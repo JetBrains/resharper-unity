@@ -31,9 +31,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             var method = element as IMethod;
-            if (method != null)
+            if (method != null && MonoBehaviourUtil.IsMonoBehaviourMessage(method.ShortName))
             {
-                // TODO: Only mark known methods as in use?
                 var monoBehaviour = TypeFactory.CreateTypeByCLRName(ourMonoBehaviourName, method.Module,
                     method.ResolveContext).GetTypeElement();
                 var containingType = method.GetContainingType();
