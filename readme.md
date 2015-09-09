@@ -1,6 +1,6 @@
 # Unity for ReSharper
 
-This plugin adds basic support for [Unity](http://unity3d.com/) to ReSharper 9.0. It requires [Unity Tools for Visual Studio](http://unityvs.com/).
+This plugin adds basic support for [Unity](http://unity3d.com/) to ReSharper 9.2.
 
 Current features:
 
