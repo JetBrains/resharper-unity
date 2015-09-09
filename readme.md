@@ -17,3 +17,8 @@ Please watch the repo or follow [@citizenmatt](https://twitter.com/citizenmatt) 
 ## Roadmap
 
 There is no roadmap as such. I am not a Unity developer, so do not know what the common pain points are. If you'd like to suggest a feature, please [raise an issue](https://github.com/JetBrains/resharper-unity/issues).
+
+Some ideas:
+ 
+ * Generate MonoBehaviour message handlers by Alt+Insert
+ * Convert void method into CoRoutine (and updating usages)
