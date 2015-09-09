@@ -12,7 +12,7 @@ That's it! If you want anything else, [suggest it](https://github.com/JetBrains/
 
 Use ReSharper's Extension Manager (ReSharper &rarr; Extension Manager), search for "Unity" and install. Restart, and it'll just start working.
 
-Please watch the repo or follow [@citizenmatt](https://twitter.com/citizenmatt) on twitter for updates.
+Please watch the repo or follow [@citizenmatt](https://twitter.com/citizenmatt) and [@slavikt](https://twitter.com/slavikt) on twitter for updates.
 
 ## Roadmap
 
