@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             var method = element as IMethod;
-            if (method != null && MonoBehaviourUtil.IsMonoBehaviourMessage(method.ShortName))
+            if (method != null && MonoBehaviourUtil.IsEventHandler(method.ShortName))
             {
                 var containingType = method.GetContainingType();
                 if (containingType != null && MonoBehaviourUtil.IsMonoBehaviourType(containingType, method.Module, method.ResolveContext))

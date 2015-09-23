@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public static class MonoBehaviourUtil
     {
-        private static readonly JetHashSet<string> ourMessageNames = new JetHashSet<string>
+        public static readonly JetHashSet<string> EventNames = new JetHashSet<string>
         {
             "Awake",
             "FixedUpdate",
@@ -75,9 +75,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             "Update"
         };
 
-        public static bool IsMonoBehaviourMessage(string shortName)
+        public static bool IsEventHandler(string shortName)
         {
-            return ourMessageNames.Contains(shortName);
+            return EventNames.Contains(shortName);
         }
 
         public static readonly IClrTypeName MonoBehaviourName = new ClrTypeName("UnityEngine.MonoBehaviour");
