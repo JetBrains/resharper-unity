@@ -1,4 +1,9 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
+using JetBrains.Metadata.Reader.Impl;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Modules;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -75,5 +80,15 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return ourMessageNames.Contains(shortName);
         }
 
+        public static readonly IClrTypeName MonoBehaviourName = new ClrTypeName("UnityEngine.MonoBehaviour");
+
+        public static bool IsMonoBehaviourType([NotNull] ITypeElement typeElement, IPsiModule module, IModuleReferenceResolveContext resolveContext)
+        {
+            // TODO: Should the module + resolve context be for Unity.Engine.dll?
+            // Then we could create a single type and reuse it
+            var monoBehaviour = TypeFactory.CreateTypeByCLRName(MonoBehaviourName, module,
+                resolveContext).GetTypeElement();
+            return typeElement.IsDescendantOf(monoBehaviour);
+        }
     }
 }
