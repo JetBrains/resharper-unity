@@ -5,7 +5,7 @@ This plugin adds basic support for [Unity](http://unity3d.com/) to ReSharper 9.2
 Current features:
 
 * ReSharper knows about classes that derive from `UnityEngine.MonoBehaviour` and the classes, public fields and methods are no longer marked as unused when Solution Wide Analysis is enabled.
-* Alt+Insert on MonoBehaviour classes to generate event handlers (without the proper methods for now)
+* Alt+Insert on MonoBehaviour classes to generate event handlers (without the proper method parameters for now)
 
 That's it! If you want anything else, [suggest it](https://github.com/JetBrains/resharper-unity/issues)!
 
