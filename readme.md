@@ -21,5 +21,4 @@ There is no roadmap as such. I am not a Unity developer, so do not know what the
 
 Some ideas:
  
- * Generate MonoBehaviour message handlers by Alt+Insert
  * Convert void method into CoRoutine (and updating usages)
