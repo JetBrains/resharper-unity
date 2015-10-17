@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>1.0.0</version>
+    <version>$version$</version>
     <authors>JetBrains slava.tutushkin</authors>
     <owners>JetBrains slava.tutushkin</owners>
     <description>Adds support for Unity.
@@ -17,13 +17,12 @@
     <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
     <copyright>Copyright 2015 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes>ReSharper 10 support</releaseNotes>
     <dependencies>
-      <dependency id="Wave" version="[3.0]" />
+      <dependency id="Wave" version="[4.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>
   <files>
-    <file src="..\src\resharper-unity\bin\Release\JetBrains.ReSharper.Plugins.Unity.dll"
-          target="DotFiles" />
   </files>
 </package>

@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var cls = element as IClass;
             if (cls != null)
             {
-                if(MonoBehaviourUtil.IsMonoBehaviourType(cls, cls.Module, cls.ResolveContext))
+                if(MonoBehaviourUtil.IsMonoBehaviourType(cls, cls.Module))
                 {
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (method != null && MonoBehaviourUtil.IsEventHandler(method.ShortName))
             {
                 var containingType = method.GetContainingType();
-                if (containingType != null && MonoBehaviourUtil.IsMonoBehaviourType(containingType, method.Module, method.ResolveContext))
+                if (containingType != null && MonoBehaviourUtil.IsMonoBehaviourType(containingType, method.Module))
                 {
                     flags = ImplicitUseKindFlags.Access;
                     return true;
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (field != null && field.GetAccessRights() == AccessRights.PUBLIC)
             {
                 var containingType = field.GetContainingType();
-                if (containingType != null && MonoBehaviourUtil.IsMonoBehaviourType(containingType, field.Module, field.ResolveContext))
+                if (containingType != null && MonoBehaviourUtil.IsMonoBehaviourType(containingType, field.Module))
                 {
                     // Public fields gets exposed to the Unity Editor and assigned from the UI. But it still should be checked if the field is ever accessed from the code.
                     flags = ImplicitUseKindFlags.Assign;

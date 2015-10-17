@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (typeElement == null)
                 return;
 
-            if (!MonoBehaviourUtil.IsMonoBehaviourType(typeElement, context.PsiModule, typeElement.ResolveContext))
+            if (!MonoBehaviourUtil.IsMonoBehaviourType(typeElement, context.PsiModule))
                 return;
             var selectedMethods = context.InputElements.OfType<GeneratorDeclaredElement<IMethod>>();
             var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (typeElement == null)
                 return;
 
-            if (!MonoBehaviourUtil.IsMonoBehaviourType(typeElement, context.PsiModule, typeElement.ResolveContext))
+            if (!MonoBehaviourUtil.IsMonoBehaviourType(typeElement, context.PsiModule))
                 return;
 
             var missingMethods = MonoBehaviourUtil.EventNames.Except(

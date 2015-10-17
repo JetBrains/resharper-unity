@@ -82,12 +82,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static readonly IClrTypeName MonoBehaviourName = new ClrTypeName("UnityEngine.MonoBehaviour");
 
-        public static bool IsMonoBehaviourType([NotNull] ITypeElement typeElement, IPsiModule module, IModuleReferenceResolveContext resolveContext)
+        public static bool IsMonoBehaviourType([NotNull] ITypeElement typeElement, IPsiModule module)
         {
             // TODO: Should the module + resolve context be for Unity.Engine.dll?
             // Then we could create a single type and reuse it
-            var monoBehaviour = TypeFactory.CreateTypeByCLRName(MonoBehaviourName, module,
-                resolveContext).GetTypeElement();
+            var monoBehaviour = TypeFactory.CreateTypeByCLRName(MonoBehaviourName, module).GetTypeElement();
             return typeElement.IsDescendantOf(monoBehaviour);
         }
     }
