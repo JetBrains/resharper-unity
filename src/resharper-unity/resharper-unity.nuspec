@@ -6,18 +6,22 @@
     <version>$version$</version>
     <authors>JetBrains slava.tutushkin</authors>
     <owners>JetBrains slava.tutushkin</owners>
+    <summary>ReSharper support for Unity</summary>
     <description>Adds support for Unity.
 
 &#8226; Marks MonoBehaviour classes, fields and methods as in use
 &#8226; Use Generate Code to generate MonoBehaviour message handlers
+&#8226; Suppress naming consistency checks on message handlers
 </description>
-    <summary>ReSharper support for Unity</summary>
+<releaseNotes>
+&#8226; Generate message handlers with parameters (#10)
+&#8226; Suppress naming consistency checks on message handlers (#11)
+</releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/license.txt</licenseUrl>
     <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
     <copyright>Copyright 2015 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <releaseNotes>ReSharper 10 support</releaseNotes>
     <dependencies>
       <dependency id="Wave" version="[4.0]" />
     </dependencies>

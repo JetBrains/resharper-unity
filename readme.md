@@ -5,7 +5,8 @@ This plugin adds basic support for [Unity](http://unity3d.com/) to ReSharper.
 Current features:
 
 * ReSharper knows about classes that derive from `UnityEngine.MonoBehaviour` and the classes, public fields and methods are no longer marked as unused when Solution Wide Analysis is enabled.
-* <kbd>Alt</kbd>+<kbd>Insert</kbd> on `MonoBehaviour` classes to generate event handlers (without the proper method parameters for now). Invoke the shortcut on the class declaration.
+* <kbd>Alt</kbd>+<kbd>Insert</kbd> on `MonoBehaviour` classes to generate event handlers, with method parameters. Invoke the shortcut on the class declaration.
+* Suppresses the naming consistency warnings on `MonoBehaviour` event handlers. E.g. ReSharper no longer suggests that `AnimatorIK` be renamed to `AnimatorIk`.
 
 That's it! If you want anything else, [suggest it](https://github.com/JetBrains/resharper-unity/issues)!
 
