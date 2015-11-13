@@ -13,6 +13,8 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Settings.Storages;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
+using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
@@ -37,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
                 var mountPoint = CreateMountPoint(projectLifetime, project, settingsStorageProviders, locks, logger, interned);
                 InitNamespaceProviderSettings(mountPoint);
+                InitLanguageLevelSettings(mountPoint);
             });
         }
 
@@ -68,6 +71,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
             var scriptsPathIndex = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse(@"Assets\Scripts"));
             SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, scriptsPathIndex, true);
+        }
+
+        private void InitLanguageLevelSettings(SettingsStorageMountPoint mountPoint)
+        {
+            // Unity only supports C# 5 for now, but they don't currently put the language level
+            // in the csproj (yet - https://twitter.com/jbevain/status/643419833594474496)
+            SetValue(mountPoint, (CSharpLanguageProjectSettings s) => s.LanguageLevel, CSharpLanguageLevel.CSharp50);
+        }
+
+        private void SetValue<TKeyClass, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,
+                                                      [NotNull] Expression<Func<TKeyClass, TEntryValue>> lambdaexpression, [NotNull] TEntryValue value,
+                                                      IDictionary<SettingsKey, object> keyIndices = null)
+        {
+            ScalarSettingsStoreAccess.SetValue(mount, settingsSchema.GetScalarEntry(lambdaexpression), keyIndices, value,
+                false, null, logger);
         }
 
         private void SetIndexedValue<TKeyClass, TEntryIndex, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,
