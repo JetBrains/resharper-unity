@@ -1,11 +1,17 @@
-﻿using JetBrains.Application;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Storage;
+using JetBrains.Application.Settings.Store;
 using JetBrains.Application.Settings.Store.Implementation;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Settings.Storages;
+using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.Util;
 
@@ -14,23 +20,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
     [SolutionComponent]
     public class PerProjectSettings
     {
+        private readonly ISettingsSchema settingsSchema;
+        private readonly ILogger logger;
+
         public PerProjectSettings(Lifetime lifetime, IViewableProjectsCollection projects,
+                                  ISettingsSchema settingsSchema,
                                   SettingsStorageProvidersCollection settingsStorageProviders, IShellLocks locks,
                                   ILogger logger, InternKeyPathComponent interned)
         {
+            this.settingsSchema = settingsSchema;
+            this.logger = logger;
             projects.Projects.View(lifetime, (projectLifetime, project) =>
             {
                 if (!project.HasFlavour<UnityProjectFlavor>())
                     return;
 
-                CreateMountPoint(projectLifetime, project, settingsStorageProviders, locks, logger, interned);
+                var mountPoint = CreateMountPoint(projectLifetime, project, settingsStorageProviders, locks, logger, interned);
+                InitNamespaceProviderSettings(mountPoint);
             });
         }
 
-        private static void CreateMountPoint(Lifetime projectLifetime,
-                                             IProject project, SettingsStorageProvidersCollection settingsStorageProviders,
-                                             IShellLocks locks, ILogger logger,
-                                             InternKeyPathComponent interned)
+        private static SettingsStorageMountPoint CreateMountPoint(Lifetime projectLifetime,
+                                                                  IProject project, SettingsStorageProvidersCollection settingsStorageProviders,
+                                                                  IShellLocks locks, ILogger logger,
+                                                                  InternKeyPathComponent interned)
         {
             var storageName = $"Project {project.Name} (Unity)";
             var storage = SettingsStorageFactory.CreateStorage(projectLifetime, storageName, logger, interned);
@@ -44,6 +57,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
             settingsStorageProviders.MountPoints.Add(projectLifetime, mountPoint);
             settingsStorageProviders.Storages.Add(projectLifetime, storage);
+
+            return mountPoint;
+        }
+
+        private void InitNamespaceProviderSettings(ISettingsStorageMountPoint mountPoint)
+        {
+            var assetsPathIndex = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse("Assets"));
+            SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, assetsPathIndex, true);
+
+            var scriptsPathIndex = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse(@"Assets\Scripts"));
+            SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, scriptsPathIndex, true);
+        }
+
+        private void SetIndexedValue<TKeyClass, TEntryIndex, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,
+                                                                          [NotNull] Expression<Func<TKeyClass, IIndexedEntry<TEntryIndex, TEntryValue>>> lambdaexpression,
+                                                                          [NotNull] TEntryIndex index,
+                                                                          [NotNull] TEntryValue value,
+                                                                          IDictionary<SettingsKey, object> keyIndices = null)
+        {
+            ScalarSettingsStoreAccess.SetIndexedValue(mount, settingsSchema.GetIndexedEntry(lambdaexpression), index,
+                keyIndices, value, null, logger);
         }
     }
 }
