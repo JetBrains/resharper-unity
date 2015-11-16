@@ -10,10 +10,18 @@
     <description>Adds support for Unity.
 
 &#8226; Marks MonoBehaviour classes, fields and methods as in use
-&#8226; Use Generate Code to generate MonoBehaviour message handlers
+&#8226; Use Generate Code to generate MonoBehaviour message handlers, with parameters
 &#8226; Suppress naming consistency checks on message handlers
+&#8226; Automatically sets Unity projects to C# 5. No more incompatible C# 6 suggestions!
+&#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code
 </description>
 <releaseNotes>
+&#8226; Suppress naming consistency checks on message handlers
+&#8226; Add parameters to generated message handlers (#8)
+&#8226; Automatically sets Unity projects to C# 5. No more incompatible C# 6 suggestions! (#5)
+&#8226; ReSharper no longer suggests `Assets` or `Scripts` as part of the namespace of your code (#6)
+
+From previous releases:
 &#8226; Generate message handlers with parameters (#10)
 &#8226; Suppress naming consistency checks on message handlers (#11)
 </releaseNotes>
