@@ -155,10 +155,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Settings\PerProjectSettings.cs" />
     <Compile Include="MessageHandlerGeneratorProvider.cs" />
     <Compile Include="MonoBehaviourEvent.cs" />
     <Compile Include="MonoBehaviourUtil.cs" />
     <Compile Include="NamingConsistencyWarningSuppressor.cs" />
+    <Compile Include="ProjectModel\Properties\Flavours\UnityProjectFlavor.cs" />
     <Compile Include="UnityEnginePredefinedType.cs" />
     <Compile Include="UsageInspectionsSuppressor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
