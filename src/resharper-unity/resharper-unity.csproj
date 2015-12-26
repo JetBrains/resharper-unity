@@ -6,6 +6,11 @@
     <HostFullIdentifier>ReSharperPlatformVs14Exp</HostFullIdentifier>
   </PropertyGroup>
   <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}</ProjectGuid>
