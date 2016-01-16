@@ -147,7 +147,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="ProgressEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeIdResolver.cs" />
+    <Compile Include="TypeKeyResolver.cs" />
     <Compile Include="TypeResolver.cs" />
     <Compile Include="XPath.cs" />
   </ItemGroup>

@@ -25,6 +25,6 @@ namespace ApiParser
         public bool IsArray { get; }
 
         [NotNull]
-        public string Identifier => TypeIdResolver.Resolve(_type);
+        public string Identifier => TypeKeyResolver.Resolve(_type);
     }
 }

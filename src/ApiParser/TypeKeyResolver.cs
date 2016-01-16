@@ -9,13 +9,13 @@ using JetBrains.ReSharper.Psi;
 
 namespace ApiParser
 {
-    public static class TypeIdResolver
+    public static class TypeKeyResolver
     {
         private static readonly Regex CamelCut = new Regex("(?<!(^|[A-Z0-9]))(?=[A-Z0-9])|(?<!^)(?=[A-Z][a-z])");
         private static readonly Dictionary<Type, string> Entries = new Dictionary<Type, string>();
         private static readonly Dictionary<Type, string> Predefined;
 
-        static TypeIdResolver()
+        static TypeKeyResolver()
         {
             FieldInfo[] fields = typeof(PredefinedType).GetFields(BindingFlags.Static | BindingFlags.Public);
             FieldInfo[] matching = fields.Where(f => typeof(IClrTypeName).IsAssignableFrom(f.FieldType)).ToArray();

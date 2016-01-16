@@ -40,7 +40,7 @@ namespace ApiParser
 
             _api.Leave("messages");
             _api.Enter("types");
-            foreach (KeyValuePair<Type, string> pair in TypeIdResolver.CustomEntries.OrderBy(p=>p.Value))
+            foreach (KeyValuePair<Type, string> pair in TypeKeyResolver.CustomEntries.OrderBy(p => p.Value))
             {
                 _api.Enter("type");
                 _api.SetAttribute("name", pair.Value);
