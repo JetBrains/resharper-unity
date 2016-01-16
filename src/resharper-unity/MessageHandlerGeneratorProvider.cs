@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
     public class GenerateMonoBehaviourMethodsWorkflow : GenerateCodeWorkflowBase
     {
-        public GenerateMonoBehaviourMethodsWorkflow() : base(GeneratorUnityKinds.UnityMessages, null, "MonoBehaviour event handlers", GenerateActionGroup.CLR_LANGUAGE, "Event handlers", "", "Generate.MonoBehaviour")
+        public GenerateMonoBehaviourMethodsWorkflow() : base(GeneratorUnityKinds.UnityMessages, ResharperUnityThemedIcons.Message16xMD.Id, "MonoBehaviour event handlers", GenerateActionGroup.CLR_LANGUAGE, "Event handlers", "", "Generate.MonoBehaviour")
         {
         }
 
