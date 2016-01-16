@@ -43,8 +43,8 @@ namespace ApiParser
             foreach (KeyValuePair<Type, string> pair in TypeKeyResolver.CustomEntries.OrderBy(p => p.Value))
             {
                 _api.Enter("type");
-                _api.SetAttribute("name", pair.Value);
-                _api.SetAttribute("type", pair.Key.FullName);
+                _api.SetAttribute("key", pair.Value);
+                _api.SetAttribute("name", pair.Key.FullName);
             }
         }
 
@@ -153,11 +153,15 @@ namespace ApiParser
             _api.Enter("type");
 
             string clsType = NsRegex.Replace(ns.Text, "$1");
-            _api.SetAttribute(@"type", clsType);
+            _api.SetAttribute("kind", clsType);
             _api.SetAttribute("name", cls.Text);
 
             string nsName = NsRegex.Replace(ns.Text, "$2");
             _api.SetAttribute(@"ns", nsName);
+
+            var hostType = new ApiType(string.Concat(nsName, ".", cls.Text));
+
+            _api.SetAttribute("key", hostType.Identifier);
             _api.SetAttribute("path", new Uri(path).AbsoluteUri);
 
             foreach (ApiNode message in messages)
@@ -172,7 +176,7 @@ namespace ApiParser
                 _api.Enter("returns");
                 _api.SetAttribute("type", type.FullName);
                 _api.SetAttribute("array", type.IsArray);
-                _api.SetAttribute("id", type.Identifier);
+                _api.SetAttribute("key", type.Identifier);
             }
         }
 
@@ -220,7 +224,7 @@ namespace ApiParser
 
                 _api.SetAttribute("type", argument.Type.FullName);
                 _api.SetAttribute("array", argument.Type.IsArray);
-                _api.SetAttribute("id", argument.Type.Identifier);
+                _api.SetAttribute("key", argument.Type.Identifier);
                 _api.SetAttribute("name", argument.Name);
                 _api.SetDescription(argument.Description);
             }

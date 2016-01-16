@@ -13,7 +13,7 @@ namespace ApiParser
     {
         private static readonly Regex CamelCut = new Regex("(?<!(^|[A-Z0-9]))(?=[A-Z0-9])|(?<!^)(?=[A-Z][a-z])");
         private static readonly Dictionary<Type, string> Entries = new Dictionary<Type, string>();
-        private static readonly Dictionary<Type, string> Predefined;
+        private static readonly Dictionary<Type, string> Predefined = new Dictionary<Type, string>();
 
         static TypeKeyResolver()
         {
@@ -21,7 +21,6 @@ namespace ApiParser
             FieldInfo[] matching = fields.Where(f => typeof(IClrTypeName).IsAssignableFrom(f.FieldType)).ToArray();
             Type[] types = matching.Select(f => Type.GetType(((IClrTypeName)f.GetValue(null)).FullName)).ToArray();
 
-            Predefined = new Dictionary<Type, string>();
             for (var i = 0; i < types.Length; ++i)
             {
                 if (types[i] != null) Predefined[types[i]] = matching[i].Name;
