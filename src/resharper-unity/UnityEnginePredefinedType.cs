@@ -1,23 +1,64 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Xml;
+using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Resources.Shell;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
-    public static class UnityEnginePredefinedType
+    [ShellComponent]
+    public class UnityEnginePredefinedType
     {
-        [NotNull] public static readonly IClrTypeName BIT_STREAM_FQN = new ClrTypeName("UnityEngine.BitStream");
-        [NotNull] public static readonly IClrTypeName COLLIDER_FQN = new ClrTypeName("UnityEngine.Collider");
-        [NotNull] public static readonly IClrTypeName COLLIDER_2D_FQN = new ClrTypeName("UnityEngine.Collider2D");
-        [NotNull] public static readonly IClrTypeName COLLISION_FQN = new ClrTypeName("UnityEngine.Collision");
-        [NotNull] public static readonly IClrTypeName COLLISION_2D_FQN = new ClrTypeName("UnityEngine.Collision2D");
-        [NotNull] public static readonly IClrTypeName CONTROLLER_COLLIDER_HIT_FQN = new ClrTypeName("UnityEngine.ControllerColliderHit");
-        [NotNull] public static readonly IClrTypeName GAME_OBJECT_FQN = new ClrTypeName("UnityEngine.GameObject");
-        [NotNull] public static readonly IClrTypeName MASTER_SERVER_EVENT_FQN = new ClrTypeName("UnityEngine.MasterServerEvent");
-        [NotNull] public static readonly IClrTypeName NETWORK_CONNECTION_ERROR_FQN = new ClrTypeName("UnityEngine.NetworkConnectionError");
-        [NotNull] public static readonly IClrTypeName NETWORK_DISCONNECTION_FQN = new ClrTypeName("UnityEngine.NetworkDisconnection");
-        [NotNull] public static readonly IClrTypeName NETWORK_MESSAGE_INFO_FQN = new ClrTypeName("UnityEngine.NetworkMessageInfo");
-        [NotNull] public static readonly IClrTypeName NETWORK_PLAYER_FQN = new ClrTypeName("UnityEngine.NetworkPlayer");
-        [NotNull] public static readonly IClrTypeName RENDER_TEXTURE_FQN = new ClrTypeName("UnityEngine.RenderTexture");
+        private readonly Dictionary<string, IClrTypeName> _unityTypes = new Dictionary<string, IClrTypeName>();
+        private readonly Dictionary<string, IClrTypeName> _systemTypes;
+
+        public UnityEnginePredefinedType()
+        {
+            Type predefined = typeof(PredefinedType);
+            FieldInfo[] fields = predefined.GetFields(BindingFlags.Static | BindingFlags.Public);
+            FieldInfo[] matching = fields.Where(f => typeof(IClrTypeName).IsAssignableFrom(f.FieldType)).ToArray();
+
+            _systemTypes = matching.ToDictionary(
+                f => predefined.FullName + "." + f.Name,
+                f => (IClrTypeName)f.GetValue(null));
+
+            XmlNodeList nodes = ApiXml.SelectNodes(@"/api/types/type");
+            if (nodes == null) return;
+
+            foreach (XmlNode node in nodes)
+            {
+                string key = node.Attributes?["key"].Value;
+                string name = node.Attributes?["name"].Value;
+
+                if (key == null || name == null) continue;
+
+                _unityTypes[key] = new ClrTypeName(name);
+            }
+        }
+
+        [NotNull]
+        private static UnityEnginePredefinedType Instance => Shell.Instance.GetComponent<UnityEnginePredefinedType>();
+
+        [NotNull]
+        private IClrTypeName this[[NotNull] string key]
+        {
+            get
+            {
+                if (_unityTypes.ContainsKey(key)) return _unityTypes[key];
+                return _systemTypes.ContainsKey(key) ? _systemTypes[key] : PredefinedType.VOID_FQN;
+            }
+        }
+
+        [NotNull]
+        public static IClrTypeName GetType([NotNull] string key)
+        {
+            return Instance[key];
+        }
     }
 }

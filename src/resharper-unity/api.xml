@@ -1,0 +1,937 @@
+﻿<api>
+  <messages>
+    <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" key="ASSET_MODIFICATION_PROCESSOR_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetModificationProcessor.html">
+      <message name="IsOpenForEdit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
+        <parameters>
+          <parameter type="System.String" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="arg1">
+            <description>Unknown argument #1</description>
+          </parameter>
+          <parameter type="System.String" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="arg2">
+            <description>Unknown argument #2</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnWillCreateAsset" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetModificationProcessor.OnWillCreateAsset.html">
+        <parameters>
+          <parameter type="System.String" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="arg">
+            <description>Unknown argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnWillDeleteAsset" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetModificationProcessor.OnWillDeleteAsset.html">
+        <parameters>
+          <parameter type="System.String" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="arg1">
+            <description>Unknown argument #1</description>
+          </parameter>
+          <parameter type="UnityEditor.RemoveAssetOptions" array="False" key="REMOVE_ASSET_OPTIONS_FQN" name="arg2">
+            <description>Unknown argument #2</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnWillMoveAsset" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetModificationProcessor.OnWillMoveAsset.html">
+        <parameters>
+          <parameter type="System.String" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="arg1">
+            <description>Unknown argument #1</description>
+          </parameter>
+          <parameter type="System.String" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="arg2">
+            <description>Unknown argument #2</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnWillSaveAssets" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetModificationProcessor.OnWillSaveAssets.html">
+        <parameters>
+          <parameter type="System.String" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="arg">
+            <description>Unknown argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="AssetPostprocessor" ns="UnityEditor" key="ASSET_POSTPROCESSOR_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.html">
+      <message name="OnAssignMaterialModel" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnAssignMaterialModel.html">
+        <parameters>
+          <parameter type="UnityEngine.Material" array="False" key="MATERIAL_FQN" name="material">
+            <description>'material' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.Renderer" array="False" key="RENDERER_FQN" name="renderer">
+            <description>'renderer' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="UnityEngine.Material" array="False" key="MATERIAL_FQN" />
+      </message>
+      <message name="OnPostprocessAllAssets" static="True" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html">
+        <parameters>
+          <parameter type="System.String" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="importedAssets">
+            <description>'importedAssets' argument</description>
+          </parameter>
+          <parameter type="System.String" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="deletedAssets">
+            <description>'deletedAssets' argument</description>
+          </parameter>
+          <parameter type="System.String" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="movedAssets">
+            <description>'movedAssets' argument</description>
+          </parameter>
+          <parameter type="System.String" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="movedFromAssetPaths">
+            <description>'movedFromAssetPaths' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPostprocessAssetbundleNameChanged" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAssetbundleNameChanged.html">
+        <parameters>
+          <parameter type="System.String" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="stringassetPath">
+            <description>'stringassetPath' argument</description>
+          </parameter>
+          <parameter type="System.String" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="stringpreviousAssetBundleName">
+            <description>'stringpreviousAssetBundleName' argument</description>
+          </parameter>
+          <parameter type="System.String" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="stringnewAssetBundleName">
+            <description>'stringnewAssetBundleName' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPostprocessAudio" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAudio.html">
+        <parameters>
+          <parameter type="UnityEngine.AudioClip" array="False" key="AUDIO_CLIP_FQN" name="arg">
+            <description>Unknown argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPostprocessGameObjectWithUserProperties" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessGameObjectWithUserProperties.html">
+        <parameters>
+          <parameter type="UnityEngine.GameObject" array="False" key="GAME_OBJECT_FQN" name="go">
+            <description>'go' argument</description>
+          </parameter>
+          <parameter type="System.String" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="propNames">
+            <description>'propNames' argument</description>
+          </parameter>
+          <parameter type="System.Object" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.OBJECT_FQN" name="values">
+            <description>'values' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPostprocessModel" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessModel.html">
+        <parameters>
+          <parameter type="UnityEngine.GameObject" array="False" key="GAME_OBJECT_FQN" name="g">
+            <description>'g' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPostprocessSpeedTree" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessSpeedTree.html">
+        <parameters>
+          <parameter type="UnityEngine.GameObject" array="False" key="GAME_OBJECT_FQN" name="arg">
+            <description>Unknown argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPostprocessTexture" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture.html">
+        <parameters>
+          <parameter type="UnityEngine.Texture2D" array="False" key="TEXTURE_2D_FQN" name="texture">
+            <description>'texture' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPreprocessAnimation" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessAnimation.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPreprocessAudio" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessAudio.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPreprocessModel" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessModel.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPreprocessSpeedTree" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessSpeedTree.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPreprocessTexture" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessTexture.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Camera" ns="UnityEngine" key="CAMERA_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Camera.html">
+      <message name="OnPostRender" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Camera.OnPostRender.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPreCull" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Camera.OnPreCull.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPreRender" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Camera.OnPreRender.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnRenderImage" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Camera.OnRenderImage.html">
+        <parameters>
+          <parameter type="UnityEngine.RenderTexture" array="False" key="RENDER_TEXTURE_FQN" name="src">
+            <description>'src' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.RenderTexture" array="False" key="RENDER_TEXTURE_FQN" name="dest">
+            <description>'dest' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnRenderObject" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Camera.OnRenderObject.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnWillRenderObject" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Camera.OnWillRenderObject.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="CharacterController" ns="UnityEngine" key="CHARACTER_CONTROLLER_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/CharacterController.html">
+      <message name="OnControllerColliderHit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/CharacterController.OnControllerColliderHit.html">
+        <parameters>
+          <parameter type="UnityEngine.ControllerColliderHit" array="False" key="CONTROLLER_COLLIDER_HIT_FQN" name="hit">
+            <description>'hit' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Collider" ns="UnityEngine" key="COLLIDER_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.html">
+      <message name="OnCollisionEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnCollisionEnter.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collision">
+            <description>'collision' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnCollisionExit.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
+            <description>'collisionInfo' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionStay" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnCollisionStay.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
+            <description>'collisionInfo' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnTriggerEnter.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnTriggerExit.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerStay" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnTriggerStay.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Collider2D" ns="UnityEngine" key="COLLIDER_2D_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.html">
+      <message name="OnCollisionEnter2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnCollisionEnter2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
+            <description>'coll' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionExit2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnCollisionExit2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
+            <description>'coll' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionStay2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnCollisionStay2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
+            <description>'coll' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerEnter2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnTriggerEnter2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerExit2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnTriggerExit2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerStay2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnTriggerStay2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Editor" ns="UnityEditor" key="EDITOR_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Editor.html">
+      <message name="OnSceneGUI" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Editor.OnSceneGUI.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="EditorWindow" ns="UnityEditor" key="EDITOR_WINDOW_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.html">
+      <message name="OnDestroy" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.OnDestroy.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnFocus" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.OnFocus.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnGUI" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.OnGUI.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnHierarchyChange" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.OnHierarchyChange.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnInspectorUpdate" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.OnInspectorUpdate.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnLostFocus" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.OnLostFocus.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnProjectChange" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.OnProjectChange.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnSelectionChange" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.OnSelectionChange.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="Update" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/EditorWindow.Update.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Playable" ns="UnityEngine.Experimental.Director" key="PLAYABLE_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Experimental.Director.Playable.html">
+      <message name="OnSetPlayState" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnSetTime" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="PrepareFrame" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Joint" ns="UnityEngine" key="JOINT_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Joint.html">
+      <message name="OnJointBreak" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Joint.OnJointBreak.html">
+        <parameters>
+          <parameter type="System.Single" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.FLOAT_FQN" name="breakForce">
+            <description>'breakForce' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="MasterServer" ns="UnityEngine" key="MASTER_SERVER_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MasterServer.html">
+      <message name="OnFailedToConnectToMasterServer" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MasterServer.OnFailedToConnectToMasterServer.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkConnectionError" array="False" key="NETWORK_CONNECTION_ERROR_FQN" name="info">
+            <description>'info' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnMasterServerEvent" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MasterServer.OnMasterServerEvent.html">
+        <parameters>
+          <parameter type="UnityEngine.MasterServerEvent" array="False" key="MASTER_SERVER_EVENT_FQN" name="msEvent">
+            <description>'msEvent' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="MonoBehaviour" ns="UnityEngine" key="MONO_BEHAVIOUR_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.html">
+      <message name="Awake" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.Awake.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="FixedUpdate" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.FixedUpdate.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="LateUpdate" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.LateUpdate.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnAnimatorIK" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnAnimatorIK.html">
+        <parameters>
+          <parameter type="System.Int32" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.INT_FQN" name="layerIndex">
+            <description>The index of the layer on which the IK solver is called.</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnAnimatorMove" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnAnimatorMove.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnApplicationFocus" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnApplicationFocus.html">
+        <parameters>
+          <parameter type="System.Boolean" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.BOOLEAN_FQN" name="focusStatus">
+            <description>'focusStatus' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnApplicationPause" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnApplicationPause.html">
+        <parameters>
+          <parameter type="System.Boolean" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.BOOLEAN_FQN" name="pauseStatus">
+            <description>'pauseStatus' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnApplicationQuit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnApplicationQuit.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnAudioFilterRead" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnAudioFilterRead.html">
+        <parameters>
+          <parameter type="System.Single" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.FLOAT_FQN" name="data">
+            <description>An array of floats comprising the audio data.</description>
+          </parameter>
+          <parameter type="System.Int32" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.INT_FQN" name="channels">
+            <description>An int that stores the number of channels of audio data passed to this delegate.</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnBecameInvisible" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnBecameInvisible.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnBecameVisible" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnBecameVisible.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collision">
+            <description>'collision' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionEnter2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
+            <description>'coll' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
+            <description>'collisionInfo' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionExit2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
+            <description>'coll' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionStay" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
+            <description>'collisionInfo' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionStay2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
+            <description>'coll' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnConnectedToServer" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnConnectedToServer.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnControllerColliderHit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnControllerColliderHit.html">
+        <parameters>
+          <parameter type="UnityEngine.ControllerColliderHit" array="False" key="CONTROLLER_COLLIDER_HIT_FQN" name="hit">
+            <description>'hit' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnDestroy" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnDestroy.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnDisable" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnDisable.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnDisconnectedFromServer" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnDisconnectedFromServer.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkDisconnection" array="False" key="NETWORK_DISCONNECTION_FQN" name="info">
+            <description>'info' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnDrawGizmos" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnDrawGizmos.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnDrawGizmosSelected" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnDrawGizmosSelected.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnEnable" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnEnable.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnFailedToConnect" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnFailedToConnect.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkConnectionError" array="False" key="NETWORK_CONNECTION_ERROR_FQN" name="error">
+            <description>'error' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnFailedToConnectToMasterServer" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnFailedToConnectToMasterServer.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkConnectionError" array="False" key="NETWORK_CONNECTION_ERROR_FQN" name="info">
+            <description>'info' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnGUI" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnGUI.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnJointBreak" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnJointBreak.html">
+        <parameters>
+          <parameter type="System.Single" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.FLOAT_FQN" name="breakForce">
+            <description>'breakForce' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnLevelWasLoaded" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnLevelWasLoaded.html">
+        <parameters>
+          <parameter type="System.Int32" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.INT_FQN" name="level">
+            <description>'level' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnMasterServerEvent" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnMasterServerEvent.html">
+        <parameters>
+          <parameter type="UnityEngine.MasterServerEvent" array="False" key="MASTER_SERVER_EVENT_FQN" name="msEvent">
+            <description>'msEvent' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnMouseDown" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnMouseDown.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnMouseDrag" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnMouseDrag.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnMouseEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnMouseEnter.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnMouseExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnMouseExit.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnMouseOver" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnMouseOver.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnMouseUp" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnMouseUp.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnMouseUpAsButton" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnMouseUpAsButton.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnNetworkInstantiate" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnNetworkInstantiate.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkMessageInfo" array="False" key="NETWORK_MESSAGE_INFO_FQN" name="info">
+            <description>'info' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnParticleCollision" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnParticleCollision.html">
+        <parameters>
+          <parameter type="UnityEngine.GameObject" array="False" key="GAME_OBJECT_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPlayerConnected" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnPlayerConnected.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkPlayer" array="False" key="NETWORK_PLAYER_FQN" name="player">
+            <description>'player' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPlayerDisconnected" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnPlayerDisconnected.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkPlayer" array="False" key="NETWORK_PLAYER_FQN" name="player">
+            <description>'player' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPostRender" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnPostRender.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPreCull" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnPreCull.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPreRender" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnPreRender.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnRenderImage" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnRenderImage.html">
+        <parameters>
+          <parameter type="UnityEngine.RenderTexture" array="False" key="RENDER_TEXTURE_FQN" name="src">
+            <description>'src' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.RenderTexture" array="False" key="RENDER_TEXTURE_FQN" name="dest">
+            <description>'dest' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnRenderObject" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnRenderObject.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnSerializeNetworkView" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnSerializeNetworkView.html">
+        <parameters>
+          <parameter type="UnityEngine.BitStream" array="False" key="BIT_STREAM_FQN" name="stream">
+            <description>'stream' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.NetworkMessageInfo" array="False" key="NETWORK_MESSAGE_INFO_FQN" name="info">
+            <description>'info' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnServerInitialized" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnServerInitialized.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTransformChildrenChanged" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTransformChildrenChanged.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTransformParentChanged" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTransformParentChanged.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerEnter2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerExit2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerStay" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnTriggerStay2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
+            <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnValidate" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnValidate.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnWillRenderObject" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnWillRenderObject.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="Reset" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.Reset.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="Start" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.Start.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="Update" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.Update.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Network" ns="UnityEngine" key="NETWORK_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Network.html">
+      <message name="OnConnectedToServer" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Network.OnConnectedToServer.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnDisconnectedFromServer" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Network.OnDisconnectedFromServer.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkDisconnection" array="False" key="NETWORK_DISCONNECTION_FQN" name="info">
+            <description>'info' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnFailedToConnect" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Network.OnFailedToConnect.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkConnectionError" array="False" key="NETWORK_CONNECTION_ERROR_FQN" name="error">
+            <description>'error' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnNetworkInstantiate" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Network.OnNetworkInstantiate.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkMessageInfo" array="False" key="NETWORK_MESSAGE_INFO_FQN" name="info">
+            <description>'info' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPlayerConnected" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Network.OnPlayerConnected.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkPlayer" array="False" key="NETWORK_PLAYER_FQN" name="player">
+            <description>'player' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnPlayerDisconnected" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Network.OnPlayerDisconnected.html">
+        <parameters>
+          <parameter type="UnityEngine.NetworkPlayer" array="False" key="NETWORK_PLAYER_FQN" name="player">
+            <description>'player' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnSerializeNetworkView" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Network.OnSerializeNetworkView.html">
+        <parameters>
+          <parameter type="UnityEngine.BitStream" array="False" key="BIT_STREAM_FQN" name="stream">
+            <description>'stream' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.NetworkMessageInfo" array="False" key="NETWORK_MESSAGE_INFO_FQN" name="info">
+            <description>'info' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnServerInitialized" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Network.OnServerInitialized.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Renderer" ns="UnityEngine" key="RENDERER_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Renderer.html">
+      <message name="OnBecameInvisible" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Renderer.OnBecameInvisible.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnBecameVisible" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Renderer.OnBecameVisible.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Rigidbody" ns="UnityEngine" key="RIGIDBODY_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Rigidbody.html">
+      <message name="OnCollisionEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Rigidbody.OnCollisionEnter.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collision">
+            <description>'collision' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Rigidbody.OnCollisionExit.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
+            <description>'collisionInfo' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnCollisionStay" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Rigidbody.OnCollisionStay.html">
+        <parameters>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
+            <description>'collisionInfo' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="ScriptableObject" ns="UnityEngine" key="SCRIPTABLE_OBJECT_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/ScriptableObject.html">
+      <message name="OnDestroy" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/ScriptableObject.OnDestroy.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnDisable" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/ScriptableObject.OnDisable.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnEnable" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/ScriptableObject.OnEnable.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="ScriptableWizard" ns="UnityEditor" key="SCRIPTABLE_WIZARD_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/ScriptableWizard.html">
+      <message name="OnWizardCreate" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/ScriptableWizard.OnWizardCreate.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnWizardOtherButton" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/ScriptableWizard.OnWizardOtherButton.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnWizardUpdate" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/ScriptableWizard.OnWizardUpdate.html">
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="StateMachineBehaviour" ns="UnityEngine" key="STATE_MACHINE_BEHAVIOUR_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/StateMachineBehaviour.html">
+      <message name="OnStateEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/StateMachineBehaviour.OnStateEnter.html">
+        <parameters>
+          <parameter type="UnityEngine.Animator" array="False" key="ANIMATOR_FQN" name="animator">
+            <description>'animator' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.AnimatorStateInfo" array="False" key="ANIMATOR_STATE_INFO_FQN" name="animatorStateInfo">
+            <description>'animatorStateInfo' argument</description>
+          </parameter>
+          <parameter type="System.Int32" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.INT_FQN" name="layerIndex">
+            <description>'layerIndex' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnStateExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/StateMachineBehaviour.OnStateExit.html">
+        <parameters>
+          <parameter type="UnityEngine.Animator" array="False" key="ANIMATOR_FQN" name="animator">
+            <description>'animator' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.AnimatorStateInfo" array="False" key="ANIMATOR_STATE_INFO_FQN" name="animatorStateInfo">
+            <description>'animatorStateInfo' argument</description>
+          </parameter>
+          <parameter type="System.Int32" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.INT_FQN" name="layerIndex">
+            <description>'layerIndex' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnStateIK" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/StateMachineBehaviour.OnStateIK.html">
+        <parameters>
+          <parameter type="UnityEngine.Animator" array="False" key="ANIMATOR_FQN" name="animator">
+            <description>'animator' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.AnimatorStateInfo" array="False" key="ANIMATOR_STATE_INFO_FQN" name="animatorStateInfo">
+            <description>'animatorStateInfo' argument</description>
+          </parameter>
+          <parameter type="System.Int32" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.INT_FQN" name="layerIndex">
+            <description>'layerIndex' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnStateMove" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/StateMachineBehaviour.OnStateMove.html">
+        <parameters>
+          <parameter type="UnityEngine.Animator" array="False" key="ANIMATOR_FQN" name="animator">
+            <description>'animator' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.AnimatorStateInfo" array="False" key="ANIMATOR_STATE_INFO_FQN" name="animatorStateInfo">
+            <description>'animatorStateInfo' argument</description>
+          </parameter>
+          <parameter type="System.Int32" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.INT_FQN" name="layerIndex">
+            <description>'layerIndex' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnStateUpdate" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/StateMachineBehaviour.OnStateUpdate.html">
+        <parameters>
+          <parameter type="UnityEngine.Animator" array="False" key="ANIMATOR_FQN" name="animator">
+            <description>'animator' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.AnimatorStateInfo" array="False" key="ANIMATOR_STATE_INFO_FQN" name="animatorStateInfo">
+            <description>'animatorStateInfo' argument</description>
+          </parameter>
+          <parameter type="System.Int32" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.INT_FQN" name="layerIndex">
+            <description>'layerIndex' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+  </messages>
+  <types>
+    <type key="ANIMATOR_FQN" name="UnityEngine.Animator" />
+    <type key="ANIMATOR_STATE_INFO_FQN" name="UnityEngine.AnimatorStateInfo" />
+    <type key="ASSET_MODIFICATION_PROCESSOR_FQN" name="UnityEditor.AssetModificationProcessor" />
+    <type key="ASSET_POSTPROCESSOR_FQN" name="UnityEditor.AssetPostprocessor" />
+    <type key="AUDIO_CLIP_FQN" name="UnityEngine.AudioClip" />
+    <type key="BIT_STREAM_FQN" name="UnityEngine.BitStream" />
+    <type key="CAMERA_FQN" name="UnityEngine.Camera" />
+    <type key="CHARACTER_CONTROLLER_FQN" name="UnityEngine.CharacterController" />
+    <type key="COLLIDER_2D_FQN" name="UnityEngine.Collider2D" />
+    <type key="COLLIDER_FQN" name="UnityEngine.Collider" />
+    <type key="COLLISION_2D_FQN" name="UnityEngine.Collision2D" />
+    <type key="COLLISION_FQN" name="UnityEngine.Collision" />
+    <type key="CONTROLLER_COLLIDER_HIT_FQN" name="UnityEngine.ControllerColliderHit" />
+    <type key="EDITOR_FQN" name="UnityEditor.Editor" />
+    <type key="EDITOR_WINDOW_FQN" name="UnityEditor.EditorWindow" />
+    <type key="GAME_OBJECT_FQN" name="UnityEngine.GameObject" />
+    <type key="JOINT_FQN" name="UnityEngine.Joint" />
+    <type key="MASTER_SERVER_EVENT_FQN" name="UnityEngine.MasterServerEvent" />
+    <type key="MASTER_SERVER_FQN" name="UnityEngine.MasterServer" />
+    <type key="MATERIAL_FQN" name="UnityEngine.Material" />
+    <type key="MONO_BEHAVIOUR_FQN" name="UnityEngine.MonoBehaviour" />
+    <type key="NETWORK_CONNECTION_ERROR_FQN" name="UnityEngine.NetworkConnectionError" />
+    <type key="NETWORK_DISCONNECTION_FQN" name="UnityEngine.NetworkDisconnection" />
+    <type key="NETWORK_FQN" name="UnityEngine.Network" />
+    <type key="NETWORK_MESSAGE_INFO_FQN" name="UnityEngine.NetworkMessageInfo" />
+    <type key="NETWORK_PLAYER_FQN" name="UnityEngine.NetworkPlayer" />
+    <type key="PLAYABLE_FQN" name="UnityEngine.Experimental.Director.Playable" />
+    <type key="REMOVE_ASSET_OPTIONS_FQN" name="UnityEditor.RemoveAssetOptions" />
+    <type key="RENDER_TEXTURE_FQN" name="UnityEngine.RenderTexture" />
+    <type key="RENDERER_FQN" name="UnityEngine.Renderer" />
+    <type key="RIGIDBODY_FQN" name="UnityEngine.Rigidbody" />
+    <type key="SCRIPTABLE_OBJECT_FQN" name="UnityEngine.ScriptableObject" />
+    <type key="SCRIPTABLE_WIZARD_FQN" name="UnityEditor.ScriptableWizard" />
+    <type key="STATE_MACHINE_BEHAVIOUR_FQN" name="UnityEngine.StateMachineBehaviour" />
+    <type key="TEXTURE_2D_FQN" name="UnityEngine.Texture2D" />
+  </types>
+</api>
