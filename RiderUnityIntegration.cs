@@ -14,7 +14,7 @@ public class RiderUnityIntegration : AssetPostprocessor
 
     try
     {
-      EditorPrefs.SetString("kScriptEditorArgs", "\"" + slnFile + "\"" + " -l $(Line) " + '"' + "$(File)" + '"');
+      EditorPrefs.SetString("kScriptEditorArgs", "\"" + slnFile + "\"" + " -l $(Line) " + "\"" + "$(File)" + "\"");
     }
     catch (Exception e)
     {
