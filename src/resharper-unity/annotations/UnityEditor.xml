@@ -1,0 +1,6 @@
+<assembly name="UnityEditor">
+  <member name="P:UnityEditor.Editor.serializedObject">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  </member>
+</assembly>
