@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity", "resharper-unity\resharper-unity.csproj", "{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1BA095E3-8422-414C-B65D-1BEEE34AEB81}"
+	ProjectSection(SolutionItems) = preProject
+		resharper-unity\annotations\UnityEditor.xml = resharper-unity\annotations\UnityEditor.xml
+		resharper-unity\annotations\UnityEngine.xml = resharper-unity\annotations\UnityEngine.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
