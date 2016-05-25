@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Psi;
@@ -33,19 +34,26 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
             }
 
-            var field = element as IField;
-            if (field != null && field.GetAccessRights() == AccessRights.PUBLIC)
+            flags = ImplicitUseKindFlags.Default;
+            return InspectField(element as IField, ref flags);
+        }
+
+        private static bool InspectField([CanBeNull] ITypeMember field, ref ImplicitUseKindFlags flags)
+        {
+            ITypeElement containingType = field?.GetContainingType();
+            if (containingType == null) return false;
+
+            bool serializable = containingType.HasAttribute("System.SerializableAttribute");
+            bool unityObject = containingType.GetSuperTypes().Any(t => t.GetClrName().FullName == "UnityEngine.Object");
+            if (!serializable && !unityObject) return false;
+
+            if (field.GetAccessRights() == AccessRights.PUBLIC ||
+                field.HasAttribute("UnityEngine.SerializeField"))
             {
-                var containingType = field.GetContainingType();
-                if (containingType != null && MonoBehaviourUtil.IsMonoBehaviourType(containingType, field.Module))
-                {
-                    // Public fields gets exposed to the Unity Editor and assigned from the UI. But it still should be checked if the field is ever accessed from the code.
-                    flags = ImplicitUseKindFlags.Assign;
-                    return true;
-                }
+                flags = ImplicitUseKindFlags.Assign;
+                return true;
             }
 
-            flags = ImplicitUseKindFlags.Default;
             return false;
         }
     }
