@@ -12,7 +12,7 @@ namespace Assets.Plugins.Editor
 	{
 		static Rider()
 		{
-			Debug.LogWarning("Attempt to update settings");
+			Debug.Log("Attempt to update settings");
 			// Open the solution file
 			string projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 			string projectName = Path.GetFileName(projectDirectory);
