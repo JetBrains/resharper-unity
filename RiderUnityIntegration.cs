@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,55 +9,99 @@ using UnityEngine;
 
 namespace Assets.Plugins.Editor
 {
-	[InitializeOnLoad]
-	public static class Rider
-	{
-		static Rider()
-		{
-			Debug.Log("Attempt to update settings");
-			// Open the solution file
-			string projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-			string projectName = Path.GetFileName(projectDirectory);
-			string slnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
+  [InitializeOnLoad]
+  public static class Rider
+  {
+    static Rider()
+    {
+      var riderPath = EditorPrefs.GetString("kScriptsDefaultApp");
+      Debug.Log(riderPath);
+      if (riderPath != null)
+      {
+        var riderFileInfo = new FileInfo(riderPath);
+        if (riderPath.ToLower().Contains("rider") && !riderFileInfo.Exists)
+        {
+          var newPath = riderPath;
+          // try to search the new version
 
-			try
-			{
-				EditorPrefs.SetString("kScriptEditorArgs", "\"" + slnFile + "\"" + " -l $(Line) " + "\"" + "$(File)" + "\"");
-			}
-			catch (Exception e)
-			{
-				Debug.LogError(e.Message);
-			}
-		}
-	}
+          switch (riderFileInfo.Extension)
+          {
 
-	public class RiderAssetPostprocessor : AssetPostprocessor
-	{
-		public static void OnGeneratedCSProjectFiles()
-		{
-			var files = new DirectoryInfo(".").GetFiles("*.csproj");
+            /*
+            Unity itself transforms lnk to exe
+            case ".lnk":
+            {
+              if (riderFileInfo.Directory != null && riderFileInfo.Directory.Exists)
+              {
+                var possibleNew = riderFileInfo.Directory.GetFiles("*ider*.lnk");
+                if (possibleNew.Length > 0)
+                  newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
+              }
+              break;
+            }*/
+            case ".exe":
+            {
+              var possibleNew =
+                riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
+                  .SelectMany(a => a.GetDirectories("bin")).SelectMany(a=>a.GetFiles(riderFileInfo.Name))
+                  .ToArray();
+              if (possibleNew.Length > 0)
+                newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
+              break;
+            }
+            default:
+            {
+              Debug.Log("Unsupported way to start Rider");
+              break;
+            }
+          }
+          if (newPath != riderPath)
 
-			bool isModified = false;
-			foreach (var file in files)
-			{
-				if (ReplaceInFile(file.FullName, "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>",
-					"<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>"))
-					isModified = true;
-			}
+            EditorPrefs.SetString("kScriptsDefaultApp", newPath);
+        }
+      }
 
-			if (isModified)
-				Debug.Log("Project was post processed successfully");
-			else
-				Debug.Log("No change necessary in project");
-		}
 
-		private static bool ReplaceInFile(string filePath, string searchText, string replaceText)
-		{
-			string oldText = File.ReadAllText(filePath);
-			string newText = oldText.Replace(searchText, replaceText);
-			if (newText == oldText) return false;
-			File.WriteAllText(filePath, newText);
-			return true;
-		}
-	}
+      Debug.Log("Attempt to update settings");
+      // Open the solution file
+      string projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+      string projectName = Path.GetFileName(projectDirectory);
+      string slnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
+
+      try
+      {
+        EditorPrefs.SetString("kScriptEditorArgs", "\"" + slnFile + "\"" + " -l $(Line) " + "\"" + "$(File)" + "\"");
+      }
+      catch (Exception e)
+      {
+        Debug.LogError(e.Message);
+      }
+    }
+  }
+
+  public class RiderAssetPostprocessor : AssetPostprocessor
+  {
+    public static void OnGeneratedCSProjectFiles()
+    {
+      var currentDirectory = Directory.GetCurrentDirectory();
+      var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
+
+      bool isModified = false;
+      foreach (var file in projectFiles)
+      {
+        string content = File.ReadAllText(file);
+        if (content.Contains("<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>"))
+        {
+          content = Regex.Replace(content, "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>",
+            "<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>");
+          File.WriteAllText(file, content);
+          isModified = true;
+        }
+      }
+
+      Debug.Log(isModified ? "Project was post processed successfully" : "No change necessary in project");
+    }
+  }
 }
+
+// Developed using JetBrains Rider =)
