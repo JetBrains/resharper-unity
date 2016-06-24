@@ -51,7 +51,7 @@ namespace Assets.Plugins.Editor
             }
             default:
             {
-              Debug.Log("Unsupported way to start Rider");
+              Debug.Log("Please manually update the path to Rider in Unity Preferences -> External Tools -> External Script Editor.");
               break;
             }
           }
