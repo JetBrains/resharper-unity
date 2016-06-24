@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,16 +11,13 @@ namespace Assets.Plugins.Editor
   [InitializeOnLoad]
   public static class Rider
   {
+    private static readonly string SlnFile;
+    private static readonly FileInfo riderFileInfo = new FileInfo(EditorPrefs.GetString("kScriptsDefaultApp"));
     static Rider()
     {
-      var riderPath = EditorPrefs.GetString("kScriptsDefaultApp");
-      
-      if (riderPath != null)
-      {
-        var riderFileInfo = new FileInfo(riderPath);
-        if (riderPath.ToLower().Contains("rider") && !riderFileInfo.Exists)
+        if (riderFileInfo.FullName.ToLower().Contains("rider") && !riderFileInfo.Exists)
         {
-          var newPath = riderPath;
+          var newPath = riderFileInfo.FullName;
           // try to search the new version
 
           switch (riderFileInfo.Extension)
@@ -43,7 +39,7 @@ namespace Assets.Plugins.Editor
             {
               var possibleNew =
                 riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
-                  .SelectMany(a => a.GetDirectories("bin")).SelectMany(a=>a.GetFiles(riderFileInfo.Name))
+                  .SelectMany(a => a.GetDirectories("bin")).SelectMany(a => a.GetFiles(riderFileInfo.Name))
                   .ToArray();
               if (possibleNew.Length > 0)
                 newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
@@ -51,33 +47,65 @@ namespace Assets.Plugins.Editor
             }
             default:
             {
-              Debug.Log("Please manually update the path to Rider in Unity Preferences -> External Tools -> External Script Editor.");
+              Debug.Log(
+                "Please manually update the path to Rider in Unity Preferences -> External Tools -> External Script Editor.");
               break;
             }
           }
-          if (newPath != riderPath)
+          if (newPath != riderFileInfo.FullName)
           {
-            Debug.Log(riderPath);
+            Debug.Log(riderFileInfo.FullName);
             Debug.Log(newPath);
             EditorPrefs.SetString("kScriptsDefaultApp", newPath);
           }
         }
-      }
 
-      Debug.Log("Attempt to update settings");
+
       // Open the solution file
-      string projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-      string projectName = Path.GetFileName(projectDirectory);
-      string slnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
+      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+      var projectName = Path.GetFileName(projectDirectory);
+      SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
+    }
 
-      try
+    /// <summary>
+    /// Asset Open Callback (from Unity)
+    /// </summary>
+    /// <remarks>
+    /// Called when Unity is about to open an asset.
+    /// </remarks>
+    [UnityEditor.Callbacks.OnOpenAssetAttribute()]
+    static bool OnOpenedAsset(int instanceID, int line)
+    {
+      if (riderFileInfo.FullName.ToLower().Contains("rider") && riderFileInfo.Exists)
       {
-        EditorPrefs.SetString("kScriptEditorArgs", "\"" + slnFile + "\"" + " -l $(Line) " + "\"" + "$(File)" + "\"");
+        string appPath = Path.GetDirectoryName(Application.dataPath);
+
+        // determine asset that has been double clicked in the project view
+        var selected = EditorUtility.InstanceIDToObject(instanceID);
+
+        if (selected.GetType().ToString() == "UnityEditor.MonoScript" ||
+            selected.GetType().ToString() == "UnityEngine.Shader")
+        {
+          string completeFilepath = appPath + Path.DirectorySeparatorChar + AssetDatabase.GetAssetPath(selected);
+          string args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
+          Debug.Log("\""+riderFileInfo.FullName+"\"" + " " + args);
+          CallRider(riderFileInfo.FullName, args);
+          return true;
+        }
       }
-      catch (Exception e)
-      {
-        Debug.LogError(e.Message);
-      }
+      return false;
+    }
+
+    private static void CallRider(string riderPath, string args)
+    {
+      System.Diagnostics.Process proc = new System.Diagnostics.Process();
+      proc.StartInfo.FileName = riderPath;
+      proc.StartInfo.Arguments = args;
+      proc.StartInfo.UseShellExecute = false;
+      proc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+      proc.StartInfo.CreateNoWindow = true;
+      proc.StartInfo.RedirectStandardOutput = true;
+      proc.Start();
     }
   }
 
