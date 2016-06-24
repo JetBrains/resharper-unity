@@ -15,7 +15,7 @@ namespace Assets.Plugins.Editor
     static Rider()
     {
       var riderPath = EditorPrefs.GetString("kScriptsDefaultApp");
-      Debug.Log(riderPath);
+      
       if (riderPath != null)
       {
         var riderFileInfo = new FileInfo(riderPath);
@@ -56,11 +56,13 @@ namespace Assets.Plugins.Editor
             }
           }
           if (newPath != riderPath)
-
+          {
+            Debug.Log(riderPath);
+            Debug.Log(newPath);
             EditorPrefs.SetString("kScriptsDefaultApp", newPath);
+          }
         }
       }
-
 
       Debug.Log("Attempt to update settings");
       // Open the solution file
