@@ -117,14 +117,14 @@ namespace Assets.Plugins.Editor
       if (new FileInfo(riderPath).Extension == ".app")
       {
         proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/"+riderPath, args);
-				Debug.Log(proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + riderPath, args);
+        Debug.Log(proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
       }
       else
       {
         proc.StartInfo.FileName = riderPath;
         proc.StartInfo.Arguments = args;
-				Debug.Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
+        Debug.Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
       }
 
       proc.StartInfo.UseShellExecute = false;
@@ -136,28 +136,28 @@ namespace Assets.Plugins.Editor
   }
 
   public class RiderAssetPostprocessor : AssetPostprocessor
-	{
-		public static void OnGeneratedCSProjectFiles()
-		{
-			var currentDirectory = Directory.GetCurrentDirectory();
-			var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
+  {
+    public static void OnGeneratedCSProjectFiles()
+    {
+      var currentDirectory = Directory.GetCurrentDirectory();
+      var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
 
-			bool isModified = false;
-			foreach (var file in projectFiles)
-			{
-				string content = File.ReadAllText(file);
-				if (content.Contains("<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>"))
-				{
-					content = Regex.Replace(content, "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>",
-						"<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>");
-					File.WriteAllText(file, content);
-					isModified = true;
-				}
-			}
+      bool isModified = false;
+      foreach (var file in projectFiles)
+      {
+        string content = File.ReadAllText(file);
+        if (content.Contains("<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>"))
+        {
+          content = Regex.Replace(content, "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>",
+            "<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>");
+          File.WriteAllText(file, content);
+          isModified = true;
+        }
+      }
 
-			Debug.Log(isModified ? "Project was post processed successfully" : "No change necessary in project");
-		}
-	}
+      Debug.Log(isModified ? "Project was post processed successfully" : "No change necessary in project");
+    }
+  }
 }
 
 // Developed using JetBrains Rider =)
