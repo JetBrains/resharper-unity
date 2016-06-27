@@ -12,53 +12,63 @@ namespace Assets.Plugins.Editor
   public static class Rider
   {
     private static readonly string SlnFile;
-    private static readonly FileInfo riderFileInfo = new FileInfo(EditorPrefs.GetString("kScriptsDefaultApp"));
+    private static readonly string defaultApp = EditorPrefs.GetString("kScriptsDefaultApp");
+
     static Rider()
     {
-        if (riderFileInfo.FullName.ToLower().Contains("rider") && !riderFileInfo.Exists)
+
+      if (string.IsNullOrEmpty(defaultApp))
+        return;
+      var riderFileInfo = new FileInfo(defaultApp);
+      if (riderFileInfo.FullName.ToLower().Contains("rider") &&
+          (!riderFileInfo.Exists || riderFileInfo.Extension == ".app")) // seems like app doesn't exist as file
+      {
+        var newPath = riderFileInfo.FullName;
+        // try to search the new version
+
+        switch (riderFileInfo.Extension)
         {
-          var newPath = riderFileInfo.FullName;
-          // try to search the new version
 
-          switch (riderFileInfo.Extension)
-          {
-
-            /*
-            Unity itself transforms lnk to exe
-            case ".lnk":
-            {
-              if (riderFileInfo.Directory != null && riderFileInfo.Directory.Exists)
+          /*
+              Unity itself transforms lnk to exe
+              case ".lnk":
               {
-                var possibleNew = riderFileInfo.Directory.GetFiles("*ider*.lnk");
-                if (possibleNew.Length > 0)
-                  newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
-              }
-              break;
-            }*/
-            case ".exe":
-            {
-              var possibleNew =
-                riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
-                  .SelectMany(a => a.GetDirectories("bin")).SelectMany(a => a.GetFiles(riderFileInfo.Name))
-                  .ToArray();
-              if (possibleNew.Length > 0)
-                newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
-              break;
-            }
-            default:
-            {
-              Debug.Log(
-                "Please manually update the path to Rider in Unity Preferences -> External Tools -> External Script Editor.");
-              break;
-            }
-          }
-          if (newPath != riderFileInfo.FullName)
+                if (riderFileInfo.Directory != null && riderFileInfo.Directory.Exists)
+                {
+                  var possibleNew = riderFileInfo.Directory.GetFiles("*ider*.lnk");
+                  if (possibleNew.Length > 0)
+                    newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
+                }
+                break;
+              }*/
+          case ".exe":
           {
-            Debug.Log(riderFileInfo.FullName);
-            Debug.Log(newPath);
-            EditorPrefs.SetString("kScriptsDefaultApp", newPath);
+            var possibleNew =
+              riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
+                .SelectMany(a => a.GetDirectories("bin")).SelectMany(a => a.GetFiles(riderFileInfo.Name))
+                .ToArray();
+            if (possibleNew.Length > 0)
+              newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
+            break;
+          }
+          case ".app": //osx
+          {
+            break;
+          }
+          default:
+          {
+            Debug.Log(
+              "Please manually update the path to Rider in Unity Preferences -> External Tools -> External Script Editor.");
+            break;
           }
         }
+        if (newPath != riderFileInfo.FullName)
+        {
+          Debug.Log(riderFileInfo.FullName);
+          Debug.Log(newPath);
+          EditorPrefs.SetString("kScriptsDefaultApp", newPath);
+        }
+      }
 
 
       // Open the solution file
@@ -76,7 +86,12 @@ namespace Assets.Plugins.Editor
     [UnityEditor.Callbacks.OnOpenAssetAttribute()]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (riderFileInfo.FullName.ToLower().Contains("rider") && riderFileInfo.Exists)
+      if (string.IsNullOrEmpty(defaultApp))
+        return false;
+
+      var riderFileInfo = new FileInfo(defaultApp);
+      if (riderFileInfo.FullName.ToLower().Contains("rider") &&
+          (riderFileInfo.Exists || riderFileInfo.Extension == ".app"))
       {
         string appPath = Path.GetDirectoryName(Application.dataPath);
 
@@ -88,7 +103,7 @@ namespace Assets.Plugins.Editor
         {
           string completeFilepath = appPath + Path.DirectorySeparatorChar + AssetDatabase.GetAssetPath(selected);
           string args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
-          Debug.Log("\""+riderFileInfo.FullName+"\"" + " " + args);
+
           CallRider(riderFileInfo.FullName, args);
           return true;
         }
@@ -98,9 +113,20 @@ namespace Assets.Plugins.Editor
 
     private static void CallRider(string riderPath, string args)
     {
-      System.Diagnostics.Process proc = new System.Diagnostics.Process();
-      proc.StartInfo.FileName = riderPath;
-      proc.StartInfo.Arguments = args;
+      var proc = new System.Diagnostics.Process();
+      if (new FileInfo(riderPath).Extension == ".app")
+      {
+        proc.StartInfo.FileName = "open";
+        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/"+riderPath, args);
+				Debug.Log(proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+      }
+      else
+      {
+        proc.StartInfo.FileName = riderPath;
+        proc.StartInfo.Arguments = args;
+				Debug.Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
+      }
+
       proc.StartInfo.UseShellExecute = false;
       proc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
       proc.StartInfo.CreateNoWindow = true;
@@ -110,28 +136,28 @@ namespace Assets.Plugins.Editor
   }
 
   public class RiderAssetPostprocessor : AssetPostprocessor
-  {
-    public static void OnGeneratedCSProjectFiles()
-    {
-      var currentDirectory = Directory.GetCurrentDirectory();
-      var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
+	{
+		public static void OnGeneratedCSProjectFiles()
+		{
+			var currentDirectory = Directory.GetCurrentDirectory();
+			var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
 
-      bool isModified = false;
-      foreach (var file in projectFiles)
-      {
-        string content = File.ReadAllText(file);
-        if (content.Contains("<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>"))
-        {
-          content = Regex.Replace(content, "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>",
-            "<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>");
-          File.WriteAllText(file, content);
-          isModified = true;
-        }
-      }
+			bool isModified = false;
+			foreach (var file in projectFiles)
+			{
+				string content = File.ReadAllText(file);
+				if (content.Contains("<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>"))
+				{
+					content = Regex.Replace(content, "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>",
+						"<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>");
+					File.WriteAllText(file, content);
+					isModified = true;
+				}
+			}
 
-      Debug.Log(isModified ? "Project was post processed successfully" : "No change necessary in project");
-    }
-  }
+			Debug.Log(isModified ? "Project was post processed successfully" : "No change necessary in project");
+		}
+	}
 }
 
 // Developed using JetBrains Rider =)
