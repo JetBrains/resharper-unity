@@ -18,9 +18,9 @@ namespace Assets.Plugins.Editor
 
     static Rider()
     {
-
       if (string.IsNullOrEmpty(defaultApp))
         return;
+        
       var riderFileInfo = new FileInfo(defaultApp);
       if (riderFileInfo.FullName.ToLower().Contains("rider") &&
           (!riderFileInfo.Exists || riderFileInfo.Extension == ".app")) // seems like app doesn't exist as file
