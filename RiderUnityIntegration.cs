@@ -1,10 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 // Put the file to Assets\Plugins\Editor
 
@@ -18,9 +19,9 @@ namespace Assets.Plugins.Editor
 
     static Rider()
     {
+
       if (string.IsNullOrEmpty(defaultApp))
         return;
-        
       var riderFileInfo = new FileInfo(defaultApp);
       if (riderFileInfo.FullName.ToLower().Contains("rider") &&
           (!riderFileInfo.Exists || riderFileInfo.Extension == ".app")) // seems like app doesn't exist as file
@@ -103,8 +104,12 @@ namespace Assets.Plugins.Editor
         if (selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader")
         {
-          string completeFilepath = appPath + Path.DirectorySeparatorChar + AssetDatabase.GetAssetPath(selected);
-          string args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
+          var completeFilepath = appPath + Path.DirectorySeparatorChar + AssetDatabase.GetAssetPath(selected);
+          var args = string.Empty;
+          if (GetPossibleRiderProcess() != null)
+            args = string.Format(" -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
+          else
+            args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
 
           CallRider(riderFileInfo.FullName, args);
           return true;
@@ -115,7 +120,7 @@ namespace Assets.Plugins.Editor
 
     private static void CallRider(string riderPath, string args)
     {
-      var proc = new System.Diagnostics.Process();
+      var proc = new Process();
       if (new FileInfo(riderPath).Extension == ".app")
       {
         proc.StartInfo.FileName = "open";
@@ -130,15 +135,28 @@ namespace Assets.Plugins.Editor
       }
 
       proc.StartInfo.UseShellExecute = false;
-      proc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+      proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
       proc.StartInfo.CreateNoWindow = true;
       proc.StartInfo.RedirectStandardOutput = true;
       proc.Start();
-      SetForegroundWindow(proc.MainWindowHandle);
     }
 
-    [DllImport("user32.dll")]
-    private static extern bool SetForegroundWindow(IntPtr hWnd);
+    private static Process GetPossibleRiderProcess()
+    {
+      var riderProcesses = Process.GetProcesses();
+      foreach (var riderProcess in riderProcesses)
+            {
+              try
+              {
+                if (riderProcess.ProcessName.ToLower().Contains("rider"))
+                  return riderProcess;
+              }
+              catch (Exception)
+              {
+              }
+            }
+      return null;
+    }
   }
 
   public class RiderAssetPostprocessor : AssetPostprocessor
