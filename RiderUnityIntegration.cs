@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -132,7 +134,11 @@ namespace Assets.Plugins.Editor
       proc.StartInfo.CreateNoWindow = true;
       proc.StartInfo.RedirectStandardOutput = true;
       proc.Start();
+      SetForegroundWindow(proc.MainWindowHandle);
     }
+
+    [DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
   }
 
   public class RiderAssetPostprocessor : AssetPostprocessor
