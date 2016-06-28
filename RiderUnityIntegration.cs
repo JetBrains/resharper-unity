@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -139,24 +141,86 @@ namespace Assets.Plugins.Editor
       proc.StartInfo.CreateNoWindow = true;
       proc.StartInfo.RedirectStandardOutput = true;
       proc.Start();
+
+      if (new FileInfo(riderPath).Extension == ".exe")
+        ActivateWindow();
+    }
+
+    private static void ActivateWindow()
+    {
+      Debug.Log("Attempt to activate window.");
+      var process = Process.GetProcesses().Where(b => b.ProcessName.Contains("Rider")).FirstOrDefault(a => !a.HasExited);
+      if (process != null)
+      {
+        // Collect top level windows
+        var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
+        // Get process main window title
+        var windowHandle =
+          topLevelWindows.Where(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id).FirstOrDefault();
+        if (windowHandle != null)
+          User32Dll.SetForegroundWindow(windowHandle);
+      }
     }
 
     private static Process GetPossibleRiderProcess()
     {
       var riderProcesses = Process.GetProcesses();
       foreach (var riderProcess in riderProcesses)
-            {
-              try
-              {
-                if (riderProcess.ProcessName.ToLower().Contains("rider"))
-                  return riderProcess;
-              }
-              catch (Exception)
-              {
-              }
-            }
+      {
+        try
+        {
+          if (riderProcess.ProcessName.ToLower().Contains("rider"))
+            return riderProcess;
+        }
+        catch (Exception)
+        {
+        }
+      }
       return null;
     }
+  }
+
+  public static class User32Dll
+  {
+
+    /// <summary>
+    /// Gets the ID of the process that owns the window.
+    /// Note that creating a <see cref="Process"/> wrapper for that is very expensive because it causes an enumeration of all the system processes to happen.
+    /// </summary>
+    public static int GetWindowProcessId(IntPtr hwnd)
+    {
+      uint dwProcessId;
+      GetWindowThreadProcessId(hwnd, out dwProcessId);
+      return unchecked((int) dwProcessId);
+    }
+
+
+    /// <summary>
+    /// Lists the handles of all the top-level windows currently available in the system.
+    /// </summary>
+    public static List<IntPtr> GetTopLevelWindowHandles()
+    {
+      var retval = new List<IntPtr>();
+      EnumWindowsProc callback = (hwnd, param) =>
+      {
+        retval.Add(hwnd);
+        return 1;
+      };
+      EnumWindows(Marshal.GetFunctionPointerForDelegate(callback), IntPtr.Zero);
+      GC.KeepAlive(callback);
+      return retval;
+    }
+
+    public delegate Int32 EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+    public static extern Int32 EnumWindows(IntPtr lpEnumFunc, IntPtr lParam);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+    public static extern Int32 SetForegroundWindow(IntPtr hWnd);
   }
 
   public class RiderAssetPostprocessor : AssetPostprocessor
@@ -177,6 +241,7 @@ namespace Assets.Plugins.Editor
           File.WriteAllText(file, content);
           isModified = true;
         }
+
       }
 
       Debug.Log(isModified ? "Project was post processed successfully" : "No change necessary in project");
