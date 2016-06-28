@@ -155,9 +155,8 @@ namespace Assets.Plugins.Editor
         // Collect top level windows
         var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
         // Get process main window title
-        var windowHandle =
-          topLevelWindows.Where(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id).FirstOrDefault();
-        if (windowHandle != null)
+        var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
+        if (windowHandle != IntPtr.Zero)
           User32Dll.SetForegroundWindow(windowHandle);
       }
     }
