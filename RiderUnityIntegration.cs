@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-// Put the file to Assets\Plugins\Editor
+// Put the file to Assets/Plugins/Rider/Editor/
 
 namespace Assets.Plugins.Editor
 {
