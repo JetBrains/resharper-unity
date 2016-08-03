@@ -137,6 +137,8 @@ namespace Assets.Plugins.Editor
         Debug.Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
       }
 
+      proc.StartInfo.EnvironmentVariables.Add("MONO_MANAGED_WATCHER", "false");
+
       proc.StartInfo.UseShellExecute = false;
       proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
       proc.StartInfo.CreateNoWindow = true;
@@ -248,10 +250,12 @@ namespace Assets.Plugins.Editor
       foreach (var file in slnFiles)
       {
         string content = File.ReadAllText(file);
-        const string magicProjectGUID = @"Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"")"; // guid representing C# project
+        const string magicProjectGUID = @"Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"")";
+          // guid representing C# project
         if (!content.Contains(magicProjectGUID))
         {
-          string matchGUID = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)"; // Unity may put a random guid, which will brake Rider goto
+          string matchGUID = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)";
+            // Unity may put a random guid, which will brake Rider goto
           content = Regex.Replace(content, matchGUID, magicProjectGUID);
           File.WriteAllText(file, content);
           isModified = true;
