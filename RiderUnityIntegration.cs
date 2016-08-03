@@ -137,7 +137,7 @@ namespace Assets.Plugins.Editor
         Debug.Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
       }
 
-      proc.StartInfo.EnvironmentVariables.Add("MONO_MANAGED_WATCHER", "false");
+      proc.StartInfo.EnvironmentVariables.Add("MONO_MANAGED_WATCHER", "false"); // remove after fix of https://youtrack.jetbrains.com/issue/RIDER-729
 
       proc.StartInfo.UseShellExecute = false;
       proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
