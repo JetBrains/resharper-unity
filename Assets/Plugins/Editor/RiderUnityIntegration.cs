@@ -159,7 +159,7 @@ namespace Assets.Plugins.Editor
     private static void ActivateWindow()
     {
       Debug.Log("Attempt to activate window.");
-      var process = Process.GetProcesses().Where(b => b.ProcessName.Contains("Rider")).FirstOrDefault(a => !a.HasExited);
+      var process = Process.GetProcesses().FirstOrDefault(b => !b.HasExited && b.ProcessName.Contains("Rider"));
       if (process != null)
       {
         // Collect top level windows

@@ -7,3 +7,4 @@ ProjectSettings/*
 obj/*
 Temp/*
 *.sln
+*.suo
