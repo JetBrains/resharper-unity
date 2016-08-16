@@ -144,7 +144,16 @@ namespace Assets.Plugins.Editor
       proc.Start();
 
       if (new FileInfo(riderPath).Extension == ".exe")
-        ActivateWindow();
+      {
+        try
+        {
+          ActivateWindow();
+        }
+        catch (Exception e)
+        {
+          Debug.Log("Exception on ActivateWindow: " + e);
+        }
+      }
     }
 
     private static void ActivateWindow()
