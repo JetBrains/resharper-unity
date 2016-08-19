@@ -7,3 +7,6 @@
 4. Assets->Open CSharp project
 
 I have tried it in Windows, Ubuntu and MacOs
+
+##Useful info:
+1. Debugging Unity is tricky but possible - follow info here https://youtrack.jetbrains.com/issue/RIDER-485
