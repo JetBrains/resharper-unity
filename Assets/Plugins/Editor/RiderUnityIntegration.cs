@@ -63,8 +63,7 @@ namespace Assets.Plugins.Editor
           }
           default:
           {
-            Debug.Log(
-              "Please manually update the path to Rider in Unity Preferences -> External Tools -> External Script Editor.");
+            Debug.Log("Please manually update the path to Rider in Unity Preferences -> External Tools -> External Script Editor.");
             break;
           }
         }
@@ -158,7 +157,6 @@ namespace Assets.Plugins.Editor
 
     private static void ActivateWindow()
     {
-      Debug.Log("Attempt to activate window.");
       var process = Process.GetProcesses().FirstOrDefault(b => !b.HasExited && b.ProcessName.Contains("Rider"));
       if (process != null)
       {
@@ -258,11 +256,11 @@ namespace Assets.Plugins.Editor
       {
         string content = File.ReadAllText(file);
         const string magicProjectGUID = @"Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"")";
-          // guid representing C# project
+        // guid representing C# project
         if (!content.Contains(magicProjectGUID))
         {
           string matchGUID = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)";
-            // Unity may put a random guid, which will brake Rider goto
+          // Unity may put a random guid, which will brake Rider goto
           content = Regex.Replace(content, matchGUID, magicProjectGUID);
           File.WriteAllText(file, content);
           isModified = true;
@@ -270,6 +268,18 @@ namespace Assets.Plugins.Editor
       }
 
       Debug.Log(isModified ? "Project was post processed successfully" : "No change necessary in project");
+
+      try
+      {
+        if (slnFiles.Any())
+          EditorPrefs.SetString("kScriptEditorArgs", "\"" + slnFiles.First() + "\"");
+        else
+          EditorPrefs.SetString("kScriptEditorArgs", string.Empty);
+      }
+      catch (Exception e)
+      {
+        Debug.Log("Exception on updating kScriptEditorArgs: " + e.Message);
+      }
     }
   }
 }
