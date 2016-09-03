@@ -16,13 +16,13 @@
 &#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code
 </description>
 <releaseNotes>
-&#8226; ReSharper 2016.1 support
+&#8226; ReSharper 2016.2 support
 
 From previous releases:
+&#8226; ReSharper 2016.1 support
 &#8226; Suppress naming consistency checks on message handlers
 &#8226; Add parameters to generated message handlers (#8)
 &#8226; Automatically sets Unity projects to C# 5. No more incompatible C# 6 suggestions! (#5)
-&#8226; ReSharper no longer suggests `Assets` or `Scripts` as part of the namespace of your code (#6)
 </releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/license.txt</licenseUrl>
@@ -30,7 +30,7 @@ From previous releases:
     <copyright>Copyright 2016 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[5.0]" />
+      <dependency id="Wave" version="[6.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>
