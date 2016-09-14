@@ -34,7 +34,6 @@ namespace Assets.Plugins.Editor
 
         switch (riderFileInfo.Extension)
         {
-
           /*
               Unity itself transforms lnk to exe
               case ".lnk":
@@ -82,6 +81,19 @@ namespace Assets.Plugins.Editor
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
     }
 
+      private static bool Enabled
+      {
+          get
+          {
+              if (string.IsNullOrEmpty(defaultApp))
+                  return false;
+              return RiderFileInfo.FullName.ToLower().Contains("rider") &&
+                     (RiderFileInfo.Exists || RiderFileInfo.Extension == ".app");
+          }
+      }
+
+      private static FileInfo RiderFileInfo {get { return new FileInfo(defaultApp); }}
+
     /// <summary>
     /// Asset Open Callback (from Unity)
     /// </summary>
@@ -91,12 +103,7 @@ namespace Assets.Plugins.Editor
     [UnityEditor.Callbacks.OnOpenAssetAttribute()]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (string.IsNullOrEmpty(defaultApp))
-        return false;
-
-      var riderFileInfo = new FileInfo(defaultApp);
-      if (riderFileInfo.FullName.ToLower().Contains("rider") &&
-          (riderFileInfo.Exists || riderFileInfo.Extension == ".app"))
+      if (Enabled)
       {
         string appPath = Path.GetDirectoryName(Application.dataPath);
 
@@ -113,7 +120,7 @@ namespace Assets.Plugins.Editor
           else
             args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
 
-          CallRider(riderFileInfo.FullName, args);
+          CallRider(RiderFileInfo.FullName, args);
           return true;
         }
       }
@@ -185,6 +192,37 @@ namespace Assets.Plugins.Editor
       }
       return null;
     }
+
+      [MenuItem("Assets/Open C# Project In Rider", false, 1000)]
+      static void MenuOpenProject()
+      {
+          // Force the project files to be sync
+          SyncSolution();
+
+          // Load Project
+          CallRider(RiderFileInfo.FullName, "\"" + SlnFile + "\"");
+      }
+
+      [MenuItem("Assets/Open C# Project In Rider", true, 1000)]
+      static bool ValidateMenuOpenProject()
+      {
+          return Enabled;
+      }
+
+      /// <summary>
+      /// Force Unity To Write Project File
+      /// </summary>
+      /// <remarks>
+      /// Reflection!
+      /// </remarks>
+      public static void SyncSolution()
+      {
+          System.Type T = System.Type.GetType("UnityEditor.SyncVS,UnityEditor");
+          System.Reflection.MethodInfo SyncSolution = T.GetMethod("SyncSolution",
+              System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+          SyncSolution.Invoke(null, null);
+
+      }
   }
 
   public static class User32Dll
