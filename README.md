@@ -4,7 +4,7 @@
 1. Open Unity Edit -> Preferences ->External Tools
 2. Browse -> Select Rider.exe / .lnk or rider.sh or Rider.app depending on the OS
 3. Put the file to Assets\Plugins\Editor
-4. Assets->Open C# Project In Rider
+4. Double click to file or error message in Unity should open Rider and navigate to file or file and line.
 
 I have tried it in Windows, Ubuntu and MacOs
 

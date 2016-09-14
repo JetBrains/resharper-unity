@@ -185,7 +185,7 @@ namespace Assets.Plugins.Editor
       return null;
     }
 
-      [MenuItem("Assets/Open C# Project In Rider", false, 1000)]
+      [MenuItem("Assets/Open C# Project in Rider", false, 1000)]
       static void MenuOpenProject()
       {
           // Force the project files to be sync
@@ -195,7 +195,7 @@ namespace Assets.Plugins.Editor
           CallRider(RiderFileInfo.FullName, "\"" + SlnFile + "\"");
       }
 
-      [MenuItem("Assets/Open C# Project In Rider", true, 1000)]
+      [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
       static bool ValidateMenuOpenProject()
       {
           return Enabled;
