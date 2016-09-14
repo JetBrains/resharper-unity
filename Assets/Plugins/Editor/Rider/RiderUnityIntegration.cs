@@ -14,7 +14,7 @@ namespace Assets.Plugins.Editor.Rider
   [InitializeOnLoad]
   public static class Rider
   {
-    private static readonly string SlnFile;
+    public static readonly string SlnFile;
     private static readonly string DefaultApp = EditorPrefs.GetString("kScriptsDefaultApp");
     private static readonly FileInfo RiderFileInfo = new FileInfo(DefaultApp);
     internal static bool Enabled
@@ -23,8 +23,7 @@ namespace Assets.Plugins.Editor.Rider
         {
           if (string.IsNullOrEmpty(DefaultApp))
             return false;
-          return RiderFileInfo.FullName.ToLower().Contains("rider") &&
-            (RiderFileInfo.Exists || RiderFileInfo.Extension == ".app"); // seems like app doesn't exist as file
+          return DefaultApp.ToLower().Contains("rider"); // seems like app doesn't exist as file
         }
     }
 
@@ -92,7 +91,7 @@ namespace Assets.Plugins.Editor.Rider
     [UnityEditor.Callbacks.OnOpenAssetAttribute()]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (Enabled)
+      if (Enabled && (RiderFileInfo.Exists || RiderFileInfo.Extension == ".app"))
       {
         string appPath = Path.GetDirectoryName(Application.dataPath);
 
@@ -175,8 +174,9 @@ namespace Assets.Plugins.Editor.Rider
           if (riderProcess.ProcessName.ToLower().Contains("rider"))
             return riderProcess;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Debug.Log(e);
         }
       }
       return null;
@@ -189,7 +189,7 @@ namespace Assets.Plugins.Editor.Rider
           SyncSolution();
 
           // Load Project
-          CallRider(RiderFileInfo.FullName, "\"" + SlnFile + "\"");
+          CallRider(RiderFileInfo.FullName, string.Format("{0}{1}{0}", "\"", SlnFile));
       }
 
       [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
@@ -201,16 +201,12 @@ namespace Assets.Plugins.Editor.Rider
       /// <summary>
       /// Force Unity To Write Project File
       /// </summary>
-      /// <remarks>
-      /// Reflection!
-      /// </remarks>
-      public static void SyncSolution()
+      private static void SyncSolution()
       {
           System.Type T = System.Type.GetType("UnityEditor.SyncVS,UnityEditor");
           System.Reflection.MethodInfo SyncSolution = T.GetMethod("SyncSolution",
               System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
           SyncSolution.Invoke(null, null);
-
       }
   }
 }
