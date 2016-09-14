@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -12,7 +9,7 @@ using Debug = UnityEngine.Debug;
 // Put the file to Assets/Plugins/Rider/Editor/ for Unity 5.2.2+
 // the file to Assets/Plugins/Editor/Rider for Unity prior 5.2.2
 
-namespace Assets.Plugins.Editor
+namespace Assets.Plugins.Editor.Rider
 {
   [InitializeOnLoad]
   public static class Rider
@@ -215,104 +212,6 @@ namespace Assets.Plugins.Editor
           SyncSolution.Invoke(null, null);
 
       }
-  }
-
-  public static class User32Dll
-  {
-
-    /// <summary>
-    /// Gets the ID of the process that owns the window.
-    /// Note that creating a <see cref="Process"/> wrapper for that is very expensive because it causes an enumeration of all the system processes to happen.
-    /// </summary>
-    public static int GetWindowProcessId(IntPtr hwnd)
-    {
-      uint dwProcessId;
-      GetWindowThreadProcessId(hwnd, out dwProcessId);
-      return unchecked((int) dwProcessId);
-    }
-
-
-    /// <summary>
-    /// Lists the handles of all the top-level windows currently available in the system.
-    /// </summary>
-    public static List<IntPtr> GetTopLevelWindowHandles()
-    {
-      var retval = new List<IntPtr>();
-      EnumWindowsProc callback = (hwnd, param) =>
-      {
-        retval.Add(hwnd);
-        return 1;
-      };
-      EnumWindows(Marshal.GetFunctionPointerForDelegate(callback), IntPtr.Zero);
-      GC.KeepAlive(callback);
-      return retval;
-    }
-
-    public delegate Int32 EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
-
-    [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
-    public static extern Int32 EnumWindows(IntPtr lpEnumFunc, IntPtr lParam);
-
-    [DllImport("user32.dll", SetLastError = true)]
-    static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
-    [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
-    public static extern Int32 SetForegroundWindow(IntPtr hWnd);
-  }
-
-  public class RiderAssetPostprocessor : AssetPostprocessor
-  {
-    public static void OnGeneratedCSProjectFiles()
-    {
-      if (!Rider.Enabled)
-        return;
-      var currentDirectory = Directory.GetCurrentDirectory();
-      var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
-
-      bool isModified = false;
-      foreach (var file in projectFiles)
-      {
-        string content = File.ReadAllText(file);
-        if (content.Contains("<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>"))
-        {
-          content = Regex.Replace(content, "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>",
-            "<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>");
-          File.WriteAllText(file, content);
-          isModified = true;
-        }
-
-      }
-
-      var slnFiles = Directory.GetFiles(currentDirectory, "*.sln"); // piece from MLTimK fork
-      foreach (var file in slnFiles)
-      {
-        string content = File.ReadAllText(file);
-        const string magicProjectGUID = @"Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"")";
-        // guid representing C# project
-        if (!content.Contains(magicProjectGUID))
-        {
-          string matchGUID = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)";
-          // Unity may put a random guid, which will brake Rider goto
-          content = Regex.Replace(content, matchGUID, magicProjectGUID);
-          File.WriteAllText(file, content);
-          isModified = true;
-        }
-      }
-
-      Debug.Log(isModified ? "Project was post processed successfully" : "No change necessary in project");
-
-      try
-      {
-        if (slnFiles.Any())
-          EditorPrefs.SetString("kScriptEditorArgs", "\"" + slnFiles.First() + "\"");
-        else
-          EditorPrefs.SetString("kScriptEditorArgs", string.Empty);
-      }
-      catch (Exception e)
-      {
-        Debug.Log("Exception on updating kScriptEditorArgs: " + e.Message);
-      }
-    }
   }
 }
 
