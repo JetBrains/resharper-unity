@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib">
+  <ImageDrawing AutomationProperties.Name="Message16xMD" AutomationProperties.ItemType="-" x:Key="0000">
+    <ToolTipService.ToolTip>
+      <x:Array Type="s:String">
+        <s:String>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAcUlEQVR4Xu2SMQ6AIAxFwbi0tzJh5DAcrgfxKE4wfh0kkDQRGxz901/eS5pfD8DNZHGTWWsppcACEpG/BS0xxlewiEyf8Au+/4M2j5o0hOBSSmMBM/vac87o4OOqGzPvPQjg6QQNW1dQsFWgYJOgweOc0oglcYxjvVQAAAAASUVORK5CYII=</s:String>
+      </x:Array>
+    </ToolTipService.ToolTip>
+  </ImageDrawing>
+</ResourceDictionary>

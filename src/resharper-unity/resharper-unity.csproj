@@ -219,25 +219,15 @@
       <HintPath>..\packages\NuGet.Core.Ultimate.3.3.2\lib\net45\NuGet.Versioning.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.core, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.Core.2.6.4\lib\nunit.core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="nunit.core.interfaces, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.Core.2.6.4\lib\nunit.core.interfaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="nunit.util, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.Core.2.6.4\lib\nunit.util.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NVelocity">
       <HintPath>..\packages\NVelocity.1.0.3\lib\NVelocity.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="Sprache, Version=2.0.0.0, Culture=neutral, PublicKeyToken=23dafc55df9bd3a3, processorArchitecture=MSIL">
       <HintPath>..\packages\Sprache.JetBrains.2.0.0.44\lib\portable-net4+netcore45+win8+wp8+sl5+MonoAndroid1+MonoTouch1\Sprache.dll</HintPath>
       <Private>True</Private>
@@ -258,6 +248,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\JetBrains.Platform.Lib.System.Windows.Interactivity.2.0.20140318.0\lib\System.Windows.Interactivity.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -292,6 +283,7 @@
     <Compile Include="MonoBehaviourUtil.cs" />
     <Compile Include="NamingConsistencyWarningSuppressor.cs" />
     <Compile Include="ProjectModel\Properties\Flavours\UnityProjectFlavor.cs" />
+    <Compile Include="ThemedIcons.ResharperUnity.Generated.cs" />
     <Compile Include="UnityEnginePredefinedType.cs" />
     <Compile Include="UsageInspectionsSuppressor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -302,6 +294,15 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ThemedIconPng Include="Message_16xMD.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="ThemedIcons.ResharperUnity.Generated.Xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
