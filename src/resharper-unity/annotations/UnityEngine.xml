@@ -49,7 +49,10 @@
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
   </member>
   <member name="T:UnityEngine.SerializeField">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags)">
+      <!-- ImplicitUseKindFlags.Assign -->
+      <argument>2</argument>
+    </attribute>
   </member>
   <member name="T:UnityEngine.SharedBetweenAnimatorsAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
