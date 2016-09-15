@@ -21,15 +21,7 @@ namespace Assets.Plugins.Editor.Rider
             bool isModified = false;
             foreach (var file in projectFiles)
             {
-                string content = File.ReadAllText(file);
-                if (content.Contains("<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>"))
-                {
-                    content = Regex.Replace(content, "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>",
-                        "<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>");
-                    File.WriteAllText(file, content);
-                    isModified = true;
-                }
-
+                isModified = UpgradeProjectFile(file);
             }
 
             var slnFiles = Directory.GetFiles(currentDirectory, "*.sln"); // piece from MLTimK fork
@@ -51,9 +43,38 @@ namespace Assets.Plugins.Editor.Rider
             Debug.Log(isModified ? "[Rider] Project was post processed successfully" : "[Rider] No change necessary in project");
 
             UpdateUnitySettings(slnFiles);
-            UpdateDotSettings();
             UpdateDebugSettings();
         }
+
+        public static bool UpgradeProjectFile(string file)
+        {
+            var doc = XDocument.Load(file);
+            var projectContentElement = doc.Root;
+            XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
+
+            var xNodes = projectContentElement.Elements().ToList();
+            var targetFrameworkVersion =
+                xNodes.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "TargetFrameworkVersion");
+            targetFrameworkVersion.SetValue("v4.5"); // very useful, when system mono 4 is used
+
+            var group = projectContentElement.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "PropertyGroup");
+
+            var lang = group.Elements("LangVersion").FirstOrDefault();
+            if (lang != null)
+            {
+                lang.SetValue("5");
+            }
+            else
+            {
+                var newLang = new XElement(xmlns + "LangVersion");
+                newLang.SetValue("5");
+                group.Add(newLang);
+            }
+
+            doc.Save(file);
+            return true;
+        }
+
 
         private static void UpdateUnitySettings(string[] slnFiles)
         {
@@ -70,27 +91,7 @@ namespace Assets.Plugins.Editor.Rider
             }
         }
 
-        // copied from https://github.com/yonstorm/ProjectRider-Unity/blob/develop/Assets/Plugins/Editor/ProjectRider/ProjectValidator.cs
-        private static bool UpdateDotSettings()
-        {
-            Debug.Log("[Rider] Updating... dot settings");
-            var projectFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj");
-
-            foreach (var file in projectFiles)
-            {
-                var dotSettingsFile = file + ".DotSettings";
-
-                if (File.Exists(dotSettingsFile))
-                {
-                    continue;
-                }
-
-                CreateDotSettingsFile(dotSettingsFile, DotSettingsContent);
-            }
-
-            return true;
-        }
-
+        // initial version copied from https://github.com/yonstorm/ProjectRider-Unity/blob/develop/Assets/Plugins/Editor/ProjectRider/ProjectValidator.cs
         private static bool UpdateDebugSettings()
         {
             Debug.Log("[Rider] Updating... debug settings");
@@ -163,14 +164,6 @@ namespace Assets.Plugins.Editor.Rider
             return true;
         }
 
-        private static void CreateDotSettingsFile(string dotSettingsFile, string content)
-        {
-            using (var writer = File.CreateText(dotSettingsFile))
-            {
-                writer.Write(content);
-            }
-        }
-
         private static int GetDebugPort()
         {
             var processId = Process.GetCurrentProcess().Id;
@@ -178,10 +171,5 @@ namespace Assets.Plugins.Editor.Rider
 
             return port;
         }
-
-        private const string DotSettingsContent =
-            @"<wpf:ResourceDictionary xml:space=""preserve"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:s=""clr-namespace:System;assembly=mscorlib"" xmlns:ss=""urn:shemas-jetbrains-com:settings-storage-xaml"" xmlns:wpf=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
-                                                                    		<s:String x:Key=""/Default/CodeInspection/CSharpLanguageProject/LanguageLevel/@EntryValue"">CSharp50</s:String></wpf:ResourceDictionary>";
-
     }
 }
