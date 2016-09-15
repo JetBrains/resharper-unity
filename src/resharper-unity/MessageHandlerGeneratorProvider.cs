@@ -44,16 +44,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         public override double Priority => 100;
 
-        protected override bool HasProcessableElements(CSharpGeneratorContext context, IEnumerable<IGeneratorElement> elements)
-        {
-            return base.HasProcessableElements(context, elements);
-        }
-
-        protected override void BuildOptions(CSharpGeneratorContext context, ICollection<IGeneratorOption> options)
-        {
-            base.BuildOptions(context, options);
-        }
-
         protected override void Process(CSharpGeneratorContext context, IProgressIndicator progress)
         {
             var typeElement = context.ClassDeclaration.DeclaredElement as IClass;

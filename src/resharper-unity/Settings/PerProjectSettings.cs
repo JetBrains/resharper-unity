@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             var storageName = $"Project {project.Name} (Unity)";
             var storage = SettingsStorageFactory.CreateStorage(projectLifetime, storageName, logger, interned);
             var isAvailable = new IsAvailableByDataConstant<IProject>(projectLifetime,
-                ProjectModelDataConstants.Project, project, locks);
+                ProjectModelDataConstants.PROJECT, project, locks);
 
             // Set at a priority less than the .csproj.dotSettings layer, so we can be overridden
             var priority = ProjectModelSettingsStorageMountPointPriorityClasses.ProjectShared*0.9;
