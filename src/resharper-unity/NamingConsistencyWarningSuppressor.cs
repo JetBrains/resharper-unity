@@ -16,10 +16,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             
             var methodDeclaration = declaration as IMethodDeclaration;
-            if (methodDeclaration != null && MonoBehaviourUtil.IsEventHandler(methodDeclaration.DeclaredName))
+            if (methodDeclaration != null)
             {
                 var containingTypeElement = methodDeclaration.GetContainingTypeDeclaration().DeclaredElement;
-                if (containingTypeElement != null && MonoBehaviourUtil.IsMonoBehaviourType(containingTypeElement, methodDeclaration.GetPsiModule()))
+                if (containingTypeElement != null && UnityTypeUtil.IsEventHandler(methodDeclaration.DeclaredName, containingTypeElement, methodDeclaration.GetPsiModule()))
                 {
                     result = NamingConsistencyCheckResult.OK;
                     isFinalResult = true;

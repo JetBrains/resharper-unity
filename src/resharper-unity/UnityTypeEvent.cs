@@ -4,22 +4,22 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
-    public class MonoBehaviourEvent
+    public class UnityTypeEvent
     {
         [NotNull]
         public string Name { get; }
 
         [NotNull]
-        public MonoBehaviourEventParameter[] Parameters { get; }
+        public UnityTypeParameter[] Parameters { get; }
 
-        public MonoBehaviourEvent([NotNull] string name, [NotNull] params MonoBehaviourEventParameter[] parameters)
+        public UnityTypeEvent([NotNull] string name, [NotNull] params UnityTypeParameter[] parameters)
         {
             Name = name;
-            Parameters = parameters.Length > 0 ? parameters : EmptyArray<MonoBehaviourEventParameter>.Instance;
+            Parameters = parameters.Length > 0 ? parameters : EmptyArray<UnityTypeParameter>.Instance;
         }
     }
 
-    public class MonoBehaviourEventParameter
+    public class UnityTypeParameter
     {
         [NotNull]
         public string Name { get; }
@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool IsArray { get; }
         
-        public MonoBehaviourEventParameter([NotNull] string name, [NotNull] IClrTypeName clrTypeName, bool isArray = false)
+        public UnityTypeParameter([NotNull] string name, [NotNull] IClrTypeName clrTypeName, bool isArray = false)
         {
             Name = name;
             ClrTypeName = clrTypeName;

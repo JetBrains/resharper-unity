@@ -22,17 +22,17 @@ namespace JetBrains.ReSharper.Plugins.Unity
     }
 
     [GenerateProvider]
-    public class MonoBehaviourMethodsWorkflowProvider: IGenerateWorkflowProvider
+    public class UnityMethodsWorkflowProvider: IGenerateWorkflowProvider
     {
         public IEnumerable<IGenerateActionWorkflow> CreateWorkflow(IDataContext dataContext)
         {
-            return new[] {new GenerateMonoBehaviourMethodsWorkflow()};
+            return new[] {new GenerateUnityMethodsWorkflow()};
         }
     }
 
-    public class GenerateMonoBehaviourMethodsWorkflow : GenerateCodeWorkflowBase
+    public class GenerateUnityMethodsWorkflow : GenerateCodeWorkflowBase
     {
-        public GenerateMonoBehaviourMethodsWorkflow() : base(GeneratorUnityKinds.UnityMessages, null, "MonoBehaviour event handlers", GenerateActionGroup.CLR_LANGUAGE, "Event handlers", "", "Generate.MonoBehaviour")
+        public GenerateUnityMethodsWorkflow() : base(GeneratorUnityKinds.UnityMessages, null, "Unity event handlers", GenerateActionGroup.CLR_LANGUAGE, "Event handlers", "", "Generate.Unity")
         {
         }
 
@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (typeElement == null)
                 return;
 
-            if (!MonoBehaviourUtil.IsMonoBehaviourType(typeElement, context.PsiModule))
+            if (!UnityTypeUtil.IsUnityType(typeElement, context.PsiModule))
                 return;
             var selectedMethods = context.InputElements.OfType<GeneratorDeclaredElement<IMethod>>();
             var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     }
 
     [GeneratorElementProvider(GeneratorUnityKinds.UnityMessages, typeof(CSharpLanguage))]
-    public class MonoBehaviourMethodsProvider : GeneratorProviderBase<CSharpGeneratorContext>
+    public class UnityMethodsProvider : GeneratorProviderBase<CSharpGeneratorContext>
     {
         public override void Populate(CSharpGeneratorContext context)
         {
@@ -85,13 +85,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (typeElement == null)
                 return;
 
-            if (!MonoBehaviourUtil.IsMonoBehaviourType(typeElement, context.PsiModule))
+            if (!UnityTypeUtil.IsUnityType(typeElement, context.PsiModule))
                 return;
 
             var existingEventNames = typeElement.Methods.Select(m => m.ShortName).ToHashSet();
-            var missingEvents = MonoBehaviourUtil.Events.Where(e => !existingEventNames.Contains(e.Name));
+			var missingEvents = UnityTypeUtil.FindMissingEvents(existingEventNames, typeElement, context.PsiModule);
 
-            var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
+			var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
 
             foreach (var missingEvent in missingEvents)
             {
@@ -102,7 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
         
         [NotNull]
-        private IMethodDeclaration CreateDeclaration([NotNull] MonoBehaviourEvent monoBehaviourEvent, [NotNull] CSharpElementFactory elementFactory, [NotNull] IClassLikeDeclaration context)
+        private IMethodDeclaration CreateDeclaration([NotNull] UnityTypeEvent monoBehaviourEvent, [NotNull] CSharpElementFactory elementFactory, [NotNull] IClassLikeDeclaration context)
         {
             var builder = new StringBuilder(128);
 
