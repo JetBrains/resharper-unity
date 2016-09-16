@@ -62,7 +62,11 @@ namespace Assets.Plugins.Editor.Rider
           {
             break;
           }
-          default:
+          case ".sh": //linux
+          {
+            break;
+          }
+            default:
           {
             Debug.Log("Please manually update the path to Rider in Unity Preferences -> External Tools -> External Script Editor.");
             break;
