@@ -17,14 +17,15 @@ namespace Assets.Plugins.Editor.Rider
     public static readonly string SlnFile;
     private static readonly string DefaultApp = EditorPrefs.GetString("kScriptsDefaultApp");
     private static readonly FileInfo RiderFileInfo = new FileInfo(DefaultApp);
+
     internal static bool Enabled
     {
-        get
-        {
-          if (string.IsNullOrEmpty(DefaultApp))
-            return false;
-          return DefaultApp.ToLower().Contains("rider"); // seems like app doesn't exist as file
-        }
+      get
+      {
+        if (string.IsNullOrEmpty(DefaultApp))
+          return false;
+        return DefaultApp.ToLower().Contains("rider"); // seems like app doesn't exist as file
+      }
     }
 
     static Rider()
@@ -52,7 +53,8 @@ namespace Assets.Plugins.Editor.Rider
           {
             var possibleNew =
               RiderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
-                .SelectMany(a => a.GetDirectories("bin")).SelectMany(a => a.GetFiles(RiderFileInfo.Name))
+                .SelectMany(a => a.GetDirectories("bin"))
+                .SelectMany(a => a.GetFiles(RiderFileInfo.Name))
                 .ToArray();
             if (possibleNew.Length > 0)
               newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
@@ -95,8 +97,10 @@ namespace Assets.Plugins.Editor.Rider
         if (selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader")
         {
-          var completeFilepath = appPath + Path.DirectorySeparatorChar + AssetDatabase.GetAssetPath(selected);
+          var completeFilepath = appPath + Path.DirectorySeparatorChar +
+                                 AssetDatabase.GetAssetPath(selected);
           var args = string.Empty;
+          // workaround for RIDER-1404 Exception There are opened projects, close them before
           if (GetPossibleRiderProcess() != null)
             args = string.Format(" -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
           else
@@ -152,7 +156,8 @@ namespace Assets.Plugins.Editor.Rider
         // Collect top level windows
         var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
         // Get process main window title
-        var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
+        var windowHandle =
+          topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
         if (windowHandle != IntPtr.Zero)
           User32Dll.SetForegroundWindow(windowHandle);
       }
@@ -161,53 +166,55 @@ namespace Assets.Plugins.Editor.Rider
     private static Process GetPossibleRiderProcess()
     {
       var riderProcesses = Process.GetProcesses();
-      foreach (var riderProcess in riderProcesses)
+      foreach (var a in riderProcesses)
       {
         try
         {
-          if (!riderProcess.HasExited && riderProcess.ProcessName.ToLower().Contains("rider"))
-            return riderProcess;
+          if (!a.HasExited && (a.ProcessName.ToLower().Contains("rider")
+                               || (a.ProcessName.ToLower().Contains("mono-sgen")
+                                   && a.MainModule.FileName.Contains("ReSharperHost"))))
+            return a;
         }
-        catch
+        catch (Exception e)
         {
-            // for some reason in mono HasExited doesn't help
-            // Log(e);
+          // for some reason in mono HasExited doesn't help
+          Log(e);
         }
       }
       return null;
     }
 
-      [MenuItem("Assets/Open C# Project in Rider", false, 1000)]
-      static void MenuOpenProject()
-      {
-          // Force the project files to be sync
-          SyncSolution();
+    [MenuItem("Assets/Open C# Project in Rider", false, 1000)]
+    static void MenuOpenProject()
+    {
+      // Force the project files to be sync
+      SyncSolution();
 
-          // Load Project
-          CallRider(RiderFileInfo.FullName, string.Format("{0}{1}{0}", "\"", SlnFile));
-      }
+      // Load Project
+      CallRider(RiderFileInfo.FullName, string.Format("{0}{1}{0}", "\"", SlnFile));
+    }
 
-      [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
-      static bool ValidateMenuOpenProject()
-      {
-          return Enabled;
-      }
+    [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
+    static bool ValidateMenuOpenProject()
+    {
+      return Enabled;
+    }
 
-      /// <summary>
-      /// Force Unity To Write Project File
-      /// </summary>
-      private static void SyncSolution()
-      {
-          System.Type T = System.Type.GetType("UnityEditor.SyncVS,UnityEditor");
-          System.Reflection.MethodInfo SyncSolution = T.GetMethod("SyncSolution",
-              System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-          SyncSolution.Invoke(null, null);
-      }
+    /// <summary>
+    /// Force Unity To Write Project File
+    /// </summary>
+    private static void SyncSolution()
+    {
+      System.Type T = System.Type.GetType("UnityEditor.SyncVS,UnityEditor");
+      System.Reflection.MethodInfo SyncSolution = T.GetMethod("SyncSolution",
+        System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+      SyncSolution.Invoke(null, null);
+    }
 
-      public static void Log(object message)
-      {
-          Debug.Log("[Rider] "+message);
-      }
+    public static void Log(object message)
+    {
+      Debug.Log("[Rider] " + message);
+    }
   }
 }
 
