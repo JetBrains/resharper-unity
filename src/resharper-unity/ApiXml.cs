@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Xml;
 using JetBrains.Annotations;
 using JetBrains.Application;
@@ -10,14 +9,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
     [ShellComponent]
     public class ApiXml
     {
-        private readonly XmlDocument _document = new XmlDocument();
+        private readonly XmlDocument document = new XmlDocument();
 
         public ApiXml()
         {
-            string ns = typeof(ApiXml).Namespace;
-            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ns + @".api.xml"))
+            var ns = typeof(ApiXml).Namespace;
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ns + @".api.xml"))
             {
-                if (stream != null) _document.Load(stream);
+                if (stream != null) document.Load(stream);
             }
         }
 
@@ -27,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [CanBeNull]
         public static XmlNodeList SelectNodes([NotNull] string xpath)
         {
-            return Instance._document.DocumentElement?.SelectNodes(xpath);
+            return Instance.document.DocumentElement?.SelectNodes(xpath);
         }
     }
 }

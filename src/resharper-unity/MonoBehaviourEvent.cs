@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             {
                 if (i > 0) builder.Append(",");
 
-                MonoBehaviourEventParameter parameter = Parameters[i];
+                var parameter = Parameters[i];
                 builder.Append(parameter.ClrTypeName.FullName);
                 if (parameter.IsArray) builder.Append("[]");
                 builder.Append(' ');

@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull]
         public static IEnumerable<MessageHost> GetMessageHosts([NotNull] this ITypeElement type)
         {
-            MessageHosts allHosts = MessageHosts.GetInstanceFor(type);
+            var allHosts = MessageHosts.GetInstanceFor(type);
             return allHosts.GetHostsFor(type);
         }
 
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static bool IsMessage([NotNull] this IMethod method)
         {
-            MessageHost[] hosts = method.GetContainingType()?.GetMessageHosts().ToArray();
+            var hosts = method.GetContainingType()?.GetMessageHosts().ToArray();
             return hosts != null && hosts.Any(h => h.Contains(method));
         }
 

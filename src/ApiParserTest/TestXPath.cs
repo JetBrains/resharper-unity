@@ -9,7 +9,7 @@ namespace ApiParserTest
         [Test]
         public void TestClassTranslation()
         {
-            string xpath = "/div.some.class/div.some.other.class/h1";
+            var xpath = "/div.some.class/div.some.other.class/h1";
             const string expected = @"/div[@class='some class']/div[@class='some other class']/h1";
 
             xpath = XPath.Resolve(xpath);
@@ -20,7 +20,7 @@ namespace ApiParserTest
         [Test]
         public void TestCombined()
         {
-            string xpath = "/div.some.class[h1='test']/text()";
+            var xpath = "/div.some.class[h1='test']/text()";
             const string expected = @"/div[@class='some class' and h1='test']/text()";
 
             xpath = XPath.Resolve(xpath);
@@ -31,7 +31,7 @@ namespace ApiParserTest
         [Test]
         public void TestIdTranslation()
         {
-            string xpath = "/div.some.class/div#unique/h1";
+            var xpath = "/div.some.class/div#unique/h1";
             const string expected = @"/div[@class='some class']/div[@id='unique']/h1";
 
             xpath = XPath.Resolve(xpath);
@@ -42,7 +42,7 @@ namespace ApiParserTest
         [Test]
         public void TestClassAndIdTranslation()
         {
-            string xpath = "/div.some.class/div#unique.other.class/h1";
+            var xpath = "/div.some.class/div#unique.other.class/h1";
             const string expected = @"/div[@class='some class']/div[@id='unique' and @class='other class']/h1";
 
             xpath = XPath.Resolve(xpath);

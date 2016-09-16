@@ -8,24 +8,24 @@ namespace ApiParser
 {
     public sealed class ApiNode
     {
-        private readonly HtmlNode _node;
+        private readonly HtmlNode node;
 
         private ApiNode([NotNull] HtmlNode node)
         {
-            _node = node;
+            this.node = node;
         }
 
         [NotNull]
-        public string Code => _node.InnerHtml;
+        private string Code => node.InnerHtml;
 
         [NotNull]
-        public string Text => _node.InnerText.Trim();
+        public string Text => node.InnerText.Trim();
 
         [CanBeNull]
-        public ApiNode this[int index] => Wrap(_node.ChildNodes[index]);
+        public ApiNode this[int index] => Wrap(node.ChildNodes[index]);
 
         [NotNull]
-        public string this[[NotNull] string attributeName] => _node.GetAttributeValue(attributeName, string.Empty);
+        public string this[[NotNull] string attributeName] => node.GetAttributeValue(attributeName, string.Empty);
 
         [CanBeNull]
         public static ApiNode Load([NotNull] string path)
@@ -37,16 +37,16 @@ namespace ApiParser
         }
 
         [NotNull]
-        public IEnumerable<ApiNode> SelectMany([NotNull] string xpath)
+        private IEnumerable<ApiNode> SelectMany([NotNull] string xpath)
         {
-            HtmlNodeCollection nodes = _node.SelectNodes(XPath.Resolve(xpath));
+            var nodes = node.SelectNodes(XPath.Resolve(xpath));
             return nodes?.Select(Wrap) ?? new ApiNode[ 0 ];
         }
 
         [CanBeNull]
         public ApiNode SelectOne([NotNull] string xpath)
         {
-            return Wrap(_node.SelectSingleNode(XPath.Resolve(xpath)));
+            return Wrap(node.SelectSingleNode(XPath.Resolve(xpath)));
         }
 
         [NotNull]

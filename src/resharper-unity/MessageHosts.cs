@@ -10,21 +10,21 @@ namespace JetBrains.ReSharper.Plugins.Unity
     [SolutionComponent]
     public class MessageHosts
     {
-        private readonly List<MessageHost> _classes = new List<MessageHost>();
+        private readonly List<MessageHost> classes = new List<MessageHost>();
 
         public MessageHosts()
         {
-            XmlNodeList types = ApiXml.SelectNodes( @"/api/messages/type" );
+            var types = ApiXml.SelectNodes( @"/api/messages/type" );
             if ( types == null ) return;
 
             foreach ( XmlNode type in types )
             {
-                _classes.Add(new MessageHost(type));
+                classes.Add(new MessageHost(type));
             }
         }
 
         [NotNull]
-        public IEnumerable<MessageHost> Classes => _classes;
+        public IEnumerable<MessageHost> Classes => classes;
 
         [NotNull]
         public static MessageHosts GetInstanceFor([NotNull] IDeclaredElement element)
@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull]
         public IEnumerable<MessageHost> GetHostsFor([NotNull]ITypeElement type)
         {
-            return _classes.Where(c => type.IsDescendantOf(c.GetType(type.Module)));
+            return classes.Where(c => type.IsDescendantOf(c.GetType(type.Module)));
         }
     }
 }

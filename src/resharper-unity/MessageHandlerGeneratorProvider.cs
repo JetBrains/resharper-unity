@@ -74,13 +74,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (typeElement == null)
                 return;
 
-            MessageHost[] hosts = typeElement.GetMessageHosts().ToArray();
-            MonoBehaviourEvent[] events = hosts.SelectMany(h => h.Messages)
+            var hosts = typeElement.GetMessageHosts().ToArray();
+            var events = hosts.SelectMany(h => h.Messages)
                 .Where(m => !typeElement.Methods.Any(m.Match)).ToArray();
 
-            IClassLikeDeclaration classDeclaration = context.ClassDeclaration;
-            CSharpElementFactory factory = CSharpElementFactory.GetInstance(classDeclaration);
-            IEnumerable<IMethod> methods = events
+            var classDeclaration = context.ClassDeclaration;
+            var factory = CSharpElementFactory.GetInstance(classDeclaration);
+            var methods = events
                 .Select(e => e.CreateDeclaration(factory, classDeclaration))
                 .Select(d => d.DeclaredElement)
                 .Where(m => m != null);
@@ -91,6 +91,4 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public override double Priority => 100;
     }
-
-
 }

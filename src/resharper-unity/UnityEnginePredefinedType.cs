@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -15,30 +14,30 @@ namespace JetBrains.ReSharper.Plugins.Unity
     [ShellComponent]
     public class UnityEnginePredefinedType
     {
-        private readonly Dictionary<string, IClrTypeName> _unityTypes = new Dictionary<string, IClrTypeName>();
-        private readonly Dictionary<string, IClrTypeName> _systemTypes;
+        private readonly Dictionary<string, IClrTypeName> unityTypes = new Dictionary<string, IClrTypeName>();
+        private readonly Dictionary<string, IClrTypeName> systemTypes;
 
         public UnityEnginePredefinedType()
         {
-            Type predefined = typeof(PredefinedType);
-            FieldInfo[] fields = predefined.GetFields(BindingFlags.Static | BindingFlags.Public);
-            FieldInfo[] matching = fields.Where(f => typeof(IClrTypeName).IsAssignableFrom(f.FieldType)).ToArray();
+            var predefined = typeof(PredefinedType);
+            var fields = predefined.GetFields(BindingFlags.Static | BindingFlags.Public);
+            var matching = fields.Where(f => typeof(IClrTypeName).IsAssignableFrom(f.FieldType)).ToArray();
 
-            _systemTypes = matching.ToDictionary(
+            systemTypes = matching.ToDictionary(
                 f => predefined.FullName + "." + f.Name,
                 f => (IClrTypeName)f.GetValue(null));
 
-            XmlNodeList nodes = ApiXml.SelectNodes(@"/api/types/type");
+            var nodes = ApiXml.SelectNodes(@"/api/types/type");
             if (nodes == null) return;
 
             foreach (XmlNode node in nodes)
             {
-                string key = node.Attributes?["key"].Value;
-                string name = node.Attributes?["name"].Value;
+                var key = node.Attributes?["key"].Value;
+                var name = node.Attributes?["name"].Value;
 
                 if (key == null || name == null) continue;
 
-                _unityTypes[key] = new ClrTypeName(name);
+                unityTypes[key] = new ClrTypeName(name);
             }
         }
 
@@ -50,8 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             get
             {
-                if (_unityTypes.ContainsKey(key)) return _unityTypes[key];
-                return _systemTypes.ContainsKey(key) ? _systemTypes[key] : PredefinedType.VOID_FQN;
+                if (unityTypes.ContainsKey(key)) return unityTypes[key];
+                return systemTypes.ContainsKey(key) ? systemTypes[key] : PredefinedType.VOID_FQN;
             }
         }
 

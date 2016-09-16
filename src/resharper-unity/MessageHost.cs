@@ -11,52 +11,50 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public class MessageHost
     {
-        private readonly MonoBehaviourEvent[] _messages = EmptyArray<MonoBehaviourEvent>.Instance;
-        private readonly IClrTypeName _name;
+        private readonly MonoBehaviourEvent[] messages = EmptyArray<MonoBehaviourEvent>.Instance;
+        private readonly IClrTypeName typeName;
 
         public MessageHost([NotNull] XmlNode type)
         {
-            string name = type.Attributes?["name"].Value ?? "Invalid";
-            string ns = type.Attributes?[@"ns"].Value ?? "Invalid";
-            string fullName = string.Concat(ns, ".", name);
-            string key = type.Attributes?["key"].Value;
+            var key = type.Attributes?["key"].Value;
 
-            _name = key != null ? UnityEnginePredefinedType.GetType(key) : PredefinedType.VOID_FQN;
+            typeName = key != null ? UnityEnginePredefinedType.GetType(key) : PredefinedType.VOID_FQN;
 
-            XmlNodeList messages = type.SelectNodes("message");
-            if (messages != null) _messages = messages.OfType<XmlNode>().Select(LoadMessage).ToArray();
+            var messageNodes = type.SelectNodes("message");
+            if (messageNodes != null)
+                messages = messageNodes.OfType<XmlNode>().Select(LoadMessage).ToArray();
         }
 
         [NotNull]
-        public IEnumerable<MonoBehaviourEvent> Messages => _messages;
+        public IEnumerable<MonoBehaviourEvent> Messages => messages;
 
         [CanBeNull]
         public ITypeElement GetType([NotNull] IPsiModule module)
         {
-            IDeclaredType type = TypeFactory.CreateTypeByCLRName(_name, module);
+            var type = TypeFactory.CreateTypeByCLRName(typeName, module);
             return type.GetTypeElement();
         }
 
         private static MonoBehaviourEvent LoadMessage([NotNull] XmlNode node)
         {
-            string name = node.Attributes?["name"].Value ?? "Invalid";
-            bool isStatic = bool.Parse(node.Attributes?["static"].Value ?? "false");
+            var name = node.Attributes?["name"].Value ?? "Invalid";
+            var isStatic = bool.Parse(node.Attributes?["static"].Value ?? "false");
 
-            MonoBehaviourEventParameter[] parameters = EmptyArray<MonoBehaviourEventParameter>.Instance;
+            var parameters = EmptyArray<MonoBehaviourEventParameter>.Instance;
 
-            XmlNodeList parameterNodes = node.SelectNodes("parameters/parameter");
+            var parameterNodes = node.SelectNodes("parameters/parameter");
             if (parameterNodes != null)
             {
                 parameters = parameterNodes.OfType<XmlNode>().Select(LoadParameter).ToArray();
             }
 
             var returnsArray = false;
-            IClrTypeName returnsType = PredefinedType.VOID_FQN;
-            XmlNode returns = node.SelectSingleNode("returns");
+            var returnsType = PredefinedType.VOID_FQN;
+            var returns = node.SelectSingleNode("returns");
             if (returns != null)
             {
                 returnsArray = bool.Parse(returns.Attributes?["array"].Value ?? "false");
-                string returnsKey = returns.Attributes?["key"].Value;
+                var returnsKey = returns.Attributes?["key"].Value;
                 if (returnsKey != null) returnsType = UnityEnginePredefinedType.GetType(returnsKey);
             }
 
@@ -65,22 +63,22 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         private static MonoBehaviourEventParameter LoadParameter([NotNull] XmlNode node, int i)
         {
-            string key = node.Attributes?["key"].Value;
-            string name = node.Attributes?["name"].Value;
-            bool isArray = bool.Parse( node.Attributes?[ "array" ].Value ?? "false" );
+            var key = node.Attributes?["key"].Value;
+            var name = node.Attributes?["name"].Value;
+            var isArray = bool.Parse( node.Attributes?[ "array" ].Value ?? "false" );
 
             if (key == null || name == null)
             {
                 return new MonoBehaviourEventParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, isArray);
             }
 
-            IClrTypeName type = UnityEnginePredefinedType.GetType(key);
+            var type = UnityEnginePredefinedType.GetType(key);
             return new MonoBehaviourEventParameter(name, type, isArray);
         }
 
         public bool Contains([NotNull] IMethod method)
         {
-            return _messages.Any(m => m.Match(method));
+            return messages.Any(m => m.Match(method));
         }
     }
 }

@@ -5,7 +5,7 @@ namespace ApiParser
 {
     public class ApiType
     {
-        private readonly Type _type;
+        private readonly Type type;
 
         public ApiType([NotNull] string name)
         {
@@ -17,14 +17,14 @@ namespace ApiParser
                 IsArray = true;
             }
 
-            _type = TypeResolver.Resolve(name);
+            type = TypeResolver.Resolve(name);
         }
 
-        public string FullName => _type.FullName;
+        public string FullName => type.FullName;
 
         public bool IsArray { get; }
 
         [NotNull]
-        public string Identifier => TypeKeyResolver.Resolve(_type);
+        public string Identifier => TypeKeyResolver.Resolve(type);
     }
 }

@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Psi;
+﻿using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Naming.Impl;
@@ -15,9 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public void Check(IDeclaration declaration, INamingPolicyProvider namingPolicyProvider, out bool isFinalResult, out NamingConsistencyCheckResult result)
         {
-            
             var methodDeclaration = declaration as IMethodDeclaration;
-            IMethod method = methodDeclaration?.DeclaredElement;
+            var method = methodDeclaration?.DeclaredElement;
 
             isFinalResult = method != null && method.IsMessage();
             result = isFinalResult ? NamingConsistencyCheckResult.OK : null;

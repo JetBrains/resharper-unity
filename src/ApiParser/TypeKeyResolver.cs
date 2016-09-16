@@ -17,9 +17,9 @@ namespace ApiParser
 
         static TypeKeyResolver()
         {
-            FieldInfo[] fields = typeof(PredefinedType).GetFields(BindingFlags.Static | BindingFlags.Public);
-            FieldInfo[] matching = fields.Where(f => typeof(IClrTypeName).IsAssignableFrom(f.FieldType)).ToArray();
-            Type[] types = matching.Select(f => Type.GetType(((IClrTypeName)f.GetValue(null)).FullName)).ToArray();
+            var fields = typeof(PredefinedType).GetFields(BindingFlags.Static | BindingFlags.Public);
+            var matching = fields.Where(f => typeof(IClrTypeName).IsAssignableFrom(f.FieldType)).ToArray();
+            var types = matching.Select(f => Type.GetType(((IClrTypeName)f.GetValue(null)).FullName)).ToArray();
 
             for (var i = 0; i < types.Length; ++i)
             {

@@ -8,28 +8,28 @@ namespace ApiParser
 {
     public static class Program
     {
-        private static int _progress;
+        private static int ourProgress;
 
         public static void Main(string[] args)
         {
-            string progPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            string dataPath = Path.Combine(progPath, @"Unity\Editor\Data");
-            string monoPath = Path.Combine(dataPath, @"Mono\lib\mono\unity");
-            string basePath = Path.Combine(dataPath, @"Managed");
+            var progPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            var dataPath = Path.Combine(progPath, @"Unity\Editor\Data");
+            var monoPath = Path.Combine(dataPath, @"Mono\lib\mono\unity");
+            var basePath = Path.Combine(dataPath, @"Managed");
             TypeResolver.AddAssembly(typeof(string).Assembly);
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(basePath, @"UnityEngine.dll")));
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(monoPath, @"UnityScript.dll")));
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(basePath, @"UnityEditor.dll")));
 
             Console.Clear();
-            string path = Path.Combine(dataPath, @"Documentation\en\ScriptReference");
+            var path = Path.Combine(dataPath, @"Documentation\en\ScriptReference");
 
             var parser = new ApiParser(path);
             parser.Progress += ( s, e ) =>
             {
-                if (e.Percent <= _progress) return;
+                if (e.Percent <= ourProgress) return;
 
-                _progress = e.Percent;
+                ourProgress = e.Percent;
                 Console.SetCursorPosition( 0, 0 );
                 Console.WriteLine( "{0,5} / {1,5} ({2,3}%)", e.Current, e.Total, e.Percent );
             };
