@@ -58,24 +58,14 @@ namespace Assets.Plugins.Editor.Rider
               newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
             break;
           }
-          case ".app": //osx
+          default:
           {
-            break;
-          }
-          case ".sh": //linux
-          {
-            break;
-          }
-            default:
-          {
-            Debug.Log("Please manually update the path to Rider in Unity Preferences -> External Tools -> External Script Editor.");
             break;
           }
         }
         if (newPath != RiderFileInfo.FullName)
         {
-          Debug.Log(RiderFileInfo.FullName);
-          Debug.Log(newPath);
+          Log(string.Format("Update {0} to {1}", RiderFileInfo.FullName, newPath));
           EditorPrefs.SetString("kScriptsDefaultApp", newPath);
         }
       }
@@ -126,13 +116,13 @@ namespace Assets.Plugins.Editor.Rider
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + riderPath, args);
-        Debug.Log(proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+        Log(proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
       }
       else
       {
         proc.StartInfo.FileName = riderPath;
         proc.StartInfo.Arguments = args;
-        Debug.Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
+        Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
       }
 
       proc.StartInfo.UseShellExecute = false;
@@ -149,7 +139,7 @@ namespace Assets.Plugins.Editor.Rider
         }
         catch (Exception e)
         {
-          Debug.Log("Exception on ActivateWindow: " + e);
+          Log("Exception on ActivateWindow: " + e);
         }
       }
     }
@@ -170,17 +160,18 @@ namespace Assets.Plugins.Editor.Rider
 
     private static Process GetPossibleRiderProcess()
     {
-      var riderProcesses = Process.GetProcesses().Where(a=>!a.HasExited);
+      var riderProcesses = Process.GetProcesses();
       foreach (var riderProcess in riderProcesses)
       {
         try
         {
-          if (riderProcess.ProcessName.ToLower().Contains("rider"))
+          if (!riderProcess.HasExited && riderProcess.ProcessName.ToLower().Contains("rider"))
             return riderProcess;
         }
-        catch (Exception e)
+        catch
         {
-            Debug.Log(e);
+            // for some reason in mono HasExited doesn't help
+            // Log(e);
         }
       }
       return null;
@@ -211,6 +202,11 @@ namespace Assets.Plugins.Editor.Rider
           System.Reflection.MethodInfo SyncSolution = T.GetMethod("SyncSolution",
               System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
           SyncSolution.Invoke(null, null);
+      }
+
+      public static void Log(object message)
+      {
+          Debug.Log("[Rider] "+message);
       }
   }
 }

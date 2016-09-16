@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
-using Debug = UnityEngine.Debug;
 
 namespace Assets.Plugins.Editor.Rider
 {
@@ -40,13 +39,12 @@ namespace Assets.Plugins.Editor.Rider
                 }
             }
 
-            Debug.Log(isModified ? "[Rider] Project was post processed successfully" : "[Rider] No change necessary in project");
-
+            Rider.Log(isModified ? "Solution was post processed successfully" : "No change necessary");
             UpdateUnitySettings(slnFiles);
             UpdateDebugSettings();
         }
 
-        public static bool UpgradeProjectFile(string file)
+        private static bool UpgradeProjectFile(string file)
         {
             var doc = XDocument.Load(file);
             var projectContentElement = doc.Root;
@@ -87,19 +85,19 @@ namespace Assets.Plugins.Editor.Rider
             }
             catch (Exception e)
             {
-                Debug.Log("Exception on updating kScriptEditorArgs: " + e.Message);
+                Rider.Log("Exception on updating kScriptEditorArgs: " + e.Message);
             }
         }
 
         // initial version copied from https://github.com/yonstorm/ProjectRider-Unity/blob/develop/Assets/Plugins/Editor/ProjectRider/ProjectValidator.cs
         private static bool UpdateDebugSettings()
         {
-            Debug.Log("[Rider] Updating... debug settings");
             var workspaceFile = Path.Combine(Path.Combine(Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), ".idea"),".idea."+Path.GetFileNameWithoutExtension(Rider.SlnFile)),".idea"), "workspace.xml");
             if (!File.Exists(workspaceFile))
             {
                 // TODO: write workspace settings from a template to be able to write debug settings before Rider is started for the first time.
-                //return true;
+                Rider.Log(workspaceFile + " doesn't exist.");
+                return true;
             }
 
             var document = XDocument.Load(workspaceFile);
