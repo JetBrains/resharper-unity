@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Psi;
+﻿using JetBrains.Annotations;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Naming.Impl;
@@ -16,19 +17,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             
             var methodDeclaration = declaration as IMethodDeclaration;
-            if (methodDeclaration != null && MonoBehaviourUtil.IsEventHandler(methodDeclaration.DeclaredName))
-            {
-                var containingTypeElement = methodDeclaration.GetContainingTypeDeclaration().DeclaredElement;
-                if (containingTypeElement != null && MonoBehaviourUtil.IsMonoBehaviourType(containingTypeElement, methodDeclaration.GetPsiModule()))
-                {
-                    result = NamingConsistencyCheckResult.OK;
-                    isFinalResult = true;
-                    return;
-                }
-            }
+            IMethod method = methodDeclaration?.DeclaredElement;
 
-            result = null;
-            isFinalResult = false;
+            isFinalResult = method != null && method.IsMessage();
+            result = isFinalResult ? NamingConsistencyCheckResult.OK : null;
         }
     }
 }

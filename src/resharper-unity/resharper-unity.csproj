@@ -286,10 +286,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiXml.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="MessageHost.cs" />
+    <Compile Include="MessageHosts.cs" />
     <Compile Include="Settings\PerProjectSettings.cs" />
     <Compile Include="MessageHandlerGeneratorProvider.cs" />
     <Compile Include="MonoBehaviourEvent.cs" />
-    <Compile Include="MonoBehaviourUtil.cs" />
     <Compile Include="NamingConsistencyWarningSuppressor.cs" />
     <Compile Include="ProjectModel\Properties\Flavours\UnityProjectFlavor.cs" />
     <Compile Include="UnityEnginePredefinedType.cs" />
@@ -301,6 +304,11 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="api.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
