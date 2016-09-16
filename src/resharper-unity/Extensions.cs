@@ -9,9 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public static class Extensions
     {
         [NotNull]
-        public static IEnumerable<MessageHost> GetMessageHosts([NotNull] this ITypeElement type)
+        public static IEnumerable<UnityType> GetMessageHosts([NotNull] this ITypeElement type)
         {
-            var allHosts = MessageHosts.GetInstanceFor(type);
+            var allHosts = UnityApi.GetInstanceFor(type);
             return allHosts.GetHostsFor(type);
         }
 

@@ -294,10 +294,11 @@
     <Compile Include="Feature\Services\Generate\MonoBehaviourMethodsProvider.cs" />
     <Compile Include="Feature\Services\Generate\MonoBehaviourMethodsWorkflowProvider.cs" />
     <Compile Include="Feature\Services\Generate\UnityMessageBuilder.cs" />
-    <Compile Include="MessageHost.cs" />
-    <Compile Include="MessageHosts.cs" />
+    <Compile Include="UnityType.cs" />
+    <Compile Include="UnityApi.cs" />
+    <Compile Include="UnityMessageParameter.cs" />
     <Compile Include="Settings\PerProjectSettings.cs" />
-    <Compile Include="MonoBehaviourEvent.cs" />
+    <Compile Include="UnityMessage.cs" />
     <Compile Include="Psi\Naming\NamingConsistencyWarningSuppressor.cs" />
     <Compile Include="ProjectModel\Properties\Flavours\UnityProjectFlavor.cs" />
     <Compile Include="UnityEnginePredefinedType.cs" />
