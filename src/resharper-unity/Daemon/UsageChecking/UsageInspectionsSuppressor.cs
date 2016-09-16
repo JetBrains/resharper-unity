@@ -3,7 +3,7 @@ using JetBrains.Application;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
 {
     [ShellComponent]
     public class UsageInspectionsSuppressor : IUsageInspectionsSuppressor

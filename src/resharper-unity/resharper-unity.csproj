@@ -287,16 +287,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiXml.cs" />
+    <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Feature\Services\Generate\GenerateMonoBehaviourMethodsWorkflow.cs" />
+    <Compile Include="Feature\Services\Generate\GeneratorUnityKinds.cs" />
+    <Compile Include="Feature\Services\Generate\MonoBehaviourMethodsProvider.cs" />
+    <Compile Include="Feature\Services\Generate\MonoBehaviourMethodsWorkflowProvider.cs" />
+    <Compile Include="Feature\Services\Generate\UnityMessageBuilder.cs" />
     <Compile Include="MessageHost.cs" />
     <Compile Include="MessageHosts.cs" />
     <Compile Include="Settings\PerProjectSettings.cs" />
-    <Compile Include="MessageHandlerGeneratorProvider.cs" />
     <Compile Include="MonoBehaviourEvent.cs" />
-    <Compile Include="NamingConsistencyWarningSuppressor.cs" />
+    <Compile Include="Psi\Naming\NamingConsistencyWarningSuppressor.cs" />
     <Compile Include="ProjectModel\Properties\Flavours\UnityProjectFlavor.cs" />
     <Compile Include="UnityEnginePredefinedType.cs" />
-    <Compile Include="UsageInspectionsSuppressor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZoneMarker.cs" />
   </ItemGroup>
