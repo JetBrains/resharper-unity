@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity", "resharper-unity\resharper-unity.csproj", "{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}"
 EndProject
@@ -10,9 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		resharper-unity\annotations\UnityEditor.xml = resharper-unity\annotations\UnityEditor.xml
 		resharper-unity\annotations\UnityEngine.xml = resharper-unity\annotations\UnityEngine.xml
 	EndProjectSection
-VisualStudioVersion = 14.0.24720.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity", "resharper-unity\resharper-unity.csproj", "{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiParser", "ApiParser\ApiParser.csproj", "{24BD8815-E48B-4790-83C2-273EDD42617D}"
 EndProject
