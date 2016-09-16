@@ -166,7 +166,7 @@ namespace Assets.Plugins.Editor.Rider
 
     private static Process GetPossibleRiderProcess()
     {
-      var riderProcesses = Process.GetProcesses();
+      var riderProcesses = Process.GetProcesses().Where(a=>!a.HasExited);
       foreach (var riderProcess in riderProcesses)
       {
         try
