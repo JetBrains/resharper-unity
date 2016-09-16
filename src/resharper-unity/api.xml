@@ -132,6 +132,17 @@
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
+      <message name="OnPostprocessSprites" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessSprites.html">
+        <parameters>
+          <parameter type="UnityEngine.Texture2D" array="False" key="TEXTURE_2D_FQN" name="texture">
+            <description>'texture' argument</description>
+          </parameter>
+          <parameter type="UnityEngine.Sprite" array="True" key="SPRITE_FQN" name="sprites">
+            <description>'sprites' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
       <message name="OnPostprocessTexture" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture.html">
         <parameters>
           <parameter type="UnityEngine.Texture2D" array="False" key="TEXTURE_2D_FQN" name="texture">
@@ -931,6 +942,7 @@
     <type key="RIGIDBODY_FQN" name="UnityEngine.Rigidbody" />
     <type key="SCRIPTABLE_OBJECT_FQN" name="UnityEngine.ScriptableObject" />
     <type key="SCRIPTABLE_WIZARD_FQN" name="UnityEditor.ScriptableWizard" />
+    <type key="SPRITE_FQN" name="UnityEngine.Sprite" />
     <type key="STATE_MACHINE_BEHAVIOUR_FQN" name="UnityEngine.StateMachineBehaviour" />
     <type key="TEXTURE_2D_FQN" name="UnityEngine.Texture2D" />
   </types>
