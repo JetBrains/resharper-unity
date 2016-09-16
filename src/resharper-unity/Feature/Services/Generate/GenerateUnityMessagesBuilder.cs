@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 {
     [GeneratorBuilder(GeneratorUnityKinds.UnityMessages, typeof (CSharpLanguage))]
-    public class UnityMessageBuilder : GeneratorBuilderBase<CSharpGeneratorContext>
+    public class GenerateUnityMessagesBuilder : GeneratorBuilderBase<CSharpGeneratorContext>
     {
         public override double Priority => 100;
 
@@ -23,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 
             if (!typeElement.IsMessageHost())
                 return;
+
             var selectedMethods = context.InputElements.OfType<GeneratorDeclaredElement<IMethod>>();
             var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
             foreach (var selectedMethod in selectedMethods)

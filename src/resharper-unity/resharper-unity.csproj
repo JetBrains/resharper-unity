@@ -289,11 +289,11 @@
     <Compile Include="ApiXml.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Feature\Services\Generate\GenerateMonoBehaviourMethodsWorkflow.cs" />
+    <Compile Include="Feature\Services\Generate\GenerateUnityMessagesWorkflow.cs" />
     <Compile Include="Feature\Services\Generate\GeneratorUnityKinds.cs" />
-    <Compile Include="Feature\Services\Generate\MonoBehaviourMethodsProvider.cs" />
-    <Compile Include="Feature\Services\Generate\MonoBehaviourMethodsWorkflowProvider.cs" />
-    <Compile Include="Feature\Services\Generate\UnityMessageBuilder.cs" />
+    <Compile Include="Feature\Services\Generate\GenerateUnityMessagesProvider.cs" />
+    <Compile Include="Feature\Services\Generate\GenerateUnityMessagesWorkflowProvider.cs" />
+    <Compile Include="Feature\Services\Generate\GenerateUnityMessagesBuilder.cs" />
     <Compile Include="UnityType.cs" />
     <Compile Include="UnityApi.cs" />
     <Compile Include="UnityMessageParameter.cs" />

@@ -9,7 +9,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 {
     [GeneratorElementProvider(GeneratorUnityKinds.UnityMessages, typeof(CSharpLanguage))]
-    public class MonoBehaviourMethodsProvider : GeneratorProviderBase<CSharpGeneratorContext>
+    public class GenerateUnityMessagesProvider : GeneratorProviderBase<CSharpGeneratorContext>
     {
         public override void Populate(CSharpGeneratorContext context)
         {
