@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Application.platforms;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.TestFramework;
 using PlatformID = JetBrains.Application.platforms.PlatformID;
@@ -7,9 +8,9 @@ using PlatformID = JetBrains.Application.platforms.PlatformID;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class TestUnityAttribute : TestPackagesAttribute, ITestFlavoursProvider, ITestPlatformProvider
+    public class TestUnityAttribute : TestPackagesAttribute, ITestFlavoursProvider, ITestPlatformProvider, ITestFileExtensionProvider
     {
-        public TestUnityAttribute(): base(GetReferences())
+        public TestUnityAttribute() : base(GetReferences())
         {
         }
 
@@ -35,5 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
             return PlatformID.CreateFromName(".NETFrameWork", new Version(4, 0));
         }
+
+        public string Extension => CSharpProjectFileType.CS_EXTENSION;
     }
 }

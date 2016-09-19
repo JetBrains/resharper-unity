@@ -1,11 +1,8 @@
-﻿using JetBrains.ProjectModel;
-using JetBrains.ReSharper.FeaturesTestFramework.Generate;
-using JetBrains.ReSharper.TestFramework;
+﻿using JetBrains.ReSharper.FeaturesTestFramework.Generate;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
 {
-    [TestFileExtension(CSharpProjectFileType.CS_EXTENSION)]
     [TestUnity]
     public class MessageGeneratorTest : GenerateTestBase
     {
