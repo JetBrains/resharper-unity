@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Psi;
+﻿using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Naming.Impl;
@@ -14,10 +15,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Naming
 
         public void Check(IDeclaration declaration, INamingPolicyProvider namingPolicyProvider, out bool isFinalResult, out NamingConsistencyCheckResult result)
         {
+            isFinalResult = false;
+
             var methodDeclaration = declaration as IMethodDeclaration;
             var method = methodDeclaration?.DeclaredElement;
 
-            isFinalResult = method != null && method.IsMessage();
+            if (method != null)
+            {
+                var unityApi = method.GetSolution().GetComponent<UnityApi>();
+                isFinalResult = unityApi.IsUnityMessage(method);
+            }
+
             result = isFinalResult ? NamingConsistencyCheckResult.OK : null;
         }
     }

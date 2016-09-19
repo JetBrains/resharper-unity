@@ -11,14 +11,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
     [GeneratorElementProvider(GeneratorUnityKinds.UnityMessages, typeof(CSharpLanguage))]
     public class GenerateUnityMessagesProvider : GeneratorProviderBase<CSharpGeneratorContext>
     {
+        private readonly UnityApi unityApi;
+
+        public GenerateUnityMessagesProvider(UnityApi unityApi)
+        {
+            this.unityApi = unityApi;
+        }
+
         public override void Populate(CSharpGeneratorContext context)
         {
             var typeElement = context.ClassDeclaration.DeclaredElement as IClass;
             if (typeElement == null)
                 return;
 
-            var hosts = typeElement.GetMessageHosts().ToArray();
-            var events = hosts.SelectMany(h => h.Messages)
+            var unityTypes = unityApi.GetBaseUnityTypes(typeElement).ToArray();
+            var events = unityTypes.SelectMany(h => h.Messages)
                 .Where(m => !typeElement.Methods.Any(m.Match)).ToArray();
 
             var classDeclaration = context.ClassDeclaration;

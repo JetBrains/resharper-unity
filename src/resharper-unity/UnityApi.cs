@@ -82,15 +82,24 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public static UnityApi GetInstanceFor([NotNull] IDeclaredElement element)
-        {
-            return element.GetSolution().GetComponent<UnityApi>();
-        }
-
-        [NotNull]
-        public IEnumerable<UnityType> GetHostsFor([NotNull] ITypeElement type)
+        public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type)
         {
             return types.Where(c => type.IsDescendantOf(c.GetType(type.Module)));
+        }
+
+        public bool IsUnityType([NotNull] ITypeElement type)
+        {
+            return GetBaseUnityTypes(type).Any();
+        }
+
+        public bool IsUnityMessage([NotNull] IMethod method)
+        {
+            var containingType = method.GetContainingType();
+            if (containingType != null)
+            {
+                return GetBaseUnityTypes(containingType).Any(type => type.Contains(method));
+            }
+            return false;
         }
     }
 }

@@ -13,6 +13,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
     [GeneratorBuilder(GeneratorUnityKinds.UnityMessages, typeof (CSharpLanguage))]
     public class GenerateUnityMessagesBuilder : GeneratorBuilderBase<CSharpGeneratorContext>
     {
+        private readonly UnityApi unityApi;
+
+        public GenerateUnityMessagesBuilder(UnityApi unityApi)
+        {
+            this.unityApi = unityApi;
+        }
+
         public override double Priority => 100;
 
         protected override void Process(CSharpGeneratorContext context, IProgressIndicator progress)
@@ -21,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
             if (typeElement == null)
                 return;
 
-            if (!typeElement.IsMessageHost())
+            if (!unityApi.GetBaseUnityTypes(typeElement).Any())
                 return;
 
             var selectedMethods = context.InputElements.OfType<GeneratorDeclaredElement<IMethod>>();

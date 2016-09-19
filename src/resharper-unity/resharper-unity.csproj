@@ -288,7 +288,6 @@
   <ItemGroup>
     <Compile Include="ApiXml.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Feature\Services\Generate\GenerateUnityMessagesWorkflow.cs" />
     <Compile Include="Feature\Services\Generate\GeneratorUnityKinds.cs" />
     <Compile Include="Feature\Services\Generate\GenerateUnityMessagesProvider.cs" />
