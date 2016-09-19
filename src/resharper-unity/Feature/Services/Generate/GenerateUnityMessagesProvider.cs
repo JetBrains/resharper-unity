@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
@@ -11,11 +10,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
     [GeneratorElementProvider(GeneratorUnityKinds.UnityMessages, typeof(CSharpLanguage))]
     public class GenerateUnityMessagesProvider : GeneratorProviderBase<CSharpGeneratorContext>
     {
-        private readonly UnityApi unityApi;
+        private readonly UnityApi myUnityApi;
 
         public GenerateUnityMessagesProvider(UnityApi unityApi)
         {
-            this.unityApi = unityApi;
+            myUnityApi = unityApi;
         }
 
         public override void Populate(CSharpGeneratorContext context)
@@ -24,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
             if (typeElement == null)
                 return;
 
-            var unityTypes = unityApi.GetBaseUnityTypes(typeElement).ToArray();
+            var unityTypes = myUnityApi.GetBaseUnityTypes(typeElement).ToArray();
             var events = unityTypes.SelectMany(h => h.Messages)
                 .Where(m => !typeElement.Methods.Any(m.Match)).ToArray();
 
@@ -34,8 +33,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
                 .Select(e => e.CreateDeclaration(factory, classDeclaration))
                 .Select(d => d.DeclaredElement)
                 .Where(m => m != null);
-            IEnumerable<IGeneratorElement> elements =
-                methods.Select(m => new GeneratorDeclaredElement<IMethod>(m));
+            // Make sure we only add a method once (e.g. EditorWindow derives from ScriptableObject
+            // and both declare the OnDestroy message)
+            var elements = methods.Select(m => new GeneratorDeclaredElement<IMethod>(m))
+                .Distinct(m => m.TestDescriptor);
             context.ProvidedElements.AddRange(elements);
         }
 

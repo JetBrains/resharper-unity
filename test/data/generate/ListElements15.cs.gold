@@ -1,0 +1,11 @@
+﻿Provided elements:
+ 0: OnBecameInvisible():System.Void
+ 1: OnBecameVisible():System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEngine;
+
+class A : Renderer
+{
+    {caret}
+}

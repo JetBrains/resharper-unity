@@ -1,0 +1,15 @@
+﻿Provided elements:
+ 0: OnCollisionEnter2D(UnityEngine.Collision2D):System.Void
+ 1: OnCollisionExit2D(UnityEngine.Collision2D):System.Void
+ 2: OnCollisionStay2D(UnityEngine.Collision2D):System.Void
+ 3: OnTriggerEnter2D(UnityEngine.Collider2D):System.Void
+ 4: OnTriggerExit2D(UnityEngine.Collider2D):System.Void
+ 5: OnTriggerStay2D(UnityEngine.Collider2D):System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEngine;
+
+class A : Collider2D
+{
+    {caret}
+}

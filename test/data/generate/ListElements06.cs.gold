@@ -1,0 +1,15 @@
+﻿Provided elements:
+ 0: OnCollisionEnter(UnityEngine.Collision):System.Void
+ 1: OnCollisionExit(UnityEngine.Collision):System.Void
+ 2: OnCollisionStay(UnityEngine.Collision):System.Void
+ 3: OnTriggerEnter(UnityEngine.Collider):System.Void
+ 4: OnTriggerExit(UnityEngine.Collider):System.Void
+ 5: OnTriggerStay(UnityEngine.Collider):System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEngine;
+
+class A : Collider
+{
+    {caret}
+}

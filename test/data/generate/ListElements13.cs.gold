@@ -1,0 +1,11 @@
+﻿Provided elements:
+ 0: OnFailedToConnectToMasterServer(UnityEngine.NetworkConnectionError):System.Void
+ 1: OnMasterServerEvent(UnityEngine.MasterServerEvent):System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEngine;
+
+class A : MasterServer
+{
+    {caret}
+}

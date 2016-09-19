@@ -1,0 +1,15 @@
+﻿Provided elements:
+ 0: OnPostRender():System.Void
+ 1: OnPreCull():System.Void
+ 2: OnPreRender():System.Void
+ 3: OnRenderImage(UnityEngine.RenderTexture,UnityEngine.RenderTexture):System.Void
+ 4: OnRenderObject():System.Void
+ 5: OnWillRenderObject():System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEngine;
+
+class A : Camera
+{
+    {caret}
+}

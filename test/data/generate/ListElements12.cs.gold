@@ -1,0 +1,10 @@
+﻿Provided elements:
+ 0: OnJointBreak2D(UnityEngine.Joint2D):System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEngine;
+
+class A : Joint2D
+{
+    {caret}
+}

@@ -1,0 +1,17 @@
+﻿Provided elements:
+ 0: OnDestroy():System.Void
+ 1: OnDisable():System.Void
+ 2: OnEnable():System.Void
+ 3: OnStateEnter(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 4: OnStateExit(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 5: OnStateIK(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 6: OnStateMove(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 7: OnStateUpdate(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEngine;
+
+class A : StateMachineBehaviour
+{
+    {caret}
+}

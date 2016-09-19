@@ -1,0 +1,13 @@
+﻿Provided elements:
+ 0: OnSceneGUI():System.Void
+ 1: OnDestroy():System.Void
+ 2: OnDisable():System.Void
+ 3: OnEnable():System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEditor;
+
+class A : Editor
+{
+    {caret}
+}

@@ -1,0 +1,17 @@
+﻿Provided elements:
+ 0: OnConnectedToServer():System.Void
+ 1: OnDisconnectedFromServer(UnityEngine.NetworkDisconnection):System.Void
+ 2: OnFailedToConnect(UnityEngine.NetworkConnectionError):System.Void
+ 3: OnNetworkInstantiate(UnityEngine.NetworkMessageInfo):System.Void
+ 4: OnPlayerConnected(UnityEngine.NetworkPlayer):System.Void
+ 5: OnPlayerDisconnected(UnityEngine.NetworkPlayer):System.Void
+ 6: OnSerializeNetworkView(UnityEngine.BitStream,UnityEngine.NetworkMessageInfo):System.Void
+ 7: OnServerInitialized():System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEngine;
+
+class A : Network
+{
+    {caret}
+}

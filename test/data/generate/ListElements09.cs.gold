@@ -1,0 +1,20 @@
+﻿Provided elements:
+ 0: OnDestroy():System.Void
+ 1: OnFocus():System.Void
+ 2: OnGUI():System.Void
+ 3: OnHierarchyChange():System.Void
+ 4: OnInspectorUpdate():System.Void
+ 5: OnLostFocus():System.Void
+ 6: OnProjectChange():System.Void
+ 7: OnSelectionChange():System.Void
+ 8: Update():System.Void
+ 9: OnDisable():System.Void
+ 10: OnEnable():System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEditor;
+
+class A : EditorWindow
+{
+    {caret}
+}

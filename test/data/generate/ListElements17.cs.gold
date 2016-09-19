@@ -1,0 +1,12 @@
+﻿Provided elements:
+ 0: OnDestroy():System.Void
+ 1: OnDisable():System.Void
+ 2: OnEnable():System.Void
+
+// ${KIND:Unity.Messages}
+using UnityEngine;
+
+class A : ScriptableObject
+{
+    {caret}
+}
