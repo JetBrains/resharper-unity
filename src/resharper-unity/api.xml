@@ -44,8 +44,8 @@
       </message>
       <message name="OnWillSaveAssets" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetModificationProcessor.OnWillSaveAssets.html">
         <parameters>
-          <parameter type="System.String" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="arg">
-            <description>Unknown argument</description>
+          <parameter type="System.String" array="True" key="JetBrains.ReSharper.Psi.PredefinedType.STRING_FQN" name="paths">
+            <description>'paths' argument</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -208,24 +208,24 @@
     <type kind="class" name="Collider" ns="UnityEngine" key="COLLIDER_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.html">
       <message name="OnCollisionEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnCollisionEnter.html">
         <parameters>
-          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collision">
-            <description>'collision' argument</description>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="other">
+            <description>The Collision data associated with this collision event.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnCollisionExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnCollisionExit.html">
         <parameters>
-          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
-            <description>'collisionInfo' argument</description>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="other">
+            <description>The Collision data associated with this collision event.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnCollisionStay" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnCollisionStay.html">
         <parameters>
-          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
-            <description>'collisionInfo' argument</description>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="other">
+            <description>The Collision data associated with this collision event.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -233,7 +233,7 @@
       <message name="OnTriggerEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnTriggerEnter.html">
         <parameters>
           <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -241,7 +241,7 @@
       <message name="OnTriggerExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnTriggerExit.html">
         <parameters>
           <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -249,7 +249,7 @@
       <message name="OnTriggerStay" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider.OnTriggerStay.html">
         <parameters>
           <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -258,24 +258,24 @@
     <type kind="class" name="Collider2D" ns="UnityEngine" key="COLLIDER_2D_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.html">
       <message name="OnCollisionEnter2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnCollisionEnter2D.html">
         <parameters>
-          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
-            <description>'coll' argument</description>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="other">
+            <description>The Collision2D data associated with this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnCollisionExit2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnCollisionExit2D.html">
         <parameters>
-          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
-            <description>'coll' argument</description>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="other">
+            <description>The Collision2D data associated with this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnCollisionStay2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnCollisionStay2D.html">
         <parameters>
-          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
-            <description>'coll' argument</description>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="other">
+            <description>The Collision2D data associated with this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -283,7 +283,7 @@
       <message name="OnTriggerEnter2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnTriggerEnter2D.html">
         <parameters>
           <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider2D involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -291,7 +291,7 @@
       <message name="OnTriggerExit2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnTriggerExit2D.html">
         <parameters>
           <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider2D involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -299,7 +299,7 @@
       <message name="OnTriggerStay2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Collider2D.OnTriggerStay2D.html">
         <parameters>
           <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider2D involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -339,14 +339,29 @@
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
     </type>
-    <type kind="class" name="Playable" ns="UnityEngine.Experimental.Director" key="PLAYABLE_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Experimental.Director.Playable.html">
+    <type kind="struct" name="Playable" ns="UnityEngine.Experimental.Director" key="PLAYABLE_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Experimental.Director.Playable.html">
       <message name="OnSetPlayState" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
+        <parameters>
+          <parameter type="UnityEditor.ParticleEffectUI+PlayState" array="False" key="PLAY_STATE_FQN" name="newState">
+            <description>New PlayState</description>
+          </parameter>
+        </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnSetTime" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
+        <parameters>
+          <parameter type="System.Single" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.FLOAT_FQN" name="localTime">
+            <description>New local time</description>
+          </parameter>
+        </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="PrepareFrame" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
+        <parameters>
+          <parameter type="UnityEngine.Experimental.Director.FrameData" array="False" key="FRAME_DATA_FQN" name="info">
+            <description>Data for the current frame.</description>
+          </parameter>
+        </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
     </type>
@@ -355,6 +370,16 @@
         <parameters>
           <parameter type="System.Single" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.FLOAT_FQN" name="breakForce">
             <description>'breakForce' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+    </type>
+    <type kind="class" name="Joint2D" ns="UnityEngine" key="JOINT_2D_FQN" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Joint2D.html">
+      <message name="OnJointBreak2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Joint2D.OnJointBreak2D.html">
+        <parameters>
+          <parameter type="UnityEngine.Joint2D" array="False" key="JOINT_2D_FQN" name="brokenJoint">
+            <description>'brokenJoint' argument</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -437,48 +462,48 @@
       </message>
       <message name="OnCollisionEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter.html">
         <parameters>
-          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collision">
-            <description>'collision' argument</description>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="other">
+            <description>The Collision data associated with this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnCollisionEnter2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter2D.html">
         <parameters>
-          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
-            <description>'coll' argument</description>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="other">
+            <description>The Collision2D data associated with this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnCollisionExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit.html">
         <parameters>
-          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
-            <description>'collisionInfo' argument</description>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="other">
+            <description>The Collision data associated with this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnCollisionExit2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit2D.html">
         <parameters>
-          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
-            <description>'coll' argument</description>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="other">
+            <description>The Collision2D data associated with this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnCollisionStay" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay.html">
         <parameters>
-          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="collisionInfo">
-            <description>'collisionInfo' argument</description>
+          <parameter type="UnityEngine.Collision" array="False" key="COLLISION_FQN" name="other">
+            <description>The Collision data associated with this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
       <message name="OnCollisionStay2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay2D.html">
         <parameters>
-          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="coll">
-            <description>'coll' argument</description>
+          <parameter type="UnityEngine.Collision2D" array="False" key="COLLISION_2D_FQN" name="other">
+            <description>The Collision2D data associated with this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -544,10 +569,10 @@
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
       </message>
-      <message name="OnLevelWasLoaded" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnLevelWasLoaded.html">
+      <message name="OnJointBreak2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnJointBreak2D.html">
         <parameters>
-          <parameter type="System.Int32" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.INT_FQN" name="level">
-            <description>'level' argument</description>
+          <parameter type="UnityEngine.Joint2D" array="False" key="JOINT_2D_FQN" name="brokenJoint">
+            <description>'brokenJoint' argument</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -593,6 +618,14 @@
         <parameters>
           <parameter type="UnityEngine.GameObject" array="False" key="GAME_OBJECT_FQN" name="other">
             <description>'other' argument</description>
+          </parameter>
+        </parameters>
+        <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
+      </message>
+      <message name="OnParticleTrigger" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnParticleTrigger.html">
+        <parameters>
+          <parameter type="UnityEngine.GameObject" array="False" key="GAME_OBJECT_FQN" name="">
+            <description>'' argument</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -659,7 +692,7 @@
       <message name="OnTriggerEnter" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter.html">
         <parameters>
           <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -667,7 +700,7 @@
       <message name="OnTriggerEnter2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter2D.html">
         <parameters>
           <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider2D involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -675,7 +708,7 @@
       <message name="OnTriggerExit" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit.html">
         <parameters>
           <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -683,7 +716,7 @@
       <message name="OnTriggerExit2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit2D.html">
         <parameters>
           <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider2D involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -691,7 +724,7 @@
       <message name="OnTriggerStay" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay.html">
         <parameters>
           <parameter type="UnityEngine.Collider" array="False" key="COLLIDER_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -699,7 +732,7 @@
       <message name="OnTriggerStay2D" static="False" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay2D.html">
         <parameters>
           <parameter type="UnityEngine.Collider2D" array="False" key="COLLIDER_2D_FQN" name="other">
-            <description>'other' argument</description>
+            <description>The other Collider2D involved in this collision.</description>
           </parameter>
         </parameters>
         <returns type="System.Void" array="False" key="JetBrains.ReSharper.Psi.PredefinedType.VOID_FQN" />
@@ -924,7 +957,9 @@
     <type key="CONTROLLER_COLLIDER_HIT_FQN" name="UnityEngine.ControllerColliderHit" />
     <type key="EDITOR_FQN" name="UnityEditor.Editor" />
     <type key="EDITOR_WINDOW_FQN" name="UnityEditor.EditorWindow" />
+    <type key="FRAME_DATA_FQN" name="UnityEngine.Experimental.Director.FrameData" />
     <type key="GAME_OBJECT_FQN" name="UnityEngine.GameObject" />
+    <type key="JOINT_2D_FQN" name="UnityEngine.Joint2D" />
     <type key="JOINT_FQN" name="UnityEngine.Joint" />
     <type key="MASTER_SERVER_EVENT_FQN" name="UnityEngine.MasterServerEvent" />
     <type key="MASTER_SERVER_FQN" name="UnityEngine.MasterServer" />
@@ -935,6 +970,7 @@
     <type key="NETWORK_FQN" name="UnityEngine.Network" />
     <type key="NETWORK_MESSAGE_INFO_FQN" name="UnityEngine.NetworkMessageInfo" />
     <type key="NETWORK_PLAYER_FQN" name="UnityEngine.NetworkPlayer" />
+    <type key="PLAY_STATE_FQN" name="UnityEditor.ParticleEffectUI+PlayState" />
     <type key="PLAYABLE_FQN" name="UnityEngine.Experimental.Director.Playable" />
     <type key="REMOVE_ASSET_OPTIONS_FQN" name="UnityEditor.RemoveAssetOptions" />
     <type key="RENDER_TEXTURE_FQN" name="UnityEngine.RenderTexture" />
