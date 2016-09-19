@@ -11,20 +11,20 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public class UnityMessage
     {
-        private readonly bool isStatic;
-        private readonly bool returnTypeIsArray;
-        [NotNull] private readonly string name;
-        [NotNull] private readonly IClrTypeName returnType;
-        [NotNull] private readonly UnityMessageParameter[] parameters;
+        private readonly bool myIsStatic;
+        private readonly bool myReturnTypeIsArray;
+        [NotNull] private readonly string myName;
+        [NotNull] private readonly IClrTypeName myReturnType;
+        [NotNull] private readonly UnityMessageParameter[] myParameters;
 
         public UnityMessage([NotNull] string name, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic,
             [NotNull] params UnityMessageParameter[] parameters)
         {
-            this.isStatic = isStatic;
-            this.name = name;
-            this.returnType = returnType;
-            this.returnTypeIsArray = returnTypeIsArray;
-            this.parameters = parameters.Length > 0 ? parameters : EmptyArray<UnityMessageParameter>.Instance;
+            myIsStatic = isStatic;
+            myName = name;
+            myReturnType = returnType;
+            myReturnTypeIsArray = returnTypeIsArray;
+            myParameters = parameters.Length > 0 ? parameters : EmptyArray<UnityMessageParameter>.Instance;
         }
 
         [NotNull]
@@ -33,17 +33,17 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var builder = new StringBuilder(128);
 
             builder.Append("private ");
-            builder.Append(returnType.FullName);
-            if (returnTypeIsArray) builder.Append("[]");
+            builder.Append(myReturnType.FullName);
+            if (myReturnTypeIsArray) builder.Append("[]");
             builder.Append(" ");
-            builder.Append(name);
+            builder.Append(myName);
             builder.Append("(");
 
-            for (var i = 0; i < parameters.Length; i++)
+            for (var i = 0; i < myParameters.Length; i++)
             {
                 if (i > 0) builder.Append(",");
 
-                var parameter = parameters[i];
+                var parameter = myParameters[i];
                 builder.Append(parameter.ClrTypeName.FullName);
                 if (parameter.IsArray) builder.Append("[]");
                 builder.Append(' ');
@@ -60,18 +60,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool Match([NotNull] IMethod method)
         {
-            if (method.ShortName != name) return false;
-            if (method.IsStatic != isStatic) return false;
+            if (method.ShortName != myName) return false;
+            if (method.IsStatic != myIsStatic) return false;
 
             var methodReturnType = (IDeclaredType)method.ReturnType;
-            if (!Equals(methodReturnType.GetClrName(), returnType)) return false;
+            if (!Equals(methodReturnType.GetClrName(), myReturnType)) return false;
 
-            if (method.Parameters.Count != parameters.Length) return false;
+            if (method.Parameters.Count != myParameters.Length) return false;
 
-            for (var i = 0; i < parameters.Length; ++i)
+            for (var i = 0; i < myParameters.Length; ++i)
             {
                 var paramType = (IDeclaredType)method.Parameters[i].Type;
-                if (!Equals(paramType.GetClrName(), parameters[i].ClrTypeName)) return false;
+                if (!Equals(paramType.GetClrName(), myParameters[i].ClrTypeName)) return false;
             }
 
             return true;

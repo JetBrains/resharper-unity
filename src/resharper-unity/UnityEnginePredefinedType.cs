@@ -14,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
     [ShellComponent]
     public class UnityEnginePredefinedType
     {
-        private readonly Dictionary<string, IClrTypeName> unityTypes = new Dictionary<string, IClrTypeName>();
-        private readonly Dictionary<string, IClrTypeName> systemTypes;
+        private readonly Dictionary<string, IClrTypeName> myUnityTypes = new Dictionary<string, IClrTypeName>();
+        private readonly Dictionary<string, IClrTypeName> mySystemTypes;
 
         public UnityEnginePredefinedType()
         {
@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var fields = predefined.GetFields(BindingFlags.Static | BindingFlags.Public);
             var matching = fields.Where(f => typeof(IClrTypeName).IsAssignableFrom(f.FieldType)).ToArray();
 
-            systemTypes = matching.ToDictionary(
+            mySystemTypes = matching.ToDictionary(
                 f => predefined.FullName + "." + f.Name,
                 f => (IClrTypeName)f.GetValue(null));
 
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
                 if (key == null || name == null) continue;
 
-                unityTypes[key] = new ClrTypeName(name);
+                myUnityTypes[key] = new ClrTypeName(name);
             }
         }
 
@@ -49,8 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             get
             {
-                if (unityTypes.ContainsKey(key)) return unityTypes[key];
-                return systemTypes.ContainsKey(key) ? systemTypes[key] : PredefinedType.VOID_FQN;
+                if (myUnityTypes.ContainsKey(key)) return myUnityTypes[key];
+                return mySystemTypes.ContainsKey(key) ? mySystemTypes[key] : PredefinedType.VOID_FQN;
             }
         }
 

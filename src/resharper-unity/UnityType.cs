@@ -9,11 +9,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public class UnityType
     {
-        private readonly IClrTypeName typeName;
+        private readonly IClrTypeName myTypeName;
 
         public UnityType(IClrTypeName typeName, IEnumerable<UnityMessage> messages)
         {
-            this.typeName = typeName;
+            myTypeName = typeName;
             Messages = messages;
         }
 
@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [CanBeNull]
         public ITypeElement GetType([NotNull] IPsiModule module)
         {
-            var type = TypeFactory.CreateTypeByCLRName(typeName, module);
+            var type = TypeFactory.CreateTypeByCLRName(myTypeName, module);
             return type.GetTypeElement();
         }
 

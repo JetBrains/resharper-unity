@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     [SolutionComponent]
     public class UnityApi
     {
-        private readonly List<UnityType> types = new List<UnityType>();
+        private readonly List<UnityType> myTypes = new List<UnityType>();
 
         public UnityApi()
         {
@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             foreach (XmlNode type in nodes)
             {
-                types.Add(CreateMessageHost(type));
+                myTypes.Add(CreateMessageHost(type));
             }
         }
 
@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull]
         public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type)
         {
-            return types.Where(c => type.IsDescendantOf(c.GetType(type.Module)));
+            return myTypes.Where(c => type.IsDescendantOf(c.GetType(type.Module)));
         }
 
         public bool IsUnityType([NotNull] ITypeElement type)
