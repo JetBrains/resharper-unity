@@ -11,8 +11,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
     {
         protected override string RelativeTestDataPath => @"generate";
 
-        [Test] public void MonoBehaviour01() { DoNamedTest(); }
-
         [Test] public void ListElements01() { DoNamedTest(); }
         // TODO: Deriving from AssetModificationProcessor doesn't work. Don't know why
         // [Test] public void ListElements02() { DoNamedTest(); }
@@ -33,5 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
         [Test] public void ListElements17() { DoNamedTest(); }
         [Test] public void ListElements18() { DoNamedTest(); }
         [Test] public void ListElements19() { DoNamedTest(); }
+
+        [Test] public void MonoBehaviour01() { DoNamedTest(); }
+        [Test] public void HasExistingMethods() { DoNamedTest(); }
+        [Test] public void InsertSingleMethod01() { DoNamedTest(); }
+        [Test] public void InsertSingleMethod02() { DoNamedTest(); }
+        [Test] public void InsertMultipleMethods() { DoNamedTest(); }
+        [Test] public void InsertWithExistingMethods() { DoNamedTest(); }
     }
 }
