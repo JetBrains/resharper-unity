@@ -35,5 +35,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
         [Test] public void InsertSingleMethod02() { DoNamedTest(); }
         [Test] public void InsertMultipleMethods() { DoNamedTest(); }
         [Test] public void InsertWithExistingMethods() { DoNamedTest(); }
+
+        // It would be nice if the base test distinguished between unavailable, no items and disabled
+        [Test] public void NonUnityType() { DoNamedTest(); }
+    }
+
+    public class MessageGeneratorNonUnityProjectTest : GenerateTestBase
+    {
+        protected override string RelativeTestDataPath => @"generate";
+
+        // It would be nice if the base test distinguished between unavailable, no items and disabled
+        [Test] public void NonUnityProject() { DoNamedTest(); }
     }
 }

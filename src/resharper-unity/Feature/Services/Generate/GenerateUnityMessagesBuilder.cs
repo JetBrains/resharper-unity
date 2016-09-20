@@ -22,14 +22,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 
         public override double Priority => 100;
 
+        // Enables/disables the menu item
+        protected override bool IsAvaliable(CSharpGeneratorContext context)
+        {
+            return HasUnityBaseType(context) && base.IsAvaliable(context);
+        }
+
         protected override void Process(CSharpGeneratorContext context, IProgressIndicator progress)
         {
-            var typeElement = context.ClassDeclaration.DeclaredElement as IClass;
-            if (typeElement == null)
-                return;
-
-            if (!myUnityApi.GetBaseUnityTypes(typeElement).Any())
-                return;
+            if (!HasUnityBaseType(context)) return;
 
             var selectedMethods = context.InputElements.OfType<GeneratorDeclaredElement<IMethod>>();
             var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
@@ -42,6 +43,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
                 method.FormatNode();
                 context.PutMemberDeclaration(method);
             }
+        }
+
+        private bool HasUnityBaseType(CSharpGeneratorContext context)
+        {
+            var typeElement = context.ClassDeclaration.DeclaredElement as IClass;
+            return typeElement != null && myUnityApi.GetBaseUnityTypes(typeElement).Any();
         }
     }
 }
