@@ -3,6 +3,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Generate.Actions;
 using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 {
@@ -10,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
     {
         public GenerateUnityMessagesWorkflow()
             : base(
-                GeneratorUnityKinds.UnityMessages, null, "Unity3D Messages", GenerateActionGroup.CLR_LANGUAGE,
+                GeneratorUnityKinds.UnityMessages, LogoThemedIcons.UnityLogo.Id, "Unity3D Messages", GenerateActionGroup.CLR_LANGUAGE,
                 "Unity3D Messages", "", "Generate.UnityMessage")
         {
         }

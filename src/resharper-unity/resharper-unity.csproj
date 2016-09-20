@@ -238,6 +238,8 @@
     <Reference Include="NVelocity">
       <HintPath>..\packages\NVelocity.1.0.3\lib\NVelocity.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="Sprache, Version=2.0.0.0, Culture=neutral, PublicKeyToken=23dafc55df9bd3a3, processorArchitecture=MSIL">
       <HintPath>..\packages\Sprache.JetBrains.2.0.0.44\lib\portable-net4+netcore45+win8+wp8+sl5+MonoAndroid1+MonoTouch1\Sprache.dll</HintPath>
       <Private>True</Private>
@@ -258,6 +260,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\JetBrains.Platform.Lib.System.Windows.Interactivity.2.0.20140318.0\lib\System.Windows.Interactivity.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -293,6 +296,7 @@
     <Compile Include="Feature\Services\Generate\GenerateUnityMessagesProvider.cs" />
     <Compile Include="Feature\Services\Generate\GenerateUnityMessagesWorkflowProvider.cs" />
     <Compile Include="Feature\Services\Generate\GenerateUnityMessagesBuilder.cs" />
+    <Compile Include="Resources\Logo\ThemedIcons.Logo.Generated.cs" />
     <Compile Include="UnityType.cs" />
     <Compile Include="UnityApi.cs" />
     <Compile Include="UnityMessageParameter.cs" />
@@ -314,6 +318,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ThemedIconsXamlV3 Include="Resources\Logo\unity-logo.xaml">
+      <ThemeColumns>Gray;GrayDark;Color</ThemeColumns>
+      <RemoveBackgroundElement>False</RemoveBackgroundElement>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ThemedIconsXamlV3>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
