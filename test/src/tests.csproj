@@ -265,6 +265,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressorTest.cs" />
+    <Compile Include="Daemon\UsageChecking\UsageCheckBaseTest.cs" />
     <Compile Include="Feature\Services\Generate\MessageGeneratorTest.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

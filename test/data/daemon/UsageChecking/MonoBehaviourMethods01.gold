@@ -1,0 +1,27 @@
+﻿using UnityEngine;
+
+public class A : MonoBehaviour
+{
+  public void |UnusedMethod|(0)()
+  {
+  }
+
+  private void |UnusedPrivateMethod|(1)()
+  {
+  }
+
+  // Should be used
+  public void OnDestroy()
+  {
+  }
+
+  // Should be used
+  private void OnDisable()
+  {
+  }
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Method 'UnusedMethod' is never used
+(1): ReSharper Dead Code: Method 'UnusedPrivateMethod' is never used
+
