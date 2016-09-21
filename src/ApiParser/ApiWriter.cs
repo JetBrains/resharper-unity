@@ -7,50 +7,43 @@ namespace ApiParser
 {
     public class ApiWriter
     {
-        private readonly XmlDocument doc = new XmlDocument();
-        private readonly Stack<XmlElement> elements = new Stack<XmlElement>();
+        private readonly XmlDocument myDoc = new XmlDocument();
+        private readonly Stack<XmlElement> myElements = new Stack<XmlElement>();
 
         public ApiWriter()
         {
-            var element = doc.CreateElement("api");
-            doc.AppendChild(element);
-            elements.Push(element);
+            var element = myDoc.CreateElement("api");
+            myDoc.AppendChild(element);
+            myElements.Push(element);
         }
 
         public void Enter([NotNull] string name)
         {
             Leave(name);
 
-            var element = doc.CreateElement(name);
-            elements.Peek().AppendChild(element);
-            elements.Push(element);
+            var element = myDoc.CreateElement(name);
+            myElements.Peek().AppendChild(element);
+            myElements.Push(element);
         }
 
         public void Leave([NotNull] string name)
         {
-            while (elements.Any(e => e.Name == name)) elements.Pop();
+            while (myElements.Any(e => e.Name == name)) myElements.Pop();
         }
 
         public void LeaveTo([NotNull] string name)
         {
-            while (elements.Any(e => e.Name == name) && elements.Peek().Name != name) elements.Pop();
+            while (myElements.Any(e => e.Name == name) && myElements.Peek().Name != name) myElements.Pop();
         }
 
         public void SetAttribute<T>([NotNull] string name, [NotNull] T value)
         {
-            elements.Peek().SetAttribute(name, value.ToString());
-        }
-
-        public void SetDescription([NotNull] string text)
-        {
-            var description = doc.CreateElement("description");
-            description.AppendChild(doc.CreateTextNode(text));
-            elements.Peek().AppendChild(description);
+            myElements.Peek().SetAttribute(name, value.ToString());
         }
 
         public void WriteTo([NotNull] XmlWriter writer)
         {
-            doc.WriteTo(writer);
+            myDoc.WriteTo(writer);
         }
     }
 }

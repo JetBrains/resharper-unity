@@ -43,6 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static UnityMessage CreateUnityMessage(XmlNode node)
         {
             var name = node.Attributes?["name"].Value ?? "Invalid";
+            var description = node.Attributes?["description"]?.Value;
             var isStatic = bool.Parse(node.Attributes?["static"].Value ?? "false");
 
             var parameters = EmptyArray<UnityMessageParameter>.Instance;
@@ -63,22 +64,23 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 if (returnsKey != null) returnType = UnityEnginePredefinedType.GetType(returnsKey);
             }
 
-            return new UnityMessage(name, returnType, returnsArray, isStatic, parameters);
+            return new UnityMessage(name, returnType, returnsArray, isStatic, description, parameters);
         }
 
         private static UnityMessageParameter LoadParameter([NotNull] XmlNode node, int i)
         {
             var key = node.Attributes?["key"].Value;
             var name = node.Attributes?["name"].Value;
+            var description = node.Attributes?["description"]?.Value;
             var isArray = bool.Parse(node.Attributes?["array"].Value ?? "false");
 
             if (key == null || name == null)
             {
-                return new UnityMessageParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, isArray);
+                return new UnityMessageParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, description, isArray);
             }
 
             var type = UnityEnginePredefinedType.GetType(key);
-            return new UnityMessageParameter(name, type, isArray);
+            return new UnityMessageParameter(name, type, description, isArray);
         }
 
         [NotNull]
@@ -100,6 +102,20 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 return GetBaseUnityTypes(containingType).Any(type => type.Contains(method));
             }
             return false;
+        }
+
+        public UnityMessage GetUnityMessage([NotNull] IMethod method)
+        {
+            var containingType = method.GetContainingType();
+            if (containingType != null)
+            {
+                var messages = from t in GetBaseUnityTypes(containingType)
+                    from m in t.Messages
+                    where m.Match(method)
+                    select m;
+                return messages.FirstOrDefault();
+            }
+            return null;
         }
     }
 }

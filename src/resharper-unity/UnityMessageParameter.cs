@@ -12,11 +12,15 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public IClrTypeName ClrTypeName { get; }
 
         public bool IsArray { get; }
-        
-        public UnityMessageParameter([NotNull] string name, [NotNull] IClrTypeName clrTypeName, bool isArray = false)
+
+        [CanBeNull]
+        public string Description { get; }
+
+        public UnityMessageParameter([NotNull] string name, [NotNull] IClrTypeName clrTypeName, [CanBeNull] string description, bool isArray = false)
         {
             Name = name;
             ClrTypeName = clrTypeName;
+            Description = description;
             IsArray = isArray;
         }
     }

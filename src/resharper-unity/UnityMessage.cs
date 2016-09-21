@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
@@ -17,15 +18,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull] private readonly IClrTypeName myReturnType;
         [NotNull] private readonly UnityMessageParameter[] myParameters;
 
-        public UnityMessage([NotNull] string name, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic,
+        public UnityMessage([NotNull] string name, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, string description,
             [NotNull] params UnityMessageParameter[] parameters)
         {
+            Description = description;
             myIsStatic = isStatic;
             myName = name;
             myReturnType = returnType;
             myReturnTypeIsArray = returnTypeIsArray;
             myParameters = parameters.Length > 0 ? parameters : EmptyArray<UnityMessageParameter>.Instance;
         }
+
+        public string Description { get; }
 
         [NotNull]
         public IMethodDeclaration CreateDeclaration([NotNull] CSharpElementFactory factory, [NotNull] IClassLikeDeclaration classDeclaration)
@@ -63,18 +67,44 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (method.ShortName != myName) return false;
             if (method.IsStatic != myIsStatic) return false;
 
-            var methodReturnType = (IDeclaredType)method.ReturnType;
-            if (!Equals(methodReturnType.GetClrName(), myReturnType)) return false;
+            if (!DoTypesMatch(method.ReturnType, myReturnType, myReturnTypeIsArray))
+                return false;
 
             if (method.Parameters.Count != myParameters.Length) return false;
 
             for (var i = 0; i < myParameters.Length; ++i)
             {
-                var paramType = (IDeclaredType)method.Parameters[i].Type;
-                if (!Equals(paramType.GetClrName(), myParameters[i].ClrTypeName)) return false;
+                if (!DoTypesMatch(method.Parameters[i].Type, myParameters[i].ClrTypeName, myParameters[i].IsArray))
+                    return false;
             }
 
             return true;
+        }
+
+        [CanBeNull]
+        public UnityMessageParameter GetParameter(string name)
+        {
+            return myParameters.FirstOrDefault(p => p.Name == name);
+        }
+
+        private static bool DoTypesMatch(IType type, IClrTypeName expectedTypeName, bool isArray)
+        {
+            IDeclaredType declaredType;
+
+            var arrayType = type as IArrayType;
+            if (arrayType != null)
+            {
+                if (!isArray) return false;
+
+                // TODO: Does this handle multi-dimensional arrays? Do we care?
+                declaredType = arrayType.GetScalarType();
+            }
+            else
+            {
+                declaredType = (IDeclaredType) type;
+            }
+
+            return declaredType != null && Equals(declaredType.GetClrName(), expectedTypeName);
         }
     }
 }

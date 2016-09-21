@@ -205,7 +205,11 @@ namespace ApiParser
             api.Enter("message");
             api.SetAttribute("name", link.Text);
             api.SetAttribute("static", staticNode != null);
+            var description = desc.Text;
+            if (!string.IsNullOrWhiteSpace(description))
+                api.SetAttribute("description", description);
 
+            // E.g. OnCollisionExit2D(Collision2D)
             var argumentString = SigRegex.Replace(signature.Text, "$2$3");
             if (string.IsNullOrWhiteSpace(argumentString)) return true;
 
@@ -226,7 +230,8 @@ namespace ApiParser
                 api.SetAttribute("array", argument.Type.IsArray);
                 api.SetAttribute("key", argument.Type.Identifier);
                 api.SetAttribute("name", argument.Name);
-                api.SetDescription(argument.Description);
+                if (!string.IsNullOrWhiteSpace(argument.Description))
+                    api.SetAttribute("description", argument.Description);
             }
 
             return true;
