@@ -18,17 +18,19 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull] private readonly IClrTypeName myReturnType;
         [NotNull] private readonly UnityMessageParameter[] myParameters;
 
-        public UnityMessage([NotNull] string name, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, string description,
+        public UnityMessage([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, string description,
             [NotNull] params UnityMessageParameter[] parameters)
         {
             Description = description;
             myIsStatic = isStatic;
             myName = name;
+            TypeName = typeName;
             myReturnType = returnType;
             myReturnTypeIsArray = returnTypeIsArray;
             myParameters = parameters.Length > 0 ? parameters : EmptyArray<UnityMessageParameter>.Instance;
         }
 
+        public string TypeName { get; }
         public string Description { get; }
 
         [NotNull]

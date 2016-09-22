@@ -34,13 +34,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var messages = EmptyArray<UnityMessage>.Instance;
             if (messageNodes != null)
             {
-                messages = messageNodes.OfType<XmlNode>().Select(CreateUnityMessage).ToArray();
+                messages = messageNodes.OfType<XmlNode>().Select(
+                    node => CreateUnityMessage(node, typeName.GetFullNameFast())).ToArray();
             }
 
             return new UnityType(typeName, messages);
         }
 
-        private static UnityMessage CreateUnityMessage(XmlNode node)
+        private static UnityMessage CreateUnityMessage(XmlNode node, string typeName)
         {
             var name = node.Attributes?["name"].Value ?? "Invalid";
             var description = node.Attributes?["description"]?.Value;
@@ -64,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 if (returnsKey != null) returnType = UnityEnginePredefinedType.GetType(returnsKey);
             }
 
-            return new UnityMessage(name, returnType, returnsArray, isStatic, description, parameters);
+            return new UnityMessage(name, typeName, returnType, returnsArray, isStatic, description, parameters);
         }
 
         private static UnityMessageParameter LoadParameter([NotNull] XmlNode node, int i)

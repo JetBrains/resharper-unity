@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;JET_MODE_ASSERT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -297,6 +297,9 @@
     <Compile Include="Feature\Services\Generate\GenerateUnityMessagesProvider.cs" />
     <Compile Include="Feature\Services\Generate\GenerateUnityMessagesWorkflowProvider.cs" />
     <Compile Include="Feature\Services\Generate\GenerateUnityMessagesBuilder.cs" />
+    <Compile Include="Feature\Services\QuickDoc\UnityMesasgeQuickDocProvider.cs" />
+    <Compile Include="Feature\Services\QuickDoc\UnityMessageQuickDocPresenter.cs" />
+    <Compile Include="Help\ShowUnityHelp.cs" />
     <Compile Include="Resources\Logo\ThemedIcons.Logo.Generated.cs" />
     <Compile Include="UnityType.cs" />
     <Compile Include="UnityApi.cs" />

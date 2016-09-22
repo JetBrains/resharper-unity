@@ -269,6 +269,8 @@
     <Compile Include="Daemon\UsageChecking\UsageCheckBaseTest.cs" />
     <Compile Include="Feature\Services\Descriptions\IdentifierTooltipTest.cs" />
     <Compile Include="Feature\Services\Generate\MessageGeneratorTest.cs" />
+    <Compile Include="Feature\Services\QuickDoc\QuickDocTestBase.cs" />
+    <Compile Include="Feature\Services\QuickDoc\UnityMessageQuickDocTest.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUnityAttribute.cs" />
