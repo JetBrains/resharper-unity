@@ -291,6 +291,7 @@
   <ItemGroup>
     <Compile Include="ApiXml.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
+    <Compile Include="DeclaredElementExtensions.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityMessageBehavior.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityMessageRule.cs" />
     <Compile Include="Feature\Services\Descriptions\UnityMessageDescriptionProvider.cs" />

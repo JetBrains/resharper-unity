@@ -11,7 +11,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
     {
         public bool SuppressUsageInspectionsOnElement(IDeclaredElement element, out ImplicitUseKindFlags flags)
         {
-            // TODO: Only do any work if the element belongs to a project that references Unity.Engine
+            flags = ImplicitUseKindFlags.Default;
+
+            if (!element.IsFromUnityProject()) return false;
 
             var solution = element.GetSolution();
             var unityApi = solution.GetComponent<UnityApi>();

@@ -1,4 +1,5 @@
 ﻿using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -11,7 +12,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Naming
     [NamingConsistencyChecker(typeof(CSharpLanguage))]
     public class NamingConsistencyWarningSuppressor : INamingConsistencyChecker
     {
-        public bool IsApplicable(IPsiSourceFile sourceFile) => true;
+        public bool IsApplicable(IPsiSourceFile sourceFile)
+        {
+            var project = sourceFile.GetProject();
+            return project != null && project.HasFlavour<UnityProjectFlavor>();
+        }
 
         public void Check(IDeclaration declaration, INamingPolicyProvider namingPolicyProvider, out bool isFinalResult, out NamingConsistencyCheckResult result)
         {

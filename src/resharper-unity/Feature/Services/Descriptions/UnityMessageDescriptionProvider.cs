@@ -21,6 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
         public RichTextBlock GetElementDescription(IDeclaredElement element, DeclaredElementDescriptionStyle style,
             PsiLanguageType language, IPsiModule module = null)
         {
+            if (!element.IsFromUnityProject())
+                return null;
+
             var method = element as IMethod;
             if (method != null)
             {

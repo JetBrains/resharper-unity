@@ -1,6 +1,7 @@
 using System.Linq;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.Util;
@@ -19,6 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 
         public override void Populate(CSharpGeneratorContext context)
         {
+            if (!context.Project.HasFlavour<UnityProjectFlavor>())
+                return;
+
             var typeElement = context.ClassDeclaration.DeclaredElement as IClass;
             if (typeElement == null)
                 return;
