@@ -267,6 +267,8 @@
   <ItemGroup>
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressorTest.cs" />
     <Compile Include="Daemon\UsageChecking\UsageCheckBaseTest.cs" />
+    <Compile Include="Feature\Services\CodeCompletion\UnityMessageCompletionActionTest.cs" />
+    <Compile Include="Feature\Services\CodeCompletion\UnityMessageCompletionListTest.cs" />
     <Compile Include="Feature\Services\Descriptions\IdentifierTooltipTest.cs" />
     <Compile Include="Feature\Services\Generate\MessageGeneratorTest.cs" />
     <Compile Include="Feature\Services\QuickDoc\QuickDocTestBase.cs" />

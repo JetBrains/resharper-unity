@@ -14,7 +14,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         private readonly bool myIsStatic;
         private readonly bool myReturnTypeIsArray;
-        [NotNull] private readonly string myName;
         [NotNull] private readonly IClrTypeName myReturnType;
         [NotNull] private readonly UnityMessageParameter[] myParameters;
 
@@ -23,15 +22,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             Description = description;
             myIsStatic = isStatic;
-            myName = name;
+            Name = name;
             TypeName = typeName;
             myReturnType = returnType;
             myReturnTypeIsArray = returnTypeIsArray;
             myParameters = parameters.Length > 0 ? parameters : EmptyArray<UnityMessageParameter>.Instance;
         }
 
-        public string TypeName { get; }
-        public string Description { get; }
+        [NotNull] public string TypeName { get; }
+        [NotNull] public string Name { get; }
+        [CanBeNull] public string Description { get; }
 
         [NotNull]
         public IMethodDeclaration CreateDeclaration([NotNull] CSharpElementFactory factory, [NotNull] IClassLikeDeclaration classDeclaration)
@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             builder.Append(myReturnType.FullName);
             if (myReturnTypeIsArray) builder.Append("[]");
             builder.Append(" ");
-            builder.Append(myName);
+            builder.Append(Name);
             builder.Append("(");
 
             for (var i = 0; i < myParameters.Length; i++)
@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool Match([NotNull] IMethod method)
         {
-            if (method.ShortName != myName) return false;
+            if (method.ShortName != Name) return false;
             if (method.IsStatic != myIsStatic) return false;
 
             if (!DoTypesMatch(method.ReturnType, myReturnType, myReturnTypeIsArray))

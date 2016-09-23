@@ -1,0 +1,17 @@
+﻿# 5 ITEMS #
+
++ OnAnimatorIK(int) { ... }
++ OnAnimatorMove() { ... }
+myOnAnima
+---- FULL EVALUATION ----
+OnAnimatorIK(int) { ... }
+OnAnimatorMove() { ... }
+# AUTOMATIC #
+# 5 ITEMS #
+
++ OnAnimatorIK(int) { ... }
++ OnAnimatorMove() { ... }
+myOnAnima
+---- FULL EVALUATION ----
+OnAnimatorIK(int) { ... }
+OnAnimatorMove() { ... }
