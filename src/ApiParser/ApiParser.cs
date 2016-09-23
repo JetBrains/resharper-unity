@@ -39,13 +39,6 @@ namespace ApiParser
             }
 
             api.Leave("messages");
-            api.Enter("types");
-            foreach (var pair in TypeKeyResolver.CustomEntries.OrderBy(p => p.Value))
-            {
-                api.Enter("type");
-                api.SetAttribute("key", pair.Value);
-                api.SetAttribute("name", pair.Key.FullName);
-            }
         }
 
         private static void ParseMessageParameters([NotNull] IEnumerable<Argument> arguments,
@@ -161,7 +154,6 @@ namespace ApiParser
 
             var hostType = new ApiType(string.Concat(nsName, ".", cls.Text));
 
-            api.SetAttribute("key", hostType.Identifier);
             api.SetAttribute("path", new Uri(filename).AbsoluteUri);
 
             foreach (var message in messages)
@@ -176,7 +168,6 @@ namespace ApiParser
                 api.Enter("returns");
                 api.SetAttribute("type", type.FullName);
                 api.SetAttribute("array", type.IsArray);
-                api.SetAttribute("key", type.Identifier);
             }
         }
 
@@ -228,7 +219,6 @@ namespace ApiParser
 
                 api.SetAttribute("type", argument.Type.FullName);
                 api.SetAttribute("array", argument.Type.IsArray);
-                api.SetAttribute("key", argument.Type.Identifier);
                 api.SetAttribute("name", argument.Name);
                 if (!string.IsNullOrWhiteSpace(argument.Description))
                     api.SetAttribute("description", argument.Description);

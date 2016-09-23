@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
+using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
@@ -11,25 +13,35 @@ namespace JetBrains.ReSharper.Plugins.Unity
     [SolutionComponent]
     public class UnityApi
     {
+        private readonly IDictionary<string, IClrTypeName> myTypeNames = new Dictionary<string, IClrTypeName>();
         private readonly List<UnityType> myTypes = new List<UnityType>();
 
         public UnityApi()
         {
-            var nodes = ApiXml.SelectNodes( @"/api/messages/type" );
+            var nodes = ApiXml.SelectNodes(@"/api/messages/type");
             if (nodes == null) return;
 
             foreach (XmlNode type in nodes)
-            {
-                myTypes.Add(CreateMessageHost(type));
-            }
+                myTypes.Add(CreateUnityType(type));
         }
 
-        private static UnityType CreateMessageHost(XmlNode type)
+        private IClrTypeName GetClrTypeName(string typeName)
         {
-            var key = type.Attributes?["key"].Value;
+            IClrTypeName clrTypeName;
+            if (!myTypeNames.TryGetValue(typeName, out clrTypeName))
+            {
+                clrTypeName = new ClrTypeName(typeName);
+                myTypeNames.Add(typeName, clrTypeName);
+            }
+            return clrTypeName;
+        }
 
-            var typeName = key != null ? UnityEnginePredefinedType.GetType(key) : PredefinedType.VOID_FQN;
+        private UnityType CreateUnityType(XmlNode type)
+        {
+            var name = type.Attributes?["name"].Value;
+            var ns = type.Attributes?["ns"].Value;
 
+            var typeName = GetClrTypeName($"{ns}.{name}");
             var messageNodes = type.SelectNodes("message");
             var messages = EmptyArray<UnityMessage>.Instance;
             if (messageNodes != null)
@@ -41,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return new UnityType(typeName, messages);
         }
 
-        private static UnityMessage CreateUnityMessage(XmlNode node, string typeName)
+        private UnityMessage CreateUnityMessage(XmlNode node, string typeName)
         {
             var name = node.Attributes?["name"].Value ?? "Invalid";
             var description = node.Attributes?["description"]?.Value;
@@ -61,27 +73,27 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (returns != null)
             {
                 returnsArray = bool.Parse(returns.Attributes?["array"].Value ?? "false");
-                var returnsKey = returns.Attributes?["key"].Value;
-                if (returnsKey != null) returnType = UnityEnginePredefinedType.GetType(returnsKey);
+                var type = returns.Attributes?["type"]?.Value ?? "System.Void";
+                returnType = GetClrTypeName(type);
             }
 
             return new UnityMessage(name, typeName, returnType, returnsArray, isStatic, description, parameters);
         }
 
-        private static UnityMessageParameter LoadParameter([NotNull] XmlNode node, int i)
+        private UnityMessageParameter LoadParameter([NotNull] XmlNode node, int i)
         {
-            var key = node.Attributes?["key"].Value;
+            var type = node.Attributes?["type"]?.Value;
             var name = node.Attributes?["name"].Value;
             var description = node.Attributes?["description"]?.Value;
             var isArray = bool.Parse(node.Attributes?["array"].Value ?? "false");
 
-            if (key == null || name == null)
+            if (type == null || name == null)
             {
                 return new UnityMessageParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, description, isArray);
             }
 
-            var type = UnityEnginePredefinedType.GetType(key);
-            return new UnityMessageParameter(name, type, description, isArray);
+            var parameterType = GetClrTypeName(type);
+            return new UnityMessageParameter(name, parameterType, description, isArray);
         }
 
         [NotNull]

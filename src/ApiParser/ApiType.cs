@@ -23,8 +23,5 @@ namespace ApiParser
         public string FullName => type.FullName;
 
         public bool IsArray { get; }
-
-        [NotNull]
-        public string Identifier => TypeKeyResolver.Resolve(type);
     }
 }
