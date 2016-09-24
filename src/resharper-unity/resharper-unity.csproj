@@ -293,6 +293,7 @@
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
     <Compile Include="DeclaredElementExtensions.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityMessageBehavior.cs" />
+    <Compile Include="Feature\Services\CodeCompletion\UnityMessageLiteralTransformationRule.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityMessageRule.cs" />
     <Compile Include="Feature\Services\Descriptions\UnityMessageDescriptionProvider.cs" />
     <Compile Include="Feature\Services\Generate\GenerateUnityMessagesWorkflow.cs" />
@@ -303,6 +304,9 @@
     <Compile Include="Feature\Services\QuickDoc\UnityMesasgeQuickDocProvider.cs" />
     <Compile Include="Feature\Services\QuickDoc\UnityMessageQuickDocPresenter.cs" />
     <Compile Include="Help\ShowUnityHelp.cs" />
+    <Compile Include="Psi\Resolve\MonoBehaviourInvokeReference.cs" />
+    <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceFactory.cs" />
+    <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceProviderFactory.cs" />
     <Compile Include="Resources\Logo\ThemedIcons.Logo.Generated.cs" />
     <Compile Include="UnityType.cs" />
     <Compile Include="UnityApi.cs" />

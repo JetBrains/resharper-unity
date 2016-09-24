@@ -1,0 +1,12 @@
+﻿using UnityEngine;
+
+public class A : MonoBehaviour
+{
+    private void Example()
+    {
+        Invoke("|UndefinedMethod|(0)", 2);
+    }
+}
+
+------------------------------------------------
+0: result=UNRESOLVED_SYMBOL_IN_STRING_LITERAL declaredElem=null
