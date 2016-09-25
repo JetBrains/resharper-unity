@@ -99,12 +99,7 @@ namespace Assets.Plugins.Editor.Rider
         {
           var completeFilepath = appPath + Path.DirectorySeparatorChar +
                                  AssetDatabase.GetAssetPath(selected);
-          var args = string.Empty;
-          // workaround for RIDER-1404 Exception There are opened projects, close them before
-          if (GetPossibleRiderProcess() != null)
-            args = string.Format(" -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
-          else
-            args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
+          var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
 
           CallRider(RiderFileInfo.FullName, args);
           return true;
@@ -156,32 +151,10 @@ namespace Assets.Plugins.Editor.Rider
         // Collect top level windows
         var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
         // Get process main window title
-        var windowHandle =
-          topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
+        var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
         if (windowHandle != IntPtr.Zero)
           User32Dll.SetForegroundWindow(windowHandle);
       }
-    }
-
-    private static Process GetPossibleRiderProcess()
-    {
-      var riderProcesses = Process.GetProcesses();
-      foreach (var a in riderProcesses)
-      {
-        try
-        {
-          if (!a.HasExited && (a.ProcessName.ToLower().Contains("rider")
-                               || (a.ProcessName.ToLower().Contains("mono-sgen")
-                                   && a.MainModule.FileName.Contains("ReSharperHost"))))
-            return a;
-        }
-        catch (Exception e)
-        {
-          // for some reason in mono HasExited doesn't help
-          Log(e);
-        }
-      }
-      return null;
     }
 
     [MenuItem("Assets/Open C# Project in Rider", false, 1000)]
