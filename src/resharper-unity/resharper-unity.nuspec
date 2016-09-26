@@ -9,14 +9,25 @@
     <summary>ReSharper support for Unity</summary>
     <description>Adds support for Unity.
 
-&#8226; Marks MonoBehaviour classes, fields and methods as in use
-&#8226; Use Generate Code to generate MonoBehaviour message handlers, with parameters
+&#8226; Marks fields and methods implicitly used by Unity as in use
+&#8226; External annotations to improve ReSharper's analysis, e.g. implicit usage and nullability of Component.gameObject
+&#8226; Use Generate Code to create message handlers, with parameters
+&#8226; Auto-suggest message handler completion when creating methods
+&#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating and CancelInvoke
+&#8226; Message handler descriptions for methods and parameters displayed in tooltips and QuickDoc
+&#8226; "Read more" in QuickDoc navigates to Unity API documentation
 &#8226; Suppress naming consistency checks on message handlers
 &#8226; Automatically sets Unity projects to C# 5. No more incompatible C# 6 suggestions!
 &#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code
 </description>
 <releaseNotes>
-&#8226; ReSharper 2016.2 support
+&#8226; ReSharper 2016.2 support. Thanks @cmcpasserby! (#44, #46)
+&#8226; Added support for messages for all Unity classes, not just MonoBehaviour. Thanks @swalex, @rorydriscoll! (#20, #29, #44)
+&#8226; External annotations to improve ReSharper's analysis, e.g. implicit usage and nullability of Component.gameObject. Thanks @bigbadtrumpet! (#34, #13, #15, #23, #42, #43)
+&#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating and CancelInvoke (#41)
+&#8226; Auto-suggest message handler completion when creating methods
+&#8226; Message handler descriptions for methods and parameters displayed in tooltips and QuickDoc
+&#8226; "Read more" in QuickDoc navigates to Unity API documentation
 
 From previous releases:
 &#8226; ReSharper 2016.1 support
