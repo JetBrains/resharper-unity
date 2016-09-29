@@ -55,19 +55,21 @@ namespace Assets.Plugins.Editor.Rider
         xNodes.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "TargetFrameworkVersion");
       targetFrameworkVersion.SetValue("v4.5"); // very useful, when system mono 4 is used
 
-      var group =
-        projectContentElement.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "PropertyGroup");
-
-      var lang = group.Elements("LangVersion").FirstOrDefault();
-      if (lang != null)
+      if (Environment.Version.Major < 4)
       {
-        lang.SetValue("5");
-      }
-      else
-      {
-        var newLang = new XElement(xmlns + "LangVersion");
-        newLang.SetValue("5");
-        group.Add(newLang);
+        // C# 6 is not supported
+        var group = projectContentElement.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "PropertyGroup");
+        var lang = group.Elements("LangVersion").FirstOrDefault();
+        if (lang != null)
+        {
+          lang.SetValue("5");
+        }
+        else
+        {
+          var newLang = new XElement(xmlns + "LangVersion");
+          newLang.SetValue("5");
+          group.Add(newLang);
+        }
       }
 
       doc.Save(file);
