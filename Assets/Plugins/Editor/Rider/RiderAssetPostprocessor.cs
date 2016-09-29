@@ -129,16 +129,16 @@ namespace Assets.Plugins.Editor.Rider
                 var factoryNameAttr = new XAttribute("factoryName", "Mono remote");
                 var showStdErrAttr = new XAttribute("show_console_on_std_err", false);
                 var showStdOutAttr = new XAttribute("show_console_on_std_out", true);
-                var portAttr = new XAttribute("b", currentDebugPort);
-                var addressAttr = new XAttribute("a", "127.0.0.1");
+                var portAttr = new XAttribute("a", currentDebugPort);
+                var addressAttr = new XAttribute("b", "127.0.0.1");
 
                 editorConfigElem.Add(defaultAttr, nameAttr, typeAttr, factoryNameAttr, showStdErrAttr, showStdOutAttr,
                     portAttr, addressAttr);
 
                 var optionAdress = new XElement("option");
-                optionAdress.Add(new XAttribute("address", "127.0.0.1"));
+                optionAdress.Add(new XAttribute("name", "address"), new XAttribute("value", "127.0.0.1"));
                 var optionPort = new XElement("option");
-                optionPort.Add(new XAttribute("port", currentDebugPort.ToString()));
+                optionPort.Add(new XAttribute("name", "port"), new XAttribute("value", currentDebugPort.ToString()));
 
                 editorConfigElem.Add(optionAdress, optionPort);
 
@@ -147,7 +147,7 @@ namespace Assets.Plugins.Editor.Rider
             }
             else
             {
-                editorConfigElem.Attribute("b").Value = currentDebugPort.ToString();
+                editorConfigElem.Attribute("a").Value = currentDebugPort.ToString();
                 var el = editorConfigElem.Descendants("option").Single(a => a.Attribute("name").Value == "port");
                 el.Attribute("value").SetValue(currentDebugPort.ToString());
             }
