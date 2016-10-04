@@ -136,14 +136,11 @@ namespace Assets.Plugins.Editor.Rider
         var factoryNameAttr = new XAttribute("factoryName", "Mono remote");
         var showStdErrAttr = new XAttribute("show_console_on_std_err", false);
         var showStdOutAttr = new XAttribute("show_console_on_std_out", true);
-        var portAttr = new XAttribute("a", currentDebugPort);
-        var addressAttr = new XAttribute("b", "127.0.0.1");
 
-        editorConfigElem.Add(defaultAttr, nameAttr, typeAttr, factoryNameAttr, showStdErrAttr, showStdOutAttr,
-          portAttr, addressAttr);
+        editorConfigElem.Add(defaultAttr, nameAttr, typeAttr, factoryNameAttr, showStdErrAttr, showStdOutAttr);
 
         var optionAdress = new XElement("option");
-        optionAdress.Add(new XAttribute("name", "address"), new XAttribute("value", "127.0.0.1"));
+        optionAdress.Add(new XAttribute("name", "address"), new XAttribute("value", "localhost"));
         var optionPort = new XElement("option");
         optionPort.Add(new XAttribute("name", "port"), new XAttribute("value", currentDebugPort.ToString()));
 
