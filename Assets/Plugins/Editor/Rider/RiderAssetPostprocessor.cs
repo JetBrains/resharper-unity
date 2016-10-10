@@ -20,7 +20,7 @@ namespace Assets.Plugins.Editor.Rider
       bool isModified = false;
       foreach (var file in projectFiles)
       {
-        isModified = UpgradeProjectFile(file);
+        isModified = UpgradeProjectFile(currentDirectory, file);
       }
 
       var slnFiles = Directory.GetFiles(currentDirectory, "*.sln"); // piece from MLTimK fork
@@ -44,7 +44,7 @@ namespace Assets.Plugins.Editor.Rider
       UpdateDebugSettings();
     }
 
-    private static bool UpgradeProjectFile(string file)
+    private static bool UpgradeProjectFile(string currentDirectory, string file)
     {
       var doc = XDocument.Load(file);
       var projectContentElement = doc.Root;
@@ -59,7 +59,7 @@ namespace Assets.Plugins.Editor.Rider
         targetFrameworkVersion.SetValue("v4.5");
       }
 
-      if (Environment.Version.Major < 4 && AsyncBridgeDllNotRefereced(projectContentElement))
+      if (Environment.Version.Major < 4 && !CSharp60Support(currentDirectory))
       {
         // C# 6 is not supported
         var group = projectContentElement.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "PropertyGroup");
@@ -80,14 +80,10 @@ namespace Assets.Plugins.Editor.Rider
       return true;
     }
 
-    private static bool AsyncBridgeDllNotRefereced(XElement projectContentElement)
+    private static bool CSharp60Support(string currentDirectory)
     {
-      var itemGroups = projectContentElement.Elements();
-      //var test = itemGroups.Elements();
-      //Rider.Log("test.First"+test.First().Name.LocalName);Rider.Log("test.Last"+test.Last().Name.LocalName);
-      var res = itemGroups.SelectMany(a => a.Elements())
-        .Any(b => b.Name.LocalName == "Reference" && b.Attribute("Include")!=null && b.Attribute("Include").Value.Contains("AsyncBridge"));
-      return !res;
+      bool res = new DirectoryInfo(Path.Combine(currentDirectory,"CSharp60Support")).Exists;
+      return res;
     }
 
     private static void UpdateUnitySettings(string[] slnFiles)
