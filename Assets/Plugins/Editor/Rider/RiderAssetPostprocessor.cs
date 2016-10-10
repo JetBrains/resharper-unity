@@ -59,7 +59,7 @@ namespace Assets.Plugins.Editor.Rider
         targetFrameworkVersion.SetValue("v4.5");
       }
 
-      if (Environment.Version.Major < 4)
+      if (Environment.Version.Major < 4 && AsyncBridgeDllNotRefereced(projectContentElement))
       {
         // C# 6 is not supported
         var group = projectContentElement.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "PropertyGroup");
@@ -80,6 +80,15 @@ namespace Assets.Plugins.Editor.Rider
       return true;
     }
 
+    private static bool AsyncBridgeDllNotRefereced(XElement projectContentElement)
+    {
+      var itemGroups = projectContentElement.Elements();
+      //var test = itemGroups.Elements();
+      //Rider.Log("test.First"+test.First().Name.LocalName);Rider.Log("test.Last"+test.Last().Name.LocalName);
+      var res = itemGroups.SelectMany(a => a.Elements())
+        .Any(b => b.Name.LocalName == "Reference" && b.Attribute("Include")!=null && b.Attribute("Include").Value.Contains("AsyncBridge"));
+      return !res;
+    }
 
     private static void UpdateUnitySettings(string[] slnFiles)
     {
