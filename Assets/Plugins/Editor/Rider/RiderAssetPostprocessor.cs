@@ -50,10 +50,14 @@ namespace Assets.Plugins.Editor.Rider
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
-      var xNodes = projectContentElement.Elements().ToList();
-      var targetFrameworkVersion =
-        xNodes.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "TargetFrameworkVersion");
-      targetFrameworkVersion.SetValue("v4.5"); // very useful, when system mono 4 is used
+      if (!Rider.IsDotNetFrameworkUsed)
+      {
+        // helps resolve System.Linq under mono 4
+        var xNodes = projectContentElement.Elements().ToList();
+        var targetFrameworkVersion =
+          xNodes.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "TargetFrameworkVersion");
+        targetFrameworkVersion.SetValue("v4.5");
+      }
 
       if (Environment.Version.Major < 4)
       {

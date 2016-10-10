@@ -17,6 +17,7 @@ namespace Assets.Plugins.Editor.Rider
     public static readonly string SlnFile;
     private static readonly string DefaultApp = EditorPrefs.GetString("kScriptsDefaultApp");
     private static readonly FileInfo RiderFileInfo = new FileInfo(DefaultApp);
+    public static bool IsDotNetFrameworkUsed {get { return RiderFileInfo.Extension == ".exe"; }}
 
     internal static bool Enabled
     {
@@ -24,7 +25,7 @@ namespace Assets.Plugins.Editor.Rider
       {
         if (string.IsNullOrEmpty(DefaultApp))
           return false;
-        return DefaultApp.ToLower().Contains("rider"); // seems like app doesn't exist as file
+        return DefaultApp.ToLower().Contains("rider"); // seems like .app doesn't exist as file
       }
     }
 
