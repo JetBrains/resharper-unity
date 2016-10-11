@@ -162,7 +162,6 @@ namespace Assets.Plugins.Editor.Rider
       }
       else
       {
-        editorConfigElem.Attribute("a").Value = currentDebugPort.ToString();
         var el = editorConfigElem.Descendants("option").Single(a => a.Attribute("name").Value == "port");
         el.Attribute("value").SetValue(currentDebugPort.ToString());
       }
