@@ -20,7 +20,7 @@ namespace Assets.Plugins.Editor.Rider
       bool isModified = false;
       foreach (var file in projectFiles)
       {
-        isModified = UpgradeProjectFile(currentDirectory, file);
+        isModified = UpgradeProjectFile(file);
       }
 
       var slnFiles = Directory.GetFiles(currentDirectory, "*.sln"); // piece from MLTimK fork
@@ -44,9 +44,9 @@ namespace Assets.Plugins.Editor.Rider
       UpdateDebugSettings();
     }
 
-    private static bool UpgradeProjectFile(string currentDirectory, string file)
+    private static bool UpgradeProjectFile(string projectFile)
     {
-      var doc = XDocument.Load(file);
+      var doc = XDocument.Load(projectFile);
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
@@ -59,7 +59,7 @@ namespace Assets.Plugins.Editor.Rider
         targetFrameworkVersion.SetValue("v4.5");
       }
 
-      if (Environment.Version.Major < 4 && !CSharp60Support(currentDirectory))
+      if (Environment.Version.Major < 4 && !CSharp60Support())
       {
         // C# 6 is not supported
         var group = projectContentElement.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "PropertyGroup");
@@ -76,13 +76,15 @@ namespace Assets.Plugins.Editor.Rider
         }
       }
 
-      doc.Save(file);
+      doc.Save(projectFile);
       return true;
     }
 
-    private static bool CSharp60Support(string currentDirectory)
+    private static bool CSharp60Support()
     {
-      bool res = new DirectoryInfo(Path.Combine(currentDirectory,"CSharp60Support")).Exists;
+      bool res = AppDomain.CurrentDomain.GetAssemblies()
+        .SelectMany(assembly => assembly.GetExportedTypes())
+        .Any(type => type.Name == "UnitySynchronizationContext");
       return res;
     }
 
