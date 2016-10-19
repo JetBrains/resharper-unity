@@ -12,20 +12,20 @@ namespace Assets.Plugins.Editor.Rider
   {
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!Rider.Enabled)
+      if (!RiderPlugin.Enabled)
         return;
       var currentDirectory = Directory.GetCurrentDirectory();
       var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
 
-      bool isModified = false;
       foreach (var file in projectFiles)
       {
-        isModified = UpgradeProjectFile(file);
+        UpgradeProjectFile(file);
       }
 
       var slnFiles = Directory.GetFiles(currentDirectory, "*.sln"); // piece from MLTimK fork
       foreach (var file in slnFiles)
       {
+        RiderPlugin.Log(string.Format("Post-processing {0}", file));
         string content = File.ReadAllText(file);
         const string magicProjectGUID = @"Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"")";
         // guid representing C# project
@@ -35,22 +35,20 @@ namespace Assets.Plugins.Editor.Rider
           // Unity may put a random guid, which will brake Rider goto
           content = Regex.Replace(content, matchGUID, magicProjectGUID);
           File.WriteAllText(file, content);
-          isModified = true;
         }
       }
 
-      Rider.Log(isModified ? "Solution was post processed successfully" : "No change necessary");
-      UpdateUnitySettings(slnFiles);
       UpdateDebugSettings();
     }
 
-    private static bool UpgradeProjectFile(string projectFile)
+    private static void UpgradeProjectFile(string projectFile)
     {
+      RiderPlugin.Log(string.Format("Post-processing {0}", projectFile));
       var doc = XDocument.Load(projectFile);
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
-      if (!Rider.IsDotNetFrameworkUsed)
+      if (!RiderPlugin.IsDotNetFrameworkUsed)
       {
         // helps resolve System.Linq under mono 4
         var xNodes = projectContentElement.Elements().ToList();
@@ -77,7 +75,6 @@ namespace Assets.Plugins.Editor.Rider
       }
 
       doc.Save(projectFile);
-      return true;
     }
 
     private static bool CSharp60Support()
@@ -88,35 +85,22 @@ namespace Assets.Plugins.Editor.Rider
       return res;
     }
 
-    private static void UpdateUnitySettings(string[] slnFiles)
-    {
-      try
-      {
-        if (slnFiles.Any())
-          EditorPrefs.SetString("kScriptEditorArgs", "\"" + slnFiles.First() + "\"");
-        else
-          EditorPrefs.SetString("kScriptEditorArgs", string.Empty);
-      }
-      catch (Exception e)
-      {
-        Rider.Log("Exception on updating kScriptEditorArgs: " + e.Message);
-      }
-    }
-
     // initial version copied from https://github.com/yonstorm/ProjectRider-Unity/blob/develop/Assets/Plugins/Editor/ProjectRider/ProjectValidator.cs
-    private static bool UpdateDebugSettings()
+    private static void UpdateDebugSettings()
     {
       var workspaceFile =
         Path.Combine(
           Path.Combine(
             Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), ".idea"),
-              ".idea." + Path.GetFileNameWithoutExtension(Rider.SlnFile)), ".idea"), "workspace.xml");
+              ".idea." + Path.GetFileNameWithoutExtension(RiderPlugin.SlnFile)), ".idea"), "workspace.xml");
       if (!File.Exists(workspaceFile))
       {
         // TODO: write workspace settings from a template to be able to write debug settings before Rider is started for the first time.
-        Rider.Log(workspaceFile + " doesn't exist.");
-        return true;
+        RiderPlugin.Log(string.Format("{0} doesn't exist.", workspaceFile));
+        return;
       }
+
+      RiderPlugin.Log(string.Format("Processing {0}", workspaceFile));
 
       var document = XDocument.Load(workspaceFile);
       var runManagerElement = (from elem in document.Descendants()
@@ -127,7 +111,7 @@ namespace Assets.Plugins.Editor.Rider
       {
         var projectElement = document.Element("project");
         if (projectElement == null)
-          return false;
+          return;
 
         runManagerElement = new XElement("component", new XAttribute("name", "RunManager"));
         projectElement.Add(runManagerElement);
@@ -172,8 +156,6 @@ namespace Assets.Plugins.Editor.Rider
       var lines = File.ReadAllLines(workspaceFile);
       lines[0] = lines[0].Replace("utf-8", "UTF-8");
       File.WriteAllLines(workspaceFile, lines);
-
-      return true;
     }
 
     private static int GetDebugPort()

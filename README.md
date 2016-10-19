@@ -17,3 +17,6 @@ The plugin should work on Windows, Linux and macOS.
 3. RIDER-573 System.Linq can not be found in a new Unity project
 4. Simple Debugging UnityEditor is implemented within the plugin, but better debugging support is planned in Rider itself- follow https://youtrack.jetbrains.com/issue/RIDER-485
 5. If Unity mono runtime is 2 and plugin CSharp60Support is not used -> LangVersion is set to 5.0, which prevents Rider to suggest C# 6 language improvements
+
+## Known issues
+1. RIDER-2458 LangVersion doesn't affect LanguageLevel, which is used for daemon

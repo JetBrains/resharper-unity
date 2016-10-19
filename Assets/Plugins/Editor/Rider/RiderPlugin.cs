@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,7 @@ using Debug = UnityEngine.Debug;
 namespace Assets.Plugins.Editor.Rider
 {
   [InitializeOnLoad]
-  public static class Rider
+  public static class RiderPlugin
   {
     public static readonly string SlnFile;
     private static readonly string DefaultApp = EditorPrefs.GetString("kScriptsDefaultApp");
@@ -30,7 +31,7 @@ namespace Assets.Plugins.Editor.Rider
       }
     }
 
-    static Rider()
+    static RiderPlugin()
     {
       if (Enabled)
       {
@@ -74,7 +75,6 @@ namespace Assets.Plugins.Editor.Rider
         }
       }
 
-      // Open the solution file
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
@@ -189,6 +189,48 @@ namespace Assets.Plugins.Editor.Rider
     public static void Log(object message)
     {
       Debug.Log("[Rider] " + message);
+    }
+
+    static class User32Dll
+    {
+
+      /// <summary>
+      /// Gets the ID of the process that owns the window.
+      /// Note that creating a <see cref="Process"/> wrapper for that is very expensive because it causes an enumeration of all the system processes to happen.
+      /// </summary>
+      public static int GetWindowProcessId(IntPtr hwnd)
+      {
+        uint dwProcessId;
+        GetWindowThreadProcessId(hwnd, out dwProcessId);
+        return unchecked((int) dwProcessId);
+      }
+
+      /// <summary>
+      /// Lists the handles of all the top-level windows currently available in the system.
+      /// </summary>
+      public static List<IntPtr> GetTopLevelWindowHandles()
+      {
+        var retval = new List<IntPtr>();
+        EnumWindowsProc callback = (hwnd, param) =>
+        {
+          retval.Add(hwnd);
+          return 1;
+        };
+        EnumWindows(Marshal.GetFunctionPointerForDelegate(callback), IntPtr.Zero);
+        GC.KeepAlive(callback);
+        return retval;
+      }
+
+      public delegate Int32 EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
+
+      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+      public static extern Int32 EnumWindows(IntPtr lpEnumFunc, IntPtr lParam);
+
+      [DllImport("user32.dll", SetLastError = true)]
+      static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+      public static extern Int32 SetForegroundWindow(IntPtr hWnd);
     }
   }
 }
