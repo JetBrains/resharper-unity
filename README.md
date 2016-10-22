@@ -11,12 +11,8 @@ The plugin should work on Windows, Linux and macOS.
 
 ## Common problems solved by this plugin
 1. Basic Open Solution and Navigate to file and line
-2. Unknown project guid in the generated sln:
-2.1. RIDER-1261 Symbols are not resolved across projects in a single solution (i.e. Unity Editor scripts do not see symbols in main project)
-2.2. 'Go To Declaration' problem. Details here https://rider-support.jetbrains.com/hc/en-us/community/posts/207243685-Unity3D-support
-3. RIDER-573 System.Linq can not be found in a new Unity project
-4. Simple Debugging UnityEditor is implemented within the plugin, but better debugging support is planned in Rider itself- follow https://youtrack.jetbrains.com/issue/RIDER-485
-5. If Unity mono runtime is 2 and plugin CSharp60Support is not used -> LangVersion is set to 5.0, which prevents Rider to suggest C# 6 language improvements
+2. Rider on mono 4 - RIDER-573 System.Linq can not be found in a new Unity project
+3. If Unity mono runtime is 2 and plugin CSharp60Support is not used -> LangVersion is set to 5.0, which prevents Rider to suggest C# 6 language improvements
 
-## Known issues
-1. RIDER-2458 LangVersion doesn't affect LanguageLevel, which is used for daemon
+## Useful info
+1. To debug Unity in Rider call `Run`-> `Attach to local processes`
