@@ -54,7 +54,26 @@ namespace Assets.Plugins.Editor.Rider
         }
       }
 
+      SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
+      SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
+
       doc.Save(projectFile);
+    }
+
+    private static void SetXCodeDllReference(string name, XNamespace xmlns, XElement projectContentElement)
+    {
+      var xcodeDllPath = Path.Combine("C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport", name);
+      if (!File.Exists(xcodeDllPath))
+        xcodeDllPath = Path.Combine("/Applications/Unity/PlaybackEngines/iOSSupport", name);
+      if (File.Exists(xcodeDllPath))
+      {
+        var itemGroup = new XElement(xmlns + "ItemGroup");
+        var reference = new XElement(xmlns + "Reference");
+        reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(xcodeDllPath)));
+        reference.Add(new XElement(xmlns + "HintPath", xcodeDllPath));
+        itemGroup.Add(reference);
+        projectContentElement.Add(itemGroup);
+      }
     }
 
     private static bool CSharp60Support()
