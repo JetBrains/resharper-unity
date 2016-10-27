@@ -12,7 +12,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Settings.Storages;
 using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.Util;
@@ -34,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             this.logger = logger;
             projects.Projects.View(lifetime, (projectLifetime, project) =>
             {
-                if (!project.HasFlavour<UnityProjectFlavor>())
+                if (!project.IsUnityProject())
                     return;
 
                 var mountPoint = CreateMountPoint(projectLifetime, project, settingsStorageProviders, locks, logger, interned);

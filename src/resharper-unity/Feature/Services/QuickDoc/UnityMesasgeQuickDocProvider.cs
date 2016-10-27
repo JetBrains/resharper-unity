@@ -8,7 +8,6 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Providers;
 using JetBrains.ReSharper.Feature.Services.Util;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.UI.Application;
@@ -43,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
         public bool CanNavigate(IDataContext context)
         {
             var project = context.GetData(ProjectModelDataConstants.PROJECT);
-            if (project == null || !project.HasFlavour<UnityProjectFlavor>()) return false;
+            if (project == null || !project.IsUnityProject()) return false;
 
             var declaredElements = context.GetData(PsiDataConstants.DECLARED_ELEMENTS);
             return declaredElements != null && declaredElements.Any(e => IsMessage(e) || IsMessageParameter(e));

@@ -12,7 +12,6 @@ using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.AspectLookupItems.Generate;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
@@ -28,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
         protected override bool IsAvailable(CSharpCodeCompletionContext context)
         {
             var projectPsiModule = context.PsiModule as IProjectPsiModule;
-            if (projectPsiModule == null || !projectPsiModule.Project.HasFlavour<UnityProjectFlavor>())
+            if (projectPsiModule == null || !projectPsiModule.Project.IsUnityProject())
             {
                 return false;
             }

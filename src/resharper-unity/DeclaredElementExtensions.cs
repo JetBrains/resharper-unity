@@ -1,5 +1,4 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
-using JetBrains.ReSharper.Psi;
+﻿using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -10,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return element.GetSourceFiles().Any(sf =>
             {
                 var project = sf.GetProject();
-                return project != null && project.HasFlavour<UnityProjectFlavor>();
+                return project != null && project.IsUnityProject();
             });
         }
     }

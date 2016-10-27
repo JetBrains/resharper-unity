@@ -2,7 +2,6 @@ using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -26,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
         // Enables/disables the menu item
         protected override bool IsAvaliable(CSharpGeneratorContext context)
         {
-            return context.Project.HasFlavour<UnityProjectFlavor>() && HasUnityBaseType(context) && base.IsAvaliable(context);
+            return context.Project.IsUnityProject() && HasUnityBaseType(context) && base.IsAvaliable(context);
         }
 
         protected override void Process(CSharpGeneratorContext context, IProgressIndicator progress)

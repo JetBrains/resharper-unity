@@ -2,7 +2,6 @@ using JetBrains.Application.DataContext;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Generate.Actions;
 using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
@@ -22,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
         public override bool IsAvailable(IDataContext dataContext)
         {
             var project = dataContext.GetData(ProjectModelDataConstants.PROJECT);
-            if (project == null || !project.HasFlavour<UnityProjectFlavor>())
+            if (project == null || !project.IsUnityProject())
                 return false;
             return base.IsAvailable(dataContext);
         }

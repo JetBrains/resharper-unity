@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
         public IReferenceFactory CreateFactory(IPsiSourceFile sourceFile, IFile file)
         {
             var project = sourceFile.GetProject();
-            if (project == null || !project.HasFlavour<UnityProjectFlavor>())
+            if (project == null || !project.IsUnityProject())
                 return null;
 
             if (sourceFile.PrimaryPsiLanguage.Is<CSharpLanguage>())
