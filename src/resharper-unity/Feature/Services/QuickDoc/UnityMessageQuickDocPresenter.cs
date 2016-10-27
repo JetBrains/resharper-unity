@@ -19,14 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
         private readonly HelpSystem myHelpSystem;
         private readonly DeclaredElementEnvoy<IClrDeclaredElement> myEnvoy;
 
-        private readonly DeclaredElementPresenterStyle myMsdnStyle =
-            new DeclaredElementPresenterStyle
-            {
-                ShowEntityKind = EntityKindForm.NONE,
-                ShowName = NameStyle.QUALIFIED,
-                ShowTypeParameters = TypeParameterStyle.CLR
-            };
-
         public UnityMessageQuickDocPresenter(UnityMessage message, IClrDeclaredElement element,
                                              QuickDocTypeMemberProvider quickDocTypeMemberProvider,
                                              ITheming theming, HelpSystem helpSystem)
@@ -55,9 +47,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
 
             // Present in the standard fashion
             var details = GetDetails(element);
+#if WAVE07
+            var text = XmlDocHtmlPresenter.Run(details, element.Module,
+                element, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.All,
+                XmlDocHtmlUtil.CrefManager, myTheming);
+#else
             var text = XmlDocHtmlPresenter.Run(details, element.Module,
                 element, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.All,
                 XmlDocHtmlUtil.ProcessCRef, myTheming);
+#endif
             var title = DeclaredElementPresenter.Format(presentationLanguage,
                 DeclaredElementPresenter.FULL_NESTED_NAME_PRESENTER, element);
 
