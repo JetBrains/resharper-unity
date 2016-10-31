@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEditor;
+using UnityEngine;
 
 namespace Assets.Plugins.Editor.Rider
 {
@@ -28,7 +29,7 @@ namespace Assets.Plugins.Editor.Rider
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
-      if (!RiderPlugin.IsDotNetFrameworkUsed)
+      if (!RiderPlugin.IsWindows)
       {
         // helps resolve System.Linq under mono 4
         var xNodes = projectContentElement.Elements().ToList();
@@ -40,18 +41,11 @@ namespace Assets.Plugins.Editor.Rider
       if (Environment.Version.Major < 4 && !CSharp60Support())
       {
         // C# 6 is not supported
-        var group = projectContentElement.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "PropertyGroup");
-        var lang = group.Elements("LangVersion").FirstOrDefault();
-        if (lang != null)
-        {
-          lang.SetValue("5");
-        }
-        else
-        {
-          var newLang = new XElement(xmlns + "LangVersion");
-          newLang.SetValue("5");
-          group.Add(newLang);
-        }
+        var newLang = new XElement(xmlns + "LangVersion");
+        newLang.SetValue("5");
+        var propGroup = new XElement(xmlns + "PropertyGroup");
+        propGroup.Add(newLang);
+        projectContentElement.AddFirst(propGroup);
       }
 
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);

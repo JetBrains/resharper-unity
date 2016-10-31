@@ -13,10 +13,9 @@ namespace Assets.Plugins.Editor.Rider
   [InitializeOnLoad]
   public static class RiderPlugin
   {
-    public static readonly string SlnFile;
+    private static readonly string SlnFile;
     private static readonly string DefaultApp = EditorPrefs.GetString("kScriptsDefaultApp");
-    private static readonly FileInfo RiderFileInfo;
-    public static bool IsDotNetFrameworkUsed {get { return RiderFileInfo.Extension == ".exe"; }}
+    public static readonly bool IsWindows;
 
     internal static bool Enabled
     {
@@ -32,12 +31,13 @@ namespace Assets.Plugins.Editor.Rider
     {
       if (Enabled)
       {
-        RiderFileInfo = new FileInfo(DefaultApp);
+        var riderFileInfo = new FileInfo(DefaultApp);
+        IsWindows = riderFileInfo.Extension == ".exe";
 
-        var newPath = RiderFileInfo.FullName;
+        var newPath = riderFileInfo.FullName;
         // try to search the new version
 
-        switch (RiderFileInfo.Extension)
+        switch (riderFileInfo.Extension)
         {
           /*
               Unity itself transforms lnk to exe
@@ -54,9 +54,9 @@ namespace Assets.Plugins.Editor.Rider
           case ".exe":
           {
             var possibleNew =
-              RiderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
+              riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
                 .SelectMany(a => a.GetDirectories("bin"))
-                .SelectMany(a => a.GetFiles(RiderFileInfo.Name))
+                .SelectMany(a => a.GetFiles(riderFileInfo.Name))
                 .ToArray();
             if (possibleNew.Length > 0)
               newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
@@ -67,9 +67,9 @@ namespace Assets.Plugins.Editor.Rider
             break;
           }
         }
-        if (newPath != RiderFileInfo.FullName)
+        if (newPath != riderFileInfo.FullName)
         {
-          Log(string.Format("Update {0} to {1}", RiderFileInfo.FullName, newPath));
+          Log(string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
           EditorPrefs.SetString("kScriptsDefaultApp", newPath);
         }
       }
@@ -88,7 +88,8 @@ namespace Assets.Plugins.Editor.Rider
     [UnityEditor.Callbacks.OnOpenAssetAttribute()]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (Enabled && (RiderFileInfo.Exists || RiderFileInfo.Extension == ".app"))
+      var riderFileInfo = new FileInfo(DefaultApp);
+      if (Enabled && (riderFileInfo.Exists || riderFileInfo.Extension == ".app"))
       {
         string appPath = Path.GetDirectoryName(Application.dataPath);
 
@@ -98,11 +99,10 @@ namespace Assets.Plugins.Editor.Rider
         if (selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader")
         {
-          var completeFilepath = appPath + Path.DirectorySeparatorChar +
-                                 AssetDatabase.GetAssetPath(selected);
-          var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, completeFilepath);
+          var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
+          var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
 
-          CallRider(RiderFileInfo.FullName, args);
+          CallRider(riderFileInfo.FullName, args);
           return true;
         }
       }
@@ -165,7 +165,7 @@ namespace Assets.Plugins.Editor.Rider
       SyncSolution();
 
       // Load Project
-      CallRider(RiderFileInfo.FullName, string.Format("{0}{1}{0}", "\"", SlnFile));
+      CallRider(new FileInfo(DefaultApp).FullName, string.Format("{0}{1}{0}", "\"", SlnFile));
     }
 
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
