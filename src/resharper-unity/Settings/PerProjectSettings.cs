@@ -10,8 +10,10 @@ using JetBrains.Application.Settings.Store.Implementation;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
+using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ProjectModel.Settings.Storages;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.Util;
@@ -21,24 +23,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
     [SolutionComponent]
     public class PerProjectSettings
     {
+        private static readonly Version Version46 = new Version(4, 6);
+
         private readonly ISettingsSchema settingsSchema;
         private readonly ILogger logger;
+        private readonly LangVersionCacheProvider myLangVersionCache;
 
         public PerProjectSettings(Lifetime lifetime, IViewableProjectsCollection projects,
                                   ISettingsSchema settingsSchema,
                                   SettingsStorageProvidersCollection settingsStorageProviders, IShellLocks locks,
-                                  ILogger logger, InternKeyPathComponent interned)
+                                  ILogger logger, InternKeyPathComponent interned,
+                                  LangVersionCacheProvider langVersionCache)
         {
             this.settingsSchema = settingsSchema;
             this.logger = logger;
+            myLangVersionCache = langVersionCache;
             projects.Projects.View(lifetime, (projectLifetime, project) =>
             {
                 if (!project.IsUnityProject())
                     return;
 
                 var mountPoint = CreateMountPoint(projectLifetime, project, settingsStorageProviders, locks, logger, interned);
-                InitNamespaceProviderSettings(mountPoint);
-                InitLanguageLevelSettings(mountPoint);
+                InitialiseSettingValues(project, mountPoint);
+
+                // Just to make things more interesting, the langversion cache isn't
+                // necessarily updated by the time we get called, so wire up a callback
+                myLangVersionCache.RegisterDataChangedCallback(projectLifetime, project.ProjectFileLocation,
+                    () => InitialiseSettingValues(project, mountPoint));
             });
         }
 
@@ -63,6 +74,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             return mountPoint;
         }
 
+        private void InitialiseSettingValues(IProject project, SettingsStorageMountPoint mountPoint)
+        {
+            InitNamespaceProviderSettings(mountPoint);
+            InitLanguageLevelSettings(project, mountPoint);
+        }
+
         private void InitNamespaceProviderSettings(ISettingsStorageMountPoint mountPoint)
         {
             var assetsPathIndex = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse("Assets"));
@@ -72,11 +89,106 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, scriptsPathIndex, true);
         }
 
-        private void InitLanguageLevelSettings(SettingsStorageMountPoint mountPoint)
+        private void InitLanguageLevelSettings(IProject project, SettingsStorageMountPoint mountPoint)
         {
-            // Unity only supports C# 5 for now, but they don't currently put the language level
-            // in the csproj (yet - https://twitter.com/jbevain/status/643419833594474496)
-            SetValue(mountPoint, (CSharpLanguageProjectSettings s) => s.LanguageLevel, CSharpLanguageLevel.CSharp50);
+            // Make sure ReSharper doesn't suggest code changes that won't compile in Unity
+            // due to mismatched C# language levels (e.g. C#6 "elvis" operator)
+            //
+            // * Unity prior to 5.5 uses an old mono compiler that only supports C# 4
+            // * Unity 5.5 and later adds C# 6 support as an option. This is enabled by setting
+            //   the API compatibility level to NET_4_6
+            // * The CSharp60Support plugin replaces the compiler with either C# 6 or C# 7.0
+            //   It can be recognised by a folder called `CSharp60Support` or `CSharp70Support`
+            //   in the root of the project
+            //   (https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration)
+            //
+            // Scenarios:
+            // * No VSTU installed (including Unity 5.5)
+            //   .csproj has NO `LangVersion`. `TargetFrameworkVersion` will be `v3.5`
+            // * Early versions of VSTU
+            //   .csproj has NO `LangVersion`. `TargetFrameworkVersion` will be `v3.5`
+            // * Later versions of VSTU
+            //   `LangVersion` is correctly set to "4". `TargetFrameworkVersion` will be `v3.5`
+            // * VSTU for 5.5
+            //   `LangVersion` is set to "default". `TargetFrameworkVersion` will be `v3.5` or `v4.6`
+            //   Note that "default" for VS"15" or Rider will be C# 7.0!
+            // * Unity3dRider is installed
+            //   Uses Unity's own generation and adds correct `LangVersion`
+            //   `TargetFrameworkVersion` will be `v3.5` or `v4.6`
+            // * CSharp60Support is installed
+            //   .csproj has NO `LangVersion`
+            //   `TargetFrameworkVersion` is NOT accurate (support for C# 6 is not dependent on/trigger by .net 4.6)
+            //   Look for `CSharp60Support` or `CSharp70Support` folders
+            //
+            // Actions:
+            // If `LangVersion` is missing or "default"
+            // then override based on `TargetFrameworkVersion` or presence of `CSharp60Support`/`CSharp70Support`
+            // else do nothing
+            //
+            // Notes:
+            // * Unity and VSTU have two separate .csproj routines. VSTU adds extra references,
+            //   the VSTU project flavour GUID and imports UnityVs.targets, which disables the
+            //   `GenerateTargetFrameworkMonikerAttribute` target
+            // * CSharp60Support post-processes the .csproj file direclty if VSTU is not installed.
+            //   If it is installed, it registers a delegate with `ProjectFilesGenerator.ProjectFileGeneration`
+            //   and removes it before it's written to disk
+            // * `LangVersion` can be conditionally specified, which makes checking for "default" awkward
+            // * If Unity3dRider + CSharp60Support are both installed, last write wins
+            //   Order of post-processing is non-deterministic, so Rider's LangVersion might be removed
+            // * Unity3dRider can set `TargetFrameworkVersion` to `v4.5` on non-Windows machines to fix
+            //   an issue resolving System.Linq
+
+            var languageLevel = CSharpLanguageLevel.Default;
+            if (IsLangVersionMissing(project) || IsLangVersionDefault(project))
+            {
+#if WAVE07
+                const CSharpLanguageLevel csharp70 = CSharpLanguageLevel.CSharp70;
+#else
+                const CSharpLanguageLevel csharp70 = CSharpLanguageLevel.Experimental;
+#endif
+
+                // Support for https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration
+                // See also https://github.com/JetBrains/resharper-unity/issues/50#issuecomment-257611218
+                if (project.Location.CombineWithShortName("CSharp70Support").ExistsDirectory)
+                    languageLevel = csharp70;
+                else if (project.Location.CombineWithShortName("CSharp60Support").ExistsDirectory)
+                    languageLevel = CSharpLanguageLevel.CSharp60;
+                else
+                {
+                    languageLevel = IsTargetFrameworkAtLeast46(project)
+                        ? CSharpLanguageLevel.CSharp60
+                        : CSharpLanguageLevel.CSharp40;
+                }
+            }
+            SetValue(mountPoint, (CSharpLanguageProjectSettings s) => s.LanguageLevel, languageLevel);
+        }
+
+        private bool IsLangVersionMissing(IProject project)
+        {
+            return !myLangVersionCache.IsLangVersionExplicitlySpecified(project);
+        }
+
+        private bool IsLangVersionDefault(IProject project)
+        {
+            // VSTU sets LangVersion to default. Would make life so much
+            // easier if it just specified the actual language version.
+            // This is stored per-configuration, gotta check 'em all
+            foreach (var configuration in project.ProjectProperties.ActiveConfigurations.Configurations)
+            {
+                var csharpConfiguration = configuration as ICSharpProjectConfiguration;
+                if (csharpConfiguration != null)
+                {
+                    if (csharpConfiguration.LanguageVersion != VSCSharpLanguageVersion.Latest)
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        private bool IsTargetFrameworkAtLeast46(IProject project)
+        {
+            // ReSharper disable once PossibleNullReferenceException (never null for real project)
+            return project.PlatformID.Version >= Version46;
         }
 
         private void SetValue<TKeyClass, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,

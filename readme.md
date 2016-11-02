@@ -25,7 +25,7 @@ Current features:
 
 * Suppress naming consistency warnings for known Unity message handlers. E.g. RSharper no longer suggests that `AnimatorIK` be renamed to `AnimatorIk`.
 * Disables the `Assets` and `Assets\Scripts` from being considered as "namespace providers". This means ReSharper will no longer suggest to include `Assets` or `Scripts` in the namespace of your code.
-* Automatically sets Unity projects to be C# 5 only. The Unity compiler is only C# 5, so no more incompatible C# 6 suggestions!
+* Automatically sets correct language C# version, if not already specified in .csproj - ReSharper will no longer suggest code fixes that won't compile! Supports the default C# 4 compiler, Unity 5.5's optional C# 6 compiler and the C# 6/7.0 compiler in the [CSharp60Support](https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src) plugin.
 
 Please feel free to [suggest new features in the issues](https://github.com/JetBrains/resharper-unity/issues)!
 

@@ -379,6 +379,7 @@
     <Compile Include="Feature\Services\QuickDoc\UnityMessageQuickDocPresenter.cs" />
     <Compile Include="Help\ShowUnityHelp.cs" />
     <Compile Include="ProjectExtensions.cs" />
+    <Compile Include="ProjectModel\Caches\LangVersionCacheProvider.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReference.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceFactory.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceProviderFactory.cs" />
