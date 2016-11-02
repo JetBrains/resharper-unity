@@ -7,6 +7,7 @@ Rider supports Unity out of the box. It includes:
 * All of the functionality of the [ReSharper plugin](https://github.com/JetBrains/resharper-unity#readme) (remember, Rider uses ReSharper as a language server).
 * Debugging of Unity instances.
     * Use the Run &rarr; "Attach to local process" menu item to list available Unity instances.
+    * Run &rarr; "Edit Configurations" &rarr; Add new "Mono remote" configuration to set everything manually.
 
 However, Unity does not currently support Rider. This plugin adds that support:
 
