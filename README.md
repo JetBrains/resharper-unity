@@ -1,18 +1,46 @@
 # Unity3dRider
 
-## How to use:
-1. Open Unity
-2. Menu `Edit` -> `Preferences` -> `External Tools`
-3. `External Script Editor` -> `Browse` -> Select `Rider.exe` / `.lnk`, `rider.sh` or `Rider.app` depending on the OS
-4. Put the folder `Assets/Plugins/Editor/Rider` from this repository into `Assets/Plugins/Editor/Rider` in your project.
-5. Double clicking a file or error message in Unity should open Rider and navigate to the corresponding file and line.
+Integrates [JetBrains Rider](https://www.jetbrains.com/rider/) into the [Unity 3D](https://unity3d.com) editor.
 
-The plugin should work on Windows, Linux and macOS.
+Rider supports Unity out of the box. It includes:
 
-## Common problems solved by this plugin
-1. Basic Open Solution and Navigate to file and line
-2. Rider on mono 4 - RIDER-573 System.Linq can not be found in a new Unity project
-3. If Unity mono runtime is 2 and plugin CSharp60Support is not used -> LangVersion is set to 5.0, which prevents Rider to suggest C# 6 language improvements
+* All of the functionality of the [ReSharper plugin](https://github.com/JetBrains/resharper-unity#readme) (remember, Rider uses ReSharper as a language server).
+* Debugging of Unity instances.
+    * Use the Run &rarr; "Attach to local process" menu item to list available Unity instances.
 
-## Useful info
-1. To debug Unity in Rider call `Run`-> `Attach to local processes`
+However, Unity does not currently support Rider. This plugin adds that support:
+
+* An "Open C# Project in Rider" item to the Assets menu.
+* Double click a C# script file or error message in Unity will open Rider and navigate to the corresponding file and line.
+* Runs on Windows, Linux and macOS.
+* Sets language level when generating project files
+    * Sets language level to C# 4, so that Rider does not suggest C# 6 language features.
+    * Sets language level to C# 6 when targeting .NET 4.6 in Unity 5.5.
+    * Sets language level to C# 6 or C# 7.0 when using the [CSharp60Support](https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src) plugin.
+* Fixes an issue with Rider on Mono 4 where System.Linq references cannot be found (see [RIDER-573](https://youtrack.jetbrains.com/issue/RIDER-573)).
+* Ensures `UnityEditor.iOS.XCode` namespaces are referenced correctly (see #15). 
+
+## How to use
+
+**Set Rider as the default External Script Editor**
+
+This only needs to be done once.
+
+1. Open Unity.
+2. Go to Edit &rarr; Preferences &rarr; External Tools.
+3. Select "Browse" in the External Script Editor dropdown and select the Rider application.
+    1. On Windows, navigate to `%APPDATA%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox` and select "Rider"
+    2. On Mac, select `~/Applications/Jet Brains/Toolbox/Rider.app` or `/Applications/Rider.app`
+    3. On Linux, select `rider.sh`
+
+**Install the plugin into your project**
+
+This needs to be done for each project.
+
+1. Copy the folder `Assets/Plugins/Editor/Rider from this repository into `Assets/Plugins/Editor/Rider` in your project.
+
+## Roadmap
+
+This plugin is intended to be lightweight and simple, and is not intended to do much more than it currently does. If you have an issues or feature suggestions with regard to Rider functionality inside Unity itself, please [file an issue](https://github.com/JetBrains/Unity3dRider/issues).
+
+If you have any issues or feature suggestions for Unity funcitonality inside Rider, please [file an issue with the ReSharper plugin](https://github.com/JetBrains/resharper-unity/issues).
