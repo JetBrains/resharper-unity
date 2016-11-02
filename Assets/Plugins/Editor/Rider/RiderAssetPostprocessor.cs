@@ -29,29 +29,50 @@ namespace Assets.Plugins.Editor.Rider
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
-      if (!RiderPlugin.IsWindows)
-      {
-        // helps resolve System.Linq under mono 4
-        var xNodes = projectContentElement.Elements().ToList();
-        var targetFrameworkVersion =
-          xNodes.Elements().FirstOrDefault(childNode => childNode.Name.LocalName == "TargetFrameworkVersion");
-        targetFrameworkVersion.SetValue("v4.5");
-      }
-
-      if (Environment.Version.Major < 4 && !CSharp60Support())
-      {
-        // C# 6 is not supported
-        var newLang = new XElement(xmlns + "LangVersion");
-        newLang.SetValue("5");
-        var propGroup = new XElement(xmlns + "PropertyGroup");
-        propGroup.Add(newLang);
-        projectContentElement.AddFirst(propGroup);
-      }
+      FixTargetFrameworkVersion(projectContentElement, xmlns);
+      SetLangVersion(projectContentElement, xmlns);
 
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
 
       doc.Save(projectFile);
+    }
+
+    // Helps resolve System.Linq under mono 4 - RIDER-573
+    private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
+    {
+      if (RiderPlugin.IsWindows)
+        return;
+
+      var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup").
+        Elements(xmlns + "TargetFrameworkVersion").First();
+      var version = new Version(targetFrameworkVersion.Value.Substring(1));
+      if (version < new Version(4, 5))
+        targetFrameworkVersion.SetValue("v4.5");
+    }
+
+    private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
+    {
+      // Add LangVersion to the .csproj. Unity doesn't generate it (although VSTU does).
+      // Not strictly necessary, as the Unity plugin for Rider will work it out, but setting
+      // it makes Rider work if it's not installed.
+      projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
+        new XElement(xmlns + "LangVersion", GetLanguageLevel())));
+    }
+
+    private static string GetLanguageLevel()
+    {
+      // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
+      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp70Support")))
+        return "7";
+      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp60SUpport")))
+        return "6";
+
+      // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
+      if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
+        return "6";
+
+      return "4";
     }
 
     private static void SetXCodeDllReference(string name, XNamespace xmlns, XElement projectContentElement)
@@ -68,14 +89,6 @@ namespace Assets.Plugins.Editor.Rider
         itemGroup.Add(reference);
         projectContentElement.Add(itemGroup);
       }
-    }
-
-    private static bool CSharp60Support()
-    {
-      bool res = AppDomain.CurrentDomain.GetAssemblies()
-        .SelectMany(assembly => assembly.GetExportedTypes())
-        .Any(type => type.Name == "UnitySynchronizationContext");
-      return res;
     }
   }
 }
