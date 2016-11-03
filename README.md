@@ -2,12 +2,12 @@
 
 Integrates [JetBrains Rider](https://www.jetbrains.com/rider/) into the [Unity 3D](https://unity3d.com) editor.
 
-Rider supports Unity out of the box. It includes:
-
-* All of the functionality of the [ReSharper plugin](https://github.com/JetBrains/resharper-unity#readme) (remember, Rider uses ReSharper as a language server).
+Rider support for Unity out of the box:
 * Debugging of Unity instances.
     * Use the Run &rarr; "Attach to local process" menu item to list available Unity instances.
     * Run &rarr; "Edit Configurations" &rarr; Add new "Mono remote" configuration to set everything manually.
+
+Addition Rider support for Unity via [ReSharper plugin](https://github.com/JetBrains/resharper-unity#readme) (Open File&rarr;Settings&rarr;Plugins&rarr;Type Unity&rarr;Press "search in repositories"&rarr;ReSharper Unity plugin will be found&rarr;Install.&rarr;Restart Rider.). 
 
 However, Unity does not currently support Rider. This plugin adds that support:
 
@@ -42,6 +42,8 @@ This needs to be done for each project.
 
 ## Roadmap
 
-This plugin is intended to be lightweight and simple, and is not intended to do much more than it currently does. If you have an issues or feature suggestions with regard to Rider functionality inside Unity itself, please [file an issue](https://github.com/JetBrains/Unity3dRider/issues).
+This plugin is intended to be lightweight and simple, and is not intended to do much more than it currently does. If you have an issues or feature suggestions with regard to plugin functionality inside Unity, please [file an issue](https://github.com/JetBrains/Unity3dRider/issues).
 
-If you have any issues or feature suggestions for Unity funcitonality inside Rider, please [file an issue with the ReSharper plugin](https://github.com/JetBrains/resharper-unity/issues).
+If you have any issues or feature suggestion for Unity funcitonality inside Rider, please [file an issue with the ReSharper plugin](https://github.com/JetBrains/resharper-unity/issues).
+
+Any issues or feature suggestion for Rider itself, please [file an issue with Rider](https://youtrack.jetbrains.com/issues/RIDER)
