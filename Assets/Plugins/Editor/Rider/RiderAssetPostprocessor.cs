@@ -3,9 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEditor;
-using UnityEngine;
 
-namespace Assets.Plugins.Editor.Rider
+namespace Assets.Plugins.Editor.JetBrains
 {
   public class RiderAssetPostprocessor : AssetPostprocessor
   {
