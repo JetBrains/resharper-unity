@@ -57,4 +57,53 @@
   <member name="T:UnityEngine.SharedBetweenAnimatorsAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
   </member>
+  
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,System.Object)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,System.Object,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,System.String,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.AssertFormat(System.Boolean,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.AssertFormat(System.Boolean,UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
 </assembly>
