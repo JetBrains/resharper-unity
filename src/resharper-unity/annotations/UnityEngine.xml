@@ -99,11 +99,67 @@
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
       <argument>condition:false=&gt;halt</argument>
     </attribute>
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
   </member>
   <member name="M:UnityEngine.Debug.AssertFormat(System.Boolean,UnityEngine.Object,System.String,System.Object[])">
     <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
       <argument>condition:false=&gt;halt</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogAssertionFormat(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogAssertionFormat(UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogErrorFormat(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogErrorFormat(UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogFormat(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogFormat(UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogWarningFormat(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogWarningFormat(UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.ILogger.LogFormat(UnityEngine.LogType,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.UnityString.Format(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>fmt</argument>
     </attribute>
   </member>
 </assembly>
