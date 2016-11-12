@@ -265,11 +265,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Daemon\Highlighting\GutterMarkTests.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressorTest.cs" />
     <Compile Include="Daemon\UsageChecking\UsageCheckBaseTest.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityMessageCompletionActionTest.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityMessageCompletionListTest.cs" />
     <Compile Include="Feature\Services\Descriptions\IdentifierTooltipTest.cs" />
+    <Compile Include="Feature\Services\Descriptions\IdentifierTooltipTestBase.cs" />
     <Compile Include="Feature\Services\Generate\MessageGeneratorTest.cs" />
     <Compile Include="Feature\Services\QuickDoc\QuickDocTestBase.cs" />
     <Compile Include="Feature\Services\QuickDoc\UnityMessageQuickDocTest.cs" />

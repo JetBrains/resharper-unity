@@ -38,6 +38,15 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return false;
         }
 
+        public bool IsUnityField([NotNull] IField field)
+        {
+            if (field.GetAccessRights() != AccessRights.PUBLIC)
+                return false;
+
+            var containingType = field.GetContainingType();
+            return containingType != null && IsUnityType(containingType);
+        }
+
         public UnityMessage GetUnityMessage([NotNull] IMethod method)
         {
             var containingType = method.GetContainingType();

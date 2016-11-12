@@ -1,0 +1,23 @@
+﻿using UnityEngine;
+
+public class A : MonoBehaviour
+{
+    public object |unityField|(0);
+    private object notUnityField;
+
+    public object |unityField1|(1), |unityField2|(2);
+
+    |private void OnDestroy()
+    {
+    }|(3)
+
+    private void NotMessage()
+    {
+    }
+}
+
+---------------------------------------------------------
+(0): Unity Gutter Icon: Unity 3D Field
+(1): Unity Gutter Icon: Unity 3D Field
+(2): Unity Gutter Icon: Unity 3D Field
+(3): Unity Gutter Icon: Unity 3D Message

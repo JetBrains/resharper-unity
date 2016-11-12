@@ -1,5 +1,4 @@
-﻿using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
 {
