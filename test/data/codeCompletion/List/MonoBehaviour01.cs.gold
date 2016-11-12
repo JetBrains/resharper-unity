@@ -1,4 +1,4 @@
-﻿# 738 ITEMS #
+﻿# 737 ITEMS #
 
 + A
 + ADBannerView
@@ -551,7 +551,6 @@
 + WrapMode
 + YieldInstruction
 + abstract
-+ async
 + bool
 + byte
 + char
@@ -740,7 +739,7 @@ public override Equals(object) { ... }
 public override GetHashCode() { ... }
 public override ToString() { ... }
 # AUTOMATIC #
-# 738 ITEMS #
+# 737 ITEMS #
 
 + A
 + ADBannerView
@@ -1293,7 +1292,6 @@ public override ToString() { ... }
 + WrapMode
 + YieldInstruction
 + abstract
-+ async
 + bool
 + byte
 + char
