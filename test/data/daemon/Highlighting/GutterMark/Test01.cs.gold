@@ -17,7 +17,9 @@ public class A : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): Unity Gutter Icon: Unity 3D Field
-(1): Unity Gutter Icon: Unity 3D Field
-(2): Unity Gutter Icon: Unity 3D Field
+(0): Unity Gutter Icon: This field is initialised by Unity
+(1): Unity Gutter Icon: This field is initialised by Unity
+(2): Unity Gutter Icon: This field is initialised by Unity
 (3): Unity Gutter Icon: Unity 3D Message
+
+This function is called when the MonoBehaviour will be destroyed.

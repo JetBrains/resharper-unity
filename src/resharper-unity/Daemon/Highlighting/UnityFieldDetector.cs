@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
                 if (field != null && myUnityApi.IsUnityField(field))
                 {
                     var documentRange = element.GetDocumentRange();
-                    var highlighting = new UnityMarkOnGutter(element, documentRange, "Unity 3D Field");
+                    var highlighting = new UnityMarkOnGutter(element, documentRange, "This field is initialised by Unity");
 
                     consumer.AddHighlighting(highlighting, documentRange);
                 }

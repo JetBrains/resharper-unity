@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
+﻿using System;
+using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -24,12 +25,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
             if (element.GetProject().IsUnityProject())
             {
                 var method = element.DeclaredElement;
-                if (method != null && myUnityApi.IsUnityMessage(method))
+                if (method != null)
                 {
-                    var documentRange = element.GetDocumentRange();
-                    var highlighting = new UnityMarkOnGutter(element, documentRange, "Unity 3D Message");
+                    var message = myUnityApi.GetUnityMessage(method);
+                    if (message != null)
+                    {
+                        var documentRange = element.GetDocumentRange();
+                        var tooltip = "Unity 3D Message";
+                        if (!string.IsNullOrEmpty(message.Description))
+                            tooltip += Environment.NewLine + Environment.NewLine + message.Description;
+                        var highlighting = new UnityMarkOnGutter(element, documentRange, tooltip);
 
-                    consumer.AddHighlighting(highlighting, documentRange);
+                        consumer.AddHighlighting(highlighting, documentRange);
+                    }
                 }
             }
         }
