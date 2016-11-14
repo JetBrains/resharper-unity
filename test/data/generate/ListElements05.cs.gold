@@ -7,7 +7,7 @@
  5: OnTriggerExit(UnityEngine.Collider):System.Void
  6: OnTriggerStay(UnityEngine.Collider):System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 using UnityEngine;
 
 class A : CharacterController

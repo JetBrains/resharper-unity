@@ -28,12 +28,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(type).Any();
         }
 
-        public bool IsUnityMessage([NotNull] IMethod method)
+        public bool IsEventFunction([NotNull] IMethod method)
         {
             var containingType = method.GetContainingType();
             if (containingType != null)
             {
-                return GetBaseUnityTypes(containingType).Any(type => type.Contains(method));
+                return GetBaseUnityTypes(containingType).Any(type => type.HasEventFunction(method));
             }
             return false;
         }
@@ -47,16 +47,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return containingType != null && IsUnityType(containingType);
         }
 
-        public UnityMessage GetUnityMessage([NotNull] IMethod method)
+        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method)
         {
             var containingType = method.GetContainingType();
             if (containingType != null)
             {
-                var messages = from t in GetBaseUnityTypes(containingType)
-                    from m in t.Messages
+                var eventFunctions = from t in GetBaseUnityTypes(containingType)
+                    from m in t.EventFunctions
                     where m.Match(method)
                     select m;
-                return messages.FirstOrDefault();
+                return eventFunctions.FirstOrDefault();
             }
             return null;
         }

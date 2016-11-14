@@ -1,4 +1,4 @@
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 using UnityEditor;
 
 class A : AssetModificationProcessor

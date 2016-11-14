@@ -6,12 +6,12 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 {
-    public class GenerateUnityMessagesWorkflow : GenerateCodeWorkflowBase
+    public class GenerateUnityEventFunctionsWorkflow : GenerateCodeWorkflowBase
     {
-        public GenerateUnityMessagesWorkflow()
+        public GenerateUnityEventFunctionsWorkflow()
             : base(
-                GeneratorUnityKinds.UnityMessages, LogoThemedIcons.UnityLogo.Id, "Unity3D Messages", GenerateActionGroup.CLR_LANGUAGE,
-                "Unity3D Messages", "", "Generate.UnityMessage")
+                GeneratorUnityKinds.UnityEventFunctions, LogoThemedIcons.UnityLogo.Id, "Unity Event Functions", GenerateActionGroup.CLR_LANGUAGE,
+                "Unity Event Functions", "", "Generate.UnityEventFunction")
         {
         }
 

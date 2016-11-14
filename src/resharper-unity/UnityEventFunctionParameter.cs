@@ -3,7 +3,7 @@ using JetBrains.Metadata.Reader.API;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
-    public class UnityMessageParameter
+    public class UnityEventFunctionParameter
     {
         [NotNull]
         public string Name { get; }
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [CanBeNull]
         public string Description { get; }
 
-        public UnityMessageParameter([NotNull] string name, [NotNull] IClrTypeName clrTypeName, [CanBeNull] string description, bool isArray = false)
+        public UnityEventFunctionParameter([NotNull] string name, [NotNull] IClrTypeName clrTypeName, [CanBeNull] string description, bool isArray = false)
         {
             Name = name;
             ClrTypeName = clrTypeName;

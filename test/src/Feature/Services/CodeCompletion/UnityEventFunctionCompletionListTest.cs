@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
     // TODO: This doesn't test automatic completion
     // The AutomaticCodeCompletionTestBase class is not in the SDK
     [TestUnity]
-    public class UnityMessageCompletionListTest : CodeCompletionTestBase
+    public class UnityEventFunctionCompletionListTest : CodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
         protected override string RelativeTestDataPath => @"codeCompletion\List";

@@ -9,31 +9,34 @@
     <summary>ReSharper support for Unity</summary>
     <description>Adds support for Unity.
 
+&#8226; Highlights Unity event functions and fields with an icon in the editor gutter
 &#8226; Marks fields and methods implicitly used by Unity as in use
 &#8226; External annotations to improve ReSharper's analysis, e.g. implicit usage and nullability of Component.gameObject
-&#8226; Use Generate Code to create message handlers, with parameters
-&#8226; Auto-suggest message handler completion when creating methods
+&#8226; Use Generate Code to create event functions, with parameters
+&#8226; Auto-suggest event functions completion when creating methods
 &#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating and CancelInvoke
-&#8226; Message handler descriptions for methods and parameters displayed in tooltips and QuickDoc
+&#8226; Event function descriptions for methods and parameters displayed in tooltips and QuickDoc
 &#8226; "Read more" in QuickDoc navigates to Unity API documentation
-&#8226; Suppress naming consistency checks on message handlers
-&#8226; Automatically sets Unity projects to C# 5. No more incompatible C# 6 suggestions!
+&#8226; Suppress naming consistency checks on event functions
+&#8226; Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!
 &#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code
 </description>
 <releaseNotes>
 &#8226; ReSharper 2016.3 support
-&#8226; Enable Unity features in normal C# projects that reference Unity (#53)
-&#8226; Added support for messages for all Unity classes, not just MonoBehaviour. Thanks @swalex, @rorydriscoll! (#20, #29, #44)
-&#8226; External annotations to improve ReSharper's analysis, e.g. implicit usage and nullability of Component.gameObject. Thanks @bigbadtrumpet! (#34, #13, #15, #23, #42, #43)
-&#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating and CancelInvoke (#41)
-&#8226; Auto-suggest message handler completion when creating methods
-&#8226; Message handler descriptions for methods and parameters displayed in tooltips and QuickDoc
-&#8226; "Read more" in QuickDoc navigates to Unity API documentation
+&#8226; Refer to "event function" instead of "message handler"
+&#8226; Highlights Unity event functions and fields with an icon in the editor gutter (#58)
+&#8226; Set language version to C# 4 or C# 6 if Unity 5.5 is installed (#50)
 
 From previous releases:
-&#8226; ReSharper 2016.1 support
-&#8226; Suppress naming consistency checks on message handlers
-&#8226; Add parameters to generated message handlers (#8)
+&#8226; Enable Unity features in normal C# projects that reference Unity (#53)
+&#8226; Added support for event functions for all Unity classes, not just MonoBehaviour. Thanks @swalex, @rorydriscoll! (#20, #29, #44)
+&#8226; External annotations to improve ReSharper's analysis, e.g. implicit usage and nullability of Component.gameObject. Thanks @bigbadtrumpet! (#34, #13, #15, #23, #42, #43)
+&#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating and CancelInvoke (#41)
+&#8226; Auto-suggest event function completion when creating methods
+&#8226; Event function descriptions for methods and parameters displayed in tooltips and QuickDoc
+&#8226; "Read more" in QuickDoc navigates to Unity API documentation
+&#8226; Suppress naming consistency checks on event functions
+&#8226; Add parameters to generated event functions (#8)
 &#8226; Automatically sets Unity projects to C# 5. No more incompatible C# 6 suggestions! (#5)
 </releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>

@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
 {
     // Priority must be less than QuickDocLocalSymbolProvider and QuickDocTypeMemberProvider
     [QuickDocProvider(-1)]
-    public class UnityMesasgeQuickDocProvider : IQuickDocProvider
+    public class UnityEventFunctionQuickDocProvider : IQuickDocProvider
     {
         private readonly ISolution mySolution;
         private readonly UnityApi myUnityApi;
@@ -27,9 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
         private readonly HelpSystem myHelpSystem;
         private readonly ITheming myTheming;
 
-        public UnityMesasgeQuickDocProvider(ISolution solution, UnityApi unityApi,
-                                            DocumentManager documentManager, QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                            HelpSystem helpSystem, ITheming theming)
+        public UnityEventFunctionQuickDocProvider(ISolution solution, UnityApi unityApi,
+                                                  DocumentManager documentManager, QuickDocTypeMemberProvider quickDocTypeMemberProvider,
+                                                  HelpSystem helpSystem, ITheming theming)
         {
             mySolution = solution;
             myUnityApi = unityApi;
@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
             if (project == null || !project.IsUnityProject()) return false;
 
             var declaredElements = context.GetData(PsiDataConstants.DECLARED_ELEMENTS);
-            return declaredElements != null && declaredElements.Any(e => IsMessage(e) || IsMessageParameter(e));
+            return declaredElements != null && declaredElements.Any(e => IsEventFunction(e) || IsParameterForEventFunction(e as IParameter));
         }
 
         public void Resolve(IDataContext context, Action<IQuickDocPresenter, PsiLanguageType> resolved)
@@ -62,19 +62,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
 
             foreach (var element in elements.OfType<IClrDeclaredElement>())
             {
-                var message = GetMessage(element);
-                if (message != null)
+                var eventFunction = GetEventFunction(element);
+                if (eventFunction != null)
                 {
-                    var presenter = new UnityMessageQuickDocPresenter(message, element, myQuickDocTypeMemberProvider,
+                    var presenter = new UnityEventFunctionQuickDocPresenter(eventFunction, element, myQuickDocTypeMemberProvider,
                         myTheming, myHelpSystem);
                     resolved(presenter, defaultLanguage);
                     return;
                 }
 
-                var owningMessage = GetMessageParameterOwner(element);
-                if (owningMessage != null)
+                var eventFunctionForParameter = GetEventFunctionFromParameter(element as IParameter);
+                if (eventFunctionForParameter != null)
                 {
-                    var presenter = new UnityMessageQuickDocPresenter(owningMessage, element.ShortName, element,
+                    var presenter = new UnityEventFunctionQuickDocPresenter(eventFunctionForParameter, element.ShortName, element,
                         myQuickDocTypeMemberProvider, myTheming, myHelpSystem);
                     resolved(presenter, defaultLanguage);
                     return;
@@ -82,26 +82,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
             }
         }
 
-        private bool IsMessage(IDeclaredElement declaredElement)
+        private bool IsEventFunction(IDeclaredElement declaredElement)
         {
-            return GetMessage(declaredElement) != null;
+            return GetEventFunction(declaredElement) != null;
         }
 
-        private UnityMessage GetMessage(IDeclaredElement declaredElement)
+        private UnityEventFunction GetEventFunction(IDeclaredElement declaredElement)
         {
             var method = declaredElement as IMethod;
-            return method != null ? myUnityApi.GetUnityMessage(method) : null;
+            return method != null ? myUnityApi.GetUnityEventFunction(method) : null;
         }
 
-        private bool IsMessageParameter(IDeclaredElement declaredElement)
+        private bool IsParameterForEventFunction(IParameter parameter)
         {
-            return GetMessageParameterOwner(declaredElement) != null;
+            return GetEventFunctionFromParameter(parameter) != null;
         }
 
-        private UnityMessage GetMessageParameterOwner(IDeclaredElement declaredElement)
+        private UnityEventFunction GetEventFunctionFromParameter(IParameter parameter)
         {
-            var parameter = declaredElement as IParameter;
-            return GetMessage(parameter?.ContainingParametersOwner);
+            return GetEventFunction(parameter?.ContainingParametersOwner);
         }
     }
 }

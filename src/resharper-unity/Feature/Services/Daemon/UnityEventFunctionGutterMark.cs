@@ -5,13 +5,13 @@ using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.BulbMenu;
 using JetBrains.Util;
 
-[assembly: RegisterHighlighter(HighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE, EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityMessageGutterMark), Layer = HighlighterLayer.SYNTAX + 1)]
+[assembly: RegisterHighlighter(HighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE, EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityEventFunctionGutterMark), Layer = HighlighterLayer.SYNTAX + 1)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
 {
-    public class UnityMessageGutterMark : IconGutterMark
+    public class UnityEventFunctionGutterMark : IconGutterMark
     {
-        public UnityMessageGutterMark()
+        public UnityEventFunctionGutterMark()
             : base(LogoThemedIcons.UnityLogo.Id)
         {
         }

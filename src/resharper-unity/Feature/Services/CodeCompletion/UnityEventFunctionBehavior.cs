@@ -20,14 +20,14 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 {
-    public class UnityMessageBehavior : TextualBehavior<DeclaredElementInfo>
+    public class UnityEventFunctionBehavior : TextualBehavior<DeclaredElementInfo>
     {
-        private readonly UnityMessage myMessage;
+        private readonly UnityEventFunction myEventFunction;
 
-        public UnityMessageBehavior(DeclaredElementInfo info, UnityMessage message)
+        public UnityEventFunctionBehavior(DeclaredElementInfo info, UnityEventFunction eventFunction)
             : base(info)
         {
-            myMessage = message;
+            myEventFunction = eventFunction;
         }
 
         public override void Accept(ITextControl textControl, TextRange nameRange, LookupItemInsertType lookupItemInsertType, Suffix suffix,
@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             var psiServices = solution.GetPsiServices();
             if (identifierNode != null)
             {
-                IErrorElement errorElement = null;
+                IErrorElement errorElement;
 
                 ITreeNode usage = identifierNode.GetContainingNode<IUserTypeUsage>();
                 if (usage != null)
@@ -103,13 +103,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                 cookie.Commit();
             }
 
-            // Get the UniteMessages generator to actually insert the methods
+            // Get the UnityEventFunction generator to actually insert the methods
             GenerateCodeWorkflowBase.ExecuteNonInteractive(
-                GeneratorUnityKinds.UnityMessages, solution, textControl, methodDeclaration.Language,
+                GeneratorUnityKinds.UnityEventFunctions, solution, textControl, methodDeclaration.Language,
                 configureContext: context =>
                 {
                     var inputElements = from e in context.ProvidedElements.Cast<GeneratorDeclaredElement<IMethod>>()
-                        where myMessage.Match(e.DeclaredElement)
+                        where myEventFunction.Match(e.DeclaredElement)
                         select e;
 
                     context.InputElements.Clear();

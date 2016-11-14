@@ -9,11 +9,11 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 {
-    public interface IUnityMessageReference
+    public interface IUnityEventFunctionReference
     {
     }
 
-    public class MonoBehaviourInvokeReference : CheckedReferenceBase<ILiteralExpression>, ICompletableReference, IReferenceFromStringLiteral, IUnityMessageReference
+    public class MonoBehaviourInvokeReference : CheckedReferenceBase<ILiteralExpression>, ICompletableReference, IReferenceFromStringLiteral, IUnityEventFunctionReference
     {
         private readonly ITypeElement myTypeElement;
         private readonly ISymbolFilter myMethodFilter;

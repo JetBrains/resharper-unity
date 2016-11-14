@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
 {
     [TestUnity]
-    public class MessageGeneratorTest : GenerateTestBase
+    public class EventFunctionGeneratorTest : GenerateTestBase
     {
         protected override string RelativeTestDataPath => @"generate";
 
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
         [Test] public void NonUnityType() { DoNamedTest(); }
     }
 
-    public class MessageGeneratorNonUnityProjectTest : GenerateTestBase
+    public class EventFunctionGeneratorNonUnityProjectTest : GenerateTestBase
     {
         protected override string RelativeTestDataPath => @"generate";
 

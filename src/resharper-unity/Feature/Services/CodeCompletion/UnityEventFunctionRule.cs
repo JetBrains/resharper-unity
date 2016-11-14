@@ -22,7 +22,7 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 {
     [Language(typeof(CSharpLanguage))]
-    public class UnityMessageRule : ItemsProviderOfSpecificContext<CSharpCodeCompletionContext>
+    public class UnityEventFunctionRule : ItemsProviderOfSpecificContext<CSharpCodeCompletionContext>
     {
         protected override bool IsAvailable(CSharpCodeCompletionContext context)
         {
@@ -80,9 +80,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             {
                 var items = new List<ILookupItem>();
 
-                foreach (var message in unityType.Messages)
+                foreach (var eventFunction in unityType.EventFunctions)
                 {
-                    if (typeElement.Methods.Any(m => message.Match(m)))
+                    if (typeElement.Methods.Any(m => eventFunction.Match(m)))
                         continue;
 
                     items.Clear();
@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                         items.Add(lookupItem);
                     }
 
-                    var item = CreateMethodItem(context, message, declaration);
+                    var item = CreateMethodItem(context, eventFunction, declaration);
                     if (item == null) continue;
 
                     items.Add(item);
@@ -121,13 +121,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             return item;
         }
 
-        private static ILookupItem CreateMethodItem(CSharpCodeCompletionContext context, UnityMessage message,
+        private static ILookupItem CreateMethodItem(CSharpCodeCompletionContext context, UnityEventFunction eventFunction,
             IClassLikeDeclaration declaration)
         {
             if (CSharpLanguage.Instance == null)
                 return null;
 
-            var method = message.CreateDeclaration(CSharpElementFactory.GetInstance(declaration), declaration);
+            var method = eventFunction.CreateDeclaration(CSharpElementFactory.GetInstance(declaration), declaration);
             if (method.DeclaredElement == null)
                 return null;
 
@@ -140,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                     _ => new GenerateMemberPresentation(declaredElementInfo, PresenterStyles.DefaultPresenterStyle)).
                 WithBehavior(_ =>
                 {
-                    var behavior = new UnityMessageBehavior(declaredElementInfo, message);
+                    var behavior = new UnityEventFunctionBehavior(declaredElementInfo, eventFunction);
                     behavior.InitializeRanges(context.CompletionRanges, context.BasicContext);
                     return behavior;
                 }).

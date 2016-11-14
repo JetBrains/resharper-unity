@@ -4,7 +4,7 @@
  2: OnTriggerExit(UnityEngine.Collider):System.Void
  3: OnTriggerStay(UnityEngine.Collider):System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 // ${SELECT0:OnCollisionStay(UnityEngine.Collision):System.Void}
 using UnityEngine;
 

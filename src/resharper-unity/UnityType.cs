@@ -11,14 +11,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         private readonly IClrTypeName myTypeName;
 
-        public UnityType(IClrTypeName typeName, IEnumerable<UnityMessage> messages)
+        public UnityType(IClrTypeName typeName, IEnumerable<UnityEventFunction> eventFunctions)
         {
             myTypeName = typeName;
-            Messages = messages;
+            EventFunctions = eventFunctions;
         }
 
         [NotNull]
-        public IEnumerable<UnityMessage> Messages { get; }
+        public IEnumerable<UnityEventFunction> EventFunctions { get; }
 
         [CanBeNull]
         public ITypeElement GetType([NotNull] IPsiModule module)
@@ -27,9 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return type.GetTypeElement();
         }
 
-        public bool Contains([NotNull] IMethod method)
+        public bool HasEventFunction([NotNull] IMethod method)
         {
-            return Messages.Any(m => m.Match(method));
+            return EventFunctions.Any(m => m.Match(method));
         }
     }
 }

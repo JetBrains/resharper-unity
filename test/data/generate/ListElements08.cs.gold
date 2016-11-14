@@ -4,7 +4,7 @@
  2: OnDisable():System.Void
  3: OnEnable():System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 using UnityEditor;
 
 class A : Editor

@@ -10,29 +10,29 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
 {
-    public class UnityMessageQuickDocPresenter : IQuickDocPresenter
+    public class UnityEventFunctionQuickDocPresenter : IQuickDocPresenter
     {
-        private readonly UnityMessage myMessage;
+        private readonly UnityEventFunction myEventFunction;
         private readonly string myParameterName;
         private readonly QuickDocTypeMemberProvider myQuickDocTypeMemberProvider;
         private readonly ITheming myTheming;
         private readonly HelpSystem myHelpSystem;
         private readonly DeclaredElementEnvoy<IClrDeclaredElement> myEnvoy;
 
-        public UnityMessageQuickDocPresenter(UnityMessage message, IClrDeclaredElement element,
-                                             QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                             ITheming theming, HelpSystem helpSystem)
-            : this(message, null, element, quickDocTypeMemberProvider, theming, helpSystem)
+        public UnityEventFunctionQuickDocPresenter(UnityEventFunction eventFunction, IClrDeclaredElement element,
+                                                   QuickDocTypeMemberProvider quickDocTypeMemberProvider,
+                                                   ITheming theming, HelpSystem helpSystem)
+            : this(eventFunction, null, element, quickDocTypeMemberProvider, theming, helpSystem)
         {
             myQuickDocTypeMemberProvider = quickDocTypeMemberProvider;
         }
 
-        public UnityMessageQuickDocPresenter(UnityMessage message, string parameterName,
-                                             IClrDeclaredElement element,
-                                             QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                             ITheming theming, HelpSystem helpSystem)
+        public UnityEventFunctionQuickDocPresenter(UnityEventFunction eventFunction, string parameterName,
+                                                   IClrDeclaredElement element,
+                                                   QuickDocTypeMemberProvider quickDocTypeMemberProvider,
+                                                   ITheming theming, HelpSystem helpSystem)
         {
-            myMessage = message;
+            myEventFunction = eventFunction;
             myParameterName = parameterName;
             myQuickDocTypeMemberProvider = quickDocTypeMemberProvider;
             myTheming = theming;
@@ -68,9 +68,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
             if (xmlDocNode != null)
                 return xmlDocNode;
 
-            var description = myMessage.Description;
+            var description = myEventFunction.Description;
             if (!string.IsNullOrWhiteSpace(myParameterName))
-                description = myMessage.GetParameter(myParameterName)?.Description;
+                description = myEventFunction.GetParameter(myParameterName)?.Description;
 
             var details = CreateMemberElement(element);
             if (!string.IsNullOrWhiteSpace(description))
@@ -110,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
         {
             // Trying to navigate away. The id is the id of the thing we're
             // trying to navigate to. For us, we're navigating away from
-            // a Unity message or message parameter, and to a genuine type
+            // a Unity event function or parameter, and to a genuine type
             // or type member. The id will be the XML doc ID of the target
             // element and QuickDocTypeMemberProvider will handle it. We'll
             // never get one of our IDs, since we can't navigate to our
@@ -142,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
                 if (element != null)
                 {
                     // TODO: Is there a nice helper for this?
-                    var unityName = myMessage.TypeName + "." + element.ShortName;
+                    var unityName = myEventFunction.TypeName + "." + element.ShortName;
                     myHelpSystem.ShowHelp(unityName, HelpSystem.HelpKind.Msdn);
                 }
             }

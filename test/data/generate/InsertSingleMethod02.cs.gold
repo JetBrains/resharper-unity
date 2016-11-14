@@ -63,7 +63,7 @@
  61: Start():System.Void
  62: Update():System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 // ${SELECT0:OnSerializeNetworkView(UnityEngine.BitStream,UnityEngine.NetworkMessageInfo):System.Void}
 using UnityEngine;
 

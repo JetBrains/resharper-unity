@@ -20,6 +20,6 @@ public class A : MonoBehaviour
 (0): Unity Gutter Icon: This field is initialised by Unity
 (1): Unity Gutter Icon: This field is initialised by Unity
 (2): Unity Gutter Icon: This field is initialised by Unity
-(3): Unity Gutter Icon: Unity 3D Message
+(3): Unity Gutter Icon: Unity Event Function
 
 This function is called when the MonoBehaviour will be destroyed.

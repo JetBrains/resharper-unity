@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             var typeName = GetClrTypeName($"{ns}.{name}");
             var messageNodes = type.SelectNodes("message");
-            var messages = EmptyArray<UnityMessage>.Instance;
+            var messages = EmptyArray<UnityEventFunction>.Instance;
             if (messageNodes != null)
             {
                 messages = messageNodes.OfType<XmlNode>().Select(
@@ -66,13 +66,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return new UnityType(typeName, messages);
         }
 
-        private UnityMessage CreateUnityMessage(XmlNode node, string typeName)
+        private UnityEventFunction CreateUnityMessage(XmlNode node, string typeName)
         {
             var name = node.Attributes?["name"].Value ?? "Invalid";
             var description = node.Attributes?["description"]?.Value;
             var isStatic = bool.Parse(node.Attributes?["static"].Value ?? "false");
 
-            var parameters = EmptyArray<UnityMessageParameter>.Instance;
+            var parameters = EmptyArray<UnityEventFunctionParameter>.Instance;
 
             var parameterNodes = node.SelectNodes("parameters/parameter");
             if (parameterNodes != null)
@@ -90,10 +90,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 returnType = GetClrTypeName(type);
             }
 
-            return new UnityMessage(name, typeName, returnType, returnsArray, isStatic, description, parameters);
+            return new UnityEventFunction(name, typeName, returnType, returnsArray, isStatic, description, parameters);
         }
 
-        private UnityMessageParameter LoadParameter([NotNull] XmlNode node, int i)
+        private UnityEventFunctionParameter LoadParameter([NotNull] XmlNode node, int i)
         {
             var type = node.Attributes?["type"]?.Value;
             var name = node.Attributes?["name"].Value;
@@ -102,11 +102,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             if (type == null || name == null)
             {
-                return new UnityMessageParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, description, isArray);
+                return new UnityEventFunctionParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, description, isArray);
             }
 
             var parameterType = GetClrTypeName(type);
-            return new UnityMessageParameter(name, parameterType, description, isArray);
+            return new UnityEventFunctionParameter(name, parameterType, description, isArray);
         }
     }
 }

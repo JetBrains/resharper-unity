@@ -10,15 +10,15 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
-    public class UnityMessage
+    public class UnityEventFunction
     {
         private readonly bool myIsStatic;
         private readonly bool myReturnTypeIsArray;
         [NotNull] private readonly IClrTypeName myReturnType;
-        [NotNull] private readonly UnityMessageParameter[] myParameters;
+        [NotNull] private readonly UnityEventFunctionParameter[] myParameters;
 
-        public UnityMessage([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, string description,
-            [NotNull] params UnityMessageParameter[] parameters)
+        public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, string description,
+            [NotNull] params UnityEventFunctionParameter[] parameters)
         {
             Description = description;
             myIsStatic = isStatic;
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             TypeName = typeName;
             myReturnType = returnType;
             myReturnTypeIsArray = returnTypeIsArray;
-            myParameters = parameters.Length > 0 ? parameters : EmptyArray<UnityMessageParameter>.Instance;
+            myParameters = parameters.Length > 0 ? parameters : EmptyArray<UnityEventFunctionParameter>.Instance;
         }
 
         [NotNull] public string TypeName { get; }
@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [CanBeNull]
-        public UnityMessageParameter GetParameter(string name)
+        public UnityEventFunctionParameter GetParameter(string name)
         {
             return myParameters.FirstOrDefault(p => p.Name == name);
         }

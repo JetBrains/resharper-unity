@@ -11,7 +11,7 @@
  9: OnDisable():System.Void
  10: OnEnable():System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 using UnityEditor;
 
 class A : EditorWindow

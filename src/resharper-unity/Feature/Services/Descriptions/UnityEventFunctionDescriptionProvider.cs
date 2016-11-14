@@ -5,15 +5,15 @@ using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
 {
-    // Adds the description to the tooltip for a message and its parameters.
+    // Adds the description to the tooltip for an event function and its parameters.
     // Requires "Colour identifiers" and "Replace Visual Studio tooltips" to
     // be checked (or Enhanced Tooltip installed)
     [DeclaredElementDescriptionProvider]
-    public class UnityMessageDescriptionProvider : IDeclaredElementDescriptionProvider
+    public class UnityEventFunctionDescriptionProvider : IDeclaredElementDescriptionProvider
     {
         private readonly UnityApi myUnityApi;
 
-        public UnityMessageDescriptionProvider(UnityApi unityApi)
+        public UnityEventFunctionDescriptionProvider(UnityApi unityApi)
         {
             myUnityApi = unityApi;
         }
@@ -27,19 +27,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
             var method = element as IMethod;
             if (method != null)
             {
-                var message = myUnityApi.GetUnityMessage(method);
-                if (message?.Description != null)
-                    return new RichTextBlock(message.Description);
+                var eventFunction = myUnityApi.GetUnityEventFunction(method);
+                if (eventFunction?.Description != null)
+                    return new RichTextBlock(eventFunction.Description);
             }
 
             var parameter = element as IParameter;
             var owner = parameter?.ContainingParametersOwner as IMethod;
             if (owner != null)
             {
-                var message = myUnityApi.GetUnityMessage(owner);
-                var messageParameter = message?.GetParameter(parameter.ShortName);
-                if (messageParameter?.Description != null)
-                    return new RichTextBlock(messageParameter.Description);
+                var eventFunction = myUnityApi.GetUnityEventFunction(owner);
+                var eventFunctionParameter = eventFunction?.GetParameter(parameter.ShortName);
+                if (eventFunctionParameter?.Description != null)
+                    return new RichTextBlock(eventFunctionParameter.Description);
             }
 
             return null;

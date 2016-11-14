@@ -8,7 +8,7 @@
  6: OnSerializeNetworkView(UnityEngine.BitStream,UnityEngine.NetworkMessageInfo):System.Void
  7: OnServerInitialized():System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 using UnityEngine;
 
 class A : Network

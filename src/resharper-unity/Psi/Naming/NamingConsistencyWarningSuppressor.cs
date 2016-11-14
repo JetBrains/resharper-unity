@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Naming
             if (method != null)
             {
                 var unityApi = method.GetSolution().GetComponent<UnityApi>();
-                isFinalResult = unityApi.IsUnityMessage(method);
+                isFinalResult = unityApi.IsEventFunction(method);
             }
 
             result = isFinalResult ? NamingConsistencyCheckResult.OK : null;

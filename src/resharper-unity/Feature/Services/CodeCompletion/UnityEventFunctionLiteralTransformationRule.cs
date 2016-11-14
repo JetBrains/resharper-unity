@@ -15,8 +15,9 @@ using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 {
+    // Removes everything apart from name from completion items for event functions in string literals
     [Language(typeof(CSharpLanguage))]
-    public class UnityMessageLiteralTransformationRule : ItemsProviderOfSpecificContext<CSharpCodeCompletionContext>
+    public class UnityEventFunctionLiteralTransformationRule : ItemsProviderOfSpecificContext<CSharpCodeCompletionContext>
     {
         protected override bool IsAvailable(CSharpCodeCompletionContext context)
         {
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 
         private bool IsApplicable(IReference reference)
         {
-            return reference is IUnityMessageReference;
+            return reference is IUnityEventFunctionReference;
         }
 
         protected override AutocompletionBehaviour GetAutocompletionBehaviour(CSharpCodeCompletionContext specificContext)

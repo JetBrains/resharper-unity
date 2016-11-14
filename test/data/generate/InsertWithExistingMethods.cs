@@ -1,4 +1,4 @@
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 // ${SELECT0:OnCollisionStay(UnityEngine.Collision):System.Void}
 using UnityEngine;
 

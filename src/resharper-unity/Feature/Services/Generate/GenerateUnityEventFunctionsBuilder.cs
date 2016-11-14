@@ -10,12 +10,12 @@ using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 {
-    [GeneratorBuilder(GeneratorUnityKinds.UnityMessages, typeof (CSharpLanguage))]
-    public class GenerateUnityMessagesBuilder : GeneratorBuilderBase<CSharpGeneratorContext>
+    [GeneratorBuilder(GeneratorUnityKinds.UnityEventFunctions, typeof (CSharpLanguage))]
+    public class GenerateUnityEventFunctionsBuilder : GeneratorBuilderBase<CSharpGeneratorContext>
     {
         private readonly UnityApi myUnityApi;
 
-        public GenerateUnityMessagesBuilder(UnityApi unityApi)
+        public GenerateUnityEventFunctionsBuilder(UnityApi unityApi)
         {
             myUnityApi = unityApi;
         }

@@ -6,7 +6,7 @@
  4: OnTriggerExit(UnityEngine.Collider):System.Void
  5: OnTriggerStay(UnityEngine.Collider):System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 using UnityEngine;
 
 class A : Collider

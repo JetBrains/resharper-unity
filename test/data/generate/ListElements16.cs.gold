@@ -3,7 +3,7 @@
  1: OnCollisionExit(UnityEngine.Collision):System.Void
  2: OnCollisionStay(UnityEngine.Collision):System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 using UnityEngine;
 
 class A : Rigidbody

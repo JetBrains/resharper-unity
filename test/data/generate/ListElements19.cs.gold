@@ -8,7 +8,7 @@
  6: OnStateMove(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
  7: OnStateUpdate(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 using UnityEngine;
 
 class A : StateMachineBehaviour

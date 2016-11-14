@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.QuickDoc
 {
     [TestUnity]
-    public class UnityMessageQuickDocTest : QuickDocTestBase
+    public class UnityEventFunctionQuickDocTest : QuickDocTestBase
     {
         protected override string RelativeTestDataPath => @"quickDoc";
 
@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.QuickDoc
         {
         }
 
-        [Test] public void MessageQuickDoc() { DoNamedTest(); }
+        [Test] public void EventFunctionQuickDoc() { DoNamedTest(); }
         [Test] public void ParameterQuickDoc() { DoNamedTest(); }
         [Test] public void XmlDocOverrides() { DoNamedTest(); }
     }

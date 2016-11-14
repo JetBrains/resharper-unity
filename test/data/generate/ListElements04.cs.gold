@@ -6,7 +6,7 @@
  4: OnRenderObject():System.Void
  5: OnWillRenderObject():System.Void
 
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 using UnityEngine;
 
 class A : Camera

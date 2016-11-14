@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletion
 {
     [TestUnity]
-    public class UnityMessageCompletionActionTest : CodeCompletionTestBase
+    public class UnityEventFunctionCompletionActionTest : CodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.Action;
         protected override string RelativeTestDataPath => @"codeCompletion\Action";

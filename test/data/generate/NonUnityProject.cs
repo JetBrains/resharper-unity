@@ -1,4 +1,4 @@
-// ${KIND:Unity.Messages}
+// ${KIND:Unity.EventFunctions}
 class A
 {
   {caret}

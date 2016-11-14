@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Resolve
 
         protected override bool AcceptReference(IReference reference)
         {
-            return reference is IUnityMessageReference;
+            return reference is IUnityEventFunctionReference;
         }
 
         [Test] public void Invoke01() { DoNamedTest(); }
