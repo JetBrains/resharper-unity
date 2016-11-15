@@ -1,0 +1,61 @@
+﻿using UnityEngine;
+
+namespace UnityTest
+{
+  public class Class1
+  {
+    public Class1()
+    {
+      var c1 = new Color(|1, 0, 0|(0));
+      var c2 = new Color(|0, 1, 1, 05.f|(1));
+      var c3 = new Color(10, 20, -2);
+
+      var c4 = Color.|red|(2);
+      var c5 = Color.|green|(3);
+
+      var c6 = new Color(1, 0, 0, 0, 0);
+      var c7 = new Color(|0x1 / 2.0f, 0.5f, 0.1f|(4));
+
+      var c8 = Color.HSVToRGB(|0, 1, 1|(5)); // Red
+      var c9 = Color.HSVToRGB(|0.333f, 1, 1|(6)); // Green
+      var c10 = Color.HSVToRGB(|0.667f, 1, 1|(7)); // Blue
+      var c11 = Color.HSVToRGB(|0.17f, 0, 0.50f|(8)); // 127 127 127
+
+      var c12 = Color.HSVToRGB(|0, 1, 1, false|(9));
+
+      var c13 = Color.HSVToRGB(0, 1, 1, 1, 1);
+    }
+  }
+}
+
+---------------------------------------------------------
+(0): : (T) '|   | 
+ARGB:  255, 255, 0, 0
+HEX:  FF, FF, 0, 0' (E) ''
+(1): : (T) '|   | 
+ARGB:  255, 0, 255, 255
+HEX:  FF, 0, FF, FF' (E) ''
+(2): : (T) '|   | red
+ARGB:  255, 255, 0, 0
+HEX:  FF, FF, 0, 0' (E) ''
+(3): : (T) '|   | green
+ARGB:  255, 0, 255, 0
+HEX:  FF, 0, FF, 0' (E) ''
+(4): : (T) '|   | 
+ARGB:  255, 127, 127, 25
+HEX:  FF, 7F, 7F, 19' (E) ''
+(5): : (T) '|   | 
+ARGB:  255, 255, 0, 0
+HEX:  FF, FF, 0, 0' (E) ''
+(6): : (T) '|   | 
+ARGB:  255, 0, 255, 0
+HEX:  FF, 0, FF, 0' (E) ''
+(7): : (T) '|   | 
+ARGB:  255, 0, 0, 255
+HEX:  FF, 0, 0, FF' (E) ''
+(8): : (T) '|   | 
+ARGB:  255, 127, 127, 127
+HEX:  FF, 7F, 7F, 7F' (E) ''
+(9): : (T) '|   | 
+ARGB:  255, 255, 0, 0
+HEX:  FF, FF, 0, 0' (E) ''

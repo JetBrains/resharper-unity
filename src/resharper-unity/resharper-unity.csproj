@@ -248,6 +248,7 @@
     <Reference Include="System.Collections.Concurrent" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Globalization" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IO.Compression" />
@@ -290,6 +291,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiXml.cs" />
+    <Compile Include="Daemon\Highlighting\ColorUtils.cs" />
     <Compile Include="Daemon\Highlighting\UnityFieldDetector.cs" />
     <Compile Include="Daemon\Highlighting\UnityEventFunctionDetector.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
@@ -311,6 +313,11 @@
     <Compile Include="Help\ShowUnityHelp.cs" />
     <Compile Include="ProjectExtensions.cs" />
     <Compile Include="ProjectModel\Caches\LangVersionCacheProvider.cs" />
+    <Compile Include="Psi\Colors\ColorPropertyPsiIconManagerExtension.cs" />
+    <Compile Include="Daemon\Highlighting\UnityColorHighlighterProcess.cs" />
+    <Compile Include="Psi\Colors\UnityColorReference.cs" />
+    <Compile Include="Psi\Colors\UnityColorTypes.cs" />
+    <Compile Include="Psi\Colors\UnityNamedColors.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReference.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceFactory.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceProviderFactory.cs" />

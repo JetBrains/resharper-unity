@@ -1,0 +1,19 @@
+﻿using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
+using JetBrains.ReSharper.Intentions.QuickFixes;
+using NUnit.Framework;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
+{
+    [Category("ColorHighlighting")]
+    [TestUnity]
+    public class ColorPickerTest : CSharpQuickFixTestBase<ColorPickerQuickFix>
+    {
+        protected override string RelativeTestDataPath => @"intentions\QuickFixes\ColorPicker";
+
+        [Test] public void TestChangeToNamedColor() { DoNamedTest2(); }
+        [Test] public void TestChangeToColorConstructor() { DoNamedTest2(); }
+        [Test] public void TestChangeToColorConstructor2() { DoNamedTest2(); }
+        [Test] public void TestChangeToColorConstructor3() { DoNamedTest2(); }
+        [Test] public void TestChangeExistingHSV() { DoNamedTest2(); }
+    }
+}

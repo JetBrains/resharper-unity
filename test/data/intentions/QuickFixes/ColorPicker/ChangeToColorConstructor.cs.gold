@@ -1,0 +1,12 @@
+﻿using UnityEngine;
+
+namespace UnityTest
+{
+  public class Class1
+  {
+    public Class1()
+    {
+      var c = new Color(0f, 1f, 1f, 0f){caret};
+    }
+  }
+}
