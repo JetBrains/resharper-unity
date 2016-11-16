@@ -283,13 +283,15 @@
     <Compile Include="TestUnityAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.csproj">
       <Project>{53b6ab4e-638a-4576-abc4-46672dd7eea1}</Project>
       <Name>resharper-unity</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.tests.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\src\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets" Condition="Exists('..\..\src\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets')" />
