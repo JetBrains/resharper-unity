@@ -109,6 +109,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
             var module = myOwningExpression.GetPsiModule();
             var unityColorTypes = UnityColorTypes.GetInstance(module);
 
+            var requiresAlpha = newColor.A != byte.MaxValue;
+
             ConstantValue r, g, b, a;
             if (unityColorTypes.UnityColorType != null && unityColorTypes.UnityColorType.Equals(colorType))
             {
@@ -125,12 +127,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
                 g = new ConstantValue((int)newColor.G, module);
                 b = new ConstantValue((int)newColor.B, module);
                 a = new ConstantValue((int)newColor.A, module);
+
+                requiresAlpha = true;
             }
             else
                 return;
 
             ICSharpExpression newExp;
-            if (newColor.A == byte.MaxValue)
+            if (!requiresAlpha)
             {
                 newExp = elementFactory
                     .CreateExpression("new $0($1, $2, $3)", colorType,
