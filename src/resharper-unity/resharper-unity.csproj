@@ -333,7 +333,7 @@
     <Compile Include="ZoneMarker.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
+    <None Include="packages.resharper-unity.config">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
