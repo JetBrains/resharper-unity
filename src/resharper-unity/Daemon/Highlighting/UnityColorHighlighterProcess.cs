@@ -92,18 +92,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
             var constructedType = constructorExpression.TypeReference?.Resolve().DeclaredElement as ITypeElement;
             if (constructedType == null) return null;
 
-            if (!IsUnityColorType(constructedType)) return null;
+            var unityColorTypes = UnityColorTypes.GetInstance(constructedType.Module);
+            if (!unityColorTypes.IsUnityColorType(constructedType)) return null;
 
             var arguments = constructorExpression.Arguments;
             if (arguments.Count < 3 || arguments.Count > 4) return null;
 
-            var baseColor = GetColorFromARGB(arguments);
-            if (baseColor == null) return null;
+            Color? color = null;
+            if (unityColorTypes.UnityColorType != null && unityColorTypes.UnityColorType.Equals(constructedType))
+            {
+                var baseColor = GetColorFromFloatARGB(arguments);
+                if (baseColor == null) return null;
 
-            var color = baseColor.Item2;
-            if (baseColor.Item1.HasValue)
-                color = Color.FromArgb((int) (255.0 * baseColor.Item1.Value), baseColor.Item2);
-            var colorElement = new ColorElement(color);
+                color = baseColor.Item1.HasValue
+                    ? Color.FromArgb((int) (255.0 * baseColor.Item1.Value), baseColor.Item2)
+                    : baseColor.Item2;
+            }
+            else if (unityColorTypes.UnityColor32Type != null && unityColorTypes.UnityColor32Type.Equals(constructedType))
+            {
+                var baseColor = GetColorFromIntARGB(arguments);
+                if (baseColor == null) return null;
+
+                color = baseColor.Item1.HasValue
+                    ? Color.FromArgb(baseColor.Item1.Value, baseColor.Item2)
+                    : baseColor.Item2;
+            }
+
+            if (color == null) return null;
+
+            var colorElement = new ColorElement(color.Value);
             var argumentList = constructorExpression.ArgumentList;
             return new UnityColorReference(colorElement, constructorExpression, argumentList, argumentList.GetDocumentRange());
         }
@@ -131,7 +148,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
             var qualifierType = qualifier.Reference.Resolve().DeclaredElement as ITypeElement;
             if (qualifierType == null) return null;
 
-            if (!IsUnityColorType(qualifierType)) return null;
+            var unityColorTypes = UnityColorTypes.GetInstance(qualifierType.Module);
+            if (!unityColorTypes.IsUnityColorTypeSupportingHSV(qualifierType)) return null;
 
             var colorElement = new ColorElement(color.Value);
             var argumentList = invocationExpression.ArgumentList;
@@ -150,7 +168,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
             var qualifierType = qualifier.Reference.Resolve().DeclaredElement as ITypeElement;
             if (qualifierType == null) return null;
 
-            if (!IsUnityColorType(qualifierType)) return null;
+            var unityColorTypes = UnityColorTypes.GetInstance(qualifierType.Module);
+            if (!unityColorTypes.IsUnityColorTypeSupportingProperties(qualifierType)) return null;
 
             var property = colorQualifiedMemberExpression.Reference.Resolve().DeclaredElement as IProperty;
             if (property == null) return null;
@@ -160,12 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
                  colorQualifiedMemberExpression, colorQualifiedMemberExpression.NameIdentifier.GetDocumentRange());
         }
 
-        private static bool IsUnityColorType(ITypeElement typeElement)
-        {
-            return UnityColorTypes.GetInstance(typeElement.Module).IsUnityColorType(typeElement);
-        }
-
-        private static Tuple<float?, Color> GetColorFromARGB(ICollection<ICSharpArgument> arguments)
+        private static Tuple<float?, Color> GetColorFromFloatARGB(ICollection<ICSharpArgument> arguments)
         {
             var a = GetArgumentAsFloatConstant(arguments, "a", 0, 1);
             var r = GetArgumentAsFloatConstant(arguments, "r", 0, 1);
@@ -176,6 +190,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
                 return null;
 
             return Tuple.Create(a, Color.FromArgb((int)(255.0 * r.Value), (int)(255.0 * g.Value), (int)(255.0 * b.Value)));
+        }
+
+        private static Tuple<int?, Color> GetColorFromIntARGB(ICollection<ICSharpArgument> arguments)
+        {
+            var a = GetArgumentAsIntConstant(arguments, "a", 0, 255);
+            var r = GetArgumentAsIntConstant(arguments, "r", 0, 255);
+            var g = GetArgumentAsIntConstant(arguments, "g", 0, 255);
+            var b = GetArgumentAsIntConstant(arguments, "b", 0, 255);
+
+            if (!r.HasValue || !g.HasValue || !b.HasValue)
+                return null;
+
+            return Tuple.Create(a, Color.FromArgb(r.Value, g.Value, b.Value));
         }
 
         private static Color? GetColorFromHSV(ICollection<ICSharpArgument> arguments)
@@ -225,6 +252,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
                 return null;
 
             return (float) value.Value;
+        }
+
+        private static int? GetArgumentAsIntConstant(IEnumerable<ICSharpArgument> arguments, string parameterName,
+            int min, int max)
+        {
+            var namedArgument = GetNamedArgument(arguments, parameterName);
+            if (namedArgument == null) return null;
+
+            var matchingParameter = namedArgument.MatchingParameter.NotNull("matchingParameter != null");
+            var paramType = matchingParameter.Element.Type;
+
+            var expression = namedArgument.Expression;
+            if (expression == null) return null;
+
+            var constantValue = expression.ConstantValue;
+            if (constantValue.IsBadValue()) return null;
+
+            var conversionRule = namedArgument.GetTypeConversionRule();
+            if (!expression.GetExpressionType().IsImplicitlyConvertibleTo(paramType, conversionRule))
+            {
+                return null;
+            }
+
+            int? value = null;
+            try
+            {
+                value = Convert.ToInt32(constantValue.Value, CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            if (value == null || value.Value.Clamp(min, max) != value.Value)
+                return null;
+
+            return value.Value;
         }
 
         private static ICSharpArgument GetNamedArgument(IEnumerable<ICSharpArgument> arguments, string parameterName)

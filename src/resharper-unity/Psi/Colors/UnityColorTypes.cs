@@ -14,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
     {
         private static readonly Key<UnityColorTypes> ourColorTypesKey = new Key<UnityColorTypes>("UnityColorTypes");
         private static readonly IClrTypeName UnityColorTypeName = new ClrTypeName("UnityEngine.Color");
+        private static readonly IClrTypeName UnityColor32TypeName = new ClrTypeName("UnityEngine.Color32");
 
         public static UnityColorTypes GetInstance(IPsiModule module)
         {
@@ -32,11 +33,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
             var cache = module.GetPsiServices().Symbols.GetSymbolScope(module, true, true);
 
             UnityColorType = cache.GetTypeElementByCLRName(UnityColorTypeName);
+            UnityColor32Type = cache.GetTypeElementByCLRName(UnityColor32TypeName);
         }
 
         [CanBeNull] public ITypeElement UnityColorType { get; }
+        [CanBeNull] public ITypeElement UnityColor32Type { get; }
 
         public bool IsUnityColorType([CanBeNull] ITypeElement typeElement)
+        {
+            return (UnityColorType != null && UnityColorType.Equals(typeElement))
+                || (UnityColor32Type != null && UnityColor32Type.Equals(typeElement));
+        }
+
+        public bool IsUnityColorTypeSupportingProperties([CanBeNull] ITypeElement typeElement)
+        {
+            return UnityColorType != null && UnityColorType.Equals(typeElement);
+        }
+
+        public bool IsUnityColorTypeSupportingHSV([CanBeNull] ITypeElement typeElement)
         {
             return UnityColorType != null && UnityColorType.Equals(typeElement);
         }
@@ -46,22 +60,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
             if (typeMember is IProperty && typeMember.IsStatic)
             {
                 var unityColorTypes = GetInstance(typeMember.Module);
-                return unityColorTypes.IsUnityColorType(typeMember.GetContainingType())
+                return unityColorTypes.IsUnityColorTypeSupportingProperties(typeMember.GetContainingType())
                        && UnityNamedColors.Get(typeMember.ShortName).HasValue;
             }
 
             return false;
         }
 
-        public static Pair<ITypeElement, ITypeMember>? PropertyFromColorElement(IColorElement colorElement,
-            IPsiModule module)
+        public static Pair<ITypeElement, ITypeMember>? PropertyFromColorElement(ITypeElement qualifierType, IColorElement colorElement, IPsiModule module)
         {
             var colorName = UnityNamedColors.GetColorName(colorElement.RGBColor);
             if (string.IsNullOrEmpty(colorName))
                 return null;
 
             var unityColorType = GetInstance(module).UnityColorType;
-            if (unityColorType == null) return null;
+            if (unityColorType == null || !unityColorType.Equals(qualifierType)) return null;
 
             var colorProperties = GetStaticColorProperties(unityColorType);
             var propertyTypeMember = colorProperties.FirstOrDefault(p => p.ShortName == colorName);

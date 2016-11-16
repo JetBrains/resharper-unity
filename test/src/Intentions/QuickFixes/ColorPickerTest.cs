@@ -15,5 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
         [Test] public void TestChangeToColorConstructor2() { DoNamedTest2(); }
         [Test] public void TestChangeToColorConstructor3() { DoNamedTest2(); }
         [Test] public void TestChangeExistingHSV() { DoNamedTest2(); }
+
+        [Test] public void TestChangeToColor32Constructor() { DoNamedTest2(); }
+        [Test] public void TestChangeToColor32Constructor2() { DoNamedTest2(); }
     }
 }

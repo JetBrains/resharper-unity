@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
             Owner = owner;
             ColorConstantRange = colorConstantRange;
 
-            BindOptions = new ColorBindOptions()
+            BindOptions = new ColorBindOptions
             {
                 BindsToName = true,
                 BindsToValue = true
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
 
         public void Bind(IColorElement colorElement)
         {
-            if (TryReplaceAsNamed(colorElement))
+            if (TryReplaceAsNamedColor(colorElement))
                 return;
 
             if (TryReplaceAsHSV(colorElement))
@@ -50,9 +50,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
         public IColorElement ColorElement { get; }
         public ColorBindOptions BindOptions { get; }
 
-        private bool TryReplaceAsNamed(IColorElement colorElement)
+        private bool TryReplaceAsNamedColor(IColorElement colorElement)
         {
-            var newColor = UnityColorTypes.PropertyFromColorElement(colorElement, myOwningExpression.GetPsiModule());
+            var colorType = GetColorType();
+
+            var newColor = UnityColorTypes.PropertyFromColorElement(colorType, colorElement,
+                myOwningExpression.GetPsiModule());
             if (newColor == null) return false;
 
             var newExp = CSharpElementFactory.GetInstance(Owner)
@@ -66,8 +69,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
         {
             // Only do this if we've already got a call to HSVToRGB
             var invocationExpression = myOwningExpression as IInvocationExpression;
-            if (invocationExpression == null || invocationExpression.Arguments.Count < 3)
+            if (invocationExpression == null || invocationExpression.Reference?.GetName() != "HSVToRGB" ||
+                invocationExpression.Arguments.Count < 3)
+            {
                 return false;
+            }
 
             var newColor = colorElement.RGBColor;
             float h, s, v;
@@ -96,38 +102,69 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
             // TODO: Perhaps we should try and update an existing constructor?
             var newColor = colorElement.RGBColor;
 
-            var module = myOwningExpression.GetPsiModule();
-            var unityColorType = UnityColorTypes.GetInstance(module).UnityColorType;
+            var colorType = GetColorType();
+            if (colorType == null) return;
 
             var elementFactory = CSharpElementFactory.GetInstance(Owner);
+            var module = myOwningExpression.GetPsiModule();
+            var unityColorTypes = UnityColorTypes.GetInstance(module);
 
-            // Round to 2 decimal places, to match the values shown in the colour palette quick fix
-            var r = (float) Math.Round(newColor.R / 255.0, 2);
-            var g = (float) Math.Round(newColor.G / 255.0, 2);
-            var b = (float) Math.Round(newColor.B / 255.0, 2);
-            var a = (float) Math.Round(newColor.A / 255.0, 2);
+            ConstantValue r, g, b, a;
+            if (unityColorTypes.UnityColorType != null && unityColorTypes.UnityColorType.Equals(colorType))
+            {
+                // Round to 2 decimal places, to match the values shown in the colour palette quick fix
+                r = new ConstantValue((float) Math.Round(newColor.R / 255.0, 2), module);
+                g = new ConstantValue((float) Math.Round(newColor.G / 255.0, 2), module);
+                b = new ConstantValue((float) Math.Round(newColor.B / 255.0, 2), module);
+                a = new ConstantValue((float) Math.Round(newColor.A / 255.0, 2), module);
+            }
+            else if (unityColorTypes.UnityColor32Type != null && unityColorTypes.UnityColor32Type.Equals(colorType))
+            {
+                // ReSharper formats byte constants with an explicit cast
+                r = new ConstantValue((int)newColor.R, module);
+                g = new ConstantValue((int)newColor.G, module);
+                b = new ConstantValue((int)newColor.B, module);
+                a = new ConstantValue((int)newColor.A, module);
+            }
+            else
+                return;
 
             ICSharpExpression newExp;
             if (newColor.A == byte.MaxValue)
             {
                 newExp = elementFactory
-                    .CreateExpression("new $0($1, $2, $3)", unityColorType,
-                        elementFactory.CreateExpressionByConstantValue(new ConstantValue(r, module)),
-                        elementFactory.CreateExpressionByConstantValue(new ConstantValue(g, module)),
-                        elementFactory.CreateExpressionByConstantValue(new ConstantValue(b, module)));
+                    .CreateExpression("new $0($1, $2, $3)", colorType,
+                        elementFactory.CreateExpressionByConstantValue(r),
+                        elementFactory.CreateExpressionByConstantValue(g),
+                        elementFactory.CreateExpressionByConstantValue(b));
             }
             else
             {
                 newExp = elementFactory
-                    .CreateExpression("new $0($1, $2, $3, $4)", unityColorType,
-                        elementFactory.CreateExpressionByConstantValue(new ConstantValue(r, module)),
-                        elementFactory.CreateExpressionByConstantValue(new ConstantValue(g, module)),
-                        elementFactory.CreateExpressionByConstantValue(new ConstantValue(b, module)),
-                        elementFactory.CreateExpressionByConstantValue(new ConstantValue(a, module)));
+                    .CreateExpression("new $0($1, $2, $3, $4)", colorType,
+                        elementFactory.CreateExpressionByConstantValue(r),
+                        elementFactory.CreateExpressionByConstantValue(g),
+                        elementFactory.CreateExpressionByConstantValue(b),
+                        elementFactory.CreateExpressionByConstantValue(a));
             }
 
-            var oldExp = myOwningExpression as ICSharpExpression;
-            oldExp?.ReplaceBy(newExp);
+            var oldExp = (ICSharpExpression) myOwningExpression;
+            oldExp.ReplaceBy(newExp);
+        }
+
+        private ITypeElement GetColorType()
+        {
+            var referenceExpression = myOwningExpression as IReferenceExpression;
+            var qualifier = referenceExpression?.QualifierExpression as IReferenceExpression;
+            if (qualifier != null)
+                return qualifier.Reference.Resolve().DeclaredElement as ITypeElement;
+
+            var invocationExpression = myOwningExpression as IInvocationExpression;
+            if (invocationExpression != null)
+                return invocationExpression.Reference?.Resolve().DeclaredElement as ITypeElement;
+
+            var objectCreationExpression = myOwningExpression as IObjectCreationExpression;
+            return objectCreationExpression?.TypeReference?.Resolve().DeclaredElement as ITypeElement;
         }
     }
 }

@@ -18,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Highlighting
             return highlighting is ColorHighlighting;
         }
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test] public void TestColor() { DoNamedTest2(); }
+        [Test] public void TestColor32() { DoNamedTest2(); }
     }
 }
