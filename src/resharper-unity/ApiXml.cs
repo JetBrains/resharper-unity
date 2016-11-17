@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (messageNodes != null)
             {
                 messages = messageNodes.OfType<XmlNode>().Select(
-                    node => CreateUnityMessage(node, typeName.GetFullNameFast())).ToArray();
+                    node => CreateUnityMessage(node, typeName.GetFullNameFast())).OrderBy(m => m.Name).ToArray();
             }
 
             return new UnityType(typeName, messages);
@@ -70,7 +70,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             var name = node.Attributes?["name"].Value ?? "Invalid";
             var description = node.Attributes?["description"]?.Value;
-            var isStatic = bool.Parse(node.Attributes?["static"].Value ?? "false");
+            var isStatic = bool.Parse(node.Attributes?["static"]?.Value ?? "false");
+            var isUndocumented = bool.Parse(node.Attributes?["undocumented"]?.Value ?? "false");
 
             var parameters = EmptyArray<UnityEventFunctionParameter>.Instance;
 
@@ -90,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 returnType = GetClrTypeName(type);
             }
 
-            return new UnityEventFunction(name, typeName, returnType, returnsArray, isStatic, description, parameters);
+            return new UnityEventFunction(name, typeName, returnType, returnsArray, isStatic, description, isUndocumented, parameters);
         }
 
         private UnityEventFunctionParameter LoadParameter([NotNull] XmlNode node, int i)

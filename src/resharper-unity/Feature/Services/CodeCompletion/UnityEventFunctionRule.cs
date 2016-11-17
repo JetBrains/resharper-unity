@@ -106,6 +106,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                     item = CombineLookupItems(context.BasicContext, context.CompletionRanges, items, item);
 
                     item.Placement.Relevance |= (long) CLRLookupItemRelevance.GenerateItems;
+                    if (eventFunction.Undocumented)
+                        item.Placement.Location = PlacementLocation.Bottom;
 
                     collector.Add(item);
                 }

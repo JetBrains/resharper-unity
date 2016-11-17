@@ -17,10 +17,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull] private readonly IClrTypeName myReturnType;
         [NotNull] private readonly UnityEventFunctionParameter[] myParameters;
 
-        public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, string description,
+        public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType,
+            bool returnTypeIsArray, bool isStatic, string description, bool undocumented,
             [NotNull] params UnityEventFunctionParameter[] parameters)
         {
             Description = description;
+            Undocumented = undocumented;
             myIsStatic = isStatic;
             Name = name;
             TypeName = typeName;
@@ -32,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull] public string TypeName { get; }
         [NotNull] public string Name { get; }
         [CanBeNull] public string Description { get; }
+        public bool Undocumented { get; }
 
         [NotNull]
         public IMethodDeclaration CreateDeclaration([NotNull] CSharpElementFactory factory, [NotNull] IClassLikeDeclaration classDeclaration)
