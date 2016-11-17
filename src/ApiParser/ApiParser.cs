@@ -12,19 +12,20 @@ namespace ApiParser
     {
         private static readonly Regex NsRegex = new Regex(@"^(class|struct) in\W*(\w+(?:\.\w+)*)$");
         private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$");
-        private readonly ApiWriter api = new ApiWriter();
         private readonly string rootPath;
+        [NotNull] private readonly UnityApi api;
 
-        public ApiParser([NotNull] string path)
+        public ApiParser([NotNull] string path, [NotNull] UnityApi api)
         {
             rootPath = path;
+            this.api = api;
         }
 
         public event EventHandler<ProgressEventArgs> Progress;
 
-        public void ExportTo(XmlWriter writer)
+        public void ExportTo(XmlTextWriter writer)
         {
-            api.WriteTo(writer);
+            api.ExportTo(writer);
         }
 
         public void ParseFolder()
@@ -36,18 +37,8 @@ namespace ApiParser
                 ParseFile(files[i]);
                 OnProgress(new ProgressEventArgs(i + 1, files.Length));
             }
-        }
 
-        private static void ParseMessageParameters([NotNull] IEnumerable<Argument> arguments,
-            [NotNull] IReadOnlyList<ApiNode> parameters)
-        {
-            var i = 0;
-            foreach (var argument in arguments)
-            {
-                argument.Name = parameters[i]?[1]?.Text ?? argument.Name;
-                argument.Description = parameters[i]?[3]?.Text ?? argument.Description;
-                ++i;
-            }
+            Console.WriteLine();
         }
 
         [CanBeNull]
@@ -61,66 +52,6 @@ namespace ApiParser
         private static ApiNode PickExample([NotNull] ApiNode details)
         {
             return PickExample(details, "Raw") ?? PickExample(details, "JS") ?? PickExample(details, "CS");
-        }
-
-        private static void ParseMessageExample(string messageName, IReadOnlyList<Argument> arguments,
-            ApiNode example, ref ApiType type)
-        {
-            var blankCleanup1 = new Regex(@"\s+");
-            var blankCleanup2 = new Regex(@"\s*(\W)\s*");
-
-            var exampleText = example.Text;
-            exampleText = blankCleanup1.Replace(exampleText, " ");
-            exampleText = blankCleanup2.Replace(exampleText, "$1");
-
-            var jsRegex = new Regex($@"(?:\W|^)function {messageName}\(([^)]*)\)(?::(\w+))?\{{");
-            var m = jsRegex.Match(exampleText);
-            if (m.Success)
-            {
-                type = new ApiType(m.Groups[2].Value);
-                var parameters = m.Groups[1].Value.Split(',');
-
-                for (var i = 0; i < arguments.Count; ++i)
-                {
-                    arguments[i].Name = parameters[i].Split(':')[0];
-                }
-
-                return;
-            }
-
-            var csRegex = new Regex($@"(\w+) {messageName}\(([^)]*)\)");
-            m = csRegex.Match(exampleText);
-            if (m.Success)
-            {
-                var nameRegex = new Regex(@"\W(\w+)$");
-
-                type = new ApiType(m.Groups[1].Value);
-                var parameters = m.Groups[2].Value.Split(',');
-                for (var i = 0; i < arguments.Count; ++i)
-                {
-                    arguments[i].Name = nameRegex.Replace(parameters[i], "$1");
-                }
-
-                return;
-            }
-
-            Console.WriteLine(exampleText);
-        }
-
-        private static void ResolveArguments([NotNull] string message, [NotNull] ApiNode details,
-            [NotNull] IReadOnlyList<Argument> arguments, [NotNull] ref ApiType type)
-        {
-            var parameters = details.Subsection("Parameters").ToArray();
-            if (parameters.Any())
-            {
-                ParseMessageParameters(arguments, parameters);
-                return;
-            }
-
-            var example = PickExample(details);
-            if (example == null) return;
-
-            ParseMessageExample(message, arguments, example, ref type);
         }
 
         private void OnProgress([NotNull] ProgressEventArgs e)
@@ -140,66 +71,55 @@ namespace ApiParser
             var messages = section.Subsection("Messages").ToArray();
             if (messages.Length == 0) return;
 
-            api.Enter("type");
-
             var clsType = NsRegex.Replace(ns.Text, "$1");
-            api.SetAttribute("kind", clsType);
-            api.SetAttribute("name", cls.Text);
-
             var nsName = NsRegex.Replace(ns.Text, "$2");
-            api.SetAttribute(@"ns", nsName);
-
-            var hostType = new ApiType(string.Concat(nsName, ".", cls.Text));
-
-            api.SetAttribute("path", new Uri(filename).AbsoluteUri);
+            var unityApiType = api.AddType(nsName, cls.Text, clsType, new Uri(filename).AbsoluteUri);
 
             foreach (var message in messages)
-            {
-                string detailsPath;
-                ApiType type;
-                if (!ParseMessage(message, out detailsPath, out type)) continue;
-
-                api.LeaveTo("message");
-                api.SetAttribute("path", new Uri(detailsPath).AbsoluteUri);
-
-                api.Enter("returns");
-                api.SetAttribute("type", type.FullName);
-                api.SetAttribute("array", type.IsArray);
-            }
+                ParseMessage(message, unityApiType);
         }
 
-        private bool ParseMessage([NotNull] ApiNode message, out string path, out ApiType type)
+        private void ParseMessage([NotNull] ApiNode message, UnityApiType unityApiType)
         {
-            path = string.Empty;
-            type = new ApiType("void");
-
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
-            if (link == null || desc == null) return false;
+            if (link == null || desc == null) return;
 
             var detailsPath = link[@"href"];
-            if (string.IsNullOrWhiteSpace(detailsPath)) return false;
+            if (string.IsNullOrWhiteSpace(detailsPath)) return;
 
-            path = Path.Combine(rootPath, detailsPath);
-            if (!File.Exists(path)) return false;
+            var path = Path.Combine(rootPath, detailsPath);
+            if (!File.Exists(path)) return;
 
             var detailsDoc = ApiNode.Load(path);
             var details = detailsDoc?.SelectOne(@"//div.content/div.section");
             var signature = details?.SelectOne(@"div.mb20.clear/h1.heading.inherit");
             var staticNode = details?.SelectOne(@"div.subsection/p/code.varname[text()='static']");
 
-            if (signature == null) return false;
+            if (signature == null) return;
 
-            api.Enter("message");
-            api.SetAttribute("name", link.Text);
-            api.SetAttribute("static", staticNode != null);
-            var description = desc.Text;
-            if (!string.IsNullOrWhiteSpace(description))
-                api.SetAttribute("description", description);
+            var messageName = link.Text;
+            var returnType = new ApiType("void");
+            string[] argumentNames = null;
 
-            // E.g. OnCollisionExit2D(Collision2D)
+            var example = PickExample(details);
+            if (example != null)
+            {
+                var tuple = ParseDetailsFromExample(messageName, example);
+                returnType = tuple.Item1;
+                argumentNames = tuple.Item2;
+            }
+
+            var eventFunction = unityApiType.AddEventFunction(messageName, staticNode != null, desc.Text, new Uri(path).AbsoluteUri, returnType);
+            ParseParameters(eventFunction, signature, details, argumentNames);
+        }
+
+        private static void ParseParameters(UnityApiEventFunction eventFunction, ApiNode signature, ApiNode details, string[] argumentNames)
+        {
+            // E.g. OnCollisionExit2D(Collision2D) - doesn't always include the argument name
+            // Hopefully, we parsed the argument name from the example
             var argumentString = SigRegex.Replace(signature.Text, "$2$3");
-            if (string.IsNullOrWhiteSpace(argumentString)) return true;
+            if (string.IsNullOrWhiteSpace(argumentString)) return;
 
             var argumentStrings = argumentString.Split(',')
                 .Select(s => s.Trim())
@@ -207,21 +127,81 @@ namespace ApiParser
             var total = argumentStrings.Length;
             var arguments = argumentStrings.Select((s, i) => new Argument(s, i, total)).ToArray();
 
-            ResolveArguments(link.Text, details, arguments, ref type);
+            ResolveArguments(details, arguments, argumentNames);
 
-            api.Enter("parameters");
             foreach (var argument in arguments)
-            {
-                api.Enter("parameter");
+                eventFunction.AddParameter(argument.Name, argument.Type, argument.Description);
+        }
 
-                api.SetAttribute("type", argument.Type.FullName);
-                api.SetAttribute("array", argument.Type.IsArray);
-                api.SetAttribute("name", argument.Name);
-                if (!string.IsNullOrWhiteSpace(argument.Description))
-                    api.SetAttribute("description", argument.Description);
+        private static void ResolveArguments([NotNull] ApiNode details, [NotNull] IReadOnlyList<Argument> arguments, string[] argumentNames)
+        {
+            if (argumentNames != null)
+            {
+                for (var i = 0; i < arguments.Count; i++)
+                    arguments[i].Name = argumentNames[i];
             }
 
-            return true;
+            var parameters = details.Subsection("Parameters").ToArray();
+            if (parameters.Any())
+                ParseMessageParameters(arguments, parameters);
+        }
+
+        private static void ParseMessageParameters([NotNull] IEnumerable<Argument> arguments, [NotNull] IReadOnlyList<ApiNode> parameters)
+        {
+            var i = 0;
+            foreach (var argument in arguments)
+            {
+                argument.Name = parameters[i]?[1]?.Text ?? argument.Name;
+                argument.Description = parameters[i]?[3]?.Text ?? argument.Description;
+                ++i;
+            }
+        }
+
+        // Gets return type and argument names from example
+        private static Tuple<ApiType, string[]> ParseDetailsFromExample(string messageName, ApiNode example)
+        {
+            var blankCleanup1 = new Regex(@"\s+");
+            var blankCleanup2 = new Regex(@"\s*(\W)\s*");
+
+            var exampleText = example.Text;
+            exampleText = blankCleanup1.Replace(exampleText, " ");
+            exampleText = blankCleanup2.Replace(exampleText, "$1");
+
+            var jsRegex = new Regex($@"(?:\W|^)function {messageName}\(([^)]*)\)(?::(\w+))?\{{");
+            var m = jsRegex.Match(exampleText);
+            if (m.Success)
+            {
+                var returnType = new ApiType(m.Groups[2].Value);
+                var parameters = m.Groups[1].Value.Split(',');
+
+                var arguments = new string[parameters.Length];
+                for (var i = 0; i < parameters.Length; ++i)
+                {
+                    arguments[i] = parameters[i].Split(':')[0];
+                }
+
+                return Tuple.Create(returnType, arguments);
+            }
+
+            var csRegex = new Regex($@"(\w+) {messageName}\(([^)]*)\)");
+            m = csRegex.Match(exampleText);
+            if (m.Success)
+            {
+                var nameRegex = new Regex(@"\W(\w+)$");
+
+                var returnType = new ApiType(m.Groups[1].Value);
+                var parameters = m.Groups[2].Value.Split(',');
+
+                var arguments = new string[parameters.Length];
+                for (var i = 0; i < parameters.Length; ++i)
+                {
+                    arguments[i] = nameRegex.Replace(parameters[i], "$1");
+                }
+
+                return Tuple.Create(returnType, arguments);
+            }
+
+            return null;
         }
     }
 }

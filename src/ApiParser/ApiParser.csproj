@@ -260,8 +260,8 @@
     <Compile Include="ApiNode.cs" />
     <Compile Include="ApiParser.cs" />
     <Compile Include="ApiType.cs" />
-    <Compile Include="ApiWriter.cs" />
     <Compile Include="Argument.cs" />
+    <Compile Include="UnityApi.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProgressEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

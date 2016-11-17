@@ -21,17 +21,19 @@ namespace ApiParser
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(monoPath, @"UnityScript.dll")));
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(basePath, @"UnityEditor.dll")));
 
-            Console.Clear();
+            Console.WriteLine();
             var path = Path.Combine(dataPath, @"Documentation\en\ScriptReference");
 
-            var parser = new ApiParser(path);
-            parser.Progress += ( s, e ) =>
+            var parser = new ApiParser(path, new UnityApi());
+
+            parser.Progress += (s, e) =>
             {
                 if (e.Percent <= ourProgress) return;
 
                 ourProgress = e.Percent;
-                Console.SetCursorPosition( 0, 0 );
-                Console.WriteLine( "{0,5} / {1,5} ({2,3}%)", e.Current, e.Total, e.Percent );
+                var cursorTop = Console.CursorTop;
+                Console.WriteLine("{0,5} / {1,5} ({2,3}%)", e.Current, e.Total, e.Percent);
+                Console.SetCursorPosition(0, cursorTop);
             };
 
             parser.ParseFolder();
@@ -45,4 +47,5 @@ namespace ApiParser
             // Console.ReadLine();
         }
     }
+
 }
