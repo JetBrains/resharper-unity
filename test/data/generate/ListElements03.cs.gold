@@ -13,6 +13,9 @@
  11: OnPreprocessModel():System.Void
  12: OnPreprocessSpeedTree():System.Void
  13: OnPreprocessTexture():System.Void
+ 14: OnPreprocessAssembly(System.String):System.Void
+ 15: OnGeneratedCSProjectFiles():System.Void
+ 16: OnPreGeneratingCSProjectFiles():System.Boolean
 
 // ${KIND:Unity.EventFunctions}
 using UnityEditor;

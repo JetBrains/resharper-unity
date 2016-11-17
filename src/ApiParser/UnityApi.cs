@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
+using JetBrains.Annotations;
 using JetBrains.Util;
 
 namespace ApiParser
@@ -22,12 +25,19 @@ namespace ApiParser
                 type.ExportTo(xmlWriter);
             xmlWriter.WriteEndElement();
         }
+
+        public UnityApiType FindType(string name)
+        {
+            var type = types.SingleOrDefault(t => t.Name == name);
+            if (type == null)
+                throw new InvalidOperationException($"Cannot find type {name}");
+            return type;
+        }
     }
 
     public class UnityApiType
     {
         private readonly string myNs;
-        private readonly string myName;
         private readonly string myKind;
         private readonly string myDocPath;
         private readonly IList<UnityApiEventFunction> myEventFunctions;
@@ -35,16 +45,18 @@ namespace ApiParser
         public UnityApiType(string ns, string name, string kind, string docPath)
         {
             myNs = ns;
-            myName = name;
+            Name = name;
             myKind = kind;
             myDocPath = docPath;
 
             myEventFunctions = new List<UnityApiEventFunction>();
         }
 
-        public UnityApiEventFunction AddEventFunction(string name, bool isStatic, string description, string docPath, ApiType returnType)
+        public string Name { get; }
+
+        public UnityApiEventFunction AddEventFunction(string name, bool isStatic, ApiType returnType, string docPath = null, string description = null, bool undocumented = false)
         {
-            var eventFunction = new UnityApiEventFunction(name, isStatic, description, docPath, returnType);
+            var eventFunction = new UnityApiEventFunction(name, isStatic, returnType, description, docPath, undocumented);
             myEventFunctions.Add(eventFunction);
             return eventFunction;
         }
@@ -53,7 +65,7 @@ namespace ApiParser
         {
             xmlWriter.WriteStartElement("type");
             xmlWriter.WriteAttributeString("kind", myKind);
-            xmlWriter.WriteAttributeString("name", myName);
+            xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("ns", myNs);
             xmlWriter.WriteAttributeString("path", myDocPath);
             foreach (var eventFunction in myEventFunctions)
@@ -66,23 +78,26 @@ namespace ApiParser
     {
         private readonly string myName;
         private readonly bool myIsStatic;
-        private readonly string myDescription;
-        private readonly string myDocPath;
+        [CanBeNull] private readonly string myDescription;
+        [CanBeNull] private readonly string myDocPath;
+        private readonly bool myUndocumented;
         private readonly ApiType myReturnType;
         private readonly IList<UnityApiParameter> myParameters;
 
-        public UnityApiEventFunction(string name, bool isStatic, string description, string docPath, ApiType returnType)
+        public UnityApiEventFunction(string name, bool isStatic, ApiType returnType, [CanBeNull] string description,
+            [CanBeNull] string docPath, bool undocumented)
         {
             myName = name;
             myIsStatic = isStatic;
             myDescription = description;
             myDocPath = docPath;
+            myUndocumented = undocumented;
             myReturnType = returnType;
 
             myParameters = new List<UnityApiParameter>();
         }
 
-        public UnityApiParameter AddParameter(string name, ApiType type, string description)
+        public UnityApiParameter AddParameter(string name, ApiType type, string description = null)
         {
             var parmaeter = new UnityApiParameter(name, type, description);
             myParameters.Add(parmaeter);
@@ -94,6 +109,8 @@ namespace ApiParser
             xmlWriter.WriteStartElement("message");
             xmlWriter.WriteAttributeString("name", myName);
             xmlWriter.WriteAttributeString("static", myIsStatic.ToString());
+            if (myUndocumented)
+                xmlWriter.WriteAttributeString("undocumented", "True");
             if (!string.IsNullOrEmpty(myDescription))
                 xmlWriter.WriteAttributeString("description", myDescription);
             if (!string.IsNullOrEmpty(myDocPath))

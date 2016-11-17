@@ -33,6 +33,9 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
+    <message name="OnStatusUpdated" static="True" undocumented="True">
+      <returns type="System.Void" array="False" />
+    </message>
   </type>
   <type kind="class" name="AssetPostprocessor" ns="UnityEditor" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.html">
     <message name="OnAssignMaterialModel" static="False" description="Feeds a source material." path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnAssignMaterialModel.html">
@@ -112,6 +115,27 @@
     </message>
     <message name="OnPreprocessTexture" static="False" description="Add this function in a subclass to get a notification just before the texture importer is run." path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessTexture.html">
       <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPostprocessAllAssets" static="True" undocumented="True">
+      <parameters>
+        <parameter type="System.String" array="True" name="importedAssets" />
+        <parameter type="System.String" array="True" name="deletedAssets" />
+        <parameter type="System.String" array="True" name="movedAssets" />
+        <parameter type="System.String" array="True" name="movedFromPathAssets" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPreprocessAssembly" static="False" undocumented="True">
+      <parameters>
+        <parameter type="System.String" array="False" name="pathName" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnGeneratedCSProjectFiles" static="True" undocumented="True">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPreGeneratingCSProjectFiles" static="True" undocumented="True">
+      <returns type="System.Boolean" array="False" />
     </message>
   </type>
   <type kind="class" name="Camera" ns="UnityEngine" path="file:///C:/Program%20Files/Unity/Editor/Data/Documentation/en/ScriptReference/Camera.html">

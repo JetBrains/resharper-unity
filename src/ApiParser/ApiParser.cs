@@ -99,7 +99,7 @@ namespace ApiParser
             if (signature == null) return;
 
             var messageName = link.Text;
-            var returnType = new ApiType("void");
+            var returnType = ApiType.Void;
             string[] argumentNames = null;
 
             var example = PickExample(details);
@@ -110,7 +110,7 @@ namespace ApiParser
                 argumentNames = tuple.Item2;
             }
 
-            var eventFunction = unityApiType.AddEventFunction(messageName, staticNode != null, desc.Text, new Uri(path).AbsoluteUri, returnType);
+            var eventFunction = unityApiType.AddEventFunction(messageName, staticNode != null, returnType, new Uri(path).AbsoluteUri, desc.Text);
             ParseParameters(eventFunction, signature, details, argumentNames);
         }
 

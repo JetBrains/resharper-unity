@@ -24,7 +24,8 @@ namespace ApiParser
             Console.WriteLine();
             var path = Path.Combine(dataPath, @"Documentation\en\ScriptReference");
 
-            var parser = new ApiParser(path, new UnityApi());
+            var unityApi = new UnityApi();
+            var parser = new ApiParser(path, unityApi);
 
             parser.Progress += (s, e) =>
             {
@@ -38,6 +39,8 @@ namespace ApiParser
 
             parser.ParseFolder();
 
+            AddUndocumentApis(unityApi);
+
             using (var writer = new XmlTextWriter(@"api.xml", Encoding.UTF8) {Formatting = Formatting.Indented})
             {
                 parser.ExportTo(writer);
@@ -45,6 +48,29 @@ namespace ApiParser
 
             // Console.WriteLine( "Press <Enter> key to continue..." );
             // Console.ReadLine();
+        }
+
+        private static void AddUndocumentApis(UnityApi unityApi)
+        {
+            // From AssetPostprocessingInternal
+            var type = unityApi.FindType("AssetPostprocessor");
+            var eventFunction = type.AddEventFunction("OnPostprocessAllAssets", true, ApiType.Void, undocumented: true);
+            eventFunction.AddParameter("importedAssets", ApiType.StringArray);
+            eventFunction.AddParameter("deletedAssets", ApiType.StringArray);
+            eventFunction.AddParameter("movedAssets", ApiType.StringArray);
+            eventFunction.AddParameter("movedFromPathAssets", ApiType.StringArray);
+
+            eventFunction = type.AddEventFunction("OnPreprocessAssembly", false, ApiType.Void, undocumented: true);
+            eventFunction.AddParameter("pathName", ApiType.String);
+
+            type.AddEventFunction("OnGeneratedCSProjectFiles", true, ApiType.Void, undocumented: true);
+
+            // Technically, return type is optional
+            type.AddEventFunction("OnPreGeneratingCSProjectFiles", true, ApiType.Bool, undocumented: true);
+
+            // From AssetModificationProcessorInternal
+            type = unityApi.FindType("AssetModificationProcessor");
+            type.AddEventFunction("OnStatusUpdated", true, ApiType.Void, undocumented: true);
         }
     }
 
