@@ -22,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Resolve
         [Test] public void InvokeRepeating02() { DoNamedTest(); }
         [Test] public void CancelInvoke01() { DoNamedTest(); }
         [Test] public void CancelInvoke02() { DoNamedTest(); }
+        [Test] public void OtherType01() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -34,5 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Resolve
         [Test] public void Invoke01() { DoNamedTest(); }
         [Test] public void InvokeRepeating01() { DoNamedTest(); }
         [Test] public void CancelInvoke01() { DoNamedTest(); }
+        [Test] public void OtherType01() { DoNamedTest(); }
     }
 }

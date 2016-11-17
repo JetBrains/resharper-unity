@@ -2,9 +2,11 @@
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
@@ -36,13 +38,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
                     var containingType = invokedMethod.GetContainingType();
                     if (containingType != null && Equals(containingType.GetClrName(), MonoBehaviourTypeName))
                     {
-                        var inMethod = literal.GetContainingNode<IMethodDeclaration>();
-                        var currentType = inMethod?.DeclaredElement?.GetContainingType();
+                        var targetType = invocationExpression.ExtensionQualifier?.GetExpressionType().ToIType()?.GetTypeElement()
+                            ?? literal.GetContainingNode<IMethodDeclaration>()?.DeclaredElement?.GetContainingType();
 
                         // TODO: Check if currentType is derived from MonoBehaviour?
-                        if (currentType != null)
+                        if (targetType != null)
                         {
-                            IReference reference = new MonoBehaviourInvokeReference(currentType, literal);
+                            IReference reference = new MonoBehaviourInvokeReference(targetType, literal);
 
                             return oldReferences != null && oldReferences.Length == 1
                                    && Equals(oldReferences[0], reference)
