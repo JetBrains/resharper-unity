@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     var document = new XmlDocument();
                     document.Load(stream);
 
-                    var nodes = document.DocumentElement?.SelectNodes(@"/api/messages/type");
+                    var nodes = document.DocumentElement?.SelectNodes(@"/api/type");
                     if (nodes != null)
                     {
                         foreach (XmlNode type in nodes)

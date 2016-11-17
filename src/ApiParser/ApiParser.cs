@@ -31,14 +31,11 @@ namespace ApiParser
         {
             var files = Directory.EnumerateFiles(rootPath, @"*.html").ToArray();
 
-            api.Enter("messages");
             for (var i = 0; i < files.Length; ++i)
             {
                 ParseFile(files[i]);
                 OnProgress(new ProgressEventArgs(i + 1, files.Length));
             }
-
-            api.Leave("messages");
         }
 
         private static void ParseMessageParameters([NotNull] IEnumerable<Argument> arguments,
