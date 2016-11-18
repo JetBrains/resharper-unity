@@ -3,28 +3,40 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>1.3.1-EAP2</version>
+    <version>1.4.0</version>
     <authors>JetBrains slava.tutushkin</authors>
     <owners>JetBrains slava.tutushkin</owners>
     <summary>ReSharper support for Unity</summary>
     <description>Adds support for Unity.
 
-&#8226; Highlights Unity event functions and fields with an icon in the editor gutter
-&#8226; Marks fields and methods implicitly used by Unity as in use
-&#8226; External annotations to improve ReSharper's analysis, e.g. implicit usage and nullability of Component.gameObject
-&#8226; Use Generate Code to create event functions, with parameters
-&#8226; Auto-suggest event functions completion when creating methods
+&#8226; Highlights Unity event functions and fields with an icon in the editor gutter.
+&#8226; Marks fields and methods implicitly used by Unity as in use.
+&#8226; Knows about all Unity script classes (MonoBehaviour, ScriptableObject, EditorWindow, etc).
+&#8226; Use Generate Code to create event functions, with parameters.
+&#8226; Start typing for automatic completion of event function declarations in a class.
 &#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating and CancelInvoke
 &#8226; Event function descriptions for methods and parameters displayed in tooltips and QuickDoc
-&#8226; "Read more" in QuickDoc navigates to Unity API documentation
-&#8226; Suppress naming consistency checks on event functions
+&#8226; "Read more" in QuickDoc navigates to Unity API documentation.
+&#8226; Code completion, find usages and rename support for string literals in MonoBehaviour.Invoke, InvokeRepeating and CancelInvoke.
+&#8226; Suppress naming consistency checks on event functions.
+&#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code.
 &#8226; Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!
-&#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code
+&#8226; Highlights UnityEngine.Color and Color32. Edit via colour palette quick fix.
+&#8226; Treats Unity debug assertions as assertion methods in ReSharper control flow analysis.
+&#8226; String formatting assistance for debug log methods.
 </description>
 <releaseNotes>
-&#8226; Refer to "event function" instead of "message handler"
-&#8226; Highlights Unity event functions and fields with an icon in the editor gutter (#58)
-&#8226; Set language version to C# 4 or C# 6 if Unity 5.5 is installed (#50)
+&#8226; Enable functionality in projects that reference Unity assemblies, not just those that have the VSTU project flavour GUID (#53)
+&#8226; Improve handling of C# language version. Default is correctly set to C# 4, not 5. Uses C# 6 if option is enabled in Unity 5.5. Handles the CSharp60Support plugin. (#50, #60)
+&#8226; Treat UnityEngine.Debug.Assert as assertion methods, so ReSharper includes asserts in control flow analysis. (#62, #63 - thanks @joshuaoconnor!)
+&#8226; Add string formatting inspections for debug assertion messages.
+&#8226; Renamed "message handlers" to "event functions", as per the Unity documentation.
+&#8226; Display a "gutter" icon for implicitly used event functions and fields. (#58)
+&#8226; Display colour highlights and the colour palette picker for UnityEngine.Color and UnityEngine.Color32. (#51)
+&#8226; Fix MonoBehaviour.Invoke code completion and rename support in string literals to work with the correct class, not just the current class. (#66)
+&#8226; Support undocumented messages, such as OnGeneratedCSProjectFiles. (#59)
+&#8226; Fix namespace provider settings for Assets and Assets\Scripts folders. (#64)
+&#8226; Sort event functions alphabetically by default in code completion.
 
 From previous releases:
 &#8226; ReSharper 2016.2 support. Thanks @cmcpasserby! (#44, #46)
