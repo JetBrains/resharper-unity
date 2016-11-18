@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.changes;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Storage;
 using JetBrains.Application.Settings.Store;
 using JetBrains.Application.Settings.Store.Implementation;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ProjectModel.Settings.Storages;
@@ -21,36 +23,104 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class PerProjectSettings
+    public class PerProjectSettings : IChangeProvider
     {
         private static readonly Version Version46 = new Version(4, 6);
 
+        private readonly ISolution mySolution;
+        private readonly ChangeManager myChangeManager;
         private readonly ISettingsSchema settingsSchema;
+        private readonly SettingsStorageProvidersCollection mySettingsStorageProviders;
+        private readonly IShellLocks myLocks;
         private readonly ILogger logger;
+        private readonly InternKeyPathComponent myInterned;
         private readonly LangVersionCacheProvider myLangVersionCache;
+        private readonly Dictionary<IProject, SettingsStorageMountPoint> myProjectMountPoints;
+        private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
 
-        public PerProjectSettings(Lifetime lifetime, IViewableProjectsCollection projects,
+        public PerProjectSettings(Lifetime lifetime, ISolution solution, ChangeManager changeManager,
+                                  ModuleReferenceResolveSync moduleReferenceResolveSync,
+                                  IViewableProjectsCollection projects,
                                   ISettingsSchema settingsSchema,
                                   SettingsStorageProvidersCollection settingsStorageProviders, IShellLocks locks,
                                   ILogger logger, InternKeyPathComponent interned,
                                   LangVersionCacheProvider langVersionCache)
         {
+            mySolution = solution;
+            myChangeManager = changeManager;
             this.settingsSchema = settingsSchema;
+            mySettingsStorageProviders = settingsStorageProviders;
+            myLocks = locks;
             this.logger = logger;
+            myInterned = interned;
             myLangVersionCache = langVersionCache;
+            myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
+            myProjectLifetimes = new Dictionary<IProject, Lifetime>();
+
+            changeManager.RegisterChangeProvider(lifetime, this);
+            changeManager.AddDependency(lifetime, this, moduleReferenceResolveSync);
+
             projects.Projects.View(lifetime, (projectLifetime, project) =>
             {
+                myProjectLifetimes.Add(project, projectLifetime);
+
                 if (!project.IsUnityProject())
                     return;
 
-                var mountPoint = CreateMountPoint(projectLifetime, project, settingsStorageProviders, locks, logger, interned);
-                InitialiseSettingValues(project, mountPoint);
-
-                // Just to make things more interesting, the langversion cache isn't
-                // necessarily updated by the time we get called, so wire up a callback
-                myLangVersionCache.RegisterDataChangedCallback(projectLifetime, project.ProjectFileLocation,
-                    () => InitialiseSettingValues(project, mountPoint));
+                InitialiseProjectSettings(project);
             });
+        }
+
+        object IChangeProvider.Execute(IChangeMap changeMap)
+        {
+            var projectModelChange = changeMap.GetChange<ProjectModelChange>(mySolution);
+            if (projectModelChange == null)
+                return null;
+
+            // ReSharper hasn't necessarily processed all references when it adds the IProject
+            // to the IViewableProjectsCollection. Keep an eye on reference changes, add the
+            // project settings if/when the project becomes a unity project
+            var projects = new JetHashSet<IProject>();
+            var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames);
+            foreach (var change in changes)
+                projects.Add(change.GetNewProject());
+
+            foreach (var project in projects)
+            {
+                myChangeManager.ExecuteAfterChange(() =>
+                {
+                    if (project.IsUnityProject())
+                        InitialiseProjectSettings(project);
+                });
+            }
+
+            return null;
+        }
+
+        private void InitialiseProjectSettings(IProject project)
+        {
+            Lifetime projectLifetime;
+            if (!myProjectLifetimes.TryGetValue(project, out projectLifetime))
+                return;
+
+            SettingsStorageMountPoint mountPoint;
+            lock(myProjectMountPoints)
+            {
+                // There's already a mount point, we're already initialised
+                if (myProjectMountPoints.TryGetValue(project, out mountPoint))
+                    return;
+
+                mountPoint = CreateMountPoint(projectLifetime, project, mySettingsStorageProviders, myLocks, logger,
+                    myInterned);
+                myProjectMountPoints.Add(projectLifetime, project, mountPoint);
+            }
+
+            InitialiseSettingValues(project, mountPoint);
+
+            // Just to make things more interesting, the langversion cache isn't
+            // necessarily updated by the time we get called, so wire up a callback
+            myLangVersionCache.RegisterDataChangedCallback(projectLifetime, project.ProjectFileLocation,
+                () => InitialiseSettingValues(project, mountPoint));
         }
 
         private static SettingsStorageMountPoint CreateMountPoint(Lifetime projectLifetime,

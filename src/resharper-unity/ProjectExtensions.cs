@@ -1,4 +1,5 @@
-﻿using JetBrains.Metadata.Utils;
+﻿using System.Collections.Generic;
+using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.Util.Reflection;
@@ -10,8 +11,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static readonly AssemblyNameInfo ourUnityEngineReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine", null);
         private static readonly AssemblyNameInfo ourUnityEditorReferenceName = AssemblyNameInfoFactory.Create2("UnityEditor", null);
 
+        public static readonly ICollection<AssemblyNameInfo> UnityReferenceNames = new List<AssemblyNameInfo>()
+        {
+            ourUnityEditorReferenceName, ourUnityEngineReferenceName
+        };
+
         public static bool IsUnityProject(this IProject project)
         {
+            // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
             return project.HasFlavour<UnityProjectFlavor>() || ReferencesUnity(project);
         }
 
