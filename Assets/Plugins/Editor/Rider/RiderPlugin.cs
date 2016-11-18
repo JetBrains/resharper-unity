@@ -77,6 +77,23 @@ namespace Assets.Plugins.Editor.JetBrains
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
+      UpdateUnitySettings(SlnFile);
+    }
+
+    /// <summary>
+    /// Helps to open xml and txt files at least on Windows
+    /// </summary>
+    /// <param name="slnFile"></param>
+    private static void UpdateUnitySettings(string slnFile)
+    {
+      try
+      {
+        EditorPrefs.SetString("kScriptEditorArgs", string.Format("{0}{1}{0} {0}$(File){0}", "\"", slnFile));
+      }
+      catch (Exception e)
+      {
+        Log("Exception on updating kScriptEditorArgs: " + e.Message);
+      }
     }
 
     /// <summary>
