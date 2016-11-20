@@ -13,10 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiParser", "ApiParser\ApiP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiParserTest", "ApiParserTest\ApiParserTest.csproj", "{E149E7F4-23E7-4BC0-A8D1-95072004A45E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity.wave07", "resharper-unity\resharper-unity.wave07.csproj", "{E725A7A5-C3E7-4B25-89F1-9F58BB20D729}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.wave07", "..\test\src\tests.wave07.csproj", "{5A8CC363-A4E9-4654-9929-43997F2477FB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity", "resharper-unity\resharper-unity.csproj", "{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "..\test\src\tests.csproj", "{28FA9B1F-B7DF-4419-B90D-3C765F4FB03F}"
@@ -35,14 +31,6 @@ Global
 		{E149E7F4-23E7-4BC0-A8D1-95072004A45E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E149E7F4-23E7-4BC0-A8D1-95072004A45E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E149E7F4-23E7-4BC0-A8D1-95072004A45E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E725A7A5-C3E7-4B25-89F1-9F58BB20D729}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E725A7A5-C3E7-4B25-89F1-9F58BB20D729}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E725A7A5-C3E7-4B25-89F1-9F58BB20D729}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E725A7A5-C3E7-4B25-89F1-9F58BB20D729}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A8CC363-A4E9-4654-9929-43997F2477FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A8CC363-A4E9-4654-9929-43997F2477FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A8CC363-A4E9-4654-9929-43997F2477FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A8CC363-A4E9-4654-9929-43997F2477FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}.Release|Any CPU.ActiveCfg = Release|Any CPU

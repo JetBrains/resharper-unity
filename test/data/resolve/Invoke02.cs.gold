@@ -9,4 +9,4 @@ public class A : MonoBehaviour
 }
 
 ------------------------------------------------
-0: result=UNRESOLVED_SYMBOL_IN_STRING_LITERAL declaredElem=null
+0: result=NOT_RESOLVED declaredElem=null

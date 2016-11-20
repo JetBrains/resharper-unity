@@ -70,11 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.QuickDoc
                 .AddRule("Test", ProjectModelDataConstants.SOLUTION, x => solution)
                 .AddRule("Test", TextControlDataConstants.TEXT_CONTROL, x => control)
                 .AddRule("Test", DocumentModelDataConstants.DOCUMENT, x => control.Document)
-#if WAVE07
                 .AddRule("Test", DocumentModelDataConstants.EDITOR_CONTEXT, x => new DocumentEditorContext(new DocumentOffset(control.Document, control.Caret.Position.Value.ToDocOffset())));
-#else
-                .AddRule("Test", DocumentModelDataConstants.DOCUMENT_OFFSET, x => new DocumentOffset(control.Document, control.Caret.Position.Value.ToDocOffset()));
-#endif
             return actionManager.DataContexts.CreateWithDataRules(control.Lifetime, dataRules);
         }
 

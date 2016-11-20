@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -23,11 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
         {
             myTypeElement = typeElement;
 
-#if WAVE07
             myMethodFilter = new DeclaredElementTypeFilter(ResolveErrorType.NOT_RESOLVED, CLRDeclaredElementType.METHOD);
-#else
-            myMethodFilter = new DeclaredElementTypeFilter(ResolveErrorType.NOT_RESOLVED_IN_STRING_LITERAL, CLRDeclaredElementType.METHOD);
-#endif
         }
 
         public override ResolveResultWithInfo ResolveWithoutCache()
@@ -35,12 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
             if (!resolveResultWithInfo.Result.IsEmpty)
                 return resolveResultWithInfo;
-#if WAVE07
             return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
-
-#else
-            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED_IN_STRING_LITERAL);
-#endif
         }
 
         public override string GetName()
@@ -97,11 +87,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
         public ISymbolTable GetCompletionSymbolTable()
         {
             return GetReferenceSymbolTable(false).Filter(myMethodFilter);
-        }
-
-        public IEnumerable<DeclaredElementType> ExpecteDeclaredElementTypes
-        {
-            get { yield return CLRDeclaredElementType.METHOD; }
         }
 
         public override ISymbolFilter[] GetSymbolFilters()

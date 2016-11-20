@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <authors>JetBrains slava.tutushkin</authors>
     <owners>JetBrains slava.tutushkin</owners>
     <summary>ReSharper support for Unity</summary>
@@ -26,6 +26,9 @@
 &#8226; String formatting assistance for debug log methods.
 </description>
 <releaseNotes>
+&#8226; ReSharper 2016.3 support
+
+From 1.4.0:
 &#8226; Enable functionality in projects that reference Unity assemblies, not just those that have the VSTU project flavour GUID (#53)
 &#8226; Improve handling of C# language version. Default is correctly set to C# 4, not 5. Uses C# 6 if option is enabled in Unity 5.5. Handles the CSharp60Support plugin. (#50, #60)
 &#8226; Treat UnityEngine.Debug.Assert as assertion methods, so ReSharper includes asserts in control flow analysis. (#62, #63 - thanks @joshuaoconnor!)
@@ -56,7 +59,7 @@ From previous releases:
     <copyright>Copyright 2016 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[6.0]" />
+      <dependency id="Wave" version="[7.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>
