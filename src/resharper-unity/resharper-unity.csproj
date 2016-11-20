@@ -352,6 +352,7 @@
     <Compile Include="Help\ShowUnityHelp.cs" />
     <Compile Include="ProjectExtensions.cs" />
     <Compile Include="ProjectModel\Caches\LangVersionCacheProvider.cs" />
+    <Compile Include="ProjectModel\ShaderLabProjectFileType.cs" />
     <Compile Include="Psi\Colors\ColorPropertyPsiIconManagerExtension.cs" />
     <Compile Include="Psi\Colors\UnityColorReference.cs" />
     <Compile Include="Psi\Colors\UnityColorTypes.cs" />
@@ -359,6 +360,7 @@
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReference.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceFactory.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceProviderFactory.cs" />
+    <Compile Include="Psi\ShaderLabLanguage.cs" />
     <Compile Include="Resources\Logo\ThemedIcons.Logo.Generated.cs" />
     <Compile Include="UnityEventFunction.cs" />
     <Compile Include="UnityType.cs" />

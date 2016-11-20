@@ -337,7 +337,9 @@
     <Compile Include="Feature\Services\QuickDoc\QuickDocTestBase.cs" />
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocTest.cs" />
     <Compile Include="Intentions\QuickFixes\ColorPickerTest.cs" />
+    <Compile Include="ProjectModel\ShaderLabProjectFileTypeTests.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceTest.cs" />
+    <Compile Include="Psi\ShaderLabLanguageTests.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUnityAttribute.cs" />
