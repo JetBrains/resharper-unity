@@ -76,9 +76,12 @@ namespace Assets.Plugins.Editor.JetBrains
 
     private static void SetXCodeDllReference(string name, XNamespace xmlns, XElement projectContentElement)
     {
-      var xcodeDllPath = Path.Combine("C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport", name);
+      string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+
+      var xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("Data/PlaybackEngines/iOSSupport", name));
       if (!File.Exists(xcodeDllPath))
-        xcodeDllPath = Path.Combine("/Applications/Unity/PlaybackEngines/iOSSupport", name);
+        xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("PlaybackEngines/iOSSupport", name));
+
       if (File.Exists(xcodeDllPath))
       {
         var itemGroup = new XElement(xmlns + "ItemGroup");
