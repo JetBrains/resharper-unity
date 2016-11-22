@@ -14,7 +14,7 @@ namespace Assets.Plugins.Editor.JetBrains
   public static class RiderPlugin
   {
     private static readonly string SlnFile;
-    private static readonly string DefaultApp
+    private static string DefaultApp
     {
       get { return EditorPrefs.GetString("kScriptsDefaultApp"); }
     }
