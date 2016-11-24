@@ -18,8 +18,11 @@ namespace Assets.Plugins.Editor.JetBrains
     {
       get { return EditorPrefs.GetString("kScriptsDefaultApp"); }
     }
-    
-    public static readonly bool IsWindows;
+
+    public static bool TargetFrameworkVersion45 {
+      get { return EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true); }
+      set { EditorPrefs.SetBool("Rider_TargetFrameworkVersion45", value); }
+    }
 
     internal static bool Enabled
     {
@@ -36,7 +39,6 @@ namespace Assets.Plugins.Editor.JetBrains
       if (Enabled)
       {
         var riderFileInfo = new FileInfo(DefaultApp);
-        IsWindows = riderFileInfo.Extension == ".exe";
 
         var newPath = riderFileInfo.FullName;
         // try to search the new version
@@ -209,6 +211,40 @@ namespace Assets.Plugins.Editor.JetBrains
     public static void Log(object message)
     {
       Debug.Log("[Rider] " + message);
+    }
+
+    /// <summary>
+    /// JetBrains Rider Integration Preferences Item
+    /// </summary>
+    /// <remarks>
+    /// Contains all 3 toggles: Enable/Disable; Debug On/Off; Writing Launch File On/Off
+    /// </remarks>
+    [PreferenceItem("Rider")]
+    static void RiderPreferencesItem()
+    {
+      EditorGUILayout.BeginVertical();
+
+      var url = "https://github.com/JetBrains/Unity3dRider";
+      if (GUILayout.Button(url))
+      {
+        Application.OpenURL(url);
+      }
+
+      EditorGUI.BeginChangeCheck();
+
+      var help = @"For now target 4.5 is strongly recommended.
+ - Without 4.5:
+    - Rider will fail to resolve System.Linq on Mac/Linux
+    - Rider will fail to resolve Firebase Analytics.
+ - With 4.5 Rider will show ambiguos references in UniRx.
+All thouse problems will go away after Unity upgrades to mono4.";
+      TargetFrameworkVersion45 =
+        EditorGUILayout.Toggle(
+          new GUIContent("TargetFrameworkVersion 4.5",
+            help), TargetFrameworkVersion45);
+      EditorGUILayout.HelpBox(help, MessageType.None);
+
+      EditorGUI.EndChangeCheck();
     }
 
     static class User32Dll

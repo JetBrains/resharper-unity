@@ -40,7 +40,7 @@ namespace Assets.Plugins.Editor.JetBrains
     // Helps resolve System.Linq under mono 4 - RIDER-573
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
-      if (RiderPlugin.IsWindows)
+      if (!RiderPlugin.TargetFrameworkVersion45)
         return;
 
       var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup").
