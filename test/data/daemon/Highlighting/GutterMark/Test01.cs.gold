@@ -7,9 +7,9 @@ public class A : MonoBehaviour
 
     public object |unityField1|(1), |unityField2|(2);
 
-    |private void OnDestroy()
+    private void |OnDestroy|(3)()
     {
-    }|(3)
+    }
 
     private void NotMessage()
     {

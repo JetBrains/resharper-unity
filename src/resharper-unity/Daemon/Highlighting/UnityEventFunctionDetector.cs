@@ -30,7 +30,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
                     var eventFunction = myUnityApi.GetUnityEventFunction(method);
                     if (eventFunction != null)
                     {
-                        var documentRange = element.GetDocumentRange();
+                        // Use the name as the range, rather than the range of the whole
+                        // method declaration (including body). Rider will remove the highlight
+                        // if anything inside the range changes, causing ugly flashes. It
+                        // might be nicer to use the whole of the method declaration (name + params)
+                        var documentRange = element.GetNameDocumentRange();
                         var tooltip = "Unity Event Function";
                         if (!string.IsNullOrEmpty(eventFunction.Description))
                             tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
