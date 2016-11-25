@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Psi.Parsing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     public class ShaderLabFilteringLexer : FilteringLexer
     {

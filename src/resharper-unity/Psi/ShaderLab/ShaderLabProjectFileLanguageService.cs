@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
 {
     [ProjectFileType(typeof(ShaderLabProjectFileType))]
     public class ShaderLabProjectFileLanguageService : ProjectFileLanguageService

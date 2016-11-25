@@ -1,9 +1,9 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Psi;
+﻿using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab;
 using JetBrains.ReSharper.Psi;
 using JetBrains.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab
 {
     [TestFixture]
     public class ShaderLabLanguageTests : BaseTest

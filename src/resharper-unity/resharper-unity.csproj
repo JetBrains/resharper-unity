@@ -360,10 +360,10 @@
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReference.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceFactory.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceProviderFactory.cs" />
-    <Compile Include="Psi\Parsing\ShaderLabFilteringLexer.cs" />
-    <Compile Include="Psi\ShaderLabLanguage.cs" />
-    <Compile Include="Psi\ShaderLabLanguageService.cs" />
-    <Compile Include="Psi\ShaderLabProjectFileLanguageService.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabFilteringLexer.cs" />
+    <Compile Include="Psi\ShaderLab\ShaderLabLanguage.cs" />
+    <Compile Include="Psi\ShaderLab\ShaderLabLanguageService.cs" />
+    <Compile Include="Psi\ShaderLab\ShaderLabProjectFileLanguageService.cs" />
     <Compile Include="Resources\Logo\ThemedIcons.Logo.Generated.cs" />
     <Compile Include="UnityEventFunction.cs" />
     <Compile Include="UnityType.cs" />
@@ -393,6 +393,9 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Psi" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets" Condition="Exists('..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets')" />

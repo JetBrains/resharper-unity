@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
 using JetBrains.ReSharper.Psi.Impl;
@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
 {
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabLanguageService : LanguageService

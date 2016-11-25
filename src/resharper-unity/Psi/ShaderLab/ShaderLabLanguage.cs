@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
 {
     [LanguageDefinition(Name)]
     public class ShaderLabLanguage : KnownLanguage
