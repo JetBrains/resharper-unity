@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<module type="RIDER_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../..">
+      <sourceFolder url="file://$MODULE_DIR$/../../ApiParser" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../ApiParserTest" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../resharper-unity" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../ApiParser/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../ApiParser/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/../../ApiParserTest/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../ApiParserTest/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/../../packages" />
+      <excludeFolder url="file://$MODULE_DIR$/../../resharper-unity/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../resharper-unity/obj" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../test/src">
+      <sourceFolder url="file://$MODULE_DIR$/../../../test/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../test/src/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../test/src/obj" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
