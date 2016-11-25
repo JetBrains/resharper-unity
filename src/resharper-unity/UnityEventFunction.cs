@@ -42,6 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var builder = new StringBuilder(128);
 
             builder.Append("private ");
+            if (myIsStatic) builder.Append("static ");
             builder.Append(myReturnType.FullName);
             if (myReturnTypeIsArray) builder.Append("[]");
             builder.Append(" ");

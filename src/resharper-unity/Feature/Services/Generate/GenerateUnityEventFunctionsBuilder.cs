@@ -39,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
                 ISubstitution newSubstitution;
                 var method = (IMethodDeclaration) CSharpGenerateUtil.CreateMemberDeclaration(
                     context.ClassDeclaration, selectedMethod.Substitution, selectedMethod.DeclaredElement, false, out newSubstitution);
+                method.SetStatic(selectedMethod.DeclaredElement.IsStatic);
                 method.SetBody(method.Type.IsVoid() ? factory.CreateEmptyBlock() : factory.CreateBlock("{return null;}"));
                 method.FormatNode();
                 context.PutMemberDeclaration(method);

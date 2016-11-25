@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
 
         [Test] public void ListElements01() { DoNamedTest(); }
         // TODO: Deriving from AssetModificationProcessor doesn't work. Don't know why
-        // [Test] public void ListElements02() { DoNamedTest(); }
+        [Test] public void ListElements02() { DoNamedTest(); }
         [Test] public void ListElements03() { DoNamedTest(); }
         [Test] public void ListElements04() { DoNamedTest(); }
         [Test] public void ListElements05() { DoNamedTest(); }
@@ -35,6 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
         [Test] public void InsertSingleMethod02() { DoNamedTest(); }
         [Test] public void InsertMultipleMethods() { DoNamedTest(); }
         [Test] public void InsertWithExistingMethods() { DoNamedTest(); }
+        [Test] public void InsertStaticMethod() { DoNamedTest(); }
 
         // It would be nice if the base test distinguished between unavailable, no items and disabled
         [Test] public void NonUnityType() { DoNamedTest(); }

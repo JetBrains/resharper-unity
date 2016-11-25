@@ -1,0 +1,16 @@
+﻿Provided elements:
+ 0: IsOpenForEdit(System.String,System.String):System.Void
+ 1: OnStatusUpdated():System.Void
+ 2: OnWillCreateAsset(System.String):System.Void
+ 3: OnWillDeleteAsset(System.String,UnityEditor.RemoveAssetOptions):System.Void
+ 4: OnWillMoveAsset(System.String,System.String):System.Void
+ 5: OnWillSaveAssets(System.String[]):System.Void
+
+// ${KIND:Unity.EventFunctions}
+// ${SELECT0:OnStatusUpdated():System.Void}
+class A : UnityEditor.AssetModificationProcessor
+{
+  private static void OnStatusUpdated()
+  {{caret}
+  }
+}
