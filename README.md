@@ -38,7 +38,7 @@ This only needs to be done once.
 
 This needs to be done for each project.
 
-1. Copy the folder `Assets/Plugins/Editor/Rider from this repository into `Assets/Plugins/Editor/Rider` in your project.
+1. Copy the folder `Assets/Plugins/Editor/JetBrains from this repository into `Assets/Plugins/Editor/JetBrains` in your project.
 
 ## Roadmap
 
