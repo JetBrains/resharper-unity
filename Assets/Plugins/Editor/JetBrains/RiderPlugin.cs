@@ -14,12 +14,14 @@ namespace Assets.Plugins.Editor.JetBrains
   public static class RiderPlugin
   {
     private static readonly string SlnFile;
+
     private static string DefaultApp
     {
       get { return EditorPrefs.GetString("kScriptsDefaultApp"); }
     }
 
-    public static bool TargetFrameworkVersion45 {
+    public static bool TargetFrameworkVersion45
+    {
       get { return EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true); }
       set { EditorPrefs.SetBool("Rider_TargetFrameworkVersion45", value); }
     }
@@ -169,7 +171,20 @@ namespace Assets.Plugins.Editor.JetBrains
 
     private static void ActivateWindow()
     {
-      var process = Process.GetProcesses().FirstOrDefault(b => !b.HasExited && b.ProcessName.Contains("Rider"));
+      var process = Process.GetProcesses().FirstOrDefault(p =>
+      {
+        string processName;
+        try
+        {
+          processName = p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
+        }
+        catch (Exception)
+        {
+          return false;
+        }
+
+        return !p.HasExited && processName.Contains("Rider");
+      });
       if (process != null)
       {
         // Collect top level windows
