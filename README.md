@@ -4,7 +4,7 @@ Integrates [JetBrains Rider](https://www.jetbrains.com/rider/) into the [Unity 3
 
 Rider support for Unity:
 * Debugging of Unity instances.
-    * Use the Run &rarr; "Attach to local process" menu item to list available Unity instances.
+    * Use the Run &rarr; "Attach to local process" menu item to list available Unity instances. Known issue RIDER-3588 Attach to Unity 5.5 doesn't work.
     * Run &rarr; "Edit Configurations" &rarr; Add new "Mono remote" configuration to set everything manually.
 
 [From EAP13 - 163.7608] Additional Rider support for Unity via [ReSharper plugin](https://github.com/JetBrains/resharper-unity#readme) (File&rarr;Settings&rarr;Plugins&rarr;Type Unity&rarr;Press "search in repositories"&rarr;ReSharper Unity plugin will be found&rarr;Install.&rarr;Restart Rider.). 
