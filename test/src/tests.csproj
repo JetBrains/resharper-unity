@@ -339,6 +339,7 @@
     <Compile Include="Intentions\QuickFixes\ColorPickerTest.cs" />
     <Compile Include="ProjectModel\ShaderLabProjectFileTypeTests.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceTest.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\LexerTests.cs" />
     <Compile Include="Psi\ShaderLab\ShaderLabLanguageTests.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -353,9 +354,7 @@
       <Name>resharper-unity</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Psi" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\src\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets" Condition="Exists('..\..\src\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -1,0 +1,4 @@
+Shader "MyShader"
+{
+  /* Unterminated comment
+}

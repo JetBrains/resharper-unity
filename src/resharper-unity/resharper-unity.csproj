@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;JET_MODE_ASSERT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -360,7 +360,26 @@
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReference.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceFactory.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceProviderFactory.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabLexer.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.GenericTokenNodeType.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.IdentifierTokenNodeType.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.FixedTokenNodeType.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.CommentTokenNodeTypes.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.Instances.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.WhitespaceTokenNodeTypes.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.ShaderLabTokenNodeType.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLab_lex.cs">
+      <DependentUpon>ShaderLab.lex</DependentUpon>
+    </Compile>
+    <Compile Include="Psi\ShaderLab\Tree\Impl\CommentTokens.cs" />
+    <Compile Include="Psi\ShaderLab\Tree\Impl\Identifier.cs" />
+    <Compile Include="Psi\ShaderLab\Tree\Impl\WhitespaceTokens.cs" />
+    <Compile Include="Psi\ShaderLab\Tree\IShaderLabTreeNode.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabFilteringLexer.cs" />
+    <Compile Include="Psi\ShaderLab\Tree\Impl\ShaderLabTokenBase.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs">
+      <DependentUpon>ShaderLabTokenType.Tokens.xml</DependentUpon>
+    </Compile>
     <Compile Include="Psi\ShaderLab\ShaderLabLanguage.cs" />
     <Compile Include="Psi\ShaderLab\ShaderLabLanguageService.cs" />
     <Compile Include="Psi\ShaderLab\ShaderLabProjectFileLanguageService.cs" />
@@ -393,9 +412,14 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
+    <None Include="Psi\ShaderLab\Parsing\Chars.lex" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Psi" />
+    <TokenGenerator Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.xml">
+      <OutputFile>Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets" Condition="Exists('..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets')" />

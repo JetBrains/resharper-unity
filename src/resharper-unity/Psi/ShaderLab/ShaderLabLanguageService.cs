@@ -2,6 +2,7 @@
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -31,7 +32,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
 
         public override IParser CreateParser(ILexer lexer, IPsiModule module, IPsiSourceFile sourceFile)
         {
-            throw new System.NotImplementedException();
+            return new DummyParser();
+        }
+
+        private class DummyParser : IParser
+        {
+            public IFile ParseFile()
+            {
+                return new DummyFile();
+            }
+
+            private class DummyFile : FileElementBase
+            {
+                public override NodeType NodeType => ShaderLabTokenType.BAD_CHARACTER;
+                public override PsiLanguageType Language => (PsiLanguageType) ShaderLabLanguage.Instance ?? UnknownLanguage.Instance;
+            }
         }
 
         public override IEnumerable<ITypeDeclaration> FindTypeDeclarations(IFile file)
