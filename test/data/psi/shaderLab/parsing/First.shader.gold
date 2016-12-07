@@ -1,0 +1,9 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderLabCommand
+    Identifier(type:IDENTIFIER, text:ShaderLab)
+    IShaderLabValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+

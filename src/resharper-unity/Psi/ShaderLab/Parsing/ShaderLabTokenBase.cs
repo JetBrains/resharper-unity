@@ -12,21 +12,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     {
         public override PsiLanguageType Language => LanguageFromParent;
 
-        // TODO: Uncomment once TreeNodeVisitor is available from PsiGen
-        //public virtual void Accept(TreeNodeVisitor visitor)
-        //{
-        //    visitor.VisitNode(this);
-        //}
+        public virtual void Accept(TreeNodeVisitor visitor)
+        {
+            visitor.VisitNode(this);
+        }
 
-        //public virtual void Accept<TContext>(TreeNodeVisitor<TContext> visitor, TContext context)
-        //{
-        //    visitor.VisitNode(this, context);
-        //}
+        public virtual void Accept<TContext>(TreeNodeVisitor<TContext> visitor, TContext context)
+        {
+            visitor.VisitNode(this, context);
+        }
 
-        //public virtual TResult Accept<TContext, TResult>(TreeNodeVisitor<TContext, TResult> visitor, TContext context)
-        //{
-        //    return visitor.VisitNode(this, context);
-        //}
+        public virtual TResult Accept<TContext, TResult>(TreeNodeVisitor<TContext, TResult> visitor, TContext context)
+        {
+            return visitor.VisitNode(this, context);
+        }
 
         public TokenNodeType GetTokenType()
         {

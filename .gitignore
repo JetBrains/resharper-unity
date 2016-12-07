@@ -13,6 +13,7 @@
 src/packages/*
 !src/packages/repositories.config
 *.nupkg
+src/resharper-unity/_Generated/
 
 **/.idea/workspace.xml
 

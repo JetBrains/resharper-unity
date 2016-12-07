@@ -32,21 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
 
         public override IParser CreateParser(ILexer lexer, IPsiModule module, IPsiSourceFile sourceFile)
         {
-            return new DummyParser();
-        }
-
-        private class DummyParser : IParser
-        {
-            public IFile ParseFile()
-            {
-                return new DummyFile();
-            }
-
-            private class DummyFile : FileElementBase
-            {
-                public override NodeType NodeType => ShaderLabTokenType.BAD_CHARACTER;
-                public override PsiLanguageType Language => (PsiLanguageType) ShaderLabLanguage.Instance ?? UnknownLanguage.Instance;
-            }
+            return new ShaderLabParser(lexer as ILexer<int> ?? lexer.ToCachingLexer());
         }
 
         public override IEnumerable<ITypeDeclaration> FindTypeDeclarations(IFile file)
@@ -63,31 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
         {
             public ILexer CreateLexer(IBuffer buffer)
             {
-                return (ILexer) new ShaderLabLexer(buffer);
+                return new ShaderLabLexerGenerated(buffer);
             }
-        }
-        
-        // TEMPORARY
-        private class ShaderLabLexer : ILexer
-        {
-            public ShaderLabLexer(IBuffer buffer)
-            {
-                Buffer = buffer;
-            }
-
-            public void Start()
-            {
-            }
-
-            public void Advance()
-            {
-            }
-
-            public object CurrentPosition { get; set; }
-            public TokenNodeType TokenType => null;
-            public int TokenStart => 0;
-            public int TokenEnd => 0;
-            public IBuffer Buffer { get; }
         }
     }
 }

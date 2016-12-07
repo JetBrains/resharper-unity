@@ -2,6 +2,14 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
+  </PropertyGroup>
+  <ItemGroup>
+    <PsiLanguageNames Include="ShaderLab">
+      <Visible>false</Visible>
+    </PsiLanguageNames>
+  </ItemGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}</ProjectGuid>
@@ -360,6 +368,35 @@
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReference.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceFactory.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceProviderFactory.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ParserMessages.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabParser.cs" />
+    <Compile Include="Psi\ShaderLab\Tree\Impl\ChildRole.cs" />
+    <Compile Include="Psi\ShaderLab\Tree\Impl\ShaderLabFileElement.cs" />
+    <Compile Include="Psi\ShaderLab\Tree\IShaderLabFile.cs" />
+    <Compile Include="_Generated\Parsing\ShaderLab\ErrorMessages.cs" />
+    <Compile Include="_Generated\Parsing\ShaderLab\ShaderLabParserGenerated.cs" />
+    <Compile Include="_Generated\Parsing\ShaderLab\TokenBitsets.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ElementBitsets.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ElementType.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\PropertiesCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\PropertiesValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShaderLabCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShaderLabFile.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShaderLabValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IPropertiesCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IPropertiesValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IShaderLabCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IShaderLabFile.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IShaderLabValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\PropertiesCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\PropertiesValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ShaderLabCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ShaderLabFileNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ShaderLabValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\TreeNodeVisitor.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\TreeNodeVisitor`1.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\TreeNodeVisitor`2.cs" />
+    <ParserGen Include="Psi\ShaderLab\Parsing\ShaderLab.psi" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabLexer.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.GenericTokenNodeType.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.IdentifierTokenNodeType.cs" />
@@ -371,12 +408,14 @@
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLab_lex.cs">
       <DependentUpon>ShaderLab.lex</DependentUpon>
     </Compile>
+    <Compile Include="Psi\ShaderLab\Tree\Impl\ShaderLabCompositeElement.cs" />
+    <Compile Include="Psi\ShaderLab\Tree\ShaderLabCompositeNodeType.cs" />
     <Compile Include="Psi\ShaderLab\Tree\Impl\CommentTokens.cs" />
     <Compile Include="Psi\ShaderLab\Tree\Impl\Identifier.cs" />
     <Compile Include="Psi\ShaderLab\Tree\Impl\WhitespaceTokens.cs" />
     <Compile Include="Psi\ShaderLab\Tree\IShaderLabTreeNode.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabFilteringLexer.cs" />
-    <Compile Include="Psi\ShaderLab\Tree\Impl\ShaderLabTokenBase.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenBase.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs">
       <DependentUpon>ShaderLabTokenType.Tokens.xml</DependentUpon>
     </Compile>
@@ -414,6 +453,7 @@
     </None>
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Include="Psi\ShaderLab\Parsing\Chars.lex" />
+    <None Include="_Generated\ShaderLab.timestamp" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -340,6 +340,7 @@
     <Compile Include="ProjectModel\ShaderLabProjectFileTypeTests.cs" />
     <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceTest.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\LexerTests.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ParserTests.cs" />
     <Compile Include="Psi\ShaderLab\ShaderLabLanguageTests.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
