@@ -37,14 +37,13 @@ namespace ApiParser
 
     public class UnityApiType
     {
-        private readonly string myNs;
         private readonly string myKind;
         private readonly string myDocPath;
         private readonly IList<UnityApiEventFunction> myEventFunctions;
 
         public UnityApiType(string ns, string name, string kind, string docPath)
         {
-            myNs = ns;
+            Namespace = ns;
             Name = name;
             myKind = kind;
             myDocPath = docPath;
@@ -53,6 +52,7 @@ namespace ApiParser
         }
 
         public string Name { get; }
+        public string Namespace { get; }
 
         public UnityApiEventFunction AddEventFunction(string name, bool isStatic, ApiType returnType, string docPath = null, string description = null, bool undocumented = false)
         {
@@ -66,7 +66,7 @@ namespace ApiParser
             xmlWriter.WriteStartElement("type");
             xmlWriter.WriteAttributeString("kind", myKind);
             xmlWriter.WriteAttributeString("name", Name);
-            xmlWriter.WriteAttributeString("ns", myNs);
+            xmlWriter.WriteAttributeString("ns", Namespace);
             xmlWriter.WriteAttributeString("path", myDocPath);
             foreach (var eventFunction in myEventFunctions)
                 eventFunction.ExportTo(xmlWriter);
