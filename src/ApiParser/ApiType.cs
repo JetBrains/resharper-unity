@@ -28,5 +28,10 @@ namespace ApiParser
         public string FullName => type.FullName;
 
         public bool IsArray { get; }
+
+        public override string ToString()
+        {
+            return FullName + (IsArray ? "[]" : string.Empty);
+        }
     }
 }

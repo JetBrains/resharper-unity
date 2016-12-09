@@ -12,13 +12,16 @@ namespace ApiParser
     {
         private static readonly Regex NsRegex = new Regex(@"^(?<type>class|struct) in\W*(?<namespace>\w+(?:\.\w+)*)$");
         private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$");
-        private readonly string rootPath;
-        [NotNull] private readonly UnityApi api;
 
-        public ApiParser([NotNull] string path, [NotNull] UnityApi api)
+        private readonly UnityApi api;
+        private readonly string myDocRootPath;
+        private readonly string myScriptReferencePath;
+
+        public ApiParser(UnityApi api, string docRootPath, string scriptReferencePath)
         {
-            rootPath = path;
             this.api = api;
+            myDocRootPath = docRootPath;
+            myScriptReferencePath = scriptReferencePath;
         }
 
         public event EventHandler<ProgressEventArgs> Progress;
@@ -28,13 +31,14 @@ namespace ApiParser
             api.ExportTo(writer);
         }
 
-        public void ParseFolder()
+        public void ParseFolder(string rootPath, Version apiVersion)
         {
-            var files = Directory.EnumerateFiles(rootPath, @"*.html").ToArray();
+            var path = Path.Combine(rootPath, myScriptReferencePath);
+            var files = Directory.EnumerateFiles(path, @"*.html").ToArray();
 
             for (var i = 0; i < files.Length; ++i)
             {
-                ParseFile(files[i]);
+                ParseFile(rootPath, files[i], apiVersion);
                 OnProgress(new ProgressEventArgs(i + 1, files.Length));
             }
 
@@ -59,7 +63,7 @@ namespace ApiParser
             Progress?.Invoke(this, e);
         }
 
-        private void ParseFile([NotNull] string filename)
+        private void ParseFile(string rootPath, string filename, Version apiVersion)
         {
             var document = ApiNode.Load(filename);
             var section = document?.SelectOne(@"//div.content/div.section");
@@ -77,30 +81,36 @@ namespace ApiParser
             var match = NsRegex.Match(ns.Text);
             var clsType = match.Groups["type"].Value;
             var nsName = match.Groups["namespace"].Value;
-            var unityApiType = api.AddType(nsName, name.Text, clsType, new Uri(filename).AbsoluteUri);
+
+            var docPath = filename.Replace(rootPath, myDocRootPath);
+            var unityApiType = api.AddType(nsName, name.Text, clsType, new Uri(docPath).AbsoluteUri, apiVersion);
 
             foreach (var message in messages)
-                ParseMessage(message, unityApiType);
+            {
+                var eventFunction = ParseMessage(rootPath, message, apiVersion, nsName);
+                unityApiType.MergeEventFunction(eventFunction, apiVersion);
+            }
         }
 
-        private void ParseMessage([NotNull] ApiNode message, UnityApiType unityApiType)
+        [CanBeNull]
+        private UnityApiEventFunction ParseMessage(string rootPath, ApiNode message, Version apiVersion, string hintNamespace)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
-            if (link == null || desc == null) return;
+            if (link == null || desc == null) return null;
 
             var detailsPath = link[@"href"];
-            if (string.IsNullOrWhiteSpace(detailsPath)) return;
+            if (string.IsNullOrWhiteSpace(detailsPath)) return null;
 
-            var path = Path.Combine(rootPath, detailsPath);
-            if (!File.Exists(path)) return;
+            var path = Path.Combine(rootPath, myScriptReferencePath, detailsPath);
+            if (!File.Exists(path)) return null;
 
             var detailsDoc = ApiNode.Load(path);
             var details = detailsDoc?.SelectOne(@"//div.content/div.section");
             var signature = details?.SelectOne(@"div.mb20.clear/h1.heading.inherit");
             var staticNode = details?.SelectOne(@"div.subsection/p/code.varname[text()='static']");
 
-            if (signature == null) return;
+            if (signature == null) return null;
 
             var messageName = link.Text;
             var returnType = ApiType.Void;
@@ -109,16 +119,20 @@ namespace ApiParser
             var example = PickExample(details);
             if (example != null)
             {
-                var tuple = ParseDetailsFromExample(messageName, example, unityApiType.Namespace);
+                var tuple = ParseDetailsFromExample(messageName, example, hintNamespace);
                 returnType = tuple.Item1;
                 argumentNames = tuple.Item2;
             }
 
-            var eventFunction = unityApiType.AddEventFunction(messageName, staticNode != null, returnType, new Uri(path).AbsoluteUri, desc.Text);
-            ParseParameters(eventFunction, signature, details, unityApiType.Namespace, argumentNames);
+            var docPath = Path.Combine(myDocRootPath, myScriptReferencePath, detailsPath);
+            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null, returnType, apiVersion, desc.Text, new Uri(docPath).AbsoluteUri, false);
+
+            ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames);
+
+            return eventFunction;
         }
 
-        private static void ParseParameters(UnityApiEventFunction eventFunction, ApiNode signature, ApiNode details, string owningMessageNamespace, string[] argumentNames)
+        private static void ParseParameters(UnityApiEventFunction  eventFunction, ApiNode signature, ApiNode details, string owningMessageNamespace, string[] argumentNames)
         {
             // E.g. OnCollisionExit2D(Collision2D) - doesn't always include the argument name
             // Hopefully, we parsed the argument name from the example
@@ -142,7 +156,10 @@ namespace ApiParser
             if (argumentNames != null)
             {
                 for (var i = 0; i < arguments.Count; i++)
-                    arguments[i].Name = argumentNames[i];
+                {
+                    if (!string.IsNullOrEmpty(argumentNames[i]))
+                        arguments[i].Name = argumentNames[i];
+                }
             }
 
             var parameters = details.Subsection("Parameters").ToArray();

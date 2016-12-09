@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -8,7 +9,17 @@ namespace ApiParser
 {
     public static class Program
     {
-        private static int ourProgress;
+        private const string ScriptReferencePath = @"Documentation\en\ScriptReference";
+
+        private static readonly IList<Tuple<string, Version>> Docs = new List<Tuple<string, Version>>
+        {
+            // These folders need to live in the runtime folder
+            // Can't redistribute, sorry
+            Tuple.Create("Documentation-5.2.3f1", new Version(5, 2)),
+            Tuple.Create("Documentation-5.3.7f1", new Version(5, 3)),
+            Tuple.Create("Documentation-5.4.3f1", new Version(5, 4)),
+            Tuple.Create("Documentation-5.5.0f3", new Version(5, 5))
+        };
 
         public static void Main(string[] args)
         {
@@ -16,30 +27,29 @@ namespace ApiParser
             var dataPath = Path.Combine(progPath, @"Unity\Editor\Data");
             var monoPath = Path.Combine(dataPath, @"Mono\lib\mono\unity");
             var basePath = Path.Combine(dataPath, @"Managed");
+
             TypeResolver.AddAssembly(typeof(string).Assembly);
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(basePath, @"UnityEngine.dll")));
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(monoPath, @"UnityScript.dll")));
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(basePath, @"UnityEditor.dll")));
-
             Console.WriteLine();
-            var path = Path.Combine(dataPath, @"Documentation\en\ScriptReference");
 
             var unityApi = new UnityApi();
-            var parser = new ApiParser(path, unityApi);
+            var parser = new ApiParser(unityApi, dataPath, ScriptReferencePath);
 
             parser.Progress += (s, e) =>
             {
-                if (e.Percent <= ourProgress) return;
-
-                ourProgress = e.Percent;
                 var cursorTop = Console.CursorTop;
                 Console.WriteLine("{0,5} / {1,5} ({2,3}%)", e.Current, e.Total, e.Percent);
                 Console.SetCursorPosition(0, cursorTop);
             };
 
-            parser.ParseFolder();
-
-            AddUndocumentApis(unityApi);
+            foreach (var doc in Docs)
+            {
+                Console.WriteLine(doc.Item1);
+                parser.ParseFolder(doc.Item1, doc.Item2);
+                AddUndocumentApis(unityApi, doc.Item2);
+            }
 
             using (var writer = new XmlTextWriter(@"api.xml", Encoding.UTF8) {Formatting = Formatting.Indented})
             {
@@ -50,27 +60,34 @@ namespace ApiParser
             // Console.ReadLine();
         }
 
-        private static void AddUndocumentApis(UnityApi unityApi)
+        private static void AddUndocumentApis(UnityApi unityApi, Version apiVersion)
         {
             // From AssetPostprocessingInternal
             var type = unityApi.FindType("AssetPostprocessor");
-            var eventFunction = type.AddEventFunction("OnPostprocessAllAssets", true, ApiType.Void, undocumented: true);
-            eventFunction.AddParameter("importedAssets", ApiType.StringArray);
-            eventFunction.AddParameter("deletedAssets", ApiType.StringArray);
-            eventFunction.AddParameter("movedAssets", ApiType.StringArray);
-            eventFunction.AddParameter("movedFromPathAssets", ApiType.StringArray);
 
-            eventFunction = type.AddEventFunction("OnPreprocessAssembly", false, ApiType.Void, undocumented: true);
+            // This is documented, at least for 5.4...
+            //var eventFunction = new UnityApiEventFunction("OnPostprocessAllAssets", true, ApiType.Void, apiVersion, undocumented: true);
+            //eventFunction.AddParameter("importedAssets", ApiType.StringArray);
+            //eventFunction.AddParameter("deletedAssets", ApiType.StringArray);
+            //eventFunction.AddParameter("movedAssets", ApiType.StringArray);
+            //eventFunction.AddParameter("movedFromPathAssets", ApiType.StringArray);
+            //type.MergeEventFunction(eventFunction, apiVersion);
+
+            var eventFunction = new UnityApiEventFunction("OnPreprocessAssembly", false, ApiType.Void, apiVersion, undocumented: true);
             eventFunction.AddParameter("pathName", ApiType.String);
+            type.MergeEventFunction(eventFunction, apiVersion);
 
-            type.AddEventFunction("OnGeneratedCSProjectFiles", true, ApiType.Void, undocumented: true);
+            eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles", true, ApiType.Void, apiVersion, undocumented: true);
+            type.MergeEventFunction(eventFunction, apiVersion);
 
             // Technically, return type is optional
-            type.AddEventFunction("OnPreGeneratingCSProjectFiles", true, ApiType.Bool, undocumented: true);
+            eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles", true, ApiType.Bool, apiVersion,  undocumented: true);
+            type.MergeEventFunction(eventFunction, apiVersion);
 
             // From AssetModificationProcessorInternal
             type = unityApi.FindType("AssetModificationProcessor");
-            type.AddEventFunction("OnStatusUpdated", true, ApiType.Void, undocumented: true);
+            eventFunction = new UnityApiEventFunction("OnStatusUpdated", true, ApiType.Void, apiVersion, undocumented: true);
+            type.MergeEventFunction(eventFunction, apiVersion);
         }
     }
 

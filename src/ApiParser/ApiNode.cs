@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,26 @@ namespace ApiParser
         private string Code => node.InnerHtml;
 
         [NotNull]
-        public string Text => node.InnerText.Trim();
+        public string Text
+        {
+            get
+            {
+                // Fix up dodgy HTML in example text for Unity 5.5
+                if (node.Name == "pre")
+                {
+                    var text = "";
+                    foreach (var childNode in node.ChildNodes)
+                    {
+                        if (childNode.NodeType == HtmlNodeType.Element && childNode.Name == "br")
+                            text += Environment.NewLine;
+                        else
+                            text += childNode.InnerText;
+                    }
+                    return text;
+                }
+                return node.InnerText.Trim();
+            }
+        }
 
         [CanBeNull]
         public ApiNode this[int index] => Wrap(node.ChildNodes[index]);

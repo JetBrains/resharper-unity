@@ -50,7 +50,7 @@ namespace ApiParser
                 {
                     if (candidate.Namespace == namespaceHint)
                     {
-                        Console.WriteLine("WARNING: Multiple candidates for {0}. Choosing {1} based on namespace", name, candidate.FullName);
+                        Console.WriteLine("WARNING: Multiple candidates for `{0}`. Choosing `{1}` based on namespace", name, candidate.FullName);
                         return candidate;
                     }
                 }
