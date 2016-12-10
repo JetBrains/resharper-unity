@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -10,15 +11,22 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class UnityType
     {
         private readonly IClrTypeName myTypeName;
+        private readonly Version myMinimumVersion;
+        private readonly Version myMaximumVersion;
+        private readonly IEnumerable<UnityEventFunction> myEventFunctions;
 
-        public UnityType(IClrTypeName typeName, IEnumerable<UnityEventFunction> eventFunctions)
+        public UnityType(IClrTypeName typeName, IEnumerable<UnityEventFunction> eventFunctions, Version minimumVersion, Version maximumVersion)
         {
             myTypeName = typeName;
-            EventFunctions = eventFunctions;
+            myMinimumVersion = minimumVersion;
+            myMaximumVersion = maximumVersion;
+            myEventFunctions = eventFunctions;
         }
 
-        [NotNull]
-        public IEnumerable<UnityEventFunction> EventFunctions { get; }
+        public IEnumerable<UnityEventFunction> GetEventFunctions(Version unityVersion)
+        {
+            return myEventFunctions.Where(f => f.SupportsVersion(unityVersion));
+        }
 
         [CanBeNull]
         public ITypeElement GetType([NotNull] IPsiModule module)
@@ -27,9 +35,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return type.GetTypeElement();
         }
 
-        public bool HasEventFunction([NotNull] IMethod method)
+        public bool HasEventFunction([NotNull] IMethod method, Version unityVersion)
         {
-            return EventFunctions.Any(m => m.Match(method));
+            return myEventFunctions.Any(f => f.SupportsVersion(unityVersion) && f.Match(method));
+        }
+
+        public bool SupportsVersion(Version unityVersion)
+        {
+            return myMinimumVersion <= unityVersion && unityVersion <= myMaximumVersion;
         }
     }
 }

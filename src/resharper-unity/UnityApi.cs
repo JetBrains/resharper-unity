@@ -11,16 +11,23 @@ namespace JetBrains.ReSharper.Plugins.Unity
     [SolutionComponent]
     public class UnityApi
     {
-        private readonly Lazy<List<UnityType>> myTypes = Lazy.Of(() =>
+        private readonly UnityVersion myUnityVersion;
+        private readonly Lazy<List<UnityType>> myTypes;
+
+        public UnityApi(UnityVersion unityVersion)
         {
-            var apiXml = new ApiXml();
-            return apiXml.LoadTypes();
-        }, true);
+            myUnityVersion = unityVersion;
+            myTypes = Lazy.Of(() =>
+            {
+                var apiXml = new ApiXml();
+                return apiXml.LoadTypes(myUnityVersion.Version);
+            }, true);
+        }
 
         [NotNull]
         public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type)
         {
-            return myTypes.Value.Where(c => type.IsDescendantOf(c.GetType(type.Module)));
+            return myTypes.Value.Where(t => t.SupportsVersion(myUnityVersion.Version) && type.IsDescendantOf(t.GetType(type.Module)));
         }
 
         public bool IsUnityType([NotNull] ITypeElement type)
@@ -33,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var containingType = method.GetContainingType();
             if (containingType != null)
             {
-                return GetBaseUnityTypes(containingType).Any(type => type.HasEventFunction(method));
+                return GetBaseUnityTypes(containingType).Any(type => type.HasEventFunction(method, myUnityVersion.Version));
             }
             return false;
         }
@@ -53,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (containingType != null)
             {
                 var eventFunctions = from t in GetBaseUnityTypes(containingType)
-                    from m in t.EventFunctions
+                    from m in t.GetEventFunctions(myUnityVersion.Version)
                     where m.Match(method)
                     select m;
                 return eventFunctions.FirstOrDefault();

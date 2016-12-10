@@ -331,6 +331,7 @@
     <Compile Include="Daemon\UsageChecking\UsageCheckBaseTest.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionCompletionActionTest.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionCompletionListTest.cs" />
+    <Compile Include="Feature\Services\CodeCompletion\VersionSpecificCompletionListTest.cs" />
     <Compile Include="Feature\Services\Descriptions\IdentifierTooltipTest.cs" />
     <Compile Include="Feature\Services\Descriptions\IdentifierTooltipTestBase.cs" />
     <Compile Include="Feature\Services\Generate\EventFunctionGeneratorTest.cs" />

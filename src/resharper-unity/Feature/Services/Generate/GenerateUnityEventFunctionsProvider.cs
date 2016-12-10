@@ -11,10 +11,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
     public class GenerateUnityEventFunctionsProvider : GeneratorProviderBase<CSharpGeneratorContext>
     {
         private readonly UnityApi myUnityApi;
+        private readonly UnityVersion myUnityVersion;
 
-        public GenerateUnityEventFunctionsProvider(UnityApi unityApi)
+        public GenerateUnityEventFunctionsProvider(UnityApi unityApi, UnityVersion unityVersion)
         {
             myUnityApi = unityApi;
+            myUnityVersion = unityVersion;
         }
 
         public override void Populate(CSharpGeneratorContext context)
@@ -26,9 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
             if (typeElement == null)
                 return;
 
-            var unityTypes = myUnityApi.GetBaseUnityTypes(typeElement).ToArray();
-            var eventFunctions = unityTypes.SelectMany(h => h.EventFunctions)
-                .Where(m => !typeElement.Methods.Any(m.Match)).ToArray();
+                var unityTypes = myUnityApi.GetBaseUnityTypes(typeElement).ToArray();
+            var eventFunctions = unityTypes.SelectMany(h => h.GetEventFunctions(myUnityVersion.Version))
+                .Where(f => !typeElement.Methods.Any(m => f.Match(m))).ToArray();
 
             var classDeclaration = context.ClassDeclaration;
             var factory = CSharpElementFactory.GetInstance(classDeclaration);

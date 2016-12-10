@@ -368,6 +368,7 @@
     <Compile Include="Psi\Naming\NamingConsistencyWarningSuppressor.cs" />
     <Compile Include="ProjectModel\Properties\Flavours\UnityProjectFlavor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnityVersion.cs" />
     <Compile Include="ZoneMarker.cs" />
   </ItemGroup>
   <ItemGroup>

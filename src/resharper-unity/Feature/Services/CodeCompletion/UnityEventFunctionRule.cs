@@ -75,12 +75,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                 return false;
 
             var unityApi = context.BasicContext.Solution.GetComponent<UnityApi>();
+            var unityVersion = context.BasicContext.Solution.GetComponent<UnityVersion>();
             var unityTypes = unityApi.GetBaseUnityTypes(typeElement);
             foreach (var unityType in unityTypes)
             {
                 var items = new List<ILookupItem>();
 
-                foreach (var eventFunction in unityType.EventFunctions)
+                foreach (var eventFunction in unityType.GetEventFunctions(unityVersion.Version))
                 {
                     if (typeElement.Methods.Any(m => eventFunction.Match(m)))
                         continue;
