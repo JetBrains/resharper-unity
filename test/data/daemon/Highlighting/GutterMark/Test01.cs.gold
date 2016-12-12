@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
-public class A : MonoBehaviour
+public class |A|(0) : MonoBehaviour
 {
-    public object |unityField|(0);
+    public object |unityField|(1);
     private object notUnityField;
 
-    public object |unityField1|(1), |unityField2|(2);
+    public object |unityField1|(2), |unityField2|(3);
 
-    private void |OnDestroy|(3)()
+    private void |OnDestroy|(4)()
     {
     }
 
@@ -17,9 +17,10 @@ public class A : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): Unity Gutter Icon: This field is initialised by Unity
+(0): Unity Gutter Icon: Unity Scripting Type
 (1): Unity Gutter Icon: This field is initialised by Unity
 (2): Unity Gutter Icon: This field is initialised by Unity
-(3): Unity Gutter Icon: Unity Event Function
+(3): Unity Gutter Icon: This field is initialised by Unity
+(4): Unity Gutter Icon: Unity Event Function
 
 This function is called when the MonoBehaviour will be destroyed.

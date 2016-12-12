@@ -333,13 +333,15 @@
     <Compile Include="Daemon\Highlighting\UnityColorHighlighterProcess.cs" />
     <Compile Include="Daemon\Highlighting\UnityEventFunctionDetector.cs" />
     <Compile Include="Daemon\Highlighting\UnityFieldDetector.cs" />
+    <Compile Include="Daemon\Highlighting\UnityTypeDetector.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
     <Compile Include="DeclaredElementExtensions.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionBehavior.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionLiteralTransformationRule.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionRule.cs" />
+    <Compile Include="Feature\Services\QuickFixes\GenerateUnityEventFunctionsFix.cs" />
     <Compile Include="Feature\Services\Daemon\HighlightingAttributeIds.cs" />
-    <Compile Include="Feature\Services\Daemon\UnityEventFunctionGutterMark.cs" />
+    <Compile Include="Feature\Services\Daemon\UnityGutterMark.cs" />
     <Compile Include="Feature\Services\Daemon\UnityMarkOnGutter.cs" />
     <Compile Include="Feature\Services\Descriptions\UnityEventFunctionDescriptionProvider.cs" />
     <Compile Include="Feature\Services\Generate\GenerateUnityEventFunctionsWorkflow.cs" />

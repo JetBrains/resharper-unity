@@ -1,6 +1,15 @@
+using System.Collections.Generic;
 using JetBrains.DocumentModel;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Resources.Resources.Icons;
+using JetBrains.TextControl;
+using JetBrains.UI.BulbMenu;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
 {
@@ -25,5 +34,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
         public DocumentRange CalculateRange() => myRange;
         public string ToolTip { get; }
         public string ErrorStripeToolTip => ToolTip;
+
+        public IEnumerable<BulbMenuItem> GetBulbMenuItems(ISolution solution, ITextControl textControl)
+        {
+            var declaration = myElement as IClassLikeDeclaration;
+            if (declaration != null)
+            {
+                var foo = new GenerateUnityEventFunctionsFix(declaration);
+                return new[]
+                {
+                    new BulbMenuItem(new IntentionAction.MyExecutableProxi(foo, solution, textControl), "Generate Unity event functions", PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
+                };
+            }
+
+            return EmptyList<BulbMenuItem>.Enumerable;
+        }
     }
 }
