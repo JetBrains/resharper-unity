@@ -1,6 +1,5 @@
-﻿using System.Linq;
-using JetBrains.Metadata.Reader.API;
-using JetBrains.Metadata.Reader.Impl;
+﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -10,9 +9,13 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 {
-    public class MonoBehaviourInvokeReferenceFactory : IReferenceFactory
+    public class UnityEventFunctionReferenceFactory : IReferenceFactory
     {
-        private static readonly IClrTypeName MonoBehaviourTypeName = new ClrTypeName("UnityEngine.MonoBehaviour");
+        private static readonly HashSet<string> ReferencingMethodNames = new HashSet<string>
+        {
+            "Invoke", "InvokeRepeating", "CancelInvoke",
+            "StartCoroutine", "StopCoroutine"
+        };
 
         public IReference[] GetReferences(ITreeNode element, IReference[] oldReferences)
         {
@@ -29,13 +32,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
                 var invocationExpression = literal.GetContainingNode<IInvocationExpression>();
                 var invocationReference = invocationExpression?.Reference;
                 var invokedMethod = invocationReference?.Resolve().DeclaredElement as IMethod;
-                if (invokedMethod != null &&
-                    (invokedMethod.ShortName == "Invoke"
-                    || invokedMethod.ShortName == "InvokeRepeating"
-                    || invokedMethod.ShortName == "CancelInvoke"))
+                if (invokedMethod != null && DoesMethodReferenceFunction(invokedMethod))
                 {
                     var containingType = invokedMethod.GetContainingType();
-                    if (containingType != null && Equals(containingType.GetClrName(), MonoBehaviourTypeName))
+                    if (containingType != null && Equals(containingType.GetClrName(), KnownTypes.MonoBehaviour))
                     {
                         var targetType = invocationExpression.ExtensionQualifier?.GetExpressionType().ToIType()?.GetTypeElement()
                             ?? literal.GetContainingNode<IMethodDeclaration>()?.DeclaredElement?.GetContainingType();
@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
                         // TODO: Check if currentType is derived from MonoBehaviour?
                         if (targetType != null)
                         {
-                            IReference reference = new MonoBehaviourInvokeReference(targetType, literal);
+                            IReference reference = new UnityEventFunctionReference(targetType, literal);
 
                             return oldReferences != null && oldReferences.Length == 1
                                    && Equals(oldReferences[0], reference)
@@ -63,6 +63,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             if (literal != null && literal.ConstantValue.IsString())
                 return names.Contains((string) literal.ConstantValue.Value);
             return false;
+        }
+
+        private static bool DoesMethodReferenceFunction(IMethod invokedMethod)
+        {
+            return ReferencingMethodNames.Contains(invokedMethod.ShortName);
         }
     }
 }

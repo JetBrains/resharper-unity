@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 
         private bool IsApplicable(IReference reference)
         {
-            return reference is IUnityEventFunctionReference;
+            return reference is UnityEventFunctionReference;
         }
 
         protected override AutocompletionBehaviour GetAutocompletionBehaviour(CSharpCodeCompletionContext specificContext)

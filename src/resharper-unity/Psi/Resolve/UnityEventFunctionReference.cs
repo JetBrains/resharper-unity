@@ -8,16 +8,12 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 {
-    public interface IUnityEventFunctionReference
-    {
-    }
-
-    public class MonoBehaviourInvokeReference : CheckedReferenceBase<ILiteralExpression>, ICompletableReference, IReferenceFromStringLiteral, IUnityEventFunctionReference
+    public class UnityEventFunctionReference : CheckedReferenceBase<ILiteralExpression>, ICompletableReference, IReferenceFromStringLiteral
     {
         private readonly ITypeElement myTypeElement;
         private readonly ISymbolFilter myMethodFilter;
 
-        public MonoBehaviourInvokeReference(ITypeElement typeElement, ILiteralExpression literal)
+        public UnityEventFunctionReference(ITypeElement typeElement, ILiteralExpression literal)
             : base(literal)
         {
             myTypeElement = typeElement;
@@ -70,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             literalAlterer.Replace((string)myOwner.ConstantValue.Value, element.ShortName, myOwner.GetPsiModule());
             var newOwner = literalAlterer.Expression;
             if (!myOwner.Equals(newOwner))
-                return newOwner.FindReference<MonoBehaviourInvokeReference>() ?? this;
+                return newOwner.FindReference<UnityEventFunctionReference>() ?? this;
             return this;
         }
 
