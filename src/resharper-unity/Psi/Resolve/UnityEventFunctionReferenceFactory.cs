@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
     {
         private static readonly HashSet<string> ReferencingMethodNames = new HashSet<string>
         {
-            "Invoke", "InvokeRepeating", "CancelInvoke",
+            "Invoke", "InvokeRepeating", "CancelInvoke", "IsInvoking",
             "StartCoroutine", "StopCoroutine"
         };
 
