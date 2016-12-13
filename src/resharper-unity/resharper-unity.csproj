@@ -332,8 +332,10 @@
     <Compile Include="ClassNames.cs" />
     <Compile Include="Daemon\Highlighting\ColorUtils.cs" />
     <Compile Include="Daemon\Highlighting\UnityColorHighlighterProcess.cs" />
+    <Compile Include="Daemon\Highlighting\UnityElementProblemAnalyzer.cs" />
     <Compile Include="Daemon\Highlighting\UnityEventFunctionDetector.cs" />
     <Compile Include="Daemon\Highlighting\UnityFieldDetector.cs" />
+    <Compile Include="Daemon\Highlighting\UnityInitialiseOnLoadCctorDetector.cs" />
     <Compile Include="Daemon\Highlighting\UnityTypeDetector.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
     <Compile Include="DeclaredElementExtensions.cs" />

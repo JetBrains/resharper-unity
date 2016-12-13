@@ -47,11 +47,29 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool IsUnityField([NotNull] IField field)
         {
-            if (field.GetAccessRights() != AccessRights.PUBLIC)
+            if (field.IsStatic)
                 return false;
 
             var containingType = field.GetContainingType();
-            return containingType != null && IsUnityType(containingType);
+            if (containingType == null || !IsUnityType(containingType))
+                return false;
+
+            // TODO: This should also check the type of the field
+            // Only allow serializable fields
+            // See https://docs.unity3d.com/ScriptReference/SerializeField.html
+            // This should probably also be an inspection
+
+            var accessRights = field.GetAccessRights();
+            if (accessRights == AccessRights.PUBLIC)
+            {
+                return !field.HasAttributeInstance(KnownTypes.NonSerializedAttribute, false);
+            }
+            if (accessRights == AccessRights.PRIVATE)
+            {
+                return field.HasAttributeInstance(KnownTypes.SerializeField, false);
+            }
+
+            return false;
         }
 
         public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method)

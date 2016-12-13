@@ -7,34 +7,19 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
 {
     [ElementProblemAnalyzer(typeof(IClassLikeDeclaration), HighlightingTypes = new[] {typeof(UnityMarkOnGutter)})]
-    public class UnityTypeDetector : ElementProblemAnalyzer<IClassLikeDeclaration>
+    public class UnityTypeDetector : UnityElementProblemAnalyzer<IClassLikeDeclaration>
     {
-        private readonly UnityApi myUnityApi;
-
         public UnityTypeDetector(UnityApi unityApi)
+            : base(unityApi)
         {
-            myUnityApi = unityApi;
         }
 
-        protected override void Run(IClassLikeDeclaration element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Analyze(IClassLikeDeclaration element, ElementProblemAnalyzerData data,
+            IHighlightingConsumer consumer)
         {
-            if (data.ProcessKind != DaemonProcessKind.VISIBLE_DOCUMENT)
-                return;
-
-            if (element.GetProject().IsUnityProject())
-            {
-                var @class = element.DeclaredElement;
-                if (@class != null)
-                {
-                    if (myUnityApi.IsUnityType(@class))
-                    {
-                        var documentRange = element.GetNameDocumentRange();
-                        var highlighting = new UnityMarkOnGutter(element, documentRange, "Unity Scripting Type");
-
-                        consumer.AddHighlighting(highlighting, documentRange);
-                    }
-                }
-            }
+            var @class = element.DeclaredElement;
+            if (@class != null && Api.IsUnityType(@class))
+                AddGutterMark(element, element.GetNameDocumentRange(), "Unity scripting type", consumer);
         }
     }
 }

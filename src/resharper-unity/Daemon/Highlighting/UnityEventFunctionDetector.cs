@@ -8,40 +8,30 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
 {
     [ElementProblemAnalyzer(typeof(IMethodDeclaration), HighlightingTypes = new[] {typeof(UnityMarkOnGutter)})]
-    public class UnityEventFunctionDetector : ElementProblemAnalyzer<IMethodDeclaration>
+    public class UnityEventFunctionDetector : UnityElementProblemAnalyzer<IMethodDeclaration>
     {
-        private readonly UnityApi myUnityApi;
-
         public UnityEventFunctionDetector(UnityApi unityApi)
+            : base(unityApi)
         {
-            myUnityApi = unityApi;
         }
 
-        protected override void Run(IMethodDeclaration element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Analyze(IMethodDeclaration element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (data.ProcessKind != DaemonProcessKind.VISIBLE_DOCUMENT)
-                return;
-
-            if (element.GetProject().IsUnityProject())
+            var method = element.DeclaredElement;
+            if (method != null)
             {
-                var method = element.DeclaredElement;
-                if (method != null)
+                var eventFunction = Api.GetUnityEventFunction(method);
+                if (eventFunction != null)
                 {
-                    var eventFunction = myUnityApi.GetUnityEventFunction(method);
-                    if (eventFunction != null)
-                    {
-                        // Use the name as the range, rather than the range of the whole
-                        // method declaration (including body). Rider will remove the highlight
-                        // if anything inside the range changes, causing ugly flashes. It
-                        // might be nicer to use the whole of the method declaration (name + params)
-                        var documentRange = element.GetNameDocumentRange();
-                        var tooltip = "Unity Event Function";
-                        if (!string.IsNullOrEmpty(eventFunction.Description))
-                            tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
-                        var highlighting = new UnityMarkOnGutter(element, documentRange, tooltip);
-
-                        consumer.AddHighlighting(highlighting, documentRange);
-                    }
+                    // Use the name as the range, rather than the range of the whole
+                    // method declaration (including body). Rider will remove the highlight
+                    // if anything inside the range changes, causing ugly flashes. It
+                    // might be nicer to use the whole of the method declaration (name + params)
+                    var documentRange = element.GetNameDocumentRange();
+                    var tooltip = "Unity event function";
+                    if (!string.IsNullOrEmpty(eventFunction.Description))
+                        tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
+                    AddGutterMark(element, documentRange, tooltip, consumer);
                 }
             }
         }
