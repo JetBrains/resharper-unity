@@ -10,6 +10,8 @@
  8: Update():System.Void
  9: OnDisable():System.Void
  10: OnEnable():System.Void
+ 11: OnValidate():System.Void
+ 12: Reset():System.Void
 
 // ${KIND:Unity.EventFunctions}
 using UnityEditor;
