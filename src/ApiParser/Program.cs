@@ -80,7 +80,32 @@ namespace ApiParser
             type = unityApi.FindType("AssetModificationProcessor");
             eventFunction = new UnityApiEventFunction("OnStatusUpdated", true, ApiType.Void, apiVersion, undocumented: true);
             type.MergeEventFunction(eventFunction, apiVersion);
+
+            // ScriptableObject
+            // From Shawn White @ Unity (https://github.com/JetBrains/resharper-unity/issues/79#issuecomment-266727851):
+            // OnValidate's behavior on ScriptableObject is the same as on MonoBehaviour. OnValidate is a non-static
+            // method which is invoked from native and isn't picky about visibility (it'll get invoked regardless of
+            // visibility). OnValidate is different from the other magic methods in that it only gets invoked from
+            // the Editor. A good practice is to wrap OnValidate with #if UNITY_EDITOR so that the function can be
+            // stripped out for deployment.
+            //
+            // To expand on ScriptableObject a bit. Native Unity code doesn't distinguish between MonoBehaviour and
+            // ScriptableObject. They are the same native type (it's confusing, I know, and everyone gets tripped up
+            // by it that looks at the native code base). The only difference is in how the object is used,
+            // MonoBehaviours live on GameObjects, while ScriptableObjects can live alone.So in general, all magic
+            // methods that would make sense without a GameObject context should work and be implemented for
+            // ScriptableObjects. Off the top of my head this includes, Awake, OnEnable, OnDisable, OnDestroy,
+            // OnValidate, and Reset, but there could be more.
+            type = unityApi.FindType("ScriptableObject");
+
+            eventFunction = new UnityApiEventFunction("OnValidate", false, ApiType.Void, apiVersion,
+                description: "This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).",
+                undocumented: true);
+            type.MergeEventFunction(eventFunction, apiVersion);
+
+            eventFunction = new UnityApiEventFunction("Reset", false, ApiType.Void, apiVersion,
+                description: "Reset to default values.", undocumented: true);
+            type.MergeEventFunction(eventFunction, apiVersion);
         }
     }
-
 }

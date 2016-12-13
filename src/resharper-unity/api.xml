@@ -712,6 +712,12 @@
     <message name="OnEnable" static="False" minimumVersion="5.2" maximumVersion="5.5" description="This function is called when the object is loaded." path="Documentation/en/ScriptReference/ScriptableObject.OnEnable.html">
       <returns type="System.Void" array="False" />
     </message>
+    <message name="OnValidate" static="False" minimumVersion="5.2" maximumVersion="5.5" undocumented="True" description="This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="Reset" static="False" minimumVersion="5.2" maximumVersion="5.5" undocumented="True" description="Reset to default values.">
+      <returns type="System.Void" array="False" />
+    </message>
   </type>
   <type kind="class" name="ScriptableWizard" ns="UnityEditor" minimumVersion="5.2" maximumVersion="5.5" path="Documentation/en/ScriptReference/ScriptableWizard.html">
     <message name="OnWizardCreate" static="False" minimumVersion="5.2" maximumVersion="5.5" description="This is called when the user clicks on the Create button." path="Documentation/en/ScriptReference/ScriptableWizard.OnWizardCreate.html">
