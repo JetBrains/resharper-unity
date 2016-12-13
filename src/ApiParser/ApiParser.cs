@@ -14,14 +14,12 @@ namespace ApiParser
         private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$");
 
         private readonly UnityApi api;
-        private readonly string myDocRootPath;
-        private readonly string myScriptReferencePath;
+        private readonly string myScriptReferenceRelativePath;
 
-        public ApiParser(UnityApi api, string docRootPath, string scriptReferencePath)
+        public ApiParser(UnityApi api, string scriptReferenceRelativePath)
         {
             this.api = api;
-            myDocRootPath = docRootPath;
-            myScriptReferencePath = scriptReferencePath;
+            myScriptReferenceRelativePath = scriptReferenceRelativePath;
         }
 
         public event EventHandler<ProgressEventArgs> Progress;
@@ -31,15 +29,25 @@ namespace ApiParser
             api.ExportTo(writer);
         }
 
-        public void ParseFolder(string rootPath, Version apiVersion)
+        public void ParseFolder(string path, Version apiVersion)
         {
-            var path = Path.Combine(rootPath, myScriptReferencePath);
-            var files = Directory.EnumerateFiles(path, @"*.html").ToArray();
-
-            for (var i = 0; i < files.Length; ++i)
+            var currentDirectory = Directory.GetCurrentDirectory();
+            try
             {
-                ParseFile(rootPath, files[i], apiVersion);
-                OnProgress(new ProgressEventArgs(i + 1, files.Length));
+                Directory.SetCurrentDirectory(path);
+
+                var files = Directory.EnumerateFiles(myScriptReferenceRelativePath, @"*.html").ToArray();
+
+                for (var i = 0; i < files.Length; ++i)
+                {
+                    ParseFile(files[i], apiVersion);
+                    OnProgress(new ProgressEventArgs(i + 1, files.Length));
+                }
+
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(currentDirectory);
             }
 
             Console.WriteLine();
@@ -63,7 +71,7 @@ namespace ApiParser
             Progress?.Invoke(this, e);
         }
 
-        private void ParseFile(string rootPath, string filename, Version apiVersion)
+        private void ParseFile(string filename, Version apiVersion)
         {
             var document = ApiNode.Load(filename);
             var section = document?.SelectOne(@"//div.content/div.section");
@@ -82,18 +90,17 @@ namespace ApiParser
             var clsType = match.Groups["type"].Value;
             var nsName = match.Groups["namespace"].Value;
 
-            var docPath = filename.Replace(rootPath, myDocRootPath);
-            var unityApiType = api.AddType(nsName, name.Text, clsType, new Uri(docPath).AbsoluteUri, apiVersion);
+            var unityApiType = api.AddType(nsName, name.Text, clsType, filename, apiVersion);
 
             foreach (var message in messages)
             {
-                var eventFunction = ParseMessage(rootPath, message, apiVersion, nsName);
+                var eventFunction = ParseMessage(message, apiVersion, nsName);
                 unityApiType.MergeEventFunction(eventFunction, apiVersion);
             }
         }
 
         [CanBeNull]
-        private UnityApiEventFunction ParseMessage(string rootPath, ApiNode message, Version apiVersion, string hintNamespace)
+        private UnityApiEventFunction ParseMessage(ApiNode message, Version apiVersion, string hintNamespace)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
@@ -102,7 +109,7 @@ namespace ApiParser
             var detailsPath = link[@"href"];
             if (string.IsNullOrWhiteSpace(detailsPath)) return null;
 
-            var path = Path.Combine(rootPath, myScriptReferencePath, detailsPath);
+            var path = Path.Combine(myScriptReferenceRelativePath, detailsPath);
             if (!File.Exists(path)) return null;
 
             var detailsDoc = ApiNode.Load(path);
@@ -124,8 +131,8 @@ namespace ApiParser
                 argumentNames = tuple.Item2;
             }
 
-            var docPath = Path.Combine(myDocRootPath, myScriptReferencePath, detailsPath);
-            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null, returnType, apiVersion, desc.Text, new Uri(docPath).AbsoluteUri, false);
+            var docPath = Path.Combine(myScriptReferenceRelativePath, detailsPath);
+            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null, returnType, apiVersion, desc.Text, docPath, false);
 
             ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames);
 

@@ -128,7 +128,7 @@ namespace ApiParser
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("ns", Namespace);
             ExportVersionRange(xmlWriter);
-            xmlWriter.WriteAttributeString("path", myDocPath);
+            xmlWriter.WriteAttributeString("path", myDocPath.Replace(@"\", "/"));
             foreach (var eventFunction in myEventFunctions.OrderBy(f => f.OrderingString))
                 eventFunction.ExportTo(xmlWriter);
             xmlWriter.WriteEndElement();
@@ -196,7 +196,7 @@ namespace ApiParser
             if (!string.IsNullOrEmpty(myDescription))
                 xmlWriter.WriteAttributeString("description", myDescription);
             if (!string.IsNullOrEmpty(myDocPath))
-                xmlWriter.WriteAttributeString("path", myDocPath);
+                xmlWriter.WriteAttributeString("path", myDocPath.Replace(@"\", "/"));
             WriteParameters(xmlWriter);
             WriteReturns(xmlWriter);
             xmlWriter.WriteEndElement();

@@ -9,7 +9,7 @@ namespace ApiParser
 {
     public static class Program
     {
-        private const string ScriptReferencePath = @"Documentation\en\ScriptReference";
+        private const string ScriptReferenceRelativePath = @"Documentation\en\ScriptReference";
 
         private static readonly IList<Tuple<string, Version>> Docs = new List<Tuple<string, Version>>
         {
@@ -35,7 +35,7 @@ namespace ApiParser
             Console.WriteLine();
 
             var unityApi = new UnityApi();
-            var parser = new ApiParser(unityApi, dataPath, ScriptReferencePath);
+            var parser = new ApiParser(unityApi, ScriptReferenceRelativePath);
 
             parser.Progress += (s, e) =>
             {
@@ -64,14 +64,6 @@ namespace ApiParser
         {
             // From AssetPostprocessingInternal
             var type = unityApi.FindType("AssetPostprocessor");
-
-            // This is documented, at least for 5.4...
-            //var eventFunction = new UnityApiEventFunction("OnPostprocessAllAssets", true, ApiType.Void, apiVersion, undocumented: true);
-            //eventFunction.AddParameter("importedAssets", ApiType.StringArray);
-            //eventFunction.AddParameter("deletedAssets", ApiType.StringArray);
-            //eventFunction.AddParameter("movedAssets", ApiType.StringArray);
-            //eventFunction.AddParameter("movedFromPathAssets", ApiType.StringArray);
-            //type.MergeEventFunction(eventFunction, apiVersion);
 
             var eventFunction = new UnityApiEventFunction("OnPreprocessAssembly", false, ApiType.Void, apiVersion, undocumented: true);
             eventFunction.AddParameter("pathName", ApiType.String);
