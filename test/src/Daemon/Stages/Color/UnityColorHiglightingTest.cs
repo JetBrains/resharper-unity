@@ -4,14 +4,14 @@ using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Color
 {
     [Category("ColorHighlighting")]
     [TestUnity]
     public class UnityColorHiglightingTest : CSharpHighlightingTestBase
     {
         protected override bool ColorIdentifiers => true;
-        protected override string RelativeTestDataPath => @"daemon\Highlighting\Colors";
+        protected override string RelativeTestDataPath => @"daemon\Stages\Colors";
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
         {

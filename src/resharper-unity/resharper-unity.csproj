@@ -330,23 +330,23 @@
   <ItemGroup>
     <Compile Include="ApiXml.cs" />
     <Compile Include="ClassNames.cs" />
-    <Compile Include="Daemon\Stages\Highlighting\ColorUtils.cs" />
-    <Compile Include="Daemon\Stages\Highlighting\UnityColorHighlighterProcess.cs" />
+    <Compile Include="Daemon\Stages\Color\ColorUtils.cs" />
+    <Compile Include="Daemon\Stages\Color\UnityColorHighlighterProcess.cs" />
     <Compile Include="Daemon\Stages\Dispatcher\UnityElementProblemAnalyzer.cs" />
     <Compile Include="Daemon\Stages\GutterMarks\UnityEventFunctionDetector.cs" />
     <Compile Include="Daemon\Stages\GutterMarks\UnityFieldDetector.cs" />
     <Compile Include="Daemon\Stages\GutterMarks\UnityInitialiseOnLoadCctorDetector.cs" />
     <Compile Include="Daemon\Stages\GutterMarks\UnityTypeDetector.cs" />
-    <Compile Include="Daemon\Stages\Highlighting\UnityColorHighlightingStage.cs" />
+    <Compile Include="Daemon\Stages\Color\UnityColorHighlightingStage.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
     <Compile Include="DeclaredElementExtensions.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionBehavior.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionLiteralTransformationRule.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionRule.cs" />
     <Compile Include="Feature\Services\QuickFixes\GenerateUnityEventFunctionsFix.cs" />
-    <Compile Include="Feature\Services\Daemon\HighlightingAttributeIds.cs" />
-    <Compile Include="Feature\Services\Daemon\UnityGutterMark.cs" />
-    <Compile Include="Feature\Services\Daemon\UnityMarkOnGutter.cs" />
+    <Compile Include="Daemon\Stages\Highlightings\HighlightingAttributeIds.cs" />
+    <Compile Include="Daemon\Stages\Highlightings\UnityGutterMark.cs" />
+    <Compile Include="Daemon\Stages\Highlightings\UnityMarkOnGutter.cs" />
     <Compile Include="Feature\Services\Descriptions\UnityEventFunctionDescriptionProvider.cs" />
     <Compile Include="Feature\Services\Generate\GenerateUnityEventFunctionsWorkflow.cs" />
     <Compile Include="Feature\Services\Generate\GeneratorUnityKinds.cs" />
@@ -396,9 +396,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Daemon\Stages\Analysis\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets" Condition="Exists('..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

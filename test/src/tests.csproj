@@ -326,7 +326,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Daemon\Stages\GutterMarks\GutterMarkTests.cs" />
-    <Compile Include="Daemon\Stages\Highlighting\UnityColorHiglightingTest.cs" />
+    <Compile Include="Daemon\Stages\Color\UnityColorHiglightingTest.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressorTest.cs" />
     <Compile Include="Daemon\UsageChecking\UsageCheckBaseTest.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionCompletionActionTest.cs" />

@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Drawing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Color
 {
     // See http://stackoverflow.com/a/1626175/88374
     // And http://www.splinter.com.au/converting-hsv-to-rgb-colour-using-c/
     internal static class ColorUtils
     {
         // Normalised so that h is 0..1, not 0..360
-        public static void ColorToHSV(Color color, out float hue, out float saturation, out float value)
+        public static void ColorToHSV(System.Drawing.Color color, out float hue, out float saturation, out float value)
         {
             int max = Math.Max(color.R, Math.Max(color.G, color.B));
             int min = Math.Min(color.R, Math.Min(color.G, color.B));
@@ -19,10 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
         }
 
         // Expects h as 0..1, not 0..360
-        public static Color ColorFromHSV(float hue, float saturation, float value)
+        public static System.Drawing.Color ColorFromHSV(float hue, float saturation, float value)
         {
             if (value <= 0)
-                return Color.FromArgb(0, 0, 0);
+                return System.Drawing.Color.FromArgb(0, 0, 0);
             if (saturation <= 0)
                 return FromRgb(value, value, value);
 
@@ -53,9 +52,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
             }
         }
 
-        private static Color FromRgb(double r, double g, double b)
+        private static System.Drawing.Color FromRgb(double r, double g, double b)
         {
-            return Color.FromArgb((int) (r * 255.0), (int) (g * 255.0), (int) (b * 255.0));
+            return System.Drawing.Color.FromArgb((int) (r * 255.0), (int) (g * 255.0), (int) (b * 255.0));
         }
     }
 }

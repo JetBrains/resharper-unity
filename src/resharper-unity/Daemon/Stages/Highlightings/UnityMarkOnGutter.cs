@@ -11,7 +11,7 @@ using JetBrains.TextControl;
 using JetBrains.UI.BulbMenu;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
     [StaticSeverityHighlighting(Severity.INFO, HighlightingGroupIds.GutterMarksGroup, OverlapResolve = OverlapResolveKind.NONE, AttributeId = HighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE)]
     public class UnityMarkOnGutter : IHighlighting

@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.BulbMenu;
 using JetBrains.Util;
-using HighlightingAttributeIds = JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon.HighlightingAttributeIds;
+using HighlightingAttributeIds = JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings.HighlightingAttributeIds;
 
 [assembly: RegisterHighlighter(HighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE, EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityGutterMark), Layer = HighlighterLayer.SYNTAX + 1)]
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
     public class UnityGutterMark : IconGutterMark
     {

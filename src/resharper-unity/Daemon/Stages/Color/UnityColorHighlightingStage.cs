@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Color
 {
     [DaemonStage(StagesBefore = new[] {typeof(IdentifierHighlightingStage)})]
     public class UnityColorHighlightingStage : CSharpDaemonStageBase

@@ -1,4 +1,4 @@
-﻿namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
+﻿namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
     public static class HighlightingAttributeIds
     {

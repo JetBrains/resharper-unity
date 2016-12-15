@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using JetBrains.Application.Settings;
@@ -16,7 +15,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Special;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Color
 {
     public class UnityColorHighlighterProcess : CSharpIncrementalDaemonStageProcessBase
     {
@@ -73,14 +72,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
             var arguments = constructorExpression.Arguments;
             if (arguments.Count < 3 || arguments.Count > 4) return null;
 
-            Color? color = null;
+            System.Drawing.Color? color = null;
             if (unityColorTypes.UnityColorType != null && unityColorTypes.UnityColorType.Equals(constructedType))
             {
                 var baseColor = GetColorFromFloatARGB(arguments);
                 if (baseColor == null) return null;
 
                 color = baseColor.Item1.HasValue
-                    ? Color.FromArgb((int) (255.0 * baseColor.Item1.Value), baseColor.Item2)
+                    ? System.Drawing.Color.FromArgb((int) (255.0 * baseColor.Item1.Value), baseColor.Item2)
                     : baseColor.Item2;
             }
             else if (unityColorTypes.UnityColor32Type != null && unityColorTypes.UnityColor32Type.Equals(constructedType))
@@ -89,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
                 if (baseColor == null) return null;
 
                 color = baseColor.Item1.HasValue
-                    ? Color.FromArgb(baseColor.Item1.Value, baseColor.Item2)
+                    ? System.Drawing.Color.FromArgb(baseColor.Item1.Value, baseColor.Item2)
                     : baseColor.Item2;
             }
 
@@ -154,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
                  colorQualifiedMemberExpression, colorQualifiedMemberExpression.NameIdentifier.GetDocumentRange());
         }
 
-        private static Tuple<float?, Color> GetColorFromFloatARGB(ICollection<ICSharpArgument> arguments)
+        private static Tuple<float?, System.Drawing.Color> GetColorFromFloatARGB(ICollection<ICSharpArgument> arguments)
         {
             var a = GetArgumentAsFloatConstant(arguments, "a", 0, 1);
             var r = GetArgumentAsFloatConstant(arguments, "r", 0, 1);
@@ -164,10 +163,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
             if (!r.HasValue || !g.HasValue || !b.HasValue)
                 return null;
 
-            return Tuple.Create(a, Color.FromArgb((int)(255.0 * r.Value), (int)(255.0 * g.Value), (int)(255.0 * b.Value)));
+            return Tuple.Create(a, System.Drawing.Color.FromArgb((int)(255.0 * r.Value), (int)(255.0 * g.Value), (int)(255.0 * b.Value)));
         }
 
-        private static Tuple<int?, Color> GetColorFromIntARGB(ICollection<ICSharpArgument> arguments)
+        private static Tuple<int?, System.Drawing.Color> GetColorFromIntARGB(ICollection<ICSharpArgument> arguments)
         {
             var a = GetArgumentAsIntConstant(arguments, "a", 0, 255);
             var r = GetArgumentAsIntConstant(arguments, "r", 0, 255);
@@ -177,10 +176,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
             if (!r.HasValue || !g.HasValue || !b.HasValue)
                 return null;
 
-            return Tuple.Create(a, Color.FromArgb(r.Value, g.Value, b.Value));
+            return Tuple.Create(a, System.Drawing.Color.FromArgb(r.Value, g.Value, b.Value));
         }
 
-        private static Color? GetColorFromHSV(ICollection<ICSharpArgument> arguments)
+        private static System.Drawing.Color? GetColorFromHSV(ICollection<ICSharpArgument> arguments)
         {
             var h = GetArgumentAsFloatConstant(arguments, "H", 0, 1);
             var s = GetArgumentAsFloatConstant(arguments, "S", 0, 1);
