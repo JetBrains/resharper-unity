@@ -4,7 +4,7 @@ using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Highlighting
 {
     [Category("ColorHighlighting")]
     [TestUnity]

@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher
 {
     public abstract class UnityElementProblemAnalyzer<T> : ElementProblemAnalyzer<T>
         where T : ITreeNode

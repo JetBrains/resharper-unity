@@ -1,11 +1,12 @@
 ﻿using System;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.GutterMarks
 {
     [ElementProblemAnalyzer(typeof(IMethodDeclaration), HighlightingTypes = new[] {typeof(UnityMarkOnGutter)})]
     public class UnityEventFunctionDetector : UnityElementProblemAnalyzer<IMethodDeclaration>

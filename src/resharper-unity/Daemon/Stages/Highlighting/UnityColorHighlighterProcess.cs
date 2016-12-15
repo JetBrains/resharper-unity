@@ -6,43 +6,18 @@ using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.VisualElements;
-using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Psi.Colors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
-using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Special;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
 {
-    [DaemonStage(StagesBefore = new[] {typeof(IdentifierHighlightingStage)})]
-    public class UnityColorHighlightingStage : CSharpDaemonStageBase
-    {
-        protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
-            DaemonProcessKind processKind, ICSharpFile file)
-        {
-            if (processKind == DaemonProcessKind.VISIBLE_DOCUMENT &&
-                settings.GetValue(HighlightingSettingsAccessor.ColorUsageHighlightingEnabled))
-            {
-                return new UnityColorHighlighterProcess(process, settings, file);
-            }
-            return null;
-        }
-
-        protected override bool IsSupported(IPsiSourceFile sourceFile)
-        {
-            if (sourceFile == null || !sourceFile.IsValid())
-                return false;
-
-            return sourceFile.IsLanguageSupported<CSharpLanguage>();
-        }
-    }
-
     public class UnityColorHighlighterProcess : CSharpIncrementalDaemonStageProcessBase
     {
         public UnityColorHighlighterProcess(IDaemonProcess process, IContextBoundSettingsStore settingsStore,

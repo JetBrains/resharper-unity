@@ -330,13 +330,14 @@
   <ItemGroup>
     <Compile Include="ApiXml.cs" />
     <Compile Include="ClassNames.cs" />
-    <Compile Include="Daemon\Highlighting\ColorUtils.cs" />
-    <Compile Include="Daemon\Highlighting\UnityColorHighlighterProcess.cs" />
-    <Compile Include="Daemon\Highlighting\UnityElementProblemAnalyzer.cs" />
-    <Compile Include="Daemon\Highlighting\UnityEventFunctionDetector.cs" />
-    <Compile Include="Daemon\Highlighting\UnityFieldDetector.cs" />
-    <Compile Include="Daemon\Highlighting\UnityInitialiseOnLoadCctorDetector.cs" />
-    <Compile Include="Daemon\Highlighting\UnityTypeDetector.cs" />
+    <Compile Include="Daemon\Stages\Highlighting\ColorUtils.cs" />
+    <Compile Include="Daemon\Stages\Highlighting\UnityColorHighlighterProcess.cs" />
+    <Compile Include="Daemon\Stages\Dispatcher\UnityElementProblemAnalyzer.cs" />
+    <Compile Include="Daemon\Stages\GutterMarks\UnityEventFunctionDetector.cs" />
+    <Compile Include="Daemon\Stages\GutterMarks\UnityFieldDetector.cs" />
+    <Compile Include="Daemon\Stages\GutterMarks\UnityInitialiseOnLoadCctorDetector.cs" />
+    <Compile Include="Daemon\Stages\GutterMarks\UnityTypeDetector.cs" />
+    <Compile Include="Daemon\Stages\Highlighting\UnityColorHighlightingStage.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
     <Compile Include="DeclaredElementExtensions.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionBehavior.cs" />
@@ -394,6 +395,9 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Daemon\Stages\Analysis\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets" Condition="Exists('..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets')" />

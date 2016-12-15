@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.GutterMarks
 {
     [TestUnity]
     public class GutterMarkTests : CSharpHighlightingTestBase

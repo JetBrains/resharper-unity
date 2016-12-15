@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting
 {
     // See http://stackoverflow.com/a/1626175/88374
     // And http://www.splinter.com.au/converting-hsv-to-rgb-colour-using-c/

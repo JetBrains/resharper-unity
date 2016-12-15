@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Highlighting;
+using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlighting;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.CSharp;
