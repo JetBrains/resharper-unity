@@ -330,6 +330,7 @@
   <ItemGroup>
     <Compile Include="ApiXml.cs" />
     <Compile Include="ClassNames.cs" />
+    <Compile Include="Daemon\Stages\Analysis\CompareTagProblemAnalyzer.cs" />
     <Compile Include="Daemon\Stages\Color\ColorUtils.cs" />
     <Compile Include="Daemon\Stages\Color\UnityColorHighlighterProcess.cs" />
     <Compile Include="Daemon\Stages\Dispatcher\UnityElementProblemAnalyzer.cs" />
@@ -338,13 +339,14 @@
     <Compile Include="Daemon\Stages\GutterMarks\UnityInitialiseOnLoadCctorDetector.cs" />
     <Compile Include="Daemon\Stages\GutterMarks\UnityTypeDetector.cs" />
     <Compile Include="Daemon\Stages\Color\UnityColorHighlightingStage.cs" />
+    <Compile Include="Daemon\Stages\Highlightings\ExplicitTagStringComparisonWarning.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
     <Compile Include="DeclaredElementExtensions.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionBehavior.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionLiteralTransformationRule.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionRule.cs" />
     <Compile Include="Feature\Services\QuickFixes\GenerateUnityEventFunctionsFix.cs" />
-    <Compile Include="Daemon\Stages\Highlightings\HighlightingAttributeIds.cs" />
+    <Compile Include="Daemon\Stages\Highlightings\UnityHighlightingAttributeIds.cs" />
     <Compile Include="Daemon\Stages\Highlightings\UnityGutterMark.cs" />
     <Compile Include="Daemon\Stages\Highlightings\UnityMarkOnGutter.cs" />
     <Compile Include="Feature\Services\Descriptions\UnityEventFunctionDescriptionProvider.cs" />

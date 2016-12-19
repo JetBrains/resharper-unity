@@ -8,9 +8,10 @@ using JetBrains.TextControl;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.BulbMenu;
 using JetBrains.Util;
-using HighlightingAttributeIds = JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings.HighlightingAttributeIds;
 
-[assembly: RegisterHighlighter(HighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE, EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityGutterMark), Layer = HighlighterLayer.SYNTAX + 1)]
+[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE, 
+    EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityGutterMark), 
+    Layer = HighlighterLayer.SYNTAX + 1)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
