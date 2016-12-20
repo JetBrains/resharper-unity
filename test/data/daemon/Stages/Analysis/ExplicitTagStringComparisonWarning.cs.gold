@@ -1,0 +1,35 @@
+﻿using UnityEngine;
+
+public class Test : MonoBehaviour
+{
+    public void Method(GameObject go, Component c, Foo f)
+    {
+        if (|go.tag == "Whatever"|(0)) { }
+        if (|go.tag != "Whatever"|(1)) { }
+        if (|c.tag == "Whatever"|(2)) { }
+        if (|c.tag != "Whatever"|(3)) { }
+        if (|this.tag == "Whatever"|(4)) { }
+        if (|this.tag != "Whatever"|(5)) { }
+        if (|tag == "Whatever"|(6)) { }
+        if (|tag != "Whatever"|(7)) { }
+        if (f.tag == "Whatever") { }
+        var other = "Whatever";
+        if (|other == go.tag|(8)) { }
+        if (|c.tag == go.tag|(9)) { }
+        if (|c.tag == null|(10)) { }
+        if (c.tag == 12) { }
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(1): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(2): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(3): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(4): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(5): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(6): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(7): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(8): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(9): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
+(10): ReSharper Warning: Explicit string comparison is inefficient, use CompareTag instead
