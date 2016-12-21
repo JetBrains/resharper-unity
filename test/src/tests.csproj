@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\src\packages\JetBrains.ReSharper.SDK.Tests.2016.3.20161124.94842-eap10\build\JetBrains.ReSharper.SDK.Tests.props" Condition="Exists('..\..\src\packages\JetBrains.ReSharper.SDK.Tests.2016.3.20161124.94842-eap10\build\JetBrains.ReSharper.SDK.Tests.props')" />
+  <Import Project="..\..\src\packages\JetBrains.ReSharper.SDK.Tests.2016.3.20161215.134837\build\JetBrains.ReSharper.SDK.Tests.props" Condition="Exists('..\..\src\packages\JetBrains.ReSharper.SDK.Tests.2016.3.20161215.134837\build\JetBrains.ReSharper.SDK.Tests.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -113,6 +113,26 @@
       <HintPath>..\..\src\packages\JetBrains.Platform.Lib.Microsoft.Deployment.Compression.Cab.2.0.20140304.0\lib\Microsoft.Deployment.Compression.Cab.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Hosting, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.StaticFiles, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Microsoft.Owin.StaticFiles.3.0.1\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\src\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
       <Private>True</Private>
@@ -162,99 +182,99 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Client, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Client.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Commands, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Commands.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Commands.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Common, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Common.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Configuration, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Configuration.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.ContentModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.ContentModel.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.ContentModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Core, Version=2.13.0.824, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.2.13.0-rc1-final\lib\net40-Client\NuGet.Core.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Core.2.13.0\lib\net40-Client\NuGet.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.DependencyResolver, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.DependencyResolver.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.DependencyResolver.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.DependencyResolver.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.DependencyResolver.Core.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.DependencyResolver.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Frameworks, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Frameworks.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Frameworks.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.LibraryModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.LibraryModel.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.LibraryModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.PackageManagement, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.PackageManagement.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.PackageManagement.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Packaging, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Packaging.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Packaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Packaging.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Packaging.Core.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Packaging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Packaging.Core.Types, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Packaging.Core.Types.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Packaging.Core.Types.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.ProjectManagement, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.ProjectManagement.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.ProjectManagement.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.ProjectModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.ProjectModel.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.ProjectModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Protocol.Core.Types, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Protocol.Core.Types.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Protocol.Core.Types.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Protocol.Core.v2, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Protocol.Core.v2.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Protocol.Core.v2.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Protocol.Core.v3, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Protocol.Core.v3.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Protocol.Core.v3.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Protocol.VisualStudio, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Protocol.VisualStudio.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Protocol.VisualStudio.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Repositories, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Repositories.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Repositories.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Resolver, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Resolver.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Resolver.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.RuntimeModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.RuntimeModel.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.RuntimeModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Versioning, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5aaa11a165479571, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NuGet.Core.Ultimate.3.5.0-rc1-final-jb1\lib\net45\NuGet.Versioning.dll</HintPath>
+      <HintPath>..\..\src\packages\JetBrains.NuGet.Ultimate.3.5.0.1\lib\net45\NuGet.Versioning.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
@@ -263,6 +283,10 @@
     </Reference>
     <Reference Include="NVelocity, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\..\src\packages\NVelocity.1.0.3\lib\NVelocity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpCompress, Version=0.11.6.0, Culture=neutral, PublicKeyToken=beaf6f427e128133, processorArchitecture=MSIL">
@@ -362,37 +386,39 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\src\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets'))" />
     <Error Condition="!Exists('..\..\src\packages\JetBrains.Build.Platform.Tasks.ThemedIconsPacker.2.0.20151217.1\build\JetBrains.Build.Platform.Tasks.ThemedIconsPacker.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Build.Platform.Tasks.ThemedIconsPacker.2.0.20151217.1\build\JetBrains.Build.Platform.Tasks.ThemedIconsPacker.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Framework.107.0.20161124.90159-eap10\build\JetBrains.Platform.Interop.dotMemoryUnit.Framework.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Framework.107.0.20161124.90159-eap10\build\JetBrains.Platform.Interop.dotMemoryUnit.Framework.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Core.Shell.107.0.20161124.85654-eap10\build\JetBrains.Platform.Core.Shell.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Core.Shell.107.0.20161124.85654-eap10\build\JetBrains.Platform.Core.Shell.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Core.Text.107.0.20161124.90159-eap10\build\JetBrains.Platform.Core.Text.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Core.Text.107.0.20161124.90159-eap10\build\JetBrains.Platform.Core.Text.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.107.0.20161124.90159-eap10\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.107.0.20161124.90159-eap10\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.RdProtocol.107.0.20161124.90159-eap10\build\JetBrains.Platform.RdProtocol.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.RdProtocol.107.0.20161124.90159-eap10\build\JetBrains.Platform.RdProtocol.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Core.Ide.107.0.20161124.90159-eap10\build\JetBrains.Platform.Core.Ide.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Core.Ide.107.0.20161124.90159-eap10\build\JetBrains.Platform.Core.Ide.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Symbols.107.0.20161124.90159-eap10\build\JetBrains.Platform.Symbols.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Symbols.107.0.20161124.90159-eap10\build\JetBrains.Platform.Symbols.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Tests.Framework.107.0.20161124.90159-eap10\build\JetBrains.Platform.Tests.Framework.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Tests.Framework.107.0.20161124.90159-eap10\build\JetBrains.Platform.Tests.Framework.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.Tasks.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.Tasks.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.Tasks.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.Tasks.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.Core.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.Core.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.Core.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.Core.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.src.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.src.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.src.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.src.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.UnitTesting.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.UnitTesting.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.UnitTesting.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.UnitTesting.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.test.Framework.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.test.Framework.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.test.Framework.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.test.Framework.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.ReSharper.SDK.Internal.107.0.20161124.94842-eap10\build\JetBrains.ReSharper.SDK.Internal.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.ReSharper.SDK.Internal.107.0.20161124.94842-eap10\build\JetBrains.ReSharper.SDK.Internal.Targets'))" />
-    <Error Condition="!Exists('..\..\src\packages\JetBrains.ReSharper.SDK.Tests.2016.3.20161124.94842-eap10\build\JetBrains.ReSharper.SDK.Tests.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.ReSharper.SDK.Tests.2016.3.20161124.94842-eap10\build\JetBrains.ReSharper.SDK.Tests.props'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Framework.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Framework.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Framework.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Framework.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Core.Shell.107.0.20161214.153252\build\JetBrains.Platform.Core.Shell.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Core.Shell.107.0.20161214.153252\build\JetBrains.Platform.Core.Shell.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Core.Text.107.0.20161214.153643\build\JetBrains.Platform.Core.Text.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Core.Text.107.0.20161214.153643\build\JetBrains.Platform.Core.Text.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.RdProtocol.107.0.20161214.153643\build\JetBrains.Platform.RdProtocol.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.RdProtocol.107.0.20161214.153643\build\JetBrains.Platform.RdProtocol.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Core.Ide.107.0.20161214.153643\build\JetBrains.Platform.Core.Ide.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Core.Ide.107.0.20161214.153643\build\JetBrains.Platform.Core.Ide.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Ide.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Ide.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Ide.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Ide.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Symbols.107.0.20161214.153643\build\JetBrains.Platform.Symbols.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Symbols.107.0.20161214.153643\build\JetBrains.Platform.Symbols.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Platform.Tests.Framework.107.0.20161214.153643\build\JetBrains.Platform.Tests.Framework.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Platform.Tests.Framework.107.0.20161214.153643\build\JetBrains.Platform.Tests.Framework.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.Tasks.107.0.20161215.131222\build\JetBrains.Psi.Features.Tasks.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.Tasks.107.0.20161215.131222\build\JetBrains.Psi.Features.Tasks.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.Core.107.0.20161215.131222\build\JetBrains.Psi.Features.Core.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.Core.107.0.20161215.131222\build\JetBrains.Psi.Features.Core.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.src.107.0.20161215.131222\build\JetBrains.Psi.Features.src.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.src.107.0.20161215.131222\build\JetBrains.Psi.Features.src.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.UnitTesting.107.0.20161215.131222\build\JetBrains.Psi.Features.UnitTesting.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.UnitTesting.107.0.20161215.131222\build\JetBrains.Psi.Features.UnitTesting.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.Psi.Features.test.Framework.107.0.20161215.131222\build\JetBrains.Psi.Features.test.Framework.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.Psi.Features.test.Framework.107.0.20161215.131222\build\JetBrains.Psi.Features.test.Framework.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.ReSharper.SDK.Internal.107.0.20161215.134837\build\JetBrains.ReSharper.SDK.Internal.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.ReSharper.SDK.Internal.107.0.20161215.134837\build\JetBrains.ReSharper.SDK.Internal.Targets'))" />
+    <Error Condition="!Exists('..\..\src\packages\JetBrains.ReSharper.SDK.Tests.2016.3.20161215.134837\build\JetBrains.ReSharper.SDK.Tests.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\JetBrains.ReSharper.SDK.Tests.2016.3.20161215.134837\build\JetBrains.ReSharper.SDK.Tests.props'))" />
   </Target>
   <Import Project="..\..\src\packages\JetBrains.Build.Platform.Tasks.ThemedIconsPacker.2.0.20151217.1\build\JetBrains.Build.Platform.Tasks.ThemedIconsPacker.Targets" Condition="Exists('..\..\src\packages\JetBrains.Build.Platform.Tasks.ThemedIconsPacker.2.0.20151217.1\build\JetBrains.Build.Platform.Tasks.ThemedIconsPacker.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Framework.107.0.20161124.90159-eap10\build\JetBrains.Platform.Interop.dotMemoryUnit.Framework.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Framework.107.0.20161124.90159-eap10\build\JetBrains.Platform.Interop.dotMemoryUnit.Framework.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Platform.Core.Shell.107.0.20161124.85654-eap10\build\JetBrains.Platform.Core.Shell.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Core.Shell.107.0.20161124.85654-eap10\build\JetBrains.Platform.Core.Shell.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Platform.Core.Text.107.0.20161124.90159-eap10\build\JetBrains.Platform.Core.Text.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Core.Text.107.0.20161124.90159-eap10\build\JetBrains.Platform.Core.Text.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.107.0.20161124.90159-eap10\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.107.0.20161124.90159-eap10\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Platform.RdProtocol.107.0.20161124.90159-eap10\build\JetBrains.Platform.RdProtocol.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.RdProtocol.107.0.20161124.90159-eap10\build\JetBrains.Platform.RdProtocol.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Platform.Core.Ide.107.0.20161124.90159-eap10\build\JetBrains.Platform.Core.Ide.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Core.Ide.107.0.20161124.90159-eap10\build\JetBrains.Platform.Core.Ide.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Platform.Symbols.107.0.20161124.90159-eap10\build\JetBrains.Platform.Symbols.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Symbols.107.0.20161124.90159-eap10\build\JetBrains.Platform.Symbols.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Platform.Tests.Framework.107.0.20161124.90159-eap10\build\JetBrains.Platform.Tests.Framework.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Tests.Framework.107.0.20161124.90159-eap10\build\JetBrains.Platform.Tests.Framework.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Psi.Features.Tasks.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.Tasks.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.Tasks.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.Tasks.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Psi.Features.Core.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.Core.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.Core.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.Core.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Psi.Features.src.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.src.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.src.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.src.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Psi.Features.UnitTesting.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.UnitTesting.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.UnitTesting.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.UnitTesting.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.Psi.Features.test.Framework.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.test.Framework.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.test.Framework.107.0.20161124.90817-eap10\build\JetBrains.Psi.Features.test.Framework.Targets')" />
-  <Import Project="..\..\src\packages\JetBrains.ReSharper.SDK.Internal.107.0.20161124.94842-eap10\build\JetBrains.ReSharper.SDK.Internal.Targets" Condition="Exists('..\..\src\packages\JetBrains.ReSharper.SDK.Internal.107.0.20161124.94842-eap10\build\JetBrains.ReSharper.SDK.Internal.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Framework.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Framework.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Framework.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Framework.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Platform.Core.Shell.107.0.20161214.153252\build\JetBrains.Platform.Core.Shell.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Core.Shell.107.0.20161214.153252\build\JetBrains.Platform.Core.Shell.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Platform.Core.Text.107.0.20161214.153643\build\JetBrains.Platform.Core.Text.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Core.Text.107.0.20161214.153643\build\JetBrains.Platform.Core.Text.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Platform.RdProtocol.107.0.20161214.153643\build\JetBrains.Platform.RdProtocol.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.RdProtocol.107.0.20161214.153643\build\JetBrains.Platform.RdProtocol.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Platform.Core.Ide.107.0.20161214.153643\build\JetBrains.Platform.Core.Ide.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Core.Ide.107.0.20161214.153643\build\JetBrains.Platform.Core.Ide.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Ide.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Ide.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Ide.107.0.20161214.153643\build\JetBrains.Platform.Interop.dotMemoryUnit.Interop.Ide.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Platform.Symbols.107.0.20161214.153643\build\JetBrains.Platform.Symbols.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Symbols.107.0.20161214.153643\build\JetBrains.Platform.Symbols.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Platform.Tests.Framework.107.0.20161214.153643\build\JetBrains.Platform.Tests.Framework.Targets" Condition="Exists('..\..\src\packages\JetBrains.Platform.Tests.Framework.107.0.20161214.153643\build\JetBrains.Platform.Tests.Framework.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Psi.Features.Tasks.107.0.20161215.131222\build\JetBrains.Psi.Features.Tasks.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.Tasks.107.0.20161215.131222\build\JetBrains.Psi.Features.Tasks.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Psi.Features.Core.107.0.20161215.131222\build\JetBrains.Psi.Features.Core.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.Core.107.0.20161215.131222\build\JetBrains.Psi.Features.Core.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Psi.Features.src.107.0.20161215.131222\build\JetBrains.Psi.Features.src.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.src.107.0.20161215.131222\build\JetBrains.Psi.Features.src.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Psi.Features.UnitTesting.107.0.20161215.131222\build\JetBrains.Psi.Features.UnitTesting.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.UnitTesting.107.0.20161215.131222\build\JetBrains.Psi.Features.UnitTesting.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.Psi.Features.test.Framework.107.0.20161215.131222\build\JetBrains.Psi.Features.test.Framework.Targets" Condition="Exists('..\..\src\packages\JetBrains.Psi.Features.test.Framework.107.0.20161215.131222\build\JetBrains.Psi.Features.test.Framework.Targets')" />
+  <Import Project="..\..\src\packages\JetBrains.ReSharper.SDK.Internal.107.0.20161215.134837\build\JetBrains.ReSharper.SDK.Internal.Targets" Condition="Exists('..\..\src\packages\JetBrains.ReSharper.SDK.Internal.107.0.20161215.134837\build\JetBrains.ReSharper.SDK.Internal.Targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
