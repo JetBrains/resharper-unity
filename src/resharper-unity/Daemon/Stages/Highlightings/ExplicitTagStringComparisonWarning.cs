@@ -19,24 +19,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
         public const string HIGHLIGHTING_ID = "Unity.ExplicitTagComparison";
         public const string MESSAGE = "Explicit string comparison is inefficient, use CompareTag instead";
 
-        private readonly IEqualityExpression myExpression;
-
-        public ExplicitTagStringComparisonWarning(IEqualityExpression expression)
+        public ExplicitTagStringComparisonWarning(IEqualityExpression expression, bool leftOperandIsTagReference)
         {
-            myExpression = expression;
+            Expression = expression;
+            LeftOperandIsTagReference = leftOperandIsTagReference;
         }
 
         public bool IsValid()
         {
-            return myExpression != null && myExpression.IsValid();
+            return Expression != null && Expression.IsValid();
         }
 
         public DocumentRange CalculateRange()
         {
-            return myExpression.GetHighlightingRange();
+            return Expression.GetHighlightingRange();
         }
+
 
         public string ToolTip => MESSAGE;
         public string ErrorStripeToolTip => ToolTip;
+        public IEqualityExpression Expression { get; }
+        public bool LeftOperandIsTagReference { get; }
     }
 }

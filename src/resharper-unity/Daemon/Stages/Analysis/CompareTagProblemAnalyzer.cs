@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
+﻿using JetBrains.Annotations;
+using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
@@ -34,13 +35,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             if (leftOperand == null && rightOperand == null)
                 return;
 
-            if (IsTagReference(leftOperand) || IsTagReference(rightOperand))
-                consumer.AddHighlighting(new ExplicitTagStringComparisonWarning(element));
+            var isLeftOperandTagReference = IsTagReference(leftOperand);
+            var isRightOperandTagReference = IsTagReference(rightOperand);
+            if (isLeftOperandTagReference || isRightOperandTagReference)
+                consumer.AddHighlighting(new ExplicitTagStringComparisonWarning(element, isLeftOperandTagReference));
         }
 
-        private bool IsTagReference(IReferenceExpression expression)
+        private bool IsTagReference([CanBeNull] IReferenceExpression expression)
         {
-            if (expression.NameIdentifier?.Name == "tag")
+            if (expression?.NameIdentifier?.Name == "tag")
             {
                 var info = expression.Reference.Resolve();
                 if (info.ResolveErrorType == ResolveErrorType.OK)

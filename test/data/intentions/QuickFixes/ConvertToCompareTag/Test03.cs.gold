@@ -1,0 +1,9 @@
+﻿using UnityEngine;
+
+public class Foo
+{
+    public void Method(Component c)
+    {
+        if (!c.Comp{caret}areTag("Whatever")) { }
+    }
+}

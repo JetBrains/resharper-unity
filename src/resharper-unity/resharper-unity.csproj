@@ -345,6 +345,7 @@
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionBehavior.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionLiteralTransformationRule.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionRule.cs" />
+    <Compile Include="Feature\Services\QuickFixes\ConvertToCompareTagQuickFix.cs" />
     <Compile Include="Feature\Services\QuickFixes\GenerateUnityEventFunctionsFix.cs" />
     <Compile Include="Daemon\Stages\Highlightings\UnityHighlightingAttributeIds.cs" />
     <Compile Include="Daemon\Stages\Highlightings\UnityGutterMark.cs" />
