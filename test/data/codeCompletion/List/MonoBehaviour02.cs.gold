@@ -1,15 +1,9 @@
-﻿# 4 ITEMS #
+﻿# 2 ITEMS #
 
 + private OnAnimatorIK(int) { ... }
 + private OnAnimatorMove() { ... }
----- FULL EVALUATION ----
-private OnAnimatorIK(int) { ... }
-private OnAnimatorMove() { ... }
 # AUTOMATIC #
-# 4 ITEMS #
+# 2 ITEMS #
 
 + private OnAnimatorIK(int) { ... }
 + private OnAnimatorMove() { ... }
----- FULL EVALUATION ----
-private OnAnimatorIK(int) { ... }
-private OnAnimatorMove() { ... }

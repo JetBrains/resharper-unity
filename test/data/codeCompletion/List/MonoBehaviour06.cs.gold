@@ -1,11 +1,7 @@
-﻿# 2 ITEMS #
+﻿# 1 ITEM #
 
 + private OnAnimatorMove() { ... }
----- FULL EVALUATION ----
-private OnAnimatorMove() { ... }
 # AUTOMATIC #
-# 2 ITEMS #
+# 1 ITEM #
 
 + private OnAnimatorMove() { ... }
----- FULL EVALUATION ----
-private OnAnimatorMove() { ... }

@@ -1,15 +1,9 @@
-﻿# 4 ITEMS #
+﻿# 2 ITEMS #
 
 + OnParticleCollision(GameObject) { ... }
 + OnParticleTrigger() { ... }
----- FULL EVALUATION ----
-OnParticleCollision(GameObject) { ... }
-OnParticleTrigger() { ... }
 # AUTOMATIC #
-# 4 ITEMS #
+# 2 ITEMS #
 
 + OnParticleCollision(GameObject) { ... }
 + OnParticleTrigger() { ... }
----- FULL EVALUATION ----
-OnParticleCollision(GameObject) { ... }
-OnParticleTrigger() { ... }

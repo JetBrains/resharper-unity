@@ -67,8 +67,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             if (!CheckPosition(context, out declaration, out hasVisibilityModifier, out hasReturnType))
                 return false;
 
+            // Don't add anything in double completion - we've already added it
+            // TODO: Confused here. Why do we allow double completion in IsAvailable, but not do anything with it here?
             if (context.BasicContext.Parameters.Multiplier > 1)
                 return true;
+
+            // Don't add anything in the light evaluation pass
+            if (context.BasicContext.Parameters.EvaluationMode == EvaluationMode.Light)
+                return false;
 
             var typeElement = declaration.DeclaredElement;
             if (typeElement == null)
