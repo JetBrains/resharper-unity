@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
 
@@ -19,6 +21,25 @@ namespace Assets.Plugins.Editor.JetBrains
       {
         UpgradeProjectFile(file);
       }
+
+      var slnFile = Directory.GetFiles(currentDirectory, "*.sln").First();
+      RiderPlugin.Log(string.Format("Post-processing {0}", slnFile));
+      string content = File.ReadAllText(slnFile);
+      var lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+      var sb = new StringBuilder();
+      foreach (var line in lines)
+      {
+        if (line.StartsWith("Project("))
+        {
+          MatchCollection mc = Regex.Matches(line, "\"([^\"]*)\"");
+          sb.Append(line.Replace(mc[1].Value, Path.GetFileNameWithoutExtension(mc[2].Value)+"\""));
+        }
+        else
+        {
+          sb.Append(line);
+        }
+      }
+      File.WriteAllText(slnFile,sb.ToString());
     }
 
     private static void UpgradeProjectFile(string projectFile)
