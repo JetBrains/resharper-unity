@@ -32,14 +32,26 @@ namespace Assets.Plugins.Editor.JetBrains
         if (line.StartsWith("Project("))
         {
           MatchCollection mc = Regex.Matches(line, "\"([^\"]*)\"");
-          sb.Append(line.Replace(mc[1].Value, Path.GetFileNameWithoutExtension(mc[2].Value)+"\""));
+          RiderPlugin.Log(mc[2].Value);
+          sb.Append(line.Replace(mc[1].Value, GetFileNameWithoutExtension(mc[2].Value)+"\""));
         }
         else
         {
           sb.Append(line);
         }
+        sb.Append(Environment.NewLine);
       }
       File.WriteAllText(slnFile,sb.ToString());
+    }
+
+    private static string GetFileNameWithoutExtension(string path)
+    {
+      if (path == null)
+        return (string) null;
+      int length;
+      if ((length = path.LastIndexOf('.')) == -1)
+        return path;
+      return path.Substring(0, length);
     }
 
     private static void UpgradeProjectFile(string projectFile)
