@@ -6,7 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.PsiFeatures.VisualStudio.Core.ProjectModel.PropertiesExtender;
 using JetBrains.VsIntegration.ProjectModel.PropertiesExtender;
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
 {
     [SolutionComponent]
     public class VsUnityVersionPropertiesExtenderProvider : IPropertiesExtenderProvider
@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio
               displayName: "Unity Version",
               description: "The version of Unity being targeted by the project. Used by ReSharper to validate APIs.",
               projectItem: project,
-              getValueAction: p => myUnityVersion.Version.ToString(2),
+              getValueAction: p => myUnityVersion.GetActualVersion(project).ToString(2),
               setValueAction: (p, value) => { });
         }
     }

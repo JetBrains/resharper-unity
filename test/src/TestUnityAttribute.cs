@@ -35,10 +35,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             switch (myVersion)
             {
                 case UnityVersion.Unity54:
-                    yield return TestPackagesAttribute.ParsePackageDependency("resharper-unity.testlibs/5.4.0");
+                    yield return ParsePackageDependency("resharper-unity.testlibs/5.4.0");
                     break;
                 case UnityVersion.Unity55:
-                    yield return TestPackagesAttribute.ParsePackageDependency("resharper-unity.testlibs/5.5.0");
+                    yield return ParsePackageDependency("resharper-unity.testlibs/5.5.0");
                     break;
             }
             foreach (var package in base.GetPackages(platformID))
@@ -59,5 +59,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         }
 
         public string Extension => CSharpProjectFileType.CS_EXTENSION;
+
+        public string DefineConstants
+        {
+            get
+            {
+                switch (myVersion)
+                {
+                    case UnityVersion.Unity54: return "UNITY_5_4";
+                    case UnityVersion.Unity55: return "UNITY_5_5";
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
     }
 }

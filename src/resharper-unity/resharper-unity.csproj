@@ -388,7 +388,7 @@
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocPresenter.cs" />
     <Compile Include="Help\ShowUnityHelp.cs" />
     <Compile Include="ProjectExtensions.cs" />
-    <Compile Include="ProjectModel\Caches\LangVersionCacheProvider.cs" />
+    <Compile Include="ProjectModel\Caches\UnityProjectFileCacheProvider.cs" />
     <Compile Include="Psi\Colors\ColorPropertyPsiIconManagerExtension.cs" />
     <Compile Include="Psi\Colors\UnityColorReference.cs" />
     <Compile Include="Psi\Colors\UnityColorTypes.cs" />
@@ -406,7 +406,7 @@
     <Compile Include="ProjectModel\Properties\Flavours\UnityProjectFlavor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnityVersion.cs" />
-    <Compile Include="VisualStudio\Property.cs" />
+    <Compile Include="VisualStudio\ProjectModel\VsUnityVersionPropertiesExtenderProvider.cs" />
     <Compile Include="VisualStudio\ZoneMarker.cs" />
     <Compile Include="ZoneMarker.cs" />
   </ItemGroup>

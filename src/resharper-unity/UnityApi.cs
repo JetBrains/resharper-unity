@@ -4,6 +4,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -12,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class UnityApi
     {
         private readonly UnityVersion myUnityVersion;
-        private readonly Lazy<List<UnityType>> myTypes;
+        private readonly Lazy<UnityTypes> myTypes;
 
         public UnityApi(UnityVersion unityVersion)
         {
@@ -20,14 +21,26 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myTypes = Lazy.Of(() =>
             {
                 var apiXml = new ApiXml();
-                return apiXml.LoadTypes(myUnityVersion.Version);
+                return apiXml.LoadTypes();
             }, true);
         }
 
         [NotNull]
         public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type)
         {
-            return myTypes.Value.Where(t => t.SupportsVersion(myUnityVersion.Version) && type.IsDescendantOf(t.GetType(type.Module)));
+            var projectPsiModule = type.Module as IProjectPsiModule;
+            if (projectPsiModule == null)
+                return EmptyArray<UnityType>.Instance;
+            var unityVersion = myUnityVersion.GetActualVersion(projectPsiModule.Project);
+            return GetBaseUnityTypes(type, unityVersion);
+        }
+
+        [NotNull]
+        public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type, Version unityVersion)
+        {
+            var types = myTypes.Value;
+            unityVersion = types.NormaliseSupportedVersion(unityVersion);
+            return types.Types.Where(t => t.SupportsVersion(unityVersion) && type.IsDescendantOf(t.GetType(type.Module)));
         }
 
         public bool IsUnityType([NotNull] ITypeElement type)
@@ -37,10 +50,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool IsEventFunction([NotNull] IMethod method)
         {
+            var projectPsiModule = method.Module as IProjectPsiModule;
             var containingType = method.GetContainingType();
-            if (containingType != null)
+            if (containingType != null && projectPsiModule != null)
             {
-                return GetBaseUnityTypes(containingType).Any(type => type.HasEventFunction(method, myUnityVersion.Version));
+                var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
+                return GetBaseUnityTypes(containingType, unityVersion).Any(type => type.HasEventFunction(method, unityVersion));
             }
             return false;
         }
@@ -74,16 +89,23 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method)
         {
+            var projectPsiModule = method.Module as IProjectPsiModule;
             var containingType = method.GetContainingType();
-            if (containingType != null)
+            if (containingType != null && projectPsiModule != null)
             {
-                var eventFunctions = from t in GetBaseUnityTypes(containingType)
-                    from m in t.GetEventFunctions(myUnityVersion.Version)
+                var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
+                var eventFunctions = from t in GetBaseUnityTypes(containingType, unityVersion)
+                    from m in t.GetEventFunctions(unityVersion)
                     where m.Match(method)
                     select m;
                 return eventFunctions.FirstOrDefault();
             }
             return null;
+        }
+
+        private Version GetNormalisedActualVersion(IProject project)
+        {
+            return myTypes.Value.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));
         }
     }
 }

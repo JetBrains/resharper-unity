@@ -29,12 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         private readonly ISolution mySolution;
         private readonly ChangeManager myChangeManager;
-        private readonly ISettingsSchema settingsSchema;
+        private readonly ISettingsSchema mySettingsSchema;
         private readonly SettingsStorageProvidersCollection mySettingsStorageProviders;
         private readonly IShellLocks myLocks;
-        private readonly ILogger logger;
+        private readonly ILogger myLogger;
         private readonly InternKeyPathComponent myInterned;
-        private readonly LangVersionCacheProvider myLangVersionCache;
+        private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private readonly Dictionary<IProject, SettingsStorageMountPoint> myProjectMountPoints;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
 
@@ -44,16 +44,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                                   ISettingsSchema settingsSchema,
                                   SettingsStorageProvidersCollection settingsStorageProviders, IShellLocks locks,
                                   ILogger logger, InternKeyPathComponent interned,
-                                  LangVersionCacheProvider langVersionCache)
+                                  UnityProjectFileCacheProvider unityProjectFileCache)
         {
             mySolution = solution;
             myChangeManager = changeManager;
-            this.settingsSchema = settingsSchema;
+            mySettingsSchema = settingsSchema;
             mySettingsStorageProviders = settingsStorageProviders;
             myLocks = locks;
-            this.logger = logger;
+            myLogger = logger;
             myInterned = interned;
-            myLangVersionCache = langVersionCache;
+            myUnityProjectFileCache = unityProjectFileCache;
             myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
             myProjectLifetimes = new Dictionary<IProject, Lifetime>();
 
@@ -110,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                 if (myProjectMountPoints.TryGetValue(project, out mountPoint))
                     return;
 
-                mountPoint = CreateMountPoint(projectLifetime, project, mySettingsStorageProviders, myLocks, logger,
+                mountPoint = CreateMountPoint(projectLifetime, project, mySettingsStorageProviders, myLocks, myLogger,
                     myInterned);
                 myProjectMountPoints.Add(projectLifetime, project, mountPoint);
             }
@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
             // Just to make things more interesting, the langversion cache isn't
             // necessarily updated by the time we get called, so wire up a callback
-            myLangVersionCache.RegisterDataChangedCallback(projectLifetime, project.ProjectFileLocation,
+            myUnityProjectFileCache.RegisterDataChangedCallback(projectLifetime, project.ProjectFileLocation,
                 () => InitialiseSettingValues(project, mountPoint));
         }
 
@@ -199,7 +199,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             // * Unity and VSTU have two separate .csproj routines. VSTU adds extra references,
             //   the VSTU project flavour GUID and imports UnityVs.targets, which disables the
             //   `GenerateTargetFrameworkMonikerAttribute` target
-            // * CSharp60Support post-processes the .csproj file direclty if VSTU is not installed.
+            // * CSharp60Support post-processes the .csproj file directly if VSTU is not installed.
             //   If it is installed, it registers a delegate with `ProjectFilesGenerator.ProjectFileGeneration`
             //   and removes it before it's written to disk
             // * `LangVersion` can be conditionally specified, which makes checking for "default" awkward
@@ -235,7 +235,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         private bool IsLangVersionMissing(IProject project)
         {
-            return !myLangVersionCache.IsLangVersionExplicitlySpecified(project);
+            return !myUnityProjectFileCache.IsLangVersionExplicitlySpecified(project);
         }
 
         private bool IsLangVersionDefault(IProject project)
@@ -265,8 +265,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                                                       [NotNull] Expression<Func<TKeyClass, TEntryValue>> lambdaexpression, [NotNull] TEntryValue value,
                                                       IDictionary<SettingsKey, object> keyIndices = null)
         {
-            ScalarSettingsStoreAccess.SetValue(mount, settingsSchema.GetScalarEntry(lambdaexpression), keyIndices, value,
-                false, null, logger);
+            ScalarSettingsStoreAccess.SetValue(mount, mySettingsSchema.GetScalarEntry(lambdaexpression), keyIndices, value,
+                false, null, myLogger);
         }
 
         private void SetIndexedValue<TKeyClass, TEntryIndex, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,
@@ -275,8 +275,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                                                                           [NotNull] TEntryValue value,
                                                                           IDictionary<SettingsKey, object> keyIndices = null)
         {
-            ScalarSettingsStoreAccess.SetIndexedValue(mount, settingsSchema.GetIndexedEntry(lambdaexpression), index,
-                keyIndices, value, null, logger);
+            ScalarSettingsStoreAccess.SetIndexedValue(mount, mySettingsSchema.GetIndexedEntry(lambdaexpression), index,
+                keyIndices, value, null, myLogger);
         }
     }
 }
