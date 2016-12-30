@@ -37,7 +37,7 @@ Please see the [Unity3dRider](https://www.github.com/JetBrains/Unity3dRider#read
 
 * Inspection and Quick Fix to use `CompareTag` instead of string comparisons.
 
-  <img src="docs/compare_tag.git" width="509">
+  <img src="docs/compare_tag.gif" width="509">
 
 * Suppress naming consistency warnings for known Unity event functions. E.g. ReSharper no longer suggests that `AnimatorIK` be renamed to `AnimatorIk`.
 * Disables the `Assets` and `Assets\Scripts` folders from being considered as ["namespace providers"](https://www.jetbrains.com/help/resharper/2016.2/CheckNamespace.html). This means ReSharper will no longer suggest to include `Assets` or `Scripts` in the namespace of your code.
