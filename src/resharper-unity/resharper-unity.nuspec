@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>1.4.1</version>
+    <version>1.5.0</version>
     <authors>JetBrains slava.tutushkin</authors>
     <owners>JetBrains slava.tutushkin</owners>
     <summary>ReSharper support for Unity</summary>
@@ -12,12 +12,14 @@
 &#8226; Highlights Unity event functions and fields with an icon in the editor gutter.
 &#8226; Marks fields and methods implicitly used by Unity as in use.
 &#8226; Knows about all Unity script classes (MonoBehaviour, ScriptableObject, EditorWindow, etc).
+&#8226; Supports Unity API 5.2 - 5.5
+&#8226; Support for undocumented functions such as OnValidate and OnPreGeneratingCSProjectFiles.
 &#8226; Use Generate Code to create event functions, with parameters.
 &#8226; Start typing for automatic completion of event function declarations in a class.
-&#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating and CancelInvoke
 &#8226; Event function descriptions for methods and parameters displayed in tooltips and QuickDoc
 &#8226; "Read more" in QuickDoc navigates to Unity API documentation.
-&#8226; Code completion, find usages and rename support for string literals in MonoBehaviour.Invoke, InvokeRepeating and CancelInvoke.
+&#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating, IsInvoking and CancelInvoke. Also Start/StopCoroutine.
+&#8226; Inspection and Quick Fix to use CompareTag instead of string comparison.
 &#8226; Suppress naming consistency checks on event functions.
 &#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code.
 &#8226; Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!
@@ -26,7 +28,16 @@
 &#8226; String formatting assistance for debug log methods.
 </description>
 <releaseNotes>
-&#8226; ReSharper 2016.3 support
+&#8226; ReSharper 2016.3 support (#80, #90)
+&#8226; Add inspection and Quick Fix to use CompareTag instead of string comparison (#82)
+&#8226; Support Unity API for 5.2 - 5.5 (#81)
+&#8226; Support undocumented ScriptableObject.OnValidate and Reset (#79)
+&#8226; Support method name in string literal of MonoBehaviour.IsInvoking (#85)
+&#8226; Support method name in string literal for MonoBehaviour.Start/StopCoroutine (#83)
+&#8226; Add gutter icon and "Create" context action for Unity classes (#77)
+&#8226; Fix method generation for static event functions (#73)
+&#8226; Improve recognition of serialised fields (#87)
+&#8226; Remove duplicate items in auto complete list (#92)
 
 From 1.4.0:
 &#8226; Enable functionality in projects that reference Unity assemblies, not just those that have the VSTU project flavour GUID (#53)
