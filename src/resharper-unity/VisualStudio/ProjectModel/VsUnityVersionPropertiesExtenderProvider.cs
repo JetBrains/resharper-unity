@@ -14,12 +14,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
         private readonly Lifetime myLifetime;
         private readonly IShellLocks myLocks;
         private readonly UnityVersion myUnityVersion;
+        private readonly UnityApi myUnityApi;
 
-        public VsUnityVersionPropertiesExtenderProvider(Lifetime lifetime, IShellLocks locks, UnityVersion unityVersion)
+        public VsUnityVersionPropertiesExtenderProvider(Lifetime lifetime, IShellLocks locks, UnityVersion unityVersion, UnityApi unityApi)
         {
             myLifetime = lifetime;
             myLocks = locks;
             myUnityVersion = unityVersion;
+            myUnityApi = unityApi;
         }
 
         public bool CanExtend(IProjectItem projectItem)
@@ -38,7 +40,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
               displayName: "Unity Version",
               description: "The version of Unity being targeted by the project. Used by ReSharper to validate APIs.",
               projectItem: project,
-              getValueAction: p => myUnityVersion.GetActualVersion(project).ToString(2),
+              getValueAction: p =>
+              {
+                  var s = myUnityVersion.GetActualVersion(project).ToString(2);
+                  var n = myUnityApi.GetNormalisedActualVersion(project).ToString(2);
+                  if (s == n) return s;
+                  return $"{s} (using API info for {n})";
+              },
               setValueAction: (p, value) => { });
         }
     }

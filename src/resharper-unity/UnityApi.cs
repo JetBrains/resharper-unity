@@ -103,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return null;
         }
 
-        private Version GetNormalisedActualVersion(IProject project)
+        public Version GetNormalisedActualVersion(IProject project)
         {
             return myTypes.Value.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));
         }
