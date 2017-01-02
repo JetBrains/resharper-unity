@@ -248,8 +248,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                 var csharpConfiguration = configuration as ICSharpProjectConfiguration;
                 if (csharpConfiguration != null)
                 {
+#if WAVE08
+                    if (csharpConfiguration.LanguageVersion != CSharpLanguageVersion.Latest)
+                        return false;
+#else
                     if (csharpConfiguration.LanguageVersion != VSCSharpLanguageVersion.Latest)
                         return false;
+#endif
                 }
             }
             return true;

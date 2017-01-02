@@ -374,10 +374,10 @@
     <Compile Include="TestUnityAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.tests.wave07.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.csproj">
+    <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.wave07.csproj">
       <Project>{53b6ab4e-638a-4576-abc4-46672dd7eea1}</Project>
       <Name>resharper-unity</Name>
     </ProjectReference>

@@ -13,9 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiParser", "ApiParser\ApiP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiParserTest", "ApiParserTest\ApiParserTest.csproj", "{E149E7F4-23E7-4BC0-A8D1-95072004A45E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity", "resharper-unity\resharper-unity.csproj", "{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity.wave07", "resharper-unity\resharper-unity.wave07.csproj", "{53B6AB4E-638A-4576-ABC4-46672DD7EEA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "..\test\src\tests.csproj", "{28FA9B1F-B7DF-4419-B90D-3C765F4FB03F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.wave07", "..\test\src\tests.wave07.csproj", "{28FA9B1F-B7DF-4419-B90D-3C765F4FB03F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity.wave08", "resharper-unity\resharper-unity.wave08.csproj", "{DF42F23E-46F3-4798-8B16-024619FA5E46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.wave08", "..\test\src\tests.wave08.csproj", "{849CDA2E-35FC-49A8-A755-C3216B72BAB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{28FA9B1F-B7DF-4419-B90D-3C765F4FB03F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28FA9B1F-B7DF-4419-B90D-3C765F4FB03F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28FA9B1F-B7DF-4419-B90D-3C765F4FB03F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF42F23E-46F3-4798-8B16-024619FA5E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF42F23E-46F3-4798-8B16-024619FA5E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF42F23E-46F3-4798-8B16-024619FA5E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF42F23E-46F3-4798-8B16-024619FA5E46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
