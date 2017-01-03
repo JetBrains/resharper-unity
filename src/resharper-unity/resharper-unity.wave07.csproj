@@ -396,16 +396,12 @@
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocPresenter.cs" />
     <Compile Include="Help\ShowUnityHelp.cs" />
     <Compile Include="ProjectExtensions.cs" />
-    <Compile Include="ProjectModel\Caches\LangVersionCacheProvider.cs" />
     <Compile Include="ProjectModel\ShaderLabProjectFileType.cs" />
     <Compile Include="ProjectModel\Caches\UnityProjectFileCacheProvider.cs" />
     <Compile Include="Psi\Colors\ColorPropertyPsiIconManagerExtension.cs" />
     <Compile Include="Psi\Colors\UnityColorReference.cs" />
     <Compile Include="Psi\Colors\UnityColorTypes.cs" />
     <Compile Include="Psi\Colors\UnityNamedColors.cs" />
-    <Compile Include="Psi\Resolve\MonoBehaviourInvokeReference.cs" />
-    <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceFactory.cs" />
-    <Compile Include="Psi\Resolve\MonoBehaviourInvokeReferenceProviderFactory.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ParserMessages.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabParser.cs" />
     <Compile Include="Psi\ShaderLab\Tree\Impl\ChildRole.cs" />
