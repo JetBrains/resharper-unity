@@ -12,7 +12,7 @@ namespace ApiParser
 
         private readonly Type type;
 
-        public ApiType([NotNull] string name)
+        public ApiType([NotNull] string name, string namespaceHint = "")
         {
             if (string.IsNullOrWhiteSpace(name)) name = "void";
 
@@ -22,11 +22,16 @@ namespace ApiParser
                 IsArray = true;
             }
 
-            type = TypeResolver.Resolve(name);
+            type = TypeResolver.Resolve(name, namespaceHint);
         }
 
         public string FullName => type.FullName;
 
         public bool IsArray { get; }
+
+        public override string ToString()
+        {
+            return FullName + (IsArray ? "[]" : string.Empty);
+        }
     }
 }

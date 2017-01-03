@@ -1,27 +1,48 @@
 using System;
-using JetBrains.Application.platforms;
+using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.TestFramework;
+using NuGet;
 using PlatformID = JetBrains.Application.platforms.PlatformID;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
+    public enum UnityVersion
+    {
+        Unity54,
+        Unity55
+    }
+
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class TestUnityAttribute : TestPackagesAttribute, ITestFlavoursProvider, ITestPlatformProvider, ITestFileExtensionProvider
     {
-        public TestUnityAttribute() : base(GetReferences())
+        private readonly UnityVersion myVersion;
+
+        public TestUnityAttribute() : this(UnityVersion.Unity54)
         {
         }
 
-        private static string[] GetReferences()
+        public TestUnityAttribute(UnityVersion version)
         {
-            var rootPath = PlatformUtils.GetProgramFiles()/@"Unity/Editor/Data/Managed";
-            return new[]
+            myVersion = version;
+        }
+
+        public override IEnumerable<PackageDependency> GetPackages(PlatformID platformID)
+        {
+            // There isn't an official nuget for Unity, sadly, so add this feed to test/data/nuget.config
+            // <add key="unity-testlibs" value="https://myget.org/F/resharper-unity/api/v2/" />
+            switch (myVersion)
             {
-                (rootPath/"UnityEngine.dll").FullPath,
-                (rootPath/"UnityEditor.dll").FullPath
-            };
+                case UnityVersion.Unity54:
+                    yield return ParsePackageDependency("resharper-unity.testlibs/5.4.0");
+                    break;
+                case UnityVersion.Unity55:
+                    yield return ParsePackageDependency("resharper-unity.testlibs/5.5.0");
+                    break;
+            }
+            foreach (var package in base.GetPackages(platformID))
+                yield return package;
         }
 
         public Guid[] GetProjectTypeGuids()
@@ -30,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             {
                 UnityProjectFlavor.UnityProjectFlavorGuid
             };
-        }
+        }   
 
         public PlatformID GetPlatformID()
         {
@@ -38,5 +59,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         }
 
         public string Extension => CSharpProjectFileType.CS_EXTENSION;
+
+        public string DefineConstants
+        {
+            get
+            {
+                switch (myVersion)
+                {
+                    case UnityVersion.Unity54: return "UNITY_5_4";
+                    case UnityVersion.Unity55: return "UNITY_5_5";
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
     }
 }

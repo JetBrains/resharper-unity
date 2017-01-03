@@ -14,12 +14,14 @@ Please see the [Unity3dRider](https://www.github.com/JetBrains/Unity3dRider#read
   <img src="docs/field_not_accessed.png" width="442">
 
 * The plugin knows about all Unity based classes (`MonoBehaviour`, `ScriptableObject`, `EditorWindow`, etc.) and their event functions via analysis of the Unity API surface and documentation.
+* Support for Unity API versions 5.2 - 5.5.
 * <kbd>Alt</kbd>+<kbd>Insert</kbd> on Unity based classes to generate event functions methods via GUI.
 
     <img src="docs/generate_menu.png" width="156">
 
     <img src="docs/generate_dialog.png" width="442">
 
+* Generate also available from <kbd>Alt</kbd>+<kbd>Enter</kbd> context menu on Unity based classes.
 * Auto complete will suggest event function names when declaring methods in Unity based classes, and expand to include method signature. Simply start typing an event function within a class deriving from a known Unity class, such as `MonoBehaviour`.
 
   <img src="docs/auto_complete_message.png" width="392">
@@ -29,9 +31,13 @@ Please see the [Unity3dRider](https://www.github.com/JetBrains/Unity3dRider#read
   <img src="docs/quickdoc.png" width="500">
 
 * "Read more" in [QuickDoc](https://www.jetbrains.com/help/resharper/2016.2/Coding_Assistance__Quick_Documentation.html) will navigate to the Unity API documentation, locally if available, or via the Unity website.
-* Code completion, find usages and rename support for string literals in `MonoBehaviour.Invoke`, `InvokeRepeating` and `CancelInvoke`.
+* Code completion, find usages and rename support for string literals in `MonoBehaviour.Invoke`, `IsInvoking`, `InvokeRepeating` and `CancelInvoke`. Also supports `StartCoroutine` and `StopCoroutine`.
 
   <img src="docs/invoke_completion.png" width="209">
+
+* Inspection and Quick Fix to use `CompareTag` instead of string comparisons.
+
+  <img src="docs/compare_tag.gif" width="509">
 
 * Suppress naming consistency warnings for known Unity event functions. E.g. ReSharper no longer suggests that `AnimatorIK` be renamed to `AnimatorIk`.
 * Disables the `Assets` and `Assets\Scripts` folders from being considered as ["namespace providers"](https://www.jetbrains.com/help/resharper/2016.2/CheckNamespace.html). This means ReSharper will no longer suggest to include `Assets` or `Scripts` in the namespace of your code.

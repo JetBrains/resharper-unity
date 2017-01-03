@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -14,28 +15,34 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         private readonly IDictionary<string, IClrTypeName> myTypeNames = new Dictionary<string, IClrTypeName>();
 
-        public List<UnityType> LoadTypes()
+        public UnityTypes LoadTypes()
         {
             var types = new List<UnityType>();
 
             var ns = GetType().Namespace;
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ns + @".api.xml"))
             {
-                if (stream != null)
-                {
-                    var document = new XmlDocument();
-                    document.Load(stream);
+                Assertion.AssertNotNull(stream, "stream != null");
 
-                    var nodes = document.DocumentElement?.SelectNodes(@"/api/type");
-                    if (nodes != null)
-                    {
-                        foreach (XmlNode type in nodes)
-                            types.Add(CreateUnityType(type));
-                    }
-                }
+                var document = new XmlDocument();
+                document.Load(stream);
+
+                var apiNode = document.DocumentElement?.SelectSingleNode("/api");
+                Assertion.AssertNotNull(apiNode, "apiNode != null");
+
+                var minimumVersion = apiNode.Attributes?["minimumVersion"]?.Value;
+                var maximumVersion = apiNode.Attributes?["maximumVersion"]?.Value;
+
+                Assertion.Assert(minimumVersion != null && maximumVersion != null,
+                    "minimumVersion != null && maximumVersion != null");
+
+                var nodes = document.DocumentElement?.SelectNodes(@"/api/type");
+                Assertion.AssertNotNull(nodes, "nodes != null");
+                foreach (XmlNode type in nodes)
+                    types.Add(CreateUnityType(type));
+
+                return new UnityTypes(types, Version.Parse(minimumVersion), Version.Parse(maximumVersion));
             }
-
-            return types;
         }
 
         private IClrTypeName GetClrTypeName(string typeName)
@@ -54,6 +61,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var name = type.Attributes?["name"].Value;
             var ns = type.Attributes?["ns"].Value;
 
+            var minimumVersion = ParseVersionAttribute(type, "minimumVersion", "1.0");
+            var maximumVersion = ParseVersionAttribute(type, "maximumVersion", "655356.0");
+
             var typeName = GetClrTypeName($"{ns}.{name}");
             var messageNodes = type.SelectNodes("message");
             var messages = EmptyArray<UnityEventFunction>.Instance;
@@ -63,7 +73,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     node => CreateUnityMessage(node, typeName.GetFullNameFast())).OrderBy(m => m.Name).ToArray();
             }
 
-            return new UnityType(typeName, messages);
+            return new UnityType(typeName, messages, minimumVersion, maximumVersion);
+        }
+
+        private Version ParseVersionAttribute(XmlNode node, string attributeName, string defaultValue)
+        {
+            var attributeValue = node.Attributes?[attributeName]?.Value ?? defaultValue;
+            return Version.Parse(attributeValue);
         }
 
         private UnityEventFunction CreateUnityMessage(XmlNode node, string typeName)
@@ -72,6 +88,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var description = node.Attributes?["description"]?.Value;
             var isStatic = bool.Parse(node.Attributes?["static"]?.Value ?? "false");
             var isUndocumented = bool.Parse(node.Attributes?["undocumented"]?.Value ?? "false");
+
+            var minimumVersion = ParseVersionAttribute(node, "minimumVersion", "1.0");
+            var maximumVersion = ParseVersionAttribute(node, "maximumVersion", "655356.0");
 
             var parameters = EmptyArray<UnityEventFunctionParameter>.Instance;
 
@@ -91,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 returnType = GetClrTypeName(type);
             }
 
-            return new UnityEventFunction(name, typeName, returnType, returnsArray, isStatic, description, isUndocumented, parameters);
+            return new UnityEventFunction(name, typeName, returnType, returnsArray, isStatic, description, isUndocumented, minimumVersion, maximumVersion, parameters);
         }
 
         private UnityEventFunctionParameter LoadParameter([NotNull] XmlNode node, int i)
@@ -109,5 +128,29 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var parameterType = GetClrTypeName(type);
             return new UnityEventFunctionParameter(name, parameterType, description, isArray);
         }
+    }
+
+    public class UnityTypes
+    {
+        private readonly Version myMinimumVersion;
+        private readonly Version myMaximumVersion;
+
+        public UnityTypes(IList<UnityType> types, Version minimumVersion, Version maximumVersion)
+        {
+            Types = types;
+            myMinimumVersion = minimumVersion;
+            myMaximumVersion = maximumVersion;
+        }
+
+        public Version NormaliseSupportedVersion(Version actualVersion)
+        {
+            if (actualVersion < myMinimumVersion)
+                return myMinimumVersion;
+            if (actualVersion > myMaximumVersion)
+                return myMaximumVersion;
+            return actualVersion;
+        }
+
+        public IList<UnityType> Types { get; }
     }
 }

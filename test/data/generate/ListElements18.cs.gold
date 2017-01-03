@@ -10,9 +10,11 @@
  8: Update():System.Void
  9: OnDisable():System.Void
  10: OnEnable():System.Void
- 11: OnWizardCreate():System.Void
- 12: OnWizardOtherButton():System.Void
- 13: OnWizardUpdate():System.Void
+ 11: OnValidate():System.Void
+ 12: Reset():System.Void
+ 13: OnWizardCreate():System.Void
+ 14: OnWizardOtherButton():System.Void
+ 15: OnWizardUpdate():System.Void
 
 // ${KIND:Unity.EventFunctions}
 using UnityEditor;

@@ -49,8 +49,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
         {
             var path = $"ScriptReference/{keyword}.html";
 
-            return GetUri(GetProgramFiles(), path)
+            return GetUri(GetDocumentationRoot(), path)
                    ?? new Uri("https://docs.unity3d.com/" + path);
+        }
+
+        private static FileSystemPath GetDocumentationRoot()
+        {
+            switch (PlatformUtil.RuntimePlatform)
+            {
+                case PlatformUtil.Platform.Windows:
+                    var programFiles = GetProgramFiles();
+                    if (!programFiles.IsEmpty)
+                        return GetProgramFiles().Combine("Unity/Editor/Data/Documentation");
+                    return FileSystemPath.Empty;
+
+                case PlatformUtil.Platform.MacOsX:
+                    return FileSystemPath.Parse("/Applications/Unity/Documentation");
+
+                case PlatformUtil.Platform.Linux:
+                    // TODO: I don't know if this value is correct...
+                    return FileSystemPath.Parse("/opt/Unity/Editor/Data/Documentation");
+            }
+            return FileSystemPath.Empty;
         }
 
         private static FileSystemPath GetProgramFiles()
@@ -63,14 +83,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
             return string.IsNullOrWhiteSpace(environmentVariable) ? FileSystemPath.Empty : FileSystemPath.TryParse(environmentVariable);
         }
 
-        private static Uri GetUri(FileSystemPath programFiles, string htmlPath)
+        private static Uri GetUri(FileSystemPath documentationRoot, string htmlPath)
         {
-            const string localPathRoot = "Unity/Editor/Data/Documentation/en";
-
-            if (programFiles.IsEmpty)
+            if (documentationRoot.IsEmpty)
                 return null;
 
-            var fileSystemPath = programFiles/localPathRoot/htmlPath;
+            var fileSystemPath = documentationRoot/"en"/htmlPath;
             return fileSystemPath.ExistsFile ? fileSystemPath.ToUri() : null;
         }
     }

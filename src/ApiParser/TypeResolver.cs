@@ -33,7 +33,7 @@ namespace ApiParser
         }
 
         [NotNull]
-        public static Type Resolve([NotNull] string name)
+        public static Type Resolve([NotNull] string name, string namespaceHint)
         {
             if (Specials.ContainsKey(name)) return Specials[name];
             if (ourAllEntries == null) ourAllEntries = Entries.SelectMany(l => l).ToArray();
@@ -42,7 +42,27 @@ namespace ApiParser
             if (!candidates.Any()) candidates = ourAllEntries.Where(t => name == t.Name).ToArray();
             if (!candidates.Any()) throw new ApplicationException($"Unknown type '{name}'.");
 
-            return candidates.First();
+            if (candidates.Length > 1)
+            {
+                // If we have more than one type with the same name, choose the one in the
+                // same namespace as the owning message. This works for PlayState and Playable
+                foreach (var candidate in candidates)
+                {
+                    if (candidate.Namespace == namespaceHint)
+                    {
+                        Console.WriteLine("WARNING: Multiple candidates for `{0}`. Choosing `{1}` based on namespace", name, candidate.FullName);
+                        return candidate;
+                    }
+                }
+
+                Console.WriteLine("Cannot resolve type: {0}", name);
+                Console.WriteLine("Candidates:");
+                foreach (var candidate in candidates)
+                    Console.WriteLine(candidate.FullName);
+                throw new InvalidOperationException("Cannot resolve type");
+            }
+
+            return candidates.Single();
         }
 
         [NotNull]

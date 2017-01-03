@@ -1,5 +1,5 @@
 ﻿Provided elements:
- 0: OnSetPlayState(UnityEditor.ParticleEffectUI):System.Void
+ 0: OnSetPlayState(UnityEngine.Experimental.Director.PlayState):System.Void
  1: OnSetTime(System.Single):System.Void
  2: PrepareFrame(UnityEngine.Experimental.Director.FrameData):System.Void
 

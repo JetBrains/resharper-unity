@@ -3,6 +3,8 @@
  1: OnDestroy():System.Void
  2: OnDisable():System.Void
  3: OnEnable():System.Void
+ 4: OnValidate():System.Void
+ 5: Reset():System.Void
 
 // ${KIND:Unity.EventFunctions}
 using UnityEditor;

@@ -10,15 +10,16 @@ namespace ApiParser
 {
     public class ApiParser
     {
-        private static readonly Regex NsRegex = new Regex(@"^(class|struct) in\W*(\w+(?:\.\w+)*)$");
+        private static readonly Regex NsRegex = new Regex(@"^(?<type>class|struct) in\W*(?<namespace>\w+(?:\.\w+)*)$");
         private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$");
-        private readonly string rootPath;
-        [NotNull] private readonly UnityApi api;
 
-        public ApiParser([NotNull] string path, [NotNull] UnityApi api)
+        private readonly UnityApi api;
+        private readonly string myScriptReferenceRelativePath;
+
+        public ApiParser(UnityApi api, string scriptReferenceRelativePath)
         {
-            rootPath = path;
             this.api = api;
+            myScriptReferenceRelativePath = scriptReferenceRelativePath;
         }
 
         public event EventHandler<ProgressEventArgs> Progress;
@@ -28,14 +29,25 @@ namespace ApiParser
             api.ExportTo(writer);
         }
 
-        public void ParseFolder()
+        public void ParseFolder(string path, Version apiVersion)
         {
-            var files = Directory.EnumerateFiles(rootPath, @"*.html").ToArray();
-
-            for (var i = 0; i < files.Length; ++i)
+            var currentDirectory = Directory.GetCurrentDirectory();
+            try
             {
-                ParseFile(files[i]);
-                OnProgress(new ProgressEventArgs(i + 1, files.Length));
+                Directory.SetCurrentDirectory(path);
+
+                var files = Directory.EnumerateFiles(myScriptReferenceRelativePath, @"*.html").ToArray();
+
+                for (var i = 0; i < files.Length; ++i)
+                {
+                    ParseFile(files[i], apiVersion);
+                    OnProgress(new ProgressEventArgs(i + 1, files.Length));
+                }
+
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(currentDirectory);
             }
 
             Console.WriteLine();
@@ -59,44 +71,53 @@ namespace ApiParser
             Progress?.Invoke(this, e);
         }
 
-        private void ParseFile([NotNull] string filename)
+        private void ParseFile(string filename, Version apiVersion)
         {
             var document = ApiNode.Load(filename);
             var section = document?.SelectOne(@"//div.content/div.section");
             var header = section?.SelectOne(@"div.mb20.clear");
-            var cls = header?.SelectOne(@"h1.heading.inherit");
-            var ns = header?.SelectOne(@"p");
-            if (cls == null || ns == null) return;
+            var name = header?.SelectOne(@"h1.heading.inherit"); // Type or type member name
+            var ns = header?.SelectOne(@"p");   // "class in {ns}"
 
+            // Only interested in types at this point
+            if (name == null || ns == null) return;
+
+            // Only types that have messages
             var messages = section.Subsection("Messages").ToArray();
             if (messages.Length == 0) return;
 
-            var clsType = NsRegex.Replace(ns.Text, "$1");
-            var nsName = NsRegex.Replace(ns.Text, "$2");
-            var unityApiType = api.AddType(nsName, cls.Text, clsType, new Uri(filename).AbsoluteUri);
+            var match = NsRegex.Match(ns.Text);
+            var clsType = match.Groups["type"].Value;
+            var nsName = match.Groups["namespace"].Value;
+
+            var unityApiType = api.AddType(nsName, name.Text, clsType, filename, apiVersion);
 
             foreach (var message in messages)
-                ParseMessage(message, unityApiType);
+            {
+                var eventFunction = ParseMessage(message, apiVersion, nsName);
+                unityApiType.MergeEventFunction(eventFunction, apiVersion);
+            }
         }
 
-        private void ParseMessage([NotNull] ApiNode message, UnityApiType unityApiType)
+        [CanBeNull]
+        private UnityApiEventFunction ParseMessage(ApiNode message, Version apiVersion, string hintNamespace)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
-            if (link == null || desc == null) return;
+            if (link == null || desc == null) return null;
 
             var detailsPath = link[@"href"];
-            if (string.IsNullOrWhiteSpace(detailsPath)) return;
+            if (string.IsNullOrWhiteSpace(detailsPath)) return null;
 
-            var path = Path.Combine(rootPath, detailsPath);
-            if (!File.Exists(path)) return;
+            var path = Path.Combine(myScriptReferenceRelativePath, detailsPath);
+            if (!File.Exists(path)) return null;
 
             var detailsDoc = ApiNode.Load(path);
             var details = detailsDoc?.SelectOne(@"//div.content/div.section");
             var signature = details?.SelectOne(@"div.mb20.clear/h1.heading.inherit");
             var staticNode = details?.SelectOne(@"div.subsection/p/code.varname[text()='static']");
 
-            if (signature == null) return;
+            if (signature == null) return null;
 
             var messageName = link.Text;
             var returnType = ApiType.Void;
@@ -105,16 +126,20 @@ namespace ApiParser
             var example = PickExample(details);
             if (example != null)
             {
-                var tuple = ParseDetailsFromExample(messageName, example);
+                var tuple = ParseDetailsFromExample(messageName, example, hintNamespace);
                 returnType = tuple.Item1;
                 argumentNames = tuple.Item2;
             }
 
-            var eventFunction = unityApiType.AddEventFunction(messageName, staticNode != null, returnType, new Uri(path).AbsoluteUri, desc.Text);
-            ParseParameters(eventFunction, signature, details, argumentNames);
+            var docPath = Path.Combine(myScriptReferenceRelativePath, detailsPath);
+            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null, returnType, apiVersion, desc.Text, docPath, false);
+
+            ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames);
+
+            return eventFunction;
         }
 
-        private static void ParseParameters(UnityApiEventFunction eventFunction, ApiNode signature, ApiNode details, string[] argumentNames)
+        private static void ParseParameters(UnityApiEventFunction  eventFunction, ApiNode signature, ApiNode details, string owningMessageNamespace, string[] argumentNames)
         {
             // E.g. OnCollisionExit2D(Collision2D) - doesn't always include the argument name
             // Hopefully, we parsed the argument name from the example
@@ -125,7 +150,7 @@ namespace ApiParser
                 .Select(s => s.Trim())
                 .ToArray();
             var total = argumentStrings.Length;
-            var arguments = argumentStrings.Select((s, i) => new Argument(s, i, total)).ToArray();
+            var arguments = argumentStrings.Select((s, i) => new Argument(s, i, total, owningMessageNamespace)).ToArray();
 
             ResolveArguments(details, arguments, argumentNames);
 
@@ -138,7 +163,10 @@ namespace ApiParser
             if (argumentNames != null)
             {
                 for (var i = 0; i < arguments.Count; i++)
-                    arguments[i].Name = argumentNames[i];
+                {
+                    if (!string.IsNullOrEmpty(argumentNames[i]))
+                        arguments[i].Name = argumentNames[i];
+                }
             }
 
             var parameters = details.Subsection("Parameters").ToArray();
@@ -158,7 +186,7 @@ namespace ApiParser
         }
 
         // Gets return type and argument names from example
-        private static Tuple<ApiType, string[]> ParseDetailsFromExample(string messageName, ApiNode example)
+        private static Tuple<ApiType, string[]> ParseDetailsFromExample(string messageName, ApiNode example, string owningMessageNamespace)
         {
             var blankCleanup1 = new Regex(@"\s+");
             var blankCleanup2 = new Regex(@"\s*(\W)\s*");
@@ -171,7 +199,7 @@ namespace ApiParser
             var m = jsRegex.Match(exampleText);
             if (m.Success)
             {
-                var returnType = new ApiType(m.Groups[2].Value);
+                var returnType = new ApiType(m.Groups[2].Value, owningMessageNamespace);
                 var parameters = m.Groups[1].Value.Split(',');
 
                 var arguments = new string[parameters.Length];
@@ -189,7 +217,7 @@ namespace ApiParser
             {
                 var nameRegex = new Regex(@"\W(\w+)$");
 
-                var returnType = new ApiType(m.Groups[1].Value);
+                var returnType = new ApiType(m.Groups[1].Value, owningMessageNamespace);
                 var parameters = m.Groups[2].Value.Split(',');
 
                 var arguments = new string[parameters.Length];
