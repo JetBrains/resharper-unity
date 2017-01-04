@@ -8680,11 +8680,11 @@ public virtual TokenNodeType _locateToken()
               case 15:
                 { return ShaderLabTokenType.BAD_CHARACTER; }
               case 16:
-                { return ShaderLabTokenType.INTEGER_LITERAL; }
+                { return ShaderLabTokenType.NUMERIC_LITERAL; }
               case 17:
                 { return ShaderLabTokenType.STRING_LITERAL; }
               case 18:
-                { return ShaderLabTokenType.FLOAT_LITERAL; }
+                { return ShaderLabTokenType.NUMERIC_LITERAL; }
               case 19:
                 { return ShaderLabTokenType.STRING_LITERAL; }
               case 20:
@@ -8710,7 +8710,7 @@ public virtual TokenNodeType _locateToken()
               case 30:
                 { return ShaderLabTokenType.BAD_CHARACTER; }
               case 31:
-                { return ShaderLabTokenType.INTEGER_LITERAL; }
+                { return ShaderLabTokenType.NUMERIC_LITERAL; }
               case 32:
                 { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
               case 33:

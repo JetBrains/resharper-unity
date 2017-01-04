@@ -96,8 +96,8 @@ CG_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^C])|(ENDC[^G]))+)
 <YYSHADERLAB>   "CGPROGRAM"             { yybegin(YYCGPROGRAM); return ShaderLabTokenType.CG_PROGRAM; }
 <YYSHADERLAB>   "CGINCLUDE"             { yybegin(YYCGPROGRAM); return ShaderLabTokenType.CG_INCLUDE; }
 
-<YYSHADERLAB>   {INTEGER_LITERAL}       { return ShaderLabTokenType.INTEGER_LITERAL; }
-<YYSHADERLAB>   {FLOAT_LITERAL}         { return ShaderLabTokenType.FLOAT_LITERAL; }
+<YYSHADERLAB>   {INTEGER_LITERAL}       { return ShaderLabTokenType.NUMERIC_LITERAL; }
+<YYSHADERLAB>   {FLOAT_LITERAL}         { return ShaderLabTokenType.NUMERIC_LITERAL; }
 <YYSHADERLAB>   {STRING_LITERAL}        { return ShaderLabTokenType.STRING_LITERAL; }
 <YYSHADERLAB>   {UNFINISHED_STRING_LITERAL}        { return ShaderLabTokenType.STRING_LITERAL; }
 <YYSHADERLAB>   {SINGLE_LINE_COMMENT}   { return ShaderLabTokenType.END_OF_LINE_COMMENT; }
