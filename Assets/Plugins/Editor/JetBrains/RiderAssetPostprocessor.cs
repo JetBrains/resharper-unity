@@ -32,7 +32,7 @@ namespace Assets.Plugins.Editor.JetBrains
         if (line.StartsWith("Project("))
         {
           MatchCollection mc = Regex.Matches(line, "\"([^\"]*)\"");
-          RiderPlugin.Log(mc[2].Value);
+          //RiderPlugin.Log(mc[2].Value);
           sb.Append(line.Replace(mc[1].Value, GetFileNameWithoutExtension(mc[2].Value)+"\""));
         }
         else
