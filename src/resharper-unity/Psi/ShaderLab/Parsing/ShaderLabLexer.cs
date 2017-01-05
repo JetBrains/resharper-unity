@@ -8,6 +8,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     public partial class ShaderLabLexerGenerated
     {
+        private static readonly LexerDictionary<TokenNodeType> Keywords = new LexerDictionary<TokenNodeType>();
+
+        private readonly ReusableBufferRange myBufferRange = new ReusableBufferRange();
+        // ReSharper disable once InconsistentNaming
         private TokenNodeType currentTokenType;
 
         private struct TokenPosition
@@ -17,6 +21,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
             public int YyBufferStart;
             public int YyBufferEnd;
             public int YyLexicalState;
+        }
+
+        static ShaderLabLexerGenerated()
+        {
+            foreach (var nodeType in ShaderLabTokenType.KEYWORDS)
+            {
+                var keyword = (TokenNodeType) nodeType;
+                Keywords[keyword.TokenRepresentation] = keyword;
+            }
         }
 
         public void Start()
@@ -112,6 +125,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
             }
 
             return currentTokenType;
+        }
+
+        private TokenNodeType FindKeywordByCurrentToken()
+        {
+            return Keywords.GetValueSafe(myBufferRange, yy_buffer, yy_buffer_start, yy_buffer_end);
         }
     }
 }

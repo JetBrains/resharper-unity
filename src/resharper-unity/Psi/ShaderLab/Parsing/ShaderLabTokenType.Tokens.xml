@@ -42,4 +42,12 @@
     
     <Token name="BAD_CHARACTER" representation="💩" />
   </Tokens>
+
+  <Commands NodeType="KeywordTokenNodeType">
+    <Command name="SHADER_KEYWORD" representation="Shader" />
+    <Command name="PROPERTIES_KEYWORD" representation="Properties" />
+    <Command name="SUB_SHADER_KEYWORD" representation="SubShader" />
+    <Command name="FALLBACK_KEYWORD" representation="Fallback" />
+    <Command name="CUSTOM_EDITOR_KEYWORD" representation="CustomEditor" />
+  </Commands>
 </ShaderLabTokens>

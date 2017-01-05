@@ -1,2 +1,2 @@
-{caret} ShaderLab "test" {
+{caret} Shader "test" {
 }

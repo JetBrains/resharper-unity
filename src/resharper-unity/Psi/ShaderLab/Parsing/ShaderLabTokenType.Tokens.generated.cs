@@ -46,5 +46,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     public const int BAD_CHARACTER_NODE_TYPE_INDEX = 1013;
     public static readonly TokenNodeType BAD_CHARACTER = new FixedTokenNodeType("BAD_CHARACTER", BAD_CHARACTER_NODE_TYPE_INDEX, representation: "💩");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1014;  }
+    //Commands
+    public const int SHADER_KEYWORD_NODE_TYPE_INDEX = 1014;
+    public static readonly TokenNodeType SHADER_KEYWORD = new KeywordTokenNodeType("SHADER_KEYWORD", SHADER_KEYWORD_NODE_TYPE_INDEX, representation: "Shader");
+    public const int PROPERTIES_KEYWORD_NODE_TYPE_INDEX = 1015;
+    public static readonly TokenNodeType PROPERTIES_KEYWORD = new KeywordTokenNodeType("PROPERTIES_KEYWORD", PROPERTIES_KEYWORD_NODE_TYPE_INDEX, representation: "Properties");
+    public const int SUB_SHADER_KEYWORD_NODE_TYPE_INDEX = 1016;
+    public static readonly TokenNodeType SUB_SHADER_KEYWORD = new KeywordTokenNodeType("SUB_SHADER_KEYWORD", SUB_SHADER_KEYWORD_NODE_TYPE_INDEX, representation: "SubShader");
+    public const int FALLBACK_KEYWORD_NODE_TYPE_INDEX = 1017;
+    public static readonly TokenNodeType FALLBACK_KEYWORD = new KeywordTokenNodeType("FALLBACK_KEYWORD", FALLBACK_KEYWORD_NODE_TYPE_INDEX, representation: "Fallback");
+    public const int CUSTOM_EDITOR_KEYWORD_NODE_TYPE_INDEX = 1018;
+    public static readonly TokenNodeType CUSTOM_EDITOR_KEYWORD = new KeywordTokenNodeType("CUSTOM_EDITOR_KEYWORD", CUSTOM_EDITOR_KEYWORD_NODE_TYPE_INDEX, representation: "CustomEditor");
+
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1019;  }
 }

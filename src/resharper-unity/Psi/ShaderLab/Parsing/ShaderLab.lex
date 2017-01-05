@@ -99,11 +99,13 @@ CG_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^C])|(ENDC[^G]))+)
 <YYSHADERLAB>   {INTEGER_LITERAL}       { return ShaderLabTokenType.NUMERIC_LITERAL; }
 <YYSHADERLAB>   {FLOAT_LITERAL}         { return ShaderLabTokenType.NUMERIC_LITERAL; }
 <YYSHADERLAB>   {STRING_LITERAL}        { return ShaderLabTokenType.STRING_LITERAL; }
+
 <YYSHADERLAB>   {UNFINISHED_STRING_LITERAL}        { return ShaderLabTokenType.STRING_LITERAL; }
 <YYSHADERLAB>   {SINGLE_LINE_COMMENT}   { return ShaderLabTokenType.END_OF_LINE_COMMENT; }
 <YYSHADERLAB>   {DELIMITED_COMMENT}     { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
 <YYSHADERLAB>   {UNFINISHED_DELIMITED_COMMENT}     { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
-<YYSHADERLAB>   {IDENTIFIER}            { return ShaderLabTokenType.IDENTIFIER; }
+
+<YYSHADERLAB>   {IDENTIFIER}            { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
 
 <YYCGPROGRAM>   {CG_BLOCK}              { return ShaderLabTokenType.CG_CONTENT; }
 <YYCGPROGRAM>   "ENDCG"                 { yybegin(YYSHADERLAB); return ShaderLabTokenType.CG_END; }

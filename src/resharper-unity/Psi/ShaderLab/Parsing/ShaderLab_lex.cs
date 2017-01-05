@@ -8676,7 +8676,7 @@ public virtual TokenNodeType _locateToken()
               case 13:
                 { return ShaderLabTokenType.RBRACK; }
               case 14:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 15:
                 { return ShaderLabTokenType.BAD_CHARACTER; }
               case 16:
@@ -8706,7 +8706,7 @@ public virtual TokenNodeType _locateToken()
               case 28:
                 { return ShaderLabTokenType.NEW_LINE; }
               case 29:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 30:
                 { return ShaderLabTokenType.BAD_CHARACTER; }
               case 31:
@@ -8716,13 +8716,13 @@ public virtual TokenNodeType _locateToken()
               case 33:
                 break;
               case 34:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 35:
                 { return ShaderLabTokenType.BAD_CHARACTER; }
               case 36:
                 break;
               case 37:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 38:
                 { return ShaderLabTokenType.BAD_CHARACTER; }
               case 39:
@@ -8732,37 +8732,37 @@ public virtual TokenNodeType _locateToken()
               case 43:
                 break;
               case 44:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 45:
                 break;
               case 46:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 47:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 48:
                 break;
               case 49:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 50:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 51:
                 break;
               case 52:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 53:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 54:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 55:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 56:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 57:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 58:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
               case 59:
-                { return ShaderLabTokenType.IDENTIFIER; }
+                { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
             }
           }
         yy_initial = true;

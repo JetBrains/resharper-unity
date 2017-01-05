@@ -21,16 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
             return (IFile) element;
         }
 
-        protected override TreeElement matchShaderLabCommand()
-        {
-            return matchNamedIdentifier("ShaderLab");
-        }
-
-        protected override bool expectShaderLabCommand()
-        {
-            return expectNamedIdentifier("ShaderLab");
-        }
-
         protected override TreeElement matchPropertiesCommand()
         {
             return matchNamedIdentifier("Properties");

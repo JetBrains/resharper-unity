@@ -77,23 +77,24 @@
 
 errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
 :
-  shaderLabCommand<SHADER_LAB_COMMAND, Command>
+  shaderCommand<SHADER_LAB_COMMAND, Command>
 ;
 
-errorhandling shaderLabCommand options {}
+errorhandling shaderCommand options {}
 :
-  IDENTIFIER `ShaderLabCommand <SHADER_LAB_IDENTIFIER, Identifier>
-  shaderLabValue<SHADER_LAB_VALUE, Value>
+  SHADER_KEYWORD<SHADER_LAB_KEYWORD, ShaderKeyword>
+  shaderValue<SHADER_LAB_VALUE, Value>
 ;
 
-errorhandling shaderLabValue options {}
+errorhandling shaderValue options {}
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   LBRACE<SHADER_LAB_LBRACE, LBrace>
-  // TODO: Do these have a strict order?
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
-//  fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
-//  customEditorComamnd<CUSTOM_EDITOR_COMMAND, CustomEditorCommand>?
+  // subshaders
+  // fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
+  // customEditorComamnd<CUSTOM_EDITOR_COMMAND, CustomEditorCommand>?
+  // TODO: Where does category go?
   RBRACE<SHADER_LAB_RBRACE, RBrace>
 ;
 
