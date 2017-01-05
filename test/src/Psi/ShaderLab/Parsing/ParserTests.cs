@@ -12,6 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         protected override string RelativeTestDataPath => @"psi\shaderLab\parsing";
 
         [TestCase("First")]
-        public void TestLexer(string name) => DoOneTest(name);
+        [TestCase("PropertiesEmpty")]
+        [TestCase("Properties")]
+        public void TestParser(string name) => DoOneTest(name);
     }
 }

@@ -1,14 +1,17 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Gen;
-using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Tree.Impl;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     internal class ShaderLabParser : ShaderLabParserGenerated, IParser
     {
+        private ITokenIntern myTokenIntern;
+
         public ShaderLabParser([NotNull] ILexer<int> lexer)
         {
             setLexer(new ShaderLabFilteringLexer(lexer));
@@ -21,36 +24,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
             return (IFile) element;
         }
 
-        protected override TreeElement matchPropertiesCommand()
-        {
-            return matchNamedIdentifier("Properties");
-        }
+        //public override TreeElement ParseIdentifier()
+        //{
+        //    ParseIdent(result);
 
-        protected override bool expectPropertiesCommand()
-        {
-            return expectNamedIdentifier("Properties");
-        }
 
-        private TreeElement matchNamedIdentifier(string name)
-        {
-            if (expectNamedIdentifier(name))
-                return CreateToken(ShaderLabTokenType.IDENTIFIER);
-            throw new UnexpectedToken(ParserMessages.GetUnexpectedTokenMessage());
-        }
+        //    var identifier = new Identifier(TokenIntern.Intern(myLexer));
+        //    SetOffset(identifier, myLexer.TokenStart);
+        //    myLexer.Advance();
+        //    return identifier;
+        //}
 
-        private bool expectNamedIdentifier(string name)
-        {
-            var tokenType = myLexer.TokenType;
-            return tokenType == ShaderLabTokenType.IDENTIFIER && LexerUtil.CompareTokenText(myLexer, name, false);
-        }
-
-        private TreeElement CreateToken(TokenNodeType tokenType)
-        {
-            var element = tokenType.Create(myLexer.Buffer, new TreeOffset(myLexer.TokenStart),
-                new TreeOffset(myLexer.TokenEnd));
-            SetOffset(element, myLexer.TokenStart);
-            myLexer.Advance();
-            return element;
-        }
+        //private ITokenIntern TokenIntern => myTokenIntern ?? (myTokenIntern = new LexerTokenIntern(10));
     }
 }

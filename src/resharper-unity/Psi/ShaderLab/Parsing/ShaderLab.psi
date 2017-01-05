@@ -52,12 +52,18 @@
   publicChildRolePrefix="SHADER_LAB_";
 
 
-  // Not sure yet...
-  customImplPackage="JetBrains.ReSharper.Psi.RegExp.JsRegex.Impl.Tree";
+  // Namespace and suffix for custom element instance implementation created by
+  // node type when `customImpl` option is specfied.
+  // Default suffix is `Impl`
+  customImplPackage="JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Tree.Impl";
+  "customImplSuffix"="";
 
 
   // Required on. Changes behaviour of various things, e.g. public child role values based on prefix
   disableReflection;
+
+  // Required. If missing, generates Add/Remove methods for each collection
+  generateWorkingPsi;
 }
 
 // Modifiers:
@@ -66,46 +72,204 @@
 //   valid following token. Generates virtual HandleErrorInXXX method that will skip to
 //   the next valid following token. All tokens in between are added to the current error.
 // `noerrorhandling` - same as omitting `errorhandling`
-// `private`
-// `abstract`
-// `interface`
+// `private` - the rule is effectively expanded inline, as part of the parent rule. Parent
+//   rule references it with no role information
+// `abstract` - does not create an element, interface or parse function.
+// `interface` - defines a rule that can match one of multiple rules, all of which will have
+//   a common base, e.g. `expression`, which can match `stringLiteralExpression`, `numericExpression`, etc.
 //
 // options:
 //
+// (not exhaustive)
+// `customImpl` - the parser generates the element interface and a "stub" base implementation, but
+//  generated node type will create an instance of a derived type that must be implemented manually.
+//  The custom name ends with the `"customImplSuffix"` global option, and must be declared in the
+//  `customImplPackage` namespace. It is named after the nonterminal, as usual. The generated base
+//  element instance ends with the suffix `Stub`
 // `customInterface` - generate element tree node with a custom interface. Name is the same
 //   as would be generated, but uses `customInterfacePackage` for namespace
+// `customParseFunction` - don't generate a parse function, create a custom abstract parse method
+//   called `Parse{NonterminalName}`
+// `stubBase="Foo"` - use `Foo` as the base class for the generated element instance. Overrides
+//   `psiStubsBaseClass` global option
+//
+// Rules:
+//
+// (terminal|nonterminal) `customParseFunction? <ROLE, PropertyName>? Quantifier?
+//
+// * A new tree element is generated for each rule definition, with properties for each child rule
+// * Rule starts with a terminal or a nonterminal token. If it's a terminal, it's a token from
+//   the lexer (e.g. IDENTIFIER), otherwise, it's an identifier for another rule
+// * An optional custom parse function comes next, preceded by a backtick. If specified, abstract
+//   methods called matchXXX and expectXXX are generated and called. The implementation of matchXXX
+//   should call expectXXX and return a TreeElement that represents what's been matched. The
+//   expectXXX method should look at the current token and return true if it's what's expected
+// * ROLE is the name of the child role generated. This can be a common role from the ChildRoles
+//   class, or a name for a private role. If no role definition is given, the node isn't added to
+//   the interface. A single property name can be used multiple times, in which case it is exposed
+//   as either a collection, or the lowest common node type.
+// * PropertyName is the name of the generated property to access this token
+// * Quantifier can be ommitted, meaning nonoptional, optional (?), zero or more (*) or one or more (+)
+//   Pipes and parentheses can also be used to separate and group rules
+
+
+// Making command names their own tokens makes it easier to parse (especially
+// with regard to follow tokens and error messages), but makes it trickier to
+// parse actually identifiers, such as property names. This nonterminal matches
+// the IDENTIFIER token, as well as all of the keywords
+//
+// Option 1. Call this `identifier`. This generates `IIdentifier` as a partial interface. Add another
+//   implementation and derive it from `Psi.Tree.IIdentifier`. We need to use `customImpl` so we can add
+//   a derived instance that will implement `IIdentifier.Name`
+// Option 2. Call this `shaderLabIdentifier` to distinguish with the `IDENTIFIER` token. All else as
+//   above. Downside is that this is a composite element (big deal?)
+// Option 3. Create an abstract nonterminal, which then requires a `ParseIdentifier` method. This would
+//   check the current token is either `IDENTIFIER` or belongs to the Keywords set. Then can return any
+//   element, e.g. `IDENTIFER` as a token, not a composite
+// Option 4. As above, but create another private non terminal that 
+//
+// Note that C# does context sensitive keywords the other way - all context sensitive keywords are identifiers
+// and parsed via custom match/expect methods. This has implications on follow tokens (on error, can skip to
+// any following identifier, rather than expected keyword)
+shaderLabIdentifier
+options {
+  customImpl;
+}
+:
+  IDENTIFIER
+
+  | SHADER_KEYWORD
+  | PROPERTIES_KEYWORD
+  | SUB_SHADER_KEYWORD
+  | FALLBACK_KEYWORD
+  | CUSTOM_EDITOR_KEYWORD
+
+  | COLOR_KEYWORD
+  | CUBE_KEYWORD
+  | FLOAT_KEYWORD
+  | INT_KEYWORD
+  | RANGE_KEYWORD
+  | TEXTURE_2D_KEYWORD
+  | TEXTURE_3D_KEYWORD
+  | VECTOR_KEYWORD
+;
 
 errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
 :
   shaderCommand<SHADER_LAB_COMMAND, Command>
 ;
 
-errorhandling shaderCommand options {}
+errorhandling shaderCommand
 :
   SHADER_KEYWORD<SHADER_LAB_KEYWORD, ShaderKeyword>
   shaderValue<SHADER_LAB_VALUE, Value>
 ;
 
-errorhandling shaderValue options {}
+// TODO: Where are CGINCLUDE blocks valid?
+// I've seen them after Properties, before Shader and after Tags...
+// TODO: Add Dependency property (from default shader)
+// https://forum.unity3d.com/threads/shaderlab-dependency-property.215130/
+// https://forum.unity3d.com/threads/solved-pass-data-from-a-shader-to-its-dependency-shader-or-set-dependecy-shader-data.437961/
+// https://alastaira.wordpress.com/2013/12/07/custom-unity-terrain-material-shaders/
+// e.g. Dependency "AddPassShader" = "Custom/ToonTerrainAddPass"
+// Looks like first string literal is a known value, called by the terrain shader
+errorhandling shaderValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
-  LBRACE<SHADER_LAB_LBRACE, LBrace>
+  LBRACE<LBRACE, LBrace>
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
-  // subshaders
+  // SubShaders/Category
+  // I think fallback, customEditor and dependency can be in any 
+  // Accept multiple instances then add inspection to only allow one?
   // fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
   // customEditorComamnd<CUSTOM_EDITOR_COMMAND, CustomEditorCommand>?
-  // TODO: Where does category go?
-  RBRACE<SHADER_LAB_RBRACE, RBrace>
+  // dependency<DEPENDENCY_COMMAND, Dependencies>*
+  RBRACE<RBRACE, RBrace>
 ;
 
-errorhandling propertiesCommand options {}
+errorhandling propertiesCommand
 :
-  IDENTIFIER `PropertiesCommand <SHADER_LAB_IDENTIFIER, Identifier>
+  PROPERTIES_KEYWORD<SHADER_LAB_KEYWORD, PropertiesKeyword>
   propertiesValue<SHADER_LAB_VALUE, Value>
 ;
 
-errorhandling propertiesValue options {}
+errorhandling propertiesValue
 :
-  LBRACE<SHADER_LAB_LBRACE, LBrace>
-  RBRACE<SHADER_LAB_RBRACE, RBrace>
+  LBRACE<LBRACE, LBrace>
+  propertyDeclaration<PROPERTY_DECLARATIONS, Declarations>*
+  RBRACE<RBRACE, RBrace>
+;
+
+// TODO: Attributes
+// I haven't seen an example of multiple attributes, but easy to support
+propertyDeclaration
+:
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Name>
+  LPAREN<LPAREN, LParen>
+  STRING_LITERAL<SHADER_LAB_NAME, DisplayName>
+  COMMA<COMMA, Comma>
+  propertyType<PROPERTY_TYPE, PropertyType>
+  RPAREN<RPAREN, RParen>
+  EQUALS<EQUALS, Equals>
+  propertyValue<PROPERTY_VALUE, PropertValue>
+;
+
+interface propertyType
+:
+  simplePropertyType
+  | rangePropertyType
+;
+
+simplePropertyType
+:
+  COLOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | CUBE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | FLOAT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | INT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_2D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_3D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | VECTOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+;
+
+rangePropertyType
+:
+  RANGE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  LPAREN<LPAREN, LParen>
+  NUMERIC_LITERAL<MIN, Min>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<MAX, Max>
+  RPAREN<RPAREN, RParen>
+;
+
+interface propertyValue
+:
+  scalarPropertyValue
+  | vectorPropertyValue
+  | texturePropertyValue
+;
+
+scalarPropertyValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, Number>
+;
+
+vectorPropertyValue
+:
+  LPAREN<LPAREN, LParen>
+  NUMERIC_LITERAL<NUMBER, Numbers>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<NUMBER, Numbers>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<NUMBER, Numbers>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<NUMBER, Numbers>
+  RPAREN<RPAREN, RParen>
+;
+
+texturePropertyValue
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  LBRACE<LBRACE, LBrace>
+  // TODO: Consume error elements here
+  RBRACE<RBRACE, RBrace>
 ;

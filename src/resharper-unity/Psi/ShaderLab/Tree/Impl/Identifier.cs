@@ -23,4 +23,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Tree.Impl
         // TODO: This doesn't seem right
         public string Name => GetText();
     }
+
+    internal abstract partial class ShaderLabIdentifierStub
+    {
+        public abstract string Name { get; }
+    }
+
+    internal class ShaderLabIdentifier : ShaderLabIdentifierStub
+    {
+        public override string Name => GetText();
+    }
 }
