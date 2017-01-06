@@ -37,44 +37,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     public static readonly TokenNodeType RBRACE = new FixedTokenNodeType("RBRACE", RBRACE_NODE_TYPE_INDEX, representation: "}");
     public const int COMMA_NODE_TYPE_INDEX = 1009;
     public static readonly TokenNodeType COMMA = new FixedTokenNodeType("COMMA", COMMA_NODE_TYPE_INDEX, representation: ",");
-    public const int EQUALS_NODE_TYPE_INDEX = 1010;
+    public const int DOT_NODE_TYPE_INDEX = 1010;
+    public static readonly TokenNodeType DOT = new FixedTokenNodeType("DOT", DOT_NODE_TYPE_INDEX, representation: ".");
+    public const int EQUALS_NODE_TYPE_INDEX = 1011;
     public static readonly TokenNodeType EQUALS = new FixedTokenNodeType("EQUALS", EQUALS_NODE_TYPE_INDEX, representation: "=");
-    public const int PLUS_NODE_TYPE_INDEX = 1011;
+    public const int PLUS_NODE_TYPE_INDEX = 1012;
     public static readonly TokenNodeType PLUS = new FixedTokenNodeType("PLUS", PLUS_NODE_TYPE_INDEX, representation: "+");
-    public const int MULTIPLY_NODE_TYPE_INDEX = 1012;
+    public const int MULTIPLY_NODE_TYPE_INDEX = 1013;
     public static readonly TokenNodeType MULTIPLY = new FixedTokenNodeType("MULTIPLY", MULTIPLY_NODE_TYPE_INDEX, representation: "*");
-    public const int BAD_CHARACTER_NODE_TYPE_INDEX = 1013;
+    public const int BAD_CHARACTER_NODE_TYPE_INDEX = 1014;
     public static readonly TokenNodeType BAD_CHARACTER = new FixedTokenNodeType("BAD_CHARACTER", BAD_CHARACTER_NODE_TYPE_INDEX, representation: "💩");
 
     //Commands
-    public const int SHADER_KEYWORD_NODE_TYPE_INDEX = 1014;
+    public const int SHADER_KEYWORD_NODE_TYPE_INDEX = 1015;
     public static readonly TokenNodeType SHADER_KEYWORD = new KeywordTokenNodeType("SHADER_KEYWORD", SHADER_KEYWORD_NODE_TYPE_INDEX, representation: "Shader");
-    public const int PROPERTIES_KEYWORD_NODE_TYPE_INDEX = 1015;
+    public const int PROPERTIES_KEYWORD_NODE_TYPE_INDEX = 1016;
     public static readonly TokenNodeType PROPERTIES_KEYWORD = new KeywordTokenNodeType("PROPERTIES_KEYWORD", PROPERTIES_KEYWORD_NODE_TYPE_INDEX, representation: "Properties");
-    public const int SUB_SHADER_KEYWORD_NODE_TYPE_INDEX = 1016;
+    public const int SUB_SHADER_KEYWORD_NODE_TYPE_INDEX = 1017;
     public static readonly TokenNodeType SUB_SHADER_KEYWORD = new KeywordTokenNodeType("SUB_SHADER_KEYWORD", SUB_SHADER_KEYWORD_NODE_TYPE_INDEX, representation: "SubShader");
-    public const int FALLBACK_KEYWORD_NODE_TYPE_INDEX = 1017;
+    public const int FALLBACK_KEYWORD_NODE_TYPE_INDEX = 1018;
     public static readonly TokenNodeType FALLBACK_KEYWORD = new KeywordTokenNodeType("FALLBACK_KEYWORD", FALLBACK_KEYWORD_NODE_TYPE_INDEX, representation: "Fallback");
-    public const int CUSTOM_EDITOR_KEYWORD_NODE_TYPE_INDEX = 1018;
+    public const int CUSTOM_EDITOR_KEYWORD_NODE_TYPE_INDEX = 1019;
     public static readonly TokenNodeType CUSTOM_EDITOR_KEYWORD = new KeywordTokenNodeType("CUSTOM_EDITOR_KEYWORD", CUSTOM_EDITOR_KEYWORD_NODE_TYPE_INDEX, representation: "CustomEditor");
 
     //PropertyTypeKeywords
-    public const int COLOR_KEYWORD_NODE_TYPE_INDEX = 1019;
+    public const int COLOR_KEYWORD_NODE_TYPE_INDEX = 1020;
     public static readonly TokenNodeType COLOR_KEYWORD = new KeywordTokenNodeType("COLOR_KEYWORD", COLOR_KEYWORD_NODE_TYPE_INDEX, representation: "Color");
-    public const int CUBE_KEYWORD_NODE_TYPE_INDEX = 1020;
+    public const int CUBE_KEYWORD_NODE_TYPE_INDEX = 1021;
     public static readonly TokenNodeType CUBE_KEYWORD = new KeywordTokenNodeType("CUBE_KEYWORD", CUBE_KEYWORD_NODE_TYPE_INDEX, representation: "Cube");
-    public const int FLOAT_KEYWORD_NODE_TYPE_INDEX = 1021;
+    public const int FLOAT_KEYWORD_NODE_TYPE_INDEX = 1022;
     public static readonly TokenNodeType FLOAT_KEYWORD = new KeywordTokenNodeType("FLOAT_KEYWORD", FLOAT_KEYWORD_NODE_TYPE_INDEX, representation: "Float");
-    public const int INT_KEYWORD_NODE_TYPE_INDEX = 1022;
+    public const int INT_KEYWORD_NODE_TYPE_INDEX = 1023;
     public static readonly TokenNodeType INT_KEYWORD = new KeywordTokenNodeType("INT_KEYWORD", INT_KEYWORD_NODE_TYPE_INDEX, representation: "Int");
-    public const int RANGE_KEYWORD_NODE_TYPE_INDEX = 1023;
+    public const int RANGE_KEYWORD_NODE_TYPE_INDEX = 1024;
     public static readonly TokenNodeType RANGE_KEYWORD = new KeywordTokenNodeType("RANGE_KEYWORD", RANGE_KEYWORD_NODE_TYPE_INDEX, representation: "Range");
-    public const int TEXTURE_2D_KEYWORD_NODE_TYPE_INDEX = 1024;
+    public const int TEXTURE_2D_KEYWORD_NODE_TYPE_INDEX = 1025;
     public static readonly TokenNodeType TEXTURE_2D_KEYWORD = new KeywordTokenNodeType("TEXTURE_2D_KEYWORD", TEXTURE_2D_KEYWORD_NODE_TYPE_INDEX, representation: "2D");
-    public const int TEXTURE_3D_KEYWORD_NODE_TYPE_INDEX = 1025;
+    public const int TEXTURE_3D_KEYWORD_NODE_TYPE_INDEX = 1026;
     public static readonly TokenNodeType TEXTURE_3D_KEYWORD = new KeywordTokenNodeType("TEXTURE_3D_KEYWORD", TEXTURE_3D_KEYWORD_NODE_TYPE_INDEX, representation: "3D");
-    public const int VECTOR_KEYWORD_NODE_TYPE_INDEX = 1026;
+    public const int VECTOR_KEYWORD_NODE_TYPE_INDEX = 1027;
     public static readonly TokenNodeType VECTOR_KEYWORD = new KeywordTokenNodeType("VECTOR_KEYWORD", VECTOR_KEYWORD_NODE_TYPE_INDEX, representation: "Vector");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1027;  }
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1028;  }
 }

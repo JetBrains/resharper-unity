@@ -88,8 +88,11 @@
 //  element instance ends with the suffix `Stub`
 // `customInterface` - generate element tree node with a custom interface. Name is the same
 //   as would be generated, but uses `customInterfacePackage` for namespace
-// `customParseFunction` - don't generate a parse function, create a custom abstract parse method
-//   called `Parse{NonterminalName}`
+// `customParseFunction` - the parse function is abstract. The usually generated parse function is
+//   also generated as a protected method with the suffix `Internal`
+// `noInternalParseFunction` - stops the standard parse function being generated as parseXxxInernal
+//   when `customParseFunction` is specified. If `customParseFunction` isn't specified, this creates
+//   an error - a virtual method without an implementation.
 // `stubBase="Foo"` - use `Foo` as the base class for the generated element instance. Overrides
 //   `psiStubsBaseClass` global option
 //
@@ -111,7 +114,17 @@
 // * PropertyName is the name of the generated property to access this token
 // * Quantifier can be ommitted, meaning nonoptional, optional (?), zero or more (*) or one or more (+)
 //   Pipes and parentheses can also be used to separate and group rules
-
+//
+// !(#name:terminal|nonterminal) - e.g. !(#id:IDENTIFIER) or !(#id:shaderLabIdentifier)
+//
+// Captures the element into a named variable, to pass to another nonterminal. Parsing continues with the
+// next matching token in the following rules. This allows switching on the second or third rule of multiple
+// nonterminals that have a common prolog. E.g. two nonterminals starting with identifier but followed by
+// DOT and COMMA respectively. The captured element is passed to the nonterminal with square brackets, e.g.
+// qualifiedValue[id] and the parameter must be part of the nonterminal declaration, e.g. qualifiedValue[identifier id]
+// where the first part is the token type and the second is the name. Multiple parameters can be sepcified,
+// separated by commas. The captured element is used in the rules with an ampersand, and can have normal
+// role definitions, e.g. &id or &id<IDENTIFIER, Identifier>. A rule may also pass null 
 
 // Making command names their own tokens makes it easier to parse (especially
 // with regard to follow tokens and error messages), but makes it trickier to
@@ -204,6 +217,7 @@ errorhandling propertiesValue
 // I haven't seen an example of multiple attributes, but easy to support
 propertyDeclaration
 :
+  attribute<ATTRIBUTE, Attributes>*
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Name>
   LPAREN<LPAREN, LParen>
   STRING_LITERAL<SHADER_LAB_NAME, DisplayName>
@@ -212,6 +226,69 @@ propertyDeclaration
   RPAREN<RPAREN, RParen>
   EQUALS<EQUALS, Equals>
   propertyValue<PROPERTY_VALUE, PropertValue>
+;
+
+attribute
+:
+  LBRACK<LBRACK, LBrack>
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  attributeParameters<PARAMETERS, Parameters>?
+  RBRACK<RBRACK, RBrack>
+;
+
+attributeParameters
+:
+  LPAREN<LPAREN, LParen>
+  attributeParameterValues<PARAMETER_VALUES, ParameterValues>
+  RPAREN<RPAREN, RParen>
+;
+
+attributeParameterValues
+:
+  attributeParameterValue<SHADER_LAB_VALUE, Value>
+  (
+    COMMA<COMMA, Comma>
+    attributeParameterValue<SHADER_LAB_VALUE, Value>
+  )*
+;
+
+// Number, unquoted(!) string literal, fully qualified type name, comma separated list of number/space containing identifiers
+interface attributeParameterValue
+:
+  numberAttributeParameterValue
+  |
+    (
+      // Parse the common shaderLabIdentifier, then pass it through to the rule
+      // This allows switching on the next token - DOT for qualifiedAttributeParameterValue
+      // or shaderLabIdentifier for stringAttributeParameterValue
+      !(#id:shaderLabIdentifier)
+      (
+        qualifiedAttributeParameterValue[id]
+        | stringAttributeParameterValue[id]
+      )
+    )
+;
+
+numberAttributeParameterValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+qualifiedAttributeParameterValue[shaderLabIdentifier id]
+:
+  &id<SHADER_LAB_IDENTIFIER, Identifiers>
+  (
+    DOT<DOT, Dots>
+    shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>
+  )+
+;
+
+// TODO: Perhaps a custom interface to allow retrieving exact text?
+stringAttributeParameterValue[shaderLabIdentifier id]
+:
+  // One or more, separated by whitespace
+  &id<SHADER_LAB_IDENTIFIER, Identifiers>
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>*
 ;
 
 interface propertyType

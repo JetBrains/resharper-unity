@@ -84,6 +84,7 @@ CG_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^C])|(ENDC[^G]))+)
 
 <YYSHADERLAB>   "="                     { return ShaderLabTokenType.EQUALS; }
 <YYSHADERLAB>   ","                     { return ShaderLabTokenType.COMMA; }
+<YYSHADERLAB>   "."                     { return ShaderLabTokenType.DOT; }
 <YYSHADERLAB>   "+"                     { return ShaderLabTokenType.PLUS; }
 <YYSHADERLAB>   "*"                     { return ShaderLabTokenType.MULTIPLY; }
 <YYSHADERLAB>   "("                     { return ShaderLabTokenType.LPAREN; }
