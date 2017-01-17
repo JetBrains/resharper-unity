@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
 
-namespace Assets.Plugins.Editor.JetBrains
+namespace Plugins.Editor.JetBrains
 {
   public class RiderAssetPostprocessor : AssetPostprocessor
   {
