@@ -135,7 +135,7 @@ namespace Plugins.Editor.JetBrains
             }
           }
 
-          UnityEngine.Debug.Log(string.Join(", ",definesList.ToArray()));
+          //UnityEngine.Debug.Log(string.Join(", ",definesList.ToArray()));
           ApplyCustomDefines(definesList.ToArray(), projectContentElement, xmlns);
         }
       }
