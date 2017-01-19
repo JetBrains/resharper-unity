@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,17 @@ namespace Plugins.Editor.JetBrains
 {
   public class RiderAssetPostprocessor : AssetPostprocessor
   {
+    private const string UNITY_PLAYER_PROJECT_NAME = "\\Assembly-CSharp.csproj";
+    private const string UNITY_EDITOR_PROJECT_NAME = "\\Assembly-CSharp-Editor.csproj";
+    private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
+    private const string UNITY_DEFINE_KEYWORD = "-define:";
+    private const string PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "/smcs.rsp";
+    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
+      = UnityEngine.Application.dataPath + PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH;
+    private const string EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "/gmcs.rsp";
+    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
+      = UnityEngine.Application.dataPath + EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH;
+
     public static void OnGeneratedCSProjectFiles()
     {
       if (!RiderPlugin.Enabled)
@@ -63,11 +75,102 @@ namespace Plugins.Editor.JetBrains
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
+      SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
 
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
 
       doc.Save(projectFile);
+    }
+
+    private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
+    {
+      var configPath = "";
+
+      if (IsPlayerProjectFile(projectFile))
+        configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+      else if (IsEditorProjectFile(projectFile))
+        configPath = EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+      else
+        configPath = null;
+
+      if(!string.IsNullOrEmpty(configPath))
+        ApplyManualCompilingSettings(configPath
+          , projectContentElement
+          , xmlns);
+    }
+
+    private static void ApplyManualCompilingSettings(string configFilePath, XElement projectContentElement, XNamespace xmlns)
+    {
+      if (File.Exists(configFilePath))
+      {
+        var configText = File.ReadAllText(configFilePath);
+        if (configText.Contains(UNITY_UNSAFE_KEYWORD))
+        {
+          // Add AllowUnsafeBlocks to the .csproj. Unity doesn't generate it (although VSTU does).
+          // Strictly necessary to compile unsafe code
+          ApplyAllowUnsafeBlocks(projectContentElement, xmlns);
+        }
+        if (configText.Contains(UNITY_DEFINE_KEYWORD))
+        {
+          //TODO parse defines
+          // defines could be
+          // 1) -define:DEFINE1,DEFINE2
+          // 2) -define:DEFINE1;DEFINE2
+          // 3) -define:DEFINE1 -define:DEFINE2
+          // 4) -define:DEFINE1,DEFINE2;DEFINE3
+          // tested on "-define:DEF1;DEF2 -define:DEF3,DEF4;DEFFFF \n -define:DEF5"
+          // result: DEF1, DEF2, DEF3, DEF4, DEFFFF, DEF5
+
+          var definesList = new List<string>();
+          var compileFlags = configText.Split(' ', '\n');
+          foreach (var flag in compileFlags)
+          {
+            var f = flag.Trim();
+            if (f.Contains(UNITY_DEFINE_KEYWORD))
+            {
+              var defineEndPos = f.IndexOf(UNITY_DEFINE_KEYWORD) + UNITY_DEFINE_KEYWORD.Length;
+              var definesSubString = f.Substring(defineEndPos,f.Length - defineEndPos);
+              definesSubString = definesSubString.Replace(";", ",");
+              definesList.AddRange(definesSubString.Split(','));
+            }
+          }
+
+          UnityEngine.Debug.Log(string.Join(", ",definesList.ToArray()));
+          ApplyCustomDefines(definesList.ToArray(), projectContentElement, xmlns);
+        }
+      }
+    }
+
+    private static void ApplyCustomDefines(string[] customDefines, XElement projectContentElement, XNamespace xmlns)
+    {
+      var definesString = string.Join(";", customDefines);
+
+      var DefineConstants = projectContentElement
+        .Elements(xmlns+"PropertyGroup")
+        .Elements(xmlns+"DefineConstants")
+        .FirstOrDefault(definesConsts=> !string.IsNullOrEmpty(definesConsts.Value));
+
+      if (DefineConstants != null)
+      {
+        DefineConstants.SetValue(DefineConstants.Value + ";" + definesString);
+      }
+    }
+
+    private static void ApplyAllowUnsafeBlocks(XElement projectContentElement, XNamespace xmlns)
+    {
+      projectContentElement.AddFirst(
+        new XElement(xmlns + "PropertyGroup", new XElement(xmlns + "AllowUnsafeBlocks", true)));
+    }
+
+    private static bool IsPlayerProjectFile(string projectFile)
+    {
+      return projectFile.EndsWith(UNITY_PLAYER_PROJECT_NAME);
+    }
+
+    private static bool IsEditorProjectFile(string projectFile)
+    {
+      return projectFile.EndsWith(UNITY_EDITOR_PROJECT_NAME);
     }
 
     // Helps resolve System.Linq under mono 4 - RIDER-573
