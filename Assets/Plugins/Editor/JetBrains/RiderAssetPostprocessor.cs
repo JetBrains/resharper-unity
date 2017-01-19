@@ -113,7 +113,6 @@ namespace Plugins.Editor.JetBrains
         }
         if (configText.Contains(UNITY_DEFINE_KEYWORD))
         {
-          //TODO parse defines
           // defines could be
           // 1) -define:DEFINE1,DEFINE2
           // 2) -define:DEFINE1;DEFINE2
