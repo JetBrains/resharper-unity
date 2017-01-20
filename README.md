@@ -20,6 +20,7 @@ However, Unity does not currently support Rider. This plugin adds that support:
     * Sets language level to C# 6 or C# 7.0 when using the [CSharp60Support](https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src) plugin.
 * Fixes an issue with Rider on Mono 4 where System.Linq references cannot be found (see [RIDER-573](https://youtrack.jetbrains.com/issue/RIDER-573)).
 * Ensures `UnityEditor.iOS.XCode` namespaces are referenced correctly (see #15). 
+* Support for gmcs.rsp and smcs.rsp keywords define and unsafe (see https://github.com/JetBrains/Unity3dRider/pull/46).
 
 ## How to use
 
