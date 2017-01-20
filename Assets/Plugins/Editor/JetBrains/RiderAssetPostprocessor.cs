@@ -11,16 +11,16 @@ namespace Plugins.Editor.JetBrains
 {
   public class RiderAssetPostprocessor : AssetPostprocessor
   {
-    private const string UNITY_PLAYER_PROJECT_NAME = "\\Assembly-CSharp.csproj";
-    private const string UNITY_EDITOR_PROJECT_NAME = "\\Assembly-CSharp-Editor.csproj";
+    private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
+    private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private const string PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "/smcs.rsp";
+    private const string PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "smcs.rsp";
     private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
-      = UnityEngine.Application.dataPath + PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH;
-    private const string EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "/gmcs.rsp";
+      = Path.Combine(UnityEngine.Application.dataPath, PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
+    private const string EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "gmcs.rsp";
     private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
-      = UnityEngine.Application.dataPath + EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH;
+      = Path.Combine(UnityEngine.Application.dataPath, EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
 
     public static void OnGeneratedCSProjectFiles()
     {
@@ -85,7 +85,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
-      var configPath = "";
+      string configPath;
 
       if (IsPlayerProjectFile(projectFile))
         configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
@@ -164,12 +164,12 @@ namespace Plugins.Editor.JetBrains
 
     private static bool IsPlayerProjectFile(string projectFile)
     {
-      return projectFile.EndsWith(UNITY_PLAYER_PROJECT_NAME);
+      return Path.GetFileName(projectFile) == UNITY_PLAYER_PROJECT_NAME;
     }
 
     private static bool IsEditorProjectFile(string projectFile)
     {
-      return projectFile.EndsWith(UNITY_EDITOR_PROJECT_NAME);
+      return Path.GetFileName(projectFile) == UNITY_EDITOR_PROJECT_NAME;
     }
 
     // Helps resolve System.Linq under mono 4 - RIDER-573
