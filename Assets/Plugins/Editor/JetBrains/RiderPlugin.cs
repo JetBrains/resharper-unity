@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -125,13 +128,84 @@ namespace Plugins.Editor.JetBrains
             selected.GetType().ToString() == "UnityEngine.Shader")
         {
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-
-          CallRider(riderFileInfo.FullName, args);
+          if (!CallUDPRider(riderFileInfo.FullName, line, SlnFile, assetFilePath))
+          {
+              var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
+              CallRider(riderFileInfo.FullName, args);
+          }
           return true;
         }
       }
       return false;
+    }
+
+    private static bool CallUDPRider(string riderPath, int line, string slnPath, string filePath)
+    {
+      using (Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+      {
+        try
+        {
+          sock.ReceiveTimeout = 10000;
+
+          IPAddress serverAddr = IPAddress.Parse("127.0.0.1");
+          IPEndPoint endPoint = new IPEndPoint(serverAddr, 11234);
+
+          var text = line + "\r\n" + slnPath + "\r\n" + filePath + "\r\n";
+          var send_buffer = Encoding.ASCII.GetBytes(text);
+          sock.SendTo(send_buffer, endPoint);
+
+          var rcv_buffer = new byte[1024];
+
+          // Poll the socket for reception with a 10 ms timeout.
+          if (sock.Poll(10000, SelectMode.SelectRead))
+            sock.Receive(rcv_buffer); // This call will not block
+          else
+            throw new TimeoutException();
+
+          sock.Close();
+        }
+        catch (Exception e)
+        {
+          //error Timed out
+          Debug.LogWarning("Socket ERROR");
+          sock.Close();
+          return false;
+        }
+      }
+
+      //Open Window
+      var proc = new Process();
+      if (new FileInfo(riderPath).Extension == ".app")
+      {
+        proc.StartInfo.FileName = "open";
+        proc.StartInfo.Arguments = string.Format("-a {0}{1}{0}", "\"", "/" + riderPath);
+        Log(proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+      }
+      else
+      {
+        proc.StartInfo.FileName = riderPath;
+        Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
+      }
+
+      proc.StartInfo.UseShellExecute = false;
+      proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+      proc.StartInfo.CreateNoWindow = true;
+      proc.StartInfo.RedirectStandardOutput = true;
+      proc.Start();
+
+      if (new FileInfo(riderPath).Extension == ".exe")
+      {
+        try
+        {
+          ActivateWindow();
+        }
+        catch (Exception e)
+        {
+          Log("Exception on ActivateWindow: " + e);
+        }
+      }
+
+      return true;
     }
 
     private static void CallRider(string riderPath, string args)

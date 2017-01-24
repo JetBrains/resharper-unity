@@ -1,3 +1,5 @@
+Implement UDPConnector class to use with [RiderUnity3DConnector](https://github.com/PotterDai/RiderUnity3DConnector) plugin
+
 # Unity3dRider
 
 Integrates [JetBrains Rider](https://www.jetbrains.com/rider/) into the [Unity 3D](https://unity3d.com) editor.
