@@ -128,7 +128,7 @@ namespace Plugins.Editor.JetBrains
             selected.GetType().ToString() == "UnityEngine.Shader")
         {
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!CallUDPRider(riderFileInfo.FullName, line, SlnFile, assetFilePath))
+          if (!CallUDPRider(line, SlnFile, assetFilePath))
           {
               var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
               CallRider(riderFileInfo.FullName, args);
@@ -139,16 +139,17 @@ namespace Plugins.Editor.JetBrains
       return false;
     }
 
-    private static bool CallUDPRider(string riderPath, int line, string slnPath, string filePath)
+    private static bool CallUDPRider(int line, string slnPath, string filePath)
     {
-      using (Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+      Log(string.Format("CallUDPRider({0} {1} {2})", line, slnPath, filePath));
+      using (var sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
       {
         try
         {
           sock.ReceiveTimeout = 10000;
 
-          IPAddress serverAddr = IPAddress.Parse("127.0.0.1");
-          IPEndPoint endPoint = new IPEndPoint(serverAddr, 11234);
+          var serverAddr = IPAddress.Parse("127.0.0.1");
+          var endPoint = new IPEndPoint(serverAddr, 11234);
 
           var text = line + "\r\n" + slnPath + "\r\n" + filePath + "\r\n";
           var send_buffer = Encoding.ASCII.GetBytes(text);
@@ -157,55 +158,23 @@ namespace Plugins.Editor.JetBrains
           var rcv_buffer = new byte[1024];
 
           // Poll the socket for reception with a 10 ms timeout.
-          if (sock.Poll(10000, SelectMode.SelectRead))
-            sock.Receive(rcv_buffer); // This call will not block
-          else
+          if (!sock.Poll(10000, SelectMode.SelectRead))
+          {
             throw new TimeoutException();
+          }
 
-          sock.Close();
+          int bytesRec = sock.Receive(rcv_buffer); // This call will not block
+          string status = Encoding.ASCII.GetString(rcv_buffer, 0, bytesRec);
+          if (status == "ok")
+            return true;
         }
-        catch (Exception e)
+        catch (Exception)
         {
           //error Timed out
-          Debug.LogWarning("Socket ERROR");
-          sock.Close();
-          return false;
+          Log("Socket error or no response.");
         }
       }
-
-      //Open Window
-      var proc = new Process();
-      if (new FileInfo(riderPath).Extension == ".app")
-      {
-        proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = string.Format("-a {0}{1}{0}", "\"", "/" + riderPath);
-        Log(proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
-      }
-      else
-      {
-        proc.StartInfo.FileName = riderPath;
-        Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
-      }
-
-      proc.StartInfo.UseShellExecute = false;
-      proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-      proc.StartInfo.CreateNoWindow = true;
-      proc.StartInfo.RedirectStandardOutput = true;
-      proc.Start();
-
-      if (new FileInfo(riderPath).Extension == ".exe")
-      {
-        try
-        {
-          ActivateWindow();
-        }
-        catch (Exception e)
-        {
-          Log("Exception on ActivateWindow: " + e);
-        }
-      }
-
-      return true;
+      return false;
     }
 
     private static void CallRider(string riderPath, string args)
