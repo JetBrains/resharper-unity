@@ -171,7 +171,7 @@ namespace Plugins.Editor.JetBrains
         catch (Exception)
         {
           //error Timed out
-          Log("Socket error or no response.");
+          Log("Socket error or no response. Have you installed RiderUnity3DConnector in Rider?");
         }
       }
       return false;
