@@ -1,8 +1,4 @@
-Implement UDPConnector class to use with [RiderUnity3DConnector](https://github.com/PotterDai/RiderUnity3DConnector) plugin
-
 # Unity3dRider
-
-Integrates [JetBrains Rider](https://www.jetbrains.com/rider/) into the [Unity 3D](https://unity3d.com) editor.
 
 Rider support for Unity:
 * Debugging of Unity instances.
@@ -14,6 +10,7 @@ Rider support for Unity:
 However, Unity does not currently support Rider. This plugin adds that support:
 
 * An "Open C# Project in Rider" item to the Assets menu.
+    * With help of [RiderUnity3dConnector](https://github.com/PotterDai/RiderUnity3DConnector/releases) open file is fast and Rider is always focused after opening file. It needs to be installed manually in Rider via Settings->Plugins->Install plugin from disk.
 * Double click a C# script file or error message in Unity will open Rider and navigate to the corresponding file and line.
 * Runs on Windows, Linux and macOS.
 * Sets language level when generating project files
