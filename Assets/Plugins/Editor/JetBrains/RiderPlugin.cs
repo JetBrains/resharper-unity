@@ -112,6 +112,7 @@ namespace Plugins.Editor.JetBrains
         if (selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader")
         {
+          SyncSolution(); // added to handle opening file, which was just recently created.
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
           if (!CallUDPRider(line, SlnFile, assetFilePath))
           {
