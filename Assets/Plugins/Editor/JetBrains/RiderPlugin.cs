@@ -166,7 +166,10 @@ namespace Plugins.Editor.JetBrains
           int bytesRec = sock.Receive(rcv_buffer); // This call will not block
           string status = Encoding.ASCII.GetString(rcv_buffer, 0, bytesRec);
           if (status == "ok")
+          {
+            ActivateWindow(new FileInfo(DefaultApp).FullName);
             return true;
+          }
         }
         catch (Exception)
         {
@@ -199,43 +202,43 @@ namespace Plugins.Editor.JetBrains
       proc.StartInfo.RedirectStandardOutput = true;
       proc.Start();
 
+      ActivateWindow(riderPath);
+    }
+
+    private static void ActivateWindow(string riderPath)
+    {
       if (new FileInfo(riderPath).Extension == ".exe")
       {
         try
         {
-          ActivateWindow();
+          var process = Process.GetProcesses().FirstOrDefault(p =>
+          {
+            string processName;
+            try
+            {
+              processName = p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
+            }
+            catch (Exception)
+            {
+              return false;
+            }
+
+            return !p.HasExited && processName.ToLower().Contains("rider");
+          });
+          if (process != null)
+          {
+            // Collect top level windows
+            var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
+            // Get process main window title
+            var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
+            if (windowHandle != IntPtr.Zero)
+              User32Dll.SetForegroundWindow(windowHandle);
+          }
         }
         catch (Exception e)
         {
           Log("Exception on ActivateWindow: " + e);
         }
-      }
-    }
-
-    private static void ActivateWindow()
-    {
-      var process = Process.GetProcesses().FirstOrDefault(p =>
-      {
-        string processName;
-        try
-        {
-          processName = p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
-        }
-        catch (Exception)
-        {
-          return false;
-        }
-
-        return !p.HasExited && processName.Contains("Rider");
-      });
-      if (process != null)
-      {
-        // Collect top level windows
-        var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
-        // Get process main window title
-        var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
-        if (windowHandle != IntPtr.Zero)
-          User32Dll.SetForegroundWindow(windowHandle);
       }
     }
 
