@@ -101,8 +101,7 @@ namespace Plugins.Editor.JetBrains
     [UnityEditor.Callbacks.OnOpenAssetAttribute()]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      var riderFileInfo = new FileInfo(DefaultApp);
-      if (Enabled && (riderFileInfo.Exists || riderFileInfo.Extension == ".app"))
+      if (Enabled)
       {
         string appPath = Path.GetDirectoryName(Application.dataPath);
 
@@ -117,7 +116,7 @@ namespace Plugins.Editor.JetBrains
           if (!CallUDPRider(line, SlnFile, assetFilePath))
           {
               var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-              CallRider(riderFileInfo.FullName, args);
+              CallRider(DefaultApp, args);
           }
           return true;
         }
@@ -168,7 +167,8 @@ namespace Plugins.Editor.JetBrains
 
     private static void CallRider(string riderPath, string args)
     {
-      if (!new FileInfo(riderPath).Exists)
+      var riderFileInfo = new FileInfo(riderPath);
+      if (!riderFileInfo.Exists || (riderFileInfo.Extension == ".app" && !new DirectoryInfo(riderPath).Exists))
       {
         EditorUtility.DisplayDialog("Rider executable not found", "Please update 'External Script Editor' path to JetBrains Rider.", "OK");
       }
@@ -240,7 +240,7 @@ namespace Plugins.Editor.JetBrains
       SyncSolution();
 
       // Load Project
-      CallRider(new FileInfo(DefaultApp).FullName, string.Format("{0}{1}{0}", "\"", SlnFile));
+      CallRider(DefaultApp, string.Format("{0}{1}{0}", "\"", SlnFile));
     }
 
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
