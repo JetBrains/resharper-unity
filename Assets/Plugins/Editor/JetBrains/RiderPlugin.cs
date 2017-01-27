@@ -33,9 +33,7 @@ namespace Plugins.Editor.JetBrains
     {
       get
       {
-        if (string.IsNullOrEmpty(DefaultApp))
-          return false;
-        return DefaultApp.ToLower().Contains("rider"); // seems like .app doesn't exist as file
+        return !string.IsNullOrEmpty(DefaultApp) && DefaultApp.ToLower().Contains("rider");
       }
     }
 
@@ -48,47 +46,34 @@ namespace Plugins.Editor.JetBrains
         var newPath = riderFileInfo.FullName;
         // try to search the new version
 
-        switch (riderFileInfo.Extension)
+        if (!riderFileInfo.Exists)
         {
-          /*
-              Unity itself transforms lnk to exe
-              case ".lnk":
-              {
-                if (riderFileInfo.Directory != null && riderFileInfo.Directory.Exists)
-                {
-                  var possibleNew = riderFileInfo.Directory.GetFiles("*ider*.lnk");
-                  if (possibleNew.Length > 0)
-                    newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
-                }
-                break;
-              }*/
-          case ".exe":
+          switch (riderFileInfo.Extension)
           {
-            var possibleNew =
-              riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
-                .SelectMany(a => a.GetDirectories("bin"))
-                .SelectMany(a => a.GetFiles(riderFileInfo.Name))
-                .ToArray();
-            if (possibleNew.Length > 0)
-              newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
-            break;
+            case ".exe":
+            {
+              var possibleNew =
+                riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
+                  .SelectMany(a => a.GetDirectories("bin"))
+                  .SelectMany(a => a.GetFiles(riderFileInfo.Name))
+                  .ToArray();
+              if (possibleNew.Length > 0)
+                newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
+              break;
+            }
           }
-          default:
+          if (newPath != riderFileInfo.FullName)
           {
-            break;
+            Log(string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
+            EditorPrefs.SetString("kScriptsDefaultApp", newPath);
           }
         }
-        if (newPath != riderFileInfo.FullName)
-        {
-          Log(string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
-          EditorPrefs.SetString("kScriptsDefaultApp", newPath);
-        }
-      }
 
-      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-      var projectName = Path.GetFileName(projectDirectory);
-      SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
-      UpdateUnitySettings(SlnFile);
+        var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+        var projectName = Path.GetFileName(projectDirectory);
+        SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
+        UpdateUnitySettings(SlnFile);
+      }
     }
 
     /// <summary>
@@ -182,6 +167,11 @@ namespace Plugins.Editor.JetBrains
 
     private static void CallRider(string riderPath, string args)
     {
+      if (!new FileInfo(riderPath).Exists)
+      {
+        EditorUtility.DisplayDialog("Rider executable not found", "Please update 'External Script Editor' path to JetBrains Rider.", "OK");
+      }
+
       var proc = new Process();
       if (new FileInfo(riderPath).Extension == ".app")
       {
