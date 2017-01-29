@@ -168,7 +168,7 @@ namespace Plugins.Editor.JetBrains
     private static void CallRider(string riderPath, string args)
     {
       var riderFileInfo = new FileInfo(riderPath);
-      var macOSVersion = riderFileInfo.Extension == "app";
+      var macOSVersion = riderFileInfo.Extension == ".app";
       var riderExists = macOSVersion ? new DirectoryInfo(riderPath).Exists : riderFileInfo.Exists;
       
       if (!riderExists)
