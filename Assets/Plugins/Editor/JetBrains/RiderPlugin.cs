@@ -168,13 +168,16 @@ namespace Plugins.Editor.JetBrains
     private static void CallRider(string riderPath, string args)
     {
       var riderFileInfo = new FileInfo(riderPath);
-      if (!riderFileInfo.Exists || (riderFileInfo.Extension == ".app" && !new DirectoryInfo(riderPath).Exists))
+      var macOSVersion = riderFileInfo.Extension == ".app";
+      var riderExists = macOSVersion ? new DirectoryInfo(riderPath).Exists : riderFileInfo.Exists;
+      
+      if (!riderExists)
       {
         EditorUtility.DisplayDialog("Rider executable not found", "Please update 'External Script Editor' path to JetBrains Rider.", "OK");
       }
 
       var proc = new Process();
-      if (new FileInfo(riderPath).Extension == ".app")
+      if (macOSVersion)
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + riderPath, args);
