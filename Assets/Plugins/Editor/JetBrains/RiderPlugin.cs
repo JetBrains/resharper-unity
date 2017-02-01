@@ -16,7 +16,9 @@ namespace Plugins.Editor.JetBrains
   [InitializeOnLoad]
   public static class RiderPlugin
   {
-    private static readonly string SlnFile;
+    private static bool Initialized;
+
+    private static string SlnFile;
 
     private static string DefaultApp
     {
@@ -41,7 +43,13 @@ namespace Plugins.Editor.JetBrains
     {
       if (Enabled)
       {
-        var riderFileInfo = new FileInfo(DefaultApp);
+        InitRiderPlugin();
+      }
+    }
+
+    private static void InitRiderPlugin()
+    {
+      var riderFileInfo = new FileInfo(DefaultApp);
 
         var newPath = riderFileInfo.FullName;
         // try to search the new version
@@ -73,7 +81,8 @@ namespace Plugins.Editor.JetBrains
         var projectName = Path.GetFileName(projectDirectory);
         SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
         UpdateUnitySettings(SlnFile);
-      }
+
+        Initialized = true;
     }
 
     /// <summary>
@@ -103,6 +112,14 @@ namespace Plugins.Editor.JetBrains
     {
       if (Enabled)
       {
+        if (!Initialized)
+        {
+          // make sure the plugin was initialized first.
+          // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
+          InitRiderPlugin();
+          RiderAssetPostprocessor.OnGeneratedCSProjectFiles();
+        }
+
         string appPath = Path.GetDirectoryName(Application.dataPath);
 
         // determine asset that has been double clicked in the project view
