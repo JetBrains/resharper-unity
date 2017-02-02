@@ -78,5 +78,6 @@ From previous releases:
     <file src="bin\wave08\Release\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
     <file src="annotations\UnityEngine.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.xml" />
     <file src="annotations\UnityEditor.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.xml" />
+    <file src="annotations\UnityEditor.EditorTestsRunner.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.EditorTestsRunner.xml" />
   </files>
 </package>
