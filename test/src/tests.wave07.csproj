@@ -368,6 +368,7 @@
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocTest.cs" />
     <Compile Include="Intentions\QuickFixes\ColorPickerTest.cs" />
     <Compile Include="Intentions\QuickFixes\ConvertToCompareTagQuickFixTest.cs" />
+    <Compile Include="Psi\CodeAnnotations\CustomCodeAnnotationProviderTest.cs" />
     <Compile Include="Psi\Resolve\UnityEventFunctionReferenceTest.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

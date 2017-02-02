@@ -1,0 +1,23 @@
+﻿using JetBrains.ReSharper.Daemon.CSharp.Errors;
+using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
+using JetBrains.ReSharper.Psi;
+using NUnit.Framework;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.CodeAnnotations
+{
+    [TestUnity]
+    public class CustomCodeAnnotationProviderTest : CSharpHighlightingTestBase
+    {
+        protected override string RelativeTestDataPath => @"psi\CodeAnnotations";
+
+        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
+        {
+            // IteratorMethodResultIsIgnoredWarning very similar warning, given if an iterator
+            // result isn't used. We'll override it. Hopefully.
+            return highlighting is MustUseReturnValueWarning || highlighting is IteratorMethodResultIsIgnoredWarning;
+        }
+
+        [Test] public void TestUnusedCoroutineReturnValue() { DoNamedTest2(); }
+    }
+}
