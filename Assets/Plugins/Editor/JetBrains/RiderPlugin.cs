@@ -25,6 +25,9 @@ namespace Plugins.Editor.JetBrains
       get { return EditorPrefs.GetString("kScriptsDefaultApp"); }
     }
 
+    private static readonly int unityProcessId = Process.GetCurrentProcess().Id;
+    private static readonly string unityVersion = Application.unityVersion;
+
     public static bool TargetFrameworkVersion45
     {
       get { return EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true); }
@@ -51,38 +54,42 @@ namespace Plugins.Editor.JetBrains
     {
       var riderFileInfo = new FileInfo(DefaultApp);
 
-        var newPath = riderFileInfo.FullName;
-        // try to search the new version
+      var newPath = riderFileInfo.FullName;
+      // try to search the new version
 
-        if (!riderFileInfo.Exists)
+      if (!riderFileInfo.Exists)
+      {
+        switch (riderFileInfo.Extension)
         {
-          switch (riderFileInfo.Extension)
+          case ".exe":
           {
-            case ".exe":
-            {
-              var possibleNew =
-                riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
-                  .SelectMany(a => a.GetDirectories("bin"))
-                  .SelectMany(a => a.GetFiles(riderFileInfo.Name))
-                  .ToArray();
-              if (possibleNew.Length > 0)
-                newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
-              break;
-            }
-          }
-          if (newPath != riderFileInfo.FullName)
-          {
-            Log(string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
-            EditorPrefs.SetString("kScriptsDefaultApp", newPath);
+            var possibleNew =
+              riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
+                .SelectMany(a => a.GetDirectories("bin"))
+                .SelectMany(a => a.GetFiles(riderFileInfo.Name))
+                .ToArray();
+            if (possibleNew.Length > 0)
+              newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
+            break;
           }
         }
+        if (newPath != riderFileInfo.FullName)
+        {
+          Log(string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
+          EditorPrefs.SetString("kScriptsDefaultApp", newPath);
+        }
+      }
 
-        var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-        var projectName = Path.GetFileName(projectDirectory);
-        SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
-        UpdateUnitySettings(SlnFile);
+      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+      var projectName = Path.GetFileName(projectDirectory);
+      SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
+      UpdateUnitySettings(SlnFile);
 
-        Initialized = true;
+      // will be used by dependent Rider to provide Denug Configuration and other features
+      Environment.SetEnvironmentVariable("unityProcessId", unityProcessId.ToString());
+      Environment.SetEnvironmentVariable("unityVersion", unityVersion);
+
+      Initialized = true;
     }
 
     /// <summary>
@@ -143,7 +150,7 @@ namespace Plugins.Editor.JetBrains
 
     private static bool CallUDPRider(int line, string slnPath, string filePath)
     {
-      Log(string.Format("CallUDPRider({0} {1} {2})", line, slnPath, filePath));
+      Log(string.Format("CallUDPRider({0} {1} {2} {3} {4})", line, slnPath, filePath, unityProcessId, unityVersion));
       using (var sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
       {
         try
@@ -153,7 +160,7 @@ namespace Plugins.Editor.JetBrains
           var serverAddr = IPAddress.Parse("127.0.0.1");
           var endPoint = new IPEndPoint(serverAddr, 11234);
 
-          var text = line + "\r\n" + slnPath + "\r\n" + filePath + "\r\n";
+          var text = line + "\r\n" + slnPath + "\r\n" + filePath + "\r\n"+unityProcessId+ "\r\n"+unityVersion+ "\r\n";
           var send_buffer = Encoding.ASCII.GetBytes(text);
           sock.SendTo(send_buffer, endPoint);
 
