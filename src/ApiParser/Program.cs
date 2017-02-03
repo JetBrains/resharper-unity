@@ -14,11 +14,14 @@ namespace ApiParser
         private static readonly IList<Tuple<string, Version>> Docs = new List<Tuple<string, Version>>
         {
             // These folders need to live in the runtime folder
-            // Can't redistribute, sorry
+            // Can't redistribute, sorry. See README.md
+            Tuple.Create("Documentation-5.0.4f1", new Version(5, 0)),
+            Tuple.Create("Documentation-5.1.5f1", new Version(5, 1)),
             Tuple.Create("Documentation-5.2.3f1", new Version(5, 2)),
             Tuple.Create("Documentation-5.3.7f1", new Version(5, 3)),
             Tuple.Create("Documentation-5.4.3f1", new Version(5, 4)),
-            Tuple.Create("Documentation-5.5.0f3", new Version(5, 5))
+            Tuple.Create("Documentation-5.5.1f1", new Version(5, 5)),
+            Tuple.Create("Documentation-5.6.0b6", new Version(5, 6))
         };
 
         public static void Main(string[] args)
@@ -64,22 +67,30 @@ namespace ApiParser
         {
             // From AssetPostprocessingInternal
             var type = unityApi.FindType("AssetPostprocessor");
+            if (type != null)
+            {
+                var eventFunction = new UnityApiEventFunction("OnPreprocessAssembly", false, ApiType.Void, apiVersion,
+                    undocumented: true);
+                eventFunction.AddParameter("pathName", ApiType.String);
+                type.MergeEventFunction(eventFunction, apiVersion);
 
-            var eventFunction = new UnityApiEventFunction("OnPreprocessAssembly", false, ApiType.Void, apiVersion, undocumented: true);
-            eventFunction.AddParameter("pathName", ApiType.String);
-            type.MergeEventFunction(eventFunction, apiVersion);
+                eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles", true, ApiType.Void, apiVersion,
+                    undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
 
-            eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles", true, ApiType.Void, apiVersion, undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
-
-            // Technically, return type is optional
-            eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles", true, ApiType.Bool, apiVersion,  undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
+                // Technically, return type is optional
+                eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles", true, ApiType.Bool,
+                    apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+            }
 
             // From AssetModificationProcessorInternal
             type = unityApi.FindType("AssetModificationProcessor");
-            eventFunction = new UnityApiEventFunction("OnStatusUpdated", true, ApiType.Void, apiVersion, undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
+            if (type != null)
+            {
+                var eventFunction = new UnityApiEventFunction("OnStatusUpdated", true, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+            }
 
             // ScriptableObject
             // From Shawn White @ Unity (https://github.com/JetBrains/resharper-unity/issues/79#issuecomment-266727851):
@@ -97,15 +108,18 @@ namespace ApiParser
             // ScriptableObjects. Off the top of my head this includes, Awake, OnEnable, OnDisable, OnDestroy,
             // OnValidate, and Reset, but there could be more.
             type = unityApi.FindType("ScriptableObject");
+            if (type != null)
+            {
+                var eventFunction = new UnityApiEventFunction("OnValidate", false, ApiType.Void, apiVersion,
+                    description:
+                    "This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).",
+                    undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
 
-            eventFunction = new UnityApiEventFunction("OnValidate", false, ApiType.Void, apiVersion,
-                description: "This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).",
-                undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
-
-            eventFunction = new UnityApiEventFunction("Reset", false, ApiType.Void, apiVersion,
-                description: "Reset to default values.", undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
+                eventFunction = new UnityApiEventFunction("Reset", false, ApiType.Void, apiVersion,
+                    description: "Reset to default values.", undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+            }
         }
     }
 }

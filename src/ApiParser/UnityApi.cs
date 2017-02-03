@@ -73,7 +73,10 @@ namespace ApiParser
         {
             var type = myTypes.SingleOrDefault(t => t.Name == name);
             if (type == null)
-                throw new InvalidOperationException($"Cannot find type {name}");
+            {
+                Console.WriteLine($"Cannot find type {name}");
+                return null;
+            }
             return type;
         }
     }
@@ -132,6 +135,13 @@ namespace ApiParser
             foreach (var eventFunction in myEventFunctions.OrderBy(f => f.OrderingString))
                 eventFunction.ExportTo(xmlWriter);
             xmlWriter.WriteEndElement();
+        }
+
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(Namespace))
+                return Name;
+            return Namespace + "." + Name;
         }
     }
 

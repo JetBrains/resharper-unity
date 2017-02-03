@@ -10,7 +10,8 @@ namespace ApiParser
 {
     public class ApiParser
     {
-        private static readonly Regex NsRegex = new Regex(@"^(?<type>class|struct) in\W*(?<namespace>\w+(?:\.\w+)*)$");
+        // "Namespace:" is only used in 5.0
+        private static readonly Regex NsRegex = new Regex(@"^((?<type>class|struct) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)$");
         private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$");
 
         private readonly UnityApi api;
@@ -77,7 +78,7 @@ namespace ApiParser
             var section = document?.SelectOne(@"//div.content/div.section");
             var header = section?.SelectOne(@"div.mb20.clear");
             var name = header?.SelectOne(@"h1.heading.inherit"); // Type or type member name
-            var ns = header?.SelectOne(@"p");   // "class in {ns}"
+            var ns = header?.SelectOne(@"p");   // "class in {ns}"/"struct in {ns}"/"Namespace: {ns}"
 
             // Only interested in types at this point
             if (name == null || ns == null) return;
@@ -89,6 +90,9 @@ namespace ApiParser
             var match = NsRegex.Match(ns.Text);
             var clsType = match.Groups["type"].Value;
             var nsName = match.Groups["namespace"].Value;
+
+            if (string.IsNullOrEmpty(clsType)) clsType = "class";
+            if (string.IsNullOrEmpty(nsName)) return;
 
             var unityApiType = api.AddType(nsName, name.Text, clsType, filename, apiVersion);
 
@@ -179,8 +183,8 @@ namespace ApiParser
             var i = 0;
             foreach (var argument in arguments)
             {
-                argument.Name = parameters[i]?[1]?.Text ?? argument.Name;
-                argument.Description = parameters[i]?[3]?.Text ?? argument.Description;
+                argument.Name = parameters[i].SelectOne(@"td.name.lbl")?.Text ?? argument.Name;
+                argument.Description = parameters[i].SelectOne(@"td.desc")?.Text ?? argument.Description;
                 ++i;
             }
         }
