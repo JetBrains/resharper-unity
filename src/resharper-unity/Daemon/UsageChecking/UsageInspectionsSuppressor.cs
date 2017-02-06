@@ -38,7 +38,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
             var field = element as IField;
             if (field != null && unityApi.IsUnityField(field))
             {
-                // Public fields gets exposed to the Unity Editor and assigned from the UI. But it still should be checked if the field is ever accessed from the code.
+                // Public fields gets exposed to the Unity Editor and assigned from the UI.
+                // But it still should be checked if the field is ever accessed from the code.
                 flags = ImplicitUseKindFlags.Assign;
                 return true;
             }

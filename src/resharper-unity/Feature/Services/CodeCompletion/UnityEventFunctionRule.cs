@@ -91,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 
                 foreach (var eventFunction in unityType.GetEventFunctions(unityVersion))
                 {
-                    if (typeElement.Methods.Any(m => eventFunction.Match(m)))
+                    if (typeElement.Methods.Any(m => eventFunction.Match(m) != EventFunctionMatch.NoMatch))
                         continue;
 
                     items.Clear();

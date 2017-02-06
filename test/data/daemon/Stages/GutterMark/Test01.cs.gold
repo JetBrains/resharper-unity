@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEditor;
 
@@ -27,12 +28,18 @@ public class |A|(0) : MonoBehaviour
     private void NotMessage()
     {
     }
+
+    // Unity message as coroutine
+    private IEnumerator |Start|(8)()
+    {
+        return null;
+    }
 }
 
 [InitializeOnLoad]
 public class Startup
 {
-    static |Startup|(8)()
+    static |Startup|(9)()
     {
         Debug.Log("Up and running");
     }
@@ -92,4 +99,7 @@ class MyClass
 (7): Unity Gutter Icon: Unity event function
 
 This function is called when the MonoBehaviour will be destroyed.
-(8): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
+(8): Unity Gutter Icon: Unity event function
+
+Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+(9): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts

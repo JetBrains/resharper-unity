@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -13,6 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public class UnityEventFunction
     {
+        private static readonly IClrTypeName EnumeratorType = new ClrTypeName("System.Collections.IEnumerator");
+
         private readonly bool myIsStatic;
         private readonly Version myMinimumVersion;
         private readonly Version myMaximumVersion;
@@ -20,14 +23,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull] private readonly IClrTypeName myReturnType;
         [NotNull] private readonly UnityEventFunctionParameter[] myParameters;
 
-        public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType,
-            bool returnTypeIsArray, bool isStatic, string description, bool undocumented,
-            Version minimumVersion, Version maximumVersion,
-            [NotNull] params UnityEventFunctionParameter[] parameters)
+        public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, bool isCoroutine, string description, bool undocumented, Version minimumVersion, Version maximumVersion, [NotNull] params UnityEventFunctionParameter[] parameters)
         {
             Description = description;
             Undocumented = undocumented;
             myIsStatic = isStatic;
+            Coroutine = isCoroutine;
             myMinimumVersion = minimumVersion;
             myMaximumVersion = maximumVersion;
             Name = name;
@@ -40,6 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull] public string TypeName { get; }
         [NotNull] public string Name { get; }
         [CanBeNull] public string Description { get; }
+        public bool Coroutine { get; }
         public bool Undocumented { get; }
 
         [NotNull]
@@ -74,23 +76,32 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return declaration;
         }
 
-        public bool Match([NotNull] IMethod method)
+        public EventFunctionMatch Match([NotNull] IMethod method)
         {
-            if (method.ShortName != Name) return false;
-            if (method.IsStatic != myIsStatic) return false;
+            if (method.ShortName != Name) return EventFunctionMatch.NoMatch;
 
-            if (!DoTypesMatch(method.ReturnType, myReturnType, myReturnTypeIsArray))
-                return false;
-
-            if (method.Parameters.Count != myParameters.Length) return false;
-
-            for (var i = 0; i < myParameters.Length; ++i)
+            var match = EventFunctionMatch.MatchingName;
+            if (method.IsStatic == myIsStatic && method.Parameters.Count == myParameters.Length)
             {
-                if (!DoTypesMatch(method.Parameters[i].Type, myParameters[i].ClrTypeName, myParameters[i].IsArray))
-                    return false;
+                var matchingSignature = true;
+                for (var i = 0; i < myParameters.Length; ++i)
+                {
+                    if (!DoTypesMatch(method.Parameters[i].Type, myParameters[i].ClrTypeName, myParameters[i].IsArray))
+                    {
+                        matchingSignature = false;
+                    }
+                }
+                if (matchingSignature)
+                    match |= EventFunctionMatch.MatchingSignature;
             }
 
-            return true;
+            if (DoTypesMatch(method.ReturnType, myReturnType, myReturnTypeIsArray)
+                || (Coroutine && DoTypesMatch(method.ReturnType, EnumeratorType, false)))
+            {
+                match |= EventFunctionMatch.MatchingReturnType;
+            }
+
+            return match;
         }
 
         [CanBeNull]

@@ -12,16 +12,20 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public IClrTypeName ClrTypeName { get; }
 
         public bool IsArray { get; }
+        public bool IsOptional { get; }
+        public string Justification { get; }
 
         [CanBeNull]
         public string Description { get; }
 
-        public UnityEventFunctionParameter([NotNull] string name, [NotNull] IClrTypeName clrTypeName, [CanBeNull] string description, bool isArray = false)
+        public UnityEventFunctionParameter([NotNull] string name, [NotNull] IClrTypeName clrTypeName, [CanBeNull] string description, bool isArray, bool isOptional, string justification)
         {
             Name = name;
             ClrTypeName = clrTypeName;
             Description = description;
             IsArray = isArray;
+            IsOptional = isOptional;
+            Justification = justification;
         }
     }
 }

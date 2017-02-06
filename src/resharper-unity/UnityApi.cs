@@ -9,6 +9,16 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
+    [Flags]
+    public enum EventFunctionMatch
+    {
+        NoMatch = 0,
+        MatchingName,
+        MatchingSignature,
+        MatchingReturnType,
+        ExactMatch = MatchingName | MatchingSignature | MatchingReturnType
+    }
+
     [SolutionComponent]
     public class UnityApi
     {
@@ -55,7 +65,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (containingType != null && projectPsiModule != null)
             {
                 var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
-                return GetBaseUnityTypes(containingType, unityVersion).Any(type => type.HasEventFunction(method, unityVersion));
+                return GetBaseUnityTypes(containingType, unityVersion)
+                    .Any(t => t.HasEventFunction(method, unityVersion));
             }
             return false;
         }
@@ -96,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
                 var eventFunctions = from t in GetBaseUnityTypes(containingType, unityVersion)
                     from m in t.GetEventFunctions(unityVersion)
-                    where m.Match(method)
+                    where m.Match(method) != EventFunctionMatch.NoMatch
                     select m;
                 return eventFunctions.FirstOrDefault();
             }

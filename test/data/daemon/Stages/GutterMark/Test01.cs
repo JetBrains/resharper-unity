@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEditor;
 
@@ -26,6 +27,12 @@ public class A : MonoBehaviour
     // Not a Unity function
     private void NotMessage()
     {
+    }
+
+    // Unity message as coroutine
+    private IEnumerator Start()
+    {
+        return null;
     }
 }
 
