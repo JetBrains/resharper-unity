@@ -353,37 +353,37 @@
     </message>
     <message name="OnCollisionEnter" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter.html">
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collision" description="The Collision data associated with this collision." />
+        <parameter type="UnityEngine.Collision" array="False" name="collision" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionEnter2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when an incoming collider makes contact with this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="coll" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="coll" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionExit" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit.html">
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" description="The Collision data associated with this collision." />
+        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionExit2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when a collider on another object stops touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="coll" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="coll" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionStay" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay.html">
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" description="The Collision data associated with this collision." />
+        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionStay2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent each frame where a collider on another object is touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="coll" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="coll" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>

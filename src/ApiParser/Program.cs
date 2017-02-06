@@ -51,9 +51,10 @@ namespace ApiParser
             {
                 Console.WriteLine(doc.Item1);
                 parser.ParseFolder(doc.Item1, doc.Item2);
-                AddUndocumentedCoroutines(unityApi, doc.Item2);
                 AddUndocumentApis(unityApi, doc.Item2);
             }
+            AddUndocumentedOptionalParameters(unityApi);
+            AddUndocumentedCoroutines(unityApi);
 
             using (var writer = new XmlTextWriter(@"api.xml", Encoding.UTF8) {Formatting = Formatting.Indented})
             {
@@ -64,7 +65,7 @@ namespace ApiParser
             // Console.ReadLine();
         }
 
-        private static void AddUndocumentedCoroutines(UnityApi unityApi, Version apiVersion)
+        private static void AddUndocumentedCoroutines(UnityApi unityApi)
         {
             var type = unityApi.FindType("MonoBehaviour");
             if (type != null)
@@ -72,16 +73,48 @@ namespace ApiParser
                 // Not documented directly, but shown in examples
                 // https://docs.unity3d.com/ScriptReference/MonoBehaviour.StartCoroutine.html
                 // https://docs.unity3d.com/ScriptReference/WaitForEndOfFrame.html
-                type.FindEventFunction("Start")?.SetIsCoroutine();
+                SetIsCoroutine(type, "Start");
 
                 // Not documented as co-routines, but the non-2D versions are
-                type.FindEventFunction("OnCollisionEnter2D")?.SetIsCoroutine();
-                type.FindEventFunction("OnCollisionExit2D")?.SetIsCoroutine();
-                type.FindEventFunction("OnCollisionStay2D")?.SetIsCoroutine();
-                type.FindEventFunction("OnTriggerEnter2D")?.SetIsCoroutine();
-                type.FindEventFunction("OnTriggerExit2D")?.SetIsCoroutine();
-                type.FindEventFunction("OnTriggerStay2D")?.SetIsCoroutine();
+                SetIsCoroutine(type, "OnCollisionEnter2D");
+                SetIsCoroutine(type, "OnCollisionExit2D");
+                SetIsCoroutine(type, "OnCollisionStay2D");
+                SetIsCoroutine(type, "OnTriggerEnter2D");
+                SetIsCoroutine(type, "OnTriggerExit2D");
+                SetIsCoroutine(type, "OnTriggerStay2D");
             }
+        }
+
+        private static void SetIsCoroutine(UnityApiType type, string functionName)
+        {
+            foreach (var function in type.FindEventFunctions(functionName))
+            {
+                function.SetIsCoroutine();
+            }
+        }
+
+        private static void AddUndocumentedOptionalParameters(UnityApi unityApi)
+        {
+            // TODO: Would this be better to mark the parameter as optional?
+            // Then add an inspection to see if the optional parameter is used in the body of the method
+            var type = unityApi.FindType("MonoBehaviour");
+            if (type != null)
+            {
+                // Not formally documented, but described in the text
+                const string justification = "Removing collision parameter avoids unnecessary calculations";
+                MakeParameterOptional(type, "OnCollisionEnter", "collision", justification);
+                MakeParameterOptional(type, "OnCollisionEnter2D", "coll", justification);
+                MakeParameterOptional(type, "OnCollisionExit", "collisionInfo", justification);
+                MakeParameterOptional(type, "OnCollisionExit2D", "coll", justification);
+                MakeParameterOptional(type, "OnCollisionStay", "collisionInfo", justification);
+                MakeParameterOptional(type, "OnCollisionStay2D", "coll", justification);
+            }
+        }
+
+        private static void MakeParameterOptional(UnityApiType type, string functionName, string parameterName, string justification)
+        {
+            foreach (var function in type.FindEventFunctions(functionName))
+                function.MakeParameterOptional(parameterName, justification);
         }
 
         private static void AddUndocumentApis(UnityApi unityApi, Version apiVersion)

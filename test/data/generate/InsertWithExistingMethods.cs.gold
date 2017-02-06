@@ -18,7 +18,7 @@ class A : Collider
   {
   }
 
-  private void OnCollisionStay(Collision other)
+  private void OnCollisionStay(Collision collisionInfo)
   {{caret}
   }
 }
