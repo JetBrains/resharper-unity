@@ -51,6 +51,7 @@ namespace ApiParser
             {
                 Console.WriteLine(doc.Item1);
                 parser.ParseFolder(doc.Item1, doc.Item2);
+                AddUndocumentedCoroutines(unityApi, doc.Item2);
                 AddUndocumentApis(unityApi, doc.Item2);
             }
 
@@ -63,24 +64,44 @@ namespace ApiParser
             // Console.ReadLine();
         }
 
+        private static void AddUndocumentedCoroutines(UnityApi unityApi, Version apiVersion)
+        {
+            var type = unityApi.FindType("MonoBehaviour");
+            if (type != null)
+            {
+                // Not documented directly, but shown in examples
+                // https://docs.unity3d.com/ScriptReference/MonoBehaviour.StartCoroutine.html
+                // https://docs.unity3d.com/ScriptReference/WaitForEndOfFrame.html
+                type.FindEventFunction("Start")?.SetIsCoroutine();
+
+                // Not documented as co-routines, but the non-2D versions are
+                type.FindEventFunction("OnCollisionEnter2D")?.SetIsCoroutine();
+                type.FindEventFunction("OnCollisionExit2D")?.SetIsCoroutine();
+                type.FindEventFunction("OnCollisionStay2D")?.SetIsCoroutine();
+                type.FindEventFunction("OnTriggerEnter2D")?.SetIsCoroutine();
+                type.FindEventFunction("OnTriggerExit2D")?.SetIsCoroutine();
+                type.FindEventFunction("OnTriggerStay2D")?.SetIsCoroutine();
+            }
+        }
+
         private static void AddUndocumentApis(UnityApi unityApi, Version apiVersion)
         {
             // From AssetPostprocessingInternal
             var type = unityApi.FindType("AssetPostprocessor");
             if (type != null)
             {
-                var eventFunction = new UnityApiEventFunction("OnPreprocessAssembly", false, ApiType.Void, apiVersion,
-                    undocumented: true);
+                var eventFunction = new UnityApiEventFunction("OnPreprocessAssembly",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
                 eventFunction.AddParameter("pathName", ApiType.String);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
-                eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles", true, ApiType.Void, apiVersion,
-                    undocumented: true);
+                eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles",
+                    true, false, ApiType.Void, apiVersion, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // Technically, return type is optional
-                eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles", true, ApiType.Bool,
-                    apiVersion, undocumented: true);
+                eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles",
+                    true, false, ApiType.Bool, apiVersion, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
             }
 
@@ -88,7 +109,8 @@ namespace ApiParser
             type = unityApi.FindType("AssetModificationProcessor");
             if (type != null)
             {
-                var eventFunction = new UnityApiEventFunction("OnStatusUpdated", true, ApiType.Void, apiVersion, undocumented: true);
+                var eventFunction = new UnityApiEventFunction("OnStatusUpdated", true,
+                    false, ApiType.Void, apiVersion, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
             }
 
@@ -110,13 +132,13 @@ namespace ApiParser
             type = unityApi.FindType("ScriptableObject");
             if (type != null)
             {
-                var eventFunction = new UnityApiEventFunction("OnValidate", false, ApiType.Void, apiVersion,
+                var eventFunction = new UnityApiEventFunction("OnValidate", false, false, ApiType.Void, apiVersion,
                     description:
                     "This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).",
                     undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
-                eventFunction = new UnityApiEventFunction("Reset", false, ApiType.Void, apiVersion,
+                eventFunction = new UnityApiEventFunction("Reset", false, false, ApiType.Void, apiVersion,
                     description: "Reset to default values.", undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
             }

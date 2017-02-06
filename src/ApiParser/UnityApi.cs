@@ -124,6 +124,11 @@ namespace ApiParser
             myEventFunctions.Add(newFunction);
         }
 
+        public UnityApiEventFunction FindEventFunction(string name)
+        {
+            return myEventFunctions.SingleOrDefault(f => f.Name == name);
+        }
+
         public void ExportTo(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("type");
@@ -148,17 +153,19 @@ namespace ApiParser
     public class UnityApiEventFunction : HasVersionRange
     {
         private readonly bool myIsStatic;
+        private bool myIsCoroutine;
         [CanBeNull] private string myDescription;
         [CanBeNull] private readonly string myDocPath;
         private readonly bool myUndocumented;
         private readonly ApiType myReturnType;
         private readonly IList<UnityApiParameter> myParameters;
 
-        public UnityApiEventFunction(string name, bool isStatic, ApiType returnType, Version apiVersion,
-            string description = null, string docPath = null, bool undocumented = false)
+        public UnityApiEventFunction(string name, bool isStatic, bool isCoroutine, ApiType returnType,
+            Version apiVersion, string description = null, string docPath = null, bool undocumented = false)
         {
             Name = name;
             myIsStatic = isStatic;
+            myIsCoroutine = isCoroutine;
             myDescription = description;
             myDocPath = docPath;
             myUndocumented = undocumented;
@@ -195,11 +202,18 @@ namespace ApiParser
             }
         }
 
+        public void SetIsCoroutine()
+        {
+            myIsCoroutine = true;
+        }
+
         public void ExportTo(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("message");
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("static", myIsStatic.ToString());
+            if (myIsCoroutine)
+                xmlWriter.WriteAttributeString("coroutine", "True");
             ExportVersionRange(xmlWriter);
             if (myUndocumented)
                 xmlWriter.WriteAttributeString("undocumented", "True");

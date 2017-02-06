@@ -13,13 +13,14 @@ namespace ApiParser
         // "Namespace:" is only used in 5.0
         private static readonly Regex NsRegex = new Regex(@"^((?<type>class|struct) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)$");
         private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$");
+        private static readonly Regex CoroutineRegex = new Regex(@"(?:can be|as) a co-routine", RegexOptions.IgnoreCase);
 
-        private readonly UnityApi api;
+        private readonly UnityApi myApi;
         private readonly string myScriptReferenceRelativePath;
 
         public ApiParser(UnityApi api, string scriptReferenceRelativePath)
         {
-            this.api = api;
+            myApi = api;
             myScriptReferenceRelativePath = scriptReferenceRelativePath;
         }
 
@@ -27,7 +28,7 @@ namespace ApiParser
 
         public void ExportTo(XmlTextWriter writer)
         {
-            api.ExportTo(writer);
+            myApi.ExportTo(writer);
         }
 
         public void ParseFolder(string path, Version apiVersion)
@@ -94,7 +95,7 @@ namespace ApiParser
             if (string.IsNullOrEmpty(clsType)) clsType = "class";
             if (string.IsNullOrEmpty(nsName)) return;
 
-            var unityApiType = api.AddType(nsName, name.Text, clsType, filename, apiVersion);
+            var unityApiType = myApi.AddType(nsName, name.Text, clsType, filename, apiVersion);
 
             foreach (var message in messages)
             {
@@ -123,6 +124,8 @@ namespace ApiParser
 
             if (signature == null) return null;
 
+            var isCoroutine = CoroutineRegex.IsMatch(details.Text);
+
             var messageName = link.Text;
             var returnType = ApiType.Void;
             string[] argumentNames = null;
@@ -136,7 +139,8 @@ namespace ApiParser
             }
 
             var docPath = Path.Combine(myScriptReferenceRelativePath, detailsPath);
-            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null, returnType, apiVersion, desc.Text, docPath, false);
+            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null, isCoroutine,
+                returnType, apiVersion, desc.Text, docPath);
 
             ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames);
 

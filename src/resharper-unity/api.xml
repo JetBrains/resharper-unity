@@ -323,13 +323,13 @@
     <message name="OnAnimatorMove" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Callback for processing animation movements for modifying root motion." path="Documentation/en/ScriptReference/MonoBehaviour.OnAnimatorMove.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnApplicationFocus" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent to all game objects when the player gets or loses focus." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationFocus.html">
+    <message name="OnApplicationFocus" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent to all game objects when the player gets or loses focus." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationFocus.html">
       <parameters>
         <parameter type="System.Boolean" array="False" name="focusStatus" description="True if the GameObjects have focus, else False." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnApplicationPause" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent to all game objects when the player pauses." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationPause.html">
+    <message name="OnApplicationPause" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent to all game objects when the player pauses." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationPause.html">
       <parameters>
         <parameter type="System.Boolean" array="False" name="pauseStatus" description="True if the application is paused, else False." />
       </parameters>
@@ -345,43 +345,43 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnBecameInvisible" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnBecameInvisible is called when the renderer is no longer visible by any camera." path="Documentation/en/ScriptReference/MonoBehaviour.OnBecameInvisible.html">
+    <message name="OnBecameInvisible" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnBecameInvisible is called when the renderer is no longer visible by any camera." path="Documentation/en/ScriptReference/MonoBehaviour.OnBecameInvisible.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnBecameVisible" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnBecameVisible is called when the renderer became visible by any camera." path="Documentation/en/ScriptReference/MonoBehaviour.OnBecameVisible.html">
+    <message name="OnBecameVisible" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnBecameVisible is called when the renderer became visible by any camera." path="Documentation/en/ScriptReference/MonoBehaviour.OnBecameVisible.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnCollisionEnter" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter.html">
+    <message name="OnCollisionEnter" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter.html">
       <parameters>
         <parameter type="UnityEngine.Collision" array="False" name="collision" description="The Collision data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnCollisionEnter2D" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent when an incoming collider makes contact with this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter2D.html">
+    <message name="OnCollisionEnter2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when an incoming collider makes contact with this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter2D.html">
       <parameters>
         <parameter type="UnityEngine.Collision2D" array="False" name="coll" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnCollisionExit" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit.html">
+    <message name="OnCollisionExit" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit.html">
       <parameters>
         <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" description="The Collision data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnCollisionExit2D" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent when a collider on another object stops touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit2D.html">
+    <message name="OnCollisionExit2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when a collider on another object stops touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit2D.html">
       <parameters>
         <parameter type="UnityEngine.Collision2D" array="False" name="coll" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnCollisionStay" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay.html">
+    <message name="OnCollisionStay" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay.html">
       <parameters>
         <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" description="The Collision data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnCollisionStay2D" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent each frame where a collider on another object is touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay2D.html">
+    <message name="OnCollisionStay2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent each frame where a collider on another object is touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay2D.html">
       <parameters>
         <parameter type="UnityEngine.Collision2D" array="False" name="coll" description="The Collision2D data associated with this collision." />
       </parameters>
@@ -444,7 +444,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnLevelWasLoaded" static="False" minimumVersion="5.0" maximumVersion="5.3" description="This function is called after a new level was loaded." path="Documentation/en/ScriptReference/MonoBehaviour.OnLevelWasLoaded.html">
+    <message name="OnLevelWasLoaded" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.3" description="This function is called after a new level was loaded." path="Documentation/en/ScriptReference/MonoBehaviour.OnLevelWasLoaded.html">
       <parameters>
         <parameter type="System.Int32" array="False" name="level" />
       </parameters>
@@ -456,25 +456,25 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnMouseDown" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnMouseDown is called when the user has pressed the mouse button while over the GUIElement or Collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseDown.html">
+    <message name="OnMouseDown" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnMouseDown is called when the user has pressed the mouse button while over the GUIElement or Collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseDown.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnMouseDrag" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnMouseDrag is called when the user has clicked on a GUIElement or Collider and is still holding down the mouse." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseDrag.html">
+    <message name="OnMouseDrag" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnMouseDrag is called when the user has clicked on a GUIElement or Collider and is still holding down the mouse." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseDrag.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnMouseEnter" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Called when the mouse enters the GUIElement or Collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseEnter.html">
+    <message name="OnMouseEnter" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Called when the mouse enters the GUIElement or Collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseEnter.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnMouseExit" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Called when the mouse is not any longer over the GUIElement or Collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseExit.html">
+    <message name="OnMouseExit" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Called when the mouse is not any longer over the GUIElement or Collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseExit.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnMouseOver" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Called every frame while the mouse is over the GUIElement or Collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseOver.html">
+    <message name="OnMouseOver" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Called every frame while the mouse is over the GUIElement or Collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseOver.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnMouseUp" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnMouseUp is called when the user has released the mouse button." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseUp.html">
+    <message name="OnMouseUp" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnMouseUp is called when the user has released the mouse button." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseUp.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnMouseUpAsButton" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnMouseUpAsButton is only called when the mouse is released over the same GUIElement or Collider as it was pressed." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseUpAsButton.html">
+    <message name="OnMouseUpAsButton" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnMouseUpAsButton is only called when the mouse is released over the same GUIElement or Collider as it was pressed." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseUpAsButton.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnNetworkInstantiate" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Called on objects which have been network instantiated with Network.Instantiate." path="Documentation/en/ScriptReference/MonoBehaviour.OnNetworkInstantiate.html">
@@ -483,7 +483,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnParticleCollision" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnParticleCollision is called when a particle hits a collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleCollision.html">
+    <message name="OnParticleCollision" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnParticleCollision is called when a particle hits a collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleCollision.html">
       <parameters>
         <parameter type="UnityEngine.GameObject" array="False" name="other" />
       </parameters>
@@ -510,13 +510,13 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostRender" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnPostRender is called after a camera finished rendering the scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPostRender.html">
+    <message name="OnPostRender" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnPostRender is called after a camera finished rendering the scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPostRender.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPreCull" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnPreCull is called before a camera culls the scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPreCull.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreRender" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnPreRender is called before a camera starts rendering the scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPreRender.html">
+    <message name="OnPreRender" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnPreRender is called before a camera starts rendering the scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPreRender.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnRenderImage" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnRenderImage is called after all rendering is complete to render image." path="Documentation/en/ScriptReference/MonoBehaviour.OnRenderImage.html">
@@ -545,37 +545,37 @@
     <message name="OnTransformParentChanged" static="False" minimumVersion="5.0" maximumVersion="5.6" description="This function is called when the parent property of the transform of the GameObject has changed." path="Documentation/en/ScriptReference/MonoBehaviour.OnTransformParentChanged.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTriggerEnter" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerEnter is called when the Collider other enters the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter.html">
+    <message name="OnTriggerEnter" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerEnter is called when the Collider other enters the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter.html">
       <parameters>
         <parameter type="UnityEngine.Collider" array="False" name="other" description="Name of the collider." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTriggerEnter2D" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent when another object enters a trigger collider attached to this object (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter2D.html">
+    <message name="OnTriggerEnter2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when another object enters a trigger collider attached to this object (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter2D.html">
       <parameters>
         <parameter type="UnityEngine.Collider2D" array="False" name="other" description="Name of the collider." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTriggerExit" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerExit is called when the Collider other has stopped touching the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit.html">
+    <message name="OnTriggerExit" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerExit is called when the Collider other has stopped touching the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit.html">
       <parameters>
         <parameter type="UnityEngine.Collider" array="False" name="other" description="Name of the collider." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTriggerExit2D" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent when another object leaves a trigger collider attached to this object (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit2D.html">
+    <message name="OnTriggerExit2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when another object leaves a trigger collider attached to this object (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit2D.html">
       <parameters>
         <parameter type="UnityEngine.Collider2D" array="False" name="other" description="Name of the collider." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTriggerStay" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerStay is called once per frame for every Collider other that is touching the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay.html">
+    <message name="OnTriggerStay" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerStay is called once per frame for every Collider other that is touching the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay.html">
       <parameters>
         <parameter type="UnityEngine.Collider" array="False" name="other" description="Name of the collider." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTriggerStay2D" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent each frame where another object is within a trigger collider attached to this object (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay2D.html">
+    <message name="OnTriggerStay2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent each frame where another object is within a trigger collider attached to this object (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay2D.html">
       <parameters>
         <parameter type="UnityEngine.Collider2D" array="False" name="other" description="Name of the collider." />
       </parameters>
@@ -590,7 +590,7 @@
     <message name="Reset" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Reset to default values." path="Documentation/en/ScriptReference/MonoBehaviour.Reset.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="Start" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Start is called on the frame when a script is enabled just before any of the Update methods is called the first time." path="Documentation/en/ScriptReference/MonoBehaviour.Start.html">
+    <message name="Start" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Start is called on the frame when a script is enabled just before any of the Update methods is called the first time." path="Documentation/en/ScriptReference/MonoBehaviour.Start.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="Update" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Update is called every frame, if the MonoBehaviour is enabled." path="Documentation/en/ScriptReference/MonoBehaviour.Update.html">
