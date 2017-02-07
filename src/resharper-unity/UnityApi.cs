@@ -12,11 +12,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
     [Flags]
     public enum EventFunctionMatch
     {
-        NoMatch = 0,
-        MatchingName,
-        MatchingSignature,
-        MatchingReturnType,
-        ExactMatch = MatchingName | MatchingSignature | MatchingReturnType
+        NoMatch = 1,
+        MatchingName = 2,
+        MatchingStaticModifier = 4,
+        MatchingSignature = 8,
+        MatchingReturnType = 16,
+        ExactMatch = MatchingName | MatchingStaticModifier | MatchingSignature | MatchingReturnType
     }
 
     [SolutionComponent]

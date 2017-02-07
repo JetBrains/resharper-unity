@@ -34,6 +34,11 @@ public class A : MonoBehaviour
     {
         return null;
     }
+
+    // Optional parameter
+    private void OnCollisionStay()
+    {
+    }
 }
 
 [InitializeOnLoad]

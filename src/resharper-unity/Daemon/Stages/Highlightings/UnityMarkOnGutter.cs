@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
     [StaticSeverityHighlighting(Severity.INFO, HighlightingGroupIds.GutterMarksGroup,
         OverlapResolve = OverlapResolveKind.NONE, AttributeId = UnityHighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE)]
-    public class UnityMarkOnGutter : IHighlighting
+    public class UnityMarkOnGutter : IHighlighting, IUnityHighlighting
     {
         private readonly ITreeNode myElement;
         private readonly DocumentRange myRange;

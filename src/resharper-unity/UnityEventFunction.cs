@@ -81,19 +81,40 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (method.ShortName != Name) return EventFunctionMatch.NoMatch;
 
             var match = EventFunctionMatch.MatchingName;
-            if (method.IsStatic == myIsStatic && method.Parameters.Count == myParameters.Length)
+            if (method.IsStatic == myIsStatic)
+                match |= EventFunctionMatch.MatchingStaticModifier;
+
+            var matchingSignature = false;
+            if (method.Parameters.Count == myParameters.Length)
             {
-                var matchingSignature = true;
-                for (var i = 0; i < myParameters.Length; ++i)
+                matchingSignature = true;
+                for (var i = 0; i < myParameters.Length && matchingSignature; i++)
                 {
-                    if (!DoTypesMatch(method.Parameters[i].Type, myParameters[i].ClrTypeName, myParameters[i].IsArray))
+                    if (!DoTypesMatch(method.Parameters[i].Type, myParameters[i].ClrTypeName,
+                        myParameters[i].IsArray))
                     {
                         matchingSignature = false;
                     }
                 }
-                if (matchingSignature)
-                    match |= EventFunctionMatch.MatchingSignature;
             }
+            else
+            {
+                // TODO: This doesn't really handle optional parameters very well
+                // It's fine for the current usage (a single parameter, either there or not)
+                // but won't work for anything more interesting. Perhaps optional parameters
+                // should be modeled as overloads?
+                var optionalParameters = 0;
+                foreach (var parameter in myParameters)
+                {
+                    if (parameter.IsOptional)
+                        optionalParameters++;
+                }
+                if (method.Parameters.Count + optionalParameters == myParameters.Length)
+                    matchingSignature = true;
+            }
+
+            if (matchingSignature)
+                match |= EventFunctionMatch.MatchingSignature;
 
             if (DoTypesMatch(method.ReturnType, myReturnType, myReturnTypeIsArray)
                 || (Coroutine && DoTypesMatch(method.ReturnType, EnumeratorType, false)))
