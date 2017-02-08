@@ -391,6 +391,7 @@
     <Compile Include="Feature\Services\Generate\GenerateUnityEventFunctionsBuilder.cs" />
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocProvider.cs" />
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocPresenter.cs" />
+    <Compile Include="Feature\Services\QuickFixes\InvalidStaticModifierQuickFix.cs" />
     <Compile Include="Help\ShowUnityHelp.cs" />
     <Compile Include="ProjectExtensions.cs" />
     <Compile Include="ProjectModel\Caches\UnityProjectFileCacheProvider.cs" />

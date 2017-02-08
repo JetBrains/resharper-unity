@@ -25,27 +25,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
         public const string HIGHLIGHTING_ID = "Unity.InvalidStaticModifier";
         public const string MESSAGE = "Incorrect static modifier for Unity event function";
 
-        private readonly IMethodDeclaration myMethodDeclaration;
-
         public InvalidStaticModifierWarning(IMethodDeclaration methodDeclaration, UnityEventFunction function)
         {
-            myMethodDeclaration = methodDeclaration;
+            MethodDeclaration = methodDeclaration;
+            Function = function;
         }
 
         public bool IsValid()
         {
-            return myMethodDeclaration != null && myMethodDeclaration.IsValid();
+            return MethodDeclaration != null && MethodDeclaration.IsValid();
         }
 
         public DocumentRange CalculateRange()
         {
-            var nameRange = myMethodDeclaration.GetNameDocumentRange();
+            var nameRange = MethodDeclaration.GetNameDocumentRange();
             if (!nameRange.IsValid())
                 return DocumentRange.InvalidRange;
 
-            if (myMethodDeclaration.IsStatic)
+            if (MethodDeclaration.IsStatic)
             {
-                var modifiersList = myMethodDeclaration.ModifiersList;
+                var modifiersList = MethodDeclaration.ModifiersList;
                 foreach (var modifier in modifiersList.Modifiers)
                 {
                     if (modifier.NodeType == CSharpTokenType.STATIC_KEYWORD)
@@ -60,8 +59,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             return nameRange;
         }
 
-        public string ToolTip => myMethodDeclaration.IsStatic ? MESSAGE : "Missing static modifier for Unity event function";
+        public string ToolTip => MethodDeclaration.IsStatic ? MESSAGE : "Missing static modifier for Unity event function";
 
         public string ErrorStripeToolTip => ToolTip;
+
+        public IMethodDeclaration MethodDeclaration { get; }
+        public UnityEventFunction Function { get; }
     }
 }

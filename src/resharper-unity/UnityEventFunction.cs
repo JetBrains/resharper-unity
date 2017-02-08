@@ -16,32 +16,32 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         private static readonly IClrTypeName EnumeratorType = new ClrTypeName("System.Collections.IEnumerator");
 
-        private readonly bool myIsStatic;
         private readonly Version myMinimumVersion;
         private readonly Version myMaximumVersion;
-        private readonly bool myReturnTypeIsArray;
-        [NotNull] private readonly IClrTypeName myReturnType;
         [NotNull] private readonly UnityEventFunctionParameter[] myParameters;
 
         public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, bool isCoroutine, string description, bool undocumented, Version minimumVersion, Version maximumVersion, [NotNull] params UnityEventFunctionParameter[] parameters)
         {
             Description = description;
             Undocumented = undocumented;
-            myIsStatic = isStatic;
+            IsStatic = isStatic;
             Coroutine = isCoroutine;
             myMinimumVersion = minimumVersion;
             myMaximumVersion = maximumVersion;
             Name = name;
             TypeName = typeName;
-            myReturnType = returnType;
-            myReturnTypeIsArray = returnTypeIsArray;
+            ReturnType = returnType;
+            ReturnTypeIsArray = returnTypeIsArray;
             myParameters = parameters.Length > 0 ? parameters : EmptyArray<UnityEventFunctionParameter>.Instance;
         }
 
         [NotNull] public string TypeName { get; }
         [NotNull] public string Name { get; }
-        [CanBeNull] public string Description { get; }
+        [NotNull] public IClrTypeName ReturnType { get; }
+        public bool ReturnTypeIsArray { get; }
         public bool Coroutine { get; }
+        public bool IsStatic { get; }
+        [CanBeNull] public string Description { get; }
         public bool Undocumented { get; }
 
         [NotNull]
@@ -50,9 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var builder = new StringBuilder(128);
 
             builder.Append("private ");
-            if (myIsStatic) builder.Append("static ");
-            builder.Append(myReturnType.FullName);
-            if (myReturnTypeIsArray) builder.Append("[]");
+            if (IsStatic) builder.Append("static ");
+            builder.Append(ReturnType.FullName);
+            if (ReturnTypeIsArray) builder.Append("[]");
             builder.Append(" ");
             builder.Append(Name);
             builder.Append("(");
@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (method.ShortName != Name) return EventFunctionMatch.NoMatch;
 
             var match = EventFunctionMatch.MatchingName;
-            if (method.IsStatic == myIsStatic)
+            if (method.IsStatic == IsStatic)
                 match |= EventFunctionMatch.MatchingStaticModifier;
 
             var matchingSignature = false;
@@ -116,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (matchingSignature)
                 match |= EventFunctionMatch.MatchingSignature;
 
-            if (DoTypesMatch(method.ReturnType, myReturnType, myReturnTypeIsArray)
+            if (DoTypesMatch(method.ReturnType, ReturnType, ReturnTypeIsArray)
                 || (Coroutine && DoTypesMatch(method.ReturnType, EnumeratorType, false)))
             {
                 match |= EventFunctionMatch.MatchingReturnType;
