@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
+using UnityEngine;
 
 namespace Plugins.Editor.JetBrains
 {
@@ -21,6 +23,9 @@ namespace Plugins.Editor.JetBrains
     private const string EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "gmcs.rsp";
     private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
       = Path.Combine(UnityEngine.Application.dataPath, EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
+
+    private static readonly int unityProcessId = Process.GetCurrentProcess().Id;
+    private static readonly string unityVersion = Application.unityVersion;
 
     public static void OnGeneratedCSProjectFiles()
     {
@@ -75,12 +80,22 @@ namespace Plugins.Editor.JetBrains
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
+      SetUnityData(projectContentElement, xmlns);
       SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
 
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
 
       doc.Save(projectFile);
+    }
+
+    private static void SetUnityData(XElement projectElement, XNamespace xmlns)
+    {
+      // will be used by dependent Rider to provide Denug Configuration and other features
+      projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
+        new XElement(xmlns + "unityProcessId", unityProcessId.ToString())));
+      projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
+        new XElement(xmlns + "unityVersion", unityVersion)));
     }
 
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
