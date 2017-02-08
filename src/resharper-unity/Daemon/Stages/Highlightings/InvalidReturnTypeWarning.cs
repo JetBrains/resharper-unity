@@ -21,25 +21,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
         public const string HIGHLIGHTING_ID = "Unity.InvalidReturnType";
         public const string MESSAGE = "Incorrect return type for Unity event function";
 
-        private readonly IMethodDeclaration myMethodDeclaration;
-
         public InvalidReturnTypeWarning(IMethodDeclaration methodDeclaration, UnityEventFunction function)
         {
-            myMethodDeclaration = methodDeclaration;
+            Function = function;
+            MethodDeclaration = methodDeclaration;
         }
 
         public bool IsValid()
         {
-            return myMethodDeclaration != null && myMethodDeclaration.IsValid();
+            return MethodDeclaration != null && MethodDeclaration.IsValid();
         }
 
         public DocumentRange CalculateRange()
         {
-            var nameRange = myMethodDeclaration.GetNameDocumentRange();
+            var nameRange = MethodDeclaration.GetNameDocumentRange();
             if (!nameRange.IsValid())
                 return DocumentRange.InvalidRange;
 
-            var returnType = myMethodDeclaration.TypeUsage;
+            var returnType = MethodDeclaration.TypeUsage;
             if (returnType == null)
                 return nameRange;
 
@@ -49,5 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 
         public string ToolTip => MESSAGE;
         public string ErrorStripeToolTip => ToolTip;
+
+        public UnityEventFunction Function { get; }
+        public IMethodDeclaration MethodDeclaration { get; }
     }
 }
