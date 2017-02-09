@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(type).Any();
         }
 
-        public bool IsEventFunction([NotNull] IMethod method)
+        public bool IsEventFunction([NotNull] IMethod method, bool exactMatch = false)
         {
             var projectPsiModule = method.Module as IProjectPsiModule;
             var containingType = method.GetContainingType();
@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             {
                 var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
                 return GetBaseUnityTypes(containingType, unityVersion)
-                    .Any(t => t.HasEventFunction(method, unityVersion));
+                    .Any(t => t.HasEventFunction(method, unityVersion, exactMatch));
             }
             return false;
         }

@@ -26,4 +26,20 @@ public class A : MonoBehaviour
   {
       return null;
   }
+
+  // Should be unused - invalid parameters!
+  public void OnAudioFilterRead()
+  {
+  }
+
+  // Should be unused - invalid return type!
+  public bool FixedUpdate()
+  {
+      return true;
+  }
+
+  // Should be unused - invalid static modifier!
+  public static void LateUpdate()
+  {
+  }
 }

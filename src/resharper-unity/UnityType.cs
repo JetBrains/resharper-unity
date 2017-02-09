@@ -35,8 +35,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return type.GetTypeElement();
         }
 
-        public bool HasEventFunction([NotNull] IMethod method, Version unityVersion)
+        public bool HasEventFunction([NotNull] IMethod method, Version unityVersion, bool exactMatch)
         {
+            if (exactMatch)
+                return myEventFunctions.Any(f => f.SupportsVersion(unityVersion) && f.Match(method) == EventFunctionMatch.ExactMatch);
             return myEventFunctions.Any(f => f.SupportsVersion(unityVersion) && f.Match(method) != EventFunctionMatch.NoMatch);
         }
 

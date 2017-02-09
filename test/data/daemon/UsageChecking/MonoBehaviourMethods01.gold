@@ -26,9 +26,31 @@ public class A : MonoBehaviour
   {
       return null;
   }
+
+  // Should be unused - invalid parameters!
+  public void |OnAudioFilterRead|(2)|()|(3)
+  {
+  }
+
+  // Should be unused - invalid return type!
+  public |bool|(4) |FixedUpdate|(5)()
+  {
+      return true;
+  }
+
+  // Should be unused - invalid static modifier!
+  public |static|(6) void |LateUpdate|(7)()
+  {
+  }
 }
 
 ---------------------------------------------------------
 (0): ReSharper Dead Code: Method 'UnusedMethod' is never used
 (1): ReSharper Dead Code: Method 'UnusedPrivateMethod' is never used
+(2): ReSharper Dead Code: Method 'OnAudioFilterRead' is never used
+(3): ReSharper Warning: Incorrect signature for Unity event function
+(4): ReSharper Warning: Incorrect return type for Unity event function
+(5): ReSharper Dead Code: Method 'FixedUpdate' is never used
+(6): ReSharper Warning: Incorrect static modifier for Unity event function
+(7): ReSharper Dead Code: Method 'LateUpdate' is never used
 

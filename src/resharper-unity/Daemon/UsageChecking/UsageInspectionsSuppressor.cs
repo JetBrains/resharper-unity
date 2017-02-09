@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
             }
 
             var method = element as IMethod;
-            if (method != null && unityApi.IsEventFunction(method))
+            if (method != null && unityApi.IsEventFunction(method, exactMatch: true))
             {
                 flags = ImplicitUseKindFlags.Access;
                 return true;
