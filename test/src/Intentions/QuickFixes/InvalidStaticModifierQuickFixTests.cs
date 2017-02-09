@@ -5,8 +5,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
 {
     [TestUnity]
-    public class InvalidStaticModifierQuickFixAvailabilityTests : 
-        QuickFixAvailabilityTestBase
+    public class InvalidStaticModifierQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
         protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\InvalidStaticModifier\Availability";
 

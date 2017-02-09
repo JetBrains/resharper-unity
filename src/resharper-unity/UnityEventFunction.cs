@@ -18,7 +18,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         private readonly Version myMinimumVersion;
         private readonly Version myMaximumVersion;
-        [NotNull] private readonly UnityEventFunctionParameter[] myParameters;
 
         public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, bool isCoroutine, string description, bool undocumented, Version minimumVersion, Version maximumVersion, [NotNull] params UnityEventFunctionParameter[] parameters)
         {
@@ -32,11 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
             TypeName = typeName;
             ReturnType = returnType;
             ReturnTypeIsArray = returnTypeIsArray;
-            myParameters = parameters.Length > 0 ? parameters : EmptyArray<UnityEventFunctionParameter>.Instance;
+            Parameters = parameters.Length > 0 ? parameters : EmptyArray<UnityEventFunctionParameter>.Instance;
         }
 
         [NotNull] public string TypeName { get; }
         [NotNull] public string Name { get; }
+        [NotNull] public UnityEventFunctionParameter[] Parameters { get; }
         [NotNull] public IClrTypeName ReturnType { get; }
         public bool ReturnTypeIsArray { get; }
         public bool Coroutine { get; }
@@ -57,11 +57,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             builder.Append(Name);
             builder.Append("(");
 
-            for (var i = 0; i < myParameters.Length; i++)
+            for (var i = 0; i < Parameters.Length; i++)
             {
                 if (i > 0) builder.Append(",");
 
-                var parameter = myParameters[i];
+                var parameter = Parameters[i];
                 builder.Append(parameter.ClrTypeName.FullName);
                 if (parameter.IsArray) builder.Append("[]");
                 builder.Append(' ');
@@ -85,13 +85,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 match |= EventFunctionMatch.MatchingStaticModifier;
 
             var matchingSignature = false;
-            if (method.Parameters.Count == myParameters.Length)
+            if (method.Parameters.Count == Parameters.Length)
             {
                 matchingSignature = true;
-                for (var i = 0; i < myParameters.Length && matchingSignature; i++)
+                for (var i = 0; i < Parameters.Length && matchingSignature; i++)
                 {
-                    if (!DoTypesMatch(method.Parameters[i].Type, myParameters[i].ClrTypeName,
-                        myParameters[i].IsArray))
+                    if (!DoTypesMatch(method.Parameters[i].Type, Parameters[i].ClrTypeName,
+                        Parameters[i].IsArray))
                     {
                         matchingSignature = false;
                     }
@@ -104,12 +104,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 // but won't work for anything more interesting. Perhaps optional parameters
                 // should be modeled as overloads?
                 var optionalParameters = 0;
-                foreach (var parameter in myParameters)
+                foreach (var parameter in Parameters)
                 {
                     if (parameter.IsOptional)
                         optionalParameters++;
                 }
-                if (method.Parameters.Count + optionalParameters == myParameters.Length)
+                if (method.Parameters.Count + optionalParameters == Parameters.Length)
                     matchingSignature = true;
             }
 
@@ -128,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [CanBeNull]
         public UnityEventFunctionParameter GetParameter(string name)
         {
-            return myParameters.FirstOrDefault(p => p.Name == name);
+            return Parameters.FirstOrDefault(p => p.Name == name);
         }
 
         public bool SupportsVersion(Version unityVersion)

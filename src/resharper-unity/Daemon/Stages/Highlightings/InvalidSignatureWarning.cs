@@ -21,25 +21,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
         public const string HIGHLIGHTING_ID = "Unity.InvalidSignature";
         public const string MESSAGE = "Incorrect signature for Unity event function";
 
-        private readonly IMethodDeclaration myMethodDeclaration;
-
         public InvalidSignatureWarning(IMethodDeclaration methodDeclaration, UnityEventFunction function)
         {
-            myMethodDeclaration = methodDeclaration;
+            MethodDeclaration = methodDeclaration;
+            Function = function;
         }
 
         public bool IsValid()
         {
-            return myMethodDeclaration != null && myMethodDeclaration.IsValid();
+            return MethodDeclaration != null && MethodDeclaration.IsValid();
         }
 
         public DocumentRange CalculateRange()
         {
-            var nameRange = myMethodDeclaration.GetNameDocumentRange();
+            var nameRange = MethodDeclaration.GetNameDocumentRange();
             if (!nameRange.IsValid())
                 return DocumentRange.InvalidRange;
 
-            var @params = myMethodDeclaration.Params;
+            var @params = MethodDeclaration.Params;
             if (@params == null)
                 return nameRange;
 
@@ -50,8 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             if (!paramsRange.IsEmpty)
                 return paramsRange;
 
-            var lparRange = myMethodDeclaration.LPar?.GetDocumentRange();
-            var rparRange = myMethodDeclaration.RPar?.GetDocumentRange();
+            var lparRange = MethodDeclaration.LPar?.GetDocumentRange();
+            var rparRange = MethodDeclaration.RPar?.GetDocumentRange();
             var startOffset = lparRange != null && lparRange.Value.IsValid()
                 ? lparRange.Value
                 : paramsRange;
@@ -64,5 +63,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 
         public string ToolTip => MESSAGE;
         public string ErrorStripeToolTip => ToolTip;
+
+        public IMethodDeclaration MethodDeclaration { get; }
+        public UnityEventFunction Function { get; private set; }
     }
 }
