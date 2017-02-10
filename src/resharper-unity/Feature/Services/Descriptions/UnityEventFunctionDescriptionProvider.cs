@@ -29,7 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
             {
                 var eventFunction = myUnityApi.GetUnityEventFunction(method);
                 if (eventFunction?.Description != null)
-                    return new RichTextBlock(eventFunction.Description);
+                {
+                    var richTextBlock = new RichTextBlock(eventFunction.Description);
+                    if (eventFunction.Coroutine)
+                        richTextBlock.Add("This function can be a coroutine.");
+                    return richTextBlock;
+                }
             }
 
             var parameter = element as IParameter;

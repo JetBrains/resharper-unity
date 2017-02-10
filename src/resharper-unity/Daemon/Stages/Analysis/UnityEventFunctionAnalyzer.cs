@@ -103,16 +103,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         private void AddGutterMark(IHighlightingConsumer consumer, IMethod method, UnityEventFunction function)
         {
             foreach (var declaration in method.GetDeclarations())
-                AddGutterMark(consumer, declaration, function);
+                AddGutterMark(declaration, function, consumer);
         }
 
-        private static void AddGutterMark(IHighlightingConsumer consumer, IDeclaration declaration,
-            UnityEventFunction eventFunction)
+        private void AddGutterMark(IDeclaration declaration, UnityEventFunction eventFunction,
+            IHighlightingConsumer consumer)
         {
             var documentRange = declaration.GetNameDocumentRange();
             var tooltip = "Unity event function";
             if (!string.IsNullOrEmpty(eventFunction.Description))
                 tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
+            if (eventFunction.Coroutine)
+                tooltip += Environment.NewLine + "This function can be a coroutine.";
             var highlighting = new UnityMarkOnGutter(declaration, documentRange, tooltip);
             consumer.AddHighlighting(highlighting, documentRange);
         }
@@ -167,8 +169,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 
         private struct Candidate
         {
-            public IMethod Method;
-            public EventFunctionMatch Match;
+            public readonly IMethod Method;
+            public readonly EventFunctionMatch Match;
 
             public Candidate(IMethod method, EventFunctionMatch match)
             {

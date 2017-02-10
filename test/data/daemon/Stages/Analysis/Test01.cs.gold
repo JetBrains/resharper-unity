@@ -70,19 +70,23 @@ public class |StaticModifier|(16) : AssetPostprocessor
 (1): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+This function can be a coroutine.
 (2): Unity Gutter Icon: Unity scripting type
 (3): ReSharper Warning: Event function with the same name is already declared
 (4): Unity Gutter Icon: Unity event function
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
+This function can be a coroutine.
 (5): ReSharper Warning: Event function with the same name is already declared
 (6): Unity Gutter Icon: Unity event function
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
+This function can be a coroutine.
 (7): Unity Gutter Icon: Unity scripting type
 (8): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+This function can be a coroutine.
 (9): ReSharper Warning: Incorrect signature for Unity event function
 (10): ReSharper Warning: Incorrect return type for Unity event function
 (11): Unity Gutter Icon: Unity event function
@@ -91,6 +95,7 @@ Update is called every frame, if the MonoBehaviour is enabled.
 (12): Unity Gutter Icon: Unity event function
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
+This function can be a coroutine.
 (13): ReSharper Warning: Incorrect signature for Unity event function
 (14): Unity Gutter Icon: Unity event function
 
