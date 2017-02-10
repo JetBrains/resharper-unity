@@ -1,5 +1,6 @@
-using UnityEngine;
+using System;
 using System.Collections;
+using UnityEngine;
 
 public class A : MonoBehaviour
 {
@@ -41,5 +42,21 @@ public class A : MonoBehaviour
   // Should be unused - invalid static modifier!
   public static void LateUpdate()
   {
+  }
+
+  // Should mark both parameters as in use
+  public void OnRenderImage(RenderTexture src, RenderTexture dest)
+  {
+  }
+
+  // Should mark collisionInfo as unused
+  public void OnCollisionExit(Collision collisionInfo)
+  {
+  }
+
+  // Should mark coll as in use
+  public void OnCollisionExit2D(Collision2D coll)
+  {
+      Console.WriteLine(coll);
   }
 }

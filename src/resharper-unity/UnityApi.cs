@@ -59,15 +59,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(type).Any();
         }
 
-        public bool IsEventFunction([NotNull] IMethod method, bool exactMatch = false)
+        public bool IsEventFunction([NotNull] IMethod method)
         {
             var projectPsiModule = method.Module as IProjectPsiModule;
             var containingType = method.GetContainingType();
             if (containingType != null && projectPsiModule != null)
             {
                 var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
-                return GetBaseUnityTypes(containingType, unityVersion)
-                    .Any(t => t.HasEventFunction(method, unityVersion, exactMatch));
+                foreach (var type in GetBaseUnityTypes(containingType, unityVersion))
+                {
+                    if (type.HasEventFunction(method, unityVersion))
+                        return true;
+                }
             }
             return false;
         }
@@ -101,16 +104,28 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method)
         {
+            EventFunctionMatch match;
+            return GetUnityEventFunction(method, out match);
+        }
+
+        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, out EventFunctionMatch match)
+        {
+            match = EventFunctionMatch.NoMatch;
+
             var projectPsiModule = method.Module as IProjectPsiModule;
             var containingType = method.GetContainingType();
             if (containingType != null && projectPsiModule != null)
             {
                 var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
-                var eventFunctions = from t in GetBaseUnityTypes(containingType, unityVersion)
-                    from m in t.GetEventFunctions(unityVersion)
-                    where m.Match(method) != EventFunctionMatch.NoMatch
-                    select m;
-                return eventFunctions.FirstOrDefault();
+                foreach (var type in GetBaseUnityTypes(containingType, unityVersion))
+                {
+                    foreach (var function in type.GetEventFunctions(unityVersion))
+                    {
+                        match = function.Match(method);
+                        if (function.Match(method) != EventFunctionMatch.NoMatch)
+                            return function;
+                    }
+                }
             }
             return null;
         }

@@ -35,11 +35,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return type.GetTypeElement();
         }
 
-        public bool HasEventFunction([NotNull] IMethod method, Version unityVersion, bool exactMatch)
+        public bool HasEventFunction([NotNull] IMethod method, Version unityVersion)
         {
-            if (exactMatch)
-                return myEventFunctions.Any(f => f.SupportsVersion(unityVersion) && f.Match(method) == EventFunctionMatch.ExactMatch);
-            return myEventFunctions.Any(f => f.SupportsVersion(unityVersion) && f.Match(method) != EventFunctionMatch.NoMatch);
+            foreach (var function in myEventFunctions)
+            {
+                if (function.SupportsVersion(unityVersion) && function.Match(method) != EventFunctionMatch.NoMatch)
+                    return true;
+            }
+            return false;
         }
 
         public bool SupportsVersion(Version unityVersion)

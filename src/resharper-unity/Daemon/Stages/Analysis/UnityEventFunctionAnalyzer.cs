@@ -21,7 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         {
         }
 
-        protected override void Analyze(IMemberOwnerDeclaration element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Analyze(IMemberOwnerDeclaration element, ElementProblemAnalyzerData data,
+            IHighlightingConsumer consumer)
         {
             var typeElement = element.DeclaredElement;
             if (typeElement == null)
@@ -30,29 +31,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             if (!Api.IsUnityType(typeElement))
                 return;
 
-            var map = new OneToListMap<UnityEventFunction, IDeclaredElement>(new UnityEventFunctionKeyComparer());
+            var map = new OneToListMap<UnityEventFunction, Candidate>(new UnityEventFunctionKeyComparer());
             foreach (var member in typeElement.GetMembers())
             {
                 var method = member as IMethod;
                 if (method != null)
                 {
-                    var unityEventFunction = Api.GetUnityEventFunction(method);
+                    EventFunctionMatch match;
+                    var unityEventFunction = Api.GetUnityEventFunction(method, out match);
                     if (unityEventFunction != null)
-                        map.Add(unityEventFunction, method);
+                        map.Add(unityEventFunction, new Candidate(method, match));
                 }
             }
 
             foreach (var pair in map)
             {
                 var function = pair.Key;
-                var members = pair.Value;
-                if (members.Count == 1)
+                var candidates = pair.Value;
+                if (candidates.Count == 1)
                 {
                     // Only one function, mark it as a unity function, even if it's not an exact match
                     // We'll let other inspections handle invalid signatures. Add inspections
-                    var method = (IMethod) members[0];
+                    var method = candidates[0].Method;
                     AddGutterMark(consumer, method, function);
-                    AddMethodSignatureInspections(consumer, method, function);
+                    AddMethodSignatureInspections(consumer, method, function, candidates[0].Match);
                 }
                 else
                 {
@@ -60,14 +62,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 
                     // All exact matches should be marked as an event function
                     var duplicates = new FrugalLocalList<IMethod>();
-                    foreach (var member in members)
+                    foreach (var candidate in candidates)
                     {
-                        var method = (IMethod) member;
-                        if (function.Match(method) == EventFunctionMatch.ExactMatch)
+                        if (candidate.Match == EventFunctionMatch.ExactMatch)
                         {
-                            AddGutterMark(consumer, method, function);
+                            AddGutterMark(consumer, candidate.Method, function);
                             hasExactMatch = true;
-                            duplicates.Add(method);
+                            duplicates.Add(candidate.Method);
                         }
                     }
 
@@ -78,7 +79,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                         {
                             foreach (var declaration in method.GetDeclarations())
                             {
-                                consumer.AddHighlighting(new DuplicateEventFunctionWarning((IMethodDeclaration) declaration));
+                                consumer.AddHighlighting(
+                                    new DuplicateEventFunctionWarning((IMethodDeclaration) declaration));
                             }
                         }
                     }
@@ -87,11 +89,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                     // to fix up signature errors
                     if (!hasExactMatch)
                     {
-                        foreach (var member in members)
+                        foreach (var candidate in candidates)
                         {
-                            var method = (IMethod) member;
+                            var method = candidate.Method;
                             AddGutterMark(consumer, method, function);
-                            AddMethodSignatureInspections(consumer, method, function);
+                            AddMethodSignatureInspections(consumer, method, function, candidate.Match);
                         }
                     }
                 }
@@ -104,7 +106,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 AddGutterMark(consumer, declaration, function);
         }
 
-        private static void AddGutterMark(IHighlightingConsumer consumer, IDeclaration declaration, UnityEventFunction eventFunction)
+        private static void AddGutterMark(IHighlightingConsumer consumer, IDeclaration declaration,
+            UnityEventFunction eventFunction)
         {
             var documentRange = declaration.GetNameDocumentRange();
             var tooltip = "Unity event function";
@@ -114,10 +117,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             consumer.AddHighlighting(highlighting, documentRange);
         }
 
-        private static void AddMethodSignatureInspections(IHighlightingConsumer consumer, IMethod method, UnityEventFunction function)
+        private static void AddMethodSignatureInspections(IHighlightingConsumer consumer, IMethod method,
+            UnityEventFunction function, EventFunctionMatch match)
         {
-            var match = function.Match(method);
-
             if ((match & EventFunctionMatch.MatchingStaticModifier) != EventFunctionMatch.MatchingStaticModifier)
             {
                 foreach (var declaration in method.GetDeclarations())
@@ -160,6 +162,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             public int GetHashCode(UnityEventFunction obj)
             {
                 return obj.Name.GetHashCode();
+            }
+        }
+
+        private struct Candidate
+        {
+            public IMethod Method;
+            public EventFunctionMatch Match;
+
+            public Candidate(IMethod method, EventFunctionMatch match)
+            {
+                Method = method;
+                Match = match;
             }
         }
     }

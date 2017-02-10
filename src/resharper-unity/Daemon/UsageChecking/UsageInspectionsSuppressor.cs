@@ -29,10 +29,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
             }
 
             var method = element as IMethod;
-            if (method != null && unityApi.IsEventFunction(method, exactMatch: true))
+            if (method != null)
             {
-                flags = ImplicitUseKindFlags.Access;
-                return true;
+                EventFunctionMatch match;
+                var function = unityApi.GetUnityEventFunction(method, out match);
+                if (function != null && match == EventFunctionMatch.ExactMatch)
+                {
+                    foreach (var parameter in function.Parameters)
+                    {
+                        if (parameter.IsOptional)
+                        {
+                            // Allows optional parameters to be marked as unused
+                            // TODO: Might need to process IParameter if optional gets more complex
+                            flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                            return true;
+                        }
+                    }
+                    flags = ImplicitUseKindFlags.Access;
+                    return true;
+                }
             }
 
             var field = element as IField;
