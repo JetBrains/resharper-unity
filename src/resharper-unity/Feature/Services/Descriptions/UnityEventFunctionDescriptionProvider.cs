@@ -41,10 +41,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
             var owner = parameter?.ContainingParametersOwner as IMethod;
             if (owner != null)
             {
-                var eventFunction = myUnityApi.GetUnityEventFunction(owner);
-                var eventFunctionParameter = eventFunction?.GetParameter(parameter.ShortName);
+                EventFunctionMatch match;
+                var eventFunction = myUnityApi.GetUnityEventFunction(owner, out match);
+                if (eventFunction == null || (match & EventFunctionMatch.MatchingSignature) == 0)
+                    return null;
+
+                var eventFunctionParameter = eventFunction.GetParameter(parameter.ShortName);
+                if (eventFunctionParameter == null)
+                {
+                    var parameters = parameter.ContainingParametersOwner.Parameters;
+                    for (var i = 0; i < parameters.Count; i++)
+                    {
+                        if (Equals(parameters[i], parameter))
+                        {
+                            eventFunctionParameter = eventFunction.Parameters[i];
+                            break;
+                        }
+                    }
+                }
+
                 if (eventFunctionParameter?.Description != null)
-                    return new RichTextBlock(eventFunctionParameter.Description);
+                {
+                    var richTextBlock = new RichTextBlock(eventFunctionParameter.Description);
+                    if (eventFunctionParameter.IsOptional)
+                    {
+                        if (string.IsNullOrEmpty(eventFunctionParameter.Justification))
+                            richTextBlock.Add("This parameter is optional and can be removed if not used.");
+                        else
+                            richTextBlock.Add($"This parameter is optional: {eventFunctionParameter.Justification}");
+                    }
+                    return richTextBlock;
+                }
             }
 
             return null;

@@ -1,4 +1,4 @@
-﻿(parameter) Collision collision
+﻿(parameter) Collision other
 
 The Collision data associated with this collision.
 This parameter is optional: Removing collision parameter avoids unnecessary calculations
