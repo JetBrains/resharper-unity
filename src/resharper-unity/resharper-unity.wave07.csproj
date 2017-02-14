@@ -367,6 +367,8 @@
     <Compile Include="Daemon\Stages\GutterMarks\UnityInitialiseOnLoadCctorDetector.cs" />
     <Compile Include="Daemon\Stages\GutterMarks\UnityTypeDetector.cs" />
     <Compile Include="Daemon\Stages\Color\UnityColorHighlightingStage.cs" />
+    <Compile Include="Daemon\Stages\Highlightings\ConvertFromCoroutineBulbAction.cs" />
+    <Compile Include="Daemon\Stages\Highlightings\ConvertToCoroutineBulbAction.cs" />
     <Compile Include="Daemon\Stages\Highlightings\InvalidStaticModifierWarning.cs" />
     <Compile Include="Daemon\Stages\Highlightings\InvalidSignatureWarning.cs" />
     <Compile Include="Daemon\Stages\Highlightings\InvalidReturnTypeWarning.cs" />
@@ -406,6 +408,7 @@
     <Compile Include="Psi\Resolve\UnityEventFunctionReferenceFactory.cs" />
     <Compile Include="Psi\Resolve\UnityEventFunctionReferenceProviderFactory.cs" />
     <Compile Include="Resources\Logo\ThemedIcons.Logo.Generated.cs" />
+    <Compile Include="TreeNodeExtensions.cs" />
     <Compile Include="UnityEventFunction.cs" />
     <Compile Include="UnityType.cs" />
     <Compile Include="UnityApi.cs" />
@@ -438,7 +441,6 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets" Condition="Exists('..\packages\Antlr2.Tools.2.7.6.4\build\Antlr2.Tools.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

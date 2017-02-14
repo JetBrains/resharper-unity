@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
             if (eventFunction.Coroutine)
                 tooltip += Environment.NewLine + "This function can be a coroutine.";
-            var highlighting = new UnityMarkOnGutter(declaration, documentRange, tooltip);
+            var highlighting = new UnityMarkOnGutter(Api, declaration, documentRange, tooltip);
             consumer.AddHighlighting(highlighting, documentRange);
         }
 
