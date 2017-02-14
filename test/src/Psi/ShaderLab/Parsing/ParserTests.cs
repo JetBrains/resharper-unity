@@ -15,6 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("PropertiesEmpty")]
         [TestCase("Properties")]
         [TestCase("PropertiesWithAttributes")]
+        [TestCase("PropertiesWithErrors")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

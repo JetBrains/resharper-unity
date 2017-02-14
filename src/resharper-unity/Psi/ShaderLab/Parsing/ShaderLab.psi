@@ -66,6 +66,8 @@
   generateWorkingPsi;
 }
 
+
+
 // Modifiers:
 //
 // `errorhandling` - includes following tokens in error handling. Checks next token is
@@ -93,6 +95,9 @@
 // `noInternalParseFunction` - stops the standard parse function being generated as parseXxxInernal
 //   when `customParseFunction` is specified. If `customParseFunction` isn't specified, this creates
 //   an error - a virtual method without an implementation.
+// `parsingContext` - push a new parsing context. This sets a "global" token follows set for the
+//   duration of the parsing context. Any nested nonterminals that implement `errorhandling` will
+//   also check this follow set when skipping tokens after an error
 // `stubBase="Foo"` - use `Foo` as the base class for the generated element instance. Overrides
 //   `psiStubsBaseClass` global option
 //
@@ -125,6 +130,153 @@
 // where the first part is the token type and the second is the name. Multiple parameters can be sepcified,
 // separated by commas. The captured element is used in the rules with an ampersand, and can have normal
 // role definitions, e.g. &id or &id<IDENTIFIER, Identifier>. A rule may also pass null 
+
+
+
+// The Tao of Error Handling
+//
+// * If a nonterminal fails to match the expected token, an exception is thrown
+//   * The remaining rules and subsequent tokens are unmatched and unconsumed
+// * The exception is rethrown by all parent nonterminals
+//   * The current work in progress elements are attached as it goes
+//   * Remaining rules and subsequent tokens are unmatched and unconsumed
+// * The first nonterminal that implements errorhandling:
+//   * Creates an error element from the exception text
+//   * Adds it as a child to the current work in progress element
+//   * Stops rethrowing
+//   * All remaining rules are not parsed
+//   * Skips tokens until one is in the valid follows set
+// * If a nonterminal implements errorhandling and successfully matches all of its rules, it must also
+//   be followed by a valid follow token, or an exception is thrown
+// * If no nonterminals implement errorhandling, the error element is not added to the tree
+// * If a nonterminal specifies a parsingContext option, it pushes a "global" follow set that any nested
+//   errorhandling nonterminal will also use when skipping tokens
+//   * Allows breaking the skip if there are no matching valid follows
+//
+// Custom error elements:
+// * Create an abstract errorElement nonterminal
+//   * It matches all tokens (make one optional so it also matches missing elements)
+//   * Use this as a rule to match if correct rules have failed
+//   * Options should include interfaceName="JB.RS.Psi.Tree.IErrorElement" and elementType="ERROR_ELEMENT"
+//   * This will create an abstract parse method - implement with TreeElementFactory.CreateErrorElement
+//     (no need to do any parsing - it's definitely an error)
+// * Abstract means it has a custom parse method
+//   * Implementation simply creates an error element and returns it
+//   * Does not advance or consume children, etc.
+//   * Means patterns in nonterminal definition are only useful as follow tokens
+// * Can create similar elements
+//   * Different set of tokens for different purposes, e.g. don't match closing braces
+//   * Again, only useful for follow tokens
+//   * Custom parse function can create error element, then skip all tokens until it finds a match,
+//     based on whatever rules are required. Skipping will add token as child to error element
+//
+// Guidance:
+//
+// * The root nonterminal should implement errorhandling, or the error element will not get attached to anything
+// * Split things up into smaller nested nonterminals that can be errorhandling
+// * If a token or nonterminal is to be used as a resync point, the nonterminal directly
+//   BEFORE it needs to implement errrorhandling
+// * Or, resync AFTER a token, not on it. E.g. don't resync on a closing paren, only on
+//   what follows a closing paren
+// * A private nonterminal can help with errorhandling without generating a node for the tree
+// * Use parsingContext when you have an errorhandling nested inside an errorhandling. The
+//   parsinngContext adds new follow rules to the inner errorhandling follow set. ParsingContext
+//   requires errorhandling somewhere, or no-one will ever check for the follow token override
+
+// CSharp parser
+//
+// Argument list is set to error handling. Doesn't resync on closing paren, but on following token
+// argumentListAux is LPAREN argumentList RPAREN, errorhandling
+// argumentList is custom parse function. Of course. Handles leading comma, trailing comma,
+//   cSharpArgument. Missing arguments (due to trailing/leading comma) are added as FakeArgument
+// cSharpArgument is custom function (and error handling)
+//   include ParseCSharpArgumentInternal + HandleErrorInCSharpArgument
+//   ParseCSharpArgumentInternal doesn't get called. Custom function calls error handler
+
+
+// Matches all tokens, but doesn't advance!
+abstract errorElement
+options {
+  interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
+  elementType="ERROR_ELEMENT";
+}
+:
+  IDENTIFIER?
+
+  | CG_PROGRAM
+  | CG_INCLUDE
+  | CG_END
+
+  | LPAREN
+  | RPAREN
+  | LBRACK
+  | RBRACK
+  | LBRACE
+  | RBRACE
+  | COMMA
+  | DOT
+  | EQUALS
+  | PLUS
+  | MULTIPLY
+
+  | SHADER_KEYWORD
+  | PROPERTIES_KEYWORD
+  | SUB_SHADER_KEYWORD
+  | FALLBACK_KEYWORD
+  | CUSTOM_EDITOR_KEYWORD
+
+  | COLOR_KEYWORD
+  | CUBE_KEYWORD
+  | FLOAT_KEYWORD
+  | INT_KEYWORD
+  | RANGE_KEYWORD
+  | TEXTURE_2D_KEYWORD
+  | TEXTURE_3D_KEYWORD
+  | VECTOR_KEYWORD
+
+  | BAD_CHARACTER
+;
+
+abstract errorElementWithoutRBrace
+options {
+  interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
+  elementType="ERROR_ELEMENT";
+}
+:
+  IDENTIFIER?
+
+  | CG_PROGRAM
+  | CG_INCLUDE
+  | CG_END
+
+  | LPAREN
+  | RPAREN
+  | LBRACK
+  | RBRACK
+  | LBRACE
+  | COMMA
+  | DOT
+  | EQUALS
+  | PLUS
+  | MULTIPLY
+
+  | SHADER_KEYWORD
+  | PROPERTIES_KEYWORD
+  | SUB_SHADER_KEYWORD
+  | FALLBACK_KEYWORD
+  | CUSTOM_EDITOR_KEYWORD
+
+  | COLOR_KEYWORD
+  | CUBE_KEYWORD
+  | FLOAT_KEYWORD
+  | INT_KEYWORD
+  | RANGE_KEYWORD
+  | TEXTURE_2D_KEYWORD
+  | TEXTURE_3D_KEYWORD
+  | VECTOR_KEYWORD
+
+  | BAD_CHARACTER
+;
 
 // Making command names their own tokens makes it easier to parse (especially
 // with regard to follow tokens and error messages), but makes it trickier to
@@ -172,7 +324,7 @@ errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
   shaderCommand<SHADER_LAB_COMMAND, Command>
 ;
 
-errorhandling shaderCommand
+shaderCommand
 :
   SHADER_KEYWORD<SHADER_LAB_KEYWORD, ShaderKeyword>
   shaderValue<SHADER_LAB_VALUE, Value>
@@ -186,7 +338,7 @@ errorhandling shaderCommand
 // https://alastaira.wordpress.com/2013/12/07/custom-unity-terrain-material-shaders/
 // e.g. Dependency "AddPassShader" = "Custom/ToonTerrainAddPass"
 // Looks like first string literal is a known value, called by the terrain shader
-errorhandling shaderValue
+shaderValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   LBRACE<LBRACE, LBrace>
@@ -200,32 +352,149 @@ errorhandling shaderValue
   RBRACE<RBRACE, RBrace>
 ;
 
+// Parsing context so nested errors will resync on following rules
+// Must also be errorhandling, or else no-one will check IsInFollow
 errorhandling propertiesCommand
+options {
+  parsingContext;
+}
 :
   PROPERTIES_KEYWORD<SHADER_LAB_KEYWORD, PropertiesKeyword>
   propertiesValue<SHADER_LAB_VALUE, Value>
 ;
 
-errorhandling propertiesValue
+propertiesValue
 :
   LBRACE<LBRACE, LBrace>
   propertyDeclaration<PROPERTY_DECLARATIONS, Declarations>*
   RBRACE<RBRACE, RBrace>
 ;
 
-// TODO: Attributes
-// I haven't seen an example of multiple attributes, but easy to support
 propertyDeclaration
 :
+  propertyHeader
+  EQUALS<EQUALS, Equals>
+  propertyValue<PROPERTY_VALUE, PropertValue>
+;
+
+// Error handling, to make propertyDeclaration::EQUALS a resync point
+// parsing context so that a missing RPAREN in propertyType/propertyParams doesn't overflow to end of file
+private errorhandling propertyHeader
+options {
+  parsingContext;
+}
+:
   attribute<ATTRIBUTE, Attributes>*
+  propertyName
+  propertyParameters
+;
+
+private propertyName
+:
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Name>
+  | errorElementWithoutRBrace
+;
+
+private propertyParameters
+:
   LPAREN<LPAREN, LParen>
   STRING_LITERAL<SHADER_LAB_NAME, DisplayName>
   COMMA<COMMA, Comma>
   propertyType<PROPERTY_TYPE, PropertyType>
   RPAREN<RPAREN, RParen>
-  EQUALS<EQUALS, Equals>
-  propertyValue<PROPERTY_VALUE, PropertValue>
+;
+
+interface propertyType
+:
+  simplePropertyType
+  | rangePropertyType
+;
+
+simplePropertyType
+:
+  COLOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | CUBE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | FLOAT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | INT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_2D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_3D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | VECTOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+;
+
+// Errorhandling to allow resync on RPAREN in propertyParameters
+errorhandling rangePropertyType
+:
+  RANGE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  LPAREN<LPAREN, LParen>
+  NUMERIC_LITERAL<MIN, Min>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<MAX, Max>
+  RPAREN<RPAREN, RParen>
+;
+
+interface propertyValue
+:
+  scalarPropertyValue
+  | vectorPropertyValue
+  | texturePropertyValue
+  | errorPropertyValue
+;
+
+scalarPropertyValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, Number>
+;
+
+vectorPropertyValue
+:
+  LPAREN<LPAREN, LParen>
+  vectorPropertyValues
+  RPAREN<RPAREN, RParen>
+;
+
+// Private and error handling to allow resync on vectorPropertyValue::RPAREN
+private errorhandling vectorPropertyValues
+:
+  NUMERIC_LITERAL<NUMBER, Numbers>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<NUMBER, Numbers>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<NUMBER, Numbers>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<NUMBER, Numbers>
+;
+
+texturePropertyValue
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  (
+    (
+      LBRACE<LBRACE, LBrace>
+      errorTexturePropertyBlockValues
+      RBRACE<RBRACE, RBrace>
+    )
+    | errorPropertyValue
+  )
+;
+
+// The spec says there shouldn't be anything here. Use a custom parse function to eat 
+// everything up to RBRACE
+private abstract errorTexturePropertyBlockValues
+options {
+  interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
+  elementType="ERROR_ELEMENT";
+}
+:
+  errorElementWithoutRBrace*
+;
+
+abstract errorPropertyValue
+options {
+  interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
+  elementType="ERROR_ELEMENT";
+}
+:
+  errorElementWithoutRBrace*
 ;
 
 attribute
@@ -289,64 +558,4 @@ stringAttributeParameterValue[shaderLabIdentifier id]
   // One or more, separated by whitespace
   &id<SHADER_LAB_IDENTIFIER, Identifiers>
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>*
-;
-
-interface propertyType
-:
-  simplePropertyType
-  | rangePropertyType
-;
-
-simplePropertyType
-:
-  COLOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | CUBE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | FLOAT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | INT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | TEXTURE_2D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | TEXTURE_3D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | VECTOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-;
-
-rangePropertyType
-:
-  RANGE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  LPAREN<LPAREN, LParen>
-  NUMERIC_LITERAL<MIN, Min>
-  COMMA<COMMA, Comma>
-  NUMERIC_LITERAL<MAX, Max>
-  RPAREN<RPAREN, RParen>
-;
-
-interface propertyValue
-:
-  scalarPropertyValue
-  | vectorPropertyValue
-  | texturePropertyValue
-;
-
-scalarPropertyValue
-:
-  NUMERIC_LITERAL<SHADER_LAB_VALUE, Number>
-;
-
-vectorPropertyValue
-:
-  LPAREN<LPAREN, LParen>
-  NUMERIC_LITERAL<NUMBER, Numbers>
-  COMMA<COMMA, Comma>
-  NUMERIC_LITERAL<NUMBER, Numbers>
-  COMMA<COMMA, Comma>
-  NUMERIC_LITERAL<NUMBER, Numbers>
-  COMMA<COMMA, Comma>
-  NUMERIC_LITERAL<NUMBER, Numbers>
-  RPAREN<RPAREN, RParen>
-;
-
-texturePropertyValue
-:
-  STRING_LITERAL<SHADER_LAB_NAME, Name>
-  LBRACE<LBRACE, LBrace>
-  // TODO: Consume error elements here
-  RBRACE<RBRACE, RBrace>
 ;

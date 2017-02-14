@@ -1,0 +1,445 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      IPropertiesCommand
+        ShaderLabTokenType+FixedTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
+        IPropertiesValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          IPropertyDeclaration
+            ErrorElement:Unexpected token
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            IRangePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_MissingOpenBrace)
+            ErrorElement:( expected
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_DisplayNameNotStringLiteral)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ErrorElement:"XXX" expected
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_DisplayNameMissing)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ErrorElement:"XXX" expected
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_PropertyTypeIncorrect)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ErrorElement:Property type expected
+              Identifier(type:IDENTIFIER, text:Thing)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_PropertyTypeMissing)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ErrorElement:Property type expected
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_PropertyTypeMissing2)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ErrorElement:, expected
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_TooManyParameters)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:INT_KEYWORD, text:Int)
+            ErrorElement:) expected
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Identifier(type:IDENTIFIER, text:SomethingElse)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RangeMissingOpenBrace)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            IRangePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ErrorElement:( expected
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ErrorElement:'=' expected
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RangeMissingFirstParameter)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            IRangePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ErrorElement:0.0 expected
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ErrorElement:'=' expected
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RangeFirstParameterIncorrectType)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            IRangePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ErrorElement:0.0 expected
+                Identifier(type:IDENTIFIER, text:Whatever)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ErrorElement:'=' expected
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RangeMissingSecondParameter)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            IRangePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ErrorElement:0.0 expected
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ErrorElement:'=' expected
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RangeSecondParameterIncorrectType)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            IRangePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ErrorElement:0.0 expected
+                Identifier(type:IDENTIFIER, text:Whatever)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ErrorElement:'=' expected
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RangeMissingClosingBrace)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            IRangePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              ErrorElement:')' expected
+            ErrorElement:) expected
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RangeMissingAllClosingBraces)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            IRangePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ErrorElement:) expected
+            ErrorElement:) expected
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_ColorWithWrongType)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:COLOR_KEYWORD, text:Color)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IVectorPropertyValue
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ErrorElement:0.0 expected
+                Identifier(type:IDENTIFIER, text:Thing)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_ColorWithMissingValue)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:COLOR_KEYWORD, text:Color)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IVectorPropertyValue
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ErrorElement:0.0 expected
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_ColorWithMissingOpenBrace)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:COLOR_KEYWORD, text:Color)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          IPropertyDeclaration
+            ErrorElement:Unexpected token
+            ErrorElement:( expected
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              Identifier(type:IDENTIFIER, text:_ColorWithMissingClosingBrace)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+FixedTokenElement(type:COLOR_KEYWORD, text:Color)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IVectorPropertyValue
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ErrorElement:')' expected
+                Identifier(type:IDENTIFIER, text:_ColorWithTooManyValues)
+                ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+FixedTokenElement(type:COLOR_KEYWORD, text:Color)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+          IPropertyDeclaration
+            ErrorElement:Unexpected token
+            ErrorElement:( expected
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IVectorPropertyValue
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ErrorElement:')' expected
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_MissingValue)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:INT_KEYWORD, text:Int)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            ErrorElement:Unexpected token
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_MissingEquals)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:INT_KEYWORD, text:Int)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ErrorElement:'=' expected
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              Identifier(type:IDENTIFIER, text:_TextureWithMissingName)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+FixedTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            ErrorElement:Unexpected token
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_TextureWithMissingBlock)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ErrorElement:Unexpected token
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_TextureWithExtraBlockValues)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ErrorElement:Unexpected token
+                Identifier(type:IDENTIFIER, text:Thing)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_TextureWithExtraBlockValues2)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ErrorElement:Unexpected token
+                Identifier(type:IDENTIFIER, text:Thing)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                Identifier(type:IDENTIFIER, text:Whatever)
+                ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                Identifier(type:IDENTIFIER, text:Stuff)
+                ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+
