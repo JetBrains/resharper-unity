@@ -2,6 +2,7 @@
 using System.Linq;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -16,6 +17,56 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             "Invoke", "InvokeRepeating", "CancelInvoke", "IsInvoking",
             "StartCoroutine", "StopCoroutine"
         };
+
+#if RIDER
+        public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
+        {
+            // If the old references are all attached to this element, 
+            if (ResolveUtil.CheckThatAllReferencesBelongToElement<UnityEventFunctionReference>(oldReferences, element))
+            {
+                return oldReferences;
+            }
+
+            var literal = element as ILiteralExpression;
+            if (literal == null || !literal.ConstantValue.IsString())
+                return ReferenceCollection.Empty;
+
+            if (!IsStringLiteralFirstArgument(literal))
+                return ReferenceCollection.Empty;
+
+            var invocationExpression = literal.GetContainingNode<IInvocationExpression>();
+            var invocationReference = invocationExpression?.Reference;
+            var invokedMethod = invocationReference?.Resolve().DeclaredElement as IMethod;
+            if (invokedMethod != null && DoesMethodReferenceFunction(invokedMethod))
+            {
+                var containingType = invokedMethod.GetContainingType();
+                if (containingType != null && Equals(containingType.GetClrName(), KnownTypes.MonoBehaviour))
+                {
+                    var targetType = invocationExpression.ExtensionQualifier?.GetExpressionType()
+                                         .ToIType()?.GetTypeElement()
+                                     ??
+                                     literal.GetContainingNode<IMethodDeclaration>()?
+                                         .DeclaredElement?.GetContainingType();
+
+                    if (targetType != null)
+                    {
+                        var reference = new UnityEventFunctionReference(targetType, literal);
+                        return new ReferenceCollection(reference);
+                    }
+                }
+            }
+
+            return ReferenceCollection.Empty;
+        }
+
+        private static bool IsStringLiteralFirstArgument(ILiteralExpression literal)
+        {
+            var argument = CSharpArgumentNavigator.GetByValue(literal as ICSharpExpression);
+            var argumentsOwner = CSharpArgumentsOwnerNavigator.GetByArgument(argument);
+            return argumentsOwner != null && argumentsOwner.ArgumentsEnumerable.FirstOrDefault() == argument;
+        }
+
+#else
 
         public IReference[] GetReferences(ITreeNode element, IReference[] oldReferences)
         {
@@ -56,6 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 
             return EmptyArray<IReference>.Instance;
         }
+#endif
 
         public bool HasReference(ITreeNode element, IReferenceNameContainer names)
         {

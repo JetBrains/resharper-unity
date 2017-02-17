@@ -248,7 +248,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                 var csharpConfiguration = configuration as ICSharpProjectConfiguration;
                 if (csharpConfiguration != null)
                 {
-#if WAVE08
+#if WAVE08 || RIDER
                     if (csharpConfiguration.LanguageVersion != CSharpLanguageVersion.Latest)
                         return false;
 #else

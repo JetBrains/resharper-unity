@@ -1,6 +1,6 @@
 ﻿// TODO: Sort out zoning properly so this Just Works when run in Rider
 
-#if !WAVE08
+#if !RIDER
 
 using System.Collections.Generic;
 using System.ComponentModel;

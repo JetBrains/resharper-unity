@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>1.5.1</version>
+    <version>1.5.1-rider</version>
     <authors>JetBrains slava.tutushkin</authors>
     <owners>JetBrains slava.tutushkin</owners>
     <summary>ReSharper support for Unity</summary>
@@ -28,7 +28,7 @@
 &#8226; String formatting assistance for debug log methods.
 </description>
 <releaseNotes>
-&#8226; ReSharper 2017.1 EAP1 support
+&#8226; Updated for Rider EAP17
 
 From 1.5.0:
 &#8226; ReSharper 2016.3 support (#80, #90)
@@ -78,7 +78,7 @@ From previous releases:
     <tags>resharper unity unity3d</tags>
   </metadata>
   <files>
-    <file src="bin\wave08\Release\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+    <file src="bin\rider\Release\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
     <file src="annotations\UnityEngine.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.xml" />
     <file src="annotations\UnityEditor.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.xml" />
   </files>
