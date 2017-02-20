@@ -359,6 +359,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Daemon\Stages\Analysis\ExplicitTagStringComparisonWarningTests.cs" />
+    <Compile Include="Daemon\Stages\Analysis\UnityEventFunctionAnalyzerTests.cs" />
     <Compile Include="Daemon\Stages\GutterMarks\GutterMarkTests.cs" />
     <Compile Include="Daemon\Stages\Color\UnityColorHiglightingTest.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressorTest.cs" />
@@ -373,6 +374,10 @@
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocTest.cs" />
     <Compile Include="Intentions\QuickFixes\ColorPickerTest.cs" />
     <Compile Include="Intentions\QuickFixes\ConvertToCompareTagQuickFixTest.cs" />
+    <Compile Include="Intentions\QuickFixes\CreateSerializedFieldFromUsage.cs" />
+    <Compile Include="Intentions\QuickFixes\InvalidReturnTypeFixTests.cs" />
+    <Compile Include="Intentions\QuickFixes\InvalidSignatureFixTests.cs" />
+    <Compile Include="Intentions\QuickFixes\InvalidStaticModifierQuickFixTests.cs" />
     <Compile Include="Psi\CodeAnnotations\CustomCodeAnnotationProviderTest.cs" />
     <Compile Include="Psi\Resolve\UnityEventFunctionReferenceTest.cs" />
     <Compile Include="TestEnvironment.cs" />

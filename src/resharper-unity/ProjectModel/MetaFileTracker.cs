@@ -89,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             private static bool ShouldHandleChange(ProjectItemChange change)
             {
-                return change.GetOldProject().IsUnityProject() && IsAsset(change) && !IsItemMetaFile(change);
+                return !(change.ProjectItem is IProject) && change.GetOldProject().IsUnityProject() && IsAsset(change) && !IsItemMetaFile(change);
             }
 
             private static bool IsAsset(ProjectItemChange change)
