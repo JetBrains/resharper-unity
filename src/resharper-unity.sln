@@ -22,6 +22,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity.wave08", "r
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.wave08", "..\test\src\tests.wave08.csproj", "{849CDA2E-35FC-49A8-A755-C3216B72BAB9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-unity.rider", "resharper-unity\resharper-unity.rider.csproj", "{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.rider", "..\test\src\tests.rider.csproj", "{31338488-0C08-43C2-884F-A38485E2FA2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +56,14 @@ Global
 		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31338488-0C08-43C2-884F-A38485E2FA2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31338488-0C08-43C2-884F-A38485E2FA2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31338488-0C08-43C2-884F-A38485E2FA2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31338488-0C08-43C2-884F-A38485E2FA2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
