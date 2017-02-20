@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -13,32 +14,33 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public class UnityEventFunction
     {
-        private readonly bool myIsStatic;
+        private static readonly IClrTypeName EnumeratorType = new ClrTypeName("System.Collections.IEnumerator");
+
         private readonly Version myMinimumVersion;
         private readonly Version myMaximumVersion;
-        private readonly bool myReturnTypeIsArray;
-        [NotNull] private readonly IClrTypeName myReturnType;
-        [NotNull] private readonly UnityEventFunctionParameter[] myParameters;
 
-        public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType,
-            bool returnTypeIsArray, bool isStatic, string description, bool undocumented,
-            Version minimumVersion, Version maximumVersion,
-            [NotNull] params UnityEventFunctionParameter[] parameters)
+        public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, bool isCoroutine, string description, bool undocumented, Version minimumVersion, Version maximumVersion, [NotNull] params UnityEventFunctionParameter[] parameters)
         {
             Description = description;
             Undocumented = undocumented;
-            myIsStatic = isStatic;
+            IsStatic = isStatic;
+            Coroutine = isCoroutine;
             myMinimumVersion = minimumVersion;
             myMaximumVersion = maximumVersion;
             Name = name;
             TypeName = typeName;
-            myReturnType = returnType;
-            myReturnTypeIsArray = returnTypeIsArray;
-            myParameters = parameters.Length > 0 ? parameters : EmptyArray<UnityEventFunctionParameter>.Instance;
+            ReturnType = returnType;
+            ReturnTypeIsArray = returnTypeIsArray;
+            Parameters = parameters.Length > 0 ? parameters : EmptyArray<UnityEventFunctionParameter>.Instance;
         }
 
         [NotNull] public string TypeName { get; }
         [NotNull] public string Name { get; }
+        [NotNull] public UnityEventFunctionParameter[] Parameters { get; }
+        [NotNull] public IClrTypeName ReturnType { get; }
+        public bool ReturnTypeIsArray { get; }
+        public bool Coroutine { get; }
+        public bool IsStatic { get; }
         [CanBeNull] public string Description { get; }
         public bool Undocumented { get; }
 
@@ -48,18 +50,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var builder = new StringBuilder(128);
 
             builder.Append("private ");
-            if (myIsStatic) builder.Append("static ");
-            builder.Append(myReturnType.FullName);
-            if (myReturnTypeIsArray) builder.Append("[]");
+            if (IsStatic) builder.Append("static ");
+            builder.Append(ReturnType.FullName);
+            if (ReturnTypeIsArray) builder.Append("[]");
             builder.Append(" ");
             builder.Append(Name);
             builder.Append("(");
 
-            for (var i = 0; i < myParameters.Length; i++)
+            for (var i = 0; i < Parameters.Length; i++)
             {
                 if (i > 0) builder.Append(",");
 
-                var parameter = myParameters[i];
+                var parameter = Parameters[i];
                 builder.Append(parameter.ClrTypeName.FullName);
                 if (parameter.IsArray) builder.Append("[]");
                 builder.Append(' ');
@@ -74,29 +76,59 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return declaration;
         }
 
-        public bool Match([NotNull] IMethod method)
+        public EventFunctionMatch Match([NotNull] IMethod method)
         {
-            if (method.ShortName != Name) return false;
-            if (method.IsStatic != myIsStatic) return false;
+            if (method.ShortName != Name) return EventFunctionMatch.NoMatch;
 
-            if (!DoTypesMatch(method.ReturnType, myReturnType, myReturnTypeIsArray))
-                return false;
+            var match = EventFunctionMatch.MatchingName;
+            if (method.IsStatic == IsStatic)
+                match |= EventFunctionMatch.MatchingStaticModifier;
 
-            if (method.Parameters.Count != myParameters.Length) return false;
-
-            for (var i = 0; i < myParameters.Length; ++i)
+            var matchingSignature = false;
+            if (method.Parameters.Count == Parameters.Length)
             {
-                if (!DoTypesMatch(method.Parameters[i].Type, myParameters[i].ClrTypeName, myParameters[i].IsArray))
-                    return false;
+                matchingSignature = true;
+                for (var i = 0; i < Parameters.Length && matchingSignature; i++)
+                {
+                    if (!DoTypesMatch(method.Parameters[i].Type, Parameters[i].ClrTypeName,
+                        Parameters[i].IsArray))
+                    {
+                        matchingSignature = false;
+                    }
+                }
+            }
+            else
+            {
+                // TODO: This doesn't really handle optional parameters very well
+                // It's fine for the current usage (a single parameter, either there or not)
+                // but won't work for anything more interesting. Perhaps optional parameters
+                // should be modeled as overloads?
+                var optionalParameters = 0;
+                foreach (var parameter in Parameters)
+                {
+                    if (parameter.IsOptional)
+                        optionalParameters++;
+                }
+                if (method.Parameters.Count + optionalParameters == Parameters.Length)
+                    matchingSignature = true;
             }
 
-            return true;
+            if (matchingSignature)
+                match |= EventFunctionMatch.MatchingSignature;
+
+            if (DoTypesMatch(method.ReturnType, ReturnType, ReturnTypeIsArray)
+                || (Coroutine && DoTypesMatch(method.ReturnType, EnumeratorType, false)))
+            {
+                match |= EventFunctionMatch.MatchingReturnType;
+            }
+
+            return match;
         }
 
         [CanBeNull]
         public UnityEventFunctionParameter GetParameter(string name)
         {
-            return myParameters.FirstOrDefault(p => p.Name == name);
+            return Parameters.FirstOrDefault(p => p.Name == name);
         }
 
         public bool SupportsVersion(Version unityVersion)

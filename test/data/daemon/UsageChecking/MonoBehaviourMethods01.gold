@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using UnityEngine;
 
 public class A : MonoBehaviour
 {
@@ -19,9 +21,54 @@ public class A : MonoBehaviour
   private void OnDisable()
   {
   }
+
+  // Coroutine - should be used
+  public IEnumerator Start()
+  {
+      return null;
+  }
+
+  // Should be unused - invalid parameters!
+  public void |OnAudioFilterRead|(2)|()|(3)
+  {
+  }
+
+  // Should be unused - invalid return type!
+  public |bool|(4) |FixedUpdate|(5)()
+  {
+      return true;
+  }
+
+  // Should be unused - invalid static modifier!
+  public |static|(6) void |LateUpdate|(7)()
+  {
+  }
+
+  // Should mark both parameters as in use
+  public void OnRenderImage(RenderTexture src, RenderTexture dest)
+  {
+  }
+
+  // Should mark collisionInfo as unused
+  public void OnCollisionExit(Collision |collisionInfo|(8))
+  {
+  }
+
+  // Should mark coll as in use
+  public void OnCollisionExit2D(Collision2D coll)
+  {
+      Console.WriteLine(coll);
+  }
 }
 
 ---------------------------------------------------------
 (0): ReSharper Dead Code: Method 'UnusedMethod' is never used
 (1): ReSharper Dead Code: Method 'UnusedPrivateMethod' is never used
+(2): ReSharper Dead Code: Method 'OnAudioFilterRead' is never used
+(3): ReSharper Warning: Incorrect signature for Unity event function
+(4): ReSharper Warning: Incorrect return type for Unity event function
+(5): ReSharper Dead Code: Method 'FixedUpdate' is never used
+(6): ReSharper Warning: Incorrect static modifier for Unity event function
+(7): ReSharper Dead Code: Method 'LateUpdate' is never used
+(8): ReSharper Dead Code: Parameter 'collisionInfo' is never used
 

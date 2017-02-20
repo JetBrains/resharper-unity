@@ -14,11 +14,14 @@ namespace ApiParser
         private static readonly IList<Tuple<string, Version>> Docs = new List<Tuple<string, Version>>
         {
             // These folders need to live in the runtime folder
-            // Can't redistribute, sorry
+            // Can't redistribute, sorry. See README.md
+            Tuple.Create("Documentation-5.0.4f1", new Version(5, 0)),
+            Tuple.Create("Documentation-5.1.5f1", new Version(5, 1)),
             Tuple.Create("Documentation-5.2.3f1", new Version(5, 2)),
             Tuple.Create("Documentation-5.3.7f1", new Version(5, 3)),
             Tuple.Create("Documentation-5.4.3f1", new Version(5, 4)),
-            Tuple.Create("Documentation-5.5.0f3", new Version(5, 5))
+            Tuple.Create("Documentation-5.5.1f1", new Version(5, 5)),
+            Tuple.Create("Documentation-5.6.0b6", new Version(5, 6))
         };
 
         public static void Main(string[] args)
@@ -50,6 +53,8 @@ namespace ApiParser
                 parser.ParseFolder(doc.Item1, doc.Item2);
                 AddUndocumentApis(unityApi, doc.Item2);
             }
+            AddUndocumentedOptionalParameters(unityApi);
+            AddUndocumentedCoroutines(unityApi);
 
             using (var writer = new XmlTextWriter(@"api.xml", Encoding.UTF8) {Formatting = Formatting.Indented})
             {
@@ -60,26 +65,87 @@ namespace ApiParser
             // Console.ReadLine();
         }
 
+        private static void AddUndocumentedCoroutines(UnityApi unityApi)
+        {
+            var type = unityApi.FindType("MonoBehaviour");
+            if (type != null)
+            {
+                // Not documented directly, but shown in examples
+                // https://docs.unity3d.com/ScriptReference/MonoBehaviour.StartCoroutine.html
+                // https://docs.unity3d.com/ScriptReference/WaitForEndOfFrame.html
+                SetIsCoroutine(type, "Start");
+
+                // Not documented as co-routines, but the non-2D versions are
+                SetIsCoroutine(type, "OnCollisionEnter2D");
+                SetIsCoroutine(type, "OnCollisionExit2D");
+                SetIsCoroutine(type, "OnCollisionStay2D");
+                SetIsCoroutine(type, "OnTriggerEnter2D");
+                SetIsCoroutine(type, "OnTriggerExit2D");
+                SetIsCoroutine(type, "OnTriggerStay2D");
+            }
+        }
+
+        private static void SetIsCoroutine(UnityApiType type, string functionName)
+        {
+            foreach (var function in type.FindEventFunctions(functionName))
+            {
+                function.SetIsCoroutine();
+            }
+        }
+
+        private static void AddUndocumentedOptionalParameters(UnityApi unityApi)
+        {
+            // TODO: Would this be better to mark the parameter as optional?
+            // Then add an inspection to see if the optional parameter is used in the body of the method
+            var type = unityApi.FindType("MonoBehaviour");
+            if (type != null)
+            {
+                // Not formally documented, but described in the text
+                const string justification = "Removing collision parameter avoids unnecessary calculations";
+                MakeParameterOptional(type, "OnCollisionEnter", "collision", justification);
+                MakeParameterOptional(type, "OnCollisionEnter2D", "coll", justification);
+                MakeParameterOptional(type, "OnCollisionExit", "collisionInfo", justification);
+                MakeParameterOptional(type, "OnCollisionExit2D", "coll", justification);
+                MakeParameterOptional(type, "OnCollisionStay", "collisionInfo", justification);
+                MakeParameterOptional(type, "OnCollisionStay2D", "coll", justification);
+            }
+        }
+
+        private static void MakeParameterOptional(UnityApiType type, string functionName, string parameterName, string justification)
+        {
+            foreach (var function in type.FindEventFunctions(functionName))
+                function.MakeParameterOptional(parameterName, justification);
+        }
+
         private static void AddUndocumentApis(UnityApi unityApi, Version apiVersion)
         {
             // From AssetPostprocessingInternal
             var type = unityApi.FindType("AssetPostprocessor");
+            if (type != null)
+            {
+                var eventFunction = new UnityApiEventFunction("OnPreprocessAssembly",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
+                eventFunction.AddParameter("pathName", ApiType.String);
+                type.MergeEventFunction(eventFunction, apiVersion);
 
-            var eventFunction = new UnityApiEventFunction("OnPreprocessAssembly", false, ApiType.Void, apiVersion, undocumented: true);
-            eventFunction.AddParameter("pathName", ApiType.String);
-            type.MergeEventFunction(eventFunction, apiVersion);
+                eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles",
+                    true, false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
 
-            eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles", true, ApiType.Void, apiVersion, undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
-
-            // Technically, return type is optional
-            eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles", true, ApiType.Bool, apiVersion,  undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
+                // Technically, return type is optional
+                eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles",
+                    true, false, ApiType.Bool, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+            }
 
             // From AssetModificationProcessorInternal
             type = unityApi.FindType("AssetModificationProcessor");
-            eventFunction = new UnityApiEventFunction("OnStatusUpdated", true, ApiType.Void, apiVersion, undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
+            if (type != null)
+            {
+                var eventFunction = new UnityApiEventFunction("OnStatusUpdated", true,
+                    false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+            }
 
             // ScriptableObject
             // From Shawn White @ Unity (https://github.com/JetBrains/resharper-unity/issues/79#issuecomment-266727851):
@@ -97,15 +163,18 @@ namespace ApiParser
             // ScriptableObjects. Off the top of my head this includes, Awake, OnEnable, OnDisable, OnDestroy,
             // OnValidate, and Reset, but there could be more.
             type = unityApi.FindType("ScriptableObject");
+            if (type != null)
+            {
+                var eventFunction = new UnityApiEventFunction("OnValidate", false, false, ApiType.Void, apiVersion,
+                    description:
+                    "This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).",
+                    undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
 
-            eventFunction = new UnityApiEventFunction("OnValidate", false, ApiType.Void, apiVersion,
-                description: "This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).",
-                undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
-
-            eventFunction = new UnityApiEventFunction("Reset", false, ApiType.Void, apiVersion,
-                description: "Reset to default values.", undocumented: true);
-            type.MergeEventFunction(eventFunction, apiVersion);
+                eventFunction = new UnityApiEventFunction("Reset", false, false, ApiType.Void, apiVersion,
+                    description: "Reset to default values.", undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+            }
         }
     }
 }

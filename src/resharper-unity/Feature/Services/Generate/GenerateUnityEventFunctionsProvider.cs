@@ -30,8 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 
             var unityVersion = myUnityVersion.GetActualVersion(context.Project);
             var unityTypes = myUnityApi.GetBaseUnityTypes(typeElement, unityVersion).ToArray();
-            var eventFunctions = unityTypes.SelectMany(h => h.GetEventFunctions(unityVersion))
-                .Where(f => !typeElement.Methods.Any(m => f.Match(m))).ToArray();
+            var eventFunctions = unityTypes.SelectMany(t => t.GetEventFunctions(unityVersion))
+                .Where(f => typeElement.Methods.All(m => f.Match(m) == EventFunctionMatch.NoMatch)).ToArray();
 
             var classDeclaration = context.ClassDeclaration;
             var factory = CSharpElementFactory.GetInstance(classDeclaration);

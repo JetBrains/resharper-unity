@@ -1,0 +1,8 @@
+﻿using UnityEditor;
+
+public class Foo : UnityEditor.AssetModificationProcessor
+{
+    public static void On{caret}StatusUpdated()
+    {
+    }
+}

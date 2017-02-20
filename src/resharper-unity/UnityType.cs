@@ -37,7 +37,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool HasEventFunction([NotNull] IMethod method, Version unityVersion)
         {
-            return myEventFunctions.Any(f => f.SupportsVersion(unityVersion) && f.Match(method));
+            foreach (var function in myEventFunctions)
+            {
+                if (function.SupportsVersion(unityVersion) && function.Match(method) != EventFunctionMatch.NoMatch)
+                    return true;
+            }
+            return false;
         }
 
         public bool SupportsVersion(Version unityVersion)

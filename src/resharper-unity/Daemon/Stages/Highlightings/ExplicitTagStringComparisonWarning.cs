@@ -35,7 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             return Expression.GetHighlightingRange();
         }
 
-
         public string ToolTip => MESSAGE;
         public string ErrorStripeToolTip => ToolTip;
         public IEqualityExpression Expression { get; }

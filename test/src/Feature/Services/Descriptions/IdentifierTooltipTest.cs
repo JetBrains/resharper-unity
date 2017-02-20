@@ -8,6 +8,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
         protected override string RelativeTestDataPath => @"daemon\IdentifierTooltip";
 
         [Test] public void EventFunction01() { DoNamedTest(); }
+        [Test] public void EventFunction02() { DoNamedTest(); }
         [Test] public void EventFunctionParameter01() { DoNamedTest(); }
+        [Test] public void EventFunctionParameter02() { DoNamedTest(); }
     }
 }

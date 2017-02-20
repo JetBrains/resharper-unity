@@ -87,6 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var name = node.Attributes?["name"].Value ?? "Invalid";
             var description = node.Attributes?["description"]?.Value;
             var isStatic = bool.Parse(node.Attributes?["static"]?.Value ?? "false");
+            var isCoroutine = bool.Parse(node.Attributes?["coroutine"]?.Value ?? "false");
             var isUndocumented = bool.Parse(node.Attributes?["undocumented"]?.Value ?? "false");
 
             var minimumVersion = ParseVersionAttribute(node, "minimumVersion", "1.0");
@@ -110,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 returnType = GetClrTypeName(type);
             }
 
-            return new UnityEventFunction(name, typeName, returnType, returnsArray, isStatic, description, isUndocumented, minimumVersion, maximumVersion, parameters);
+            return new UnityEventFunction(name, typeName, returnType, returnsArray, isStatic, isCoroutine, description, isUndocumented, minimumVersion, maximumVersion, parameters);
         }
 
         private UnityEventFunctionParameter LoadParameter([NotNull] XmlNode node, int i)
@@ -119,14 +120,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var name = node.Attributes?["name"].Value;
             var description = node.Attributes?["description"]?.Value;
             var isArray = bool.Parse(node.Attributes?["array"].Value ?? "false");
+            var isOptional = bool.Parse(node.Attributes?["optional"]?.Value ?? "false");
+            var justification = node.Attributes?["justification"]?.Value;
 
             if (type == null || name == null)
             {
-                return new UnityEventFunctionParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, description, isArray);
+                return new UnityEventFunctionParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, description, isArray, isOptional, justification);
             }
 
             var parameterType = GetClrTypeName(type);
-            return new UnityEventFunctionParameter(name, parameterType, description, isArray);
+            return new UnityEventFunctionParameter(name, parameterType, description, isArray, isOptional, justification);
         }
     }
 

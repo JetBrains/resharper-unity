@@ -394,6 +394,7 @@
     <Compile Include="Help\ShowUnityHelp.cs" />
     <Compile Include="ProjectExtensions.cs" />
     <Compile Include="ProjectModel\Caches\UnityProjectFileCacheProvider.cs" />
+    <Compile Include="Psi\CodeAnnotations\CustomCodeAnnotationProvider.cs" />
     <Compile Include="Psi\Colors\ColorPropertyPsiIconManagerExtension.cs" />
     <Compile Include="Psi\Colors\UnityColorReference.cs" />
     <Compile Include="Psi\Colors\UnityColorTypes.cs" />

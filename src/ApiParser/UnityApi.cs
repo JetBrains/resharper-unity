@@ -73,7 +73,10 @@ namespace ApiParser
         {
             var type = myTypes.SingleOrDefault(t => t.Name == name);
             if (type == null)
-                throw new InvalidOperationException($"Cannot find type {name}");
+            {
+                Console.WriteLine($"Cannot find type {name}");
+                return null;
+            }
             return type;
         }
     }
@@ -121,6 +124,11 @@ namespace ApiParser
             myEventFunctions.Add(newFunction);
         }
 
+        public IEnumerable<UnityApiEventFunction> FindEventFunctions(string name)
+        {
+            return myEventFunctions.Where(f => f.Name == name);
+        }
+
         public void ExportTo(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("type");
@@ -133,22 +141,31 @@ namespace ApiParser
                 eventFunction.ExportTo(xmlWriter);
             xmlWriter.WriteEndElement();
         }
+
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(Namespace))
+                return Name;
+            return Namespace + "." + Name;
+        }
     }
 
     public class UnityApiEventFunction : HasVersionRange
     {
         private readonly bool myIsStatic;
+        private bool myIsCoroutine;
         [CanBeNull] private string myDescription;
         [CanBeNull] private readonly string myDocPath;
         private readonly bool myUndocumented;
         private readonly ApiType myReturnType;
         private readonly IList<UnityApiParameter> myParameters;
 
-        public UnityApiEventFunction(string name, bool isStatic, ApiType returnType, Version apiVersion,
-            string description = null, string docPath = null, bool undocumented = false)
+        public UnityApiEventFunction(string name, bool isStatic, bool isCoroutine, ApiType returnType,
+            Version apiVersion, string description = null, string docPath = null, bool undocumented = false)
         {
             Name = name;
             myIsStatic = isStatic;
+            myIsCoroutine = isCoroutine;
             myDescription = description;
             myDocPath = docPath;
             myUndocumented = undocumented;
@@ -185,11 +202,27 @@ namespace ApiParser
             }
         }
 
+        public void SetIsCoroutine()
+        {
+            myIsCoroutine = true;
+        }
+
+        public void MakeParameterOptional(string name, string justification)
+        {
+            if (myParameters.Count != 1)
+                throw new InvalidOperationException("Cannot handle multiple optional parameters");
+            if (myParameters[0].Name != name)
+                throw new InvalidOperationException($"Cannot find parameter {name}");
+            myParameters[0].SetOptional(justification);
+        }
+
         public void ExportTo(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("message");
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("static", myIsStatic.ToString());
+            if (myIsCoroutine)
+                xmlWriter.WriteAttributeString("coroutine", "True");
             ExportVersionRange(xmlWriter);
             if (myUndocumented)
                 xmlWriter.WriteAttributeString("undocumented", "True");
@@ -230,15 +263,23 @@ namespace ApiParser
 
     public class UnityApiParameter
     {
-        private string myName;
         private readonly ApiType myType;
         private string myDescription;
+        private string myJustification;
 
         public UnityApiParameter(string name, ApiType type, string description)
         {
-            myName = name;
+            Name = name;
             myType = type;
             myDescription = description;
+            myJustification = string.Empty;
+        }
+
+        public string Name { get; private set; }
+
+        public void SetOptional(string justification)
+        {
+            myJustification = justification;
         }
 
         public void ExportTo(XmlTextWriter xmlWriter)
@@ -246,7 +287,12 @@ namespace ApiParser
             xmlWriter.WriteStartElement("parameter");
             xmlWriter.WriteAttributeString("type", myType.FullName);
             xmlWriter.WriteAttributeString("array", myType.IsArray.ToString());
-            xmlWriter.WriteAttributeString("name", myName);
+            xmlWriter.WriteAttributeString("name", Name);
+            if (!string.IsNullOrEmpty(myJustification))
+            {
+                xmlWriter.WriteAttributeString("optional", "True");
+                xmlWriter.WriteAttributeString("justification", myJustification);
+            }
             if (!string.IsNullOrEmpty(myDescription))
                 xmlWriter.WriteAttributeString("description", myDescription);
             xmlWriter.WriteEndElement();
@@ -254,9 +300,9 @@ namespace ApiParser
 
         public void Update(UnityApiParameter newParameter)
         {
-            if (myName != newParameter.myName && !string.IsNullOrEmpty(newParameter.myName))
+            if (Name != newParameter.Name && !string.IsNullOrEmpty(newParameter.Name))
             {
-                myName = newParameter.myName;
+                Name = newParameter.Name;
             }
 
             if (myDescription != newParameter.myDescription && !string.IsNullOrEmpty(newParameter.myDescription))
@@ -265,7 +311,7 @@ namespace ApiParser
             }
 
             if (myType.FullName != newParameter.myType.FullName)
-                throw new InvalidOperationException($"Parameter type differences for parameter {myName}! {myType.FullName} {newParameter.myType.FullName}");
+                throw new InvalidOperationException($"Parameter type differences for parameter {Name}! {myType.FullName} {newParameter.myType.FullName}");
         }
 
         public override string ToString()

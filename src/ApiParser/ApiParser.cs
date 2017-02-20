@@ -10,15 +10,17 @@ namespace ApiParser
 {
     public class ApiParser
     {
-        private static readonly Regex NsRegex = new Regex(@"^(?<type>class|struct) in\W*(?<namespace>\w+(?:\.\w+)*)$");
+        // "Namespace:" is only used in 5.0
+        private static readonly Regex NsRegex = new Regex(@"^((?<type>class|struct) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)$");
         private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$");
+        private static readonly Regex CoroutineRegex = new Regex(@"(?:can be|as) a co-routine", RegexOptions.IgnoreCase);
 
-        private readonly UnityApi api;
+        private readonly UnityApi myApi;
         private readonly string myScriptReferenceRelativePath;
 
         public ApiParser(UnityApi api, string scriptReferenceRelativePath)
         {
-            this.api = api;
+            myApi = api;
             myScriptReferenceRelativePath = scriptReferenceRelativePath;
         }
 
@@ -26,7 +28,7 @@ namespace ApiParser
 
         public void ExportTo(XmlTextWriter writer)
         {
-            api.ExportTo(writer);
+            myApi.ExportTo(writer);
         }
 
         public void ParseFolder(string path, Version apiVersion)
@@ -77,7 +79,7 @@ namespace ApiParser
             var section = document?.SelectOne(@"//div.content/div.section");
             var header = section?.SelectOne(@"div.mb20.clear");
             var name = header?.SelectOne(@"h1.heading.inherit"); // Type or type member name
-            var ns = header?.SelectOne(@"p");   // "class in {ns}"
+            var ns = header?.SelectOne(@"p");   // "class in {ns}"/"struct in {ns}"/"Namespace: {ns}"
 
             // Only interested in types at this point
             if (name == null || ns == null) return;
@@ -90,7 +92,10 @@ namespace ApiParser
             var clsType = match.Groups["type"].Value;
             var nsName = match.Groups["namespace"].Value;
 
-            var unityApiType = api.AddType(nsName, name.Text, clsType, filename, apiVersion);
+            if (string.IsNullOrEmpty(clsType)) clsType = "class";
+            if (string.IsNullOrEmpty(nsName)) return;
+
+            var unityApiType = myApi.AddType(nsName, name.Text, clsType, filename, apiVersion);
 
             foreach (var message in messages)
             {
@@ -119,6 +124,8 @@ namespace ApiParser
 
             if (signature == null) return null;
 
+            var isCoroutine = CoroutineRegex.IsMatch(details.Text);
+
             var messageName = link.Text;
             var returnType = ApiType.Void;
             string[] argumentNames = null;
@@ -132,7 +139,8 @@ namespace ApiParser
             }
 
             var docPath = Path.Combine(myScriptReferenceRelativePath, detailsPath);
-            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null, returnType, apiVersion, desc.Text, docPath, false);
+            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null, isCoroutine,
+                returnType, apiVersion, desc.Text, docPath);
 
             ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames);
 
@@ -179,8 +187,8 @@ namespace ApiParser
             var i = 0;
             foreach (var argument in arguments)
             {
-                argument.Name = parameters[i]?[1]?.Text ?? argument.Name;
-                argument.Description = parameters[i]?[3]?.Text ?? argument.Description;
+                argument.Name = parameters[i].SelectOne(@"td.name.lbl")?.Text ?? argument.Name;
+                argument.Description = parameters[i].SelectOne(@"td.desc")?.Text ?? argument.Description;
                 ++i;
             }
         }

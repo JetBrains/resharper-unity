@@ -31,8 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher
 
         protected void AddGutterMark(T element, DocumentRange documentRange, string tooltip, IHighlightingConsumer consumer)
         {
-            var highlighting = new UnityMarkOnGutter(element, documentRange, tooltip);
-
+            var highlighting = new UnityMarkOnGutter(Api, element, documentRange, tooltip);
             consumer.AddHighlighting(highlighting, documentRange);
         }
     }
