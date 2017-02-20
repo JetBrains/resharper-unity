@@ -78,5 +78,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     public const int VECTOR_KEYWORD_NODE_TYPE_INDEX = 1027;
     public static readonly TokenNodeType VECTOR_KEYWORD = new KeywordTokenNodeType("VECTOR_KEYWORD", VECTOR_KEYWORD_NODE_TYPE_INDEX, representation: "Vector");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1028;  }
+    //Keywords
+    public const int OFF_KEYWORD_NODE_TYPE_INDEX = 1028;
+    public static readonly TokenNodeType OFF_KEYWORD = new KeywordTokenNodeType("OFF_KEYWORD", OFF_KEYWORD_NODE_TYPE_INDEX, representation: "Off");
+
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1029;  }
 }

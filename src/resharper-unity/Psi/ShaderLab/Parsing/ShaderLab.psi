@@ -346,7 +346,7 @@ shaderValue
   // SubShaders/Category
   // I think fallback, customEditor and dependency can be in any 
   // Accept multiple instances then add inspection to only allow one?
-  // fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
+  fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
   // customEditorComamnd<CUSTOM_EDITOR_COMMAND, CustomEditorCommand>?
   // dependency<DEPENDENCY_COMMAND, Dependencies>*
   RBRACE<RBRACE, RBrace>
@@ -558,4 +558,17 @@ stringAttributeParameterValue[shaderLabIdentifier id]
   // One or more, separated by whitespace
   &id<SHADER_LAB_IDENTIFIER, Identifiers>
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>*
+;
+
+fallbackCommand
+:
+  FALLBACK_KEYWORD<SHADER_LAB_KEYWORD, FallbackKeyword>
+  fallbackValue<SHADER_LAB_VALUE, Value>
+;
+
+fallbackValue
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  | OFF_KEYWORD<SHADER_LAB_KEYWORD, OffKeyword>
+  | errorElementWithoutRBrace
 ;

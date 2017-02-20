@@ -22,7 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 RANGE_KEYWORD,
                 TEXTURE_2D_KEYWORD,
                 TEXTURE_3D_KEYWORD,
-                VECTOR_KEYWORD
+                VECTOR_KEYWORD,
+
+                OFF_KEYWORD
               );
         }
     }

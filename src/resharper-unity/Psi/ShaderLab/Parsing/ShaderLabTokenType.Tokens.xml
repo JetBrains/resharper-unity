@@ -63,4 +63,8 @@
     <Keyword name="TEXTURE_3D_KEYWORD" representation="3D" />
     <Keyword name="VECTOR_KEYWORD" representation="Vector" />
   </PropertyTypeKeywords>
+
+  <Keywords NodeType="KeywordTokenNodeType">
+    <Keyword name="OFF_KEYWORD" representation="Off" />
+  </Keywords>
 </ShaderLabTokens>

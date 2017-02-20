@@ -1,0 +1,13 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      IFallbackCommand
+        ShaderLabTokenType+FixedTokenElement(type:FALLBACK_KEYWORD, text:Fallback)
+        IFallbackValue
+          ErrorElement:Unexpected token
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+
