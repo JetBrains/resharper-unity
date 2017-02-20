@@ -21,6 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("FallbackNamed")]
         [TestCase("FallbackNone")]
         [TestCase("FallbackError")]
+
+        [TestCase("CustomEditor")]
+        [TestCase("CustomEditorError")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

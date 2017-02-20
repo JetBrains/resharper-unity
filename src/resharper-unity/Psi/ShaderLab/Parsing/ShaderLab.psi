@@ -317,6 +317,8 @@ options {
   | TEXTURE_2D_KEYWORD
   | TEXTURE_3D_KEYWORD
   | VECTOR_KEYWORD
+
+  | OFF_KEYWORD
 ;
 
 errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
@@ -347,7 +349,7 @@ shaderValue
   // I think fallback, customEditor and dependency can be in any 
   // Accept multiple instances then add inspection to only allow one?
   fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
-  // customEditorComamnd<CUSTOM_EDITOR_COMMAND, CustomEditorCommand>?
+  customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommand>?
   // dependency<DEPENDENCY_COMMAND, Dependencies>*
   RBRACE<RBRACE, RBrace>
 ;
@@ -560,6 +562,7 @@ stringAttributeParameterValue[shaderLabIdentifier id]
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>*
 ;
 
+// TODO: Verify error handling
 fallbackCommand
 :
   FALLBACK_KEYWORD<SHADER_LAB_KEYWORD, FallbackKeyword>
@@ -570,5 +573,17 @@ fallbackValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   | OFF_KEYWORD<SHADER_LAB_KEYWORD, OffKeyword>
+  | errorElementWithoutRBrace   // TODO: Will this match `CustomEditor`?
+;
+
+customEditorCommand
+:
+  CUSTOM_EDITOR_KEYWORD<SHADER_LAB_KEYWORD, CustomEditorKeyword>
+  customEditorValue<SHADER_LAB_VALUE, Value>
+;
+
+customEditorValue
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
   | errorElementWithoutRBrace
 ;
