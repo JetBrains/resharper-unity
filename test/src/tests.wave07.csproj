@@ -367,6 +367,7 @@
     <Compile Include="Feature\Services\Generate\EventFunctionGeneratorTest.cs" />
     <Compile Include="Feature\Services\QuickDoc\QuickDocTestBase.cs" />
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocTest.cs" />
+    <Compile Include="Intentions\QuickFixes\CreateSerializedFieldFromUsage.cs" />
     <Compile Include="Intentions\QuickFixes\InvalidReturnTypeFixTests.cs" />
     <Compile Include="Intentions\QuickFixes\InvalidSignatureFixTests.cs" />
     <Compile Include="Intentions\QuickFixes\InvalidStaticModifierQuickFixTests.cs" />
