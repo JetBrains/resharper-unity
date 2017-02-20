@@ -6,11 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         public static bool IsFromUnityProject(this IDeclaredElement element)
         {
-            return element.GetSourceFiles().Any(sf =>
-            {
-                var project = sf.GetProject();
-                return project != null && project.IsUnityProject();
-            });
+            return element.GetSourceFiles().Any(sf => sf.GetProject().IsUnityProject());
         }
     }
 }

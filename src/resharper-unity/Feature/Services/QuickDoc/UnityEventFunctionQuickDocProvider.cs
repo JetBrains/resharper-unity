@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
         public bool CanNavigate(IDataContext context)
         {
             var project = context.GetData(ProjectModelDataConstants.PROJECT);
-            if (project == null || !project.IsUnityProject()) return false;
+            if (!project.IsUnityProject()) return false;
 
             var declaredElements = context.GetData(PsiDataConstants.DECLARED_ELEMENTS);
             return declaredElements != null && declaredElements.Any(e => IsEventFunction(e) || IsParameterForEventFunction(e as IParameter));
