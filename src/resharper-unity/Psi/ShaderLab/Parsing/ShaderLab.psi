@@ -350,7 +350,7 @@ shaderValue
   // Accept multiple instances then add inspection to only allow one?
   fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
   customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommand>?
-  // dependency<DEPENDENCY_COMMAND, Dependencies>*
+  dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>*
   RBRACE<RBRACE, RBrace>
 ;
 
@@ -576,6 +576,7 @@ fallbackValue
   | errorElementWithoutRBrace   // TODO: Will this match `CustomEditor`?
 ;
 
+// TODO: Verify error handling
 customEditorCommand
 :
   CUSTOM_EDITOR_KEYWORD<SHADER_LAB_KEYWORD, CustomEditorKeyword>
@@ -586,4 +587,17 @@ customEditorValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   | errorElementWithoutRBrace
+;
+
+errorhandling dependencyCommand
+:
+  DEPENDENCY_KEYWORD<SHADER_LAB_KEYWORD, DependencyKeyword>
+  dependencyValue<SHADER_LAB_VALUE, Value>
+;
+
+dependencyValue
+:
+  STRING_LITERAL<DEPENDENCY_KIND, Kind>
+  EQUALS<EQUALS, Equals>
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
 ;

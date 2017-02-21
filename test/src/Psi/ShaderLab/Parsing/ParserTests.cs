@@ -24,6 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
 
         [TestCase("CustomEditor")]
         [TestCase("CustomEditorError")]
+
+        [TestCase("Dependency01")]
+        [TestCase("Dependency02")]
+        [TestCase("DependencyErrors")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

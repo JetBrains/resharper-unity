@@ -14,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 SUB_SHADER_KEYWORD,
                 FALLBACK_KEYWORD,
                 CUSTOM_EDITOR_KEYWORD,
+                DEPENDENCY_KEYWORD,
 
                 COLOR_KEYWORD,
                 CUBE_KEYWORD,

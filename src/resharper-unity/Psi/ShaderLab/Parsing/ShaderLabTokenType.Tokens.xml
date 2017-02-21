@@ -51,6 +51,7 @@
     <Command name="SUB_SHADER_KEYWORD" representation="SubShader" />
     <Command name="FALLBACK_KEYWORD" representation="Fallback" />
     <Command name="CUSTOM_EDITOR_KEYWORD" representation="CustomEditor" />
+    <Command name="DEPENDENCY_KEYWORD" representation="Dependency" />
   </Commands>
 
   <PropertyTypeKeywords NodeType="KeywordTokenNodeType">
