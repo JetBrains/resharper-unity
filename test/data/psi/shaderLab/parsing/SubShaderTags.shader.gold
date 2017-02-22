@@ -1,0 +1,41 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      ISubShaderCommand
+        ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        ISubShaderValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          ITagsCommand
+            ShaderLabTokenType+FixedTokenElement(type:TAGS_KEYWORD, text:Tags)
+            ITagsValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITagDeclaration
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ITagDeclaration
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          ITagsCommand
+            ShaderLabTokenType+FixedTokenElement(type:TAGS_KEYWORD, text:Tags)
+            ITagsValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITagDeclaration
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IRegularPassDef
+            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+

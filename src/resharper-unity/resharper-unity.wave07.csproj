@@ -417,25 +417,35 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AttributeParametersNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AttributeParameterValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AttributeParameterValuesNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\CgIncludeBlockNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\CgProgramBlockNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\CustomEditorCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\CustomEditorValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\DependencyCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\DependencyValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\FallbackCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\FallbackValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\GrabPassDefNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\GrabPassValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAttribute.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAttributeParameters.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAttributeParameterValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAttributeParameterValues.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ICgIncludeBlock.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ICgProgramBlock.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ICustomEditorCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ICustomEditorValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IDependencyCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IDependencyValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IFallbackCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IFallbackValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IGrabPassDef.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IGrabPassValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\Attribute.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AttributeParameters.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AttributeParameterValues.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\CgIncludeBlock.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\CgProgramBlock.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\CustomEditorCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\CustomEditorValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\DependencyCommand.cs" />
@@ -444,12 +454,17 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ElementType.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\FallbackCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\FallbackValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\GrabPassDef.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\GrabPassValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\NumberAttributeParameterValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\PropertiesCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\PropertiesValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\PropertyDeclaration.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\QualifiedAttributeParameterValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\RangePropertyType.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\RegularPassDef.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\RegularPassValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\RenderState.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ScalarPropertyValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShaderCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShaderLabFile.cs" />
@@ -457,9 +472,16 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShaderValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\SimplePropertyType.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\StringAttributeParameterValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\SubShaderCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\SubShaderValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\TagDeclaration.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\TagsCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\TagsValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\TexturePropertyValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\UsePassDef.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\VectorPropertyValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\INumberAttributeParameterValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IPassDef.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IPropertiesCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IPropertiesValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IPropertyDeclaration.cs" />
@@ -467,6 +489,9 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IPropertyValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IQualifiedAttributeParameterValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IRangePropertyType.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IRegularPassDef.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IRegularPassValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IRenderState.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IScalarPropertyValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IShaderCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IShaderLabFile.cs" />
@@ -474,9 +499,16 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IShaderValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ISimplePropertyType.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IStringAttributeParameterValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ISubShaderCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ISubShaderValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ITagDeclaration.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ITagsCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ITagsValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ITexturePropertyValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IUsePassDef.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IVectorPropertyValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\NumberAttributeParameterValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\PassDefNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\PropertiesCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\PropertiesValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\PropertyDeclarationNavigator.cs" />
@@ -484,6 +516,9 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\PropertyValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\QualifiedAttributeParameterValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\RangePropertyTypeNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\RegularPassDefNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\RegularPassValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\RenderStateNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ScalarPropertyValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ShaderCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ShaderLabFileNavigator.cs" />
@@ -491,10 +526,16 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ShaderValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\SimplePropertyTypeNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\StringAttributeParameterValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\SubShaderCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\SubShaderValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\TagDeclarationNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\TagsCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\TagsValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\TexturePropertyValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\TreeNodeVisitor.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\TreeNodeVisitor`1.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\TreeNodeVisitor`2.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\UsePassDefNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\VectorPropertyValueNavigator.cs" />
     <ParserGen Include="Psi\ShaderLab\Parsing\ShaderLab.psi" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabLexer.cs" />
@@ -565,6 +606,7 @@
   <ItemGroup>
     <TokenGenerator Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.xml">
       <OutputFile>Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
+      <SubType>Designer</SubType>
     </TokenGenerator>
   </ItemGroup>
   <ItemGroup />

@@ -334,18 +334,13 @@ shaderCommand
 
 // TODO: Where are CGINCLUDE blocks valid?
 // I've seen them after Properties, before Shader and after Tags...
-// TODO: Add Dependency property (from default shader)
-// https://forum.unity3d.com/threads/shaderlab-dependency-property.215130/
-// https://forum.unity3d.com/threads/solved-pass-data-from-a-shader-to-its-dependency-shader-or-set-dependecy-shader-data.437961/
-// https://alastaira.wordpress.com/2013/12/07/custom-unity-terrain-material-shaders/
-// e.g. Dependency "AddPassShader" = "Custom/ToonTerrainAddPass"
-// Looks like first string literal is a known value, called by the terrain shader
 shaderValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   LBRACE<LBRACE, LBrace>
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
-  // SubShaders/Category
+  // Category
+  subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>*
   // I think fallback, customEditor and dependency can be in any 
   // Accept multiple instances then add inspection to only allow one?
   fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
@@ -562,6 +557,113 @@ stringAttributeParameterValue[shaderLabIdentifier id]
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>*
 ;
 
+// TODO: Sort out error handling for subtree
+subShaderCommand
+:
+  SUB_SHADER_KEYWORD<SHADER_LAB_KEYWORD, SubShaderKeyword>
+  subShaderValue<SHADER_LAB_VALUE, Value>
+;
+
+subShaderValue
+:
+  LBRACE<LBRACE, LBrace>
+  tagsCommand<TAG, TagsCommands>*
+  renderState<RENDER_STATE, CommonRenderState>*
+  passDef<PASSDEF, PassDefinition>+
+  RBRACE<RBRACE, RBrace>
+;
+
+tagsCommand
+:
+  TAGS_KEYWORD<SHADER_LAB_KEYWORD, TagsKeyword>
+  tagsValue<SHADER_KAB_VALUE, Value>
+;
+
+tagsValue
+:
+  LBRACE<LBRACE, LBrace>
+  tagDeclaration<TAG_DECLARATIONS, Declarations>*
+  RBRACE<RBRACE, RBrace>
+;
+
+tagDeclaration
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  EQUALS<EQUALS, Equals>
+  STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+renderState
+:
+
+
+
+
+STRING_LITERAL<SHADER_LAB_NAME, Name>
+
+
+
+
+
+;
+
+interface passDef
+:
+  usePassDef
+  | grabPassDef
+  | regularPassDef
+  // | cgProgramPassDef ??? Reflect-Glossy.shader has SubShader with no passDef, just CGPROGRAM
+;
+
+usePassDef
+:
+  USEPASS_KEYWORD<SHADER_LAB_KEYWORD, UsePassKeyword>
+  STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+grabPassDef
+:
+  GRABPASS_KEYWORD<SHADER_LAB_KEYWORD, GrabPassKeyword>
+  grabPassValue<SHADER_LAB_VALUE, Value>
+;
+
+grabPassValue
+:
+  LBRACE<LBRACE, LBrace>
+  STRING_LITERAL<SHADER_LAB_NAME, Name>?
+  RBRACE<RBRACE, RBrace>
+;
+
+regularPassDef
+:
+  PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
+  regularPassValue<SHADER_LAB_VALUE, Value>
+;
+
+regularPassValue
+:
+  LBRACE<LBRACE, LBrace>
+  STRING_LITERAL<SHADER_LAB_NAME, Name>?
+  tagsCommand<TAG, TagsCommands>*
+  renderState<RENDER_STATE, RenderState>*
+  cgProgramBlock<CG_PROGRAM, CgProgram>?
+  RBRACE<RBRACE, RBrace>
+;
+
+cgIncludeBlock
+:
+  CG_INCLUDE<CG_INCLUDE, CgInclude>
+  CG_CONTENT<CG_CONTENT, CgContent>
+  CG_END<CG_END, CgEnd>
+;
+
+cgProgramBlock
+:
+  CG_PROGRAM<CG_PROGRAM, CgProgram>
+  CG_CONTENT<CG_CONTENT, CgContent>
+  CG_END<CG_END, CgEnd>
+;
+
 // TODO: Verify error handling
 fallbackCommand
 :
@@ -589,6 +691,11 @@ customEditorValue
   | errorElementWithoutRBrace
 ;
 
+// https://forum.unity3d.com/threads/shaderlab-dependency-property.215130/
+// https://forum.unity3d.com/threads/solved-pass-data-from-a-shader-to-its-dependency-shader-or-set-dependecy-shader-data.437961/
+// https://alastaira.wordpress.com/2013/12/07/custom-unity-terrain-material-shaders/
+// e.g. Dependency "AddPassShader" = "Custom/ToonTerrainAddPass"
+// Looks like first string literal is a known value, called by the terrain shader
 errorhandling dependencyCommand
 :
   DEPENDENCY_KEYWORD<SHADER_LAB_KEYWORD, DependencyKeyword>

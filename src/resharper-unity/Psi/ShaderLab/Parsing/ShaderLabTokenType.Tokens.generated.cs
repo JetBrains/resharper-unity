@@ -80,9 +80,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     public const int VECTOR_KEYWORD_NODE_TYPE_INDEX = 1028;
     public static readonly TokenNodeType VECTOR_KEYWORD = new KeywordTokenNodeType("VECTOR_KEYWORD", VECTOR_KEYWORD_NODE_TYPE_INDEX, representation: "Vector");
 
+    //SubShaderCommands
+    public const int TAGS_KEYWORD_NODE_TYPE_INDEX = 1029;
+    public static readonly TokenNodeType TAGS_KEYWORD = new KeywordTokenNodeType("TAGS_KEYWORD", TAGS_KEYWORD_NODE_TYPE_INDEX, representation: "Tags");
+    public const int PASS_KEYWORD_NODE_TYPE_INDEX = 1030;
+    public static readonly TokenNodeType PASS_KEYWORD = new KeywordTokenNodeType("PASS_KEYWORD", PASS_KEYWORD_NODE_TYPE_INDEX, representation: "Pass");
+    public const int USEPASS_KEYWORD_NODE_TYPE_INDEX = 1031;
+    public static readonly TokenNodeType USEPASS_KEYWORD = new KeywordTokenNodeType("USEPASS_KEYWORD", USEPASS_KEYWORD_NODE_TYPE_INDEX, representation: "UsePass");
+    public const int GRABPASS_KEYWORD_NODE_TYPE_INDEX = 1032;
+    public static readonly TokenNodeType GRABPASS_KEYWORD = new KeywordTokenNodeType("GRABPASS_KEYWORD", GRABPASS_KEYWORD_NODE_TYPE_INDEX, representation: "GrabPass");
+
+    //RenderStateCommands
+    public const int NAME_KEYWORD_NODE_TYPE_INDEX = 1033;
+    public static readonly TokenNodeType NAME_KEYWORD = new KeywordTokenNodeType("NAME_KEYWORD", NAME_KEYWORD_NODE_TYPE_INDEX, representation: "Name");
+
     //Keywords
-    public const int OFF_KEYWORD_NODE_TYPE_INDEX = 1029;
+    public const int OFF_KEYWORD_NODE_TYPE_INDEX = 1034;
     public static readonly TokenNodeType OFF_KEYWORD = new KeywordTokenNodeType("OFF_KEYWORD", OFF_KEYWORD_NODE_TYPE_INDEX, representation: "Off");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1030;  }
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1035;  }
 }

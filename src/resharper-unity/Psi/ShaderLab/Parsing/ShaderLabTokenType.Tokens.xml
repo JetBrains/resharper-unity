@@ -65,6 +65,17 @@
     <Keyword name="VECTOR_KEYWORD" representation="Vector" />
   </PropertyTypeKeywords>
 
+  <SubShaderCommands NodeType="KeywordTokenNodeType">
+    <Command name="TAGS_KEYWORD" representation="Tags" />
+    <Command name="PASS_KEYWORD" representation="Pass" />
+    <Command name="USEPASS_KEYWORD" representation="UsePass" />
+    <Command name="GRABPASS_KEYWORD" representation="GrabPass" />
+  </SubShaderCommands>
+
+  <RenderStateCommands NodeType="KeywordTokenNodeType">
+    <Command name="NAME_KEYWORD" representation="Name" />
+  </RenderStateCommands>
+
   <Keywords NodeType="KeywordTokenNodeType">
     <Keyword name="OFF_KEYWORD" representation="Off" />
   </Keywords>

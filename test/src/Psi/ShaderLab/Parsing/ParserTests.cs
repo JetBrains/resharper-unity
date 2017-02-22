@@ -28,6 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("Dependency01")]
         [TestCase("Dependency02")]
         [TestCase("DependencyErrors")]
+
+        [TestCase("SubShader01")]
+        [TestCase("SubShader02")]
+        [TestCase("SubShaderTags")]
+
+        [TestCase("PassDefGrabPass")]
+        [TestCase("PassDefUsePass")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }
