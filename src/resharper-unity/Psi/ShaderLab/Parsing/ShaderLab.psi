@@ -605,6 +605,7 @@ interface renderStateCommand
   | ztestCommand
   | offsetCommand
   | stencilCommand
+  | nameCommand
 ;
 
 // TODO: values should live in own node, not private
@@ -754,6 +755,17 @@ stencilOperation
   | INVERT_KEYWORD<SHADER_LAB_VALUE, Value>
   | INCR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
   | DECR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
+;
+
+nameCommand
+:
+  NAME_KEYWORD<SHADER_LAB_COMMAND, NameKeyword>
+  nameValue
+;
+
+nameValue
+:
+  STRING_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
 interface passDef

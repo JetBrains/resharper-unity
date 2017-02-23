@@ -468,6 +468,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\FallbackValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\GrabPassDef.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\GrabPassValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\NameCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\NameValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\NumberAttributeParameterValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\OffsetCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\OffsetValue.cs" />
@@ -506,6 +508,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ZfailCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ZtestCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ZwriteCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\INameCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\INameValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\INumberAttributeParameterValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IOffsetCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IOffsetValue.cs" />
@@ -549,6 +553,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IZfailCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IZtestCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IZwriteCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\NameCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\NameValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\NumberAttributeParameterValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\OffsetCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\OffsetValueNavigator.cs" />
