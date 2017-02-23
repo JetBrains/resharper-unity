@@ -862,6 +862,7 @@ interface renderStateCommand
   | offsetCommand
   | stencilCommand
   | nameCommand
+  | lodCommand
 ;
 
 cullCommand
@@ -1017,13 +1018,24 @@ stencilOperation
 
 nameCommand
 :
-  NAME_KEYWORD<SHADER_LAB_COMMAND, NameKeyword>
-  nameValue
+  NAME_KEYWORD<SHADER_LAB_KEYWORD, NameKeyword>
+  nameValue<SHADER_LAB_VALUE>
 ;
 
 nameValue
 :
   STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+lodCommand
+:
+  LOD_KEYWORD<SHADER_LAB_KEYWORD, LodKeyword>
+  lodValue<SHADER_LAB_VALUE, Value>
+;
+
+lodValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
 interface passDef

@@ -482,6 +482,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ILegacyLightingCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ILegacyTextureCombinerCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ILightingCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ILodCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\ILodValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IMaterialCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IMaterialValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IMaterialValueCommand.cs" />
@@ -520,6 +522,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\GrabPassDef.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\GrabPassValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\LightingCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\LodCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\LodValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\MaterialCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\MaterialValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\NameCommand.cs" />
@@ -626,6 +630,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\LegacyLightingCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\LegacyTextureCombinerCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\LightingCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\LodCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\LodValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\MaterialCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\MaterialValueCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\MaterialValueNavigator.cs" />

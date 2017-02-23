@@ -1,6 +1,17 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+﻿using System;
+using System.Collections.Generic;
+using JetBrains.Metadata.Reader.API;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.ExtensionsAPI;
+using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.TestFramework;
+using JetBrains.TestFramework.Utils;
+using JetBrains.Text;
+using JetBrains.Util;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
@@ -41,6 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("Stencil01")]
         [TestCase("Stencil02")]
         [TestCase("Name")]
+        [TestCase("LOD")]
 
         [TestCase("LegacyLighting01")]
         [TestCase("LegacyLighting02")]
