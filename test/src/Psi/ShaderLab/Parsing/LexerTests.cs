@@ -39,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("UnterminatedComment")]
         [TestCase("UnterminatedCgInclude")]
         [TestCase("UnterminatedCgProgram")]
+        [TestCase("MultilineComment")]
         public void TestLexer(string name) => DoOneTest(name);
     }
 }
