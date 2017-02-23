@@ -57,7 +57,7 @@ MINUS="-"
 DOT="."
 DECIMAL_DIGIT=[0-9]
 INTEGER_LITERAL={MINUS}?{DECIMAL_DIGIT}+
-FLOAT_LITERAL={MINUS}?{DECIMAL_DIGIT}*{DOT}{DECIMAL_DIGIT}+
+FLOAT_LITERAL={MINUS}?{DECIMAL_DIGIT}*{DOT}{DECIMAL_DIGIT}*
 
 %{ /* I don't think ShaderLab supports multi-line strings, or escape chars */
 %}
