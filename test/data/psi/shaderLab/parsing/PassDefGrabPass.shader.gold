@@ -24,6 +24,13 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IGrabPassDef
+            ShaderLabTokenType+FixedTokenElement(type:GRABPASS_KEYWORD, text:GrabPass)
+            IGrabPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ShaderLabTokenType+FixedTokenElement(type:NAME_KEYWORD, text:Name)
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
             IRegularPassValue

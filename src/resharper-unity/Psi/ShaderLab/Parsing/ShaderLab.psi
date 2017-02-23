@@ -1065,7 +1065,10 @@ grabPassDef
 grabPassValue
 :
   LBRACE<LBRACE, LBrace>
-  STRING_LITERAL<SHADER_LAB_NAME, Name>?
+  (
+    NAME_KEYWORD<SHADER_LAB_KEYWORD, Keyword>?
+    STRING_LITERAL<SHADER_LAB_NAME, Name>
+  )?
   RBRACE<RBRACE, RBrace>
 ;
 

@@ -11,6 +11,11 @@
             "_BackgroundTexture"
         }
 
+        GrabPass
+        {
+            Name "_OtherTexture"
+        }
+
         // Render the object with the texture generated above, and invert the colors
         Pass
         {
