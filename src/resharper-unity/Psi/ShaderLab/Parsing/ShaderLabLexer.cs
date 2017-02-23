@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     public partial class ShaderLabLexerGenerated
     {
-        private static readonly LexerDictionary<TokenNodeType> Keywords = new LexerDictionary<TokenNodeType>();
+        private static readonly LexerDictionary<TokenNodeType> Keywords = new LexerDictionary<TokenNodeType>(false);
 
         private readonly ReusableBufferRange myBufferRange = new ReusableBufferRange();
         // ReSharper disable once InconsistentNaming
