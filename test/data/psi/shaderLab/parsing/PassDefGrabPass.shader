@@ -14,6 +14,7 @@
         GrabPass
         {
             Name "_OtherTexture"
+            Tags { "Other" = "Whatever" }
         }
 
         // Render the object with the texture generated above, and invert the colors

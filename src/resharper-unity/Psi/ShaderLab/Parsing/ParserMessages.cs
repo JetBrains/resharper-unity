@@ -4,6 +4,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     public static class ParserMessages
     {
+        public const string IDS_GRAB_PASS_VALUE_COMMAND = "GrabPass command";
         public const string IDS_ATTRIBUTE_PARAMETER_VALUE = "parameter value";
         public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";

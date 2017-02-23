@@ -1065,11 +1065,20 @@ grabPassDef
 grabPassValue
 :
   LBRACE<LBRACE, LBrace>
-  (
-    NAME_KEYWORD<SHADER_LAB_KEYWORD, Keyword>?
-    STRING_LITERAL<SHADER_LAB_NAME, Name>
-  )?
+  grabPassValueCommand<SHADER_LAB_COMMAND, Commands>*
   RBRACE<RBRACE, RBrace>
+;
+
+interface grabPassValueCommand
+:
+  optionalNameCommand
+  | tagsCommand
+;
+
+optionalNameCommand
+:
+  NAME_KEYWORD<SHADER_LAB_KEYWORD, NameKeyword>?
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
 ;
 
 cgProgramPassDef
