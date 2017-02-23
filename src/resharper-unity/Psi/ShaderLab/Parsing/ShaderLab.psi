@@ -567,8 +567,8 @@ subShaderCommand
 subShaderValue
 :
   LBRACE<LBRACE, LBrace>
-  tagsCommand<TAG, TagsCommands>*
-  renderState<RENDER_STATE, CommonRenderState>?
+  tagsCommand<TAGS_COMMAND, TagsCommands>*
+  renderStateCommands
   passDef<PASSDEF, PassDefinition>+
   RBRACE<RBRACE, RBrace>
 ;
@@ -593,10 +593,9 @@ tagDeclaration
   STRING_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
-// TODO: This should probably be private
-renderState
+private renderStateCommands
 :
-  renderStateCommand<SHADER_LAB_COMMAND, Command>*
+  renderStateCommand<SHADER_LAB_COMMAND, Commands>*
 ;
 
 interface renderStateCommand
@@ -634,10 +633,10 @@ private onOffValue
 ztestCommand
 :
   ZTEST_KEYWORD<SHADER_LAB_KEYWORD, ZTestKeyword>
-  comparisonFunctionValue
+  comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
-private comparisonFunctionValue
+comparisonFunctionValue
 :
   GREATER_KEYWORD<SHADER_LAB_VALUE, Value>
   | GEQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
@@ -652,6 +651,11 @@ private comparisonFunctionValue
 offsetCommand
 :
   OFFSET_KEYWORD<SHADER_LAB_KEYWORD, OffsetKeyword>
+  offsetValue<SHADER_LAB_VALUE, Value>
+;
+
+offsetValue
+:
   NUMERIC_LITERAL<FACTOR, Factor>
   COMMA<COMMA, Comma>
   NUMERIC_LITERAL<UNITS, Units>
@@ -719,13 +723,7 @@ writeMaskValue
 compCommand
 :
   COMP_KEYWORD<SHADER_LAB_KEYWORD, CompKeyword>
-  compValue<SHADER_LAB_VALUE, Value>
-;
-
-// TODO: Make comparisonFunctionValue non-private
-compValue
-:
-  comparisonFunctionValue
+  comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
 passCommand
@@ -796,7 +794,7 @@ regularPassValue
   LBRACE<LBRACE, LBrace>
   STRING_LITERAL<SHADER_LAB_NAME, Name>?
   tagsCommand<TAG, TagsCommands>*
-  renderState<RENDER_STATE, RenderState>*
+  renderStateCommands
   cgProgramBlock<CG_PROGRAM, CgProgram>?
   RBRACE<RBRACE, RBrace>
 ;

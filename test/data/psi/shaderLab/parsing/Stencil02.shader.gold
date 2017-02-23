@@ -26,24 +26,23 @@ IShaderLabFile
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
             IRegularPassValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-              IRenderState
-                IStencilCommand
-                  ShaderLabTokenType+FixedTokenElement(type:STENCIL_KEYWORD, text:Stencil)
-                  IStencilValue
-                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                    IRefCommand
-                      ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
-                      IRefValue
-                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
-                    ICompCommand
-                      ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
-                      ICompValue
-                        ShaderLabTokenType+FixedTokenElement(type:ALWAYS_KEYWORD, text:Always)
-                    IPassCommand
-                      ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
-                      IStencilOperation
-                        ShaderLabTokenType+FixedTokenElement(type:REPLACE_KEYWORD, text:Replace)
-                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              IStencilCommand
+                ShaderLabTokenType+FixedTokenElement(type:STENCIL_KEYWORD, text:Stencil)
+                IStencilValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  IRefCommand
+                    ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
+                    IRefValue
+                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  ICompCommand
+                    ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
+                    IComparisonFunctionValue
+                      ShaderLabTokenType+FixedTokenElement(type:ALWAYS_KEYWORD, text:Always)
+                  IPassCommand
+                    ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+                    IStencilOperation
+                      ShaderLabTokenType+FixedTokenElement(type:REPLACE_KEYWORD, text:Replace)
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
               ICgProgramBlock
                 ShaderLabTokenType+FixedTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
                 ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:CG_CONTENT)
