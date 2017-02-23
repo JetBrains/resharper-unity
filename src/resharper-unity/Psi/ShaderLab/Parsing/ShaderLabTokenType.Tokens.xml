@@ -39,6 +39,7 @@
     <Token name="DOT" representation="." />
     <Token name="EQUALS" representation="=" />
     <Token name="PLUS" representation="+" />
+    <Token name="MINUS" representation="-" />
     <Token name="MULTIPLY" representation="*" />
     
     <Token name="BAD_CHARACTER" representation="💩" />
@@ -115,6 +116,7 @@
     <Keyword name="DOUBLE_KEYWORD" representation="Double" />
     <Keyword name="QUAD_KEYWORD" representation="Quad" />
     <Keyword name="LERP_KEYWORD" representation="Lerp" />
+    <Keyword name="ONE_KEYWORD" representation="One" />
     <Keyword name="ALPHA_KEYWORD" representation="Alpha" />
   </LegacyTextureCombinerKeywords>
 

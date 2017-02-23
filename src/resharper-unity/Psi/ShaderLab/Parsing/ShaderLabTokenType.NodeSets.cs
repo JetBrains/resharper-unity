@@ -64,6 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 DOUBLE_KEYWORD,
                 QUAD_KEYWORD,
                 LERP_KEYWORD,
+                ONE_KEYWORD,
                 ALPHA_KEYWORD,
 
                 BIND_KEYWORD,

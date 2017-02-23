@@ -120,7 +120,7 @@ IShaderLabFile
                 IAttributeParameterValues
                   IStringAttributeParameterValue
                     IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:One)
+                      ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   INumberAttributeParameterValue
                     ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
