@@ -1,0 +1,92 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      ISubShaderCommand
+        ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        ISubShaderValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          IRegularPassDef
+            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              IRenderState
+                IStencilCommand
+                  ShaderLabTokenType+FixedTokenElement(type:STENCIL_KEYWORD, text:Stencil)
+                  IStencilValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    IRefCommand
+                      ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
+                      IRefValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    IReadMaskCommand
+                      ShaderLabTokenType+FixedTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
+                      IReadMaskValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    IWriteMaskCommand
+                      ShaderLabTokenType+FixedTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
+                      IWriteMaskValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    ICompCommand
+                      ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
+                      ICompValue
+                        ShaderLabTokenType+FixedTokenElement(type:GREATER_KEYWORD, text:Greater)
+                    IPassCommand
+                      ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+                      IStencilOperation
+                        ShaderLabTokenType+FixedTokenElement(type:KEEP_KEYWORD, text:Keep)
+                    IFailCommand
+                      ShaderLabTokenType+FixedTokenElement(type:FAIL_KEYWORD, text:Fail)
+                      IStencilOperation
+                        ShaderLabTokenType+FixedTokenElement(type:ZERO_KEYWORD, text:Zero)
+                    IZfailCommand
+                      ShaderLabTokenType+FixedTokenElement(type:ZFAIL_KEYWORD, text:ZFail)
+                      IStencilOperation
+                        ShaderLabTokenType+FixedTokenElement(type:REPLACE_KEYWORD, text:Replace)
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IRegularPassDef
+            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              IRenderState
+                IStencilCommand
+                  ShaderLabTokenType+FixedTokenElement(type:STENCIL_KEYWORD, text:Stencil)
+                  IStencilValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    IRefCommand
+                      ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
+                      IRefValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    IReadMaskCommand
+                      ShaderLabTokenType+FixedTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
+                      IReadMaskValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    IWriteMaskCommand
+                      ShaderLabTokenType+FixedTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
+                      IWriteMaskValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    ICompCommand
+                      ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
+                      ICompValue
+                        ShaderLabTokenType+FixedTokenElement(type:LESS_KEYWORD, text:Less)
+                    IPassCommand
+                      ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+                      IStencilOperation
+                        ShaderLabTokenType+FixedTokenElement(type:INCR_SAT_KEYWORD, text:IncrSat)
+                    IFailCommand
+                      ShaderLabTokenType+FixedTokenElement(type:FAIL_KEYWORD, text:Fail)
+                      IStencilOperation
+                        ShaderLabTokenType+FixedTokenElement(type:DECR_SAT_KEYWORD, text:DecrSat)
+                    IZfailCommand
+                      ShaderLabTokenType+FixedTokenElement(type:ZFAIL_KEYWORD, text:ZFail)
+                      IStencilOperation
+                        ShaderLabTokenType+FixedTokenElement(type:INVERT_KEYWORD, text:Invert)
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+

@@ -593,6 +593,7 @@ tagDeclaration
   STRING_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
+// TODO: This should probably be private
 renderState
 :
   renderStateCommand<SHADER_LAB_COMMAND, Command>*
@@ -604,8 +605,10 @@ interface renderStateCommand
   | zwriteCommand
   | ztestCommand
   | offsetCommand
+  | stencilCommand
 ;
 
+// TODO: values should live in own node, not private
 cullCommand
 :
   CULL_KEYWORD<SHADER_LAB_KEYWORD, CullKeyword>
@@ -652,6 +655,107 @@ offsetCommand
   NUMERIC_LITERAL<FACTOR, Factor>
   COMMA<COMMA, Comma>
   NUMERIC_LITERAL<UNITS, Units>
+;
+
+stencilCommand
+:
+  STENCIL_KEYWORD<SHADER_LAB_KEYWORD, StencilKeyword>
+  stencilValue<SHADER_LAB_VALUE, Value>
+;
+
+stencilValue
+:
+  LBRACE<LBRACE, LBrace>
+  stencilValueCommand<SHADER_LAB_COMMAND, Command>*
+  RBRACE<RBRACE, RBrace>
+;
+
+// All nodes have a `Value` property, which gets pushed into the IStencilValueCommand as an ITreeNode
+// TODO: Add strongly typed accessors
+interface stencilValueCommand
+:
+  refCommand
+  | readMaskCommand
+  | writeMaskCommand
+  | compCommand
+  | passCommand
+  | failCommand
+  | zfailCommand
+;
+
+refCommand
+:
+  REF_KEYWORD<SHADER_LAB_KEYWORD, RefKeyword>
+  refValue<SHADER_LAB_VALUE, Value>
+;
+
+refValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, ReferenceValue>
+;
+
+readMaskCommand
+:
+  READ_MASK_KEYWORD<SHADER_LAB_KEYWORD, ReadMaskKeyword>
+  readMaskValue<SHADER_LAB_VALUE, Value>
+;
+
+readMaskValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, ReadMask>
+;
+
+writeMaskCommand
+:
+  WRITE_MASK_KEYWORD<SHADER_LAB_KEYWORD, WriteMaskKeyword>
+  writeMaskValue<SHADER_LAB_VALUE, Value>
+;
+
+writeMaskValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, WriteMask>
+;
+
+compCommand
+:
+  COMP_KEYWORD<SHADER_LAB_KEYWORD, CompKeyword>
+  compValue<SHADER_LAB_VALUE, Value>
+;
+
+// TODO: Make comparisonFunctionValue non-private
+compValue
+:
+  comparisonFunctionValue
+;
+
+passCommand
+:
+  PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+failCommand
+:
+  FAIL_KEYWORD<SHADER_LAB_KEYWORD, FailKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+zfailCommand
+:
+  ZFAIL_KEYWORD<SHADER_LAB_KEYWORD, ZFailKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+stencilOperation
+:
+  KEEP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | ZERO_KEYWORD<SHADER_LAB_VALUE, Value>
+  | REPLACE_KEYWORD<SHADER_LAB_VALUE, Value>
+  | INCR_SAT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | DECR_SAT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | INVERT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | INCR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | DECR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
 ;
 
 interface passDef

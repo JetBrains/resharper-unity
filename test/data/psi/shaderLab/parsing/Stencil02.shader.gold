@@ -1,0 +1,54 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      ISubShaderCommand
+        ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        ISubShaderValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          ITagsCommand
+            ShaderLabTokenType+FixedTokenElement(type:TAGS_KEYWORD, text:Tags)
+            ITagsValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITagDeclaration
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ITagDeclaration
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IRegularPassDef
+            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              IRenderState
+                IStencilCommand
+                  ShaderLabTokenType+FixedTokenElement(type:STENCIL_KEYWORD, text:Stencil)
+                  IStencilValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    IRefCommand
+                      ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
+                      IRefValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    ICompCommand
+                      ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
+                      ICompValue
+                        ShaderLabTokenType+FixedTokenElement(type:ALWAYS_KEYWORD, text:Always)
+                    IPassCommand
+                      ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+                      IStencilOperation
+                        ShaderLabTokenType+FixedTokenElement(type:REPLACE_KEYWORD, text:Replace)
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              ICgProgramBlock
+                ShaderLabTokenType+FixedTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
+                ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:CG_CONTENT)
+                ShaderLabTokenType+FixedTokenElement(type:CG_END, text:ENDCG)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+
