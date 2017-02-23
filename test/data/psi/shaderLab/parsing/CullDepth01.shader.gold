@@ -15,10 +15,12 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ICullCommand
                 ShaderLabTokenType+FixedTokenElement(type:CULL_KEYWORD, text:Cull)
-                ShaderLabTokenType+FixedTokenElement(type:FRONT_KEYWORD, text:Front)
+                ICullValue
+                  ShaderLabTokenType+FixedTokenElement(type:FRONT_KEYWORD, text:Front)
               IZwriteCommand
                 ShaderLabTokenType+FixedTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
-                ShaderLabTokenType+FixedTokenElement(type:ON_KEYWORD, text:On)
+                IOnOffValue
+                  ShaderLabTokenType+FixedTokenElement(type:ON_KEYWORD, text:On)
               IZtestCommand
                 ShaderLabTokenType+FixedTokenElement(type:ZTEST_KEYWORD, text:ZTest)
                 IComparisonFunctionValue
@@ -36,7 +38,8 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ICullCommand
                 ShaderLabTokenType+FixedTokenElement(type:CULL_KEYWORD, text:Cull)
-                ShaderLabTokenType+FixedTokenElement(type:BACK_KEYWORD, text:Back)
+                ICullValue
+                  ShaderLabTokenType+FixedTokenElement(type:BACK_KEYWORD, text:Back)
               IZtestCommand
                 ShaderLabTokenType+FixedTokenElement(type:ZTEST_KEYWORD, text:ZTest)
                 IComparisonFunctionValue
@@ -49,7 +52,8 @@ IShaderLabFile
                   ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
               IZwriteCommand
                 ShaderLabTokenType+FixedTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
-                ShaderLabTokenType+FixedTokenElement(type:OFF_KEYWORD, text:Off)
+                IOnOffValue
+                  ShaderLabTokenType+FixedTokenElement(type:OFF_KEYWORD, text:Off)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
@@ -57,7 +61,8 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ICullCommand
                 ShaderLabTokenType+FixedTokenElement(type:CULL_KEYWORD, text:Cull)
-                ShaderLabTokenType+FixedTokenElement(type:OFF_KEYWORD, text:Off)
+                ICullValue
+                  ShaderLabTokenType+FixedTokenElement(type:OFF_KEYWORD, text:Off)
               IZtestCommand
                 ShaderLabTokenType+FixedTokenElement(type:ZTEST_KEYWORD, text:ZTest)
                 IComparisonFunctionValue

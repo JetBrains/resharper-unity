@@ -41,6 +41,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("Stencil01")]
         [TestCase("Stencil02")]
         [TestCase("Name")]
+
+        [TestCase("LegacyLighting01")]
+        [TestCase("LegacyLighting02")]
+        [TestCase("LegacyLighting03")]
+        [TestCase("LegacyLighting04")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

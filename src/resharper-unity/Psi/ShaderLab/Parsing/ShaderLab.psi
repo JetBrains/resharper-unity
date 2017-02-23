@@ -568,7 +568,7 @@ subShaderValue
 :
   LBRACE<LBRACE, LBrace>
   tagsCommand<TAGS_COMMAND, TagsCommands>*
-  renderStateCommands
+  renderStateCommands   // Common state
   passDef<PASSDEF, PassDefinition>+
   RBRACE<RBRACE, RBrace>
 ;
@@ -608,24 +608,26 @@ interface renderStateCommand
   | nameCommand
 ;
 
-// TODO: values should live in own node, not private
 cullCommand
 :
   CULL_KEYWORD<SHADER_LAB_KEYWORD, CullKeyword>
-  (
-    FRONT_KEYWORD<SHADER_LAB_VALUE, Value>
-    | BACK_KEYWORD<SHADER_LAB_VALUE, Value>
-    | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
-  )
+  cullValue<SHADER_LAB_VALUE, Value>
+;
+
+cullValue
+:
+  FRONT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | BACK_KEYWORD<SHADER_LAB_VALUE, Value>
+  | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
 ;
 
 zwriteCommand
 :
   ZWRITE_KEYWORD<SHADER_LAB_KEYWORD, ZWriteKeyword>
-  onOffValue
+  onOffValue<SHADER_LAB_VALUE, Value>
 ;
 
-private onOffValue
+onOffValue
 :
   ON_KEYWORD<SHADER_LAB_VALUE, Value>
   | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
@@ -671,7 +673,7 @@ stencilCommand
 stencilValue
 :
   LBRACE<LBRACE, LBrace>
-  stencilValueCommand<SHADER_LAB_COMMAND, Command>*
+  stencilValueCommand<SHADER_LAB_COMMAND, Commands>*
   RBRACE<RBRACE, RBrace>
 ;
 
@@ -807,8 +809,126 @@ regularPassValue
   STRING_LITERAL<SHADER_LAB_NAME, Name>?
   tagsCommand<TAG, TagsCommands>*
   renderStateCommands
+  legacyLightingCommands
   cgProgramBlock<CG_PROGRAM, CgProgram>?
   RBRACE<RBRACE, RBrace>
+;
+
+private legacyLightingCommands
+:
+  legacyLightingCommand<SHADER_LAB_COMMAND, Comamnds>*
+;
+
+// TODO: All commands should have a common interface
+// Keyword/Value
+interface legacyLightingCommand
+:
+  colorCommand
+  | lightingCommand
+  | separateSpecularCommand
+  | colorMaterialCommand
+  | materialCommand
+;
+
+colorCommand
+:
+  COLOR_KEYWORD<SHADER_LAB_KEYWORD, ColorKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+colorValue
+:
+  vectorPropertyValue<SHADER_LAB_VALUE, Value>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+;
+
+referencedProperty
+:
+  LBRACK<LBRACK, LBRack>
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  RBRACK<RBRACK, RBrack>
+;
+
+lightingCommand
+:
+  LIGHTING_KEYWORD<SHADER_LAB_KEYWORD, LightingKeyword>
+  onOffValue<SHADER_LAB_VALUE, Value>
+;
+
+separateSpecularCommand
+:
+  SEPARATE_SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, SeparateSpecularKeyword>
+  onOffValue<SHADER_LAB_VALUE, Value>
+;
+
+colorMaterialCommand
+:
+  COLOR_MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, ColorMaterialKeyword>
+  colorMaterialValue<SHADER_LAB_VALUE, Value>
+;
+
+colorMaterialValue
+:
+  AMBIENT_AND_DIFFUSE_KEYWORD<SHADER_LAB_VALUE, Value>
+  | EMISSION_KEYWORD<SHADER_LAB_VALUE, Value>
+;
+
+materialCommand
+:
+  MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, MaterialKeyword>
+  materialValue<SHADER_LAB_VALUE, Value>
+;
+
+materialValue
+:
+  LBRACE<LBRACE, LBrace>
+  materialValueCommand<SHADER_LAB_COMMAND, Commands>*
+  RBRACE<RBRACE, RBrace>
+;
+
+interface materialValueCommand
+:
+  diffuseCommand
+  | ambientCommand
+  | specularCommand
+  | shininessCommand
+  | emissionCommand
+;
+
+diffuseCommand
+:
+  DIFFUSE_KEYWORD<SHADER_LAB_KEYWORD, DiffuseKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+ambientCommand
+:
+  AMBIENT_KEYWORD<SHADER_LAB_KEYWORD, AmbientKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+specularCommand
+:
+  SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, SpecularKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+shininessCommand
+:
+  SHININESS_KEYWORD<SHADER_LAB_KEYWORD, ShininessKeyword>
+  shininessValue<SHADER_LAB_VALUE, Value>
+;
+
+shininessValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+;
+
+emissionCommand
+:
+  EMISSION_KEYWORD<SHADER_LAB_KEYWORD, EmissionKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
 ;
 
 cgIncludeBlock
