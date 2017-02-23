@@ -35,6 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
 
         [TestCase("PassDefGrabPass")]
         [TestCase("PassDefUsePass")]
+
+        [TestCase("CullDepth01")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

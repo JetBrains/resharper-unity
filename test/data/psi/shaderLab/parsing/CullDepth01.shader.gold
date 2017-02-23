@@ -1,0 +1,66 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      ISubShaderCommand
+        ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        ISubShaderValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          IRegularPassDef
+            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              IRenderState
+                ICullCommand
+                  ShaderLabTokenType+FixedTokenElement(type:CULL_KEYWORD, text:Cull)
+                  ShaderLabTokenType+FixedTokenElement(type:FRONT_KEYWORD, text:Front)
+                IZwriteCommand
+                  ShaderLabTokenType+FixedTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
+                  ShaderLabTokenType+FixedTokenElement(type:ON_KEYWORD, text:On)
+                IZtestCommand
+                  ShaderLabTokenType+FixedTokenElement(type:ZTEST_KEYWORD, text:ZTest)
+                  ShaderLabTokenType+FixedTokenElement(type:LESS_KEYWORD, text:Less)
+                IOffsetCommand
+                  ShaderLabTokenType+FixedTokenElement(type:OFFSET_KEYWORD, text:Offset)
+                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IRegularPassDef
+            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              IRenderState
+                ICullCommand
+                  ShaderLabTokenType+FixedTokenElement(type:CULL_KEYWORD, text:Cull)
+                  ShaderLabTokenType+FixedTokenElement(type:BACK_KEYWORD, text:Back)
+                IZtestCommand
+                  ShaderLabTokenType+FixedTokenElement(type:ZTEST_KEYWORD, text:ZTest)
+                  ShaderLabTokenType+FixedTokenElement(type:LEQUAL_KEYWORD, text:LEqual)
+                IOffsetCommand
+                  ShaderLabTokenType+FixedTokenElement(type:OFFSET_KEYWORD, text:Offset)
+                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                IZwriteCommand
+                  ShaderLabTokenType+FixedTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
+                  ShaderLabTokenType+FixedTokenElement(type:OFF_KEYWORD, text:Off)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IRegularPassDef
+            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              IRenderState
+                ICullCommand
+                  ShaderLabTokenType+FixedTokenElement(type:CULL_KEYWORD, text:Cull)
+                  ShaderLabTokenType+FixedTokenElement(type:OFF_KEYWORD, text:Off)
+                IZtestCommand
+                  ShaderLabTokenType+FixedTokenElement(type:ZTEST_KEYWORD, text:ZTest)
+                  ShaderLabTokenType+FixedTokenElement(type:ALWAYS_KEYWORD, text:Always)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+

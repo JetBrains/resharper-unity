@@ -568,7 +568,7 @@ subShaderValue
 :
   LBRACE<LBRACE, LBrace>
   tagsCommand<TAG, TagsCommands>*
-  renderState<RENDER_STATE, CommonRenderState>*
+  renderState<RENDER_STATE, CommonRenderState>?
   passDef<PASSDEF, PassDefinition>+
   RBRACE<RBRACE, RBrace>
 ;
@@ -595,16 +595,63 @@ tagDeclaration
 
 renderState
 :
+  renderStateCommand<SHADER_LAB_COMMAND, Command>*
+;
 
+interface renderStateCommand
+:
+  cullCommand
+  | zwriteCommand
+  | ztestCommand
+  | offsetCommand
+;
 
+cullCommand
+:
+  CULL_KEYWORD<SHADER_LAB_KEYWORD, CullKeyword>
+  (
+    FRONT_KEYWORD<SHADER_LAB_VALUE, Value>
+    | BACK_KEYWORD<SHADER_LAB_VALUE, Value>
+    | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+  )
+;
 
+zwriteCommand
+:
+  ZWRITE_KEYWORD<SHADER_LAB_KEYWORD, ZWriteKeyword>
+  onOffValue
+;
 
-STRING_LITERAL<SHADER_LAB_NAME, Name>
+private onOffValue
+:
+  ON_KEYWORD<SHADER_LAB_VALUE, Value>
+  | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+;
 
+ztestCommand
+:
+  ZTEST_KEYWORD<SHADER_LAB_KEYWORD, ZTestKeyword>
+  comparisonFunctionValue
+;
 
+private comparisonFunctionValue
+:
+  GREATER_KEYWORD<SHADER_LAB_VALUE, Value>
+  | GEQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | LESS_KEYWORD<SHADER_LAB_VALUE, Value>
+  | LEQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | NOT_EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | ALWAYS_KEYWORD<SHADER_LAB_VALUE, Value>
+  | NEVER_KEYWORD<SHADER_LAB_VALUE, Value>
+;
 
-
-
+offsetCommand
+:
+  OFFSET_KEYWORD<SHADER_LAB_KEYWORD, OffsetKeyword>
+  NUMERIC_LITERAL<FACTOR, Factor>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<UNITS, Units>
 ;
 
 interface passDef

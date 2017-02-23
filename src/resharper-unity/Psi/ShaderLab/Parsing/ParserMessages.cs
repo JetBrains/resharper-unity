@@ -4,6 +4,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     public static class ParserMessages
     {
+        public const string IDS_RENDER_STATE_COMMAND = "render state command";
+        public const string IDS_ON_OFF_VALUE = "On or Off";
+        public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
         public const string IDS_PASS_DEF = "pass definition";
         public const string IDS_SHADER_LAB_IDENTIFIER = "identifier";
         public const string IDS_PROPERTY_TYPE = "property type";
