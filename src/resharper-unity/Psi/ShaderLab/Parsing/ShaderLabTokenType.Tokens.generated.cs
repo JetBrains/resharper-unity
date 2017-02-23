@@ -129,128 +129,130 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     public static readonly TokenNodeType ALPHA_TEST_KEYWORD = new KeywordTokenNodeType("ALPHA_TEST_KEYWORD", ALPHA_TEST_KEYWORD_NODE_TYPE_INDEX, representation: "AlphaTest");
     public const int SET_TEXTURE_KEYWORD_NODE_TYPE_INDEX = 1050;
     public static readonly TokenNodeType SET_TEXTURE_KEYWORD = new KeywordTokenNodeType("SET_TEXTURE_KEYWORD", SET_TEXTURE_KEYWORD_NODE_TYPE_INDEX, representation: "SetTexture");
+    public const int ANY_KEYWORD_NODE_TYPE_INDEX = 1051;
+    public static readonly TokenNodeType ANY_KEYWORD = new KeywordTokenNodeType("ANY_KEYWORD", ANY_KEYWORD_NODE_TYPE_INDEX, representation: "Any");
 
     //LegacyMaterialCommands
-    public const int DIFFUSE_KEYWORD_NODE_TYPE_INDEX = 1051;
+    public const int DIFFUSE_KEYWORD_NODE_TYPE_INDEX = 1052;
     public static readonly TokenNodeType DIFFUSE_KEYWORD = new KeywordTokenNodeType("DIFFUSE_KEYWORD", DIFFUSE_KEYWORD_NODE_TYPE_INDEX, representation: "Diffuse");
-    public const int AMBIENT_KEYWORD_NODE_TYPE_INDEX = 1052;
+    public const int AMBIENT_KEYWORD_NODE_TYPE_INDEX = 1053;
     public static readonly TokenNodeType AMBIENT_KEYWORD = new KeywordTokenNodeType("AMBIENT_KEYWORD", AMBIENT_KEYWORD_NODE_TYPE_INDEX, representation: "Ambient");
-    public const int SPECULAR_KEYWORD_NODE_TYPE_INDEX = 1053;
+    public const int SPECULAR_KEYWORD_NODE_TYPE_INDEX = 1054;
     public static readonly TokenNodeType SPECULAR_KEYWORD = new KeywordTokenNodeType("SPECULAR_KEYWORD", SPECULAR_KEYWORD_NODE_TYPE_INDEX, representation: "Specular");
-    public const int SHININESS_KEYWORD_NODE_TYPE_INDEX = 1054;
+    public const int SHININESS_KEYWORD_NODE_TYPE_INDEX = 1055;
     public static readonly TokenNodeType SHININESS_KEYWORD = new KeywordTokenNodeType("SHININESS_KEYWORD", SHININESS_KEYWORD_NODE_TYPE_INDEX, representation: "Shininess");
 
     //LegacyTextureCommands
-    public const int COMBINE_KEYWORD_NODE_TYPE_INDEX = 1055;
+    public const int COMBINE_KEYWORD_NODE_TYPE_INDEX = 1056;
     public static readonly TokenNodeType COMBINE_KEYWORD = new KeywordTokenNodeType("COMBINE_KEYWORD", COMBINE_KEYWORD_NODE_TYPE_INDEX, representation: "Combine");
-    public const int CONSTANT_COLOR_KEYWORD_NODE_TYPE_INDEX = 1056;
+    public const int CONSTANT_COLOR_KEYWORD_NODE_TYPE_INDEX = 1057;
     public static readonly TokenNodeType CONSTANT_COLOR_KEYWORD = new KeywordTokenNodeType("CONSTANT_COLOR_KEYWORD", CONSTANT_COLOR_KEYWORD_NODE_TYPE_INDEX, representation: "ConstantColor");
 
     //LegacyTextureCombinerKeywords
-    public const int PREVIOUS_KEYWORD_NODE_TYPE_INDEX = 1057;
+    public const int PREVIOUS_KEYWORD_NODE_TYPE_INDEX = 1058;
     public static readonly TokenNodeType PREVIOUS_KEYWORD = new KeywordTokenNodeType("PREVIOUS_KEYWORD", PREVIOUS_KEYWORD_NODE_TYPE_INDEX, representation: "Previous");
-    public const int PRIMARY_KEYWORD_NODE_TYPE_INDEX = 1058;
+    public const int PRIMARY_KEYWORD_NODE_TYPE_INDEX = 1059;
     public static readonly TokenNodeType PRIMARY_KEYWORD = new KeywordTokenNodeType("PRIMARY_KEYWORD", PRIMARY_KEYWORD_NODE_TYPE_INDEX, representation: "Primary");
-    public const int TEXTURE_KEYWORD_NODE_TYPE_INDEX = 1059;
+    public const int TEXTURE_KEYWORD_NODE_TYPE_INDEX = 1060;
     public static readonly TokenNodeType TEXTURE_KEYWORD = new KeywordTokenNodeType("TEXTURE_KEYWORD", TEXTURE_KEYWORD_NODE_TYPE_INDEX, representation: "Texture");
-    public const int CONSTANT_KEYWORD_NODE_TYPE_INDEX = 1060;
+    public const int CONSTANT_KEYWORD_NODE_TYPE_INDEX = 1061;
     public static readonly TokenNodeType CONSTANT_KEYWORD = new KeywordTokenNodeType("CONSTANT_KEYWORD", CONSTANT_KEYWORD_NODE_TYPE_INDEX, representation: "Constant");
-    public const int DOUBLE_KEYWORD_NODE_TYPE_INDEX = 1061;
+    public const int DOUBLE_KEYWORD_NODE_TYPE_INDEX = 1062;
     public static readonly TokenNodeType DOUBLE_KEYWORD = new KeywordTokenNodeType("DOUBLE_KEYWORD", DOUBLE_KEYWORD_NODE_TYPE_INDEX, representation: "Double");
-    public const int QUAD_KEYWORD_NODE_TYPE_INDEX = 1062;
+    public const int QUAD_KEYWORD_NODE_TYPE_INDEX = 1063;
     public static readonly TokenNodeType QUAD_KEYWORD = new KeywordTokenNodeType("QUAD_KEYWORD", QUAD_KEYWORD_NODE_TYPE_INDEX, representation: "Quad");
-    public const int LERP_KEYWORD_NODE_TYPE_INDEX = 1063;
+    public const int LERP_KEYWORD_NODE_TYPE_INDEX = 1064;
     public static readonly TokenNodeType LERP_KEYWORD = new KeywordTokenNodeType("LERP_KEYWORD", LERP_KEYWORD_NODE_TYPE_INDEX, representation: "Lerp");
-    public const int ONE_KEYWORD_NODE_TYPE_INDEX = 1064;
+    public const int ONE_KEYWORD_NODE_TYPE_INDEX = 1065;
     public static readonly TokenNodeType ONE_KEYWORD = new KeywordTokenNodeType("ONE_KEYWORD", ONE_KEYWORD_NODE_TYPE_INDEX, representation: "One");
-    public const int ALPHA_KEYWORD_NODE_TYPE_INDEX = 1065;
+    public const int ALPHA_KEYWORD_NODE_TYPE_INDEX = 1066;
     public static readonly TokenNodeType ALPHA_KEYWORD = new KeywordTokenNodeType("ALPHA_KEYWORD", ALPHA_KEYWORD_NODE_TYPE_INDEX, representation: "Alpha");
 
     //LegacyBindChannelsCommands
-    public const int BIND_KEYWORD_NODE_TYPE_INDEX = 1066;
+    public const int BIND_KEYWORD_NODE_TYPE_INDEX = 1067;
     public static readonly TokenNodeType BIND_KEYWORD = new KeywordTokenNodeType("BIND_KEYWORD", BIND_KEYWORD_NODE_TYPE_INDEX, representation: "Bind");
 
     //ColorMaterialKeywords
-    public const int AMBIENT_AND_DIFFUSE_KEYWORD_NODE_TYPE_INDEX = 1067;
+    public const int AMBIENT_AND_DIFFUSE_KEYWORD_NODE_TYPE_INDEX = 1068;
     public static readonly TokenNodeType AMBIENT_AND_DIFFUSE_KEYWORD = new KeywordTokenNodeType("AMBIENT_AND_DIFFUSE_KEYWORD", AMBIENT_AND_DIFFUSE_KEYWORD_NODE_TYPE_INDEX, representation: "AmbientAndDiffuse");
-    public const int EMISSION_KEYWORD_NODE_TYPE_INDEX = 1068;
+    public const int EMISSION_KEYWORD_NODE_TYPE_INDEX = 1069;
     public static readonly TokenNodeType EMISSION_KEYWORD = new KeywordTokenNodeType("EMISSION_KEYWORD", EMISSION_KEYWORD_NODE_TYPE_INDEX, representation: "Emission");
 
     //LegacyFogCommands
-    public const int MODE_KEYWORD_NODE_TYPE_INDEX = 1069;
+    public const int MODE_KEYWORD_NODE_TYPE_INDEX = 1070;
     public static readonly TokenNodeType MODE_KEYWORD = new KeywordTokenNodeType("MODE_KEYWORD", MODE_KEYWORD_NODE_TYPE_INDEX, representation: "Mode");
-    public const int DENSITY_KEYWORD_NODE_TYPE_INDEX = 1070;
+    public const int DENSITY_KEYWORD_NODE_TYPE_INDEX = 1071;
     public static readonly TokenNodeType DENSITY_KEYWORD = new KeywordTokenNodeType("DENSITY_KEYWORD", DENSITY_KEYWORD_NODE_TYPE_INDEX, representation: "Density");
 
     //FogModeKeywords
-    public const int GLOBAL_KEYWORD_NODE_TYPE_INDEX = 1071;
+    public const int GLOBAL_KEYWORD_NODE_TYPE_INDEX = 1072;
     public static readonly TokenNodeType GLOBAL_KEYWORD = new KeywordTokenNodeType("GLOBAL_KEYWORD", GLOBAL_KEYWORD_NODE_TYPE_INDEX, representation: "Global");
-    public const int LINEAR_KEYWORD_NODE_TYPE_INDEX = 1072;
+    public const int LINEAR_KEYWORD_NODE_TYPE_INDEX = 1073;
     public static readonly TokenNodeType LINEAR_KEYWORD = new KeywordTokenNodeType("LINEAR_KEYWORD", LINEAR_KEYWORD_NODE_TYPE_INDEX, representation: "Linear");
-    public const int EXP_KEYWORD_NODE_TYPE_INDEX = 1073;
+    public const int EXP_KEYWORD_NODE_TYPE_INDEX = 1074;
     public static readonly TokenNodeType EXP_KEYWORD = new KeywordTokenNodeType("EXP_KEYWORD", EXP_KEYWORD_NODE_TYPE_INDEX, representation: "Exp");
-    public const int EXP2_KEYWORD_NODE_TYPE_INDEX = 1074;
+    public const int EXP2_KEYWORD_NODE_TYPE_INDEX = 1075;
     public static readonly TokenNodeType EXP2_KEYWORD = new KeywordTokenNodeType("EXP2_KEYWORD", EXP2_KEYWORD_NODE_TYPE_INDEX, representation: "Exp2");
 
     //StencilCommands
-    public const int REF_KEYWORD_NODE_TYPE_INDEX = 1075;
+    public const int REF_KEYWORD_NODE_TYPE_INDEX = 1076;
     public static readonly TokenNodeType REF_KEYWORD = new KeywordTokenNodeType("REF_KEYWORD", REF_KEYWORD_NODE_TYPE_INDEX, representation: "Ref");
-    public const int READ_MASK_KEYWORD_NODE_TYPE_INDEX = 1076;
+    public const int READ_MASK_KEYWORD_NODE_TYPE_INDEX = 1077;
     public static readonly TokenNodeType READ_MASK_KEYWORD = new KeywordTokenNodeType("READ_MASK_KEYWORD", READ_MASK_KEYWORD_NODE_TYPE_INDEX, representation: "ReadMask");
-    public const int WRITE_MASK_KEYWORD_NODE_TYPE_INDEX = 1077;
+    public const int WRITE_MASK_KEYWORD_NODE_TYPE_INDEX = 1078;
     public static readonly TokenNodeType WRITE_MASK_KEYWORD = new KeywordTokenNodeType("WRITE_MASK_KEYWORD", WRITE_MASK_KEYWORD_NODE_TYPE_INDEX, representation: "WriteMask");
-    public const int COMP_KEYWORD_NODE_TYPE_INDEX = 1078;
+    public const int COMP_KEYWORD_NODE_TYPE_INDEX = 1079;
     public static readonly TokenNodeType COMP_KEYWORD = new KeywordTokenNodeType("COMP_KEYWORD", COMP_KEYWORD_NODE_TYPE_INDEX, representation: "Comp");
-    public const int FAIL_KEYWORD_NODE_TYPE_INDEX = 1079;
+    public const int FAIL_KEYWORD_NODE_TYPE_INDEX = 1080;
     public static readonly TokenNodeType FAIL_KEYWORD = new KeywordTokenNodeType("FAIL_KEYWORD", FAIL_KEYWORD_NODE_TYPE_INDEX, representation: "Fail");
-    public const int ZFAIL_KEYWORD_NODE_TYPE_INDEX = 1080;
+    public const int ZFAIL_KEYWORD_NODE_TYPE_INDEX = 1081;
     public static readonly TokenNodeType ZFAIL_KEYWORD = new KeywordTokenNodeType("ZFAIL_KEYWORD", ZFAIL_KEYWORD_NODE_TYPE_INDEX, representation: "ZFail");
 
     //ComparisonFunctionKeywords
-    public const int GREATER_KEYWORD_NODE_TYPE_INDEX = 1081;
+    public const int GREATER_KEYWORD_NODE_TYPE_INDEX = 1082;
     public static readonly TokenNodeType GREATER_KEYWORD = new KeywordTokenNodeType("GREATER_KEYWORD", GREATER_KEYWORD_NODE_TYPE_INDEX, representation: "Greater");
-    public const int GEQUAL_KEYWORD_NODE_TYPE_INDEX = 1082;
+    public const int GEQUAL_KEYWORD_NODE_TYPE_INDEX = 1083;
     public static readonly TokenNodeType GEQUAL_KEYWORD = new KeywordTokenNodeType("GEQUAL_KEYWORD", GEQUAL_KEYWORD_NODE_TYPE_INDEX, representation: "GEqual");
-    public const int LESS_KEYWORD_NODE_TYPE_INDEX = 1083;
+    public const int LESS_KEYWORD_NODE_TYPE_INDEX = 1084;
     public static readonly TokenNodeType LESS_KEYWORD = new KeywordTokenNodeType("LESS_KEYWORD", LESS_KEYWORD_NODE_TYPE_INDEX, representation: "Less");
-    public const int LEQUAL_KEYWORD_NODE_TYPE_INDEX = 1084;
+    public const int LEQUAL_KEYWORD_NODE_TYPE_INDEX = 1085;
     public static readonly TokenNodeType LEQUAL_KEYWORD = new KeywordTokenNodeType("LEQUAL_KEYWORD", LEQUAL_KEYWORD_NODE_TYPE_INDEX, representation: "LEqual");
-    public const int EQUAL_KEYWORD_NODE_TYPE_INDEX = 1085;
+    public const int EQUAL_KEYWORD_NODE_TYPE_INDEX = 1086;
     public static readonly TokenNodeType EQUAL_KEYWORD = new KeywordTokenNodeType("EQUAL_KEYWORD", EQUAL_KEYWORD_NODE_TYPE_INDEX, representation: "Equal");
-    public const int NOT_EQUAL_KEYWORD_NODE_TYPE_INDEX = 1086;
+    public const int NOT_EQUAL_KEYWORD_NODE_TYPE_INDEX = 1087;
     public static readonly TokenNodeType NOT_EQUAL_KEYWORD = new KeywordTokenNodeType("NOT_EQUAL_KEYWORD", NOT_EQUAL_KEYWORD_NODE_TYPE_INDEX, representation: "NotEqual");
-    public const int ALWAYS_KEYWORD_NODE_TYPE_INDEX = 1087;
+    public const int ALWAYS_KEYWORD_NODE_TYPE_INDEX = 1088;
     public static readonly TokenNodeType ALWAYS_KEYWORD = new KeywordTokenNodeType("ALWAYS_KEYWORD", ALWAYS_KEYWORD_NODE_TYPE_INDEX, representation: "Always");
-    public const int NEVER_KEYWORD_NODE_TYPE_INDEX = 1088;
+    public const int NEVER_KEYWORD_NODE_TYPE_INDEX = 1089;
     public static readonly TokenNodeType NEVER_KEYWORD = new KeywordTokenNodeType("NEVER_KEYWORD", NEVER_KEYWORD_NODE_TYPE_INDEX, representation: "Never");
 
     //StencilOperationKeywords
-    public const int KEEP_KEYWORD_NODE_TYPE_INDEX = 1089;
+    public const int KEEP_KEYWORD_NODE_TYPE_INDEX = 1090;
     public static readonly TokenNodeType KEEP_KEYWORD = new KeywordTokenNodeType("KEEP_KEYWORD", KEEP_KEYWORD_NODE_TYPE_INDEX, representation: "Keep");
-    public const int ZERO_KEYWORD_NODE_TYPE_INDEX = 1090;
+    public const int ZERO_KEYWORD_NODE_TYPE_INDEX = 1091;
     public static readonly TokenNodeType ZERO_KEYWORD = new KeywordTokenNodeType("ZERO_KEYWORD", ZERO_KEYWORD_NODE_TYPE_INDEX, representation: "Zero");
-    public const int REPLACE_KEYWORD_NODE_TYPE_INDEX = 1091;
+    public const int REPLACE_KEYWORD_NODE_TYPE_INDEX = 1092;
     public static readonly TokenNodeType REPLACE_KEYWORD = new KeywordTokenNodeType("REPLACE_KEYWORD", REPLACE_KEYWORD_NODE_TYPE_INDEX, representation: "Replace");
-    public const int INCR_SAT_KEYWORD_NODE_TYPE_INDEX = 1092;
+    public const int INCR_SAT_KEYWORD_NODE_TYPE_INDEX = 1093;
     public static readonly TokenNodeType INCR_SAT_KEYWORD = new KeywordTokenNodeType("INCR_SAT_KEYWORD", INCR_SAT_KEYWORD_NODE_TYPE_INDEX, representation: "IncrSat");
-    public const int DECR_SAT_KEYWORD_NODE_TYPE_INDEX = 1093;
+    public const int DECR_SAT_KEYWORD_NODE_TYPE_INDEX = 1094;
     public static readonly TokenNodeType DECR_SAT_KEYWORD = new KeywordTokenNodeType("DECR_SAT_KEYWORD", DECR_SAT_KEYWORD_NODE_TYPE_INDEX, representation: "DecrSat");
-    public const int INVERT_KEYWORD_NODE_TYPE_INDEX = 1094;
+    public const int INVERT_KEYWORD_NODE_TYPE_INDEX = 1095;
     public static readonly TokenNodeType INVERT_KEYWORD = new KeywordTokenNodeType("INVERT_KEYWORD", INVERT_KEYWORD_NODE_TYPE_INDEX, representation: "Invert");
-    public const int INCR_WRAP_KEYWORD_NODE_TYPE_INDEX = 1095;
+    public const int INCR_WRAP_KEYWORD_NODE_TYPE_INDEX = 1096;
     public static readonly TokenNodeType INCR_WRAP_KEYWORD = new KeywordTokenNodeType("INCR_WRAP_KEYWORD", INCR_WRAP_KEYWORD_NODE_TYPE_INDEX, representation: "IncrWrap");
-    public const int DECR_WRAP_KEYWORD_NODE_TYPE_INDEX = 1096;
+    public const int DECR_WRAP_KEYWORD_NODE_TYPE_INDEX = 1097;
     public static readonly TokenNodeType DECR_WRAP_KEYWORD = new KeywordTokenNodeType("DECR_WRAP_KEYWORD", DECR_WRAP_KEYWORD_NODE_TYPE_INDEX, representation: "DecrWrap");
 
     //Keywords
-    public const int ON_KEYWORD_NODE_TYPE_INDEX = 1097;
+    public const int ON_KEYWORD_NODE_TYPE_INDEX = 1098;
     public static readonly TokenNodeType ON_KEYWORD = new KeywordTokenNodeType("ON_KEYWORD", ON_KEYWORD_NODE_TYPE_INDEX, representation: "On");
-    public const int OFF_KEYWORD_NODE_TYPE_INDEX = 1098;
+    public const int OFF_KEYWORD_NODE_TYPE_INDEX = 1099;
     public static readonly TokenNodeType OFF_KEYWORD = new KeywordTokenNodeType("OFF_KEYWORD", OFF_KEYWORD_NODE_TYPE_INDEX, representation: "Off");
-    public const int BACK_KEYWORD_NODE_TYPE_INDEX = 1099;
+    public const int BACK_KEYWORD_NODE_TYPE_INDEX = 1100;
     public static readonly TokenNodeType BACK_KEYWORD = new KeywordTokenNodeType("BACK_KEYWORD", BACK_KEYWORD_NODE_TYPE_INDEX, representation: "Back");
-    public const int FRONT_KEYWORD_NODE_TYPE_INDEX = 1100;
+    public const int FRONT_KEYWORD_NODE_TYPE_INDEX = 1101;
     public static readonly TokenNodeType FRONT_KEYWORD = new KeywordTokenNodeType("FRONT_KEYWORD", FRONT_KEYWORD_NODE_TYPE_INDEX, representation: "Front");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1101;  }
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1102;  }
 }

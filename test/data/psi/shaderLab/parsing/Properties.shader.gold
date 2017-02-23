@@ -136,6 +136,20 @@ IShaderLabFile
               ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_MainTex)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:ANY_KEYWORD, text:Any)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
 

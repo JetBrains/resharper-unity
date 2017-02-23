@@ -24,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 TEXTURE_2D_KEYWORD,
                 TEXTURE_3D_KEYWORD,
                 VECTOR_KEYWORD,
+                ANY_KEYWORD,
 
                 TAGS_KEYWORD,
                 PASS_KEYWORD,

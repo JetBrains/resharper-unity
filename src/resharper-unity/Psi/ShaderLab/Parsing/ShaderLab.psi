@@ -234,6 +234,7 @@ options {
   | TEXTURE_2D_KEYWORD
   | TEXTURE_3D_KEYWORD
   | VECTOR_KEYWORD
+  | ANY_KEYWORD
 
   | TAGS_KEYWORD
   | PASS_KEYWORD
@@ -361,6 +362,7 @@ options {
   | TEXTURE_2D_KEYWORD
   | TEXTURE_3D_KEYWORD
   | VECTOR_KEYWORD
+  | ANY_KEYWORD
 
   | TAGS_KEYWORD
   | PASS_KEYWORD
@@ -490,6 +492,7 @@ options {
   | TEXTURE_2D_KEYWORD
   | TEXTURE_3D_KEYWORD
   | VECTOR_KEYWORD
+  | ANY_KEYWORD
 
   | TAGS_KEYWORD
   | PASS_KEYWORD
@@ -672,6 +675,7 @@ simplePropertyType
   | TEXTURE_2D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
   | TEXTURE_3D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
   | VECTOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | ANY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>    // TODO: This is not documented, but used in builtin shaders (e.g. Internal-BlitCopy.shader)
 ;
 
 // Errorhandling to allow resync on RPAREN in propertyParameters

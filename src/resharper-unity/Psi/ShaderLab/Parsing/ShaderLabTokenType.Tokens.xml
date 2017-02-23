@@ -94,6 +94,7 @@
     <Command name="FOG_KEYWORD" representation="Fog" />
     <Command name="ALPHA_TEST_KEYWORD" representation="AlphaTest" />
     <Command name="SET_TEXTURE_KEYWORD" representation="SetTexture" />
+    <Command name="ANY_KEYWORD" representation="Any" />
   </LegacyFixedFunctionCommands>
 
   <LegacyMaterialCommands NodeType="KeywordTokenNodeType">

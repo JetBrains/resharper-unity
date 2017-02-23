@@ -8,5 +8,6 @@
     _RefractionTex ("Environment Refraction", 2D) = "" {}
     _Fresnel ("Fresnel (A) ", 2D) = "" {}
     _BumpMap ("Bumpmap (RGB) ", 2D) = "" {} 
+    _MainTex ("Texture", any) = "" {}
   }
 }
