@@ -73,10 +73,108 @@
   </SubShaderCommands>
 
   <RenderStateCommands NodeType="KeywordTokenNodeType">
+    <Command name="CULL_KEYWORD" representation="Cull" />
+    <Command name="ZTEST_KEYWORD" representation="ZTest" />
+    <Command name="ZWRITE_KEYWORD" representation="ZWrite" />
+    <Command name="OFFSET_KEYWORD" representation="Offset" />
+    <Command name="BLEND_KEYWORD" representation="Blend" />
+    <Command name="COLOR_MASK_KEYWORD" representation="ColorMask" />
+    <Command name="STENCIL_KEYWORD" representation="Stencil" />
     <Command name="NAME_KEYWORD" representation="Name" />
+    <Command name="LOD_KEYWORD" representation="LOD" />
+    <Command name="BIND_CHANNELS_KEYWORD" representation="BindChannels" />
   </RenderStateCommands>
 
+  <LegacyFixedFunctionCommands NodeType="KeywordTokenNodeType">
+    <Command name="LIGHTING_KEYWORD" representation="Lighting" />
+    <Command name="MATERIAL_KEYWORD" representation="Material" />
+    <Command name="SEPARATE_SPECULAR_KEYWORD" representation="SeparateSpecular" />
+    <Command name="COLOR_MATERIAL_KEYWORD" representation="ColorMaterial" />
+    <Command name="FOG_KEYWORD" representation="Fog" />
+    <Command name="ALPHA_TEST_KEYWORD" representation="AlphaTest" />
+    <Command name="SET_TEXTURE_KEYWORD" representation="SetTexture" />
+  </LegacyFixedFunctionCommands>
+
+  <LegacyMaterialCommands NodeType="KeywordTokenNodeType">
+    <Command name="DIFFUSE_KEYWORD" representation="Diffuse" />
+    <Command name="AMBIENT_KEYWORD" representation="Ambient" />
+    <Command name="SPECULAR_KEYWORD" representation="Specular" />
+    <Command name="SHININESS_KEYWORD" representation="Shininess" />
+  </LegacyMaterialCommands>
+
+  <LegacyTextureCommands NodeType="KeywordTokenNodeType">
+    <Keywords name="COMBINE_KEYWORD" representation="Combine" />
+    <Keywords name="CONSTANT_COLOR_KEYWORD" representation="ConstantColor" />
+  </LegacyTextureCommands>
+
+  <LegacyTextureCombinerKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="PREVIOUS_KEYWORD" representation="Previous" />
+    <Keyword name="PRIMARY_KEYWORD" representation="Primary" />
+    <Keyword name="TEXTURE_KEYWORD" representation="Texture" />
+    <Keyword name="CONSTANT_KEYWORD" representation="Constant" />
+    <Keyword name="DOUBLE_KEYWORD" representation="Double" />
+    <Keyword name="QUAD_KEYWORD" representation="Quad" />
+    <Keyword name="LERP_KEYWORD" representation="Lerp" />
+    <Keyword name="ALPHA_KEYWORD" representation="Alpha" />
+  </LegacyTextureCombinerKeywords>
+
+  <LegacyBindChannelsCommands NodeType="KeywordTokenNodeType">
+    <Command name="BIND_KEYWORD" representation="Bind" />
+  </LegacyBindChannelsCommands>
+
+  <ColorMaterialKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="AMBIENT_AND_DIFFUSE_KEYWORD" representation="AmbientAndDiffuse" />
+    <Keyword name="EMISSION_KEYWORD" representation="Emission" />
+  </ColorMaterialKeywords>
+
+  <LegacyFogCommands NodeType="KeywordTokenNodeType">
+    <Command name="MODE_KEYWORD" representation="Mode" />
+    <Command name="DENSITY_KEYWORD" representation="Density" />
+  </LegacyFogCommands>
+
+  <FogModeKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="GLOBAL_KEYWORD" representation="Global" />
+    <Keyword name="LINEAR_KEYWORD" representation="Linear" />
+    <Keyword name="EXP_KEYWORD" representation="Exp" />
+    <Keyword name="EXP2_KEYWORD" representation="Exp2" />
+  </FogModeKeywords>
+
+  <StencilCommands NodeType="KeywordTokenNodeType">
+    <Command name="REF_KEYWORD" representation="Ref" />
+    <Command name="READ_MASK_KEYWORD" representation="ReadMask" />
+    <Command name="WRITE_MASK_KEYWORD" representation="WriteMask" />
+    <Command name="COMP_KEYWORD" representation="Comp" />
+    <Command name="FAIL_KEYWORD" representation="Fail" />
+    <Command name="ZFAIL_KEYWORD" representation="ZFail" />
+    <!-- Possibly also CompFront, PassFront, FailFront, ZFailFront & same again for Back -->
+  </StencilCommands>
+
+  <ComparisonFunctionKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="GREATER_KEYWORD" representation="Greater" />
+    <Keyword name="GEQUAL_KEYWORD" representation="GEqual" />
+    <Keyword name="LESS_KEYWORD" representation="Less" />
+    <Keyword name="LEQUAL_KEYWORD" representation="LEqual" />
+    <Keyword name="EQUAL_KEYWORD" representation="Equal" />
+    <Keyword name="NOT_EQUAL_KEYWORD" representation="NotEqual" />
+    <Keyword name="ALWAYS_KEYWORD" representation="Always" />
+    <Keyword name="NEVER_KEYWORD" representation="Never" />
+  </ComparisonFunctionKeywords>
+
+  <StencilOperationKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="KEEP_KEYWORD" representation="Keep" />
+    <Keyword name="ZERO_KEYWORD" representation="Zero" />
+    <Keyword name="REPLACE_KEYWORD" representation="Replace" />
+    <Keyword name="INCR_SAT_KEYWORD" representation="IncrSat" />
+    <Keyword name="DECR_SAT_KEYWORD" representation="DecrSat" />
+    <Keyword name="INVERT_KEYWORD" representation="Invert" />
+    <Keyword name="INCR_WRAP_KEYWORD" representation="IncrWrap" />
+    <Keyword name="DECR_WRAP_KEYWORD" representation="DecrWrap" />
+  </StencilOperationKeywords>
+
   <Keywords NodeType="KeywordTokenNodeType">
+    <Keyword name="ON_KEYWORD" representation="On" />
     <Keyword name="OFF_KEYWORD" representation="Off" />
+    <Keyword name="BACK_KEYWORD" representation="Back" />
+    <Keyword name="FRONT_KEYWORD" representation="Front" />
   </Keywords>
 </ShaderLabTokens>

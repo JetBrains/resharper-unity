@@ -30,9 +30,84 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 USEPASS_KEYWORD,
                 GRABPASS_KEYWORD,
 
+                CULL_KEYWORD,
+                ZTEST_KEYWORD,
+                ZWRITE_KEYWORD,
+                OFFSET_KEYWORD,
+                BLEND_KEYWORD,
+                COLOR_MASK_KEYWORD,
+                STENCIL_KEYWORD,
                 NAME_KEYWORD,
+                LOD_KEYWORD,
+                BIND_CHANNELS_KEYWORD,
 
-                OFF_KEYWORD
+                LIGHTING_KEYWORD,
+                MATERIAL_KEYWORD,
+                SEPARATE_SPECULAR_KEYWORD,
+                COLOR_MATERIAL_KEYWORD,
+                FOG_KEYWORD,
+                ALPHA_TEST_KEYWORD,
+                SET_TEXTURE_KEYWORD,
+
+                DIFFUSE_KEYWORD,
+                AMBIENT_KEYWORD,
+                SPECULAR_KEYWORD,
+                SHININESS_KEYWORD,
+
+                COMBINE_KEYWORD,
+                CONSTANT_COLOR_KEYWORD,
+
+                PREVIOUS_KEYWORD,
+                PRIMARY_KEYWORD,
+                TEXTURE_KEYWORD,
+                CONSTANT_KEYWORD,
+                DOUBLE_KEYWORD,
+                QUAD_KEYWORD,
+                LERP_KEYWORD,
+                ALPHA_KEYWORD,
+
+                BIND_KEYWORD,
+
+                AMBIENT_AND_DIFFUSE_KEYWORD,
+                EMISSION_KEYWORD,
+
+                MODE_KEYWORD,
+                DENSITY_KEYWORD,
+
+                GLOBAL_KEYWORD,
+                LINEAR_KEYWORD,
+                EXP_KEYWORD,
+                EXP2_KEYWORD,
+
+                REF_KEYWORD,
+                READ_MASK_KEYWORD,
+                WRITE_MASK_KEYWORD,
+                COMP_KEYWORD,
+                FAIL_KEYWORD,
+                ZFAIL_KEYWORD,
+
+                GREATER_KEYWORD,
+                GEQUAL_KEYWORD,
+                LESS_KEYWORD,
+                LEQUAL_KEYWORD,
+                EQUAL_KEYWORD,
+                NOT_EQUAL_KEYWORD,
+                ALWAYS_KEYWORD,
+                NEVER_KEYWORD,
+
+                KEEP_KEYWORD,
+                ZERO_KEYWORD,
+                REPLACE_KEYWORD,
+                INCR_SAT_KEYWORD,
+                DECR_SAT_KEYWORD,
+                INVERT_KEYWORD,
+                INCR_WRAP_KEYWORD,
+                DECR_WRAP_KEYWORD,
+
+                ON_KEYWORD,
+                OFF_KEYWORD,
+                BACK_KEYWORD,
+                FRONT_KEYWORD
               );
         }
     }
