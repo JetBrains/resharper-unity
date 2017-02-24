@@ -580,10 +580,24 @@ options {
   | FRONT_KEYWORD
 ;
 
+
+// **************************************************************************
+//
+// ShaderLab
+//
+// **************************************************************************
+
 errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
 :
   shaderCommand<SHADER_LAB_COMMAND, Command>
 ;
+
+
+// **************************************************************************
+//
+// Shader
+//
+// **************************************************************************
 
 shaderCommand
 :
@@ -600,13 +614,18 @@ shaderValue
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
   // Category
   subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>*
-  // I think fallback, customEditor and dependency can be in any 
-  // Accept multiple instances then add inspection to only allow one?
   fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
   customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommand>?
   dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>*
   RBRACE<RBRACE, RBrace>
 ;
+
+
+// **************************************************************************
+//
+// Properties
+//
+// **************************************************************************
 
 // Parsing context so nested errors will resync on following rules
 // Must also be errorhandling, or else no-one will check IsInFollow
@@ -754,6 +773,13 @@ options {
   errorElementWithoutRBrace*
 ;
 
+
+// **************************************************************************
+//
+// Property attributes
+//
+// **************************************************************************
+
 attribute
 :
   LBRACK<LBRACK, LBrack>
@@ -817,6 +843,23 @@ stringAttributeParameterValue[shaderLabIdentifier id]
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>*
 ;
 
+
+// **************************************************************************
+//
+// TODO: Common interface for commands?
+// TODO: Strongly typed accessors?
+//
+// **************************************************************************
+
+
+
+
+// **************************************************************************
+//
+// SubShader
+//
+// **************************************************************************
+
 // TODO: Sort out error handling for subtree
 subShaderCommand
 :
@@ -828,10 +871,18 @@ subShaderValue
 :
   LBRACE<LBRACE, LBrace>
   tagsCommand<TAGS_COMMAND, TagsCommands>*
-  renderStateCommands   // Common state
+  subShaderContents*
   passDef<PASSDEF, PassDefinition>+
   RBRACE<RBRACE, RBrace>
 ;
+
+
+
+// **************************************************************************
+//
+// Tags
+//
+// **************************************************************************
 
 tagsCommand
 :
@@ -853,21 +904,125 @@ tagDeclaration
   STRING_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
-private renderStateCommands
+
+
+// **************************************************************************
+//
+// SubShader commands
+//
+// **************************************************************************
+
+private subShaderContents
 :
-  renderStateCommand<SHADER_LAB_COMMAND, Commands>*
+  renderStateCommand
+  | legacyRenderStateCommand
+  | cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>
 ;
 
-interface renderStateCommand
+
+
+// **************************************************************************
+//
+// Render state setup
+//
+// **************************************************************************
+
+private renderStateCommand
 :
-  cullCommand
-  | zwriteCommand
-  | ztestCommand
-  | offsetCommand
-  | stencilCommand
-  | nameCommand
-  | lodCommand
+  cullCommand<SHADER_LAB_COMMAND, Commands>
+  | zwriteCommand<SHADER_LAB_COMMAND, Commands>
+  | ztestCommand<SHADER_LAB_COMMAND, Commands>
+  | offsetCommand<SHADER_LAB_COMMAND, Command>
+  // blend
+  // blendOp
+  // colormask (defined in Pass docs)
+  | stencilCommand<SHADER_LAB_COMMAND, Command>
+  | nameCommand<SHADER_LAB_COMMAND, Command>
+  | lodCommand<SHADER_LAB_COMMAND, Command>
 ;
+
+private legacyRenderStateCommand
+:
+  legacyLightingCommand
+  | legacyTextureCombinersCommand
+  //| legacyAlphaTestingCommand
+  //| legacyFogCommand
+  //| legacyBindChannelsCommand
+;
+
+private legacyLightingCommand
+:
+  colorCommand<SHADER_LAB_COMMAND, Commands>
+  | lightingCommand<SHADER_LAB_COMMAND, Commands>
+  | separateSpecularCommand<SHADER_LAB_COMMAND, Commands>
+  | colorMaterialCommand<SHADER_LAB_COMMAND, Commands>
+  | materialCommand<SHADER_LAB_COMMAND, Commands>
+;
+
+private legacyTextureCombinersCommand
+:
+  setTextureCommand<SHADER_LAB_COMMAND, Commands>
+;
+
+//private legacyAlphaTestingCommand
+//:
+  // alphaTest
+//;
+
+//private legacyFogCommand
+//:
+  // fog
+//;
+
+//private legacyBindChannelsCommand
+//:
+  // bindChannels
+//;
+
+
+// **************************************************************************
+//
+// Common values
+//
+// **************************************************************************
+
+comparisonFunctionValue
+:
+  GREATER_KEYWORD<SHADER_LAB_VALUE, Value>
+  | GEQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | LESS_KEYWORD<SHADER_LAB_VALUE, Value>
+  | LEQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | NOT_EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | ALWAYS_KEYWORD<SHADER_LAB_VALUE, Value>
+  | NEVER_KEYWORD<SHADER_LAB_VALUE, Value>
+;
+
+colorValue
+:
+  vectorPropertyValue<SHADER_LAB_VALUE, Value>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+;
+
+referencedProperty
+:
+  LBRACK<LBRACK, LBRack>
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  RBRACK<RBRACK, RBrack>
+;
+
+onOffValue
+:
+  ON_KEYWORD<SHADER_LAB_VALUE, Value>
+  | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Render state commands
+//
+// **************************************************************************
 
 cullCommand
 :
@@ -888,28 +1043,10 @@ zwriteCommand
   onOffValue<SHADER_LAB_VALUE, Value>
 ;
 
-onOffValue
-:
-  ON_KEYWORD<SHADER_LAB_VALUE, Value>
-  | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
-;
-
 ztestCommand
 :
   ZTEST_KEYWORD<SHADER_LAB_KEYWORD, ZTestKeyword>
   comparisonFunctionValue<SHADER_LAB_VALUE, Value>
-;
-
-comparisonFunctionValue
-:
-  GREATER_KEYWORD<SHADER_LAB_VALUE, Value>
-  | GEQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
-  | LESS_KEYWORD<SHADER_LAB_VALUE, Value>
-  | LEQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
-  | EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
-  | NOT_EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
-  | ALWAYS_KEYWORD<SHADER_LAB_VALUE, Value>
-  | NEVER_KEYWORD<SHADER_LAB_VALUE, Value>
 ;
 
 offsetCommand
@@ -925,6 +1062,39 @@ offsetValue
   NUMERIC_LITERAL<UNITS, Units>
 ;
 
+
+// **************************************************************************
+//
+// Blend
+//
+// **************************************************************************
+
+
+// **************************************************************************
+//
+// ColorMask
+//
+// **************************************************************************
+
+
+// **************************************************************************
+//
+// Stencil
+//
+// **************************************************************************
+
+stencilOperation
+:
+  KEEP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | ZERO_KEYWORD<SHADER_LAB_VALUE, Value>
+  | REPLACE_KEYWORD<SHADER_LAB_VALUE, Value>
+  | INCR_SAT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | DECR_SAT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | INVERT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | INCR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | DECR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
+;
+
 stencilCommand
 :
   STENCIL_KEYWORD<SHADER_LAB_KEYWORD, StencilKeyword>
@@ -934,13 +1104,11 @@ stencilCommand
 stencilValue
 :
   LBRACE<LBRACE, LBrace>
-  stencilValueCommand<SHADER_LAB_COMMAND, Commands>*
+  stencilContents*
   RBRACE<RBRACE, RBrace>
 ;
 
-// All nodes have a `Value` property, which gets pushed into the IStencilValueCommand as an ITreeNode
-// TODO: Add strongly typed accessors
-interface stencilValueCommand
+private stencilContents
 :
   refCommand
   | readMaskCommand
@@ -1008,17 +1176,12 @@ zfailCommand
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
-stencilOperation
-:
-  KEEP_KEYWORD<SHADER_LAB_VALUE, Value>
-  | ZERO_KEYWORD<SHADER_LAB_VALUE, Value>
-  | REPLACE_KEYWORD<SHADER_LAB_VALUE, Value>
-  | INCR_SAT_KEYWORD<SHADER_LAB_VALUE, Value>
-  | DECR_SAT_KEYWORD<SHADER_LAB_VALUE, Value>
-  | INVERT_KEYWORD<SHADER_LAB_VALUE, Value>
-  | INCR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
-  | DECR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
-;
+
+// **************************************************************************
+//
+// Name
+//
+// **************************************************************************
 
 nameCommand
 :
@@ -1031,6 +1194,13 @@ nameValue
   STRING_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
+
+// **************************************************************************
+//
+// LOD
+//
+// **************************************************************************
+
 lodCommand
 :
   LOD_KEYWORD<SHADER_LAB_KEYWORD, LodKeyword>
@@ -1042,101 +1212,17 @@ lodValue
   NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
-interface passDef
-:
-  usePassDef
-  | grabPassDef
-  | regularPassDef
-  | cgProgramPassDef
-;
 
-usePassDef
-:
-  USEPASS_KEYWORD<SHADER_LAB_KEYWORD, UsePassKeyword>
-  STRING_LITERAL<SHADER_LAB_VALUE, Value>
-;
-
-grabPassDef
-:
-  GRABPASS_KEYWORD<SHADER_LAB_KEYWORD, GrabPassKeyword>
-  grabPassValue<SHADER_LAB_VALUE, Value>
-;
-
-grabPassValue
-:
-  LBRACE<LBRACE, LBrace>
-  grabPassValueCommand<SHADER_LAB_COMMAND, Commands>*
-  RBRACE<RBRACE, RBrace>
-;
-
-interface grabPassValueCommand
-:
-  optionalNameCommand
-  | tagsCommand
-;
-
-optionalNameCommand
-:
-  NAME_KEYWORD<SHADER_LAB_KEYWORD, NameKeyword>?
-  STRING_LITERAL<SHADER_LAB_NAME, Name>
-;
-
-cgProgramPassDef
-:
-  cgProgramBlock<CG_PROGRAM, CgProgram>
-;
-
-regularPassDef
-:
-  PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
-  regularPassValue<SHADER_LAB_VALUE, Value>
-;
-
-regularPassValue
-:
-  LBRACE<LBRACE, LBrace>
-  STRING_LITERAL<SHADER_LAB_NAME, Name>?
-  tagsCommand<TAG, TagsCommands>*
-  renderStateCommands
-  legacyLightingCommands
-  legacyTextureCombinerCommands
-  cgProgramBlock<CG_PROGRAM, CgProgram>?
-  RBRACE<RBRACE, RBrace>
-;
-
-private legacyLightingCommands
-:
-  legacyLightingCommand<SHADER_LAB_COMMAND, Comamnds>*
-;
-
-// TODO: All commands should have a common interface
-// Keyword/Value
-interface legacyLightingCommand
-:
-  colorCommand
-  | lightingCommand
-  | separateSpecularCommand
-  | colorMaterialCommand
-  | materialCommand
-;
+// **************************************************************************
+//
+// Legacy lighting commands
+//
+// **************************************************************************
 
 colorCommand
 :
   COLOR_KEYWORD<SHADER_LAB_KEYWORD, ColorKeyword>
   colorValue<SHADER_LAB_VALUE, Value>
-;
-
-colorValue
-:
-  vectorPropertyValue<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
-;
-
-referencedProperty
-:
-  LBRACK<LBRACK, LBRack>
-  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
-  RBRACK<RBRACK, RBrack>
 ;
 
 lightingCommand
@@ -1172,17 +1258,17 @@ materialCommand
 materialValue
 :
   LBRACE<LBRACE, LBrace>
-  materialValueCommand<SHADER_LAB_COMMAND, Commands>*
+  materialContents*
   RBRACE<RBRACE, RBrace>
 ;
 
-interface materialValueCommand
+private materialContents
 :
-  diffuseCommand
-  | ambientCommand
-  | specularCommand
-  | shininessCommand
-  | emissionCommand
+  diffuseCommand<SHADER_LAB_COMMAND, Commands>
+  | ambientCommand<SHADER_LAB_COMMAND, Commands>
+  | specularCommand<SHADER_LAB_COMMAND, Commands>
+  | shininessCommand<SHADER_LAB_COMMAND, Commands>
+  | emissionCommand<SHADER_LAB_COMMAND, Commands>
 ;
 
 diffuseCommand
@@ -1221,15 +1307,12 @@ emissionCommand
   colorValue<SHADER_LAB_VALUE, Value>
 ;
 
-private legacyTextureCombinerCommands
-:
-  legacyTextureCombinerCommand<SHADER_LAB_COMMAND, Commands>*
-;
 
-interface legacyTextureCombinerCommand
-:
-  setTextureCommand
-;
+// **************************************************************************
+//
+// Legacy texture combiners
+//
+// **************************************************************************
 
 setTextureCommand
 :
@@ -1322,6 +1405,13 @@ constantColorCommand
   colorValue<SHADER_LAB_VALUE, Value>
 ;
 
+
+// **************************************************************************
+//
+// CGINCLUDE/CGPROGRAM
+//
+// **************************************************************************
+
 cgIncludeBlock
 :
   CG_INCLUDE<CG_INCLUDE, CgInclude>
@@ -1335,6 +1425,86 @@ cgProgramBlock
   CG_CONTENT<CG_CONTENT, CgContent>
   CG_END<CG_END, CgEnd>
 ;
+
+
+// **************************************************************************
+//
+// Pass definitions
+//
+// **************************************************************************
+
+interface passDef
+:
+  usePassDef
+  | grabPassDef
+  | regularPassDef
+  | cgProgramPassDef
+;
+
+usePassDef
+:
+  USEPASS_KEYWORD<SHADER_LAB_KEYWORD, UsePassKeyword>
+  STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+grabPassDef
+:
+  GRABPASS_KEYWORD<SHADER_LAB_KEYWORD, GrabPassKeyword>
+  grabPassValue<SHADER_LAB_VALUE, Value>
+;
+
+grabPassValue
+:
+  LBRACE<LBRACE, LBrace>
+  grabPassContents*
+  RBRACE<RBRACE, RBrace>
+;
+
+private grabPassContents
+:
+  optionalNameCommand<SHADER_LAB_COMMAND, Commands>
+  | tagsCommand
+;
+
+optionalNameCommand
+:
+  NAME_KEYWORD<SHADER_LAB_KEYWORD, NameKeyword>?
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+;
+
+cgProgramPassDef
+:
+  cgProgramBlock<CG_PROGRAM, CgProgram>
+;
+
+regularPassDef
+:
+  PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
+  regularPassValue<SHADER_LAB_VALUE, Value>
+;
+
+regularPassValue
+:
+  LBRACE<LBRACE, LBrace>
+  STRING_LITERAL<SHADER_LAB_NAME, Name>?
+  tagsCommand<TAG, TagsCommands>*
+  regularPassContents*
+  RBRACE<RBRACE, RBrace>
+;
+
+private regularPassContents
+:
+  renderStateCommand
+  | legacyRenderStateCommand
+  | cgProgramBlock<CGPROGRAM_BLOCK, CgPrograms>
+;
+
+
+// **************************************************************************
+//
+// Fallback
+//
+// **************************************************************************
 
 // TODO: Verify error handling
 fallbackCommand
@@ -1350,6 +1520,13 @@ fallbackValue
   | errorElementWithoutRBrace   // TODO: Will this match `CustomEditor`?
 ;
 
+
+// **************************************************************************
+//
+// CustomEditor
+//
+// **************************************************************************
+
 // TODO: Verify error handling
 customEditorCommand
 :
@@ -1362,6 +1539,13 @@ customEditorValue
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   | errorElementWithoutRBrace
 ;
+
+
+// **************************************************************************
+//
+// Dependency
+//
+// **************************************************************************
 
 // https://forum.unity3d.com/threads/shaderlab-dependency-property.215130/
 // https://forum.unity3d.com/threads/solved-pass-data-from-a-shader-to-its-dependency-shader-or-set-dependecy-shader-data.437961/
