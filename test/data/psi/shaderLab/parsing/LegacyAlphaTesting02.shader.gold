@@ -1,0 +1,121 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      IPropertiesCommand
+        ShaderLabTokenType+FixedTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
+        IPropertiesValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_MainTex)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_Cutoff)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            IRangePropertyType
+              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      ISubShaderCommand
+        ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        ISubShaderValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          IRegularPassDef
+            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              IAlphaTestCommand
+                ShaderLabTokenType+FixedTokenElement(type:ALPHA_TEST_KEYWORD, text:AlphaTest)
+                IAlphaTestValue
+                  IComparisonFunctionValue
+                    ShaderLabTokenType+FixedTokenElement(type:GREATER_KEYWORD, text:Greater)
+                  INumericValue
+                    IReferencedProperty
+                      ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                      IShaderLabIdentifier
+                        Identifier(type:IDENTIFIER, text:_Cutoff)
+                      ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              IMaterialCommand
+                ShaderLabTokenType+FixedTokenElement(type:MATERIAL_KEYWORD, text:Material)
+                IMaterialValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  IDiffuseCommand
+                    ShaderLabTokenType+FixedTokenElement(type:DIFFUSE_KEYWORD, text:Diffuse)
+                    IColorValue
+                      IVectorPropertyValue
+                        ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                        ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+                  IAmbientCommand
+                    ShaderLabTokenType+FixedTokenElement(type:AMBIENT_KEYWORD, text:Ambient)
+                    IColorValue
+                      IVectorPropertyValue
+                        ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                        ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              ILightingCommand
+                ShaderLabTokenType+FixedTokenElement(type:LIGHTING_KEYWORD, text:Lighting)
+                IOnOffValue
+                  ShaderLabTokenType+FixedTokenElement(type:ON_KEYWORD, text:On)
+              ISetTextureCommand
+                ShaderLabTokenType+FixedTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
+                ISetTextureValue
+                  IReferencedProperty
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                    IShaderLabIdentifier
+                      Identifier(type:IDENTIFIER, text:_MainTex)
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  ICombineCommand
+                    ShaderLabTokenType+FixedTokenElement(type:COMBINE_KEYWORD, text:Combine)
+                    ICombineValue
+                      ICombineCalculation
+                        ICombineOperation
+                          ICombineSrc
+                            ShaderLabTokenType+FixedTokenElement(type:TEXTURE_KEYWORD, text:Texture)
+                          ShaderLabTokenType+FixedTokenElement(type:MULTIPLY, text:*)
+                          ICombineSrc
+                            ShaderLabTokenType+FixedTokenElement(type:PRIMARY_KEYWORD, text:Primary)
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+

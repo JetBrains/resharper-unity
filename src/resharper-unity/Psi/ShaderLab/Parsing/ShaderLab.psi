@@ -945,7 +945,7 @@ private legacyRenderStateCommand
 :
   legacyLightingCommand
   | legacyTextureCombinersCommand
-  //| legacyAlphaTestingCommand
+  | legacyAlphaTestingCommand
   //| legacyFogCommand
   //| legacyBindChannelsCommand
 ;
@@ -964,10 +964,10 @@ private legacyTextureCombinersCommand
   setTextureCommand<SHADER_LAB_COMMAND, Commands>
 ;
 
-//private legacyAlphaTestingCommand
-//:
-  // alphaTest
-//;
+private legacyAlphaTestingCommand
+:
+  alphaTestCommand<SHADER_LAB_COMMAND, Commands>
+;
 
 //private legacyFogCommand
 //:
@@ -996,6 +996,12 @@ comparisonFunctionValue
   | NOT_EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
   | ALWAYS_KEYWORD<SHADER_LAB_VALUE, Value>
   | NEVER_KEYWORD<SHADER_LAB_VALUE, Value>
+;
+
+numericValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
 ;
 
 colorValue
@@ -1292,13 +1298,7 @@ specularCommand
 shininessCommand
 :
   SHININESS_KEYWORD<SHADER_LAB_KEYWORD, ShininessKeyword>
-  shininessValue<SHADER_LAB_VALUE, Value>
-;
-
-shininessValue
-:
-  NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 emissionCommand
@@ -1403,6 +1403,31 @@ constantColorCommand
 :
   CONSTANT_COLOR_KEYWORD<SHADER_LAB_KEYWORD, ConstantColorKeyword>
   colorValue<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Legacy alpha testing
+//
+// **************************************************************************
+
+alphaTestCommand
+:
+  ALPHA_TEST_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  alphaTestValue<SHADER_LAB_VALUE, Value>
+;
+
+alphaTestValue
+:
+  OFF_KEYWORD<OFF_KEYWORD, OffKeyword>
+  | alphaTestComparisonValue
+;
+
+private alphaTestComparisonValue
+:
+  comparisonFunctionValue<COMPARISON_FUNCTION, ComparisonFunction>
+  numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 

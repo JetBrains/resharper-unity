@@ -131,7 +131,7 @@ IShaderLabFile
                         ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                   IShininessCommand
                     ShaderLabTokenType+FixedTokenElement(type:SHININESS_KEYWORD, text:Shininess)
-                    IShininessValue
+                    INumericValue
                       IReferencedProperty
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                         IShaderLabIdentifier

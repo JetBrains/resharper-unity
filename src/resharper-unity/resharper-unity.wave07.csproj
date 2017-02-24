@@ -413,6 +413,8 @@
     <Compile Include="_Generated\Parsing\ShaderLab\ErrorMessages.cs" />
     <Compile Include="_Generated\Parsing\ShaderLab\ShaderLabParserGenerated.cs" />
     <Compile Include="_Generated\Parsing\ShaderLab\TokenBitsets.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\AlphaTestCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\AlphaTestValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AmbientCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AttributeNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AttributeParametersNavigator.cs" />
@@ -447,6 +449,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\FallbackValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\GrabPassDefNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\GrabPassValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IAlphaTestCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IAlphaTestValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAmbientCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAttribute.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAttributeParameters.cs" />
@@ -486,6 +490,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ILodValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IMaterialCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IMaterialValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AlphaTestCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AlphaTestValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AmbientCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\Attribute.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AttributeParameters.cs" />
@@ -529,6 +535,7 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\NameCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\NameValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\NumberAttributeParameterValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\NumericValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\OffsetCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\OffsetValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\OnOffValue.cs" />
@@ -555,7 +562,6 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShaderLabIdentifierStub.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShaderValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShininessCommand.cs" />
-    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\ShininessValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\SimplePropertyType.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\SpecularCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\StencilCommand.cs" />
@@ -578,6 +584,7 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\INameCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\INameValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\INumberAttributeParameterValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\INumericValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IOffsetCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IOffsetValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IOnOffValue.cs" />
@@ -607,7 +614,6 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IShaderLabIdentifier.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IShaderValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IShininessCommand.cs" />
-    <Compile Include="_Generated\Psi\ShaderLab\Tree\IShininessValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ISimplePropertyType.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ISpecularCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IStencilCommand.cs" />
@@ -635,6 +641,7 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\NameCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\NameValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\NumberAttributeParameterValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\NumericValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\OffsetCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\OffsetValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\OnOffValueNavigator.cs" />
@@ -664,7 +671,6 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ShaderLabIdentifierNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ShaderValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ShininessCommandNavigator.cs" />
-    <Compile Include="_Generated\Psi\ShaderLab\Tree\ShininessValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\SimplePropertyTypeNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\SpecularCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\StencilCommandNavigator.cs" />

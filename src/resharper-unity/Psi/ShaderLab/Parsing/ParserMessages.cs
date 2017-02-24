@@ -4,6 +4,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     public static class ParserMessages
     {
+        public const string IDS_ALPHA_TEST_VALUE = "AlphaTest value";
         public const string IDS_ATTRIBUTE_PARAMETER_VALUE = "parameter value";
         public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";
@@ -13,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_LEGACY_LIGHTING_COMMAND = "lighting command";
         public const string IDS_LEGACY_RENDER_STATE_COMMAND = "render state command";
         public const string IDS_MATERIAL_CONTENTS = "Material command";
+        public const string IDS_NUMERIC_VALUE = "numeric literal or referenced property";
         public const string IDS_ON_OFF_VALUE = "On or Off";
         public const string IDS_OPERATOR = "operator";
         public const string IDS_PASS_DEF = "pass definition";
