@@ -947,7 +947,7 @@ private legacyRenderStateCommand
   | legacyTextureCombinersCommand
   | legacyAlphaTestingCommand
   | legacyFogCommand
-  //| legacyBindChannelsCommand
+  | legacyBindChannelsCommand
 ;
 
 private legacyLightingCommand
@@ -974,10 +974,10 @@ private legacyFogCommand
   fogCommand<SHADER_LAB_COMMAND, Commands>
 ;
 
-//private legacyBindChannelsCommand
-//:
-  // bindChannels
-//;
+private legacyBindChannelsCommand
+:
+   bindChannelsCommand<SHADER_LAB_COMMAND, Commands>
+;
 
 
 // **************************************************************************
@@ -1490,6 +1490,39 @@ rangeValue
   numericValue<SHADER_LAB_VALUE, Value>
   COMMA<COMMA, Comma>
   numericValue<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Legacy BindChannels
+//
+// **************************************************************************
+
+bindChannelsCommand
+:
+  BIND_CHANNELS_KEYWORD<SHADER_LAB_KEYWORD, BindChannelsKeyword>
+  bindChannelsValue<SHADER_LAB_VALUE, Value>
+;
+
+bindChannelsValue
+:
+  LBRACE<LBRACE, LBrace>
+  bindCommand<SHADER_LAB_COMMAND, BindCommand>+
+  RBRACE<RBRACE, RBrace>
+;
+
+bindCommand
+:
+  BIND_KEYWORD<SHADER_LAB_KEYWORD, BindKeyword>
+  bindValue<SHADER_LAB_VALUE, Values>+
+;
+
+bindValue
+:
+  STRING_LITERAL<SOURCE, Source>
+  COMMA<COMMA, Comma>
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Target>
 ;
 
 

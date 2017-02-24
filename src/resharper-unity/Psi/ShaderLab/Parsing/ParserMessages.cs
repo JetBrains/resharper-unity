@@ -6,6 +6,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     {
         public const string IDS_ALPHA_TEST_VALUE = "AlphaTest value";
         public const string IDS_ATTRIBUTE_PARAMETER_VALUE = "parameter value";
+        public const string IDS_BIND_COMMAND = "Bind command";
+        public const string IDS_BIND_VALUE = "Bind value";
         public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";
         public const string IDS_COLOR_VALUE = "color value";
@@ -24,7 +26,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_RENDER_STATE_COMMAND = "render state command";
         public const string IDS_REGULAR_PASS_CONTENTS = "Pass command";
         public const string IDS_SHADER_LAB_IDENTIFIER = "identifier";
-        public const string IDS_SHININESS_VALUE = "shininess value";
         public const string IDS_SIMPLE_PROPERTY_TYPE = "property type";
         public const string IDS_STENCIL_CONTENTS = "Stencil command";
         public const string IDS_STENCIL_OPERATION = "stencil operation";

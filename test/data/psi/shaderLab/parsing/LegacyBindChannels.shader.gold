@@ -1,0 +1,45 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      ISubShaderCommand
+        ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        ISubShaderValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          IRegularPassDef
+            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              IBindChannelsCommand
+                ShaderLabTokenType+FixedTokenElement(type:BIND_CHANNELS_KEYWORD, text:BindChannels)
+                IBindChannelsValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  IBindCommand
+                    ShaderLabTokenType+FixedTokenElement(type:BIND_KEYWORD, text:Bind)
+                    IBindValue
+                      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                      ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                      IShaderLabIdentifier
+                        Identifier(type:IDENTIFIER, text:vertex)
+                  IBindCommand
+                    ShaderLabTokenType+FixedTokenElement(type:BIND_KEYWORD, text:Bind)
+                    IBindValue
+                      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                      ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                      IShaderLabIdentifier
+                        Identifier(type:IDENTIFIER, text:texcoord0)
+                  IBindCommand
+                    ShaderLabTokenType+FixedTokenElement(type:BIND_KEYWORD, text:Bind)
+                    IBindValue
+                      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                      ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                      IShaderLabIdentifier
+                        Identifier(type:IDENTIFIER, text:texcoord1)
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+
