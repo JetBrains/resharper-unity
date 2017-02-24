@@ -933,9 +933,9 @@ private renderStateCommand
   | zwriteCommand<SHADER_LAB_COMMAND, Commands>
   | ztestCommand<SHADER_LAB_COMMAND, Commands>
   | offsetCommand<SHADER_LAB_COMMAND, Command>
+  | colorMaskCommand<SHADER_LAB_COMMAND, Command>
   // blend
   // blendOp
-  // colormask (defined in Pass docs)
   | stencilCommand<SHADER_LAB_COMMAND, Command>
   | nameCommand<SHADER_LAB_COMMAND, Command>
   | lodCommand<SHADER_LAB_COMMAND, Command>
@@ -1066,6 +1066,19 @@ offsetValue
   NUMERIC_LITERAL<FACTOR, Factor>
   COMMA<COMMA, Comma>
   NUMERIC_LITERAL<UNITS, Units>
+;
+
+colorMaskCommand
+:
+  COLOR_MASK_KEYWORD<SHADER_LAB_KEYWORD, ColorMaskKeyword>
+  colorMaskValue<SHADER_LAB_VALUE, Value>
+;
+
+colorMaskValue
+:
+  // RBG, A, 0, any combination of R, G, B, A
+  shaderLabIdentifier<SHADER_LAB_VALUE, Value>
+  | NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
 

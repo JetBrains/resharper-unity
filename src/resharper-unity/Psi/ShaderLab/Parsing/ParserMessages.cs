@@ -9,6 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_BIND_COMMAND = "Bind command";
         public const string IDS_BIND_VALUE = "Bind value";
         public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
+        public const string IDS_COLOR_MASK_VALUE = "ColorMask value";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";
         public const string IDS_COLOR_VALUE = "color value";
         public const string IDS_CULL_VALUE = "cull value";
