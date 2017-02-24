@@ -946,7 +946,7 @@ private legacyRenderStateCommand
   legacyLightingCommand
   | legacyTextureCombinersCommand
   | legacyAlphaTestingCommand
-  //| legacyFogCommand
+  | legacyFogCommand
   //| legacyBindChannelsCommand
 ;
 
@@ -969,10 +969,10 @@ private legacyAlphaTestingCommand
   alphaTestCommand<SHADER_LAB_COMMAND, Commands>
 ;
 
-//private legacyFogCommand
-//:
-  // fog
-//;
+private legacyFogCommand
+:
+  fogCommand<SHADER_LAB_COMMAND, Commands>
+;
 
 //private legacyBindChannelsCommand
 //:
@@ -1408,13 +1408,13 @@ constantColorCommand
 
 // **************************************************************************
 //
-// Legacy alpha testing
+// Legacy AlphaTesting
 //
 // **************************************************************************
 
 alphaTestCommand
 :
-  ALPHA_TEST_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  ALPHA_TEST_KEYWORD<SHADER_LAB_KEYWORD, AlphaTestKeyword>
   alphaTestValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1427,6 +1427,68 @@ alphaTestValue
 private alphaTestComparisonValue
 :
   comparisonFunctionValue<COMPARISON_FUNCTION, ComparisonFunction>
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Legacy Fog
+//
+// **************************************************************************
+
+fogCommand
+:
+  FOG_KEYWORD<SHADER_LAB_KEYWORD, FogKeyword>
+  fogValue<SHADER_LAB_VALUE, Value>
+;
+
+fogValue
+:
+  LBRACE<LBRACE, LBrace>
+  fogContents*
+  RBRACE<RBRACE, RBrace>
+;
+
+private fogContents
+:
+  modeCommand<SHADER_LAB_COMMAND, Commands>
+  | colorCommand<SHADER_LAB_COMMAND, Commands>
+  | densityCommand<SHDAER_LAB_COMMAND, Commands>
+  | rangeCommand<SHDAER_LAB_COMMAND, Commands>
+;
+
+modeCommand
+:
+  MODE_KEYWORD<SHADER_LAB_KEYWORD, ModeKeyword>
+  modeValue<SHADER_LAB_VALUE, Value>
+;
+
+modeValue
+:
+  OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+  | GLOBAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | LINEAR_KEYWORD<SHADER_LAB_VALUE, Value>
+  | EXP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | EXP2_KEYWORD<SHADER_LAB_VALUE, Value>
+;
+
+densityCommand
+:
+  DENSITY_KEYWORD<SHADER_LAB_KEYWORD, DensityKeyword>
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+rangeCommand
+:
+  RANGE_KEYWORD<SHADER_LAB_KEYWORD, RangeKeyword>
+  rangeValue<SHADER_LAB_VALUE, Value>
+;
+
+rangeValue
+:
+  numericValue<SHADER_LAB_VALUE, Value>
+  COMMA<COMMA, Comma>
   numericValue<SHADER_LAB_VALUE, Value>
 ;
 

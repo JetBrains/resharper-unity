@@ -10,10 +10,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";
         public const string IDS_COLOR_VALUE = "color value";
         public const string IDS_CULL_VALUE = "cull value";
+        public const string IDS_FOG_CONTENTS = "Fog command";
         public const string IDS_GRAB_PASS_CONTENTS = "GrabPass command";
         public const string IDS_LEGACY_LIGHTING_COMMAND = "lighting command";
         public const string IDS_LEGACY_RENDER_STATE_COMMAND = "render state command";
         public const string IDS_MATERIAL_CONTENTS = "Material command";
+        public const string IDS_MODE_VALUE = "Mode value";
         public const string IDS_NUMERIC_VALUE = "numeric literal or referenced property";
         public const string IDS_ON_OFF_VALUE = "On or Off";
         public const string IDS_OPERATOR = "operator";
