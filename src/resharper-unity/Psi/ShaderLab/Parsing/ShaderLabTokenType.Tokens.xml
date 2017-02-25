@@ -79,6 +79,8 @@
     <Command name="ZWRITE_KEYWORD" representation="ZWrite" />
     <Command name="OFFSET_KEYWORD" representation="Offset" />
     <Command name="BLEND_KEYWORD" representation="Blend" />
+    <Command name="BLEND_OP_KEYWORD" representation="BlendOp" />
+    <Command name="ALPHA_TO_MASK_KEYWORD" representation="AlphaToMask" />
     <Command name="COLOR_MASK_KEYWORD" representation="ColorMask" />
     <Command name="STENCIL_KEYWORD" representation="Stencil" />
     <Command name="NAME_KEYWORD" representation="Name" />

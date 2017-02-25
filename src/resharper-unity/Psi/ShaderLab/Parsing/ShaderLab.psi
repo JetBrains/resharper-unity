@@ -246,6 +246,8 @@ options {
   | ZWRITE_KEYWORD
   | OFFSET_KEYWORD
   | BLEND_KEYWORD
+  | BLEND_OP_KEYWORD
+  | ALPHA_TO_MASK_KEYWORD
   | COLOR_MASK_KEYWORD
   | STENCIL_KEYWORD
   | NAME_KEYWORD
@@ -374,6 +376,8 @@ options {
   | ZWRITE_KEYWORD
   | OFFSET_KEYWORD
   | BLEND_KEYWORD
+  | BLEND_OP_KEYWORD
+  | ALPHA_TO_MASK_KEYWORD
   | COLOR_MASK_KEYWORD
   | STENCIL_KEYWORD
   | NAME_KEYWORD
@@ -504,6 +508,8 @@ options {
   | ZWRITE_KEYWORD
   | OFFSET_KEYWORD
   | BLEND_KEYWORD
+  | BLEND_OP_KEYWORD
+  | ALPHA_TO_MASK_KEYWORD
   | COLOR_MASK_KEYWORD
   | STENCIL_KEYWORD
   | NAME_KEYWORD
@@ -933,12 +939,14 @@ private renderStateCommand
   | zwriteCommand<SHADER_LAB_COMMAND, Commands>
   | ztestCommand<SHADER_LAB_COMMAND, Commands>
   | offsetCommand<SHADER_LAB_COMMAND, Command>
-  | colorMaskCommand<SHADER_LAB_COMMAND, Command>
-  // blend
-  // blendOp
-  | stencilCommand<SHADER_LAB_COMMAND, Command>
-  | nameCommand<SHADER_LAB_COMMAND, Command>
-  | lodCommand<SHADER_LAB_COMMAND, Command>
+  | colorMaskCommand<SHADER_LAB_COMMAND, Commands>
+  // Do these 3 make sense outside of Pass?
+  | blendCommand<SHADER_LAB_COMMAND, Commands>
+  | blendOpCommand<SHADER_LAB_COMMAND, Commands>
+  | alphaToMaskCommand<SHADER_LAB_COMMAND, Commands>
+  | stencilCommand<SHADER_LAB_COMMAND, Commands>
+  | nameCommand<SHADER_LAB_COMMAND, Commands>
+  | lodCommand<SHADER_LAB_COMMAND, Commands>
 ;
 
 private legacyRenderStateCommand
@@ -1087,6 +1095,58 @@ colorMaskValue
 // Blend
 //
 // **************************************************************************
+
+blendCommand
+:
+  BLEND_KEYWORD<SHADER_LAB_KEYWORD, BlendKeyword>
+  blendValue<SHADER_LAB_VALUE, Value>
+;
+
+blendValue
+:
+  OFF_KEYWORD<OFF_KEYWORD, OffKeyword>
+  | blendValues
+;
+
+private blendValues
+:
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
+  shaderLabIdentifier<SRCFACTOR, SrcFactor>
+  shaderLabIdentifier<DSTFACTOR, DstFactor>
+  (
+    COMMA<COMMA, Comma>
+    shaderLabIdentifier<SRCFACTORA, SrcFactorA>
+    shaderLabIdentifier<DSTFACTORA, DstFactorA>
+  )?
+;
+
+blendOpCommand
+:
+  BLEND_OP_KEYWORD<SHADER_LAB_KEYWORD, BlendOpKeyword>
+  blendOpValue<SHADER_LAB_VALUE, Value>
+;
+
+blendOpValue
+:
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
+  // Treat Op enum value as an identifier, rather than a keyword
+  shaderLabIdentifier<OP_COLOR, OpColor>
+  (
+    COMMA<COMMA, Comma>
+    shaderLabIdentifier<OP_ALPHA, OpAlpha>
+  )?
+;
+
+alphaToMaskCommand
+:
+  ALPHA_TO_MASK_KEYWORD<SHADER_LAB_KEYWORD, AlphaToMaskKeyword>
+  alphaToMaskValue<SHADER_LAB_VALUE, Value>
+;
+
+alphaToMaskValue
+:
+  ON_KEYWORD<SHADER_LAB_KEYWORD, OnKeyword>
+;
 
 
 // **************************************************************************

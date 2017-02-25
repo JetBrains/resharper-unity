@@ -415,6 +415,8 @@
     <Compile Include="_Generated\Parsing\ShaderLab\TokenBitsets.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AlphaTestCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AlphaTestValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\AlphaToMaskCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\AlphaToMaskValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AmbientCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AttributeNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\AttributeParametersNavigator.cs" />
@@ -424,6 +426,10 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\BindChannelsValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\BindCommandNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\BindValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\BlendCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\BlendOpCommandNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\BlendOpValueNavigator.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\BlendValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\CgIncludeBlockNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\CgProgramBlockNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\CgProgramPassDefNavigator.cs" />
@@ -460,6 +466,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\GrabPassValueNavigator.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAlphaTestCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAlphaTestValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IAlphaToMaskCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IAlphaToMaskValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAmbientCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAttribute.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IAttributeParameters.cs" />
@@ -469,6 +477,10 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IBindChannelsValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IBindCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IBindValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IBlendCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IBlendOpCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IBlendOpValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\IBlendValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ICgIncludeBlock.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ICgProgramBlock.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\ICgProgramPassDef.cs" />
@@ -512,6 +524,8 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\IModeValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AlphaTestCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AlphaTestValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AlphaToMaskCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AlphaToMaskValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AmbientCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\Attribute.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\AttributeParameters.cs" />
@@ -520,6 +534,10 @@
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\BindChannelsValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\BindCommand.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\BindValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\BlendCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\BlendOpCommand.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\BlendOpValue.cs" />
+    <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\BlendValue.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\CgIncludeBlock.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\CgProgramBlock.cs" />
     <Compile Include="_Generated\Psi\ShaderLab\Tree\Impl\CgProgramPassDef.cs" />

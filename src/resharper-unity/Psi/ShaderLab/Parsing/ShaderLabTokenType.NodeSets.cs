@@ -36,6 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 ZWRITE_KEYWORD,
                 OFFSET_KEYWORD,
                 BLEND_KEYWORD,
+                BLEND_OP_KEYWORD,
+                ALPHA_TO_MASK_KEYWORD,
                 COLOR_MASK_KEYWORD,
                 STENCIL_KEYWORD,
                 NAME_KEYWORD,
