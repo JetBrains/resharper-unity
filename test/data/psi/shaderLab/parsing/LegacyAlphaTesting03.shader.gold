@@ -161,10 +161,12 @@ IShaderLabFile
               IBlendCommand
                 ShaderLabTokenType+FixedTokenElement(type:BLEND_KEYWORD, text:Blend)
                 IBlendValue
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:SrcAlpha)
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:OneMinusSrcAlpha)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      Identifier(type:IDENTIFIER, text:SrcAlpha)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      Identifier(type:IDENTIFIER, text:OneMinusSrcAlpha)
               ISetTextureCommand
                 ShaderLabTokenType+FixedTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
                 ISetTextureValue

@@ -32,7 +32,7 @@ IShaderLabFile
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   IRefCommand
                     ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
-                    IRefValue
+                    INumericValue
                       ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
                   ICompCommand
                     ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)

@@ -222,6 +222,7 @@ options {
 
   | SHADER_KEYWORD
   | PROPERTIES_KEYWORD
+  | CATEGORY_KEYWORD
   | SUB_SHADER_KEYWORD
   | FALLBACK_KEYWORD
   | CUSTOM_EDITOR_KEYWORD
@@ -261,6 +262,7 @@ options {
   | FOG_KEYWORD
   | ALPHA_TEST_KEYWORD
   | SET_TEXTURE_KEYWORD
+  | MATRIX_KEYWORD
 
   | DIFFUSE_KEYWORD
   | AMBIENT_KEYWORD
@@ -296,9 +298,17 @@ options {
   | REF_KEYWORD
   | READ_MASK_KEYWORD
   | WRITE_MASK_KEYWORD
+  | PASS_FRONT_KEYWORD
+  | PASS_BACK_KEYWORD
   | COMP_KEYWORD
+  | COMP_FRONT_KEYWORD
+  | COMP_BACK_KEYWORD
   | FAIL_KEYWORD
+  | FAIL_FRONT_KEYWORD
+  | FAIL_BACK_KEYWORD
   | ZFAIL_KEYWORD
+  | ZFAIL_FRONT_KEYWORD
+  | ZFAIL_BACK_KEYWORD
 
   | GREATER_KEYWORD
   | GEQUAL_KEYWORD
@@ -318,10 +328,12 @@ options {
   | INCR_WRAP_KEYWORD
   | DECR_WRAP_KEYWORD
 
+  | TRUE_KEYWORD
   | ON_KEYWORD
   | OFF_KEYWORD
   | BACK_KEYWORD
   | FRONT_KEYWORD
+  | LIGHTMAP_MODE_KEYWORD
 
   | BAD_CHARACTER
 ;
@@ -352,6 +364,7 @@ options {
 
   | SHADER_KEYWORD
   | PROPERTIES_KEYWORD
+  | CATEGORY_KEYWORD
   | SUB_SHADER_KEYWORD
   | FALLBACK_KEYWORD
   | CUSTOM_EDITOR_KEYWORD
@@ -391,6 +404,7 @@ options {
   | FOG_KEYWORD
   | ALPHA_TEST_KEYWORD
   | SET_TEXTURE_KEYWORD
+  | MATRIX_KEYWORD
 
   | DIFFUSE_KEYWORD
   | AMBIENT_KEYWORD
@@ -426,9 +440,17 @@ options {
   | REF_KEYWORD
   | READ_MASK_KEYWORD
   | WRITE_MASK_KEYWORD
+  | PASS_FRONT_KEYWORD
+  | PASS_BACK_KEYWORD
   | COMP_KEYWORD
+  | COMP_FRONT_KEYWORD
+  | COMP_BACK_KEYWORD
   | FAIL_KEYWORD
+  | FAIL_FRONT_KEYWORD
+  | FAIL_BACK_KEYWORD
   | ZFAIL_KEYWORD
+  | ZFAIL_FRONT_KEYWORD
+  | ZFAIL_BACK_KEYWORD
 
   | GREATER_KEYWORD
   | GEQUAL_KEYWORD
@@ -448,10 +470,12 @@ options {
   | INCR_WRAP_KEYWORD
   | DECR_WRAP_KEYWORD
 
+  | TRUE_KEYWORD
   | ON_KEYWORD
   | OFF_KEYWORD
   | BACK_KEYWORD
   | FRONT_KEYWORD
+  | LIGHTMAP_MODE_KEYWORD
 
   | BAD_CHARACTER
 ;
@@ -483,6 +507,7 @@ options {
 
   | SHADER_KEYWORD
   | PROPERTIES_KEYWORD
+  | CATEGORY_KEYWORD
   | SUB_SHADER_KEYWORD
   | FALLBACK_KEYWORD
   | CUSTOM_EDITOR_KEYWORD
@@ -523,6 +548,7 @@ options {
   | FOG_KEYWORD
   | ALPHA_TEST_KEYWORD
   | SET_TEXTURE_KEYWORD
+  | MATRIX_KEYWORD
 
   | DIFFUSE_KEYWORD
   | AMBIENT_KEYWORD
@@ -558,9 +584,17 @@ options {
   | REF_KEYWORD
   | READ_MASK_KEYWORD
   | WRITE_MASK_KEYWORD
+  | PASS_FRONT_KEYWORD
+  | PASS_BACK_KEYWORD
   | COMP_KEYWORD
+  | COMP_FRONT_KEYWORD
+  | COMP_BACK_KEYWORD
   | FAIL_KEYWORD
+  | FAIL_FRONT_KEYWORD
+  | FAIL_BACK_KEYWORD
   | ZFAIL_KEYWORD
+  | ZFAIL_FRONT_KEYWORD
+  | ZFAIL_BACK_KEYWORD
 
   | GREATER_KEYWORD
   | GEQUAL_KEYWORD
@@ -580,10 +614,12 @@ options {
   | INCR_WRAP_KEYWORD
   | DECR_WRAP_KEYWORD
 
+  | TRUE_KEYWORD
   | ON_KEYWORD
   | OFF_KEYWORD
   | BACK_KEYWORD
   | FRONT_KEYWORD
+  | LIGHTMAP_MODE_KEYWORD
 ;
 
 
@@ -611,19 +647,23 @@ shaderCommand
   shaderValue<SHADER_LAB_VALUE, Value>
 ;
 
-// TODO: Where are CGINCLUDE blocks valid?
-// I've seen them after Properties, before Shader and after Tags...
 shaderValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   LBRACE<LBRACE, LBrace>
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
-  // Category
+  cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>?
+  categoryCommand<CATEGORY_COMMAND, CategoryCommand>?
   subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>*
-  fallbackCommand<FALLBACK_COMMAND, FallbackCommand>?
-  customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommand>?
-  dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>*
+  shaderContents*
   RBRACE<RBRACE, RBrace>
+;
+
+private shaderContents
+:
+  fallbackCommand<FALLBACK_COMMAND, FallbackCommands>
+  | customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommands>
+  | dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>
 ;
 
 
@@ -737,13 +777,7 @@ vectorPropertyValue
 // Private and error handling to allow resync on vectorPropertyValue::RPAREN
 private errorhandling vectorPropertyValues
 :
-  NUMERIC_LITERAL<NUMBER, Numbers>
-  COMMA<COMMA, Comma>
-  NUMERIC_LITERAL<NUMBER, Numbers>
-  COMMA<COMMA, Comma>
-  NUMERIC_LITERAL<NUMBER, Numbers>
-  COMMA<COMMA, Comma>
-  NUMERIC_LITERAL<NUMBER, Numbers>
+  LIST NUMERIC_LITERAL<Number, Numbers> SEP COMMA<COMMA, Comma>
 ;
 
 texturePropertyValue
@@ -752,6 +786,7 @@ texturePropertyValue
   (
     (
       LBRACE<LBRACE, LBrace>
+      LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>?
       errorTexturePropertyBlockValues
       RBRACE<RBRACE, RBrace>
     )
@@ -858,6 +893,33 @@ stringAttributeParameterValue[shaderLabIdentifier id]
 // **************************************************************************
 
 
+// **************************************************************************
+//
+// Category
+//
+// **************************************************************************
+
+categoryCommand
+:
+  CATEGORY_KEYWORD<SHADER_LAB_KEYWORD, CategoryKeyword>
+  categoryValue<SHADERLAB_VALUE, Value>
+;
+
+categoryValue
+:
+  LBRACE<LBRACE, LBrace>
+  categoryContents*
+  RBRACE<RBRACE, RBrace>
+;
+
+private categoryContents
+:
+  tagsCommand<TAGS_COMMAND, TagsCommands>
+  | renderStateCommand
+  | legacyRenderStateCommand
+  | cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>
+  | subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>
+;
 
 
 // **************************************************************************
@@ -876,10 +938,17 @@ subShaderCommand
 subShaderValue
 :
   LBRACE<LBRACE, LBrace>
-  tagsCommand<TAGS_COMMAND, TagsCommands>*
   subShaderContents*
-  passDef<PASSDEF, PassDefinition>+
   RBRACE<RBRACE, RBrace>
+;
+
+private subShaderContents
+:
+  tagsCommand<TAGS_COMMAND, TagsCommands>
+  | renderStateCommand
+  | legacyRenderStateCommand
+  | cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>
+  | passDef<PASSDEF, PassDefinitions>
 ;
 
 
@@ -908,21 +977,6 @@ tagDeclaration
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   EQUALS<EQUALS, Equals>
   STRING_LITERAL<SHADER_LAB_VALUE, Value>
-;
-
-
-
-// **************************************************************************
-//
-// SubShader commands
-//
-// **************************************************************************
-
-private subShaderContents
-:
-  renderStateCommand
-  | legacyRenderStateCommand
-  | cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>
 ;
 
 
@@ -1004,6 +1058,7 @@ comparisonFunctionValue
   | NOT_EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
   | ALWAYS_KEYWORD<SHADER_LAB_VALUE, Value>
   | NEVER_KEYWORD<SHADER_LAB_VALUE, Value>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
 ;
 
 numericValue
@@ -1029,6 +1084,7 @@ onOffValue
 :
   ON_KEYWORD<SHADER_LAB_VALUE, Value>
   | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
 ;
 
 
@@ -1049,6 +1105,7 @@ cullValue
   FRONT_KEYWORD<SHADER_LAB_VALUE, Value>
   | BACK_KEYWORD<SHADER_LAB_VALUE, Value>
   | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
 ;
 
 zwriteCommand
@@ -1071,9 +1128,9 @@ offsetCommand
 
 offsetValue
 :
-  NUMERIC_LITERAL<FACTOR, Factor>
+  numericValue<FACTOR, Factor>
   COMMA<COMMA, Comma>
-  NUMERIC_LITERAL<UNITS, Units>
+  numericValue<UNITS, Units>
 ;
 
 colorMaskCommand
@@ -1087,6 +1144,7 @@ colorMaskValue
   // RBG, A, 0, any combination of R, G, B, A
   shaderLabIdentifier<SHADER_LAB_VALUE, Value>
   | NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
 ;
 
 
@@ -1110,14 +1168,20 @@ blendValue
 
 private blendValues
 :
-  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
-  shaderLabIdentifier<SRCFACTOR, SrcFactor>
-  shaderLabIdentifier<DSTFACTOR, DstFactor>
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?  // TODO: Can this also be a reference?
+  blendFactor<SRCFACTOR, SrcFactor>
+  blendFactor<DSTFACTOR, DstFactor>
   (
     COMMA<COMMA, Comma>
-    shaderLabIdentifier<SRCFACTORA, SrcFactorA>
-    shaderLabIdentifier<DSTFACTORA, DstFactorA>
+    blendFactor<SRCFACTORA, SrcFactorA>
+    blendFactor<DSTFACTORA, DstFactorA>
   )?
+;
+
+blendFactor
+:
+  shaderLabIdentifier<FACTOR, Factor>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
 ;
 
 blendOpCommand
@@ -1145,15 +1209,9 @@ alphaToMaskCommand
 
 alphaToMaskValue
 :
-  ON_KEYWORD<SHADER_LAB_KEYWORD, OnKeyword>
+  ON_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TRUE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
 ;
-
-
-// **************************************************************************
-//
-// ColorMask
-//
-// **************************************************************************
 
 
 // **************************************************************************
@@ -1172,6 +1230,7 @@ stencilOperation
   | INVERT_KEYWORD<SHADER_LAB_VALUE, Value>
   | INCR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
   | DECR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
 ;
 
 stencilCommand
@@ -1193,47 +1252,52 @@ private stencilContents
   | readMaskCommand
   | writeMaskCommand
   | compCommand
+  | compFrontCommand
+  | compBackCommand
   | passCommand
+  | passFrontCommand
+  | passBackCommand
   | failCommand
+  | failFrontCommand
+  | failBackCommand
   | zfailCommand
+  | zfailFrontCommand
+  | zfailBackCommand
 ;
 
 refCommand
 :
   REF_KEYWORD<SHADER_LAB_KEYWORD, RefKeyword>
-  refValue<SHADER_LAB_VALUE, Value>
-;
-
-refValue
-:
-  NUMERIC_LITERAL<SHADER_LAB_VALUE, ReferenceValue>
+  numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 readMaskCommand
 :
   READ_MASK_KEYWORD<SHADER_LAB_KEYWORD, ReadMaskKeyword>
-  readMaskValue<SHADER_LAB_VALUE, Value>
-;
-
-readMaskValue
-:
-  NUMERIC_LITERAL<SHADER_LAB_VALUE, ReadMask>
+  numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 writeMaskCommand
 :
   WRITE_MASK_KEYWORD<SHADER_LAB_KEYWORD, WriteMaskKeyword>
-  writeMaskValue<SHADER_LAB_VALUE, Value>
-;
-
-writeMaskValue
-:
-  NUMERIC_LITERAL<SHADER_LAB_VALUE, WriteMask>
+  numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 compCommand
 :
   COMP_KEYWORD<SHADER_LAB_KEYWORD, CompKeyword>
+  comparisonFunctionValue<SHADER_LAB_VALUE, Value>
+;
+
+compFrontCommand
+:
+  COMP_FRONT_KEYWORD<SHADER_LAB_KEYWORD, CompFrontKeyword>
+  comparisonFunctionValue<SHADER_LAB_VALUE, Value>
+;
+
+compBackCommand
+:
+  COMP_BACK_KEYWORD<SHADER_LAB_KEYWORD, CompBackKeyword>
   comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1243,15 +1307,51 @@ passCommand
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
+passFrontCommand
+:
+  PASS_FRONT_KEYWORD<SHADER_LAB_KEYWORD, PassFrontKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+passBackCommand
+:
+  PASS_BACK_KEYWORD<SHADER_LAB_KEYWORD, PassBackKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
 failCommand
 :
   FAIL_KEYWORD<SHADER_LAB_KEYWORD, FailKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
+failFrontCommand
+:
+  FAIL_FRONT_KEYWORD<SHADER_LAB_KEYWORD, FailFrontKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+failBackCommand
+:
+  FAIL_BACK_KEYWORD<SHADER_LAB_KEYWORD, FailBackKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
 zfailCommand
 :
   ZFAIL_KEYWORD<SHADER_LAB_KEYWORD, ZFailKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+zfailFrontCommand
+:
+  ZFAIL_FRONT_KEYWORD<SHADER_LAB_KEYWORD, ZFailFrontKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+zfailBackCommand
+:
+  ZFAIL_BACK_KEYWORD<SHADER_LAB_KEYWORD, ZFailBackKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1397,9 +1497,16 @@ setTextureValue
 :
   referencedProperty<SHADER_LAB_REFERENCE, TextureName>
   LBRACE<LBRACE, LBrace>
+  matrixCommand<MATRIX_COMMAND, MatrixCommand>?
   constantColorCommand<CONSTANT_COLOR_COMMAND, ConstantColorCommand>?
   combineCommand<COMBINE_COMMAND, CombineCommand>?
   RBRACE<RBRACE, RBrace>
+;
+
+matrixCommand
+:
+  MATRIX_KEYWORD<SHADER_LAB_KEYWORD, MatrixKeyword>
+  referencedProperty<SHADER_LAB_REFERENCE, Value>
 ;
 
 combineCommand
@@ -1656,7 +1763,7 @@ grabPassValue
 private grabPassContents
 :
   optionalNameCommand<SHADER_LAB_COMMAND, Commands>
-  | tagsCommand
+  | tagsCommand<TAGS_COMMAND, TagsCommands>
 ;
 
 optionalNameCommand
@@ -1680,14 +1787,14 @@ regularPassValue
 :
   LBRACE<LBRACE, LBrace>
   STRING_LITERAL<SHADER_LAB_NAME, Name>?
-  tagsCommand<TAG, TagsCommands>*
   regularPassContents*
   RBRACE<RBRACE, RBrace>
 ;
 
 private regularPassContents
 :
-  renderStateCommand
+  tagsCommand<TAG, TagsCommands>
+  | renderStateCommand
   | legacyRenderStateCommand
   | cgProgramBlock<CGPROGRAM_BLOCK, CgPrograms>
 ;

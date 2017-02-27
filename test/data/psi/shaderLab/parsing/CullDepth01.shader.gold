@@ -28,9 +28,11 @@ IShaderLabFile
               IOffsetCommand
                 ShaderLabTokenType+FixedTokenElement(type:OFFSET_KEYWORD, text:Offset)
                 IOffsetValue
-                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  INumericValue
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  INumericValue
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
@@ -47,9 +49,11 @@ IShaderLabFile
               IOffsetCommand
                 ShaderLabTokenType+FixedTokenElement(type:OFFSET_KEYWORD, text:Offset)
                 IOffsetValue
-                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  INumericValue
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  INumericValue
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
               IZwriteCommand
                 ShaderLabTokenType+FixedTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
                 IOnOffValue

@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
             KEYWORDS = new NodeTypeSet(
                 SHADER_KEYWORD,
                 PROPERTIES_KEYWORD,
+                CATEGORY_KEYWORD,
                 SUB_SHADER_KEYWORD,
                 FALLBACK_KEYWORD,
                 CUSTOM_EDITOR_KEYWORD,
@@ -51,6 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 FOG_KEYWORD,
                 ALPHA_TEST_KEYWORD,
                 SET_TEXTURE_KEYWORD,
+                MATRIX_KEYWORD,
 
                 DIFFUSE_KEYWORD,
                 AMBIENT_KEYWORD,
@@ -86,9 +88,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 REF_KEYWORD,
                 READ_MASK_KEYWORD,
                 WRITE_MASK_KEYWORD,
+                PASS_FRONT_KEYWORD,
+                PASS_BACK_KEYWORD,
                 COMP_KEYWORD,
+                COMP_FRONT_KEYWORD,
+                COMP_BACK_KEYWORD,
                 FAIL_KEYWORD,
+                FAIL_FRONT_KEYWORD,
+                FAIL_BACK_KEYWORD,
                 ZFAIL_KEYWORD,
+                ZFAIL_FRONT_KEYWORD,
+                ZFAIL_BACK_KEYWORD,
 
                 GREATER_KEYWORD,
                 GEQUAL_KEYWORD,
@@ -108,10 +118,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 INCR_WRAP_KEYWORD,
                 DECR_WRAP_KEYWORD,
 
+                TRUE_KEYWORD,
                 ON_KEYWORD,
                 OFF_KEYWORD,
                 BACK_KEYWORD,
-                FRONT_KEYWORD
+                FRONT_KEYWORD,
+                LIGHTMAP_MODE_KEYWORD
               );
         }
     }

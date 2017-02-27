@@ -348,11 +348,10 @@ IShaderLabFile
               ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
               ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
-              ErrorElement:')' expected
-                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
-                ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
               ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
           IPropertyDeclaration
             IShaderLabIdentifier

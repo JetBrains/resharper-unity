@@ -19,15 +19,15 @@ IShaderLabFile
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   IRefCommand
                     ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
-                    IRefValue
+                    INumericValue
                       ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
                   IReadMaskCommand
                     ShaderLabTokenType+FixedTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
-                    IReadMaskValue
+                    INumericValue
                       ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
                   IWriteMaskCommand
                     ShaderLabTokenType+FixedTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
-                    IWriteMaskValue
+                    INumericValue
                       ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
                   ICompCommand
                     ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
@@ -57,15 +57,15 @@ IShaderLabFile
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   IRefCommand
                     ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
-                    IRefValue
+                    INumericValue
                       ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
                   IReadMaskCommand
                     ShaderLabTokenType+FixedTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
-                    IReadMaskValue
+                    INumericValue
                       ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
                   IWriteMaskCommand
                     ShaderLabTokenType+FixedTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
-                    IWriteMaskValue
+                    INumericValue
                       ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
                   ICompCommand
                     ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)

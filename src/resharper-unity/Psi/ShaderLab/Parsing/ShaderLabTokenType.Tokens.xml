@@ -49,6 +49,7 @@
   <Commands NodeType="KeywordTokenNodeType">
     <Command name="SHADER_KEYWORD" representation="Shader" />
     <Command name="PROPERTIES_KEYWORD" representation="Properties" />
+    <Command name="CATEGORY_KEYWORD" representation="Category" />
     <Command name="SUB_SHADER_KEYWORD" representation="SubShader" />
     <Command name="FALLBACK_KEYWORD" representation="Fallback" />
     <Command name="CUSTOM_EDITOR_KEYWORD" representation="CustomEditor" />
@@ -96,7 +97,6 @@
     <Command name="FOG_KEYWORD" representation="Fog" />
     <Command name="ALPHA_TEST_KEYWORD" representation="AlphaTest" />
     <Command name="SET_TEXTURE_KEYWORD" representation="SetTexture" />
-    <Command name="ANY_KEYWORD" representation="Any" />
   </LegacyFixedFunctionCommands>
 
   <LegacyMaterialCommands NodeType="KeywordTokenNodeType">
@@ -148,10 +148,17 @@
     <Command name="REF_KEYWORD" representation="Ref" />
     <Command name="READ_MASK_KEYWORD" representation="ReadMask" />
     <Command name="WRITE_MASK_KEYWORD" representation="WriteMask" />
+    <Command name="PASS_FRONT_KEYWORD" representation="PassFront" />
+    <Command name="PASS_BACK_KEYWORD" representation="PassBack" />
     <Command name="COMP_KEYWORD" representation="Comp" />
+    <Command name="COMP_FRONT_KEYWORD" representation="CompFront" />
+    <Command name="COMP_BACK_KEYWORD" representation="CompBack" />
     <Command name="FAIL_KEYWORD" representation="Fail" />
+    <Command name="FAIL_FRONT_KEYWORD" representation="FailFront" />
+    <Command name="FAIL_BACK_KEYWORD" representation="FailBack" />
     <Command name="ZFAIL_KEYWORD" representation="ZFail" />
-    <!-- Possibly also CompFront, PassFront, FailFront, ZFailFront & same again for Back -->
+    <Command name="ZFAIL_FRONT_KEYWORD" representation="ZFailFront" />
+    <Command name="ZFAIL_BACK_KEYWORD" representation="ZFailBack" />
   </StencilCommands>
 
   <ComparisonFunctionKeywords NodeType="KeywordTokenNodeType">
@@ -177,9 +184,13 @@
   </StencilOperationKeywords>
 
   <Keywords NodeType="KeywordTokenNodeType">
+    <Keyword name="TRUE_KEYWORD" representation="True" />
     <Keyword name="ON_KEYWORD" representation="On" />
     <Keyword name="OFF_KEYWORD" representation="Off" />
     <Keyword name="BACK_KEYWORD" representation="Back" />
     <Keyword name="FRONT_KEYWORD" representation="Front" />
+    <Keyword name="MATRIX_KEYWORD" representation="Matrix" />
+    <Keyword name="ANY_KEYWORD" representation="Any" />
+    <Keyword name="LIGHTMAP_MODE_KEYWORD" representation="LightmapMode" />
   </Keywords>
 </ShaderLabTokens>

@@ -25,10 +25,12 @@ IShaderLabFile
               IBlendCommand
                 ShaderLabTokenType+FixedTokenElement(type:BLEND_KEYWORD, text:Blend)
                 IBlendValue
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:SrcAlpha)
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:OneMinusSrcAlpha)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      Identifier(type:IDENTIFIER, text:SrcAlpha)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      Identifier(type:IDENTIFIER, text:OneMinusSrcAlpha)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
@@ -37,10 +39,12 @@ IShaderLabFile
               IBlendCommand
                 ShaderLabTokenType+FixedTokenElement(type:BLEND_KEYWORD, text:Blend)
                 IBlendValue
-                  IShaderLabIdentifier
-                    ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
-                  IShaderLabIdentifier
-                    ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
@@ -49,15 +53,19 @@ IShaderLabFile
               IBlendCommand
                 ShaderLabTokenType+FixedTokenElement(type:BLEND_KEYWORD, text:Blend)
                 IBlendValue
-                  IShaderLabIdentifier
-                    ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
-                  IShaderLabIdentifier
-                    ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                  IShaderLabIdentifier
-                    ShaderLabTokenType+FixedTokenElement(type:ZERO_KEYWORD, text:Zero)
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:SrcColor)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      ShaderLabTokenType+FixedTokenElement(type:ZERO_KEYWORD, text:Zero)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      Identifier(type:IDENTIFIER, text:SrcColor)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
@@ -67,10 +75,12 @@ IShaderLabFile
                 ShaderLabTokenType+FixedTokenElement(type:BLEND_KEYWORD, text:Blend)
                 IBlendValue
                   ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
-                  IShaderLabIdentifier
-                    ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
-                  IShaderLabIdentifier
-                    ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
+                  IBlendFactor
+                    IShaderLabIdentifier
+                      ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
