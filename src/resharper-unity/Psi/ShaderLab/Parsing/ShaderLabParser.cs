@@ -143,6 +143,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 var text = TokenIntern.Intern(myLexer);
                 element = new ShaderLabTokenType.GenericTokenElement(tokenType, text);
             }
+            else if (tokenType.IsKeyword)
+            {
+                var text = TokenIntern.Intern(myLexer);
+                element = new ShaderLabTokenType.KeywordTokenElement(tokenType, text);
+            }
             else
                 element = tokenType.Create(myLexer.Buffer, new TreeOffset(myLexer.TokenStart),
                     new TreeOffset(myLexer.TokenEnd));

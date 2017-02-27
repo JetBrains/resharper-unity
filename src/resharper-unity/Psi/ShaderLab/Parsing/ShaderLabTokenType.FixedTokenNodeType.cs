@@ -45,6 +45,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 return myTokenNodeType.TokenRepresentation;
             }
         }
-
     }
 }

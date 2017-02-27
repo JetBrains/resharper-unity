@@ -1,8 +1,11 @@
+using System.Text;
 using JetBrains.Application;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Tree.Impl;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Text;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
@@ -69,12 +72,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
             if (root == null)
                 return;
 
+            // Append an EOF token so we insert filtered tokens right up to
+            // the end of the file
+            var eof = new EofToken(lexer.Buffer.Length);
+            root.AppendNewChild(eof);
+
             var inserter = new ShaderLabMissingTokensInserter(lexer, offsetProvider, interruptChecker, intern);
 
             // Reset the lexer, walk the tree and call ProcessLeafElement on each leaf element
             lexer.Start();
             inserter.Run(root);
 
+            root.DeleteChildRange(eof, eof);
+        }
+
+        private class EofToken : LeafElementBaseWithCustomOffset
+        {
+            public EofToken(int position)
+                : base(new TreeOffset(position))
+            {
+            }
+
+            public override int GetTextLength() => 0;
+            public override StringBuilder GetText(StringBuilder to) => to;
+            public override IBuffer GetTextAsBuffer() => new StringBuffer(string.Empty);
+
+            public override string GetText() => string.Empty;
+            public override NodeType NodeType => ShaderLabTokenType.EOF;
+            public override PsiLanguageType Language => ShaderLabLanguage.Instance;
         }
     }
 }

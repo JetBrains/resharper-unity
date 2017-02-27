@@ -120,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
                 Assert.Fail("File contains error elements");
             }
 
-            // Assert.AreEqual(buffer, psiFile.GetText(), "Reconstructed text mismatch");
+            Assert.AreEqual(text.Text, psiFile.GetText(), "Reconstructed text mismatch");
             //CheckRange(buffer, psiFile);
         }
 

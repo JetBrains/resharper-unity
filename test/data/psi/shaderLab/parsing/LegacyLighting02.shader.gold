@@ -1,7 +1,7 @@
 ﻿Language: PsiLanguageType:SHADERLAB
 IShaderLabFile
   IShaderCommand
-    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
       ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
@@ -10,7 +10,7 @@ IShaderLabFile
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
       ISubShaderCommand
-        ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        ShaderLabTokenType+KeywordTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
         Whitespace(type:WHITESPACE, text:    ) spaces: "    "
         ISubShaderValue
@@ -18,21 +18,21 @@ IShaderLabFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
           IRegularPassDef
-            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRegularPassValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IMaterialCommand
-                ShaderLabTokenType+FixedTokenElement(type:MATERIAL_KEYWORD, text:Material)
+                ShaderLabTokenType+KeywordTokenElement(type:MATERIAL_KEYWORD, text:Material)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IMaterialValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                   IDiffuseCommand
-                    ShaderLabTokenType+FixedTokenElement(type:DIFFUSE_KEYWORD, text:Diffuse)
+                    ShaderLabTokenType+KeywordTokenElement(type:DIFFUSE_KEYWORD, text:Diffuse)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IColorValue
                       IVectorPropertyValue
@@ -48,7 +48,7 @@ IShaderLabFile
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                   IAmbientCommand
-                    ShaderLabTokenType+FixedTokenElement(type:AMBIENT_KEYWORD, text:Ambient)
+                    ShaderLabTokenType+KeywordTokenElement(type:AMBIENT_KEYWORD, text:Ambient)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IColorValue
                       IVectorPropertyValue
@@ -67,10 +67,10 @@ IShaderLabFile
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               ILightingCommand
-                ShaderLabTokenType+FixedTokenElement(type:LIGHTING_KEYWORD, text:Lighting)
+                ShaderLabTokenType+KeywordTokenElement(type:LIGHTING_KEYWORD, text:Lighting)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IOnOffValue
-                  ShaderLabTokenType+FixedTokenElement(type:ON_KEYWORD, text:On)
+                  ShaderLabTokenType+KeywordTokenElement(type:ON_KEYWORD, text:On)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -79,4 +79,5 @@ IShaderLabFile
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

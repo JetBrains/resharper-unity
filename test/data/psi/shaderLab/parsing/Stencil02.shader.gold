@@ -1,7 +1,7 @@
 ﻿Language: PsiLanguageType:SHADERLAB
 IShaderLabFile
   IShaderCommand
-    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
       ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Red")
@@ -10,14 +10,14 @@ IShaderLabFile
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
       ISubShaderCommand
-        ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        ShaderLabTokenType+KeywordTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
         ISubShaderValue
           ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
           ITagsCommand
-            ShaderLabTokenType+FixedTokenElement(type:TAGS_KEYWORD, text:Tags)
+            ShaderLabTokenType+KeywordTokenElement(type:TAGS_KEYWORD, text:Tags)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ITagsValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
@@ -35,38 +35,38 @@ IShaderLabFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
           IRegularPassDef
-            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRegularPassValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IStencilCommand
-                ShaderLabTokenType+FixedTokenElement(type:STENCIL_KEYWORD, text:Stencil)
+                ShaderLabTokenType+KeywordTokenElement(type:STENCIL_KEYWORD, text:Stencil)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IStencilValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                   IRefCommand
-                    ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
+                    ShaderLabTokenType+KeywordTokenElement(type:REF_KEYWORD, text:Ref)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     INumericValue
                       ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                   ICompCommand
-                    ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
+                    ShaderLabTokenType+KeywordTokenElement(type:COMP_KEYWORD, text:Comp)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IComparisonFunctionValue
-                      ShaderLabTokenType+FixedTokenElement(type:ALWAYS_KEYWORD, text:Always)
+                      ShaderLabTokenType+KeywordTokenElement(type:ALWAYS_KEYWORD, text:always)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                   IPassCommand
-                    ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+                    ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IStencilOperation
-                      ShaderLabTokenType+FixedTokenElement(type:REPLACE_KEYWORD, text:Replace)
+                      ShaderLabTokenType+KeywordTokenElement(type:REPLACE_KEYWORD, text:replace)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:            ) spaces: "            "
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -75,9 +75,9 @@ IShaderLabFile
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               ICgProgramBlock
-                ShaderLabTokenType+FixedTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
+                ShaderLabTokenType+KeywordTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
                 ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            struct appdata {\n                float4 vertex : POSITION;\n            };\n            struct v2f {\n                float4 pos : SV_POSITION;\n            };\n            v2f vert(appdata v) {\n                v2f o;\n                o.pos = UnityObjectToClipPos(v.vertex);\n                return o;\n            }\n            half4 frag(v2f i) : SV_Target {\n                return half4(1,0,0,1);\n            }\n            )
-                ShaderLabTokenType+FixedTokenElement(type:CG_END, text:ENDCG)
+                ShaderLabTokenType+KeywordTokenElement(type:CG_END, text:ENDCG)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -87,4 +87,5 @@ IShaderLabFile
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

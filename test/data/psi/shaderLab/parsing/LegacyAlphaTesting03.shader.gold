@@ -1,7 +1,7 @@
 ﻿Language: PsiLanguageType:SHADERLAB
 IShaderLabFile
   IShaderCommand
-    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
       ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Vegetation")
@@ -10,7 +10,7 @@ IShaderLabFile
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
       IPropertiesCommand
-        ShaderLabTokenType+FixedTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
+        ShaderLabTokenType+KeywordTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
         IPropertiesValue
           ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
@@ -25,7 +25,7 @@ IShaderLabFile
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
-              ShaderLabTokenType+FixedTokenElement(type:COLOR_KEYWORD, text:Color)
+              ShaderLabTokenType+KeywordTokenElement(type:COLOR_KEYWORD, text:Color)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
@@ -54,7 +54,7 @@ IShaderLabFile
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
-              ShaderLabTokenType+FixedTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
@@ -75,7 +75,7 @@ IShaderLabFile
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRangePropertyType
-              ShaderLabTokenType+FixedTokenElement(type:RANGE_KEYWORD, text:Range)
+              ShaderLabTokenType+KeywordTokenElement(type:RANGE_KEYWORD, text:Range)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
               ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
@@ -94,7 +94,7 @@ IShaderLabFile
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
       ISubShaderCommand
-        ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        ShaderLabTokenType+KeywordTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
         ISubShaderValue
           ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
@@ -104,14 +104,14 @@ IShaderLabFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
           IMaterialCommand
-            ShaderLabTokenType+FixedTokenElement(type:MATERIAL_KEYWORD, text:Material)
+            ShaderLabTokenType+KeywordTokenElement(type:MATERIAL_KEYWORD, text:Material)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IMaterialValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IDiffuseCommand
-                ShaderLabTokenType+FixedTokenElement(type:DIFFUSE_KEYWORD, text:Diffuse)
+                ShaderLabTokenType+KeywordTokenElement(type:DIFFUSE_KEYWORD, text:Diffuse)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IColorValue
                   IReferencedProperty
@@ -122,7 +122,7 @@ IShaderLabFile
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IAmbientCommand
-                ShaderLabTokenType+FixedTokenElement(type:AMBIENT_KEYWORD, text:Ambient)
+                ShaderLabTokenType+KeywordTokenElement(type:AMBIENT_KEYWORD, text:Ambient)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IColorValue
                   IReferencedProperty
@@ -136,10 +136,10 @@ IShaderLabFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
           ILightingCommand
-            ShaderLabTokenType+FixedTokenElement(type:LIGHTING_KEYWORD, text:Lighting)
+            ShaderLabTokenType+KeywordTokenElement(type:LIGHTING_KEYWORD, text:Lighting)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IOnOffValue
-              ShaderLabTokenType+FixedTokenElement(type:ON_KEYWORD, text:On)
+              ShaderLabTokenType+KeywordTokenElement(type:ON_KEYWORD, text:On)
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
@@ -147,10 +147,10 @@ IShaderLabFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
           ICullCommand
-            ShaderLabTokenType+FixedTokenElement(type:CULL_KEYWORD, text:Cull)
+            ShaderLabTokenType+KeywordTokenElement(type:CULL_KEYWORD, text:Cull)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ICullValue
-              ShaderLabTokenType+FixedTokenElement(type:OFF_KEYWORD, text:Off)
+              ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
@@ -161,18 +161,18 @@ IShaderLabFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
           IRegularPassDef
-            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRegularPassValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IAlphaTestCommand
-                ShaderLabTokenType+FixedTokenElement(type:ALPHA_TEST_KEYWORD, text:AlphaTest)
+                ShaderLabTokenType+KeywordTokenElement(type:ALPHA_TEST_KEYWORD, text:AlphaTest)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IAlphaTestValue
                   IComparisonFunctionValue
-                    ShaderLabTokenType+FixedTokenElement(type:GREATER_KEYWORD, text:Greater)
+                    ShaderLabTokenType+KeywordTokenElement(type:GREATER_KEYWORD, text:Greater)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   INumericValue
                     IReferencedProperty
@@ -183,7 +183,7 @@ IShaderLabFile
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               ISetTextureCommand
-                ShaderLabTokenType+FixedTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
+                ShaderLabTokenType+KeywordTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ISetTextureValue
                   IReferencedProperty
@@ -196,24 +196,24 @@ IShaderLabFile
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                   ICombineCommand
-                    ShaderLabTokenType+FixedTokenElement(type:COMBINE_KEYWORD, text:Combine)
+                    ShaderLabTokenType+KeywordTokenElement(type:COMBINE_KEYWORD, text:combine)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     ICombineValue
                       ICombineCalculation
                         ICombineOperation
                           ICombineSrc
-                            ShaderLabTokenType+FixedTokenElement(type:TEXTURE_KEYWORD, text:Texture)
+                            ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_KEYWORD, text:texture)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
                           ShaderLabTokenType+FixedTokenElement(type:MULTIPLY, text:*)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
                           ICombineSrc
-                            ShaderLabTokenType+FixedTokenElement(type:PRIMARY_KEYWORD, text:Primary)
+                            ShaderLabTokenType+KeywordTokenElement(type:PRIMARY_KEYWORD, text:primary)
                       ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
                       ICombineCalculation
                         ICombineOperation
                           ICombineSrc
-                            ShaderLabTokenType+FixedTokenElement(type:TEXTURE_KEYWORD, text:Texture)
+                            ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_KEYWORD, text:texture)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:            ) spaces: "            "
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -230,7 +230,7 @@ IShaderLabFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
           IRegularPassDef
-            ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
+            ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRegularPassValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
@@ -240,31 +240,31 @@ IShaderLabFile
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IZwriteCommand
-                ShaderLabTokenType+FixedTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
+                ShaderLabTokenType+KeywordTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IOnOffValue
-                  ShaderLabTokenType+FixedTokenElement(type:OFF_KEYWORD, text:Off)
+                  ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:off)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Don't write pixels we have already written.) spaces: "// Don't write pixels we have already written."
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IZtestCommand
-                ShaderLabTokenType+FixedTokenElement(type:ZTEST_KEYWORD, text:ZTest)
+                ShaderLabTokenType+KeywordTokenElement(type:ZTEST_KEYWORD, text:ZTest)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IComparisonFunctionValue
-                  ShaderLabTokenType+FixedTokenElement(type:LESS_KEYWORD, text:Less)
+                  ShaderLabTokenType+KeywordTokenElement(type:LESS_KEYWORD, text:Less)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Only render pixels less or equal to the value) spaces: "// Only render pixels less or equal to the value"
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IAlphaTestCommand
-                ShaderLabTokenType+FixedTokenElement(type:ALPHA_TEST_KEYWORD, text:AlphaTest)
+                ShaderLabTokenType+KeywordTokenElement(type:ALPHA_TEST_KEYWORD, text:AlphaTest)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IAlphaTestValue
                   IComparisonFunctionValue
-                    ShaderLabTokenType+FixedTokenElement(type:LEQUAL_KEYWORD, text:LEqual)
+                    ShaderLabTokenType+KeywordTokenElement(type:LEQUAL_KEYWORD, text:LEqual)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   INumericValue
                     IReferencedProperty
@@ -279,7 +279,7 @@ IShaderLabFile
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IBlendCommand
-                ShaderLabTokenType+FixedTokenElement(type:BLEND_KEYWORD, text:Blend)
+                ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IBlendValue
                   IBlendFactor
@@ -293,7 +293,7 @@ IShaderLabFile
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               ISetTextureCommand
-                ShaderLabTokenType+FixedTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
+                ShaderLabTokenType+KeywordTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ISetTextureValue
                   IReferencedProperty
@@ -306,24 +306,24 @@ IShaderLabFile
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                   ICombineCommand
-                    ShaderLabTokenType+FixedTokenElement(type:COMBINE_KEYWORD, text:Combine)
+                    ShaderLabTokenType+KeywordTokenElement(type:COMBINE_KEYWORD, text:combine)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     ICombineValue
                       ICombineCalculation
                         ICombineOperation
                           ICombineSrc
-                            ShaderLabTokenType+FixedTokenElement(type:TEXTURE_KEYWORD, text:Texture)
+                            ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_KEYWORD, text:texture)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
                           ShaderLabTokenType+FixedTokenElement(type:MULTIPLY, text:*)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
                           ICombineSrc
-                            ShaderLabTokenType+FixedTokenElement(type:PRIMARY_KEYWORD, text:Primary)
+                            ShaderLabTokenType+KeywordTokenElement(type:PRIMARY_KEYWORD, text:primary)
                       ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
                       ICombineCalculation
                         ICombineOperation
                           ICombineSrc
-                            ShaderLabTokenType+FixedTokenElement(type:TEXTURE_KEYWORD, text:Texture)
+                            ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_KEYWORD, text:texture)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:            ) spaces: "            "
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -335,4 +335,5 @@ IShaderLabFile
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

@@ -2,7 +2,7 @@
 IShaderLabFile
   Whitespace(type:WHITESPACE, text: ) spaces: " "
   IShaderCommand
-    ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
       ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
@@ -11,7 +11,7 @@ IShaderLabFile
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:  ) spaces: "  "
       IDependencyCommand
-        ShaderLabTokenType+FixedTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
+        ShaderLabTokenType+KeywordTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
         IDependencyValue
           ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"AddPassShader")
@@ -21,4 +21,5 @@ IShaderLabFile
           ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyShaders/Terrain/Editor/AddPass")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

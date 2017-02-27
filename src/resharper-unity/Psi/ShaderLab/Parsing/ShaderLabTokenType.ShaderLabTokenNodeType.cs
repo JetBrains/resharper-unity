@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
     public static partial class ShaderLabTokenType
     {
-        private abstract class ShaderLabTokenNodeType : TokenNodeType, IShaderLabTokenNodeType
+        public abstract class ShaderLabTokenNodeType : TokenNodeType, IShaderLabTokenNodeType
         {
             private const int BASE_INDEX = 10000;
 

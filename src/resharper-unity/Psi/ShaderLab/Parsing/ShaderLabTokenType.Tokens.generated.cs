@@ -16,11 +16,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
   {
     //FragmentDelimiters
     public const int CG_PROGRAM_NODE_TYPE_INDEX = 1000;
-    public static readonly TokenNodeType CG_PROGRAM = new FixedTokenNodeType("CG_PROGRAM", CG_PROGRAM_NODE_TYPE_INDEX, representation: "CGPROGRAM");
+    public static readonly TokenNodeType CG_PROGRAM = new KeywordTokenNodeType("CG_PROGRAM", CG_PROGRAM_NODE_TYPE_INDEX, representation: "CGPROGRAM");
     public const int CG_INCLUDE_NODE_TYPE_INDEX = 1001;
-    public static readonly TokenNodeType CG_INCLUDE = new FixedTokenNodeType("CG_INCLUDE", CG_INCLUDE_NODE_TYPE_INDEX, representation: "CGINCLUDE");
+    public static readonly TokenNodeType CG_INCLUDE = new KeywordTokenNodeType("CG_INCLUDE", CG_INCLUDE_NODE_TYPE_INDEX, representation: "CGINCLUDE");
     public const int CG_END_NODE_TYPE_INDEX = 1002;
-    public static readonly TokenNodeType CG_END = new FixedTokenNodeType("CG_END", CG_END_NODE_TYPE_INDEX, representation: "ENDCG");
+    public static readonly TokenNodeType CG_END = new KeywordTokenNodeType("CG_END", CG_END_NODE_TYPE_INDEX, representation: "ENDCG");
 
     //Tokens
     public const int LPAREN_NODE_TYPE_INDEX = 1003;

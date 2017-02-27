@@ -1,4 +1,10 @@
-﻿namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
+﻿using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.Text;
+using JetBrains.Util;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     public partial class ShaderLabTokenType
     {
@@ -9,7 +15,30 @@
             {
             }
 
+            public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+            {
+                return new KeywordTokenElement(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
+            }
+
             public override bool IsKeyword => true;
+        }
+
+        public class KeywordTokenElement : ShaderLabTokenBase
+        {
+            private readonly TokenNodeType myTokenNodeType;
+            private readonly string myText;
+
+            // Keywords need to take the actual text because they are case insensitive -
+            // we can't normalise them
+            public KeywordTokenElement(TokenNodeType tokenNodeType, string text)
+            {
+                myTokenNodeType = tokenNodeType;
+                myText = text;
+            }
+
+            public override NodeType NodeType => myTokenNodeType;
+            public override int GetTextLength() => myText.Length;
+            public override string GetText() => myText;
         }
     }
 }

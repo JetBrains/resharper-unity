@@ -21,7 +21,7 @@
   <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing</TokenTypeNamespace>
   <TokenTypeClass>ShaderLabTokenType</TokenTypeClass>
 
-  <FragmentDelimiters NodeType="FixedTokenNodeType">
+  <FragmentDelimiters NodeType="KeywordTokenNodeType">
     <FragmentDelimiter name="CG_PROGRAM" representation="CGPROGRAM" /> 
     <!-- This doesn't seem to be documented -->
     <FragmentDelimiter name="CG_INCLUDE" representation="CGINCLUDE" />
