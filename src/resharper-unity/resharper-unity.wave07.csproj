@@ -403,6 +403,7 @@
     <Compile Include="Psi\Colors\UnityColorTypes.cs" />
     <Compile Include="Psi\Colors\UnityNamedColors.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ParserMessages.cs" />
+    <Compile Include="Psi\ShaderLab\Parsing\ShaderLabMissingTokensInserter.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabParser.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.KeywordTokenNodeType.cs" />
     <Compile Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.NodeSets.cs" />

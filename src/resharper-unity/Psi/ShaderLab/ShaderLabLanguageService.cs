@@ -2,11 +2,11 @@
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 using JetBrains.Util;
 
@@ -15,9 +15,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabLanguageService : LanguageService
     {
-        public ShaderLabLanguageService(ShaderLabLanguage psiLanguageType, IConstantValueService constantValueService)
+        private readonly CommonIdentifierIntern myCommonIdentifierIntern;
+
+        public ShaderLabLanguageService(ShaderLabLanguage psiLanguageType, IConstantValueService constantValueService, CommonIdentifierIntern commonIdentifierIntern)
             : base(psiLanguageType, constantValueService)
         {
+            myCommonIdentifierIntern = commonIdentifierIntern;
         }
 
         public override ILexerFactory GetPrimaryLexerFactory()
@@ -32,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
 
         public override IParser CreateParser(ILexer lexer, IPsiModule module, IPsiSourceFile sourceFile)
         {
-            return new ShaderLabParser(lexer as ILexer<int> ?? lexer.ToCachingLexer());
+            return new ShaderLabParser(lexer as ILexer<int> ?? lexer.ToCachingLexer(), myCommonIdentifierIntern);
         }
 
         public override IEnumerable<ITypeDeclaration> FindTypeDeclarations(IFile file)

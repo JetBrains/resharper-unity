@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Gen;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -11,10 +12,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     internal class ShaderLabParser : ShaderLabParserGenerated, IParser
     {
+        [NotNull] private readonly ILexer<int> myOriginalLexer;
+        private readonly CommonIdentifierIntern myIntern;
         private ITokenIntern myTokenIntern;
 
-        public ShaderLabParser([NotNull] ILexer<int> lexer)
+        public ShaderLabParser([NotNull] ILexer<int> lexer, CommonIdentifierIntern intern)
         {
+            myOriginalLexer = lexer;
+            myIntern = intern;
             setLexer(new ShaderLabFilteringLexer(lexer));
         }
 
@@ -22,8 +27,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
         public IFile ParseFile()
         {
-            var element = ParseShaderLabFile();
-            return (IFile)element;
+            return myIntern.DoWithIdentifierIntern(intern =>
+            {
+                var element = ParseShaderLabFile();
+                InsertMissingTokens(element, intern);
+                return (IFile) element;
+            });
         }
 
         protected override TreeElement createToken()
@@ -32,20 +41,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
             Assertion.Assert(tokenType != null, "tokenType != null");
 
-            LeafElementBase element;
-            if (tokenType == ShaderLabTokenType.NUMERIC_LITERAL
-                || tokenType == ShaderLabTokenType.STRING_LITERAL
-                || tokenType == ShaderLabTokenType.CG_CONTENT)
-            {
-                var text = TokenIntern.Intern(myLexer);
-                element = new ShaderLabTokenType.GenericTokenElement(tokenType, text);
-            }
-            else
-                element = tokenType.Create(myLexer.Buffer, new TreeOffset(myLexer.TokenStart),
-                    new TreeOffset(myLexer.TokenEnd));
-
-            myLexer.Advance();
-
+            // Node offsets aren't stored during parsing. However, we need the absolute file
+            // offset position so we can re-insert filtered tokens, so call SetOffset here.
+            // Implementation details: This is non-obvious, so I'm going into implementation
+            // details. SetOffset updates TreeElement.myCachedOffsetData to an absolute offset,
+            // indicated by having a negative value, offset by 2. In other words, -1 means unset,
+            // -2 means 0 and -3 means an absolute offset of 1. This offset is only valid during
+            // parsing! After parsing, TreeElement.myCachedOffsetData is re-used to cache the offset
+            // (relative to the parent node) calculated from a call to GetTextLength or GetTreeStartOffset
+            // and invalidated by SubTreeChanged, or otherwise modifying the tree. The relative
+            // offset is indicated by a positive value, or 0. The implementation of 
+            // MissingTokenInserterBase.GetLeafOffset has a minor optimisation that tries to downcast
+            // the leaf element to BindedToBufferLeafElement, and uses the Offset property there.
+            // If all tokens inherit from BindedToBufferLeafElement, the offset is known at parse
+            // time, and we don't need to call SetOffset here (doing so is ignored)
+            var tokenStart = myLexer.TokenStart;
+            var element = CreateToken(tokenType);
+            var leaf = element as LeafElementBase;
+            if (leaf != null)
+                SetOffset(leaf, tokenStart);
             return element;
         }
 
@@ -74,11 +88,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
             // Consume until we hit either an identifier (start of another property)
             // an LBRACK (start of attributes for another property) or RBRACE
-            while (!IsIdentifier(myLexer.TokenType)
-                && myLexer.TokenType != ShaderLabTokenType.LBRACK
-                && myLexer.TokenType != ShaderLabTokenType.RBRACE)
+            while (!IsIdentifier(myOriginalLexer.TokenType)
+                && myOriginalLexer.TokenType != ShaderLabTokenType.LBRACK
+                && myOriginalLexer.TokenType != ShaderLabTokenType.RBRACE)
             {
-                if (myLexer.TokenType == ShaderLabTokenType.LBRACE)
+                if (myOriginalLexer.TokenType == ShaderLabTokenType.LBRACE)
                     SkipNestedBraces(result);
                 else
                     skip(result);
@@ -88,10 +102,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
         private void SkipNestedBraces(CompositeElement result)
         {
-            while (myLexer.TokenType != ShaderLabTokenType.RBRACE)
+            while (myOriginalLexer.TokenType != ShaderLabTokenType.RBRACE)
             {
                 skip(result);
-                if (myLexer.TokenType == ShaderLabTokenType.LBRACE)
+                if (myOriginalLexer.TokenType == ShaderLabTokenType.LBRACE)
                     SkipNestedBraces(result);
             }
 
@@ -102,13 +116,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public override void ParseErrorTexturePropertyBlockValues(CompositeElement result)
         {
             // Parse anything with the `{ }` of a texture property block
-            if (myLexer.TokenType == ShaderLabTokenType.RBRACE)
+            if (myOriginalLexer.TokenType == ShaderLabTokenType.RBRACE)
                 return;
 
             var errorElement = TreeElementFactory.CreateErrorElement(ParserMessages.GetUnexpectedTokenMessage());
-            while (myLexer.TokenType != ShaderLabTokenType.RBRACE)
+            while (myOriginalLexer.TokenType != ShaderLabTokenType.RBRACE)
                 skip(errorElement);
             result.AppendNewChild(errorElement);
+        }
+
+        private void InsertMissingTokens(TreeElement root, ITokenIntern intern)
+        {
+            var interruptChecker = new SeldomInterruptChecker();
+            ShaderLabMissingTokensInserter.Run(root, myOriginalLexer, this, interruptChecker, intern);
+        }
+
+        private TreeElement CreateToken(TokenNodeType tokenType)
+        {
+            Assertion.Assert(tokenType != null, "tokenType != null");
+
+            LeafElementBase element;
+            if (tokenType == ShaderLabTokenType.NUMERIC_LITERAL
+                || tokenType == ShaderLabTokenType.STRING_LITERAL
+                || tokenType== ShaderLabTokenType.CG_CONTENT)
+            {
+                var text = TokenIntern.Intern(myLexer);
+                element = new ShaderLabTokenType.GenericTokenElement(tokenType, text);
+            }
+            else
+                element = tokenType.Create(myLexer.Buffer, new TreeOffset(myLexer.TokenStart),
+                    new TreeOffset(myLexer.TokenEnd));
+
+            myLexer.Advance();
+
+            return element;
         }
     }
 }
