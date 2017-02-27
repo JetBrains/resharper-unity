@@ -215,7 +215,7 @@ namespace Plugins.Editor.JetBrains
       // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
       if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp70Support")))
         return "7";
-      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp60SUpport")))
+      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp60Support")))
         return "6";
 
       // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
