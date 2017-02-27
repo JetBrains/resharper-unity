@@ -376,6 +376,11 @@
     <Compile Include="Daemon\Stages\GutterMarks\UnityTypeDetector.cs" />
     <Compile Include="Daemon\Stages\Color\UnityColorHighlightingStage.cs" />
     <Compile Include="Daemon\Stages\Highlightings\ExplicitTagStringComparisonWarning.cs" />
+    <Compile Include="Daemon\Stages\Highlightings\ShaderLabSyntaxError.cs" />
+    <Compile Include="Daemon\Stages\IdentifierHighlighterProcess.cs" />
+    <Compile Include="Daemon\Stages\IdentifierHighlightingStage.cs" />
+    <Compile Include="Daemon\Stages\ShaderLabDaemonStageProcessBase.cs" />
+    <Compile Include="Daemon\Stages\ShaderLabStageBase.cs" />
     <Compile Include="Daemon\UsageChecking\UsageInspectionsSuppressor.cs" />
     <Compile Include="DeclaredElementExtensions.cs" />
     <Compile Include="Feature\Services\CodeCompletion\UnityEventFunctionBehavior.cs" />
@@ -394,6 +399,7 @@
     <Compile Include="Feature\Services\Generate\GenerateUnityEventFunctionsBuilder.cs" />
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocProvider.cs" />
     <Compile Include="Feature\Services\QuickDoc\UnityEventFunctionQuickDocPresenter.cs" />
+    <Compile Include="Feature\Services\VisualElements\VisualElementFactory.cs" />
     <Compile Include="Help\ShowUnityHelp.cs" />
     <Compile Include="ProjectExtensions.cs" />
     <Compile Include="ProjectModel\ShaderLabProjectFileType.cs" />
