@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       ISubShaderCommand
         ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
@@ -16,7 +16,7 @@ IShaderLabFile
               ILodCommand
                 ShaderLabTokenType+FixedTokenElement(type:LOD_KEYWORD, text:LOD)
                 ILodValue
-                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:100)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

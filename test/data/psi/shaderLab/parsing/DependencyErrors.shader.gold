@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       IDependencyCommand
         ShaderLabTokenType+FixedTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
@@ -11,30 +11,30 @@ IShaderLabFile
         ErrorElement:"XXX" expected
           Identifier(type:IDENTIFIER, text:wrong)
           ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyShaders/Terrain/Editor/AddPass")
       IDependencyCommand
         ShaderLabTokenType+FixedTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
         IDependencyValue
-          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"BaseMapShader")
           ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
         ErrorElement:"XXX" expected
           Identifier(type:IDENTIFIER, text:wrong)
       IDependencyCommand
         ShaderLabTokenType+FixedTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
         IDependencyValue
-          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"BaseMapShader")
         ErrorElement:= expected
-          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyShaders/Terrain/Editor/BaseMap")
       IDependencyCommand
         ShaderLabTokenType+FixedTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
         IDependencyValue
-          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"BaseMapShader")
           ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
         ErrorElement:"XXX" expected
       IDependencyCommand
         ShaderLabTokenType+FixedTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
         IDependencyValue
-          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"BaseMapShader")
           ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
         ErrorElement:"XXX" expected
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

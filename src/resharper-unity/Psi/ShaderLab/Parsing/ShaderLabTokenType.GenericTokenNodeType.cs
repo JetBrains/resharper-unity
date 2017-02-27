@@ -1,6 +1,8 @@
 ﻿using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
@@ -17,34 +19,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
             public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
             {
-                return new GenericTokenElement(this);
+                return new GenericTokenElement(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
             }
 
             public override string TokenRepresentation { get; }
         }
 
         // An instance of a fixed length token node type that will be added to the PSI tree
-        private class GenericTokenElement : ShaderLabTokenBase
+        public class GenericTokenElement : ShaderLabTokenBase
         {
-            private readonly GenericTokenNodeType myTokenNodeType;
+            private readonly TokenNodeType myTokenNodeType;
+            private readonly string myText;
 
-            public GenericTokenElement(GenericTokenNodeType tokenNodeType)
+            public GenericTokenElement(TokenNodeType tokenNodeType, string text)
             {
                 myTokenNodeType = tokenNodeType;
+                myText = text;
             }
 
             public override NodeType NodeType => myTokenNodeType;
-
-            public override int GetTextLength()
-            {
-                return myTokenNodeType.TokenRepresentation.Length;
-            }
-
-            public override string GetText()
-            {
-                return myTokenNodeType.TokenRepresentation;
-            }
+            public override int GetTextLength() => myText.Length;
+            public override string GetText() => myText;
         }
-
     }
 }

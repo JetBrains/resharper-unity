@@ -3,11 +3,11 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       IFallbackCommand
         ShaderLabTokenType+FixedTokenElement(type:FALLBACK_KEYWORD, text:Fallback)
         IFallbackValue
-          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"foo")
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
 

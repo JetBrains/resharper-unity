@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       ISubShaderCommand
         ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
@@ -14,22 +14,22 @@ IShaderLabFile
             ITagsValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ITagDeclaration
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Foo")
                 ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Bar")
               ITagDeclaration
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Thing")
                 ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Other Thing")
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           ITagsCommand
             ShaderLabTokenType+FixedTokenElement(type:TAGS_KEYWORD, text:Tags)
             ITagsValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ITagDeclaration
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Something")
                 ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)

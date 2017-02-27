@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       ISubShaderCommand
         ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
@@ -20,15 +20,15 @@ IShaderLabFile
                   IRefCommand
                     ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
                     INumericValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:255)
                   IReadMaskCommand
                     ShaderLabTokenType+FixedTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
                     INumericValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:134)
                   IWriteMaskCommand
                     ShaderLabTokenType+FixedTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
                     INumericValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:155)
                   ICompCommand
                     ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
                     IComparisonFunctionValue
@@ -58,15 +58,15 @@ IShaderLabFile
                   IRefCommand
                     ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
                     INumericValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:255)
                   IReadMaskCommand
                     ShaderLabTokenType+FixedTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
                     INumericValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:134)
                   IWriteMaskCommand
                     ShaderLabTokenType+FixedTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
                     INumericValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:155)
                   ICompCommand
                     ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
                     IComparisonFunctionValue

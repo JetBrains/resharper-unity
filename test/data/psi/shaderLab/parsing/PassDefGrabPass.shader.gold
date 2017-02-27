@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"GrabPassInvert")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       ISubShaderCommand
         ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
@@ -14,16 +14,16 @@ IShaderLabFile
             ITagsValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ITagDeclaration
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Queue")
                 ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Transparent")
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IGrabPassDef
             ShaderLabTokenType+FixedTokenElement(type:GRABPASS_KEYWORD, text:GrabPass)
             IGrabPassValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               IOptionalNameCommand
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_BackgroundTexture")
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IGrabPassDef
             ShaderLabTokenType+FixedTokenElement(type:GRABPASS_KEYWORD, text:GrabPass)
@@ -31,15 +31,15 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               IOptionalNameCommand
                 ShaderLabTokenType+FixedTokenElement(type:NAME_KEYWORD, text:Name)
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_OtherTexture")
               ITagsCommand
                 ShaderLabTokenType+FixedTokenElement(type:TAGS_KEYWORD, text:Tags)
                 ITagsValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   ITagDeclaration
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Other")
                     ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
@@ -48,7 +48,7 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ICgProgramBlock
                 ShaderLabTokenType+FixedTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
-                ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:CG_CONTENT)
+                ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            #include "UnityCG.cginc"\n\n            struct v2f\n            {\n                float4 grabPos : TEXCOORD0;\n                float4 pos : SV_POSITION;\n            };\n\n            v2f vert(appdata_base v) {\n                v2f o;\n                // use UnityObjectToClipPos from UnityCG.cginc to calculate \n                // the clip-space of the vertex\n                o.pos = UnityObjectToClipPos(v.vertex);\n                // use ComputeGrabScreenPos function from UnityCG.cginc\n                // to get the correct texture coordinate\n                o.grabPos = ComputeGrabScreenPos(o.pos);\n                return o;\n            }\n\n            sampler2D _BackgroundTexture;\n\n            half4 frag(v2f i) : SV_Target\n            {\n                half4 bgcolor = tex2Dproj(_BackgroundTexture, i.grabPos);\n                return 1 - bgcolor;\n            }\n            )
                 ShaderLabTokenType+FixedTokenElement(type:CG_END, text:ENDCG)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

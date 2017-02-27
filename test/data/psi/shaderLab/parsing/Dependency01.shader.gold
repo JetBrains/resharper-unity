@@ -3,13 +3,13 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       IDependencyCommand
         ShaderLabTokenType+FixedTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
         IDependencyValue
-          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"AddPassShader")
           ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyShaders/Terrain/Editor/AddPass")
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
 

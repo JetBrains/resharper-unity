@@ -1,23 +1,52 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Gen;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     internal class ShaderLabParser : ShaderLabParserGenerated, IParser
     {
+        private ITokenIntern myTokenIntern;
+
         public ShaderLabParser([NotNull] ILexer<int> lexer)
         {
             setLexer(new ShaderLabFilteringLexer(lexer));
         }
 
+        public ITokenIntern TokenIntern => myTokenIntern ?? (myTokenIntern = new LexerTokenIntern(10));
+
         public IFile ParseFile()
         {
             var element = ParseShaderLabFile();
-            // TODO: Insert filtered tokens
-            return (IFile) element;
+            return (IFile)element;
+        }
+
+        protected override TreeElement createToken()
+        {
+            var tokenType = myLexer.TokenType;
+
+            Assertion.Assert(tokenType != null, "tokenType != null");
+
+            LeafElementBase element;
+            if (tokenType == ShaderLabTokenType.NUMERIC_LITERAL
+                || tokenType == ShaderLabTokenType.STRING_LITERAL
+                || tokenType == ShaderLabTokenType.CG_CONTENT)
+            {
+                var text = TokenIntern.Intern(myLexer);
+                element = new ShaderLabTokenType.GenericTokenElement(tokenType, text);
+            }
+            else
+                element = tokenType.Create(myLexer.Buffer, new TreeOffset(myLexer.TokenStart),
+                    new TreeOffset(myLexer.TokenEnd));
+
+            myLexer.Advance();
+
+            return element;
         }
 
         public override TreeElement ParseErrorElement()

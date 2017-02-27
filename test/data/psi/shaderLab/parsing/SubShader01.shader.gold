@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       IPropertiesCommand
         ShaderLabTokenType+FixedTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
@@ -13,7 +13,7 @@ IShaderLabFile
             IShaderLabIdentifier
               Identifier(type:IDENTIFIER, text:_Color)
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Main Color")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             ISimplePropertyType
               ShaderLabTokenType+FixedTokenElement(type:COLOR_KEYWORD, text:Color)
@@ -21,13 +21,13 @@ IShaderLabFile
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             IVectorPropertyValue
               ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
       ISubShaderCommand
@@ -40,7 +40,7 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ICgProgramBlock
                 ShaderLabTokenType+FixedTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
-                ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:CG_CONTENT)
+                ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            \n            // vertex shader\n            // this time instead of using "appdata" struct, just spell inputs manually,\n            // and instead of returning v2f struct, also just return a single output\n            // float4 clip position\n            float4 vert (float4 vertex : POSITION) : SV_POSITION\n            {\n                return mul(UNITY_MATRIX_MVP, vertex);\n            }\n            \n            // color from the material\n            fixed4 _Color;\n\n            // pixel shader, no inputs needed\n            fixed4 frag () : SV_Target\n            {\n                return _Color; // just return it\n            }\n            )
                 ShaderLabTokenType+FixedTokenElement(type:CG_END, text:ENDCG)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

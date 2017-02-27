@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Blah")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       ISubShaderCommand
         ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
@@ -29,10 +29,10 @@ IShaderLabFile
                 ShaderLabTokenType+FixedTokenElement(type:OFFSET_KEYWORD, text:Offset)
                 IOffsetValue
                   INumericValue
-                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   INumericValue
-                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:-1)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
@@ -50,10 +50,10 @@ IShaderLabFile
                 ShaderLabTokenType+FixedTokenElement(type:OFFSET_KEYWORD, text:Offset)
                 IOffsetValue
                   INumericValue
-                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:-1)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   INumericValue
-                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:-1)
               IZwriteCommand
                 ShaderLabTokenType+FixedTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
                 IOnOffValue

@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Red")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       ISubShaderCommand
         ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
@@ -14,13 +14,13 @@ IShaderLabFile
             ITagsValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ITagDeclaration
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderType")
                 ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Opaque")
               ITagDeclaration
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Queue")
                 ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Geometry")
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           IRegularPassDef
             ShaderLabTokenType+FixedTokenElement(type:PASS_KEYWORD, text:Pass)
@@ -33,7 +33,7 @@ IShaderLabFile
                   IRefCommand
                     ShaderLabTokenType+FixedTokenElement(type:REF_KEYWORD, text:Ref)
                     INumericValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
                   ICompCommand
                     ShaderLabTokenType+FixedTokenElement(type:COMP_KEYWORD, text:Comp)
                     IComparisonFunctionValue
@@ -45,7 +45,7 @@ IShaderLabFile
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
               ICgProgramBlock
                 ShaderLabTokenType+FixedTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
-                ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:CG_CONTENT)
+                ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            struct appdata {\n                float4 vertex : POSITION;\n            };\n            struct v2f {\n                float4 pos : SV_POSITION;\n            };\n            v2f vert(appdata v) {\n                v2f o;\n                o.pos = UnityObjectToClipPos(v.vertex);\n                return o;\n            }\n            half4 frag(v2f i) : SV_Target {\n                return half4(1,0,0,1);\n            }\n            )
                 ShaderLabTokenType+FixedTokenElement(type:CG_END, text:ENDCG)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

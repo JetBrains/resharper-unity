@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Simple Alpha Test")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       IPropertiesCommand
         ShaderLabTokenType+FixedTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
@@ -13,14 +13,14 @@ IShaderLabFile
             IShaderLabIdentifier
               Identifier(type:IDENTIFIER, text:_MainTex)
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Base (RGB) Transparency (A)")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             ISimplePropertyType
               ShaderLabTokenType+FixedTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             ITexturePropertyValue
-              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"")
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

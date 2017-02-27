@@ -3,7 +3,7 @@ IShaderLabFile
   IShaderCommand
     ShaderLabTokenType+FixedTokenElement(type:SHADER_KEYWORD, text:Shader)
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"XXX")
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       ISubShaderCommand
         ShaderLabTokenType+FixedTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
@@ -74,7 +74,7 @@ IShaderLabFile
               IBlendCommand
                 ShaderLabTokenType+FixedTokenElement(type:BLEND_KEYWORD, text:Blend)
                 IBlendValue
-                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
                   IBlendFactor
                     IShaderLabIdentifier
                       ShaderLabTokenType+FixedTokenElement(type:ONE_KEYWORD, text:One)
@@ -99,7 +99,7 @@ IShaderLabFile
               IBlendOpCommand
                 ShaderLabTokenType+FixedTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
                 IBlendOpValue
-                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:3)
                   IShaderLabIdentifier
                     Identifier(type:IDENTIFIER, text:Sub)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -110,7 +110,7 @@ IShaderLabFile
               IBlendOpCommand
                 ShaderLabTokenType+FixedTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
                 IBlendOpValue
-                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
+                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:3)
                   IShaderLabIdentifier
                     Identifier(type:IDENTIFIER, text:Min)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
