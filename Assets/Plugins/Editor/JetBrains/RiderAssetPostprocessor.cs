@@ -63,12 +63,10 @@ namespace Plugins.Editor.JetBrains
 
     private static string GetFileNameWithoutExtension(string path)
     {
-      if (path == null)
-        return (string) null;
+      if (string.IsNullOrEmpty(path))
+        return null;
       int length;
-      if ((length = path.LastIndexOf('.')) == -1)
-        return path;
-      return path.Substring(0, length);
+      return (length = path.LastIndexOf('.')) == -1 ? path : path.Substring(0, length);
     }
 
     private static void UpgradeProjectFile(string projectFile)
@@ -194,10 +192,13 @@ namespace Plugins.Editor.JetBrains
         return;
 
       var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup").
-        Elements(xmlns + "TargetFrameworkVersion").First();
-      var version = new Version(targetFrameworkVersion.Value.Substring(1));
-      if (version < new Version(4, 5))
-        targetFrameworkVersion.SetValue("v4.5");
+        Elements(xmlns + "TargetFrameworkVersion").FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
+      if (targetFrameworkVersion != null)
+      {
+        var version = new Version(targetFrameworkVersion.Value.Substring(1));
+        if (version < new Version(4, 5))
+          targetFrameworkVersion.SetValue("v4.5");
+      }
     }
 
     private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
