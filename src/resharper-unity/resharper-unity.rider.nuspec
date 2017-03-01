@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>1.5.1-rider</version>
+    <version>1.6.0-rider</version>
     <authors>JetBrains slava.tutushkin</authors>
     <owners>JetBrains slava.tutushkin</owners>
     <summary>ReSharper support for Unity</summary>
@@ -12,23 +12,38 @@
 &#8226; Highlights Unity event functions and fields with an icon in the editor gutter.
 &#8226; Marks fields and methods implicitly used by Unity as in use.
 &#8226; Knows about all Unity script classes (MonoBehaviour, ScriptableObject, EditorWindow, etc).
-&#8226; Supports Unity API 5.2 - 5.5
+&#8226; Supports Unity API 5.0 - 5.6.
+&#8226; Inspections and Quick Fixes for incorrect event function method signature and return types.
 &#8226; Support for undocumented functions such as OnValidate and OnPreGeneratingCSProjectFiles.
+&#8226; Warns if a coroutine return value is unused.
+&#8226; Context action to convert event function method signature to/from coroutine.
 &#8226; Use Generate Code to create event functions, with parameters.
 &#8226; Start typing for automatic completion of event function declarations in a class.
 &#8226; Event function descriptions for methods and parameters displayed in tooltips and QuickDoc
 &#8226; "Read more" in QuickDoc navigates to Unity API documentation.
+&#8226; Correctly update .meta files.
 &#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating, IsInvoking and CancelInvoke. Also Start/StopCoroutine.
 &#8226; Inspection and Quick Fix to use CompareTag instead of string comparison.
+&#8226; "Create serialized field" from usage Quick Fix.
 &#8226; Suppress naming consistency checks on event functions.
 &#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code.
 &#8226; Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!
 &#8226; Highlights UnityEngine.Color and Color32. Edit via colour palette quick fix.
 &#8226; Treats Unity debug assertions as assertion methods in ReSharper control flow analysis.
 &#8226; String formatting assistance for debug log methods.
+&#8226; Regex assistance for EditorTestsWithLogParser.ExpectLogLineRegex.
 </description>
 <releaseNotes>
-&#8226; Updated for Rider EAP17
+&#8226; Support for Rider EAP18
+&#8226; Correctly update .meta files when creating, renaming or refactoring (#56, #61)
+&#8226; "Create serialized field" from usage Quick Fix (#111)
+&#8226; Inspections and quick fixes for incorrect event function signature and return type
+&#8226; Event functions that are coroutines are now recognised and marked as in use (#52)
+&#8226; Context action to convert event function signature to/from coroutine
+&#8226; Add coroutine and optional parameter information to API and tooltips
+&#8226; Expand API support to 5.0 - 5.6
+&#8226; Add regex annotations for EditorTestsWithLogParser.ExpectLogLineRegex (#95)
+&#8226; Warn if coroutine return value is unused (#99)
 
 From 1.5.0:
 &#8226; ReSharper 2016.3 support (#80, #90)
@@ -68,7 +83,7 @@ From previous releases:
 &#8226; Automatically sets Unity projects to C# 5. No more incompatible C# 6 suggestions! (#5)
 </releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
-    <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/license.txt</licenseUrl>
+    <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
     <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
     <copyright>Copyright 2016 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
