@@ -30,6 +30,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             if (projectModelChange.IsOpeningSolution || projectModelChange.IsClosingSolution)
                 return null;
 
+            if (projectModelChange.GetNewProject().IsUnityProject()
+                || projectModelChange.GetOldProject().IsUnityProject())
+            {
+                return null;
+            }
+
             myLogger.Verbose("resharper-unity: ProjectModelChange start");
             myLogger.Verbose("resharper-unity: " + projectModelChange.Dump());
             projectModelChange.Accept(new Visitor(this, myLogger));
@@ -55,6 +61,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                     myLogger.Verbose("resharper-unity: Project item {0} {1}", change.ProjectItem.GetType().Name, change.ProjectItem.Name);
                 else
                     myLogger.Verbose("resharper-unity: Project item {0}", change.ProjectItem);
+
+                // When a project is reloaded, we get a removal notification for it and all of its
+                // files, followed by a load of addition notifications. If we don't handle this
+                // properly, we'll delete a load of .meta files and create new ones, causing big problems.
+                // So ignore any project removal messages. We can safely ignore them, as a) Unity will
+                // never do this, and b) you can't delete a project from Visual Studio/Rider, only remove it
+                if (change.ProjectItem is IProject && change.IsRemoved)
+                    return;
 
                 var shouldRecurse = true;
                 if (IsRenamedAsset(change))

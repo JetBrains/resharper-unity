@@ -35,6 +35,7 @@
   </description>
   <change-notes>
 <![CDATA[
+<p>Fix nasty bug that will recreate all .meta files when reloading projects. Sorry! (<a href="https://github.com/JetBrains/resharper-unity/issues/118">#118</a>)</p>
 <ul>
   <li>Correctly update .meta files when creating, renaming or refactoring (<a href="https://github.com/JetBrains/resharper-unity/issues/56">#56</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/61">#61</a>)</li>
   <li>"Create serialized field" from usage Quick Fix (<a href="https://github.com/JetBrains/resharper-unity/issues/111">#111</a>)</li>
@@ -48,7 +49,7 @@
 </ul>
 ]]>
   </change-notes>
-  <version>1.6.0.0</version>
+  <version>1.6.1.0</version>
   <vendor url="https://www.jetbrains.com" logo="resharper/Logos/UnityLogo.png">JetBrains</vendor>
   <idea-version since-build="171.3085"/>
   <extensions defaultExtensionNs="com.intellij" />

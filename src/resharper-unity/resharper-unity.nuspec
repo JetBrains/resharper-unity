@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
     <authors>JetBrains slava.tutushkin</authors>
     <owners>JetBrains slava.tutushkin</owners>
     <summary>ReSharper support for Unity</summary>
@@ -34,6 +34,9 @@
 &#8226; Regex assistance for EditorTestsWithLogParser.ExpectLogLineRegex.
 </description>
 <releaseNotes>
+&#8226; Fix nasty bug that will recreate all .meta files when reloading projects. Sorry! (#118)
+
+From 1.6.0:
 &#8226; Correctly update .meta files when creating, renaming or refactoring (#56, #61)
 &#8226; "Create serialized field" from usage Quick Fix (#111)
 &#8226; Inspections and quick fixes for incorrect event function signature and return type
