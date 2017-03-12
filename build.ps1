@@ -16,6 +16,8 @@ if (-not $Source -and $target -eq "Folder") {
 
 function SetPackageReferenceVersion($csproj, $name, $version)
 {
+  Write-Host "- ${csproj}: package $name -> $version"
+
   $xml = New-Object xml
   $xml.PreserveWhitespace = $true
   $xml.Load($csproj)
@@ -30,6 +32,8 @@ function SetPackageReferenceVersion($csproj, $name, $version)
 }
 
 function ReplaceInFile($file, $what, $value) {
+  Write-Host "- ${file}: $what -> $value"
+
   $content = [System.IO.File]::ReadAllText($file)
   if (-not [regex]::Match($content, $what).Success) {
     Write-Error "Regex $what was not found in file $file"
