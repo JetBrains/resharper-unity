@@ -5,6 +5,8 @@
     <TargetFramework>net452</TargetFramework>
     <OutputTypeEx>library</OutputTypeEx>
 
+    <DefineConstants>WAVE08;$(DefineConstants)</DefineConstants>
+
     <AssemblyVersion>1.6.1.0</AssemblyVersion>
     <FileVersion>1.6.1.0</FileVersion>
     <Version>1.6.1</Version>
@@ -20,13 +22,11 @@
     <BuildOutputTargetFolder>DotFiles</BuildOutputTargetFolder>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET452;RIDER</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170309.135707-eap04" />
     <PackageReference Include="JetBrains.Platform.VisualStudio" Version="108.0.20170309.131657-eap04" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="108.0.20170309.132110-eap04" />
+
   </ItemGroup>
 
   <ItemGroup>

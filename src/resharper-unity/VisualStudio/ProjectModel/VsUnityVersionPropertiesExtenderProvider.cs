@@ -1,8 +1,4 @@
-﻿// TODO: Sort out zoning properly so this Just Works when run in Rider
-
-#if !RIDER
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using JetBrains.Application;
 using JetBrains.DataFlow;
@@ -55,5 +51,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
         }
     }
 }
-
-#endif
