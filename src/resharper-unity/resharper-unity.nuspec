@@ -4,8 +4,8 @@
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
     <version>1.6.1</version>
-    <authors>JetBrains slava.tutushkin</authors>
-    <owners>JetBrains slava.tutushkin</owners>
+    <authors>JetBrains</authors>
+    <owners>JetBrains</owners>
     <summary>ReSharper support for Unity</summary>
     <description>Adds support for Unity.
 
@@ -87,15 +87,15 @@ From previous releases:
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
     <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
-    <copyright>Copyright 2016 JetBrains, s.r.o</copyright>
+    <copyright>Copyright 2016, 2017 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[7.0]" />
+      <dependency id="Wave" version="[8.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>
   <files>
-    <file src="bin\Release\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+    <file src="bin\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
     <file src="annotations\UnityEngine.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.xml" />
     <file src="annotations\UnityEditor.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.xml" />
     <file src="annotations\UnityEditor.EditorTestsRunner.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.EditorTestsRunner.xml" />

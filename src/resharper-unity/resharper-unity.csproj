@@ -4,6 +4,20 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net452</TargetFramework>
     <OutputTypeEx>library</OutputTypeEx>
+
+    <AssemblyVersion>1.6.1.0</AssemblyVersion>
+    <FileVersion>1.6.1.0</FileVersion>
+    <Version>1.6.1</Version>
+
+    <Copyright>Copyright 2016, 2017 JetBrains, s.r.o</Copyright>
+    <Authors>JetBrains</Authors>
+    <Company>JetBrains</Company>
+
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
+
+    <OutputPath>bin\</OutputPath>
+    <BuildOutputTargetFolder>DotFiles</BuildOutputTargetFolder>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
