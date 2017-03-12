@@ -108,7 +108,7 @@ Write-Host "##teamcity[progressMessage 'Building']"
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet build: exit code $LastExitCode" }
 
 Write-Host "##teamcity[progressMessage 'Creating nupkg']"
-& dotnet pack src/resharper-unity/resharper-unity.csproj /p:NuspecFile=resharper-unity.nuspec 
+& dotnet pack --no-build src/resharper-unity/resharper-unity.csproj /p:NuspecFile=resharper-unity.nuspec 
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
 Write-Host "##teamcity[publishArtifacts 'src/resharper-unity/bin/JetBrains.Unity.*.nupkg']"
 
