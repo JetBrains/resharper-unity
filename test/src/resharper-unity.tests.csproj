@@ -6,6 +6,11 @@
     <OutputTypeEx>library</OutputTypeEx>
 
     <DefineConstants>WAVE08;$(DefineConstants)</DefineConstants>
+
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Tests</RootNamespace>
+
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
