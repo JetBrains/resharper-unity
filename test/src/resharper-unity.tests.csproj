@@ -1,13 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net452</TargetFramework>
     <OutputTypeEx>library</OutputTypeEx>
-  </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET452;RIDER</DefineConstants>
+    <DefineConstants>WAVE08;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

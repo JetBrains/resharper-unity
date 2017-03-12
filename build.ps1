@@ -62,6 +62,7 @@ function SetSDKVersions($sdkPackageVersion, $platformVisualStudioVersion, $psiFe
   SetPackageReferenceVersion "test\src\resharper-unity.tests.csproj" "JetBrains.Platform.VisualStudio" $platformVisualStudioVersion
 
   ReplaceInFile "src\resharper-unity\resharper-unity.csproj" "WAVE\d+" ("WAVE" + $wave.ToString("00"))
+  ReplaceInFile "test\src\resharper-unity.tests.csproj" "WAVE\d+" ("WAVE" + $wave.ToString("00"))
   ReplaceInFile "src\resharper-unity\resharper-unity.nuspec" ([Regex]::Escape('<dependency id="Wave" version="[') + '\d+\.0\]" />') ('<dependency id="Wave" version="[' + $wave + '.0]" />')
 }
 
