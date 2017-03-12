@@ -95,7 +95,7 @@ switch ($target) {
 
 Write-Host "##teamcity[progressMessage 'Restoring packages']"
 if ($Source) {
-  & dotnet restore --source $Source src/resharper-unity.sln
+  & dotnet restore --source $Source --source https://api.nuget.org/v3/index.json src/resharper-unity.sln
 } else {
   & dotnet restore src/resharper-unity.sln
 }
