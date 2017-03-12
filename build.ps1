@@ -1,5 +1,5 @@
 param (
-  [string] [ValidateSet("Wave08", "Wave07", "Folder")] $target = "Wave08", # 'Folder' takes packages version from specified Folder
+  [string] [ValidateSet("Wave08", "Wave07", "Folder", "Dev")] $target = "Dev", # 'Folder' takes packages version from specified Folder
   [string]$Source, # SDK Packages folder
   [switch]$NoBuild # Skip building and packing, just set package versions and restore packages
 )
@@ -83,6 +83,9 @@ switch ($target) {
     $platformVisualStudioVersion = GetPackageVersionFromFolder $Source "JetBrains.Platform.VisualStudio"
     $psiFeaturesVisualStudioVersion = GetPackageVersionFromFolder $Source "JetBrains.Psi.Features.VisualStudio"
     SetSDKVersions -sdkPackageVersion $sdkPackageVersion -platformVisualStudioVersion $platformVisualStudioVersion -psiFeaturesVisualStudioVersion $psiFeaturesVisualStudioVersion
+  }
+  "Dev" {
+    # Dev target: do not substitute package versions, use defaults
   }
 }
 
