@@ -6,9 +6,17 @@
     <OutputTypeEx>library</OutputTypeEx>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NET452;RIDER</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170309.135707-eap04" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.4.9" />
+    <PackageReference Include="JetBrains.Platform.VisualStudio" Version="108.0.20170309.131657-eap04" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Xaml" />
   </ItemGroup>
 
 </Project>

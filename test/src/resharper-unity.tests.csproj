@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net452</TargetFramework>
+    <OutputTypeEx>library</OutputTypeEx>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NET452;RIDER</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2017.1.20170309.135707-eap04" />
+    <PackageReference Include="JetBrains.Platform.VisualStudio" Version="108.0.20170309.131657-eap04" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.csproj" />
+  </ItemGroup>
+
+</Project>
