@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             "StartCoroutine", "StopCoroutine"
         };
 
-#if RIDER
+#if WAVE08
         public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
             // If the old references are all attached to this element, 

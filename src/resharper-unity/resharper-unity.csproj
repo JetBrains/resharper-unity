@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net452</TargetFramework>
+    <OutputTypeEx>library</OutputTypeEx>
+
+    <DefineConstants>WAVE08;$(DefineConstants)</DefineConstants>
+
+    <AssemblyVersion>1.6.1.0</AssemblyVersion>
+    <FileVersion>1.6.1.0</FileVersion>
+    <Version>1.6.1</Version>
+
+    <Copyright>Copyright 2016, 2017 JetBrains, s.r.o</Copyright>
+    <Authors>JetBrains</Authors>
+    <Company>JetBrains</Company>
+
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
+
+    <OutputPath>bin\</OutputPath>
+    <BuildOutputTargetFolder>DotFiles</BuildOutputTargetFolder>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170309.135707-eap04" />
+    <PackageReference Include="JetBrains.Platform.VisualStudio" Version="108.0.20170309.131657-eap04" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="108.0.20170309.132110-eap04" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Xaml" />
+  </ItemGroup>
+
+</Project>
