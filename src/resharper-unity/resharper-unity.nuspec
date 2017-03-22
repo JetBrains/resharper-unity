@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <authors>JetBrains slava.tutushkin</authors>
     <owners>JetBrains slava.tutushkin</owners>
     <summary>ReSharper support for Unity</summary>
@@ -34,6 +34,9 @@
 &#8226; Regex assistance for EditorTestsWithLogParser.ExpectLogLineRegex.
 </description>
 <releaseNotes>
+&#8226; Improve location of "Create serialized field" Quick Fix (#124)
+
+From 1.6.1:
 &#8226; Fix nasty bug that will recreate all .meta files when reloading projects. Sorry! (#118)
 
 From 1.6.0:
@@ -95,7 +98,7 @@ From previous releases:
     <tags>resharper unity unity3d</tags>
   </metadata>
   <files>
-    <file src="bin\Release\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+    <file src="..\..\build\resharper-unity.wave07\bin\Release\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
     <file src="annotations\UnityEngine.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.xml" />
     <file src="annotations\UnityEditor.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.xml" />
     <file src="annotations\UnityEditor.EditorTestsRunner.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.EditorTestsRunner.xml" />
