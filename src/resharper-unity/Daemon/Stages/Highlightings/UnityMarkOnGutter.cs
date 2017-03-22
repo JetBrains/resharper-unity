@@ -11,8 +11,14 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Resources.Icons;
 using JetBrains.TextControl;
-using JetBrains.UI.BulbMenu;
 using JetBrains.Util;
+
+#if WAVE07 || WAVE08
+using JetBrains.UI.BulbMenu;
+#else
+using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {

@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Text;
-using JetBrains.ActionManagement;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
@@ -13,9 +11,17 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Refactorings.ChangeSignature;
 using JetBrains.TextControl;
+using JetBrains.Util;
+
+#if WAVE07 || WAVE08
+using JetBrains.ActionManagement;
 using JetBrains.UI.ActionsRevised.Handlers;
 using JetBrains.UI.ActionSystem;
-using JetBrains.Util;
+#else
+using JetBrains.Application.UI.Actions.ActionManager;
+using JetBrains.Application.UI.ActionsRevised.Handlers;
+using JetBrains.Application.UI.ActionSystem;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 {

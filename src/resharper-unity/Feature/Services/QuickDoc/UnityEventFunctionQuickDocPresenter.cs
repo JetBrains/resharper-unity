@@ -4,9 +4,15 @@ using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Providers;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Psi;
+using JetBrains.Util;
+
+#if WAVE07 || WAVE08
 using JetBrains.UI.Application;
 using JetBrains.UI.Theming;
-using JetBrains.Util;
+#else
+using JetBrains.Application.UI.Components.Theming;
+using JetBrains.Application.UI.Help;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
 {

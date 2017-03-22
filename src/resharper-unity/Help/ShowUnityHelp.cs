@@ -1,8 +1,13 @@
 ﻿using System;
 using JetBrains.Application;
 using JetBrains.Application.StdApplicationUI;
-using JetBrains.UI.Application;
 using JetBrains.Util;
+
+#if WAVE07 || WAVE08
+using JetBrains.UI.Application;
+#else
+using JetBrains.Application.UI.Help;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Help
 {

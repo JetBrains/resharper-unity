@@ -5,7 +5,6 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel.Propoerties;
 using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
-using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using NUnit.Framework;
 using PlatformID = JetBrains.Application.platforms.PlatformID;
@@ -18,8 +17,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
         protected override string RelativeTestDataPath => @"codeCompletion\List";
         protected override bool CheckAutomaticCompletionDefault() => true;
 
+#if WAVE07
         protected override Pair<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>> CreateProjectDescriptor(PlatformID platformID,
-            string projectName, string outputAssemblyName, ICollection<FileSystemPath> absoluteFileSet, IEnumerable<string> libraries, ReferenceDlls referenceMsCorLib, Guid projectGuid)
+            string projectName, string outputAssemblyName, ICollection<FileSystemPath> absoluteFileSet, IEnumerable<string> libraries, TestFramework.ReferenceDlls referenceMsCorLib, Guid projectGuid)
         {
             var projectDescriptor = base.CreateProjectDescriptor(platformID, projectName, outputAssemblyName, absoluteFileSet, libraries, referenceMsCorLib, projectGuid);
             var activeConfigurations = projectDescriptor.First.ProjectProperties.ActiveConfigurations;
@@ -28,6 +28,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
             projectConfiguration.DefineConstants = testUnityAttributes.DefineConstants;
             return projectDescriptor;
         }
+#else
+        protected override Pair<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>> CreateProjectDescriptor(PlatformID platformID, string projectName, string outputAssemblyName, ICollection<FileSystemPath> absoluteFileSet, ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> libraries, Guid projectGuid)
+        {
+            var projectDescriptor = base.CreateProjectDescriptor(platformID, projectName, outputAssemblyName, absoluteFileSet, libraries, projectGuid);
+            var activeConfigurations = projectDescriptor.First.ProjectProperties.ActiveConfigurations;
+            var projectConfiguration = (CSharpProjectConfiguration)activeConfigurations.GetOrCreateConfiguration(TargetFrameworkId.Default);
+            var testUnityAttributes = GetClassAttributes<TestUnityAttribute>().Single();
+            projectConfiguration.DefineConstants = testUnityAttributes.DefineConstants;
+            return projectDescriptor;
+        }
+#endif
     }
 
     [TestUnity(UnityVersion.Unity54)]

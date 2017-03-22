@@ -6,8 +6,14 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.TextControl.DocumentMarkup;
-using JetBrains.UI.BulbMenu;
 using JetBrains.Util;
+
+#if WAVE07 || WAVE08
+using JetBrains.UI.BulbMenu;
+#else
+using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
+#endif
 
 [assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE, 
     EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityGutterMark), 
