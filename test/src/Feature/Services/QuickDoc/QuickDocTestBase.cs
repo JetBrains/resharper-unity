@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using JetBrains.ActionManagement;
 using JetBrains.Application.Components;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.platforms;
@@ -17,10 +16,20 @@ using JetBrains.TextControl;
 using JetBrains.TextControl.DataContext;
 using NUnit.Framework;
 
+#if WAVE07 || WAVE08
+using JetBrains.ActionManagement;
+#else
+using JetBrains.Application.UI.Actions.ActionManager;
+#endif
+
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.QuickDoc
 {
     [Category("QuickDoc")]
+#if WAVE07
     [TestReferences(PlatformManager.SystemCore, Inherits = true)]
+#else
+    [TestReferences(PlatformManager.SystemCore, DoesNotInherit = false)]
+#endif
     public abstract class QuickDocTestBase : BaseTestWithTextControl
     {
         protected override void DoTest(IProject testProject)

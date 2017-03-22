@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
-using JetBrains.Application;
 using JetBrains.Application.changes;
 using JetBrains.Application.Settings;
-using JetBrains.Application.Settings.Storage;
-using JetBrains.Application.Settings.Store;
-using JetBrains.Application.Settings.Store.Implementation;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
@@ -19,6 +15,17 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.Util;
+
+#if WAVE07 || WAVE08
+using JetBrains.Application;
+using JetBrains.Application.Settings.Storage;
+using JetBrains.Application.Settings.Store;
+using JetBrains.Application.Settings.Store.Implementation;
+#else
+using JetBrains.Application.Settings.Implementation;
+using JetBrains.Application.Settings.Storage.DefaultBody;
+using JetBrains.Application.Threading;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {

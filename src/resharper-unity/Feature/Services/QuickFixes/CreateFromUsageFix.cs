@@ -8,8 +8,14 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.CreateFromUsage;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.UI.BulbMenu;
 using JetBrains.Util;
+
+#if WAVE07 || WAVE08
+using JetBrains.UI.BulbMenu;
+#else
+using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Application.UI.Controls.BulbMenu.Positions;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 {
