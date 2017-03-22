@@ -1,6 +1,7 @@
 src/packages/*
 *.nupkg
 
+build/
 *.suo
 *.user
 [Bb]in
