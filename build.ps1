@@ -17,8 +17,8 @@ function SetPropertyValue($file, $name, $value)
   $node = $xml.SelectSingleNode("//$name")
   if($node -eq $null) { Write-Error "$name was not found in $file" }
 
-  if ($node.Text -ne $value) {
-    $node.Text = $value
+  if ($node.InnerText -ne $value) {
+    $node.InnerText = $value
     $xml.Save($file)
   }
 }
@@ -30,7 +30,7 @@ function SetRiderSDKVersions($sdkPackageVersion, $sdkTestsPackageVersion, $psiFe
   Write-Host "  JetBrains.ReSharper.SDK.Tests -> $sdkTestsPackageVersion"
   Write-Host "  JetBrains.Psi.Features.VisualStudio -> $psiFeaturesVisualStudioVersion"  
 
-  SetPropertyValue  "Directory.Build.props" "RiderJetBrainsPsiFeaturesVisualStudioVersion" "[$platformVisualStudioVersion]"
+  SetPropertyValue  "Directory.Build.props" "RiderJetBrainsPsiFeaturesVisualStudioVersion" "[$psiFeaturesVisualStudioVersion]"
   SetPropertyValue  "Directory.Build.props" "RiderJetBrainsReSharperSDKVersion" "[$sdkPackageVersion]"
   SetPropertyValue  "Directory.Build.props" "RiderJetBrainsReSharperSDKTestsVersion" "[$sdkTestsPackageVersion]"
 }
@@ -49,7 +49,7 @@ if ($Source) {
   $sdkPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK"
   $sdkTestsPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK.Tests"
   $psiFeaturesVisualStudioVersion = GetPackageVersionFromFolder $Source "JetBrains.Psi.Features.VisualStudio"
-  SetSDKVersions -sdkPackageVersion $sdkPackageVersion -sdkTestsPackageVersion $sdkTestsPackageVersion -psiFeaturesVisualStudioVersion $psiFeaturesVisualStudioVersion
+  SetRiderSDKVersions -sdkPackageVersion $sdkPackageVersion -sdkTestsPackageVersion $sdkTestsPackageVersion -psiFeaturesVisualStudioVersion $psiFeaturesVisualStudioVersion
 }
 
 Write-Host "##teamcity[progressMessage 'Restoring packages']"
