@@ -26,5 +26,12 @@
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\Release</OutputPath>
   </PropertyGroup>
 
+  <!-- Specify Rider SDK version in one place -->
+  <PropertyGroup>
+    <RiderJetBrainsPsiFeaturesVisualStudioVersion>[108.0.20170323.62404-eap06]</RiderJetBrainsPsiFeaturesVisualStudioVersion>
+    <RiderJetBrainsReSharperSDKVersion>[2017.1.20170323.65736-eap06]</RiderJetBrainsReSharperSDKVersion>
+    <RiderJetBrainsReSharperSDKTestsVersion>[2017.1.20170323.65736-eap06]</RiderJetBrainsReSharperSDKTestsVersion>
+  </PropertyGroup>  
+
   <Import Project="Packaging.props" />
 </Project>

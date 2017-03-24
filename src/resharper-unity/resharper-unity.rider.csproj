@@ -26,8 +26,8 @@
     <!-- It would be nice to use floating versions here during EAP, but that would require fixed
          version major, minor and patch numbers, e.g. 2017.1.0-* or it will match incorrectly
          See https://github.com/NuGet/Home/issues/4859-->
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="108.0.20170321.13125-eap06" />
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170321.20400-eap06" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(RiderJetBrainsPsiFeaturesVisualStudioVersion)" />
+    <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(RiderJetBrainsReSharperSDKVersion)" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
