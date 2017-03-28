@@ -308,8 +308,8 @@ namespace Plugins.Editor.JetBrains
  - Without 4.5:
     - Rider will fail to resolve System.Linq on Mac/Linux
     - Rider will fail to resolve Firebase Analytics.
- - With 4.5 Rider will show ambiguos references in UniRx.
-All thouse problems will go away after Unity upgrades to mono4.";
+ - With 4.5 Rider will show ambiguous references in UniRx.
+All those problems will go away after Unity upgrades to mono4.";
       TargetFrameworkVersion45 =
         EditorGUILayout.Toggle(
           new GUIContent("TargetFrameworkVersion 4.5",
