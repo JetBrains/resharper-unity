@@ -15,12 +15,14 @@
     <EmbeddedResource Include="api.xml" />
   </ItemGroup>
   <ItemGroup>
+    <!--
     <ThemedIconsXamlV3 Include="Resources\Logo\unity-logo.xaml">
       <ThemeColumns>Gray;GrayDark;Color</ThemeColumns>
       <RemoveBackgroundElement>False</RemoveBackgroundElement>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
+    -->
   </ItemGroup>
   <ItemGroup>
     <!-- It would be nice to use floating versions here during EAP, but that would require fixed
