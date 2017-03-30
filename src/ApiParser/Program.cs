@@ -26,6 +26,8 @@ namespace ApiParser
 
         public static void Main(string[] args)
         {
+            Directory.SetCurrentDirectory(@"C:\Users\matt\Code\forks\JetBrains\resharper-unity\build\ApiParser\bin\Debug\net452");
+
             var progPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             var dataPath = Path.Combine(progPath, @"Unity\Editor\Data");
             var monoPath = Path.Combine(dataPath, @"Mono\lib\mono\unity");
@@ -55,6 +57,7 @@ namespace ApiParser
             }
             AddUndocumentedOptionalParameters(unityApi);
             AddUndocumentedCoroutines(unityApi);
+            Fixup(unityApi);
 
             using (var writer = new XmlTextWriter(@"api.xml", Encoding.UTF8) {Formatting = Formatting.Indented})
             {
@@ -88,9 +91,7 @@ namespace ApiParser
         private static void SetIsCoroutine(UnityApiType type, string functionName)
         {
             foreach (var function in type.FindEventFunctions(functionName))
-            {
                 function.SetIsCoroutine();
-            }
         }
 
         private static void AddUndocumentedOptionalParameters(UnityApi unityApi)
@@ -115,6 +116,51 @@ namespace ApiParser
         {
             foreach (var function in type.FindEventFunctions(functionName))
                 function.MakeParameterOptional(parameterName, justification);
+        }
+
+        private static void Fixup(UnityApi unityApi)
+        {
+            var type = unityApi.FindType("AssetModificationProcessor");
+            if (type != null)
+            {
+                // Not part of the actual documentation
+                foreach (var function in type.FindEventFunctions("IsOpenForEdit"))
+                {
+                    function.SetIsStatic();
+                    function.SetReturnType(ApiType.Bool);
+                    var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
+                    function.UpdateParameter("arg1", newParameter);
+                    newParameter = new UnityApiParameter("message", ApiType.StringByRef, string.Empty);
+                    function.UpdateParameter("arg2", newParameter);
+                }
+
+                foreach (var function in type.FindEventFunctions("OnWillCreateAsset"))
+                {
+                    function.SetIsStatic();
+                    var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
+                    function.UpdateParameter("arg", newParameter);
+                }
+
+                foreach (var function in type.FindEventFunctions("OnWillDeleteAsset"))
+                {
+                    function.SetIsStatic();
+                    function.SetReturnType(new ApiType("UnityEditor.AssetDeleteResult"));
+                    var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
+                    function.UpdateParameter("arg1", newParameter);
+                    newParameter = new UnityApiParameter("options", new ApiType("UnityEditor.RemoveAssetOptions"), string.Empty);
+                    function.UpdateParameter("arg2", newParameter);
+                }
+
+                foreach (var function in type.FindEventFunctions("OnWillMoveAsset"))
+                {
+                    function.SetIsStatic();
+                    function.SetReturnType(new ApiType("UnityEditor.AssetMoveResult"));
+                    var newParameter = new UnityApiParameter("fromPath", ApiType.String, string.Empty);
+                    function.UpdateParameter("arg1", newParameter);
+                    newParameter = new UnityApiParameter("toPath", ApiType.String, string.Empty);
+                    function.UpdateParameter("arg2", newParameter);
+                }
+            }
         }
 
         private static void AddUndocumentApis(UnityApi unityApi, Version apiVersion)

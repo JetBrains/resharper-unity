@@ -119,17 +119,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var type = node.Attributes?["type"]?.Value;
             var name = node.Attributes?["name"].Value;
             var description = node.Attributes?["description"]?.Value;
-            var isArray = bool.Parse(node.Attributes?["array"].Value ?? "false");
+            var isArray = bool.Parse(node.Attributes?["array"]?.Value ?? "false");
+            var isByRef = bool.Parse(node.Attributes?["byRef"]?.Value ?? "false");
             var isOptional = bool.Parse(node.Attributes?["optional"]?.Value ?? "false");
             var justification = node.Attributes?["justification"]?.Value;
 
             if (type == null || name == null)
             {
-                return new UnityEventFunctionParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, description, isArray, isOptional, justification);
+                return new UnityEventFunctionParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, description, isArray, isByRef, isOptional, justification);
             }
 
             var parameterType = GetClrTypeName(type);
-            return new UnityEventFunctionParameter(name, parameterType, description, isArray, isOptional, justification);
+            return new UnityEventFunctionParameter(name, parameterType, description, isArray, isByRef, isOptional, justification);
         }
     }
 

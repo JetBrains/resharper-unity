@@ -1,37 +1,43 @@
 ﻿<api minimumVersion="5.0" maximumVersion="5.6">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" minimumVersion="5.1" maximumVersion="5.6" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
-    <message name="IsOpenForEdit" static="False" minimumVersion="5.1" maximumVersion="5.6" description="This is called by Unity when inspecting an asset to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
+    <message name="IsOpenForEdit" static="True" minimumVersion="5.1" maximumVersion="5.6" description="This is called by Unity when inspecting an asset to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
       <parameters>
-        <parameter type="System.String" array="False" name="arg1" />
-        <parameter type="System.String" array="False" name="arg2" />
+        <parameter type="System.String" array="False" name="assetPath" />
+        <parameter type="System.String" array="False" byRef="True" name="message" />
+      </parameters>
+      <returns type="System.Boolean" array="False" />
+    </message>
+    <message name="OnWillCreateAsset" static="True" minimumVersion="5.1" maximumVersion="5.6" description="This is called by Unity when it is about to create an asset not imported by the user, eg. &quot;.meta&quot; files." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillCreateAsset.html">
+      <parameters>
+        <parameter type="System.String" array="False" name="assetPath" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnWillCreateAsset" static="False" minimumVersion="5.1" maximumVersion="5.6" description="This is called by Unity when it is about to create an asset not imported by the user, eg. &quot;.meta&quot; files." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillCreateAsset.html">
+    <message name="OnWillDeleteAsset" static="True" minimumVersion="5.1" maximumVersion="5.6" description="This is called by Unity when it is about to delete an asset from disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillDeleteAsset.html">
       <parameters>
-        <parameter type="System.String" array="False" name="arg" />
+        <parameter type="System.String" array="False" name="assetPath" />
+        <parameter type="UnityEditor.RemoveAssetOptions" array="False" name="options" />
+      </parameters>
+      <returns type="UnityEditor.AssetDeleteResult" array="False" />
+    </message>
+    <message name="OnWillMoveAsset" static="True" minimumVersion="5.1" maximumVersion="5.6" description="This is called by Unity when it is about to move an asset on disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillMoveAsset.html">
+      <parameters>
+        <parameter type="System.String" array="False" name="fromPath" />
+        <parameter type="System.String" array="False" name="toPath" />
+      </parameters>
+      <returns type="UnityEditor.AssetMoveResult" array="False" />
+    </message>
+    <message name="OnWillSaveAssets" static="False" minimumVersion="5.1" maximumVersion="5.3" description="This is called by Unity when it is about to write serialized assets or scene files to disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillSaveAssets.html">
+      <parameters>
+        <parameter type="System.String" array="True" name="arg" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnWillDeleteAsset" static="False" minimumVersion="5.1" maximumVersion="5.6" description="This is called by Unity when it is about to delete an asset from disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillDeleteAsset.html">
-      <parameters>
-        <parameter type="System.String" array="False" name="arg1" />
-        <parameter type="UnityEditor.RemoveAssetOptions" array="False" name="arg2" />
-      </parameters>
-      <returns type="System.Void" array="False" />
-    </message>
-    <message name="OnWillMoveAsset" static="False" minimumVersion="5.1" maximumVersion="5.6" description="This is called by Unity when it is about to move an asset on disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillMoveAsset.html">
-      <parameters>
-        <parameter type="System.String" array="False" name="arg1" />
-        <parameter type="System.String" array="False" name="arg2" />
-      </parameters>
-      <returns type="System.Void" array="False" />
-    </message>
-    <message name="OnWillSaveAssets" static="False" minimumVersion="5.1" maximumVersion="5.6" description="This is called by Unity when it is about to write serialized assets or scene files to disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillSaveAssets.html">
+    <message name="OnWillSaveAssets" static="True" minimumVersion="5.4" maximumVersion="5.6" description="This is called by Unity when it is about to write serialized assets or scene files to disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillSaveAssets.html">
       <parameters>
         <parameter type="System.String" array="True" name="paths" />
       </parameters>
-      <returns type="System.Void" array="False" />
+      <returns type="System.String" array="True" />
     </message>
     <message name="OnStatusUpdated" static="True" minimumVersion="5.1" maximumVersion="5.6" undocumented="True">
       <returns type="System.Void" array="False" />
@@ -56,9 +62,9 @@
     </message>
     <message name="OnPostprocessAssetbundleNameChanged" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Handler called when asset is assigned to a different asset bundle." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAssetbundleNameChanged.html">
       <parameters>
-        <parameter type="System.String" array="False" name="stringassetPath" />
-        <parameter type="System.String" array="False" name="stringpreviousAssetBundleName" />
-        <parameter type="System.String" array="False" name="stringnewAssetBundleName" />
+        <parameter type="System.String" array="False" name="assetPath" />
+        <parameter type="System.String" array="False" name="previousAssetBundleName" />
+        <parameter type="System.String" array="False" name="newAssetBundleName" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>

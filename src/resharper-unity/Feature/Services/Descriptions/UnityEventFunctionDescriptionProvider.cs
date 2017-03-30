@@ -33,6 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
                     var richTextBlock = new RichTextBlock(eventFunction.Description);
                     if (eventFunction.Coroutine)
                         richTextBlock.Add("This function can be a coroutine.");
+                    if (eventFunction.Undocumented)
+                        richTextBlock.Add("This function is undocumented.");
                     return richTextBlock;
                 }
             }

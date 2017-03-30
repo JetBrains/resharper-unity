@@ -70,6 +70,7 @@ using UnityEngine;
 class A : MonoBehaviour
 {
   private void OnDestroy()
-  {{caret}
+  {
+    {selstart}throw new System.NotImplementedException();{selend}
   }
 }

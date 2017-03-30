@@ -151,12 +151,12 @@ namespace ApiParser
 
     public class UnityApiEventFunction : HasVersionRange
     {
-        private readonly bool myIsStatic;
+        private bool myIsStatic;
         private bool myIsCoroutine;
         [CanBeNull] private string myDescription;
         [CanBeNull] private readonly string myDocPath;
         private readonly bool myUndocumented;
-        private readonly ApiType myReturnType;
+        private ApiType myReturnType;
         private readonly IList<UnityApiParameter> myParameters;
 
         public UnityApiEventFunction(string name, bool isStatic, bool isCoroutine, ApiType returnType,
@@ -189,6 +189,8 @@ namespace ApiParser
         {
             if (UpdateSupportedVersion(apiVersion))
             {
+                myIsStatic = function.myIsStatic;
+
                 if (function.myDescription != myDescription && !string.IsNullOrEmpty(function.myDescription))
                 {
                     myDescription = function.myDescription;
@@ -206,6 +208,16 @@ namespace ApiParser
             myIsCoroutine = true;
         }
 
+        public void SetIsStatic()
+        {
+            myIsStatic = true;
+        }
+
+        public void SetReturnType(ApiType returnType)
+        {
+            myReturnType = returnType;
+        }
+
         public void MakeParameterOptional(string name, string justification)
         {
             if (myParameters.Count != 1)
@@ -213,6 +225,17 @@ namespace ApiParser
             if (myParameters[0].Name != name)
                 throw new InvalidOperationException($"Cannot find parameter {name}");
             myParameters[0].SetOptional(justification);
+        }
+
+        public void UpdateParameter(string name, UnityApiParameter newParameter)
+        {
+            var parameter = GetParameter(name);
+            parameter.Update(newParameter);
+        }
+
+        private UnityApiParameter GetParameter(string name)
+        {
+            return myParameters.Single(p => p.Name == name);
         }
 
         public void ExportTo(XmlTextWriter xmlWriter)
@@ -247,6 +270,9 @@ namespace ApiParser
 
         private void WriteReturns(XmlWriter xmlWriter)
         {
+            if (myReturnType.IsByRef)
+                throw new InvalidOperationException("Cannot have ref return type");
+
             xmlWriter.WriteStartElement("returns");
             xmlWriter.WriteAttributeString("type", myReturnType.FullName);
             xmlWriter.WriteAttributeString("array", myReturnType.IsArray.ToString());
@@ -262,7 +288,7 @@ namespace ApiParser
 
     public class UnityApiParameter
     {
-        private readonly ApiType myType;
+        private ApiType myType;
         private string myDescription;
         private string myJustification;
 
@@ -286,6 +312,8 @@ namespace ApiParser
             xmlWriter.WriteStartElement("parameter");
             xmlWriter.WriteAttributeString("type", myType.FullName);
             xmlWriter.WriteAttributeString("array", myType.IsArray.ToString());
+            if (myType.IsByRef)
+                xmlWriter.WriteAttributeString("byRef", myType.IsByRef.ToString());
             xmlWriter.WriteAttributeString("name", Name);
             if (!string.IsNullOrEmpty(myJustification))
             {
@@ -311,6 +339,12 @@ namespace ApiParser
 
             if (myType.FullName != newParameter.myType.FullName)
                 throw new InvalidOperationException($"Parameter type differences for parameter {Name}! {myType.FullName} {newParameter.myType.FullName}");
+
+            if (myType.IsArray != newParameter.myType.IsArray || myType.IsByRef != newParameter.myType.IsByRef)
+            {
+                Console.WriteLine("WARNING: Parameter `{2}` type changed: was {0} now {1}", myType, newParameter.myType, Name);
+                myType = newParameter.myType;
+            }
         }
 
         public override string ToString()

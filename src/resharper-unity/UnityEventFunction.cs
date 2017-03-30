@@ -62,6 +62,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 if (i > 0) builder.Append(",");
 
                 var parameter = Parameters[i];
+                // TODO: `out` or `ref`?
+                // From reflection point of view, it's a "ByRef" Type, and that's all we know...
+                // The only place it's currently being used is an out parameter
+                if (parameter.IsByRef) builder.Append("out ");
                 builder.Append(parameter.ClrTypeName.FullName);
                 if (parameter.IsArray) builder.Append("[]");
                 builder.Append(' ');

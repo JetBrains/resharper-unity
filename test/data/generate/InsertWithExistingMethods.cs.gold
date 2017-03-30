@@ -18,7 +18,8 @@ class A : Collider
   {
   }
 
-  private void OnCollisionStay(Collision collisionInfo)
-  {{caret}
+  private void OnCollisionStay(Collision other)
+  {
+    {selstart}throw new System.NotImplementedException();{selend}
   }
 }

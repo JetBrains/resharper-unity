@@ -72,14 +72,17 @@ using UnityEngine;
 class A : MonoBehaviour
 {
   private void OnMouseDown()
-  {{caret}
+  {
+    {selstart}throw new System.NotImplementedException();{selend}
   }
 
   private void OnMouseDrag()
   {
+    throw new System.NotImplementedException();
   }
 
   private void OnMouseEnter()
   {
+    throw new System.NotImplementedException();
   }
 }

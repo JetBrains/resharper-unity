@@ -70,6 +70,7 @@ using UnityEngine;
 class A : MonoBehaviour
 {
   private void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
-  {{caret}
+  {
+    {selstart}throw new System.NotImplementedException();{selend}
   }
 }

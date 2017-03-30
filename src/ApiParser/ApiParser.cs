@@ -65,7 +65,8 @@ namespace ApiParser
         [CanBeNull]
         private static ApiNode PickExample([NotNull] ApiNode details)
         {
-            return PickExample(details, "Raw") ?? PickExample(details, "JS") ?? PickExample(details, "CS");
+            // Favour C#, it's the most strongly typed
+            return PickExample(details, "CS") ?? PickExample(details, "JS") ?? PickExample(details, "Raw");
         }
 
         private void OnProgress([NotNull] ProgressEventArgs e)
@@ -129,6 +130,7 @@ namespace ApiParser
             var messageName = link.Text;
             var returnType = ApiType.Void;
             string[] argumentNames = null;
+            var isStaticFromExample = false;
 
             var example = PickExample(details);
             if (example != null)
@@ -136,10 +138,11 @@ namespace ApiParser
                 var tuple = ParseDetailsFromExample(messageName, example, hintNamespace);
                 returnType = tuple.Item1;
                 argumentNames = tuple.Item2;
+                isStaticFromExample = tuple.Item3;
             }
 
             var docPath = Path.Combine(myScriptReferenceRelativePath, detailsPath);
-            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null, isCoroutine,
+            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null || isStaticFromExample, isCoroutine,
                 returnType, apiVersion, desc.Text, docPath);
 
             ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames);
@@ -194,21 +197,24 @@ namespace ApiParser
         }
 
         // Gets return type and argument names from example
-        private static Tuple<ApiType, string[]> ParseDetailsFromExample(string messageName, ApiNode example, string owningMessageNamespace)
+        private static Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, ApiNode example, string owningMessageNamespace)
         {
             var blankCleanup1 = new Regex(@"\s+");
             var blankCleanup2 = new Regex(@"\s*(\W)\s*");
+            var arrayFixup = new Regex(@"(\[\])(\w)");
 
             var exampleText = example.Text;
             exampleText = blankCleanup1.Replace(exampleText, " ");
             exampleText = blankCleanup2.Replace(exampleText, "$1");
+            exampleText = arrayFixup.Replace(exampleText, "$1 $2");
 
-            var jsRegex = new Regex($@"(?:\W|^)function {messageName}\(([^)]*)\)(?::(\w+))?\{{");
+            var jsRegex = new Regex($@"(?:\W|^)(?<static>static\s+)?function {messageName}\((?<parameters>[^)]*)\)(?::(?<returnType>\w+\W*))?\{{");
             var m = jsRegex.Match(exampleText);
             if (m.Success)
             {
-                var returnType = new ApiType(m.Groups[2].Value, owningMessageNamespace);
-                var parameters = m.Groups[1].Value.Split(',');
+                var returnType = new ApiType(m.Groups["returnType"].Value, owningMessageNamespace);
+                var parameters = m.Groups["parameters"].Value.Split(',');
+                var isStatic = m.Groups["static"].Success;
 
                 var arguments = new string[parameters.Length];
                 for (var i = 0; i < parameters.Length; ++i)
@@ -216,17 +222,18 @@ namespace ApiParser
                     arguments[i] = parameters[i].Split(':')[0];
                 }
 
-                return Tuple.Create(returnType, arguments);
+                return Tuple.Create(returnType, arguments, isStatic);
             }
 
-            var csRegex = new Regex($@"(\w+) {messageName}\(([^)]*)\)");
+            var csRegex = new Regex($@"(?:\W|^)(?<static>static\s+)?(?<returnType>\w+\W*) {messageName}\((?<parameters>[^)]*)\)");
             m = csRegex.Match(exampleText);
             if (m.Success)
             {
-                var nameRegex = new Regex(@"\W(\w+)$");
+                var nameRegex = new Regex(@"^.*?\W(\w+)$");
 
-                var returnType = new ApiType(m.Groups[1].Value, owningMessageNamespace);
-                var parameters = m.Groups[2].Value.Split(',');
+                var returnType = new ApiType(m.Groups["returnType"].Value, owningMessageNamespace);
+                var parameters = m.Groups["parameters"].Value.Split(',');
+                var isStatic = m.Groups["static"].Success;
 
                 var arguments = new string[parameters.Length];
                 for (var i = 0; i < parameters.Length; ++i)
@@ -234,7 +241,7 @@ namespace ApiParser
                     arguments[i] = nameRegex.Replace(parameters[i], "$1");
                 }
 
-                return Tuple.Create(returnType, arguments);
+                return Tuple.Create(returnType, arguments, isStatic);
             }
 
             return null;
