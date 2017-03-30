@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using JetBrains.Annotations;
-using JetBrains.Util;
 
 namespace ApiParser
 {
@@ -237,7 +236,7 @@ namespace ApiParser
 
         private void WriteParameters(XmlTextWriter xmlWriter)
         {
-            if (myParameters.IsEmpty())
+            if (!myParameters.Any())
                 return;
 
             xmlWriter.WriteStartElement("parameters");

@@ -68,7 +68,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostprocessGameObjectWithUserProperties" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Gets called for each GameObject that had at least one userpropery attached to it in the imported file." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessGameObjectWithUserProperties.html">
+    <message name="OnPostprocessGameObjectWithUserProperties" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Gets called for each GameObject that had at least one user property attached to it in the imported file." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessGameObjectWithUserProperties.html">
       <parameters>
         <parameter type="UnityEngine.GameObject" array="False" name="go" />
         <parameter type="System.String" array="True" name="propNames" />
@@ -164,37 +164,37 @@
   <type kind="class" name="Collider" ns="UnityEngine" minimumVersion="5.0" maximumVersion="5.6" path="Documentation/en/ScriptReference/Collider.html">
     <message name="OnCollisionEnter" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider." path="Documentation/en/ScriptReference/Collider.OnCollisionEnter.html">
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collision" description="The Collision data associated with this collision event." />
+        <parameter type="UnityEngine.Collision" array="False" name="other" description="The Collision data associated with this collision event." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionExit" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider." path="Documentation/en/ScriptReference/Collider.OnCollisionExit.html">
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" description="The Collision data associated with this collision event." />
+        <parameter type="UnityEngine.Collision" array="False" name="other" description="The Collision data associated with this collision event." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionStay" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." path="Documentation/en/ScriptReference/Collider.OnCollisionStay.html">
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" description="The Collision data associated with this collision event." />
+        <parameter type="UnityEngine.Collision" array="False" name="other" description="The Collision data associated with this collision event." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTriggerEnter" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerEnter is called when the Collider other enters the trigger." path="Documentation/en/ScriptReference/Collider.OnTriggerEnter.html">
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="Name of the collider." />
+        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTriggerExit" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerExit is called when the Collider other has stopped touching the trigger." path="Documentation/en/ScriptReference/Collider.OnTriggerExit.html">
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="Name of the collider." />
+        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTriggerStay" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerStay is called almost all the frames for every Collider other that is touching the trigger." path="Documentation/en/ScriptReference/Collider.OnTriggerStay.html">
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="Name of the collider." />
+        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -202,19 +202,19 @@
   <type kind="class" name="Collider2D" ns="UnityEngine" minimumVersion="5.0" maximumVersion="5.6" path="Documentation/en/ScriptReference/Collider2D.html">
     <message name="OnCollisionEnter2D" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent when an incoming collider makes contact with this object's collider (2D physics only)." path="Documentation/en/ScriptReference/Collider2D.OnCollisionEnter2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="coll" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionExit2D" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent when a collider on another object stops touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/Collider2D.OnCollisionExit2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="coll" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionStay2D" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Sent each frame where a collider on another object is touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/Collider2D.OnCollisionStay2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="coll" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -238,12 +238,12 @@
     </message>
   </type>
   <type kind="class" name="Editor" ns="UnityEditor" minimumVersion="5.0" maximumVersion="5.6" path="Documentation/en/ScriptReference/Editor.html">
-    <message name="OnSceneGUI" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Lets the Editor handle an event in the scene view." path="Documentation/en/ScriptReference/Editor.OnSceneGUI.html">
+    <message name="OnSceneGUI" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Enables the Editor to handle an event in the scene view." path="Documentation/en/ScriptReference/Editor.OnSceneGUI.html">
       <returns type="System.Void" array="False" />
     </message>
   </type>
   <type kind="class" name="EditorWindow" ns="UnityEditor" minimumVersion="5.0" maximumVersion="5.6" path="Documentation/en/ScriptReference/EditorWindow.html">
-    <message name="Awake" static="False" minimumVersion="5.5" maximumVersion="5.5" description="Called as the new window is opened." path="Documentation/en/ScriptReference/EditorWindow.Awake.html">
+    <message name="Awake" static="False" minimumVersion="5.5" maximumVersion="5.6" description="Called as the new window is opened." path="Documentation/en/ScriptReference/EditorWindow.Awake.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnDestroy" static="False" minimumVersion="5.0" maximumVersion="5.6" description="OnDestroy is called when the EditorWindow is closed." path="Documentation/en/ScriptReference/EditorWindow.OnDestroy.html">
@@ -323,13 +323,13 @@
     <message name="OnAnimatorMove" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Callback for processing animation movements for modifying root motion." path="Documentation/en/ScriptReference/MonoBehaviour.OnAnimatorMove.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnApplicationFocus" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent to all game objects when the player gets or loses focus." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationFocus.html">
+    <message name="OnApplicationFocus" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent to all GameObjects when the player gets or loses focus." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationFocus.html">
       <parameters>
-        <parameter type="System.Boolean" array="False" name="focusStatus" description="True if the GameObjects have focus, else False." />
+        <parameter type="System.Boolean" array="False" name="hasFocus" description="True if the GameObjects have focus, else False." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnApplicationPause" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent to all game objects when the player pauses." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationPause.html">
+    <message name="OnApplicationPause" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent to all GameObjects when the application pauses." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationPause.html">
       <parameters>
         <parameter type="System.Boolean" array="False" name="pauseStatus" description="True if the application is paused, else False." />
       </parameters>
@@ -353,37 +353,37 @@
     </message>
     <message name="OnCollisionEnter" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter.html">
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collision" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
+        <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionEnter2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when an incoming collider makes contact with this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionEnter2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="coll" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionExit" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit.html">
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
+        <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionExit2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when a collider on another object stops touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionExit2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="coll" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionStay" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay.html">
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
+        <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnCollisionStay2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent each frame where a collider on another object is touching this object's collider (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="coll" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -411,7 +411,7 @@
     <message name="OnDrawGizmos" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Implement OnDrawGizmos if you want to draw gizmos that are also pickable and always drawn." path="Documentation/en/ScriptReference/MonoBehaviour.OnDrawGizmos.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnDrawGizmosSelected" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Implement this OnDrawGizmosSelected if you want to draw gizmos only if the object is selected." path="Documentation/en/ScriptReference/MonoBehaviour.OnDrawGizmosSelected.html">
+    <message name="OnDrawGizmosSelected" static="False" minimumVersion="5.0" maximumVersion="5.6" description="Implement OnDrawGizmosSelected to draw a gizmo if the object is selected." path="Documentation/en/ScriptReference/MonoBehaviour.OnDrawGizmosSelected.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnEnable" static="False" minimumVersion="5.0" maximumVersion="5.6" description="This function is called when the object becomes enabled and active." path="Documentation/en/ScriptReference/MonoBehaviour.OnEnable.html">
@@ -483,7 +483,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnParticleCollision" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnParticleCollision is called when a particle hits a collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleCollision.html">
+    <message name="OnParticleCollision" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnParticleCollision is called when a particle hits a Collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleCollision.html">
       <parameters>
         <parameter type="UnityEngine.GameObject" array="False" name="other" />
       </parameters>
@@ -547,37 +547,37 @@
     </message>
     <message name="OnTriggerEnter" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerEnter is called when the Collider other enters the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter.html">
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="Name of the collider." />
+        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTriggerEnter2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when another object enters a trigger collider attached to this object (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collider2D" array="False" name="other" description="Name of the collider." />
+        <parameter type="UnityEngine.Collider2D" array="False" name="other" description="The other Collider2D involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTriggerExit" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerExit is called when the Collider other has stopped touching the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit.html">
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="Name of the collider." />
+        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTriggerExit2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent when another object leaves a trigger collider attached to this object (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collider2D" array="False" name="other" description="Name of the collider." />
+        <parameter type="UnityEngine.Collider2D" array="False" name="other" description="The other Collider2D involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTriggerStay" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="OnTriggerStay is called once per frame for every Collider other that is touching the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay.html">
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="Name of the collider." />
+        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTriggerStay2D" static="False" coroutine="True" minimumVersion="5.0" maximumVersion="5.6" description="Sent each frame where another object is within a trigger collider attached to this object (2D physics only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay2D.html">
       <parameters>
-        <parameter type="UnityEngine.Collider2D" array="False" name="other" description="Name of the collider." />
+        <parameter type="UnityEngine.Collider2D" array="False" name="other" description="The other Collider2D involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -642,8 +642,8 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  <type kind="class" name="Playable" ns="UnityEngine.Experimental.Director" minimumVersion="5.1" maximumVersion="5.6" path="Documentation/en/ScriptReference/Experimental.Director.Playable.html">
-    <message name="OnSetPlayState" static="False" minimumVersion="5.1" maximumVersion="5.3" description="Callback called when the PlayState has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
+  <type kind="class" name="Playable" ns="UnityEngine.Experimental.Director" minimumVersion="5.2" maximumVersion="5.6" path="Documentation/en/ScriptReference/Experimental.Director.Playable.html">
+    <message name="OnSetPlayState" static="False" minimumVersion="5.2" maximumVersion="5.3" description="Callback called when the PlayState has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnSetPlayState" static="False" minimumVersion="5.4" maximumVersion="5.6" description="Callback called when the PlayState has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
@@ -652,7 +652,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnSetTime" static="False" minimumVersion="5.1" maximumVersion="5.3" description="Callback called when the current time has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
+    <message name="OnSetTime" static="False" minimumVersion="5.2" maximumVersion="5.3" description="Callback called when the current time has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnSetTime" static="False" minimumVersion="5.4" maximumVersion="5.6" description="Callback called when the current time has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
@@ -661,7 +661,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="PrepareFrame" static="False" minimumVersion="5.1" maximumVersion="5.3" description="Prepares the Playable tree for the next frame. PrepareFrame is called before the tree is evaluated." path="Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
+    <message name="PrepareFrame" static="False" minimumVersion="5.2" maximumVersion="5.3" description="Prepares the Playable tree for the next frame. PrepareFrame is called before the tree is evaluated." path="Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="PrepareFrame" static="False" minimumVersion="5.4" maximumVersion="5.6" description="Prepares the Playable tree for the next frame. PrepareFrame is called before the tree is evaluated." path="Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
@@ -700,7 +700,7 @@
     </message>
   </type>
   <type kind="class" name="ScriptableObject" ns="UnityEngine" minimumVersion="5.0" maximumVersion="5.6" path="Documentation/en/ScriptReference/ScriptableObject.html">
-    <message name="Awake" static="False" minimumVersion="5.5" maximumVersion="5.5" description="This function is called when the ScriptableObject script is started." path="Documentation/en/ScriptReference/ScriptableObject.Awake.html">
+    <message name="Awake" static="False" minimumVersion="5.5" maximumVersion="5.6" description="This function is called when the ScriptableObject script is started." path="Documentation/en/ScriptReference/ScriptableObject.Awake.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnDestroy" static="False" minimumVersion="5.0" maximumVersion="5.6" description="This function is called when the scriptable object will be destroyed." path="Documentation/en/ScriptReference/ScriptableObject.OnDestroy.html">

@@ -21,7 +21,7 @@ namespace ApiParser
             Tuple.Create("Documentation-5.3.7f1", new Version(5, 3)),
             Tuple.Create("Documentation-5.4.3f1", new Version(5, 4)),
             Tuple.Create("Documentation-5.5.1f1", new Version(5, 5)),
-            Tuple.Create("Documentation-5.6.0b6", new Version(5, 6))
+            Tuple.Create("Documentation-5.6.0f2", new Version(5, 6))
         };
 
         public static void Main(string[] args)
@@ -102,12 +102,12 @@ namespace ApiParser
             {
                 // Not formally documented, but described in the text
                 const string justification = "Removing collision parameter avoids unnecessary calculations";
-                MakeParameterOptional(type, "OnCollisionEnter", "collision", justification);
-                MakeParameterOptional(type, "OnCollisionEnter2D", "coll", justification);
-                MakeParameterOptional(type, "OnCollisionExit", "collisionInfo", justification);
-                MakeParameterOptional(type, "OnCollisionExit2D", "coll", justification);
-                MakeParameterOptional(type, "OnCollisionStay", "collisionInfo", justification);
-                MakeParameterOptional(type, "OnCollisionStay2D", "coll", justification);
+                MakeParameterOptional(type, "OnCollisionEnter", "other", justification);
+                MakeParameterOptional(type, "OnCollisionEnter2D", "other", justification);
+                MakeParameterOptional(type, "OnCollisionExit", "other", justification);
+                MakeParameterOptional(type, "OnCollisionExit2D", "other", justification);
+                MakeParameterOptional(type, "OnCollisionStay", "other", justification);
+                MakeParameterOptional(type, "OnCollisionStay2D", "other", justification);
             }
         }
 
