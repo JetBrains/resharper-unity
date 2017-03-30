@@ -1,5 +1,7 @@
 param (
   [string]$Source, # Rider SDK Packages folder, optional
+  [string]$SinceBuild, # Set since-build in Rider plugin descriptor
+  [string]$UntilBuild, # Set until-build in Rider plugin descriptor
   [switch]$NoBuild # Skip building and packing, just set package versions and restore packages
 )
 
@@ -19,6 +21,30 @@ function SetPropertyValue($file, $name, $value)
 
   if ($node.InnerText -ne $value) {
     $node.InnerText = $value
+    $xml.Save($file)
+  }
+}
+
+function SetIdeaVersion($file, $since, $until)
+{
+  if ($since -or $until) {
+    Write-Host "- ${file}: since-build -> $since, until-build -> $until"
+
+    $xml = New-Object xml
+    $xml.PreserveWhitespace = $true
+    $xml.Load($file)
+  
+    $node = $xml.SelectSingleNode("//idea-version")
+    if($node -eq $null) { Write-Error "idea-build was not found in $file" }
+
+    if ($since) {
+      $node.SetAttribute("since-build", $since)
+    }
+
+    if ($until) {
+      $node.SetAttribute("until-build", $until)
+    }
+
     $xml.Save($file)
   }
 }
@@ -73,6 +99,8 @@ if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastEx
 Write-Host "##teamcity[publishArtifacts 'build/resharper-unity.rider/bin/Release/*.nupkg']"
 
 ### Pack Rider plugin directory
+SetIdeaVersion -file "rider/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
+
 $dir = "build\zip"
 if (Test-Path $dir) { Remove-Item $dir -Force -Recurse }
 New-Item $dir -type directory | Out-Null
