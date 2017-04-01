@@ -151,5 +151,8 @@ Copy-Item rider\* $dir\resharper-unity -recurse
 
 ### Pack and publish Rider plugin zip
 $zip = "build/JetBrains.Unity-$version.zip"
-Compress-Archive -Path $dir\* -Force -DestinationPath $zip
+If (Test-Path $zip) { Remove-Item $zip }
+& "tools\7za.exe" a -r -tzip $zip ".\$dir\*"
+if ($LastExitCode -ne 0) { throw "Exec: Unable to compress with 7za: exit code $LastExitCode" }
+
 Write-Host "##teamcity[publishArtifacts '$zip']"
