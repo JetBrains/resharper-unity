@@ -132,12 +132,15 @@ Write-Host "##teamcity[publishArtifacts 'build/resharper-unity.rider/bin/Release
 ### Pack Rider plugin directory
 SetIdeaVersion -file "rider/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
 
+$baseVersion = GetBasePluginVersion "Packaging.props"
 if ($BuildCounter) {
-  $baseVersion = GetBasePluginVersion "Packaging.props"
   $version = "$baseVersion.$BuildCounter"
-  Write-Host "##teamcity[buildNumber '$version']"
-  SetPluginVersion -file "rider/META-INF/plugin.xml" -version $version
+} else {
+  $version = $baseVersion
 }
+
+Write-Host "##teamcity[buildNumber '$version']"
+SetPluginVersion -file "rider/META-INF/plugin.xml" -version $version
 
 $dir = "build\zip"
 if (Test-Path $dir) { Remove-Item $dir -Force -Recurse }
@@ -147,6 +150,6 @@ Copy-Item build\resharper-unity.rider\bin\Release\*.nupkg $dir\resharper-unity -
 Copy-Item rider\* $dir\resharper-unity -recurse
 
 ### Pack and publish Rider plugin zip
-$zip = "build/JetBrains.Unity.zip"
+$zip = "build/JetBrains.Unity-$version.zip"
 Compress-Archive -Path $dir\* -Force -DestinationPath $zip
 Write-Host "##teamcity[publishArtifacts '$zip']"
