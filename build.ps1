@@ -135,6 +135,7 @@ SetIdeaVersion -file "rider/META-INF/plugin.xml" -since $SinceBuild -until $Unti
 if ($BuildCounter) {
   $baseVersion = GetBasePluginVersion "Packaging.props"
   $version = "$baseVersion.$BuildCounter"
+  Write-Host "##teamcity[buildNumber '$version']"
   SetPluginVersion -file "rider/META-INF/plugin.xml" -version $version
 }
 
