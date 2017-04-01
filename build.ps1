@@ -1,5 +1,6 @@
 param (
   [string]$Source, # Rider SDK Packages folder, optional
+  [string]$BuildCounter, # Set Rider plugin version to version from Packaging.Props + $BuildCounter, optional
   [string]$SinceBuild, # Set since-build in Rider plugin descriptor
   [string]$UntilBuild, # Set until-build in Rider plugin descriptor
   [switch]$NoBuild # Skip building and packing, just set package versions and restore packages
@@ -25,6 +26,21 @@ function SetPropertyValue($file, $name, $value)
   }
 }
 
+function GetBasePluginVersion($packagingPropsFile)
+{
+  $xml = New-Object xml
+  $xml.Load($packagingPropsFile)
+  
+  $node = $xml.SelectSingleNode("//Version")
+  if($node -eq $null) { Write-Error "//Version was not found in $packagingPropsFile" }
+
+  $version = $node.InnerText
+
+  Write-Host "- ${packagingPropsFile}: version = $version"
+
+  return $version
+}
+
 function SetIdeaVersion($file, $since, $until)
 {
   if ($since -or $until) {
@@ -47,6 +63,21 @@ function SetIdeaVersion($file, $since, $until)
 
     $xml.Save($file)
   }
+}
+
+function SetPluginVersion($file, $version)
+{
+  Write-Host "- ${file}: version -> $version"
+
+  $xml = New-Object xml
+  $xml.PreserveWhitespace = $true
+  $xml.Load($file)
+  
+  $node = $xml.SelectSingleNode("//version")
+  if($node -eq $null) { Write-Error "//version was not found in $file" }
+
+  $node.InnerText = $version
+  $xml.Save($file)
 }
 
 function SetRiderSDKVersions($sdkPackageVersion, $sdkTestsPackageVersion, $psiFeaturesVisualStudioVersion)
@@ -100,6 +131,12 @@ Write-Host "##teamcity[publishArtifacts 'build/resharper-unity.rider/bin/Release
 
 ### Pack Rider plugin directory
 SetIdeaVersion -file "rider/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
+
+if ($BuildCounter) {
+  $baseVersion = GetBasePluginVersion "Packaging.props"
+  $version = "$baseVersion.$BuildCounter"
+  SetPluginVersion -file "rider/META-INF/plugin.xml" -version $version
+}
 
 $dir = "build\zip"
 if (Test-Path $dir) { Remove-Item $dir -Force -Recurse }
