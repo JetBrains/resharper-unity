@@ -14,7 +14,4 @@
     <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="107.0.20170126.120917" />
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2016.3.20170126.124206" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.wave07.csproj" />
-  </ItemGroup>
 </Project>

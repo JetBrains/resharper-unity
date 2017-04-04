@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Resources.Resources.Icons;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-#if WAVE07 || WAVE08
+#if WAVE08
 using JetBrains.UI.BulbMenu;
 #else
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;

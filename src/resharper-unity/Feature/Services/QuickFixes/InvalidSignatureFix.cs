@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Refactorings.ChangeSignature;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-#if WAVE07 || WAVE08
+#if WAVE08
 using JetBrains.ActionManagement;
 using JetBrains.UI.ActionsRevised.Handlers;
 using JetBrains.UI.ActionSystem;

@@ -16,7 +16,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.Util;
 
-#if WAVE07 || WAVE08
+#if WAVE08
 using JetBrains.Application;
 using JetBrains.Application.Settings.Storage;
 using JetBrains.Application.Settings.Store;
@@ -218,11 +218,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             var languageLevel = CSharpLanguageLevel.Default;
             if (IsLangVersionMissing(project) || IsLangVersionDefault(project))
             {
-#if WAVE07
-                const CSharpLanguageLevel csharp70 = CSharpLanguageLevel.CSharp70;
-#else
                 const CSharpLanguageLevel csharp70 = CSharpLanguageLevel.Experimental;
-#endif
 
                 // Support for https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration
                 // See also https://github.com/JetBrains/resharper-unity/issues/50#issuecomment-257611218

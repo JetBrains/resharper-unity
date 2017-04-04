@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
-#if WAVE07 || WAVE08
+#if WAVE08
 using JetBrains.UI.Application;
 using JetBrains.UI.Theming;
 #else

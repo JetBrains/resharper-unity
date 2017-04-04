@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.Util;
 
-#if WAVE07 || WAVE08
+#if WAVE08
 using JetBrains.UI.Application;
 using JetBrains.UI.Theming;
 #else

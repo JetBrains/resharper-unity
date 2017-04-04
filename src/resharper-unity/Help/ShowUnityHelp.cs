@@ -3,7 +3,7 @@ using JetBrains.Application;
 using JetBrains.Application.StdApplicationUI;
 using JetBrains.Util;
 
-#if WAVE07 || WAVE08
+#if WAVE08
 using JetBrains.UI.Application;
 #else
 using JetBrains.Application.UI.Help;

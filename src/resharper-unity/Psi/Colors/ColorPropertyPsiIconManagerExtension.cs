@@ -1,7 +1,7 @@
 using JetBrains.ReSharper.Psi;
 using JetBrains.UI.Icons;
 
-#if WAVE07 || WAVE08
+#if WAVE08
 using JetBrains.UI.Icons.ColorIcons;
 #else
 using JetBrains.Application.UI.Icons.ColorIcons;

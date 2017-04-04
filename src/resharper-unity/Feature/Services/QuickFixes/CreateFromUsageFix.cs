@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Intentions.CreateFromUsage;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
-#if WAVE07 || WAVE08
+#if WAVE08
 using JetBrains.UI.BulbMenu;
 #else
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
