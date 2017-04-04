@@ -1,5 +1,4 @@
-﻿using System;
-using JetBrains.DataFlow;
+﻿using JetBrains.DataFlow;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -11,18 +10,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
     [ReferenceProviderFactory]
     public class UnityEventFunctionReferenceProviderFactory : IReferenceProviderFactory
     {
-#if RIDER
         public UnityEventFunctionReferenceProviderFactory(Lifetime lifetime)
         {
             Changed = new Signal<IReferenceProviderFactory>(lifetime, GetType().FullName);
         }
-#endif
 
-#if RIDER
         public IReferenceFactory CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex wordIndexForChecks)
-#else
-        public IReferenceFactory CreateFactory(IPsiSourceFile sourceFile, IFile file)
-#endif
         {
             var project = sourceFile.GetProject();
             if (project == null || !project.IsUnityProject())
@@ -34,10 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             return null;
         }
 
-#if RIDER
         public ISignal<IReferenceProviderFactory> Changed { get; private set; }
-#else
-        public event Action OnChanged;
-#endif
     }
 }

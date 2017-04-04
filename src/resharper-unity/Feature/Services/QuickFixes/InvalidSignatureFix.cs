@@ -82,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
                 model.Remove(i);
 
             var refactoring = new ChangeSignatureRefactoring(model);
-            refactoring.Execute(NullProgressIndicator.Instance);
+            refactoring.Execute(NullProgressIndicator.Create());
 
             // Ideally, we would now call InplaceRefactoringsManager.Reset to make sure we didn't have
             // an inplace refactoring highlight. But InplaceRefactoringsManager is internal, so we can't.
