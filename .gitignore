@@ -1,4 +1,6 @@
-src/packages/*
+# New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
+# Would be nice to download them somewhere outside of the source tree.
+Packages/*
 *.nupkg
 
 build/
