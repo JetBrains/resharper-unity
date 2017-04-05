@@ -34,6 +34,7 @@
 &#8226; Regex assistance for EditorTestsWithLogParser.ExpectLogLineRegex.
 </description>
 <releaseNotes>
+&#8226; Fix incorrect signatures in known API (#128)
 &#8226; Treats Assertion.Assert as assertion methods (#129)
 
 From 1.6.2:
