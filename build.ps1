@@ -119,13 +119,27 @@ if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet restore: exit code $Las
 
 if ($NoBuild) { Exit 0 }
 
+$vspath = .\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+if (!$vspath) {
+  Write-Error "Could not find Visual Studio 2017+ for MSBuild 15"
+}
+
+$msbuild = join-path $vspath 'MSBuild\15.0\Bin\MSBuild.exe'
+if (!(test-path $msbuild)) {
+  Write-Error "MSBuild 15 is expected at $msbuild"
+}  
+
+Write-Host "##teamcity[progressMessage 'Building']"
+& $msbuild src\resharper-unity.sln /p:Configuration=Release
+if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $LastExitCode" }
+
 Write-Host "##teamcity[progressMessage 'Building and Packaging: Wave08']"
-& dotnet pack src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.wave08.nuspec 
+& dotnet pack src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.wave08.nuspec --no-build
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
 Write-Host "##teamcity[publishArtifacts 'build/resharper-unity.wave08/bin/Release/*.nupkg']"
 
 Write-Host "##teamcity[progressMessage 'Building and Packaging: Rider']"
-& dotnet pack src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.rider.nuspec 
+& dotnet pack src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.rider.nuspec --no-build
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
 Write-Host "##teamcity[publishArtifacts 'build/resharper-unity.rider/bin/Release/*.nupkg']"
 
