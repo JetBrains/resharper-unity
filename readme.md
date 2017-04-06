@@ -68,6 +68,7 @@ Inspections and Quick Fixes:
 * Mark `Component.gameObject` and `Object.name` as not-nullable.
 * `Debug.Assert` marked as assertion method to help null-value analysis (e.g. "value cannot be null" after `Debug.Assert(x != null)`)
 * `Debug.AssertFormat`, `LogFormat`, etc. gets string formatting helper functionality.
+* `Assertions.Assert` methods marked as assertion methods to help null-value analysis.
 * `EditorTestsWithLogParser.ExpectLogLineRegex` gets regular expression helper functionality.
 
 Other:
