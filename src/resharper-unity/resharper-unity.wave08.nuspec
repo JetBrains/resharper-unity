@@ -34,6 +34,9 @@
 &#8226; Regex assistance for EditorTestsWithLogParser.ExpectLogLineRegex.
 </description>
 <releaseNotes>
+&#8226; Added implicit use annotations for UnityEngine.Networking attributes (#136)
+
+From 1.7.0:
 &#8226; Support for ReSharper 2017.1 (#110)
 &#8226; Fix incorrect signatures in known API (#128)
 &#8226; Treats Assertion.Assert as assertion methods (#129)
@@ -105,6 +108,7 @@ From previous releases:
   <files>
     <file src="..\..\build\resharper-unity.wave08\bin\Release\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
     <file src="annotations\UnityEngine.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.xml" />
+    <file src="annotations\UnityEngine.Networking.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.Networking.xml" />
     <file src="annotations\UnityEditor.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.xml" />
     <file src="annotations\UnityEditor.EditorTestsRunner.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.EditorTestsRunner.xml" />
   </files>
