@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             return new[]
             {
                 new ExactNameFilter(GetName()),
-                myMethodFilter 
+                myMethodFilter
             };
         }
     }

@@ -27,6 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             return null;
         }
 
-        public ISignal<IReferenceProviderFactory> Changed { get; private set; }
+        public ISignal<IReferenceProviderFactory> Changed { get; }
     }
 }
