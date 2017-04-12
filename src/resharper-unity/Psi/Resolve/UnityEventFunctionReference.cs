@@ -1,6 +1,7 @@
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
@@ -8,7 +9,10 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 {
-    public class UnityEventFunctionReference : CheckedReferenceBase<ILiteralExpression>, ICompletableReference, IReferenceFromStringLiteral
+    // Needs to be a void method without parameters. Can be public or private. Must be instance
+    // Not a compile time error - output to log as an informational message
+    // Actually doesn't care about return value
+    public class UnityEventFunctionReference : CheckedReferenceBase<ILiteralExpression>, ICompletableReference, IUnityReferenceFromStringLiteral
     {
         private readonly ITypeElement myTypeElement;
         private readonly ISymbolFilter myMethodFilter;
@@ -31,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 
         public override string GetName()
         {
-            return (string) myOwner.ConstantValue.Value ?? "???";
+            return myOwner.ConstantValue.Value as string ?? SharedImplUtil.MISSING_DECLARATION_NAME;
         }
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)

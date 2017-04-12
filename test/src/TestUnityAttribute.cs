@@ -28,6 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             myVersion = version;
         }
 
+        public bool IncludeNetworking { get; set; }
+
         public override IEnumerable<PackageDependency> GetPackages(PlatformID platformID)
         {
             // There isn't an official nuget for Unity, sadly, so add this feed to test/data/nuget.config
@@ -36,9 +38,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             {
                 case UnityVersion.Unity54:
                     yield return ParsePackageDependency("resharper-unity.testlibs/5.4.0");
+                    if (IncludeNetworking)
+                        throw new InvalidOperationException("Network libs not available for Unity 5.4");
                     break;
                 case UnityVersion.Unity55:
                     yield return ParsePackageDependency("resharper-unity.testlibs/5.5.0");
+                    if (IncludeNetworking)
+                        yield return ParsePackageDependency("resharper-unity.testlibs.networking/5.5.0");
                     break;
             }
             foreach (var package in base.GetPackages(platformID))
@@ -51,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             {
                 UnityProjectFlavor.UnityProjectFlavorGuid
             };
-        }   
+        }
 
         public PlatformID GetPlatformID()
         {

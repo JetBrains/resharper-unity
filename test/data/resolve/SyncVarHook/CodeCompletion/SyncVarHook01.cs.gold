@@ -1,0 +1,11 @@
+﻿# 3 ITEMS #
+
++ AnotherValidMethod    void
++ OnValueChanged    void
++ SomeOtherValue    int
+# AUTOMATIC #
+# 3 ITEMS #
+
++ AnotherValidMethod    void
++ OnValueChanged    void
++ SomeOtherValue    int

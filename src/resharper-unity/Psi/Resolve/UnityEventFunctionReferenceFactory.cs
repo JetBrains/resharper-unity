@@ -3,13 +3,12 @@ using System.Linq;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
-using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 {
-    public class UnityEventFunctionReferenceFactory : IReferenceFactory
+    public class UnityEventFunctionReferenceFactory : StringLiteralReferenceFactoryBase
     {
         private static readonly HashSet<string> ReferencingMethodNames = new HashSet<string>
         {
@@ -17,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             "StartCoroutine", "StopCoroutine"
         };
 
-        public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
+        public override ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
             if (ResolveUtil.CheckThatAllReferencesBelongToElement<UnityEventFunctionReference>(oldReferences, element))
             {
@@ -61,14 +60,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             var argument = CSharpArgumentNavigator.GetByValue(literal as ICSharpExpression);
             var argumentsOwner = CSharpArgumentsOwnerNavigator.GetByArgument(argument);
             return argumentsOwner != null && argumentsOwner.ArgumentsEnumerable.FirstOrDefault() == argument;
-        }
-
-        public bool HasReference(ITreeNode element, IReferenceNameContainer names)
-        {
-            var literal = element as ILiteralExpression;
-            if (literal != null && literal.ConstantValue.IsString())
-                return names.Contains((string) literal.ConstantValue.Value);
-            return false;
         }
 
         private static bool DoesMethodReferenceFunction(IMethod invokedMethod)
