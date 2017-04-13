@@ -10,6 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName MonoBehaviour = new ClrTypeName("UnityEngine.MonoBehaviour");
         public static readonly IClrTypeName SerializeField = new ClrTypeName("UnityEngine.SerializeField");
 
+        public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");
         public static readonly IClrTypeName SyncVarAttribute =
             new ClrTypeName("UnityEngine.Networking.SyncVarAttribute");
 
