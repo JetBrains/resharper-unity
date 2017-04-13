@@ -1,6 +1,7 @@
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
@@ -20,15 +21,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
         public const string HIGHLIGHTING_ID = "Unity.RedundantEventFunction";
         public const string MESSAGE = "Redundant Unity event function";
 
-        private readonly IMethodDeclaration myDeclaration;
-
         public RedundantEventFunctionWarning(IMethodDeclaration declaration)
         {
-            myDeclaration = declaration;
+            Declaration = declaration;
         }
 
-        public bool IsValid() => myDeclaration == null || myDeclaration.IsValid();
-        public DocumentRange CalculateRange() => myDeclaration.GetHighlightingRange();
+        public IDeclaration Declaration { get; }
+
+        public bool IsValid() => Declaration == null || Declaration.IsValid();
+        public DocumentRange CalculateRange() => Declaration.GetHighlightingRange();
         public string ToolTip => MESSAGE;
         public string ErrorStripeToolTip => ToolTip;
     }
