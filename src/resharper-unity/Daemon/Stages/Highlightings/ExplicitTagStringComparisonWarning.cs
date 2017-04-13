@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
     [ConfigurableSeverityHighlighting(HIGHLIGHTING_ID, CSharpLanguage.Name,
         OverlapResolve = OverlapResolveKind.WARNING,
         ToolTipFormatString = MESSAGE)]
-    public class ExplicitTagStringComparisonWarning : IHighlighting
+    public class ExplicitTagStringComparisonWarning : IHighlighting, IUnityHighlighting
     {
         public const string HIGHLIGHTING_ID = "Unity.ExplicitTagComparison";
         public const string MESSAGE = "Explicit string comparison is inefficient, use CompareTag instead";
