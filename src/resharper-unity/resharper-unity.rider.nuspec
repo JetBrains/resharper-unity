@@ -32,9 +32,15 @@
 &#8226; Treats Unity debug assertions as assertion methods in ReSharper control flow analysis.
 &#8226; String formatting assistance for debug log methods.
 &#8226; Regex assistance for EditorTestsWithLogParser.ExpectLogLineRegex.
+&#8226; Types and type members marked with UnityEngine.Networking attributes are marked as in use.
+&#8226; Code completion, find usages and rename support for SyncVarAttribute hook function.
+&#8226; Inspections for incorrect SyncVarAttribute usage.
+&#8226; Marks empty event functions as dead code, with Quick Fix to remove.
 </description>
 <releaseNotes>
 &#8226; Added implicit use annotations for UnityEngine.Networking attributes (#136)
+&#8226; Code completion, find usages and rename support for SyncVarAttribute hook function (#135)
+&#8226; Mark empty event functions as dead code, with Quick Fix to remove (#137)
 
 From 1.7.0:
 &#8226; Fix incorrect signatures in known API (#128)

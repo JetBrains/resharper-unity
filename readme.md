@@ -14,6 +14,7 @@ The plugin adds knowledge of Unity based classes to ReSharper/Rider's analysis:
 Event functions:
 
 * [Event functions](https://docs.unity3d.com/Manual/EventFunctions.html) and fields implicitly used by Unity are marked with an icon in the gutter.
+* Empty event functions are marked as dead code, with a Quick Fix to remove the method.
 * When [Solution Wide Analysis](https://www.jetbrains.com/help/resharper/2016.2/Code_Analysis__Solution-Wide_Analysis.html) is enabled, implicitly used fields and event functions are marked as in use. Fields are highlighted if they aren't accessed in your code.
 
   <img src="docs/field_not_accessed.png" width="442">
@@ -46,8 +47,15 @@ Coroutines and invokable methods:
 
   <img src="docs/invoke_completion.png" width="209">
 
+Networking:
+
+* Code completion, find usages and rename support for string literals in `[SyncVar(hook = "OnValueChanged")]`.
+* Highlight usage of `SyncVarAttribute` in any class other than `NetworkBehaviour` as an error.
+
 Inspections and Quick Fixes:
 
+* Empty event functions are shown as dead code, with a quick fix to remove the method.
+* Using the `SyncVarAttribute` inside any class other than `NetworkBehaviour` is treated as an error.
 * Inspection and Quick Fix to use `CompareTag` instead of string comparison.
 
   <img src="docs/compare_tag.gif" width="509">
@@ -64,7 +72,7 @@ Inspections and Quick Fixes:
 
 [External Annotations](https://www.jetbrains.com/help/resharper/2016.2/Code_Analysis__External_Annotations.html):
 
-* Treat code marked with attributes from UnityEngine.dll and UnityEditor.dll as implicitly used.
+* Treat code marked with attributes from UnityEngine.dll, UnityEngine.Networking.dll and UnityEditor.dll as implicitly used.
 * Mark `Component.gameObject` and `Object.name` as not-nullable.
 * `Debug.Assert` marked as assertion method to help null-value analysis (e.g. "value cannot be null" after `Debug.Assert(x != null)`)
 * `Debug.AssertFormat`, `LogFormat`, etc. gets string formatting helper functionality.
