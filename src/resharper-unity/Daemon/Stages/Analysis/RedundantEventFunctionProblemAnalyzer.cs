@@ -2,6 +2,7 @@ using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 
@@ -21,10 +22,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         {
             var method = methodDeclaration.DeclaredElement;
             if (method == null) return;
-            if (Api.IsEventFunction(method) && HasEmptyBody(methodDeclaration))
+            if (IsEventFunction(method) && HasEmptyBody(methodDeclaration))
             {
                 consumer.AddHighlighting(new RedundantEventFunctionWarning(methodDeclaration));
             }
+        }
+
+        private bool IsEventFunction(IMethod method)
+        {
+            Api.GetUnityEventFunction(method, out var match);
+            return match == EventFunctionMatch.ExactMatch;
         }
 
         private bool HasEmptyBody(IMethodDeclaration method)

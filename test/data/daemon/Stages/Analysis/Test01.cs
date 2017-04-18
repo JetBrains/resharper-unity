@@ -1,3 +1,4 @@
+// ReSharper disable Unity.RedundantEventFunction
 using UnityEditor;
 using UnityEngine;
 

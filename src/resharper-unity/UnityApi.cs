@@ -61,18 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool IsEventFunction([NotNull] IMethod method)
         {
-            var projectPsiModule = method.Module as IProjectPsiModule;
-            var containingType = method.GetContainingType();
-            if (containingType != null && projectPsiModule != null)
-            {
-                var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
-                foreach (var type in GetBaseUnityTypes(containingType, unityVersion))
-                {
-                    if (type.HasEventFunction(method, unityVersion))
-                        return true;
-                }
-            }
-            return false;
+            return GetUnityEventFunction(method) != null;
         }
 
         public bool IsUnityField([NotNull] IField field)
