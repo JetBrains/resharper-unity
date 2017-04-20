@@ -7,7 +7,8 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 [assembly: RegisterConfigurableSeverity(InvalidStaticModifierWarning.HIGHLIGHTING_ID,
-    null, UnityHighlightingGroupIds.Unity, InvalidStaticModifierWarning.MESSAGE,
+    UnityHighlightingGroupIds.INCORRECT_EVENT_FUNCTION_SIGNATURE,
+    UnityHighlightingGroupIds.Unity, InvalidStaticModifierWarning.MESSAGE,
     "Incorrect static modifier for Unity event function.",
     Severity.WARNING)]
 

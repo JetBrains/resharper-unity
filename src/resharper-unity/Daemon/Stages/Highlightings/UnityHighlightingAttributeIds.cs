@@ -13,5 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
     public static class UnityHighlightingGroupIds
     {
         public const string Unity = "Unity";
+
+        public const string INCORRECT_EVENT_FUNCTION_SIGNATURE = "Incorrect Unity event function signature";
     }
 }

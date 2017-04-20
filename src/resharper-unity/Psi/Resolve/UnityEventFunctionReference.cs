@@ -3,6 +3,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -14,16 +15,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
     // Actually doesn't care about return value
     public class UnityEventFunctionReference : CheckedReferenceBase<ILiteralExpression>, ICompletableReference, IUnityReferenceFromStringLiteral
     {
-        private readonly ITypeElement myTypeElement;
+        private readonly ITypeElement myTargetType;
+        private readonly IAccessContext myAccessContext;
         private readonly ISymbolFilter myMethodFilter;
+        private readonly ISymbolFilter myStaticFilter;
+        private readonly ISymbolFilter myMethodSignatureFilter;
+        private readonly ISymbolFilter myUserCodeCompletionFilter;
 
-        public UnityEventFunctionReference(ITypeElement typeElement, ILiteralExpression literal)
+        // e.g. literalExpressionOwner = "InvokeRepeating"
+        // targetType = "MyMonoBehaviour"
+        public UnityEventFunctionReference(ITypeElement targetType, ILiteralExpression literal, MethodSignature methodSignature)
             : base(literal)
         {
-            myTypeElement = typeElement;
+            myTargetType = targetType;
+            MethodSignature = methodSignature;
 
-            myMethodFilter = new DeclaredElementTypeFilter(ResolveErrorType.NOT_RESOLVED, CLRDeclaredElementType.METHOD);
+            myAccessContext = new NonStaticAccessContext(myOwner);
+
+            myMethodFilter = new InvokableMethodFilter();
+            myStaticFilter = new StaticFilter(myAccessContext);
+            myMethodSignatureFilter = new MethodSignatureFilter(UnityResolveErrorType.UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_WARNING, MethodSignature);
+            myUserCodeCompletionFilter = new UserCodeCompletionFilter();
         }
+
+        public MethodSignature MethodSignature { get; }
 
         public override ResolveResultWithInfo ResolveWithoutCache()
         {
@@ -40,8 +55,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            var symbolTable = ResolveUtil.GetOwnMembersSymbolTable(myTypeElement, SymbolTableMode.FULL)
-                .Filter(myMethodFilter);
+            // Just resolve to the method. ReSharper will use GetSymbolFilters to filter
+            // candidates for errors
+            var symbolTable =
+                ResolveUtil.GetSymbolTableByTypeElement(myTargetType, SymbolTableMode.FULL, myTargetType.Module)
+                    .Filter(myMethodFilter);
 
             if (useReferenceName)
             {
@@ -81,21 +99,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 
         public override IAccessContext GetAccessContext()
         {
-            return new DefaultAccessContext(myOwner);
+            return myAccessContext;
         }
 
         public ISymbolTable GetCompletionSymbolTable()
         {
-            return GetReferenceSymbolTable(false).Filter(myMethodFilter);
+            // Symbol table used for completion, not resolving. Show only methods from user
+            // code (naively defined as anything other than classes in UnityEngine). We'll
+            // still resolve even if the user types something not in this symbol table
+            return GetReferenceSymbolTable(false).Filter(myMethodFilter, myUserCodeCompletionFilter);
         }
 
         public override ISymbolFilter[] GetSymbolFilters()
         {
+            // Note. Do not include the user code filter. It's not a good idea to
+            // call a Unity base method, or to define your own code inside the
+            // UnityEngine namespace, but let's still resolve
             return new[]
             {
                 new ExactNameFilter(GetName()),
-                myMethodFilter
+                myMethodFilter,
+                myStaticFilter,
+                myMethodSignatureFilter
             };
+        }
+
+        private class InvokableMethodFilter : SimpleSymbolFilter
+        {
+            public override ResolveErrorType ErrorType => ResolveErrorType.NOT_RESOLVED;
+
+            public override bool Accepts(IDeclaredElement declaredElement, ISubstitution substitution)
+            {
+                return declaredElement is IMethod && !(declaredElement is IAccessor) &&
+                       !CSharpDeclaredElementUtil.IsDestructor(declaredElement);
+            }
+        }
+
+        private class UserCodeCompletionFilter : SimpleSymbolFilter
+        {
+            public override ResolveErrorType ErrorType => ResolveErrorType.NOT_RESOLVED;
+
+            public override bool Accepts(IDeclaredElement declaredElement, ISubstitution substitution)
+            {
+                if (declaredElement is IMethod method)
+                {
+                    var containingType = method.GetContainingType();
+                    if (containingType == null)
+                        return true;
+
+                    return !containingType.IsObjectClass() && containingType.GetContainingNamespace().QualifiedName != "UnityEngine";
+                }
+                return false;
+            }
         }
     }
 }

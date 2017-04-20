@@ -6,7 +6,8 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 [assembly: RegisterConfigurableSeverity(InvalidReturnTypeWarning.HIGHLIGHTING_ID,
-    null, UnityHighlightingGroupIds.Unity, InvalidReturnTypeWarning.MESSAGE,
+    UnityHighlightingGroupIds.INCORRECT_EVENT_FUNCTION_SIGNATURE,
+    UnityHighlightingGroupIds.Unity, InvalidReturnTypeWarning.MESSAGE,
     "Incorrect return type for Unity event function.",
     Severity.WARNING)]
 

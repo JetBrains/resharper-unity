@@ -1,3 +1,4 @@
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -26,7 +27,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
         {
             myOwningType = owningType;
             myIsMethodFilter = new DeclaredElementTypeFilter(ResolveErrorType.NOT_RESOLVED, CLRDeclaredElementType.METHOD);
-            myMethodSignatureFilter = new MethodSignatureFilter(UnityResolveErrorType.UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE, fieldType);
+
+            var methodSignature = GetMethodSignature(owningType, fieldType);
+            myMethodSignatureFilter = new MethodSignatureFilter(
+                UnityResolveErrorType.UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_ERROR,
+                methodSignature);
+        }
+
+        private static MethodSignature GetMethodSignature(ITypeElement owningType, IType fieldType)
+        {
+            var cache = owningType.GetSolution().GetComponent<IPredefinedTypeCache>();
+            var predefinedType = cache.GetOrCreatePredefinedType(owningType.Module);
+            var @void = predefinedType.Void;
+
+            return new MethodSignature(@void, fieldType);
         }
 
         public override ResolveResultWithInfo ResolveWithoutCache()
@@ -100,34 +114,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
                 myIsMethodFilter,
                 myMethodSignatureFilter
             };
-        }
-
-        private class MethodSignatureFilter : SimpleSymbolFilter
-        {
-            private readonly IType myFieldType;
-
-            public MethodSignatureFilter(ResolveErrorType errorType, IType fieldType)
-            {
-                myFieldType = fieldType;
-                ErrorType = errorType;
-            }
-
-            public override ResolveErrorType ErrorType { get; }
-
-            public override bool Accepts(IDeclaredElement declaredElement, ISubstitution substitution)
-            {
-                var method = declaredElement as IMethod;
-                if (method == null)
-                    return false;
-
-                if (!method.ReturnType.IsVoid())
-                    return false;
-
-                if (method.Parameters.Count != 1)
-                    return false;
-
-                return Equals(method.Parameters[0].Type, myFieldType);
-            }
         }
     }
 }

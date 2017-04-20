@@ -88,7 +88,7 @@ This function can be a coroutine.
 
 Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
 This function can be a coroutine.
-(9): ReSharper Warning: Incorrect signature for Unity event function
+(9): ReSharper Warning: Incorrect parameters for Unity event function
 (10): ReSharper Warning: Incorrect return type for Unity event function
 (11): Unity Gutter Icon: Unity event function
 
@@ -97,11 +97,11 @@ Update is called every frame, if the MonoBehaviour is enabled.
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
-(13): ReSharper Warning: Incorrect signature for Unity event function
+(13): ReSharper Warning: Incorrect parameters for Unity event function
 (14): Unity Gutter Icon: Unity event function
 
 Callback for setting up animation IK (inverse kinematics).
-(15): ReSharper Warning: Incorrect signature for Unity event function
+(15): ReSharper Warning: Incorrect parameters for Unity event function
 (16): Unity Gutter Icon: Unity scripting type
 (17): ReSharper Warning: Missing static modifier for Unity event function
 (18): Unity Gutter Icon: Unity event function

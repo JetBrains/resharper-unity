@@ -6,8 +6,9 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 [assembly: RegisterConfigurableSeverity(InvalidSignatureWarning.HIGHLIGHTING_ID,
-    null, UnityHighlightingGroupIds.Unity, InvalidSignatureWarning.MESSAGE,
-    "Incorrect signature for the given Unity event function.",
+    UnityHighlightingGroupIds.INCORRECT_EVENT_FUNCTION_SIGNATURE,
+    UnityHighlightingGroupIds.Unity, InvalidSignatureWarning.MESSAGE,
+    "Incorrect parameters for the given Unity event function.",
     Severity.WARNING)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
@@ -18,8 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
         ToolTipFormatString = MESSAGE)]
     public class InvalidSignatureWarning : IHighlighting, IUnityHighlighting
     {
-        public const string HIGHLIGHTING_ID = "Unity.InvalidSignature";
-        public const string MESSAGE = "Incorrect signature for Unity event function";
+        public const string HIGHLIGHTING_ID = "Unity.InvalidParameters";
+        public const string MESSAGE = "Incorrect parameters for Unity event function";
 
         public InvalidSignatureWarning(IMethodDeclaration methodDeclaration, UnityEventFunction function)
         {

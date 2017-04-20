@@ -28,7 +28,7 @@ public class B : MonoBehaviour
 }
 
 ------------------------------------------------
-0: result=OK declaredElem=Void A.LaunchProjectile()
-1: result=OK declaredElem=Void A.LaunchProjectile()
-2: result=OK declaredElem=Void B.DoSomething()
-3: result=OK declaredElem=Void B.DoSomething()
+0: result=OK declaredElem=void A.LaunchProjectile()
+1: result=OK declaredElem=void A.LaunchProjectile()
+2: result=OK declaredElem=void B.DoSomething()
+3: result=OK declaredElem=void B.DoSomething()

@@ -13,9 +13,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
     {
         public IHighlighting Run(IReference reference)
         {
-            return new StringLiteralReferenceIncorrectSignatureError(reference);
+            if (reference is SyncVarHookReference)
+                return new StringLiteralReferenceIncorrectSignatureError(reference);
+            if (reference is UnityEventFunctionReference eventFunctionReference)
+                return new StringLiteralReferenceIncorrectSignatureWarning(eventFunctionReference);
+            return null;
         }
 
-        public IEnumerable<ResolveErrorType> ErrorTypes => new[] {UnityResolveErrorType.UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE};
+        public IEnumerable<ResolveErrorType> ErrorTypes => new[]
+        {
+            UnityResolveErrorType.UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_ERROR,
+            UnityResolveErrorType.UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_WARNING
+        };
     }
 }

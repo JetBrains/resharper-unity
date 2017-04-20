@@ -15,6 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
         // string literal (for SyncVar, etc). If we add a highlight, we need
         // to handle all instances of the resolve error, so we'll use our
         // own, rather than using ResolveErrorType.INCORRECT_SIGNATURE
-        [NotNull] public static readonly ResolveErrorType UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE = new UnityResolveErrorType("UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE");
+        [NotNull] public static readonly ResolveErrorType UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_ERROR = new UnityResolveErrorType("UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_ERROR");
+
+        [NotNull] public static readonly ResolveErrorType UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_WARNING = new UnityResolveErrorType("UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_WARNING");
     }
 }

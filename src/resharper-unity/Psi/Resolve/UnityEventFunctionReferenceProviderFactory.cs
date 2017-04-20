@@ -10,8 +10,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
     [ReferenceProviderFactory]
     public class UnityEventFunctionReferenceProviderFactory : IReferenceProviderFactory
     {
-        public UnityEventFunctionReferenceProviderFactory(Lifetime lifetime)
+        private readonly IPredefinedTypeCache myPredefinedTypeCache;
+
+        public UnityEventFunctionReferenceProviderFactory(Lifetime lifetime, IPredefinedTypeCache predefinedTypeCache)
         {
+            myPredefinedTypeCache = predefinedTypeCache;
             Changed = new Signal<IReferenceProviderFactory>(lifetime, GetType().FullName);
         }
 
@@ -22,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
                 return null;
 
             if (sourceFile.PrimaryPsiLanguage.Is<CSharpLanguage>())
-                return new UnityEventFunctionReferenceFactory();
+                return new UnityEventFunctionReferenceFactory(myPredefinedTypeCache);
 
             return null;
         }

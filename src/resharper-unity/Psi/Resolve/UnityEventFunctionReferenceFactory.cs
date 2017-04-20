@@ -10,11 +10,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 {
     public class UnityEventFunctionReferenceFactory : StringLiteralReferenceFactoryBase
     {
-        private static readonly HashSet<string> ReferencingMethodNames = new HashSet<string>
+        private readonly IPredefinedTypeCache myPredefinedTypeCache;
+
+        private static readonly HashSet<string> InvokeMethodNames = new HashSet<string>
         {
-            "Invoke", "InvokeRepeating", "CancelInvoke", "IsInvoking",
-            "StartCoroutine", "StopCoroutine"
+            "Invoke", "InvokeRepeating", "CancelInvoke", "IsInvoking"
         };
+
+        public UnityEventFunctionReferenceFactory(IPredefinedTypeCache predefinedTypeCache)
+        {
+            myPredefinedTypeCache = predefinedTypeCache;
+        }
 
         public override ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
@@ -33,7 +39,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             var invocationExpression = literal.GetContainingNode<IInvocationExpression>();
             var invocationReference = invocationExpression?.Reference;
             var invokedMethod = invocationReference?.Resolve().DeclaredElement as IMethod;
-            if (invokedMethod != null && DoesMethodReferenceFunction(invokedMethod))
+            if (invokedMethod == null)
+                return ReferenceCollection.Empty;
+
+            var isInvokedFunction = InvokeMethodNames.Contains(invokedMethod.ShortName);
+            var isCoroutine = IsCoroutine(invokedMethod);
+
+            if (isInvokedFunction || isCoroutine)
             {
                 var containingType = invokedMethod.GetContainingType();
                 if (containingType != null && Equals(containingType.GetClrName(), KnownTypes.MonoBehaviour))
@@ -46,7 +58,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 
                     if (targetType != null)
                     {
-                        var reference = new UnityEventFunctionReference(targetType, literal);
+                        var methodSignature = GetMethodSignature(invocationExpression, invokedMethod, isCoroutine);
+                        var reference = new UnityEventFunctionReference(targetType, literal, methodSignature);
                         return new ReferenceCollection(reference);
                     }
                 }
@@ -62,9 +75,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             return argumentsOwner != null && argumentsOwner.ArgumentsEnumerable.FirstOrDefault() == argument;
         }
 
-        private static bool DoesMethodReferenceFunction(IMethod invokedMethod)
+        private static bool IsCoroutine(IMethod invokedMethod)
         {
-            return ReferencingMethodNames.Contains(invokedMethod.ShortName);
+            return invokedMethod.ShortName == "StartCoroutine" || invokedMethod.ShortName == "StopCoroutine";
+        }
+
+        private MethodSignature GetMethodSignature(IInvocationExpression invocationExpression, IMethod invokedMethod, bool isCoroutine)
+        {
+            var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(invocationExpression.GetPsiModule());
+            var returnType = isCoroutine ? predefinedType.IEnumerator : predefinedType.Void;
+
+            if (invokedMethod.ShortName == "StartCoroutine")
+            {
+                var arguments = invocationExpression.ArgumentList.Arguments;
+                if (arguments.Count == 2)
+                {
+                    var argumentValue = arguments[1].Value;
+                    if (argumentValue != null)
+                    {
+                        var argumentType = argumentValue.Type();
+                        return new MethodSignature(returnType, argumentType);
+                    }
+                }
+            }
+
+            return new MethodSignature(returnType);
         }
     }
 }

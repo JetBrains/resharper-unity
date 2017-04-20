@@ -1,20 +1,20 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class A : MonoBehaviour
 {
     public Rigidbody projectile;
 
-    private void LaunchProjectile()
+    protected void LaunchProjectile()
     {
         Rigidbody instance = Instantiate(projectile);
         instance.velocity = UnityEngine.Random.insideUnitSphere * 5;
     }
-
-    private void Example()
-    {
-        InvokeRepeating("|LaunchProjectile|(0)", 2, 0.3F);
-    }
 }
 
-------------------------------------------------
-0: result=OK declaredElem=void A.LaunchProjectile()
+public class B : A
+{
+    private void Example()
+    {
+        Invoke("{caret}", 2);
+    }
+}

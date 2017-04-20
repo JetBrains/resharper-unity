@@ -18,5 +18,5 @@ public class A : MonoBehaviour
 }
 
 ------------------------------------------------
-0: result=OK declaredElem=Void A.LaunchProjectile()
-1: result=OK declaredElem=Void A.LaunchProjectile()
+0: result=OK declaredElem=void A.LaunchProjectile()
+1: result=OK declaredElem=void A.LaunchProjectile()

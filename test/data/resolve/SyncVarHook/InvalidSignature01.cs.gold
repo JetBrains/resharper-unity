@@ -28,6 +28,6 @@ public class A : NetworkBehaviour
 }
 
 ------------------------------------------------
-0: result=UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE declaredElem=void A.RequiresMatchingParameterType(string newValue)
-1: result=UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE declaredElem=void A.RequiresSingleParameter(int newValue, string whatever)
-2: result=UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE declaredElem=string A.RequiresVoidReturnType(int newValue)
+0: result=UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_ERROR declaredElem=void A.RequiresMatchingParameterType(string newValue)
+1: result=UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_ERROR declaredElem=void A.RequiresSingleParameter(int newValue, string whatever)
+2: result=UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_ERROR declaredElem=string A.RequiresVoidReturnType(int newValue)
