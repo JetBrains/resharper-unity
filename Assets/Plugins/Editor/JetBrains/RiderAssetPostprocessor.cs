@@ -219,7 +219,7 @@ namespace Plugins.Editor.JetBrains
         return "6";
 
       // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-      #if UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3|| UNITY_5_4 || UNITY_5_5
+      #if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3|| UNITY_5_4 || UNITY_5_5
       if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
       #else
       if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
