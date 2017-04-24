@@ -144,7 +144,7 @@ if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastEx
 Write-Host "##teamcity[publishArtifacts 'build/resharper-unity.rider/bin/Release/*.nupkg']"
 
 ### Pack Rider plugin directory
-SetIdeaVersion -file "rider/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
+SetIdeaVersion -file "rider/src/main/resources/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
 
 $baseVersion = GetBasePluginVersion "Packaging.props"
 if ($BuildCounter) {
@@ -154,19 +154,12 @@ if ($BuildCounter) {
 }
 
 Write-Host "##teamcity[buildNumber '$version']"
-SetPluginVersion -file "rider/META-INF/plugin.xml" -version $version
+SetPluginVersion -file "rider/src/main/resources/META-INF/plugin.xml" -version $version
 
-$dir = "build\zip"
-if (Test-Path $dir) { Remove-Item $dir -Force -Recurse }
-New-Item $dir -type directory | Out-Null
-New-Item $dir\resharper-unity -type directory | Out-Null
-Copy-Item build\resharper-unity.rider\bin\Release\*.nupkg $dir\resharper-unity -recurse
-Copy-Item rider\* $dir\resharper-unity -recurse
+Push-Location -Path rider
+.\gradle.bat buildPlugin
+if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
+Pop-Location
 
-### Pack and publish Rider plugin zip
-$zip = "build/JetBrains.Unity-$version.zip"
-If (Test-Path $zip) { Remove-Item $zip }
-& "tools\7za.exe" a -r -tzip $zip ".\$dir\*"
-if ($LastExitCode -ne 0) { throw "Exec: Unable to compress with 7za: exit code $LastExitCode" }
-
-Write-Host "##teamcity[publishArtifacts '$zip']"
+# TODO: This might need to be $version
+Write-Host "##teamcity[publishArtifacts 'rider\build\distributions\rider-unity-1.6.2.zip']"

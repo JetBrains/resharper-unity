@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="rider-unity:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="com.jetbrains" external.system.module.type="sourceSet" external.system.module.version="1.6.2" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="1">
+        <option name="compilerInfo">
+          <KotlinCompilerInfo>
+            <option name="compilerSettings">
+              <CompilerSettings />
+            </option>
+            <option name="k2jsCompilerArguments">
+              <K2JSCompilerArguments />
+            </option>
+            <option name="k2jvmCompilerArguments">
+              <K2JVMCompilerArguments>
+                <option name="noStdlib" value="true" />
+                <option name="noReflect" value="true" />
+                <option name="moduleName" value="rider-unity_main" />
+                <option name="jvmTarget" value="1.6" />
+                <option name="addCompilerBuiltIns" value="true" />
+                <option name="loadBuiltInsFromDependencies" value="true" />
+                <option name="languageVersion" value="1.1" />
+                <option name="apiVersion" value="1.1" />
+                <option name="coroutinesWarn" value="true" />
+              </K2JVMCompilerArguments>
+            </option>
+            <option name="_commonCompilerArguments">
+              <DummyImpl>
+                <option name="languageVersion" value="1.1" />
+                <option name="apiVersion" value="1.1" />
+                <option name="pluginClasspaths">
+                  <array />
+                </option>
+                <option name="coroutinesWarn" value="true" />
+                <option name="pluginOptions">
+                  <array />
+                </option>
+              </DummyImpl>
+            </option>
+          </KotlinCompilerInfo>
+        </option>
+        <option name="useProjectSettings" value="false" />
+        <option name="versionInfo">
+          <KotlinVersionInfo>
+            <option name="apiLevel" value="1.1" />
+            <option name="languageLevel" value="1.1" />
+            <option name="targetPlatformName" value="JVM 1.6" />
+          </KotlinVersionInfo>
+        </option>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <output url="file://$MODULE_DIR$/../../build/classes/main" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/kotlin" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library name="Gradle: com.jetbrains:ideaLocal:RS-171.4089.265">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/alloy.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/annotations-12.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/annotations-25.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/annotations.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/asm-all.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/automaton.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/batik-all.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/bcprov-jdk15on-155.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/boot.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/bootstrap.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/cglib-nodep-3.2.4.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/cli-parser-1.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/cloud-config-client.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/common-25.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/common-image-3.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/common-io-3.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/common-lang-3.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/commons-codec-1.9.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/commons-compress-1.10.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/commons-httpclient-3.1-patched.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/commons-logging-1.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/commons-net-3.3.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/ddmlib-25.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/dvlib-25.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/extensions.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/fluent-hc-4.5.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/forms_rt.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/groovy-all-2.4.6.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/gson-2.5.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/guava-19.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/hamcrest-core-1.3.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/httpclient-4.5.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/httpcore-4.4.5.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/httpmime-4.5.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/icons.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/imageio-core-3.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/imageio-metadata-3.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/imageio-tiff-3.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/imgscalr-lib-4.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/isorelax.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jaxen-1.1.3.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jayatana-1.2.4.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jdom.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jediterm-pty-2.5.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jettison-1.3.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jgoodies-forms.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jh.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jimfs-1.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jing.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jna-platform.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jna.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jsch-0.1.54.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jsch.agentproxy.connector-factory.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jsch.agentproxy.core.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jsch.agentproxy.pageant.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jsch.agentproxy.sshagent.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jsch.agentproxy.usocket-jna.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jsch.agentproxy.usocket-nc.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jsr173_1.0_api.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jtar-2.3.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/junit-4.12.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/jzlib-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/kotlin-reflect.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/kotlin-runtime.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/kotlin-test.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/kxml2-2.3.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/layoutlib-api-25.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/log4j.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/markdown4j-2.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/markdownj-core-0.4.2-SNAPSHOT.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/microba.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/miglayout-core-5.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/miglayout-swing-5.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/nanoxml-2.2.3.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/netty-all-4.1.9.Final.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/openapi.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/oromatcher.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/picocontainer.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/protobuf-2.5.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/proxy-vole_20131209.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/pty4j-0.7.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/purejavacomm.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/repository-25.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/resolver.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/resources.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/resources_en.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/rhino-js-1_7R4.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/rider.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/rngom-20051226-patched.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/sanselan-0.98-snapshot.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/sdklib-25.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/serviceMessages.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/slf4j-api-1.7.10.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/slf4j-log4j12-1.7.10.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/snakeyaml-1.17.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/snappy-in-java-0.5.1.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/sqlite-jdbc-3.8.11.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/streamex-0.6.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/swingx-core-1.6.2.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/trang-core.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/trove4j.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/util.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/velocity.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/winp-1.23.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/xbean.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/xercesImpl.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/xml-apis-ext.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/xml-apis.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/xmlgraphics-commons-1.5.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/xmlrpc-2.0.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/xpp3-1.1.4-min.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/xstream-1.4.8.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/xz-1.5.jar!/" />
+          <root url="jar://$USER_HOME$/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents/lib/yjp-controller-api-redist.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library>
+        <CLASSES>
+          <root url="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/lib/tools.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>

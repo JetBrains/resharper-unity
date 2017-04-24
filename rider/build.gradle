@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.1.1'
+    id 'org.jetbrains.intellij' version '0.2.8'
+}
+
+group 'com.jetbrains'
+version '1.6.2'
+
+ext.kotlin_version = '1.1.1'
+ext.nupkg_path = "$projectDir/../build/rider-unity.$version-rider.nupkg"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+intellij {
+    type = 'RS'
+
+    // Looks like the IntelliJ plugin will transform `LATEST_TRUNK_SNAPSHOT`
+    // to `LATEST-TRUNK-SNAPSHOT`, which is incorrect. Furthermore, the latest
+    // snapshot on www.jetbrains.com/intellij-repository/snapshots isn't up to date
+    //intellij.version = 'LATEST_TRUNK_SNAPSHOT'
+    //intellij.version = '171.3655.1246'
+
+    // Use localPath as a dependency
+    intellij.localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
+
+    // Set to true for CI
+    //intellij.downloadSources = false
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+}
+
+assert file(nupkg_path).exists()
+prepareSandbox {
+    from(nupkg_path, {
+        into "$intellij.pluginName"
+    })
+}
