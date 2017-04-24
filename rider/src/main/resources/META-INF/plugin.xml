@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>1.6.2.0</version>
+  <version>1.7.0.0</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
   <idea-version since-build="171.3655" until-build="171.3655.*" />
@@ -20,18 +20,33 @@
 <p></p>
 <p>
 <ul>
-  <li>Event functions and serialised fields that are implicitly used by Unity are marked with an icon in the text editor gutter.</li>
-  <li>Implicitly used methods, fields and attributed types are no longer marked as unused.</li>
-  <li>Generate event functions via Insert Code GUI or auto complete as you type method definitions.</li>
-  <li>Code completion, find usages and rename of method names in string literal arguments for <code>MonoBehaviour.Invoke</code>, <code>InvokeRepeating</code>, <code>IsInvoking</code>, and <code>CancelInvoke</code>. Also <code>MonoBehaviour.StartCoroutine</code>/<code>StopCoroutine</code>.</li>
-  <li>Inspections and Quick Fix for <code>CompareTag</code> instead of string comparison.</li>
-  <li>All Unity based classes are supported via analysis of the Unity API documentation (<code>MonoBehaviour</code>, <code>ScriptableObject</code>, <code>EditorWindow</code>, etc.)</li>
-  <li>Descriptions for message handler methods and parameters in Unity based classes are shown in tooltips and QuickDoc.</li>
-  <li>"Read more" in QuickDoc will navigate to the Unity API documentation, locally if available, or via the Unity website.</li>
-  <li>Supports Unity API versions 5.2 to 5.5.</li>
-  <li>Suppress naming consistency warnings for known Unity message handlers. E.g. Rider no longer suggests that <code>AnimatorIK</code> be renamed to <code>AnimatorIk</code>.</li>
-  <li>Disables the <code>Assets</code> and <code>Assets\Scripts</code> from being considered as "namespace providers". This means Rider will no longer suggest to include Assets or Scripts in the namespace of your code.</li>
-  <li>Automatically sets C# language level, to C# 4 or C# 6, as appropriate.</li>
+  <li>Highlights Unity event functions and fields with an icon in the editor gutter.</li>
+  <li>Marks fields and methods implicitly used by Unity as in use.</li>
+  <li>Knows about all Unity script classes (<code>MonoBehaviour</code>, <code>ScriptableObject</code>, <code>EditorWindow</code>, etc).</li>
+  <li>Supports Unity API 5.0 - 5.6.</li>
+  <li>Inspections and Quick Fixes for incorrect event function method signature and return types.</li>
+  <li>Support for undocumented functions such as OnValidate and OnPreGeneratingCSProjectFiles.</li>
+  <li>Warns if a coroutine return value is unused.</li>
+  <li>Context action to convert event function method signature to/from coroutine.</li>
+  <li>Use Generate Code to create event functions, with parameters.</li>
+  <li>Start typing for automatic completion of event function declarations in a class.</li>
+  <li>Event function descriptions for methods and parameters displayed in tooltips and QuickDoc.</li>
+  <li>Creates, deletes and renames .meta files automatically when refactoring.<li>
+  <li>Code completion, find usages and rename support for <code>Invoke</code>, <code>InvokeRepeating</code>, <code>IsInvoking</code> and <code>CancelInvoke</code>. Also <code>Start</code>/<code>StopCoroutine</code>.</li>
+  <li>Inspection and Quick Fix to use <code>CompareTag</code> instead of string comparison.</li>
+  <li>"Create serialized field" from usage Quick Fix.</li>
+  <li>Suppress naming consistency checks on event functions.</li>
+  <li>Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code.<li>
+  <li>Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!</li>
+  <li>Highlights <code>UnityEngine.Color</code> and <code>Color32</code>. Edit via colour palette quick fix.</li>
+  <li>Treats Unity debug assertions as assertion methods in ReSharper control flow analysis.<li>
+  <li>String formatting assistance for debug log methods.</li>
+  <li>Regex assistance for <code>EditorTestsWithLogParser.ExpectLogLineRegex</code>.</li>
+  <li>Types and type members marked with UnityEngine.Networking attributes are marked as in use.</li>
+  <li>Code completion, find usages and rename support for <code>SyncVarAttribute</code> hook function.</li>
+  <li>Inspections for incorrect SyncVarAttribute usage.</li>
+  <li>Marks empty event functions as dead code, with Quick Fix to remove.</li>
+  <li>Automatically excludes large Library and Temp folders from Rider's text index.</li>
 </ul>
 </p>
 <p></p>
@@ -47,19 +62,13 @@
   </description>
   <change-notes>
 <![CDATA[
-<p>Updated to EAP19</p>
-<p>Improve location of "Create serialized field" Quick Fix (<a href="https://github.com/JetBrains/resharper-unity/issues/124">#124</a>)</p>
 <ul>
-  <ul>Fix nasty bug that will recreate all .meta files when reloading projects. Sorry! (<a href="https://github.com/JetBrains/resharper-unity/issues/118">#118</a>)</ul>
-  <li>Correctly update .meta files when creating, renaming or refactoring (<a href="https://github.com/JetBrains/resharper-unity/issues/56">#56</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/61">#61</a>)</li>
-  <li>"Create serialized field" from usage Quick Fix (<a href="https://github.com/JetBrains/resharper-unity/issues/111">#111</a>)</li>
-  <li>Inspections and quick fixes for incorrect event function signature and return type</li>
-  <li>Event functions that are coroutines are now recognised and marked as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/52">#52</a>)</li>
-  <li>Context action to convert event function signature to/from coroutine</li>
-  <li>Add coroutine and optional parameter information to API and tooltips</li>
-  <li>Expand API support to 5.0 - 5.6</li>
-  <li>Add regex annotations for EditorTestsWithLogParser.ExpectLogLineRegex (<a href="https://github.com/JetBrains/resharper-unity/issues/95">#95</a>)</li>
-  <li>Warn if coroutine return value is unused (<a href="https://github.com/JetBrains/resharper-unity/issues/99">#99</a>)</li>
+  <li>Automatically exclude Library and Temp from Rider's text index (<a href="https://github.com/JetBrains/resharper-unity/issues/117">#117</a>)</li>
+  <li>Added implicit use annotations for UnityEngine.Networking attributes (<a href="https://github.com/JetBrains/resharper-unity/issues/136">#136</a>)</li>
+  <li>Code completion, find usages and rename support for SyncVarAttribute hook function (<a href="https://github.com/JetBrains/resharper-unity/issues/135">#135</a>)</li>
+  <li>Mark empty event functions as dead code, with Quick Fix to remove (<a href="https://github.com/JetBrains/resharper-unity/issues/137">#137</a>)</li>
+  <li>Fix incorrect signatures in known API (<a href="https://github.com/JetBrains/resharper-unity/issues/128">#128</a>)</li>
+  <li>Treats Assertion.Assert as assertion methods (<a href="https://github.com/JetBrains/resharper-unity/issues/129">#129</a>)</li>
 </ul>
 ]]>
   </change-notes>
