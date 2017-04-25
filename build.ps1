@@ -161,5 +161,4 @@ Push-Location -Path rider
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
 Pop-Location
 
-# TODO: This might need to be $version
-Write-Host "##teamcity[publishArtifacts 'rider\build\distributions\rider-unity-1.7.0.zip']"
+Write-Host "##teamcity[publishArtifacts 'rider\build\distributions\**']"

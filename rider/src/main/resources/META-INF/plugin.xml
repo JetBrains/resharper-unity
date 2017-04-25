@@ -31,7 +31,7 @@
   <li>Use Generate Code to create event functions, with parameters.</li>
   <li>Start typing for automatic completion of event function declarations in a class.</li>
   <li>Event function descriptions for methods and parameters displayed in tooltips and QuickDoc.</li>
-  <li>Creates, deletes and renames .meta files automatically when refactoring.<li>
+  <li>Creates, deletes and renames .meta files automatically when refactoring.</li>
   <li>Code completion, find usages and rename support for <code>Invoke</code>, <code>InvokeRepeating</code>, <code>IsInvoking</code> and <code>CancelInvoke</code>. Also <code>Start</code>/<code>StopCoroutine</code>.</li>
   <li>Inspection and Quick Fix to use <code>CompareTag</code> instead of string comparison.</li>
   <li>"Create serialized field" from usage Quick Fix.</li>

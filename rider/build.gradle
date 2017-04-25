@@ -5,10 +5,10 @@ plugins {
 }
 
 group 'com.jetbrains'
-version '1.6.2'
+version '1.7.0'
 
 ext.kotlin_version = '1.1.1'
-ext.nupkg_path = "$projectDir/../build/rider-unity.$version-rider.nupkg"
+ext.nupkg_path = "$projectDir/../build/resharper-unity.rider/bin/Release/JetBrains.Unity.$version-rider.nupkg"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -19,7 +19,7 @@ intellij {
     // Looks like the IntelliJ plugin will transform `LATEST_TRUNK_SNAPSHOT`
     // to `LATEST-TRUNK-SNAPSHOT`, which is incorrect. Furthermore, the latest
     // snapshot on www.jetbrains.com/intellij-repository/snapshots isn't up to date
-    //intellij.version = 'LATEST_TRUNK_SNAPSHOT'
+    //intellij.version = 'LATEST-TRUNK-SNAPSHOT'
     //intellij.version = '171.3655.1246'
 
     // Use localPath as a dependency
