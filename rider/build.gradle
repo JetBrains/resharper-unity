@@ -41,19 +41,21 @@ dependencies {
 }
 
 assert file(nupkg_path).exists()
+
 prepareSandbox {
     from(nupkg_path, {
         into "$intellij.pluginName"
     })
+}
 
-    // The current 171.4089.265 snapshot doesn't set the executable bit for
-    // lib/ReSharperHost/runtime.sh, and is missing macos-x64
-    // This isn't the right place to fix this, but let's get things working
-    doLast {
-        project.exec {
-            if (System.getProperty('os.name').toLowerCase().contains('mac os')) {
-                it.commandLine 'chmod', '744', "$projectDir/build/rider$intellij.type-$intellij.version/lib/ReSharperHost/runtime.sh"
-            }
+// The current 171.4089.265 snapshot doesn't set the executable bit for
+// lib/ReSharperHost/runtime.sh, and is missing macos-x64
+project.afterEvaluate {
+    if (System.getProperty('os.name').toLowerCase().contains('mac os')) {
+        exec {
+            it.commandLine 'chmod', '744', "$projectDir/build/rider$intellij.type-$intellij.version/lib/ReSharperHost/runtime.sh"
         }
+
+        // TODO: Copy macos-x64 from somewhere. But where?
     }
 }
