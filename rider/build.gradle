@@ -49,9 +49,11 @@ prepareSandbox {
     // The current 171.4089.265 snapshot doesn't set the executable bit for
     // lib/ReSharperHost/runtime.sh, and is missing macos-x64
     // This isn't the right place to fix this, but let's get things working
-    project.exec {
-        if (System.getProperty('os.name').toLowerCase().contains('mac os')) {
-            it.commandLine 'chmod', '744', "$projectDir/build/rider$intellij.type-$intellij.version/lib/ReSharperHost/runtime.sh"
+    doLast {
+        project.exec {
+            if (System.getProperty('os.name').toLowerCase().contains('mac os')) {
+                it.commandLine 'chmod', '744', "$projectDir/build/rider$intellij.type-$intellij.version/lib/ReSharperHost/runtime.sh"
+            }
         }
     }
 }
