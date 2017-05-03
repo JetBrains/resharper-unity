@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using UnityEditor;
@@ -130,7 +129,7 @@ namespace Plugins.Editor.JetBrains
         {
           SyncSolution(); // added to handle opening file, which was just recently created.
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!CallUDPRider(line, SlnFile, assetFilePath))
+          if (!HttpRequestOpenFile(line, SlnFile, assetFilePath))
           {
               var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
               CallRider(DefaultApp, args);
@@ -141,45 +140,31 @@ namespace Plugins.Editor.JetBrains
       return false;
     }
 
-    private static bool CallUDPRider(int line, string slnPath, string filePath)
+
+    private static bool HttpRequestOpenFile(int line, string slnPath, string filePath)
     {
-      Log(string.Format("CallUDPRider({0} {1} {2})", line, slnPath, filePath));
-      using (var sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+      var url = string.Format(@"http://localhost:63342/api/file/{0}{1}",filePath, line<0?"":":"+line);
+      Log(string.Format("HttpRequestOpenFile({0})", url));
+
+      try
       {
-        try
+        using (var client = new WebClient())
         {
-          sock.ReceiveTimeout = 10000;
+          client.Headers.Add("origin", "http://localhost:63342");
+          client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+          var response = client.DownloadData(url);
 
-          var serverAddr = IPAddress.Parse("127.0.0.1");
-          var endPoint = new IPEndPoint(serverAddr, 11234);
-
-          var text = line + "\r\n" + slnPath + "\r\n" + filePath + "\r\n";
-          var send_buffer = Encoding.ASCII.GetBytes(text);
-          sock.SendTo(send_buffer, endPoint);
-
-          var rcv_buffer = new byte[1024];
-
-          // Poll the socket for reception with a 10 ms timeout.
-          if (!sock.Poll(10000, SelectMode.SelectRead))
-          {
-            throw new TimeoutException();
-          }
-
-          int bytesRec = sock.Receive(rcv_buffer); // This call will not block
-          string status = Encoding.ASCII.GetString(rcv_buffer, 0, bytesRec);
-          if (status == "ok")
-          {
-            ActivateWindow(new FileInfo(DefaultApp).FullName);
-            return true;
-          }
-        }
-        catch (Exception)
-        {
-          //error Timed out
-          Log("Socket error or no response. Have you installed RiderUnity3DConnector in Rider?");
+          var responseString = Encoding.Default.GetString(response);
+          Log(responseString);
         }
       }
-      return false;
+      catch (Exception e)
+      {
+        Log("Exception in HttpRequestOpenFile: " + e);
+        return false;
+      }
+      ActivateWindow(new FileInfo(DefaultApp).FullName);
+      return true;
     }
 
     private static void CallRider(string riderPath, string args)
