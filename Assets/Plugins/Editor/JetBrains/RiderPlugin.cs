@@ -110,7 +110,7 @@ namespace Plugins.Editor.JetBrains
     private static void InitializeEditorInstanceJson(string projectDirectory)
     {
       // Only manage EditorInstance.json for 5.x - it's a native feature for 2017.x
-#if UNITY_5
+#if UNITY_4 || UNITY_5
       Debug.Log("[Rider] " + "Writing Library/EditorInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
