@@ -71,7 +71,7 @@ namespace Plugins.Editor.JetBrains
         }
         if (newPath != riderFileInfo.FullName)
         {
-          Log(string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
+          Debug.Log("[Rider] " + string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
           EditorPrefs.SetString("kScriptsDefaultApp", newPath);
         }
       }
@@ -99,7 +99,7 @@ namespace Plugins.Editor.JetBrains
       }
       catch (Exception e)
       {
-        Log("Exception on updating kScriptEditorArgs: " + e.Message);
+        Debug.Log("[Rider] " + ("Exception on updating kScriptEditorArgs: " + e.Message));
       }
     }
 
@@ -111,7 +111,7 @@ namespace Plugins.Editor.JetBrains
     {
       // Only manage EditorInstance.json for 5.x - it's a native feature for 2017.x
 #if UNITY_5
-      Log("Writing Library/EditorInstance.json");
+      Debug.Log("[Rider] " + "Writing Library/EditorInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
       var editorInstanceJsonPath = Path.Combine(library, "EditorInstance.json");
@@ -123,7 +123,7 @@ namespace Plugins.Editor.JetBrains
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
-        Log("Deleting Library/EditorInstance.json");
+        Debug.Log("[Rider] " + "Deleting Library/EditorInstance.json");
         File.Delete(editorInstanceJsonPath);
       };
 #endif
@@ -173,7 +173,7 @@ namespace Plugins.Editor.JetBrains
     private static bool HttpRequestOpenFile(int line, string slnPath, string filePath)
     {
       var url = string.Format(@"http://localhost:63342/api/file/{0}{1}",filePath, line<0?"":":"+line);
-      Log(string.Format("HttpRequestOpenFile({0})", url));
+      Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", url));
 
       try
       {
@@ -184,12 +184,12 @@ namespace Plugins.Editor.JetBrains
           var response = client.DownloadData(url);
 
           var responseString = Encoding.Default.GetString(response);
-          Log(responseString);
+          Debug.Log("[Rider] " + responseString);
         }
       }
       catch (Exception e)
       {
-        Log("Exception in HttpRequestOpenFile: " + e);
+        Debug.Log("[Rider] " + "Exception in HttpRequestOpenFile: " + e);
         return false;
       }
       ActivateWindow(new FileInfo(DefaultApp).FullName);
@@ -212,13 +212,13 @@ namespace Plugins.Editor.JetBrains
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + riderPath, args);
-        Log(proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+        Debug.Log("[Rider] " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
       }
       else
       {
         proc.StartInfo.FileName = riderPath;
         proc.StartInfo.Arguments = args;
-        Log("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments);
+        Debug.Log("[Rider] " + ("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments));
       }
 
       proc.StartInfo.UseShellExecute = false;
@@ -262,7 +262,7 @@ namespace Plugins.Editor.JetBrains
         }
         catch (Exception e)
         {
-          Log("Exception on ActivateWindow: " + e);
+          Debug.Log("[Rider] " + ("Exception on ActivateWindow: " + e));
         }
       }
     }
@@ -292,11 +292,6 @@ namespace Plugins.Editor.JetBrains
       System.Reflection.MethodInfo SyncSolution = T.GetMethod("SyncSolution",
         System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
       SyncSolution.Invoke(null, null);
-    }
-
-    public static void Log(object message)
-    {
-      Debug.Log("[Rider] " + message);
     }
 
     /// <summary>
