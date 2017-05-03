@@ -77,9 +77,12 @@ namespace Plugins.Editor.JetBrains
       }
 
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
       UpdateUnitySettings(SlnFile);
+
+      InitializeEditorInstanceJson(projectDirectory);
 
       Initialized = true;
     }
@@ -98,6 +101,32 @@ namespace Plugins.Editor.JetBrains
       {
         Log("Exception on updating kScriptEditorArgs: " + e.Message);
       }
+    }
+
+    /// <summary>
+    /// Creates and deletes Library/EditorInstance.json containing version and process ID
+    /// </summary>
+    /// <param name="projectDirectory">Path to the project root directory</param>
+    private static void InitializeEditorInstanceJson(string projectDirectory)
+    {
+      // Only manage EditorInstance.json for 5.x - it's a native feature for 2017.x
+#if UNITY_5
+      Log("Writing Library/EditorInstance.json");
+
+      var library = Path.Combine(projectDirectory, "Library");
+      var editorInstanceJsonPath = Path.Combine(library, "EditorInstance.json");
+
+      File.WriteAllText(editorInstanceJsonPath, string.Format(@"{{
+  ""process_id"": {0},
+  ""version"": ""{1}""
+}}", Process.GetCurrentProcess().Id, Application.unityVersion));
+
+      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      {
+        Log("Deleting Library/EditorInstance.json");
+        File.Delete(editorInstanceJsonPath);
+      };
+#endif
     }
 
     /// <summary>
@@ -172,7 +201,7 @@ namespace Plugins.Editor.JetBrains
       var riderFileInfo = new FileInfo(riderPath);
       var macOSVersion = riderFileInfo.Extension == ".app";
       var riderExists = macOSVersion ? new DirectoryInfo(riderPath).Exists : riderFileInfo.Exists;
-      
+
       if (!riderExists)
       {
         EditorUtility.DisplayDialog("Rider executable not found", "Please update 'External Script Editor' path to JetBrains Rider.", "OK");
