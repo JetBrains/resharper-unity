@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -158,7 +158,7 @@ namespace Plugins.Editor.JetBrains
         {
           SyncSolution(); // added to handle opening file, which was just recently created.
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!HttpRequestOpenFile(line, SlnFile, assetFilePath))
+          if (!HttpRequestOpenFile(line, assetFilePath))
           {
               var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
               CallRider(DefaultApp, args);
@@ -170,10 +170,11 @@ namespace Plugins.Editor.JetBrains
     }
 
 
-    private static bool HttpRequestOpenFile(int line, string slnPath, string filePath)
+    private static bool HttpRequestOpenFile(int line, string filePath)
     {
-      var url = string.Format(@"http://localhost:63342/api/file/{0}{1}",filePath, line<0?"":":"+line);
-      Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", url));
+      var url = string.Format("http://localhost:63342/api/file?file={0}&line={1}", filePath, line < 0 ? 0 : line);
+      var uri = new Uri(url);
+      Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
 
       try
       {
@@ -181,9 +182,7 @@ namespace Plugins.Editor.JetBrains
         {
           client.Headers.Add("origin", "http://localhost:63342");
           client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-          var response = client.DownloadData(url);
-
-          var responseString = Encoding.Default.GetString(response);
+          var responseString = client.DownloadString(uri);
           Debug.Log("[Rider] " + responseString);
         }
       }
