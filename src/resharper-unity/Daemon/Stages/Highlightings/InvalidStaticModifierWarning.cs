@@ -7,9 +7,10 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 [assembly: RegisterConfigurableSeverity(InvalidStaticModifierWarning.HIGHLIGHTING_ID,
-    UnityHighlightingGroupIds.INCORRECT_EVENT_FUNCTION_SIGNATURE,
-    UnityHighlightingGroupIds.Unity, InvalidStaticModifierWarning.MESSAGE,
-    "Incorrect static modifier for Unity event function.",
+    UnityHighlightingGroupIds.INCORRECT_METHOD_SIGNATURE,
+    UnityHighlightingGroupIds.Unity,
+    "Incorrect or missing static modifier",
+    "Incorrect or missing static modifier for required method signature.",
     Severity.WARNING)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
@@ -24,12 +25,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
     public class InvalidStaticModifierWarning : IHighlighting, IUnityHighlighting
     {
         public const string HIGHLIGHTING_ID = "Unity.InvalidStaticModifier";
-        public const string MESSAGE = "Incorrect static modifier for Unity event function";
 
-        public InvalidStaticModifierWarning(IMethodDeclaration methodDeclaration, UnityEventFunction function)
+        public InvalidStaticModifierWarning(IMethodDeclaration methodDeclaration, MethodSignature methodSignature)
         {
             MethodDeclaration = methodDeclaration;
-            Function = function;
+            MethodSignature = methodSignature;
         }
 
         public bool IsValid()
@@ -60,11 +60,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             return nameRange;
         }
 
-        public string ToolTip => MethodDeclaration.IsStatic ? MESSAGE : "Missing static modifier for Unity event function";
+        public string ToolTip => MethodDeclaration.IsStatic ? "Incorrect static modifier" : "Missing static modifier";
 
         public string ErrorStripeToolTip => ToolTip;
 
         public IMethodDeclaration MethodDeclaration { get; }
-        public UnityEventFunction Function { get; }
+        public MethodSignature MethodSignature { get; }
     }
 }

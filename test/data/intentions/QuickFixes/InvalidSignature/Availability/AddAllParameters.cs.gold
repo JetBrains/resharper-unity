@@ -8,6 +8,6 @@ public class Foo : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Incorrect parameters for Unity event function
+0: Incorrect method parameters. Expected '(float[] data, int channels)'
 QUICKFIXES:
 Change parameters to '(float[] data, int channels)'

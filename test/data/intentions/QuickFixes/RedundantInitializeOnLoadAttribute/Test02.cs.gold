@@ -1,0 +1,7 @@
+﻿using UnityEditor;
+using UnityEngine;
+
+[{caret}SerializeField]
+public class MissingConstructor()
+{
+}

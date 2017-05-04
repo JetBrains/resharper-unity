@@ -11,6 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
+        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -20,5 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
+        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 }

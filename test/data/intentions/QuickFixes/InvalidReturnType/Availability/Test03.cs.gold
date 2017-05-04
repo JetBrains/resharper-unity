@@ -6,6 +6,6 @@
 }
 
 ------------------------------------------------
-0: Incorrect return type for Unity event function
+0: Incorrect return type. Expected 'Material'
 QUICKFIXES:
 Change return type to 'Material'

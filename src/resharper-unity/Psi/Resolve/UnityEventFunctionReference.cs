@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 {
@@ -30,7 +31,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             myTargetType = targetType;
             MethodSignature = methodSignature;
 
-            myAccessContext = new NonStaticAccessContext(myOwner);
+            // All Unity event functions are instance methods, but handle the method signature
+            if (methodSignature.IsStatic == null)
+                myAccessContext = new DefaultAccessContext(myOwner);
+            else if (methodSignature.IsStatic == true)
+                myAccessContext = new StaticAccessContext(myOwner);
+            else
+                myAccessContext = new NonStaticAccessContext(myOwner);
 
             myMethodFilter = new InvokableMethodFilter();
             myStaticFilter = new StaticFilter(myAccessContext);
@@ -85,7 +92,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
         public override IReference BindTo(IDeclaredElement element)
         {
             var literalAlterer = StringLiteralAltererUtil.CreateStringLiteralByExpression(myOwner);
-            literalAlterer.Replace((string)myOwner.ConstantValue.Value, element.ShortName, myOwner.GetPsiModule());
+            var constantValue = (string)myOwner.ConstantValue.Value;
+            Assertion.AssertNotNull(constantValue, "constantValue != null");
+            literalAlterer.Replace(constantValue, element.ShortName, myOwner.GetPsiModule());
             var newOwner = literalAlterer.Expression;
             if (!myOwner.Equals(newOwner))
                 return newOwner.FindReference<UnityEventFunctionReference>() ?? this;

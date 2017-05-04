@@ -15,25 +15,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
     public class InvalidReturnTypeFix : QuickFixBase
     {
         private readonly IMethodDeclaration myMethodDeclaration;
-        private readonly IType myReturnType;
+        private readonly MethodSignature myMethodSignature;
 
         public InvalidReturnTypeFix(InvalidReturnTypeWarning warning)
         {
-            var eventFunction = warning.Function;
+            myMethodSignature = warning.MethodSignature;
             myMethodDeclaration = warning.MethodDeclaration;
-
-            myReturnType = TypeFactory.CreateTypeByCLRName(eventFunction.ReturnType, myMethodDeclaration.GetPsiModule());
-            if (eventFunction.ReturnTypeIsArray)
-                myReturnType = TypeFactory.CreateArrayType(myReturnType, 1);
         }
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             var element = myMethodDeclaration.DeclaredElement;
+            Assertion.AssertNotNull(element, "element != null");
 
             var language = myMethodDeclaration.Language;
             var changeTypeHelper = LanguageManager.Instance.GetService<IChangeTypeHelper>(language);
-            changeTypeHelper.ChangeType(myReturnType, element);
+            changeTypeHelper.ChangeType(myMethodSignature.ReturnType, element);
             return null;
         }
 
@@ -41,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
         {
             get
             {
-                var returnType = myReturnType.GetPresentableName(myMethodDeclaration.Language);
+                var returnType = myMethodSignature.ReturnType.GetPresentableName(myMethodDeclaration.Language);
                 return $"Change return type to '{returnType}'";
             }
         }

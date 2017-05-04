@@ -23,9 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             var method = methodDeclaration.DeclaredElement;
             if (method == null) return;
             if (IsEventFunction(method) && HasEmptyBody(methodDeclaration))
-            {
                 consumer.AddHighlighting(new RedundantEventFunctionWarning(methodDeclaration));
-            }
         }
 
         private bool IsEventFunction(IMethod method)

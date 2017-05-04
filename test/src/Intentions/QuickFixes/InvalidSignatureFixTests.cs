@@ -13,6 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
         [Test] public void AddMissingParameter() { DoNamedTest(); }
         [Test] public void RemoveAllParameters() { DoNamedTest(); }
         [Test] public void ReorderParameters() { DoNamedTest(); }
+        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -25,5 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
         [Test] public void RemoveAllParameters() { DoNamedTest(); }
         [Test] public void RenameParameters() { DoNamedTest(); }
         [Test] public void ReorderParameters() { DoNamedTest(); }
+        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 }

@@ -94,12 +94,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
                     if (argumentValue != null)
                     {
                         var argumentType = argumentValue.Type();
-                        return new MethodSignature(returnType, argumentType);
+                        var argumentName = invokedMethod.Parameters.FirstOrDefault()?.ShortName ?? "value";
+                        return new MethodSignature(returnType, false, new[] {argumentType}, new[] {argumentName});
                     }
                 }
             }
 
-            return new MethodSignature(returnType);
+            return new MethodSignature(returnType, false);
         }
     }
 }

@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName Component = new ClrTypeName("UnityEngine.Component");
         public static readonly IClrTypeName GameObject = new ClrTypeName("UnityEngine.GameObject");
         public static readonly IClrTypeName MonoBehaviour = new ClrTypeName("UnityEngine.MonoBehaviour");
+        public static readonly IClrTypeName RuntimeInitializeOnLoadMethodAttribute = new ClrTypeName("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
         public static readonly IClrTypeName SerializeField = new ClrTypeName("UnityEngine.SerializeField");
 
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");
@@ -15,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             new ClrTypeName("UnityEngine.Networking.SyncVarAttribute");
 
         public static readonly IClrTypeName InitializeOnLoadAttribute = new ClrTypeName("UnityEditor.InitializeOnLoadAttribute");
+        public static readonly IClrTypeName InitializeOnLoadMethodAttribute = new ClrTypeName("UnityEditor.InitializeOnLoadMethodAttribute");
 
         public static readonly IClrTypeName NonSerializedAttribute = new ClrTypeName("System.NonSerializedAttribute");
     }

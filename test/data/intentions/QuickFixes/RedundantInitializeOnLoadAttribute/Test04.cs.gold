@@ -1,0 +1,15 @@
+﻿using UnityEditor;
+using UnityEngine;
+
+[InitializeOnLoad]
+public class MissingConstructor()
+{
+  private int myField;
+
+  static MissingConstructor()
+  {
+    {selstart}throw new System.NotImplementedException();{selend}
+  }
+
+  public String MyProperty { get; set; }
+}

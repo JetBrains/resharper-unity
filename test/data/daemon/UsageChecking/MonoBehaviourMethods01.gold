@@ -66,10 +66,10 @@ public class A : MonoBehaviour
 (0): ReSharper Dead Code: Method 'UnusedMethod' is never used
 (1): ReSharper Dead Code: Method 'UnusedPrivateMethod' is never used
 (2): ReSharper Dead Code: Method 'OnAudioFilterRead' is never used
-(3): ReSharper Warning: Incorrect parameters for Unity event function
-(4): ReSharper Warning: Incorrect return type for Unity event function
+(3): ReSharper Warning: Incorrect method parameters. Expected '(float[] data, int channels)'
+(4): ReSharper Warning: Incorrect return type. Expected 'void'
 (5): ReSharper Dead Code: Method 'FixedUpdate' is never used
-(6): ReSharper Warning: Incorrect static modifier for Unity event function
+(6): ReSharper Warning: Incorrect static modifier
 (7): ReSharper Dead Code: Method 'LateUpdate' is never used
 (8): ReSharper Dead Code: Parameter 'collisionInfo' is never used
 

@@ -8,6 +8,6 @@ public class Foo : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Incorrect parameters for Unity event function
+0: Incorrect method parameters. Expected '()'
 QUICKFIXES:
 Change parameters to '()'

@@ -20,9 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
     public class StringLiteralReferenceIncorrectSignatureWarning : IHighlighting, IUnityHighlighting
     {
         public const string HIGHLIGHTING_ID = "Unity.IncorrectSignature";
-
-        // This isn't required right now, as we only require void, parameterless methods
-        // Ah. Apart from StartCoroutine, which can take an object parameter
         public const string MESSAGE = "Expected a method with '{0} {1}({2})' signature";
 
         private readonly UnityEventFunctionReference myReference;
@@ -46,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
                 var methodSignature = myReference.MethodSignature;
                 var returnType = methodSignature.ReturnType.GetPresentableName(CSharpLanguage.Instance);
                 var parameterTypes = string.Join(", ",
-                    methodSignature.ParameterTypes.Select(p => p.GetPresentableName(CSharpLanguage.Instance)));
+                    methodSignature.Parameters.Select(p => p.Type.GetPresentableName(CSharpLanguage.Instance)));
                 return string.Format(MESSAGE, returnType, myReference.GetName(), parameterTypes);
             }
         }

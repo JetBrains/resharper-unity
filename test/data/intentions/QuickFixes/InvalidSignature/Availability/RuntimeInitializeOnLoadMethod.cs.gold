@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Foo
+{
+    [RuntimeInitializeOnLoadMethod]
+    public static void OnLoad(|int i, int j|(0))
+    {
+    }
+}
+
+------------------------------------------------
+0: Incorrect method parameters. Expected '()'
+QUICKFIXES:
+Change parameters to '()'

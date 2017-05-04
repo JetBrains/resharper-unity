@@ -5,14 +5,15 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
 {
     [TestUnity]
-    public class InvalidReturnTypeFixAvailabilityTests : 
-        QuickFixAvailabilityTestBase
+    public class InvalidReturnTypeFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
         protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\InvalidReturnType\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
         [Test] public void Test03() { DoNamedTest(); }
+        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -23,5 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
         [Test] public void Test03() { DoNamedTest(); }
+        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 }

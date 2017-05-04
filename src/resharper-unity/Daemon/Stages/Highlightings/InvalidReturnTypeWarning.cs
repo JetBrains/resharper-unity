@@ -6,9 +6,10 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 [assembly: RegisterConfigurableSeverity(InvalidReturnTypeWarning.HIGHLIGHTING_ID,
-    UnityHighlightingGroupIds.INCORRECT_EVENT_FUNCTION_SIGNATURE,
-    UnityHighlightingGroupIds.Unity, InvalidReturnTypeWarning.MESSAGE,
-    "Incorrect return type for Unity event function.",
+    UnityHighlightingGroupIds.INCORRECT_METHOD_SIGNATURE,
+    UnityHighlightingGroupIds.Unity,
+    "Incorrect return type",
+    "Incorrect return type for expected method signature.",
     Severity.WARNING)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
@@ -20,12 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
     public class InvalidReturnTypeWarning : IHighlighting, IUnityHighlighting
     {
         public const string HIGHLIGHTING_ID = "Unity.InvalidReturnType";
-        public const string MESSAGE = "Incorrect return type for Unity event function";
+        public const string MESSAGE = "Incorrect return type. Expected '{0}'";
 
-        public InvalidReturnTypeWarning(IMethodDeclaration methodDeclaration, UnityEventFunction function)
+        public InvalidReturnTypeWarning(IMethodDeclaration methodDeclaration, MethodSignature methodSignature)
         {
-            Function = function;
             MethodDeclaration = methodDeclaration;
+            MethodSignature = methodSignature;
         }
 
         public bool IsValid()
@@ -47,10 +48,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             return !documentRange.IsValid() ? nameRange : documentRange;
         }
 
-        public string ToolTip => MESSAGE;
+        public string ToolTip => string.Format(MESSAGE, MethodSignature.ReturnType.GetPresentableName(MethodDeclaration.Language));
         public string ErrorStripeToolTip => ToolTip;
 
-        public UnityEventFunction Function { get; }
         public IMethodDeclaration MethodDeclaration { get; }
+        public MethodSignature MethodSignature { get; }
     }
 }

@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 {
@@ -40,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             var predefinedType = cache.GetOrCreatePredefinedType(owningType.Module);
             var @void = predefinedType.Void;
 
-            return new MethodSignature(@void, fieldType);
+            return new MethodSignature(@void, null, new[] {fieldType}, new[] {"value"});
         }
 
         public override ResolveResultWithInfo ResolveWithoutCache()
@@ -85,7 +86,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
         public override IReference BindTo(IDeclaredElement element)
         {
             var literalAlterer = StringLiteralAltererUtil.CreateStringLiteralByExpression(myOwner);
-            literalAlterer.Replace((string)myOwner.ConstantValue.Value, element.ShortName, myOwner.GetPsiModule());
+            var constantValue = (string)myOwner.ConstantValue.Value;
+            Assertion.AssertNotNull(constantValue, "constantValue != null");
+            literalAlterer.Replace(constantValue, element.ShortName, myOwner.GetPsiModule());
             var newOwner = literalAlterer.Expression;
             if (!myOwner.Equals(newOwner))
                 return newOwner.FindReference<SyncVarHookReference>() ?? this;

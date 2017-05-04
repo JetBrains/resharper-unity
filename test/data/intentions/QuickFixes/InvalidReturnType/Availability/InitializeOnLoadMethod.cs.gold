@@ -1,0 +1,15 @@
+﻿using UnityEditor;
+
+public class Foo
+{
+    [InitializeOnLoadMethod]
+    public static |int|(0) OnLoad()
+    {
+        return 0;
+    }
+}
+
+------------------------------------------------
+0: Incorrect return type. Expected 'void'
+QUICKFIXES:
+Change return type to 'void'

@@ -15,18 +15,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
     [QuickFix]
     public class InvalidStaticModifierQuickFix : QuickFixBase
     {
-        private readonly UnityEventFunction myEventFunction;
         private readonly IMethodDeclaration myMethodDeclaration;
+        private readonly bool myExpectedStatic;
 
         public InvalidStaticModifierQuickFix(InvalidStaticModifierWarning warning)
         {
-            myEventFunction = warning.Function;
             myMethodDeclaration = warning.MethodDeclaration;
+
+            Assertion.Assert(warning.MethodSignature.IsStatic.HasValue, "warning.MethodSignature.IsStatic.HasValue");
+            myExpectedStatic = warning.MethodSignature.IsStatic.Value;
         }
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
-            myMethodDeclaration.SetStatic(myEventFunction.IsStatic);
+            myMethodDeclaration.SetStatic(myExpectedStatic);
             return null;
         }
 
@@ -37,10 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
                 var language = myMethodDeclaration.Language;
                 var staticTerm = PresentationHelper.GetHelper(language).GetStaticTerm();
 
-                if (myEventFunction.IsStatic)
+                if (myExpectedStatic)
                 {
+                    var declaredElement = myMethodDeclaration.DeclaredElement;
+                    Assertion.AssertNotNull(declaredElement, "declaredElement != null");
                     var methodName = DeclaredElementPresenter.Format(language, DeclaredElementPresenter.NAME_PRESENTER,
-                        myMethodDeclaration.DeclaredElement);
+                        declaredElement);
                     return
                         $"Make '{methodName}' {staticTerm}";
                 }

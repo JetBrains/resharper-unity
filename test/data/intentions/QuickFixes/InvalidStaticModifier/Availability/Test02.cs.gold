@@ -13,6 +13,6 @@ QUICKFIXES:
 Remove unused directives in file
 --Remove unused directives in project
 --Remove unused directives in solution
-1: Missing static modifier for Unity event function
+1: Missing static modifier
 QUICKFIXES:
 Make 'OnStatusUpdated' static

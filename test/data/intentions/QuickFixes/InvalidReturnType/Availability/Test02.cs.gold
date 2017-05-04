@@ -23,6 +23,6 @@ Remove redundant qualifier
 Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-2: Incorrect return type for Unity event function
+2: Incorrect return type. Expected 'Material'
 QUICKFIXES:
 Change return type to 'Material'

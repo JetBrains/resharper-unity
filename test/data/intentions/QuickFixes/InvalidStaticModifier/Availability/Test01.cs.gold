@@ -8,6 +8,6 @@ public class Foo : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Incorrect static modifier for Unity event function
+0: Incorrect static modifier
 QUICKFIXES:
 Remove 'static' modifier

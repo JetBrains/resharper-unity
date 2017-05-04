@@ -13,7 +13,14 @@ using JetBrains.Util.dataStructures;
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IMemberOwnerDeclaration),
-        HighlightingTypes = new[] {typeof(UnityMarkOnGutter), typeof(DuplicateEventFunctionWarning)})]
+        HighlightingTypes = new[]
+        {
+            typeof(UnityMarkOnGutter),
+            typeof(DuplicateEventFunctionWarning),
+            typeof(InvalidStaticModifierWarning),
+            typeof(InvalidReturnTypeWarning),
+            typeof(InvalidSignatureWarning),
+        })]
     public class UnityEventFunctionAnalyzer : UnityElementProblemAnalyzer<IMemberOwnerDeclaration>
     {
         public UnityEventFunctionAnalyzer(UnityApi unityApi)
@@ -122,13 +129,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         private static void AddMethodSignatureInspections(IHighlightingConsumer consumer, IMethod method,
             UnityEventFunction function, EventFunctionMatch match)
         {
+            if (match == EventFunctionMatch.NoMatch || match == EventFunctionMatch.ExactMatch)
+                return;
+
+            var methodSignature = function.AsMethodSignature(method.Module);
+
             if ((match & EventFunctionMatch.MatchingStaticModifier) != EventFunctionMatch.MatchingStaticModifier)
             {
                 foreach (var declaration in method.GetDeclarations())
                 {
                     var methodDeclaration = declaration as IMethodDeclaration;
                     if (methodDeclaration != null)
-                        consumer.AddHighlighting(new InvalidStaticModifierWarning(methodDeclaration, function));
+                        consumer.AddHighlighting(new InvalidStaticModifierWarning(methodDeclaration, methodSignature));
                 }
             }
 
@@ -138,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 {
                     var methodDeclaration = declaration as IMethodDeclaration;
                     if (methodDeclaration != null)
-                        consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, function));
+                        consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, methodSignature));
                 }
             }
 
@@ -148,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 {
                     var methodDeclaration = declaration as IMethodDeclaration;
                     if (methodDeclaration != null)
-                        consumer.AddHighlighting(new InvalidSignatureWarning(methodDeclaration, function));
+                        consumer.AddHighlighting(new InvalidSignatureWarning(methodDeclaration, methodSignature));
                 }
             }
         }

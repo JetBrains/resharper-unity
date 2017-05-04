@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.CreateFromUsage;
+using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
@@ -54,6 +55,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
         public CreateFromUsageFix(UnexpectedElementTypeError error)
             : this(error.Reference)
         {
+        }
+
+        public CreateFromUsageFix(RedundantInitializeOnLoadAttributeWarning warning)
+        {
+            myUnfilteredItems = new List<ICreateFromUsageAction>
+            {
+                new CreateStaticConstructorFromUsageAction(warning.Attribute)
+            };
         }
 
         private CreateFromUsageFix(IReference reference)

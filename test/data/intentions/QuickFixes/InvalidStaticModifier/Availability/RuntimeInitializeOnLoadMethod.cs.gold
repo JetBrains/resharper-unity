@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Foo
+{
+    [RuntimeInitializeOnLoadMethod]
+    public void |OnLoad|(0)()
+    {
+    }
+}
+
+------------------------------------------------
+0: Missing static modifier
+QUICKFIXES:
+Make 'OnLoad' static

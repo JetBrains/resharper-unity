@@ -1,4 +1,5 @@
-﻿using JetBrains.DocumentModel;
+﻿using System.Linq;
+using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -6,9 +7,10 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 [assembly: RegisterConfigurableSeverity(InvalidSignatureWarning.HIGHLIGHTING_ID,
-    UnityHighlightingGroupIds.INCORRECT_EVENT_FUNCTION_SIGNATURE,
-    UnityHighlightingGroupIds.Unity, InvalidSignatureWarning.MESSAGE,
-    "Incorrect parameters for the given Unity event function.",
+    UnityHighlightingGroupIds.INCORRECT_METHOD_SIGNATURE,
+    UnityHighlightingGroupIds.Unity,
+    "Incorrect method parameters",
+    "Incorrect parameters for expected method signature.",
     Severity.WARNING)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
@@ -20,12 +22,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
     public class InvalidSignatureWarning : IHighlighting, IUnityHighlighting
     {
         public const string HIGHLIGHTING_ID = "Unity.InvalidParameters";
-        public const string MESSAGE = "Incorrect parameters for Unity event function";
+        public const string MESSAGE = "Incorrect method parameters. Expected '{0}'";
 
-        public InvalidSignatureWarning(IMethodDeclaration methodDeclaration, UnityEventFunction function)
+        public InvalidSignatureWarning(IMethodDeclaration methodDeclaration, MethodSignature expectedMethodSignature)
         {
             MethodDeclaration = methodDeclaration;
-            Function = function;
+            ExpectedMethodSignature = expectedMethodSignature;
+
+            ToolTip = string.Format(MESSAGE,
+                $"({string.Join(", ", expectedMethodSignature.Parameters.Select(p => p.Type.GetPresentableName(methodDeclaration.Language) + " " + p.Name))})");
         }
 
         public bool IsValid()
@@ -62,10 +67,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             return new DocumentRange(startOffset.StartOffset, endOffset.EndOffset);
         }
 
-        public string ToolTip => MESSAGE;
+        public string ToolTip { get; }
         public string ErrorStripeToolTip => ToolTip;
 
         public IMethodDeclaration MethodDeclaration { get; }
-        public UnityEventFunction Function { get; private set; }
+        public MethodSignature ExpectedMethodSignature { get; }
     }
 }
