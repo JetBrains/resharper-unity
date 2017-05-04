@@ -158,7 +158,7 @@ namespace Plugins.Editor.JetBrains
         {
           SyncSolution(); // added to handle opening file, which was just recently created.
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!HttpRequestOpenFile(line, assetFilePath))
+          if (!HttpRequestOpenFile(line, assetFilePath, new FileInfo(DefaultApp).Extension == ".exe"))
           {
               var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
               CallRider(DefaultApp, args);
@@ -170,9 +170,12 @@ namespace Plugins.Editor.JetBrains
     }
 
 
-    private static bool HttpRequestOpenFile(int line, string filePath)
+    private static bool HttpRequestOpenFile(int line, string filePath, bool isWindows)
     {
-      var url = string.Format("http://localhost:63342/api/file?file={0}&line={1}", filePath, line < 0 ? 0 : line);
+      var url = string.Format("http://localhost:63342/api/file?file={0}{1}", filePath, line < 0 ? "&p=0" : "&line="+line); // &p is needed to workaround https://youtrack.jetbrains.com/issue/IDEA-172350
+      if (isWindows)
+        url = string.Format(@"http://localhost:63342/api/file/{0}{1}",filePath, line<0?"":":"+line);
+
       var uri = new Uri(url);
       Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
 
