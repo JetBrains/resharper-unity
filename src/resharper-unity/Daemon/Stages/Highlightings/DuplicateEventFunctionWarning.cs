@@ -15,8 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
     // TODO: Check out CSharpConflictDeclarationsContextSearch
     [ConfigurableSeverityHighlighting(HIGHLIGHTING_ID, CSharpLanguage.Name,
-        OverlapResolve = OverlapResolveKind.WARNING,
-        ToolTipFormatString = MESSAGE)]
+        OverlapResolve = OverlapResolveKind.WARNING)]
     public class DuplicateEventFunctionWarning : IHighlighting, IUnityHighlighting
     {
         public const string HIGHLIGHTING_ID = "Unity.DuplicateEventFunction";
@@ -29,10 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             myMethodDeclaration = methodDeclaration;
         }
 
-        public bool IsValid()
-        {
-            return myMethodDeclaration != null && myMethodDeclaration.IsValid();
-        }
+        public bool IsValid() => myMethodDeclaration == null || myMethodDeclaration.IsValid();
 
         public DocumentRange CalculateRange()
         {

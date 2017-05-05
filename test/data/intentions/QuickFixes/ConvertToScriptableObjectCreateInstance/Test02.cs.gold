@@ -1,0 +1,9 @@
+﻿using UnityEngine;
+
+public class Foo
+{
+    public static void DoSomething()
+    {
+        var foo = ScriptableObject.CreateInstance<MyScriptable{caret}Object>();
+    }
+}
