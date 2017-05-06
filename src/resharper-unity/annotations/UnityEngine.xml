@@ -225,24 +225,54 @@
   </member>
   <member name="T:UnityEngine.CreateAssetMenuAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.ScriptableObject</argument>
+    </attribute>
   </member>
   <member name="T:UnityEngine.DisallowMultipleComponent">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
   </member>
   <member name="T:UnityEngine.ExecuteInEditMode">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
   </member>
   <member name="T:UnityEngine.GUITargetAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
   </member>
+  <member name="T:UnityEngine.HelpURLAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
+  </member>
   <member name="T:UnityEngine.HideInInspector">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEngine.ImageEffectAllowedInSceneView">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.PreferBinarySerialization">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.ScriptableObject</argument>
+    </attribute>
   </member>
   <member name="T:UnityEngine.PropertyAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
   </member>
   <member name="T:UnityEngine.RequireComponent">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.Component</argument>
+    </attribute>
   </member>
   <member name="T:UnityEngine.RuntimeInitializeOnLoadMethodAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
@@ -258,6 +288,9 @@
   </member>
   <member name="T:UnityEngine.SharedBetweenAnimatorsAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.StateMachineBehaviour</argument>
+    </attribute>
   </member>
   
   <member name="M:UnityEngine.Debug.Assert(System.Boolean)">

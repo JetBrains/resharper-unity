@@ -8,12 +8,21 @@
   </member>
   <member name="T:UnityEditor.CustomEditor">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.Editor</argument>
+    </attribute>
   </member>
   <member name="T:UnityEditor.CustomPreviewAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.ObjectPreview</argument>
+    </attribute>
   </member>
   <member name="T:UnityEditor.CustomPropertyDrawer">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.GUIDrawer</argument>
+    </attribute>
   </member>
   <member name="T:UnityEditor.DrawGizmo">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
