@@ -29,6 +29,12 @@ namespace Plugins.Editor.JetBrains
       get { return EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true); }
       set { EditorPrefs.SetBool("Rider_TargetFrameworkVersion45", value); }
     }
+    
+    public static bool EnableLogging
+    {
+      get { return EditorPrefs.GetBool("Rider_EnableLogging", false); }
+      set { EditorPrefs.SetBool("Rider_EnableLogging", value); }
+    }
 
     internal static bool Enabled
     {
@@ -71,7 +77,7 @@ namespace Plugins.Editor.JetBrains
         }
         if (newPath != riderFileInfo.FullName)
         {
-          Debug.Log("[Rider] " + string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
+          if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
           EditorPrefs.SetString("kScriptsDefaultApp", newPath);
         }
       }
@@ -99,7 +105,7 @@ namespace Plugins.Editor.JetBrains
       }
       catch (Exception e)
       {
-        Debug.Log("[Rider] " + ("Exception on updating kScriptEditorArgs: " + e.Message));
+        if (EnableLogging) Debug.Log("[Rider] " + ("Exception on updating kScriptEditorArgs: " + e.Message));
       }
     }
 
@@ -111,7 +117,7 @@ namespace Plugins.Editor.JetBrains
     {
       // Only manage EditorInstance.json for 5.x - it's a native feature for 2017.x
 #if UNITY_4 || UNITY_5
-      Debug.Log("[Rider] " + "Writing Library/EditorInstance.json");
+      if (EnableLogging) Debug.Log("[Rider] " + "Writing Library/EditorInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
       var editorInstanceJsonPath = Path.Combine(library, "EditorInstance.json");
@@ -123,7 +129,7 @@ namespace Plugins.Editor.JetBrains
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
-        Debug.Log("[Rider] " + "Deleting Library/EditorInstance.json");
+        if (EnableLogging) Debug.Log("[Rider] " + "Deleting Library/EditorInstance.json");
         File.Delete(editorInstanceJsonPath);
       };
 #endif
@@ -177,7 +183,7 @@ namespace Plugins.Editor.JetBrains
         url = string.Format(@"http://localhost:63342/api/file/{0}{1}",filePath, line<0?"":":"+line);
 
       var uri = new Uri(url);
-      Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
+      if (EnableLogging) Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
 
       try
       {
@@ -186,7 +192,7 @@ namespace Plugins.Editor.JetBrains
           client.Headers.Add("origin", "http://localhost:63342");
           client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
           var responseString = client.DownloadString(uri);
-          Debug.Log("[Rider] " + responseString);
+          if (EnableLogging) Debug.Log("[Rider] " + responseString);
         }
       }
       catch (Exception e)
@@ -214,13 +220,13 @@ namespace Plugins.Editor.JetBrains
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + riderPath, args);
-        Debug.Log("[Rider] " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+        if (EnableLogging) Debug.Log("[Rider] " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
       }
       else
       {
         proc.StartInfo.FileName = riderPath;
         proc.StartInfo.Arguments = args;
-        Debug.Log("[Rider] " + ("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments));
+        if (EnableLogging) Debug.Log("[Rider] " + ("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments));
       }
 
       proc.StartInfo.UseShellExecute = false;
@@ -326,6 +332,17 @@ All those problems will go away after Unity upgrades to mono4.";
           new GUIContent("TargetFrameworkVersion 4.5",
             help), TargetFrameworkVersion45);
       EditorGUILayout.HelpBox(help, MessageType.None);
+
+      EditorGUI.EndChangeCheck();
+      
+      EditorGUI.BeginChangeCheck();
+
+      var loggingMsg = @"Enable logging. If you are about to report an issue, please enable logging and attach Unity console output to the issue.";
+      EnableLogging =
+        EditorGUILayout.Toggle(
+          new GUIContent("Enable Logging",
+            loggingMsg), EnableLogging);
+      EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
       EditorGUI.EndChangeCheck();
     }

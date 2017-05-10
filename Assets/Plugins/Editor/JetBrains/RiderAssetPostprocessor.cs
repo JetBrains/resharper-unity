@@ -41,7 +41,7 @@ namespace Plugins.Editor.JetBrains
       }
 
       var slnFile = Directory.GetFiles(currentDirectory, "*.sln").First();
-      Debug.Log("[Rider] " + string.Format("Post-processing {0}", slnFile));
+      if (RiderPlugin.EnableLogging) Debug.Log("[Rider] " + string.Format("Post-processing {0}", slnFile));
       string content = File.ReadAllText(slnFile);
       var lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
       var sb = new StringBuilder();
@@ -72,7 +72,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void UpgradeProjectFile(string projectFile)
     {
-      Debug.Log("[Rider] " + string.Format("Post-processing {0}", projectFile));
+      if (RiderPlugin.EnableLogging) Debug.Log("[Rider] " + string.Format("Post-processing {0}", projectFile));
       var doc = XDocument.Load(projectFile);
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
@@ -149,7 +149,6 @@ namespace Plugins.Editor.JetBrains
             }
           }
 
-          //UnityEngine.Debug.Log(string.Join(", ",definesList.ToArray()));
           ApplyCustomDefines(definesList.ToArray(), projectContentElement, xmlns);
         }
       }
