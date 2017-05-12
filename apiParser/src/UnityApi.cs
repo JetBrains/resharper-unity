@@ -198,7 +198,7 @@ namespace ApiParser
 
                 for (var i = 0; i < myParameters.Count; i++)
                 {
-                    myParameters[i].Update(function.myParameters[i]);
+                    myParameters[i].Update(function.myParameters[i], function.Name);
                 }
             }
         }
@@ -230,7 +230,7 @@ namespace ApiParser
         public void UpdateParameter(string name, UnityApiParameter newParameter)
         {
             var parameter = GetParameter(name);
-            parameter.Update(newParameter);
+            parameter.Update(newParameter, Name);
         }
 
         private UnityApiParameter GetParameter(string name)
@@ -325,7 +325,7 @@ namespace ApiParser
             xmlWriter.WriteEndElement();
         }
 
-        public void Update(UnityApiParameter newParameter)
+        public void Update(UnityApiParameter newParameter, string functionName)
         {
             if (Name != newParameter.Name && !string.IsNullOrEmpty(newParameter.Name))
             {
@@ -342,7 +342,7 @@ namespace ApiParser
 
             if (myType.IsArray != newParameter.myType.IsArray || myType.IsByRef != newParameter.myType.IsByRef)
             {
-                Console.WriteLine("WARNING: Parameter `{2}` type changed: was {0} now {1}", myType, newParameter.myType, Name);
+                Console.WriteLine("WARNING: Parameter `{2}` of function `{3}` type changed: was {0} now {1}", myType, newParameter.myType, Name, functionName);
                 myType = newParameter.myType;
             }
         }

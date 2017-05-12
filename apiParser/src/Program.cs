@@ -17,16 +17,25 @@ namespace ApiParser
             // Can't redistribute, sorry. See README.md
             Tuple.Create("Documentation-5.0.4f1", new Version(5, 0)),
             Tuple.Create("Documentation-5.1.5f1", new Version(5, 1)),
-            Tuple.Create("Documentation-5.2.3f1", new Version(5, 2)),
+            Tuple.Create("Documentation-5.2.4f1", new Version(5, 2)),
             Tuple.Create("Documentation-5.3.7f1", new Version(5, 3)),
             Tuple.Create("Documentation-5.4.3f1", new Version(5, 4)),
-            Tuple.Create("Documentation-5.5.1f1", new Version(5, 5)),
-            Tuple.Create("Documentation-5.6.0f2", new Version(5, 6))
+            Tuple.Create("Documentation-5.5.3f1", new Version(5, 5)),
+            Tuple.Create("Documentation-5.6.1f1", new Version(5, 6)),
+            Tuple.Create("Documentation-2017.1.0b5", new Version(2017, 1))
         };
 
         public static void Main(string[] args)
         {
-            Directory.SetCurrentDirectory(@"C:\Users\matt\Code\forks\JetBrains\resharper-unity\build\ApiParser\bin\Debug\net452");
+            if (args.Length != 1)
+            {
+                Console.WriteLine("Usage: ApiParser.exe docsFolder");
+                Console.WriteLine();
+                Console.WriteLine("  docsFolder - folder that contains all versions of Unity docs");
+                return;
+            }
+
+            Directory.SetCurrentDirectory(args[0]);
 
             var progPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             var dataPath = Path.Combine(progPath, @"Unity\Editor\Data");
@@ -70,6 +79,8 @@ namespace ApiParser
 
         private static void AddUndocumentedCoroutines(UnityApi unityApi)
         {
+            Console.WriteLine("Adding undocumented coroutines");
+
             var type = unityApi.FindType("MonoBehaviour");
             if (type != null)
             {
@@ -96,6 +107,8 @@ namespace ApiParser
 
         private static void AddUndocumentedOptionalParameters(UnityApi unityApi)
         {
+            Console.WriteLine("Adding undocumented optional parameters");
+
             // TODO: Would this be better to mark the parameter as optional?
             // Then add an inspection to see if the optional parameter is used in the body of the method
             var type = unityApi.FindType("MonoBehaviour");
@@ -120,6 +133,9 @@ namespace ApiParser
 
         private static void Fixup(UnityApi unityApi)
         {
+            // Documentation doesn't state that it's static, or has wrong types
+            Console.WriteLine("Fixing incorrect documentation");
+
             var type = unityApi.FindType("AssetModificationProcessor");
             if (type != null)
             {
