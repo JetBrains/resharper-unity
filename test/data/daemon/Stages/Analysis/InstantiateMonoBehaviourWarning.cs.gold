@@ -13,5 +13,5 @@ public class Whatever
 }
 
 ---------------------------------------------------------
-(0): Unity Gutter Icon: Unity scripting type
+(0): Unity Gutter Icon: Unity scripting component
 (1): ReSharper Warning: MonoBehaviours must be instantiated with 'GameObject.AddComponent<T>()' instead of 'new'

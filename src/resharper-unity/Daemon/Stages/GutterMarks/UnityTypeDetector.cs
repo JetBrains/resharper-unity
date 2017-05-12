@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.GutterMarks
         {
             var @class = element.DeclaredElement;
             if (@class != null && Api.IsUnityType(@class))
-                AddGutterMark(element, element.GetNameDocumentRange(), "Unity scripting type", consumer);
+                AddGutterMark(element, element.GetNameDocumentRange(), "Unity scripting component", consumer);
         }
     }
 }

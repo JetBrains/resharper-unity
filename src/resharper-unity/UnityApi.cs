@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             var types = myTypes.Value;
             unityVersion = types.NormaliseSupportedVersion(unityVersion);
-            return types.Types.Where(t => t.SupportsVersion(unityVersion) && type.IsDescendantOf(t.GetType(type.Module)));
+            return types.Types.Where(t => t.SupportsVersion(unityVersion) && type.IsDescendantOf(t.GetTypeElement(type.Module)));
         }
 
         public bool IsUnityType([NotNull] ITypeElement type)

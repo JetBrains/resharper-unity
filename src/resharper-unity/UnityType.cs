@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [CanBeNull]
-        public ITypeElement GetType([NotNull] IPsiModule module)
+        public ITypeElement GetTypeElement([NotNull] IPsiModule module)
         {
             var type = TypeFactory.CreateTypeByCLRName(myTypeName, module);
             return type.GetTypeElement();

@@ -3,6 +3,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.TextControl.DocumentMarkup;
@@ -15,8 +16,8 @@ using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 #endif
 
-[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE, 
-    EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityGutterMark), 
+[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE,
+    EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityGutterMark),
     Layer = HighlighterLayer.SYNTAX + 1)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
@@ -42,7 +43,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             var daemon = solution.GetComponent<IDaemon>();
             var highlighting = daemon.GetHighlighting(highlighter) as UnityMarkOnGutter;
             if (highlighting != null)
-                return highlighting.GetBulbMenuItems(solution, textControl);
+            {
+                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                    return highlighting.GetBulbMenuItems(solution, textControl);
+            }
 
             return EmptyList<BulbMenuItem>.InstanceList;
         }
