@@ -15,6 +15,27 @@
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
 
+
+  <!-- UnityEngine.GameObject -->
+  <member name="M:UnityEngine.GameObject.AddComponent``1">
+    <typeparameter name="T">
+      <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags)">
+        <!-- ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature -->
+        <argument>8</argument>
+      </attribute>
+    </typeparameter>
+  </member>
+
+
+  <!-- UnityEngine.ScriptableObject -->
+  <member name="M:UnityEngine.ScriptableObject.CreateInstance``1">
+    <typeparameter name="T">
+      <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags)">
+        <!-- ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature -->
+        <argument>8</argument>
+      </attribute>
+    </typeparameter>
+  </member>
   
   <!-- UnityEngine.Assertions.Assert -->
   <member name="M:UnityEngine.Assertions.Assert.IsTrue(System.Boolean)">
