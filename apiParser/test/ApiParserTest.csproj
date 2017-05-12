@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApiParser\ApiParser.csproj" />
+    <ProjectReference Include="..\src\ApiParser.csproj" />
   </ItemGroup>
 
 </Project>
