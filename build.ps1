@@ -87,9 +87,9 @@ function SetRiderSDKVersions($sdkPackageVersion, $sdkTestsPackageVersion, $psiFe
   Write-Host "  JetBrains.ReSharper.SDK.Tests -> $sdkTestsPackageVersion"
   Write-Host "  JetBrains.Psi.Features.VisualStudio -> $psiFeaturesVisualStudioVersion"  
 
-  SetPropertyValue  "Directory.Build.props" "RiderJetBrainsPsiFeaturesVisualStudioVersion" "[$psiFeaturesVisualStudioVersion]"
-  SetPropertyValue  "Directory.Build.props" "RiderJetBrainsReSharperSDKVersion" "[$sdkPackageVersion]"
-  SetPropertyValue  "Directory.Build.props" "RiderJetBrainsReSharperSDKTestsVersion" "[$sdkTestsPackageVersion]"
+  SetPropertyValue  "resharper/Directory.Build.props" "RiderJetBrainsPsiFeaturesVisualStudioVersion" "[$psiFeaturesVisualStudioVersion]"
+  SetPropertyValue  "resharper/Directory.Build.props" "RiderJetBrainsReSharperSDKVersion" "[$sdkPackageVersion]"
+  SetPropertyValue  "resharper/Directory.Build.props" "RiderJetBrainsReSharperSDKTestsVersion" "[$sdkTestsPackageVersion]"
 }
 
 function GetPackageVersionFromFolder($folder, $name) {
@@ -111,9 +111,9 @@ if ($Source) {
 
 Write-Host "##teamcity[progressMessage 'Restoring packages']"
 if ($Source) {
-  & dotnet restore --source $Source --source https://api.nuget.org/v3/index.json src/resharper-unity.sln
+  & dotnet restore --source $Source --source https://api.nuget.org/v3/index.json resharper/src/resharper-unity.sln
 } else {
-  & dotnet restore src/resharper-unity.sln
+  & dotnet restore resharper/src/resharper-unity.sln
 }
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet restore: exit code $LastExitCode" }
 
@@ -130,18 +130,18 @@ if (!(test-path $msbuild)) {
 }  
 
 Write-Host "##teamcity[progressMessage 'Building']"
-& $msbuild src\resharper-unity.sln /p:Configuration=Release
+& $msbuild resharper\src\resharper-unity.sln /p:Configuration=Release
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $LastExitCode" }
 
 Write-Host "##teamcity[progressMessage 'Building and Packaging: Wave08']"
-& dotnet pack src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.wave08.nuspec --no-build
+& dotnet pack resharper/src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.wave08.nuspec --no-build
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
-Write-Host "##teamcity[publishArtifacts 'build/resharper-unity.wave08/bin/Release/*.nupkg']"
+Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.wave08/bin/Release/*.nupkg']"
 
 Write-Host "##teamcity[progressMessage 'Building and Packaging: Rider']"
-& dotnet pack src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.rider.nuspec --no-build
+& dotnet pack resharper/src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.rider.nuspec --no-build
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
-Write-Host "##teamcity[publishArtifacts 'build/resharper-unity.rider/bin/Release/*.nupkg']"
+Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.rider/bin/Release/*.nupkg']"
 
 ### Pack Rider plugin directory
 SetIdeaVersion -file "rider/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
@@ -160,7 +160,7 @@ $dir = "build\zip"
 if (Test-Path $dir) { Remove-Item $dir -Force -Recurse }
 New-Item $dir -type directory | Out-Null
 New-Item $dir\resharper-unity -type directory | Out-Null
-Copy-Item build\resharper-unity.rider\bin\Release\*.nupkg $dir\resharper-unity -recurse
+Copy-Item resharper\build\resharper-unity.rider\bin\Release\*.nupkg $dir\resharper-unity -recurse
 Copy-Item rider\* $dir\resharper-unity -recurse
 
 ### Pack and publish Rider plugin zip

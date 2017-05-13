@@ -33,5 +33,5 @@
     <RiderJetBrainsReSharperSDKTestsVersion>[2017.1.20170331.83328-eap07]</RiderJetBrainsReSharperSDKTestsVersion>
   </PropertyGroup>  
 
-  <Import Project="Packaging.props" />
+  <Import Project="..\Packaging.props" />
 </Project>
