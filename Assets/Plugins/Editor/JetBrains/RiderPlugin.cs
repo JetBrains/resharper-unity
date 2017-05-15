@@ -54,33 +54,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void InitRiderPlugin()
     {
-      var riderFileInfo = new FileInfo(DefaultApp);
-
-      var newPath = riderFileInfo.FullName;
-      // try to search the new version
-
-      if (!riderFileInfo.Exists)
-      {
-        switch (riderFileInfo.Extension)
-        {
-          case ".exe":
-          {
-            var possibleNew =
-              riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
-                .SelectMany(a => a.GetDirectories("bin"))
-                .SelectMany(a => a.GetFiles(riderFileInfo.Name))
-                .ToArray();
-            if (possibleNew.Length > 0)
-              newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
-            break;
-          }
-        }
-        if (newPath != riderFileInfo.FullName)
-        {
-          if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
-          EditorPrefs.SetString("kScriptsDefaultApp", newPath);
-        }
-      }
+      AutomaticChangeRiderLocation(DefaultApp);
 
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
@@ -91,6 +65,40 @@ namespace Plugins.Editor.JetBrains
       InitializeEditorInstanceJson(projectDirectory);
 
       Initialized = true;
+    }
+
+    private static void AutomaticChangeRiderLocation(string riderPath)
+    {
+      // at least on windows new version of Rider gets always installed to new location - so try to search that new location
+      var riderFileInfo = new FileInfo(riderPath);
+      var newPath = riderFileInfo.FullName+"non-existing extension";
+
+      if (riderFileInfo.Exists) 
+        return;
+      
+      switch (riderFileInfo.Extension)
+      {
+        case ".exe":
+        {
+          var possibleNew =
+            riderFileInfo.Directory.Parent.Parent.GetDirectories("*ider*")
+              .SelectMany(a => a.GetDirectories("bin"))
+              .SelectMany(a => a.GetFiles(riderFileInfo.Name))
+              .ToArray();
+          if (possibleNew.Length > 0)
+            newPath = possibleNew.OrderBy(a => a.LastWriteTime).Last().FullName;
+          break;
+        }
+      }
+      if (newPath != riderFileInfo.FullName)
+      {
+        if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
+        EditorPrefs.SetString("kScriptsDefaultApp", newPath);
+      }
+      else
+      {
+        EditorUtility.DisplayDialog("Rider executable not found", "Please update 'External Script Editor' path to JetBrains Rider.", "OK");  
+      }
     }
 
     /// <summary>
@@ -167,7 +175,7 @@ namespace Plugins.Editor.JetBrains
           if (!HttpRequestOpenFile(line, assetFilePath, new FileInfo(DefaultApp).Extension == ".exe"))
           {
               var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-              CallRider(DefaultApp, args);
+              CallRider(args);
           }
           return true;
         }
@@ -204,27 +212,27 @@ namespace Plugins.Editor.JetBrains
       return true;
     }
 
-    private static void CallRider(string riderPath, string args)
+    private static void CallRider(string args)
     {
-      var riderFileInfo = new FileInfo(riderPath);
+      var riderFileInfo = new FileInfo(DefaultApp);
       var macOSVersion = riderFileInfo.Extension == ".app";
-      var riderExists = macOSVersion ? new DirectoryInfo(riderPath).Exists : riderFileInfo.Exists;
+      var riderExists = macOSVersion ? new DirectoryInfo(DefaultApp).Exists : riderFileInfo.Exists;
 
       if (!riderExists)
       {
-        EditorUtility.DisplayDialog("Rider executable not found", "Please update 'External Script Editor' path to JetBrains Rider.", "OK");
+        AutomaticChangeRiderLocation(DefaultApp);
       }
 
       var proc = new Process();
       if (macOSVersion)
       {
         proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + riderPath, args);
+        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + DefaultApp, args);
         if (EnableLogging) Debug.Log("[Rider] " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
       }
       else
       {
-        proc.StartInfo.FileName = riderPath;
+        proc.StartInfo.FileName = DefaultApp;
         proc.StartInfo.Arguments = args;
         if (EnableLogging) Debug.Log("[Rider] " + ("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments));
       }
@@ -235,7 +243,7 @@ namespace Plugins.Editor.JetBrains
       proc.StartInfo.RedirectStandardOutput = true;
       proc.Start();
 
-      ActivateWindow(riderPath);
+      ActivateWindow(DefaultApp);
     }
 
     private static void ActivateWindow(string riderPath)
@@ -282,7 +290,7 @@ namespace Plugins.Editor.JetBrains
       SyncSolution();
 
       // Load Project
-      CallRider(DefaultApp, string.Format("{0}{1}{0}", "\"", SlnFile));
+      CallRider(string.Format("{0}{1}{0}", "\"", SlnFile));
     }
 
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
