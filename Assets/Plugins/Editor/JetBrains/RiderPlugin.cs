@@ -67,14 +67,14 @@ namespace Plugins.Editor.JetBrains
       Initialized = true;
     }
 
-    private static void AutomaticChangeRiderLocation(string riderPath)
+    private static bool AutomaticChangeRiderLocation(string riderPath)
     {
       // at least on windows new version of Rider gets always installed to new location - so try to search that new location
       var riderFileInfo = new FileInfo(riderPath);
-      var newPath = riderFileInfo.FullName+"non-existing extension";
+      var newPath = riderFileInfo.FullName+".non-existing extension";
 
       if (riderFileInfo.Exists) 
-        return;
+        return true;
       
       switch (riderFileInfo.Extension)
       {
@@ -90,15 +90,18 @@ namespace Plugins.Editor.JetBrains
           break;
         }
       }
-      if (newPath != riderFileInfo.FullName)
+      if (new FileInfo(newPath).Exists && newPath != riderFileInfo.FullName)
       {
         if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
         EditorPrefs.SetString("kScriptsDefaultApp", newPath);
       }
       else
       {
-        EditorUtility.DisplayDialog("Rider executable not found", "Please update 'External Script Editor' path to JetBrains Rider.", "OK");  
+        EditorUtility.DisplayDialog("Rider executable not found", 
+          string.Format("Rider was not found in {0}{1}Please update 'External Script Editor'.", new FileInfo(riderPath).Directory, Environment.NewLine), "OK");
+        return false;  
       }
+      return true;
     }
 
     /// <summary>
@@ -175,7 +178,7 @@ namespace Plugins.Editor.JetBrains
           if (!HttpRequestOpenFile(line, assetFilePath, new FileInfo(DefaultApp).Extension == ".exe"))
           {
               var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-              CallRider(args);
+              return CallRider(args);
           }
           return true;
         }
@@ -200,7 +203,7 @@ namespace Plugins.Editor.JetBrains
           client.Headers.Add("origin", "http://localhost:63342");
           client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
           var responseString = client.DownloadString(uri);
-          if (EnableLogging) Debug.Log("[Rider] " + responseString);
+          if (EnableLogging) Debug.Log("[Rider] HttpRequestOpenFile response: " + responseString);
         }
       }
       catch (Exception e)
@@ -212,7 +215,7 @@ namespace Plugins.Editor.JetBrains
       return true;
     }
 
-    private static void CallRider(string args)
+    private static bool CallRider(string args)
     {
       var riderFileInfo = new FileInfo(DefaultApp);
       var macOSVersion = riderFileInfo.Extension == ".app";
@@ -220,7 +223,9 @@ namespace Plugins.Editor.JetBrains
 
       if (!riderExists)
       {
-        AutomaticChangeRiderLocation(DefaultApp);
+        var res = AutomaticChangeRiderLocation(DefaultApp);
+        if (res==false)
+          return res;
       }
 
       var proc = new Process();
@@ -244,6 +249,7 @@ namespace Plugins.Editor.JetBrains
       proc.Start();
 
       ActivateWindow(DefaultApp);
+      return true;
     }
 
     private static void ActivateWindow(string riderPath)
