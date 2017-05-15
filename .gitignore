@@ -9,8 +9,8 @@ build/
 [Bb]in
 [Oo]bj
 
-src/.idea/**/workspace.xml
-test/data/**/*.tmp
+resharper/src/.idea/**/workspace.xml
+resharper/test/data/**/*.tmp
 
 # Backup & report files from converting an old project file to a newer Visual Studio version
 _UpgradeReport_Files/
