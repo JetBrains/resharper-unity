@@ -115,7 +115,7 @@ namespace Plugins.Editor.JetBrains
     /// <param name="projectDirectory">Path to the project root directory</param>
     private static void InitializeEditorInstanceJson(string projectDirectory)
     {
-      // Only manage EditorInstance.json for 5.x - it's a native feature for 2017.x
+      // Only manage EditorInstance.json for 4.x and 5.x - it's a native feature for 2017.x
 #if UNITY_4 || UNITY_5
       if (EnableLogging) Debug.Log("[Rider] " + "Writing Library/EditorInstance.json");
 

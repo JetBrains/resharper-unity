@@ -79,22 +79,12 @@ namespace Plugins.Editor.JetBrains
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
-      SetUnityData(projectContentElement, xmlns);
       SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
 
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
 
       doc.Save(projectFile);
-    }
-
-    private static void SetUnityData(XElement projectElement, XNamespace xmlns)
-    {
-      // will be used by dependent Rider to provide Denug Configuration and other features
-      projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
-        new XElement(xmlns + "unityProcessId", unityProcessId.ToString())));
-      projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
-        new XElement(xmlns + "unityVersion", unityVersion)));
     }
 
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
