@@ -178,16 +178,20 @@ namespace Plugins.Editor.JetBrains
     // Helps resolve System.Linq under mono 4 - RIDER-573
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
-      if (!RiderPlugin.TargetFrameworkVersion45)
-        return;
-
       var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup").
         Elements(xmlns + "TargetFrameworkVersion").FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
         var version = new Version(targetFrameworkVersion.Value.Substring(1));
-        if (version < new Version(4, 5))
-          targetFrameworkVersion.SetValue("v4.5");
+        if (RiderPlugin.TargetFrameworkVersion45)
+        {
+          if (version < new Version(4, 5))
+            targetFrameworkVersion.SetValue("v4.5");  
+        }
+        else
+        {
+          targetFrameworkVersion.SetValue("v3.5");
+        }
       }
     }
 
