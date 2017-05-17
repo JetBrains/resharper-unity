@@ -25,9 +25,6 @@ namespace Plugins.Editor.JetBrains
     private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
       = Path.Combine(UnityEngine.Application.dataPath, EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
 
-    private static readonly int unityProcessId = Process.GetCurrentProcess().Id;
-    private static readonly string unityVersion = Application.unityVersion;
-
     public static void OnGeneratedCSProjectFiles()
     {
       if (!RiderPlugin.Enabled)

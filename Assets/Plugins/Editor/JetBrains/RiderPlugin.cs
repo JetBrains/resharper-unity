@@ -197,8 +197,7 @@ namespace Plugins.Editor.JetBrains
     private static bool DetectPortAndOpenFile(int line, string filePath, bool isWindows)
     {
       var startPort = 63342;
-
-      for (int port = 63342; port < 63363; port++)
+      for (int port = startPort; port < startPort+21; port++)
       {
         var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
         var aboutUri = new Uri(aboutUrl);
