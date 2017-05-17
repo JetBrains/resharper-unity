@@ -182,7 +182,7 @@ namespace Plugins.Editor.JetBrains
         {
           SyncSolution(); // added to handle opening file, which was just recently created.
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!HttpRequestOpenFile(line, assetFilePath, new FileInfo(DefaultApp).Extension == ".exe"))
+          if (!DetectPortAndOpenFile(line, assetFilePath, new FileInfo(DefaultApp).Extension == ".exe"))
           {
               var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
               return CallRider(args);
@@ -194,24 +194,36 @@ namespace Plugins.Editor.JetBrains
     }
 
 
-    private static bool HttpRequestOpenFile(int line, string filePath, bool isWindows)
+    private static bool DetectPortAndOpenFile(int line, string filePath, bool isWindows)
     {
-      var url = string.Format("http://localhost:63342/api/file?file={0}{1}", filePath, line < 0 ? "&p=0" : "&line="+line); // &p is needed to workaround https://youtrack.jetbrains.com/issue/IDEA-172350
+      var startPort = 63342;
+
+      for (int port = 63342; port < 63363; port++)
+      {
+        var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
+        var aboutUri = new Uri(aboutUrl);
+        var responce = CallHttpApi(port, aboutUri);
+        if (responce.ToLower().Contains("rider"))
+        {
+          return HttpOpenFile(line, filePath, isWindows, port);    
+        }
+      }
+      return false;
+    }
+
+    private static bool HttpOpenFile(int line, string filePath, bool isWindows, int port)
+    {
+      var url = string.Format("http://localhost:{0}/api/file?file={1}{2}", port, filePath,
+        line < 0 ? "&p=0" : "&line=" + line); // &p is needed to workaround https://youtrack.jetbrains.com/issue/IDEA-172350
       if (isWindows)
-        url = string.Format(@"http://localhost:63342/api/file/{0}{1}",filePath, line<0?"":":"+line);
+        url = string.Format(@"http://localhost:{0}/api/file/{1}{2}", port, filePath, line < 0 ? "" : ":" + line);
 
       var uri = new Uri(url);
       if (EnableLogging) Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
 
       try
       {
-        using (var client = new WebClient())
-        {
-          client.Headers.Add("origin", "http://localhost:63342");
-          client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-          var responseString = client.DownloadString(uri);
-          if (EnableLogging) Debug.Log("[Rider] HttpRequestOpenFile response: " + responseString);
-        }
+        CallHttpApi(port, uri);
       }
       catch (Exception e)
       {
@@ -220,6 +232,18 @@ namespace Plugins.Editor.JetBrains
       }
       ActivateWindow(new FileInfo(DefaultApp).FullName);
       return true;
+    }
+
+    private static string CallHttpApi(int port, Uri uri)
+    {
+      using (var client = new WebClient())
+      {
+        client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
+        client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+        var responseString = client.DownloadString(uri);
+        if (EnableLogging) Debug.Log("[Rider] HttpRequestOpenFile response: " + responseString);
+        return responseString;
+      }
     }
 
     private static bool CallRider(string args)
@@ -285,8 +309,12 @@ namespace Plugins.Editor.JetBrains
             var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
             // Get process main window title
             var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
+            Debug.Log("[Rider] ActivateWindow: " + process.Id +" "+windowHandle);
             if (windowHandle != IntPtr.Zero)
+            {
+              //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
               User32Dll.SetForegroundWindow(windowHandle);
+            }
           }
         }
         catch (Exception e)
@@ -408,6 +436,9 @@ All those problems will go away after Unity upgrades to mono4.";
 
       [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
       public static extern Int32 SetForegroundWindow(IntPtr hWnd);
+      
+      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+      public static extern UInt32 ShowWindow(IntPtr hWnd, Int32 nCmdShow);
     }
   }
 }
