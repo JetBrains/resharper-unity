@@ -9,7 +9,7 @@ Rider is JetBrains' cross platform .NET IDE, based on ReSharper and the IntelliJ
 The plugin adds knowledge of Unity based classes to ReSharper/Rider's analysis:
 
 * The plugin knows about all Unity based classes (`MonoBehaviour`, `ScriptableObject`, `EditorWindow`, etc.) and their event functions via analysis of the Unity API surface and documentation.
-* Support for Unity API versions 5.0 - 5.6.
+* Support for Unity API versions 5.0 - 5.6, as well as 2017.1.
 
 Event functions:
 
@@ -68,6 +68,8 @@ Inspections and Quick Fixes:
 
   <img src="docs/incorrect_signature.png" width="627">
 
+* Inspections and Quick Fixes for incorrect method or static constructor signatures for `InitializeOnLoad` attributes.
+* Inspections for incorrectly calling `new` on a `MonoBehaviour` or `ScriptableObject`. Quick Fixes will convert to calls to `GameObject.AddComponent<T>()` and `ScriptableObject.CreateInstance<T>()`.
 * Inspection for unused coroutine return value.
 
 [External Annotations](https://www.jetbrains.com/help/resharper/2016.2/Code_Analysis__External_Annotations.html):
@@ -78,6 +80,7 @@ Inspections and Quick Fixes:
 * `Debug.AssertFormat`, `LogFormat`, etc. gets string formatting helper functionality.
 * `Assertions.Assert` methods marked as assertion methods to help null-value analysis.
 * `EditorTestsWithLogParser.ExpectLogLineRegex` gets regular expression helper functionality.
+* Various attributes now require the class they are applied to derive from a specific base type. E.g. `[CustomEditor]` requires a base class of `Editor`).
 
 Other:
 
