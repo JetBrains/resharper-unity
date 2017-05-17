@@ -51,7 +51,7 @@
 </ul>
 ]]>
   </change-notes>
-  <version>1.6.2.0</version>
+  <version>1.8.0</version>
   <vendor url="https://www.jetbrains.com" logo="resharper/Logos/UnityLogo.png">JetBrains</vendor>
   <idea-version since-build="171.3655" until-build="171.3655.9999" />
   <extensions defaultExtensionNs="com.intellij" />

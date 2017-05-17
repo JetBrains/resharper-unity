@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>1.7.0-rider</version>
+    <version>1.8.0-rider</version>
     <authors>JetBrains</authors>
     <owners>JetBrains</owners>
     <summary>ReSharper support for Unity</summary>
@@ -12,7 +12,8 @@
 &#8226; Highlights Unity event functions and fields with an icon in the editor gutter.
 &#8226; Marks fields and methods implicitly used by Unity as in use.
 &#8226; Knows about all Unity script classes (MonoBehaviour, ScriptableObject, EditorWindow, etc).
-&#8226; Supports Unity API 5.0 - 5.6.
+&#8226; Marks empty event methods as dead code.
+&#8226; Supports Unity API 5.0 - 5.6, and 2017.1b5.
 &#8226; Inspections and Quick Fixes for incorrect event function method signature and return types.
 &#8226; Support for undocumented functions such as OnValidate and OnPreGeneratingCSProjectFiles.
 &#8226; Warns if a coroutine return value is unused.
@@ -24,6 +25,7 @@
 &#8226; Correctly update .meta files.
 &#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating, IsInvoking and CancelInvoke. Also Start/StopCoroutine.
 &#8226; Inspection and Quick Fix to use CompareTag instead of string comparison.
+&#8226; Inspection and Quick Fix for using new with ScriptableObject or MonoBehaviour.
 &#8226; "Create serialized field" from usage Quick Fix.
 &#8226; Suppress naming consistency checks on event functions.
 &#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code.
@@ -38,9 +40,14 @@
 &#8226; Marks empty event functions as dead code, with Quick Fix to remove.
 </description>
 <releaseNotes>
+&#8226; Inspection and quick fix for calling new on ScriptableObject and MonoBehaviour (#142)
+&#8226; Inspections and quick fixes for incorrect method signature for InitializeOnLoad attributes (#143)
+&#8226; Added base type required annotations for various attributes (#145)
 &#8226; Added implicit use annotations for UnityEngine.Networking attributes (#136)
 &#8226; Code completion, find usages and rename support for SyncVarAttribute hook function (#135)
-&#8226; Mark empty event functions as dead code, with Quick Fix to remove (#137)
+&#8226; Inspection and quick fix to mark empty event functions as dead code (#137)
+&#8226; Fixed bug in Invoke symbol resolution to check base class (#138)
+&#8226; Support "hook" property of SyncVarAttribute (#136)
 
 From 1.7.0:
 &#8226; Fix incorrect signatures in known API (#128)
