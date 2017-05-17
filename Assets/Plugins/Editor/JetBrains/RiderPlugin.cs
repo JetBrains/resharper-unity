@@ -15,7 +15,6 @@ namespace Plugins.Editor.JetBrains
   public static class RiderPlugin
   {
     private static bool Initialized;
-
     private static string SlnFile;
 
     private static string DefaultApp
@@ -66,14 +65,23 @@ namespace Plugins.Editor.JetBrains
       Initialized = true;
     }
 
+    private static bool RiderPathExist(string path)
+    {
+      // windows or mac
+      var fileInfo = new FileInfo(path);
+      var directoryInfo = new DirectoryInfo(path);
+      return fileInfo.Exists || (directoryInfo.Extension == ".app" && directoryInfo.Exists);
+    }
+
     private static bool AutomaticChangeRiderLocation(string riderPath)
     {
       // at least on windows new version of Rider gets always installed to new location - so try to search that new location
       var riderFileInfo = new FileInfo(riderPath);
-      var newPath = riderFileInfo.FullName+".non-existing extension";
 
-      if (riderFileInfo.Exists) 
+      if (RiderPathExist(riderPath)) 
         return true;
+      
+      var newPath = riderFileInfo.FullName+".non-existing extension";
       
       switch (riderFileInfo.Extension)
       {
@@ -89,7 +97,7 @@ namespace Plugins.Editor.JetBrains
           break;
         }
       }
-      if (new FileInfo(newPath).Exists && newPath != riderFileInfo.FullName)
+      if (RiderPathExist(newPath) && newPath != riderPath)
       {
         if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", riderFileInfo.FullName, newPath));
         EditorPrefs.SetString("kScriptsDefaultApp", newPath);
@@ -176,7 +184,7 @@ namespace Plugins.Editor.JetBrains
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
           if (!HttpRequestOpenFile(line, assetFilePath, new FileInfo(DefaultApp).Extension == ".exe"))
           {
-              var args = string.Format("{0}{1}{0} -l {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
+              var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
               return CallRider(args);
           }
           return true;
