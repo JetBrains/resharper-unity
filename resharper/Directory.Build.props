@@ -15,7 +15,8 @@
        * https://github.com/dotnet/sdk/issues/803
        * https://github.com/dotnet/sdk/issues/802 -->
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition=" '$(OS)' == 'Unix' ">$(MSBuildThisFileDirectory)/build/$(MSBuildProjectName)/obj/</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition=" '$(OS)' != 'Unix' ">$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
