@@ -5,10 +5,12 @@ plugins {
 }
 
 group 'com.jetbrains'
-version '1.7.0'
+
+// TODO: Get this version from e.g. Packaging.props
+version '1.8.0'
 
 ext.kotlin_version = '1.1.1'
-ext.nupkg_path = "$projectDir/../build/resharper-unity.rider/bin/Release/JetBrains.Unity.$version-rider.nupkg"
+ext.nupkg_path = "$projectDir/../resharper/build/resharper-unity.rider/bin/Release/JetBrains.Unity.$version-rider.nupkg"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
