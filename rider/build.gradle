@@ -24,10 +24,17 @@ intellij {
     // www.jetbrains.com/intellij-repository/releases, respectively.
     // Note that there's no guarantee that these are kept up to date
     // version = 'LATEST-TRUNK-SNAPSHOT'
-    version = '171.4089.466'   // EAP 21
-
     // If the build isn't available in intellij-repository, use an installed version via `localPath`
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
+
+
+    def dir = file('dependencies')
+    if (dir.exists()) {
+      localPath = dir.absolutePath
+    }
+    else {
+      version = '171.4089.466'  // EAP21
+    }
 
     // Sources aren't available for Rider
     downloadSources = false
@@ -54,8 +61,11 @@ prepareSandbox {
 // lib/ReSharperHost/runtime.sh, and is missing macos-x64
 project.afterEvaluate {
     if (System.getProperty('os.name').toLowerCase().contains('mac os')) {
-        exec {
-            it.commandLine 'chmod', '744', "$projectDir/build/rider$intellij.type-$intellij.version/lib/ReSharperHost/runtime.sh"
+        def dep = file("$projectDir/build/rider$intellij.type-$intellij.version")
+        if (dep.exists()) {
+            exec {
+                it.commandLine 'chmod', '744', "$projectDir/build/rider$intellij.type-$intellij.version/lib/ReSharperHost/runtime.sh"
+            }
         }
 
         // TODO: Copy macos-x64 from somewhere. But where?
