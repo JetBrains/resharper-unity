@@ -1,9 +1,34 @@
+# Rider code
+
+# User-specific stuff:
+**/.idea/**/workspace.xml
+**/.idea/**/tasks.xml
+**/.idea/dictionaries
+
+# Sensitive or high-churn files:
+**/.idea/**/dataSources/
+**/.idea/**/dataSources.ids
+**/.idea/**/dataSources.xml
+**/.idea/**/dataSources.local.xml
+**/.idea/**/sqlDataSources.xml
+**/.idea/**/dynamic.xml
+
+# Gradle:
+.gradle/
+**/.idea/**/gradle.xml
+**/.idea/**/libraries
+
+# IntelliJ
+build/
+out/
+
+# ReSharper code
+#
 # New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
 # Would be nice to download them somewhere outside of the source tree.
 Packages/*
 *.nupkg
 
-build/
 *.suo
 *.user
 [Bb]in
@@ -19,3 +44,4 @@ UpgradeLog*.XML
 
 Thumbs.db
 Desktop.ini
+.DS_Store

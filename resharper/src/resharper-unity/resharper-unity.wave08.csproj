@@ -15,7 +15,8 @@
     <EmbeddedResource Include="api.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ThemedIconsXamlV3 Include="Resources\Logo\unity-logo.xaml">
+    <!-- This requires WPF and PresentationFramework to build -->
+    <ThemedIconsXamlV3 Include="Resources\Logo\unity-logo.xaml" Condition=" '$(OS)' != 'Unix' ">
       <ThemeColumns>Gray;GrayDark;Color</ThemeColumns>
       <RemoveBackgroundElement>False</RemoveBackgroundElement>
       <Generator>MSBuild:Compile</Generator>
@@ -26,8 +27,8 @@
     <!-- It would be nice to use floating versions here during EAP, but that would require fixed
          version major, minor and patch numbers, e.g. 2017.1.0-* or it will match incorrectly
          See https://github.com/NuGet/Home/issues/4859 -->
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="108.0.20170403.124150" />
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170403.131543" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="108.0.20170428.80128" />
+    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170428.83402" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
