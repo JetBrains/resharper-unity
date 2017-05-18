@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
                     var markupModel = Solution.GetComponent<IDocumentMarkupManager>().GetMarkupModel(document);
                     var highlighterTooltipProvider = DaemonUtil.GetHighlighterTooltipProvider(highlightingInfo.Highlighting, Solution);
                     var attributeId = HighlightingSettingsManager.Instance.GetAttributeId(highlightingInfo.Highlighting, psiSourceFile).NotNull();
-                    var highlighter = markupModel.AddHighlighter(new Key("test"), highlightingInfo.Range.TextRange, AreaType.EXACT_RANGE, 0, attributeId, new ErrorStripeAttributes(), highlighterTooltipProvider);
+                    var highlighter = markupModel.AddHighlighter("test", highlightingInfo.Range.TextRange, AreaType.EXACT_RANGE, 0, attributeId, new ErrorStripeAttributes(), highlighterTooltipProvider);
                     ExecuteWithGold(writer => writer.WriteLine(highlighter.ToolTip));
                 }
             }
