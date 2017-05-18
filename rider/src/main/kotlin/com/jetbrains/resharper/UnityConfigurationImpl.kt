@@ -3,7 +3,7 @@ package com.jetbrains.resharper
 import com.intellij.openapi.project.Project
 import com.jetbrains.resharper.projectView.contentModel.RiderContentModelStore
 
-class UnityConfigurationImpl(project : Project, unityReferenceDiscoverer: UnityReferenceDiscoverer, contentModelStore : RiderContentModelStore) {
+class UnityConfigurationImpl(project: Project, unityReferenceDiscoverer: UnityReferenceDiscoverer, contentModelStore: RiderContentModelStore) {
 
     init {
         unityReferenceDiscoverer.addUnityReferenceListener(object : UnityReferenceListener {
