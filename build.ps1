@@ -160,5 +160,3 @@ Push-Location -Path rider
 .\gradlew.bat buildPlugin
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
 Pop-Location
-
-Write-Host "##teamcity[publishArtifacts 'rider\build\distributions\**']"
