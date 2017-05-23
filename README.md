@@ -30,7 +30,7 @@ This only needs to be done once.
 1. Open Unity.
 2. Go to Edit &rarr; Preferences &rarr; External Tools.
 3. Select "Browse" in the External Script Editor dropdown and select the Rider application.
-    1. On Windows, navigate to `%APPDATA%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox` and select "Rider"
+    1. On Windows, navigate to `%APPDATA%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox` or `C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains` and select "Rider"
     2. On Mac, select `~/Applications/Jet Brains/Toolbox/Rider.app` or `/Applications/Rider.app`
     3. On Linux, select `rider.sh`
 
