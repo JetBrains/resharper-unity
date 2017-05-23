@@ -201,16 +201,20 @@ namespace Plugins.Editor.JetBrains
       {
         var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
         var aboutUri = new Uri(aboutUrl);
-        var responce = CallHttpApi(port, aboutUri);
-        if (responce.ToLower().Contains("rider"))
+
+        using (var client = new WebClient())
         {
-          return HttpOpenFile(line, filePath, isWindows, port);    
+          var responce = CallHttpApi(port, aboutUri, client);
+          if (responce.ToLower().Contains("rider"))
+          {
+            return HttpOpenFile(line, filePath, isWindows, port, client);
+          }
         }
       }
       return false;
     }
 
-    private static bool HttpOpenFile(int line, string filePath, bool isWindows, int port)
+    private static bool HttpOpenFile(int line, string filePath, bool isWindows, int port, WebClient client)
     {
       var url = string.Format("http://localhost:{0}/api/file?file={1}{2}", port, filePath,
         line < 0 ? "&p=0" : "&line=" + line); // &p is needed to workaround https://youtrack.jetbrains.com/issue/IDEA-172350
@@ -222,7 +226,7 @@ namespace Plugins.Editor.JetBrains
 
       try
       {
-        CallHttpApi(port, uri);
+        CallHttpApi(port, uri, client);
       }
       catch (Exception e)
       {
@@ -233,16 +237,13 @@ namespace Plugins.Editor.JetBrains
       return true;
     }
 
-    private static string CallHttpApi(int port, Uri uri)
+    private static string CallHttpApi(int port, Uri uri, WebClient client)
     {
-      using (var client = new WebClient())
-      {
-        client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
-        client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-        var responseString = client.DownloadString(uri);
-        if (EnableLogging) Debug.Log("[Rider] HttpRequestOpenFile response: " + responseString);
-        return responseString;
-      }
+      client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
+      client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+      var responseString = client.DownloadString(uri);
+      if (EnableLogging) Debug.Log("[Rider] HttpRequestOpenFile response: " + responseString);
+      return responseString;
     }
 
     private static bool CallRider(string args)
