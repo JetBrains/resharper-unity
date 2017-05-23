@@ -204,6 +204,9 @@ namespace Plugins.Editor.JetBrains
 
         using (var client = new WebClient())
         {
+          client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
+          client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+          
           var responce = CallHttpApi(port, aboutUri, client);
           if (responce.ToLower().Contains("rider"))
           {
@@ -239,8 +242,6 @@ namespace Plugins.Editor.JetBrains
 
     private static string CallHttpApi(int port, Uri uri, WebClient client)
     {
-      client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
-      client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
       var responseString = client.DownloadString(uri);
       if (EnableLogging) Debug.Log("[Rider] HttpRequestOpenFile response: " + responseString);
       return responseString;
