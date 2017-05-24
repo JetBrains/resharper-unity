@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Plugins.Editor.JetBrains
