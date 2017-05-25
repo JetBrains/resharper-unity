@@ -5,18 +5,25 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using JetBrains.Annotations;
+using System.Text;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.WSA;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 
 namespace Plugins.Editor.JetBrains
 {
+  public class TTT
+  {
+    [Test]
+    public void Test()
+    {
+      Console.WriteLine(WinShortcut.Parse(
+        @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains\JetBrains Rider 171.4456.242.lnk"));
+    }
+  }
+
   [InitializeOnLoad]
   public static class RiderPlugin
   {
@@ -28,28 +35,35 @@ namespace Plugins.Editor.JetBrains
       get
       {
         var alreadySetPath = EditorPrefs.GetString("kScriptsDefaultApp");
-        if (!string.IsNullOrEmpty(alreadySetPath) && alreadySetPath.ToLower().Contains("rider") && RiderPathExist(alreadySetPath))
+        if (!string.IsNullOrEmpty(alreadySetPath) && alreadySetPath.ToLower().Contains("rider") &&
+            RiderPathExist(alreadySetPath))
           return alreadySetPath;
-        
+
         switch (new FileInfo(alreadySetPath).Extension)
         {
+          case ".lnk":
           case ".exe":
             //"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains\*Rider*.lnk"
             //%appdata%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox\*Rider*.lnk
 
-            var f1 = new DirectoryInfo(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains").GetFiles("*Rider*.lnk");
-            var f2 = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")).GetFiles("*Rider*.lnk");
+            var f1 =
+              new DirectoryInfo(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains")
+                .GetFiles("*Rider*.lnk");
+            var f2 = new DirectoryInfo(Path.Combine(
+              Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+              @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")).GetFiles("*Rider*.lnk");
             var newPathLnk = f1.ToArray().Concat(f2).OrderBy(a => a.LastWriteTime).LastOrDefault();
             if (newPathLnk != null)
             {
-              var newPath = ShellLinkHelper.ResolveLinkTarget(newPathLnk.FullName);
+              var newPath = WinShortcut.Parse(newPathLnk.FullName);
               if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", alreadySetPath, newPath));
-              EditorPrefs.SetString("kScriptsDefaultApp", newPath);
+              if (!string.IsNullOrEmpty(newPath))
+                EditorPrefs.SetString("kScriptsDefaultApp", newPath);
             }
             break;
 
           case ".app":
-          // "/Applications/*Rider*.app"
+            // "/Applications/*Rider*.app"
             //"~/Applications/JetBrains Toolbox/*Rider*.app"
             break;
 
@@ -57,9 +71,12 @@ namespace Plugins.Editor.JetBrains
 
         var riderPath = EditorPrefs.GetString("kScriptsDefaultApp");
         if (!RiderPathExist(riderPath))
-        {EditorUtility.DisplayDialog("Rider executable not found", 
-          string.Format("Rider was not found in {0}{1}Please update 'External Script Editor'.", new FileInfo(riderPath).Directory, Environment.NewLine), "OK");}
-        
+        {
+          EditorUtility.DisplayDialog("Rider executable not found",
+            string.Format(@"Rider was not found in {0}{1}Please update 'External Script Editor'.", riderPath,
+              Environment.NewLine), "OK");
+        }
+
         return riderPath;
       }
     }
@@ -69,7 +86,7 @@ namespace Plugins.Editor.JetBrains
       get { return EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true); }
       set { EditorPrefs.SetBool("Rider_TargetFrameworkVersion45", value); }
     }
-    
+
     public static bool EnableLogging
     {
       get { return EditorPrefs.GetBool("Rider_EnableLogging", false); }
@@ -105,6 +122,8 @@ namespace Plugins.Editor.JetBrains
 
     private static bool RiderPathExist(string path)
     {
+      if (string.IsNullOrEmpty(path))
+        return false;
       // windows or mac
       var fileInfo = new FileInfo(path);
       var directoryInfo = new DirectoryInfo(path);
@@ -184,8 +203,8 @@ namespace Plugins.Editor.JetBrains
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
           if (!DetectPortAndOpenFile(line, assetFilePath, new FileInfo(DefaultApp).Extension == ".exe"))
           {
-              var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-              return CallRider(args);
+            var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
+            return CallRider(args);
           }
           return true;
         }
@@ -197,7 +216,7 @@ namespace Plugins.Editor.JetBrains
     private static bool DetectPortAndOpenFile(int line, string filePath, bool isWindows)
     {
       var startPort = 63342;
-      for (int port = startPort; port < startPort+21; port++)
+      for (int port = startPort; port < startPort + 21; port++)
       {
         var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
         var aboutUri = new Uri(aboutUrl);
@@ -206,7 +225,7 @@ namespace Plugins.Editor.JetBrains
         {
           client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
           client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-          
+
           var responce = CallHttpApi(port, aboutUri, client);
           if (responce.ToLower().Contains("rider"))
           {
@@ -220,7 +239,9 @@ namespace Plugins.Editor.JetBrains
     private static bool HttpOpenFile(int line, string filePath, bool isWindows, int port, WebClient client)
     {
       var url = string.Format("http://localhost:{0}/api/file?file={1}{2}", port, filePath,
-        line < 0 ? "&p=0" : "&line=" + line); // &p is needed to workaround https://youtrack.jetbrains.com/issue/IDEA-172350
+        line < 0
+          ? "&p=0"
+          : "&line=" + line); // &p is needed to workaround https://youtrack.jetbrains.com/issue/IDEA-172350
       if (isWindows)
         url = string.Format(@"http://localhost:{0}/api/file/{1}{2}", port, filePath, line < 0 ? "" : ":" + line);
 
@@ -267,7 +288,8 @@ namespace Plugins.Editor.JetBrains
       {
         proc.StartInfo.FileName = DefaultApp;
         proc.StartInfo.Arguments = args;
-        if (EnableLogging) Debug.Log("[Rider] " + ("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments));
+        if (EnableLogging)
+          Debug.Log("[Rider] " + ("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments));
       }
 
       proc.StartInfo.UseShellExecute = false;
@@ -291,7 +313,8 @@ namespace Plugins.Editor.JetBrains
             string processName;
             try
             {
-              processName = p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
+              processName =
+                p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
             }
             catch (Exception)
             {
@@ -306,7 +329,7 @@ namespace Plugins.Editor.JetBrains
             var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
             // Get process main window title
             var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
-            Debug.Log("[Rider] ActivateWindow: " + process.Id +" "+windowHandle);
+            Debug.Log("[Rider] ActivateWindow: " + process.Id + " " + windowHandle);
             if (windowHandle != IntPtr.Zero)
             {
               //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
@@ -366,7 +389,7 @@ namespace Plugins.Editor.JetBrains
       }
 
       EditorGUI.BeginChangeCheck();
-      
+
       var enabledMsg = @"Enable Unity3dRider.";
       Enabled =
         EditorGUILayout.Toggle(
@@ -387,10 +410,11 @@ All those problems will go away after Unity upgrades to mono4.";
       EditorGUILayout.HelpBox(help, MessageType.None);
 
       EditorGUI.EndChangeCheck();
-      
+
       EditorGUI.BeginChangeCheck();
 
-      var loggingMsg = @"Enable logging. If you are about to report an issue, please enable logging and attach Unity console output to the issue.";
+      var loggingMsg =
+        @"Enable logging. If you are about to report an issue, please enable logging and attach Unity console output to the issue.";
       EnableLogging =
         EditorGUILayout.Toggle(
           new GUIContent("Enable Logging",
@@ -398,61 +422,6 @@ All those problems will go away after Unity upgrades to mono4.";
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
       EditorGUI.EndChangeCheck();
-    }
-
-    static class ShellLinkHelper
-    {
-      private static IShellLinkW CreateShellLinkComObject()
-      {
-        return (IShellLinkW)new CLSID_ShellLink();
-      }
-
-      /// <summary>
-      /// Given a path to an .LNK file, reads the target path of the shell link.
-      /// </summary>
-      /// <param name="pathLnk"></param>
-      /// <returns></returns>
-      public static unsafe string ResolveLinkTarget([NotNull] string pathLnk)
-      {
-        if(pathLnk == null)
-          throw new ArgumentNullException("pathLnk");
-
-        try
-        {
-          if(!new FileInfo(pathLnk).Exists)
-            throw new FileNotFoundException("The .LNK file does not exist.");
-
-          // Load object
-          IShellLinkW shellink = CreateShellLinkComObject();
-          var t = (IPersistFile)shellink;
-          t.Load(pathLnk, 0);
-
-          // Link target path
-          const int charlen = 0x1000;
-          char* szTarget = stackalloc char[charlen];
-          shellink.GetPath(szTarget, charlen - 1, null, 0);
-          return new string(szTarget);
-        }
-        catch(Exception e)
-        {
-          var ex = new InvalidOperationException("Could not get the Shell Link target path. " + e.Message, e);
-          throw ex;
-        }
-      }
-    }
-
-    [ComImport]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid("000214F9-0000-0000-C000-000000000046")]
-    public unsafe interface IShellLinkW
-    {
-      Int32 GetPath(char* pszFile, int cch, /*WIN32_FIND_DATAW*/void* pfd, UInt32 fFlags);
-    }
-    
-    [ComImport]
-    [Guid("00021401-0000-0000-C000-000000000046")]
-    public class CLSID_ShellLink
-    {
     }
 
     static class User32Dll
@@ -487,25 +456,38 @@ All those problems will go away after Unity upgrades to mono4.";
 
       public delegate Int32 EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
 
-      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
+        ExactSpelling = true)]
       public static extern Int32 EnumWindows(IntPtr lpEnumFunc, IntPtr lParam);
 
       [DllImport("user32.dll", SetLastError = true)]
       static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
-      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
+        ExactSpelling = true)]
       public static extern Int32 SetForegroundWindow(IntPtr hWnd);
-      
-      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+
+      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
+        ExactSpelling = true)]
       public static extern UInt32 ShowWindow(IntPtr hWnd, Int32 nCmdShow);
     }
-    
-    public class MyClass
+  }
+
+  public static class WinShortcut
+  {
+    public static string Parse(String shortcutPath)
     {
-      [Test]
-      public void Test()
+      using (var fs = new FileStream(shortcutPath, FileMode.Open, FileAccess.Read))
       {
-        Console.WriteLine(ShellLinkHelper.ResolveLinkTarget(@"C:\Users\Ivan.Shakhov\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox\JetBrains Toolbox.lnk"));
+      //LocalBasePath: (14 bytes, offset 0x0138), because VolumeIDAndLocalBasePath is set, the
+      //character string "c:\test\a.txt" is present.
+      
+        fs.Seek(0x0138, SeekOrigin.Begin);
+        var data = new byte[14];
+        fs.Read(data, 0, data.Length);
+        var localBasePath = Encoding.Default.GetString(data);
+
+        return localBasePath;
       }
     }
   }
