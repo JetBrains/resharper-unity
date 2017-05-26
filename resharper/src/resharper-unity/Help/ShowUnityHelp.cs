@@ -52,10 +52,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
 
         private static Uri GetUri(string keyword)
         {
-            var path = $"ScriptReference/{keyword}.html";
-
-            return GetUri(GetDocumentationRoot(), path)
-                   ?? new Uri("https://docs.unity3d.com/" + path);
+            var documentationRoot = GetDocumentationRoot();
+            return GetFileUri(documentationRoot, $"ScriptReference/{keyword}.html")
+                   ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace('.', '-')}.html")
+                   ?? new Uri($"https://docs.unity3d.com/ScriptReference/30_search.html?q={keyword}");
         }
 
         private static FileSystemPath GetDocumentationRoot()
@@ -65,15 +65,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
                 case PlatformUtil.Platform.Windows:
                     var programFiles = GetProgramFiles();
                     if (!programFiles.IsEmpty)
-                        return GetProgramFiles().Combine("Unity/Editor/Data/Documentation");
+                    {
+                        // Technically, Windows allows installing multiple Unity versions side by
+                        // side, but we don't really know which one is running. We could look for
+                        // Library/EditorInstance.json (which requires Unity 2017.1/Unity3dRider)
+                        // which would contain the version of the current editor, then look in the
+                        // registry for HKEY_CURRENT_USER\Software\Unity Technologies\Installer
+                        // and check the version under the children. Or we could just fall back
+                        // to the online search
+                        return GetProgramFiles().Combine("Unity/Editor/Data/Documentation/en");
+                    }
                     return FileSystemPath.Empty;
 
                 case PlatformUtil.Platform.MacOsX:
-                    return FileSystemPath.Parse("/Applications/Unity/Documentation");
+                    return FileSystemPath.Parse("/Applications/Unity/Documentation/en");
 
                 case PlatformUtil.Platform.Linux:
                     // TODO: I don't know if this value is correct...
-                    return FileSystemPath.Parse("/opt/Unity/Editor/Data/Documentation");
+                    return FileSystemPath.Parse("/opt/Unity/Editor/Data/Documentation/en");
             }
             return FileSystemPath.Empty;
         }
@@ -88,12 +97,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
             return string.IsNullOrWhiteSpace(environmentVariable) ? FileSystemPath.Empty : FileSystemPath.TryParse(environmentVariable);
         }
 
-        private static Uri GetUri(FileSystemPath documentationRoot, string htmlPath)
+        private static Uri GetFileUri(FileSystemPath documentationRoot, string htmlPath)
         {
             if (documentationRoot.IsEmpty)
                 return null;
 
-            var fileSystemPath = documentationRoot/"en"/htmlPath;
+            var fileSystemPath = documentationRoot/htmlPath;
             return fileSystemPath.ExistsFile ? fileSystemPath.ToUri() : null;
         }
     }
