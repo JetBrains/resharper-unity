@@ -3,6 +3,7 @@ param (
   [string]$BuildCounter, # Set Rider plugin version to version from Packaging.Props + $BuildCounter, optional
   [string]$SinceBuild, # Set since-build in Rider plugin descriptor
   [string]$UntilBuild, # Set until-build in Rider plugin descriptor
+  [string]$Configuration = "Release", # Release / Debug
   [switch]$NoBuild # Skip building and packing, just set package versions and restore packages
 )
 
@@ -130,18 +131,18 @@ if (!(test-path $msbuild)) {
 }  
 
 Write-Host "##teamcity[progressMessage 'Building']"
-& $msbuild resharper\src\resharper-unity.sln /p:Configuration=Release
+& $msbuild resharper\src\resharper-unity.sln /p:Configuration=$Configuration
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $LastExitCode" }
 
 Write-Host "##teamcity[progressMessage 'Building and Packaging: Wave08']"
-& dotnet pack resharper/src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.wave08.nuspec --no-build
+& dotnet pack resharper/src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.wave08.$Configuration.nuspec --no-build
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
-Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.wave08/bin/Release/*.nupkg']"
+Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.wave08/bin/$Configuration/*.nupkg']"
 
 Write-Host "##teamcity[progressMessage 'Building and Packaging: Rider']"
-& dotnet pack resharper/src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=Release /p:NuspecFile=resharper-unity.rider.nuspec --no-build
+& dotnet pack resharper/src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.rider.$Configuration.nuspec --no-build
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
-Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.rider/bin/Release/*.nupkg']"
+Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.rider/bin/$Configuration/*.nupkg']"
 
 ### Pack Rider plugin directory
 SetIdeaVersion -file "rider/src/main/resources/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
@@ -157,7 +158,7 @@ Write-Host "##teamcity[buildNumber '$version']"
 SetPluginVersion -file "rider/src/main/resources/META-INF/plugin.xml" -version $version
 
 Push-Location -Path rider
-.\gradlew.bat buildPlugin
+.\gradlew.bat buildPlugin "-PpluginConfiguration=$Configuration"
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
 Pop-Location
 
