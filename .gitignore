@@ -22,6 +22,9 @@
 build/
 out/
 
+# .idea
+rider/.idea/**
+
 # ReSharper code
 #
 # New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
