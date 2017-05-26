@@ -4,6 +4,7 @@ param (
   [string]$SinceBuild, # Set since-build in Rider plugin descriptor
   [string]$UntilBuild, # Set until-build in Rider plugin descriptor
   [string]$Configuration = "Release", # Release / Debug
+  [string]$GradleTask = "buildPlugin", # buildPlugin / runIde
   [switch]$NoBuild # Skip building and packing, just set package versions and restore packages
 )
 
@@ -158,7 +159,7 @@ Write-Host "##teamcity[buildNumber '$version']"
 SetPluginVersion -file "rider/src/main/resources/META-INF/plugin.xml" -version $version
 
 Push-Location -Path rider
-.\gradlew.bat buildPlugin "-PpluginConfiguration=$Configuration"
+.\gradlew.bat $GradleTask "-PpluginConfiguration=$Configuration"
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
 Pop-Location
 
