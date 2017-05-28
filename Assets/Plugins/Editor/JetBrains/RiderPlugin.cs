@@ -118,6 +118,7 @@ namespace Plugins.Editor.JetBrains
 
       InitializeEditorInstanceJson(projectDirectory);
 
+      Debug.Log("[Rider] " + "Rider plugin initialized.");
       Initialized = true;
     }
 
@@ -227,10 +228,17 @@ namespace Plugins.Editor.JetBrains
           client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
           client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
 
-          var responce = CallHttpApi(port, aboutUri, client);
-          if (responce.ToLower().Contains("rider"))
+          try
           {
-            return HttpOpenFile(line, filePath, isWindows, port, client);
+            var responce = CallHttpApi(aboutUri, client);
+            if (responce.ToLower().Contains("rider"))
+            {
+              return HttpOpenFile(line, filePath, isWindows, port, client);
+            }
+          }
+          catch (Exception e)
+          {
+            if (EnableLogging) Debug.Log("[Rider] " + "Exception in DetectPortAndOpenFile: " + e);
           }
         }
       }
@@ -249,20 +257,12 @@ namespace Plugins.Editor.JetBrains
       var uri = new Uri(url);
       if (EnableLogging) Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
 
-      try
-      {
-        CallHttpApi(port, uri, client);
-      }
-      catch (Exception e)
-      {
-        Debug.Log("[Rider] " + "Exception in HttpRequestOpenFile: " + e);
-        return false;
-      }
+      CallHttpApi(uri, client);
       ActivateWindow(new FileInfo(DefaultApp).FullName);
       return true;
     }
 
-    private static string CallHttpApi(int port, Uri uri, WebClient client)
+    private static string CallHttpApi(Uri uri, WebClient client)
     {
       var responseString = client.DownloadString(uri);
       if (EnableLogging) Debug.Log("[Rider] HttpRequestOpenFile response: " + responseString);
