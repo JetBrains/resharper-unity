@@ -204,37 +204,36 @@ namespace Plugins.Editor.JetBrains
     private static bool DetectPortAndOpenFile(int line, string filePath, bool isWindows)
     {
       var process = GetRiderProcess();
-      if (process != null)
+      if (process == null) 
+        return false;
+      
+      int[] ports = Enumerable.Range(63342, 20).ToArray();
+      var res = ports.Any(port => 
       {
-        int[] ports = Enumerable.Range(63342, 20).ToArray();
-        var res = ports.Any(port => 
+        var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
+        var aboutUri = new Uri(aboutUrl);
+
+        using (var client = new WebClient())
         {
-          var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
-          var aboutUri = new Uri(aboutUrl);
+          client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
+          client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
 
-          using (var client = new WebClient())
+          try
           {
-            client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
-            client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-
-            try
+            var responce = CallHttpApi(aboutUri, client);
+            if (responce.ToLower().Contains("rider"))
             {
-              var responce = CallHttpApi(aboutUri, client);
-              if (responce.ToLower().Contains("rider"))
-              {
-                return HttpOpenFile(line, filePath, isWindows, port, client);
-              }
-            }
-            catch (Exception e)
-            {
-              if (EnableLogging) Debug.Log("[Rider] " + "Exception in DetectPortAndOpenFile: " + e);
+              return HttpOpenFile(line, filePath, isWindows, port, client);
             }
           }
-          return false;
-        });
-        return res;
-      }
-      return false;
+          catch (Exception e)
+          {
+            if (EnableLogging) Debug.Log("[Rider] " + "Exception in DetectPortAndOpenFile: " + e);
+          }
+        }
+        return false;
+      });
+      return res;
     }
 
     private static bool HttpOpenFile(int line, string filePath, bool isWindows, int port, WebClient client)
