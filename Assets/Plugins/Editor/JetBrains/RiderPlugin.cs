@@ -32,11 +32,11 @@ namespace Plugins.Editor.JetBrains
           case OperatingSystemFamily.Windows:
             //"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains\*Rider*.lnk"
             //%appdata%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox\*Rider*.lnk
+            string[] folders = {@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains", Path.Combine(
+              Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+              @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")};
 
-            var f1 = new DirectoryInfo(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains").GetFiles("*Rider*.lnk");
-            var f2 = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-              @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")).GetFiles("*Rider*.lnk");
-            var newPathLnks = f1.ToArray().Concat(f2);
+            var newPathLnks = folders.Select(b=>new DirectoryInfo(b)).Where(a => a.Exists).SelectMany(c=>c.GetFiles("*Rider*.lnk"));
             if (newPathLnks.Any())
             {
               var newPath = newPathLnks.Select(newPathLnk=> new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName))).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
@@ -51,10 +51,9 @@ namespace Plugins.Editor.JetBrains
           case OperatingSystemFamily.MacOSX:
             // "/Applications/*Rider*.app"
             //"~/Applications/JetBrains Toolbox/*Rider*.app"
-            
-            var dir = new DirectoryInfo("/Applications").GetDirectories("*Rider*.app").ToArray();
-            var toolboxDir = new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications")).GetDirectories("*Rider*.app").ToArray();
-            var newPathMac = dir.Concat(toolboxDir).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
+            string[] foldersMac = {"/Applications",Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications")};
+            var newPathMac = foldersMac.Select(b=>new DirectoryInfo(b)).Where(a => a.Exists)
+              .SelectMany(c=>c.GetDirectories("*Rider*.app")).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
             if (newPathMac != null)
             {
               if (!string.IsNullOrEmpty(newPathMac.FullName))
