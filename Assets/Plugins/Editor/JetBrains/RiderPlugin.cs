@@ -118,7 +118,7 @@ namespace Plugins.Editor.JetBrains
 
       InitializeEditorInstanceJson(projectDirectory);
 
-      Debug.Log("[Rider] " + "Rider plugin initialized.");
+      Debug.Log("[Rider] " + "Rider plugin initialized. You may enabled more Rider Debug output via Preferences -> Rider -> Enable Logging");
       Initialized = true;
     }
 
