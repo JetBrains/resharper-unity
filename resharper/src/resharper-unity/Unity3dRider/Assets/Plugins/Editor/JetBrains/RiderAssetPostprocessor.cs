@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Plugins.Editor.JetBrains
@@ -197,8 +195,17 @@ namespace Plugins.Editor.JetBrains
       // Add LangVersion to the .csproj. Unity doesn't generate it (although VSTU does).
       // Not strictly necessary, as the Unity plugin for Rider will work it out, but setting
       // it makes Rider work if it's not installed.
-      projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
-        new XElement(xmlns + "LangVersion", GetLanguageLevel())));
+      var langVersion = projectElement.Elements(xmlns + "PropertyGroup").
+        Elements(xmlns + "LangVersion").FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
+      if (langVersion != null)
+      {
+        langVersion.SetValue(GetLanguageLevel());
+      }
+      else
+      {
+        projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
+          new XElement(xmlns + "LangVersion", GetLanguageLevel())));  
+      }
     }
 
     private static string GetLanguageLevel()
