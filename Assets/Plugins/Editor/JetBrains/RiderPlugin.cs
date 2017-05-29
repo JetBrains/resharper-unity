@@ -124,7 +124,7 @@ namespace Plugins.Editor.JetBrains
       // windows or mac
       var fileInfo = new FileInfo(path);
       var directoryInfo = new DirectoryInfo(path);
-      return fileInfo.Exists || (directoryInfo.Extension == ".app" && directoryInfo.Exists);
+      return fileInfo.Exists || (SystemInfo.operatingSystemFamily==OperatingSystemFamily.MacOSX && directoryInfo.Exists);
     }
 
     /// <summary>
@@ -198,7 +198,7 @@ namespace Plugins.Editor.JetBrains
         {
           SyncSolution(); // added to handle opening file, which was just recently created.
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!DetectPortAndOpenFile(line, assetFilePath, new FileInfo(GetDefaultApp()).Extension == ".exe"))
+          if (!DetectPortAndOpenFile(line, assetFilePath, SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows))
           {
             var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
             return CallRider(args);
@@ -258,7 +258,7 @@ namespace Plugins.Editor.JetBrains
       if (EnableLogging) Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
 
       CallHttpApi(uri, client);
-      ActivateWindow(new FileInfo(GetDefaultApp()).FullName);
+      ActivateWindow();
       return true;
     }
 
@@ -272,14 +272,13 @@ namespace Plugins.Editor.JetBrains
     private static bool CallRider(string args)
     {
       var riderFileInfo = new FileInfo(GetDefaultApp());
-      var macOSVersion = riderFileInfo.Extension == ".app";
       if (!RiderPathExist(riderFileInfo.FullName))
       {
         return false;
       }
 
       var proc = new Process();
-      if (macOSVersion)
+      if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + GetDefaultApp(), args);
@@ -299,13 +298,13 @@ namespace Plugins.Editor.JetBrains
       proc.StartInfo.RedirectStandardOutput = true;
       proc.Start();
 
-      ActivateWindow(GetDefaultApp());
+      ActivateWindow();
       return true;
     }
 
-    private static void ActivateWindow(string riderPath)
+    private static void ActivateWindow()
     {
-      if (new FileInfo(riderPath).Extension == ".exe")
+      if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows)
       {
         try
         {
