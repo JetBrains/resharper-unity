@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using Application = UnityEngine.Application;
@@ -15,16 +14,6 @@ using Debug = UnityEngine.Debug;
 
 namespace Plugins.Editor.JetBrains
 {
-  public class TTT
-  {
-    [Test]
-    public void Test()
-    {
-      Console.WriteLine(ShortcutResolver.Resolve(
-        @"C:\Users\Ivan.Shakhov\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox\Rider.lnk"));
-    }
-  }
-
   [InitializeOnLoad]
   public static class RiderPlugin
   {
@@ -47,11 +36,8 @@ namespace Plugins.Editor.JetBrains
             //"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains\*Rider*.lnk"
             //%appdata%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox\*Rider*.lnk
 
-            var f1 =
-              new DirectoryInfo(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains")
-                .GetFiles("*Rider*.lnk");
-            var f2 = new DirectoryInfo(Path.Combine(
-              Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            var f1 = new DirectoryInfo(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains").GetFiles("*Rider*.lnk");
+            var f2 = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
               @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")).GetFiles("*Rider*.lnk");
             var newPathLnk = f1.ToArray().Concat(f2).OrderBy(a => a.LastWriteTime).LastOrDefault();
             if (newPathLnk != null)
@@ -217,30 +203,36 @@ namespace Plugins.Editor.JetBrains
 
     private static bool DetectPortAndOpenFile(int line, string filePath, bool isWindows)
     {
-      var startPort = 63342;
-      for (int port = startPort; port < startPort + 21; port++)
+      var process = GetRiderProcess();
+      if (process != null)
       {
-        var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
-        var aboutUri = new Uri(aboutUrl);
-
-        using (var client = new WebClient())
+        int[] ports = Enumerable.Range(63342, 20).ToArray();
+        var res = ports.Any(port => 
         {
-          client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
-          client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+          var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
+          var aboutUri = new Uri(aboutUrl);
 
-          try
+          using (var client = new WebClient())
           {
-            var responce = CallHttpApi(aboutUri, client);
-            if (responce.ToLower().Contains("rider"))
+            client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
+            client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+
+            try
             {
-              return HttpOpenFile(line, filePath, isWindows, port, client);
+              var responce = CallHttpApi(aboutUri, client);
+              if (responce.ToLower().Contains("rider"))
+              {
+                return HttpOpenFile(line, filePath, isWindows, port, client);
+              }
+            }
+            catch (Exception e)
+            {
+              if (EnableLogging) Debug.Log("[Rider] " + "Exception in DetectPortAndOpenFile: " + e);
             }
           }
-          catch (Exception e)
-          {
-            if (EnableLogging) Debug.Log("[Rider] " + "Exception in DetectPortAndOpenFile: " + e);
-          }
-        }
+          return false;
+        });
+        return res;
       }
       return false;
     }
@@ -309,21 +301,7 @@ namespace Plugins.Editor.JetBrains
       {
         try
         {
-          var process = Process.GetProcesses().FirstOrDefault(p =>
-          {
-            string processName;
-            try
-            {
-              processName =
-                p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
-            }
-            catch (Exception)
-            {
-              return false;
-            }
-
-            return !p.HasExited && processName.ToLower().Contains("rider");
-          });
+          var process = GetRiderProcess();
           if (process != null)
           {
             // Collect top level windows
@@ -343,6 +321,25 @@ namespace Plugins.Editor.JetBrains
           Debug.Log("[Rider] " + ("Exception on ActivateWindow: " + e));
         }
       }
+    }
+
+    private static Process GetRiderProcess()
+    {
+      var process = Process.GetProcesses().FirstOrDefault(p =>
+      {
+        string processName;
+        try
+        {
+          processName = p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
+        }
+        catch (Exception)
+        {
+          return false;
+        }
+
+        return !p.HasExited && processName.ToLower().Contains("rider");
+      });
+      return process;
     }
 
     [MenuItem("Assets/Open C# Project in Rider", false, 1000)]
