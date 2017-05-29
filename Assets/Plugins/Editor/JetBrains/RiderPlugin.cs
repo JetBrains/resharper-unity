@@ -39,10 +39,10 @@ namespace Plugins.Editor.JetBrains
             var newPathLnks = f1.ToArray().Concat(f2);
             if (newPathLnks.Any())
             {
-              var newPath = newPathLnks.Select(newPathLnk=> new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName))).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).FileVersion).LastOrDefault();
+              var newPath = newPathLnks.Select(newPathLnk=> new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName))).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
               if (!string.IsNullOrEmpty(newPath.FullName))
               {
-                if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", alreadySetPath, newPath));
+                if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1} product version: {2}", alreadySetPath, newPath, FileVersionInfo.GetVersionInfo(newPath.FullName).ProductVersion));
                 EditorPrefs.SetString("kScriptsDefaultApp", newPath.FullName);
               }
             }
@@ -54,7 +54,7 @@ namespace Plugins.Editor.JetBrains
             
             var dir = new DirectoryInfo("/Applications").GetDirectories("*Rider*.app").ToArray();
             var toolboxDir = new DirectoryInfo(Path.Combine(Environment.SpecialFolder.MyDocuments.ToString(), "Applications")).GetDirectories("*Rider*.app").ToArray();
-            var newPathMac = dir.Concat(toolboxDir).OrderBy(a => a.LastWriteTime).LastOrDefault();
+            var newPathMac = dir.Concat(toolboxDir).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
             if (newPathMac != null)
             {
               if (!string.IsNullOrEmpty(newPathMac.FullName))
@@ -476,10 +476,9 @@ All those problems will go away after Unity upgrades to mono4.";
         ExactSpelling = true)]
       public static extern UInt32 ShowWindow(IntPtr hWnd, Int32 nCmdShow);
     }
-  }
-
-  public static class ShortcutResolver
-  {
+    
+    static class ShortcutResolver
+    {
       #region Signitures imported from http://pinvoke.net
 
       [DllImport("shfolder.dll", CharSet = CharSet.Auto)]
@@ -689,6 +688,7 @@ All those problems will go away after Unity upgrades to mono4.";
         return sb.ToString();
       }
 
+    }
   }
 }
 
