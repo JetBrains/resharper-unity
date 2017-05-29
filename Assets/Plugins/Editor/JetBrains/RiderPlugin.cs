@@ -53,7 +53,7 @@ namespace Plugins.Editor.JetBrains
             //"~/Applications/JetBrains Toolbox/*Rider*.app"
             
             var dir = new DirectoryInfo("/Applications").GetDirectories("*Rider*.app").ToArray();
-            var toolboxDir = new DirectoryInfo(Path.Combine(Environment.SpecialFolder.MyDocuments.ToString(), "Applications")).GetDirectories("*Rider*.app").ToArray();
+            var toolboxDir = new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications")).GetDirectories("*Rider*.app").ToArray();
             var newPathMac = dir.Concat(toolboxDir).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
             if (newPathMac != null)
             {
