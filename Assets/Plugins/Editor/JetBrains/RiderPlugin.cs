@@ -20,40 +20,50 @@ namespace Plugins.Editor.JetBrains
     private static bool Initialized;
     private static string SlnFile;
 
-    private static string DefaultApp
+    private static string GetDefaultApp()
     {
-      get
-      {
         var alreadySetPath = EditorPrefs.GetString("kScriptsDefaultApp");
         if (!string.IsNullOrEmpty(alreadySetPath) && alreadySetPath.ToLower().Contains("rider") &&
             RiderPathExist(alreadySetPath))
           return alreadySetPath;
 
-        switch (new FileInfo(alreadySetPath).Extension)
+        switch (SystemInfo.operatingSystemFamily)
         {
-          case ".lnk":
-          case ".exe":
+          case OperatingSystemFamily.Windows:
             //"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains\*Rider*.lnk"
             //%appdata%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox\*Rider*.lnk
 
             var f1 = new DirectoryInfo(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains").GetFiles("*Rider*.lnk");
             var f2 = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
               @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")).GetFiles("*Rider*.lnk");
-            var newPathLnk = f1.ToArray().Concat(f2).OrderBy(a => a.LastWriteTime).LastOrDefault();
-            if (newPathLnk != null)
+            var newPathLnks = f1.ToArray().Concat(f2);
+            if (newPathLnks.Any())
             {
-              var newPath = ShortcutResolver.Resolve(newPathLnk.FullName);
-              if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", alreadySetPath, newPath));
-              if (!string.IsNullOrEmpty(newPath))
-                EditorPrefs.SetString("kScriptsDefaultApp", newPath);
+              var newPath = newPathLnks.Select(newPathLnk=> new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName))).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).FileVersion).LastOrDefault();
+              if (!string.IsNullOrEmpty(newPath.FullName))
+              {
+                if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", alreadySetPath, newPath));
+                EditorPrefs.SetString("kScriptsDefaultApp", newPath.FullName);
+              }
             }
             break;
 
-          case ".app":
+          case OperatingSystemFamily.MacOSX:
             // "/Applications/*Rider*.app"
             //"~/Applications/JetBrains Toolbox/*Rider*.app"
+            
+            var dir = new DirectoryInfo("/Applications").GetDirectories("*Rider*.app").ToArray();
+            var toolboxDir = new DirectoryInfo(Path.Combine(Environment.SpecialFolder.MyDocuments.ToString(), "Applications")).GetDirectories("*Rider*.app").ToArray();
+            var newPathMac = dir.Concat(toolboxDir).OrderBy(a => a.LastWriteTime).LastOrDefault();
+            if (newPathMac != null)
+            {
+              if (!string.IsNullOrEmpty(newPathMac.FullName))
+              {
+                if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", alreadySetPath, newPathMac));
+                EditorPrefs.SetString("kScriptsDefaultApp", newPathMac.FullName);
+              }
+            }           
             break;
-
         }
 
         var riderPath = EditorPrefs.GetString("kScriptsDefaultApp");
@@ -65,7 +75,6 @@ namespace Plugins.Editor.JetBrains
         }
 
         return riderPath;
-      }
     }
 
     public static bool TargetFrameworkVersion45
@@ -189,7 +198,7 @@ namespace Plugins.Editor.JetBrains
         {
           SyncSolution(); // added to handle opening file, which was just recently created.
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!DetectPortAndOpenFile(line, assetFilePath, new FileInfo(DefaultApp).Extension == ".exe"))
+          if (!DetectPortAndOpenFile(line, assetFilePath, new FileInfo(GetDefaultApp()).Extension == ".exe"))
           {
             var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
             return CallRider(args);
@@ -249,7 +258,7 @@ namespace Plugins.Editor.JetBrains
       if (EnableLogging) Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
 
       CallHttpApi(uri, client);
-      ActivateWindow(new FileInfo(DefaultApp).FullName);
+      ActivateWindow(new FileInfo(GetDefaultApp()).FullName);
       return true;
     }
 
@@ -262,7 +271,7 @@ namespace Plugins.Editor.JetBrains
 
     private static bool CallRider(string args)
     {
-      var riderFileInfo = new FileInfo(DefaultApp);
+      var riderFileInfo = new FileInfo(GetDefaultApp());
       var macOSVersion = riderFileInfo.Extension == ".app";
       if (!RiderPathExist(riderFileInfo.FullName))
       {
@@ -273,12 +282,12 @@ namespace Plugins.Editor.JetBrains
       if (macOSVersion)
       {
         proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + DefaultApp, args);
+        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + GetDefaultApp(), args);
         if (EnableLogging) Debug.Log("[Rider] " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
       }
       else
       {
-        proc.StartInfo.FileName = DefaultApp;
+        proc.StartInfo.FileName = GetDefaultApp();
         proc.StartInfo.Arguments = args;
         if (EnableLogging)
           Debug.Log("[Rider] " + ("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments));
@@ -290,7 +299,7 @@ namespace Plugins.Editor.JetBrains
       proc.StartInfo.RedirectStandardOutput = true;
       proc.Start();
 
-      ActivateWindow(DefaultApp);
+      ActivateWindow(GetDefaultApp());
       return true;
     }
 
