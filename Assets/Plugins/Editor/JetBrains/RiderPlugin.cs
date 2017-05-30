@@ -16,7 +16,7 @@ namespace Plugins.Editor.JetBrains
 {
   [InitializeOnLoad]
   public static class RiderPlugin
-  {
+  {   
     private static bool Initialized;
     private static string SlnFile;
 
@@ -27,7 +27,7 @@ namespace Plugins.Editor.JetBrains
             RiderPathExist(alreadySetPath))
           return alreadySetPath;
 
-        switch (SystemInfo.operatingSystemFamily)
+        switch (SystemInfoRiderPlugin.operatingSystemFamily)
         {
           case OperatingSystemFamily.Windows:
             //"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains\*Rider*.lnk"
@@ -123,7 +123,7 @@ namespace Plugins.Editor.JetBrains
       // windows or mac
       var fileInfo = new FileInfo(path);
       var directoryInfo = new DirectoryInfo(path);
-      return fileInfo.Exists || (SystemInfo.operatingSystemFamily==OperatingSystemFamily.MacOSX && directoryInfo.Exists);
+      return fileInfo.Exists || (SystemInfoRiderPlugin.operatingSystemFamily==OperatingSystemFamily.MacOSX && directoryInfo.Exists);
     }
 
     /// <summary>
@@ -197,7 +197,7 @@ namespace Plugins.Editor.JetBrains
         {
           SyncSolution(); // added to handle opening file, which was just recently created.
           var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!DetectPortAndOpenFile(line, assetFilePath, SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows))
+          if (!DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
           {
             var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
             return CallRider(args);
@@ -277,7 +277,7 @@ namespace Plugins.Editor.JetBrains
       }
 
       var proc = new Process();
-      if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.MacOSX)
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + GetDefaultApp(), args);
@@ -303,7 +303,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void ActivateWindow()
     {
-      if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows)
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
       {
         try
         {
@@ -428,6 +428,44 @@ All those problems will go away after Unity upgrades to mono4.";
       EditorGUI.EndChangeCheck();
     }
 
+    #region SystemInfoRiderPlugin
+    static class SystemInfoRiderPlugin
+    {
+      public static OperatingSystemFamily operatingSystemFamily
+      {
+        get
+        {
+#if UNITY_5_5_OR_NEWER
+return SystemInfo.operatingSystemFamily;
+#else
+          if (SystemInfo.operatingSystem.StartsWith("Mac", StringComparison.InvariantCultureIgnoreCase))
+          {
+            return OperatingSystemFamily.MacOSX;
+          }
+          if (SystemInfo.operatingSystem.StartsWith("Win", StringComparison.InvariantCultureIgnoreCase))
+          {
+            return OperatingSystemFamily.Windows;
+          }
+          if (SystemInfo.operatingSystem.StartsWith("Lin", StringComparison.InvariantCultureIgnoreCase))
+          {
+            return OperatingSystemFamily.Linux;
+          }
+          return OperatingSystemFamily.Other;
+#endif
+        }
+      }
+    }
+#if !UNITY_5_5_OR_NEWER
+    enum OperatingSystemFamily
+    {
+      Other,
+      MacOSX,
+      Windows,
+      Linux,
+    }
+#endif
+    #endregion
+    
     static class User32Dll
     {
 
@@ -686,7 +724,6 @@ All those problems will go away after Unity upgrades to mono4.";
         ((IShellLinkW) link).GetPath(sb, sb.Capacity, out data, 0);
         return sb.ToString();
       }
-
     }
   }
 }
