@@ -132,6 +132,11 @@ namespace Plugins.Editor.JetBrains
     /// <param name="slnFile"></param>
     private static void UpdateUnitySettings(string slnFile)
     {
+      // For OSX - Unity doesn't use kScriptEditorArgs
+      // For Linux - escaping inside kScriptEditorArgs get broken. "SlnPath" "$(FilePath)" is transformed into 'SlnPath" "$(FilePath)'
+      if (SystemInfoRiderPlugin.operatingSystemFamily!=OperatingSystemFamily.Windows)
+        return;
+      
       try
       {
         EditorPrefs.SetString("kScriptEditorArgs", string.Format("{0}{1}{0} {0}$(File){0}", "\"", slnFile));
