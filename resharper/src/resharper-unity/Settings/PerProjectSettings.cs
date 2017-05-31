@@ -6,11 +6,11 @@ using JetBrains.Application.changes;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ProjectModel.Settings.Storages;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
@@ -30,7 +30,7 @@ using JetBrains.Application.Threading;
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class PerProjectSettings : IChangeProvider
+    public class PerProjectSettings
     {
         private static readonly Version Version46 = new Version(4, 6);
 
@@ -45,13 +45,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         private readonly Dictionary<IProject, SettingsStorageMountPoint> myProjectMountPoints;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
 
-        public PerProjectSettings(Lifetime lifetime, ISolution solution, ChangeManager changeManager,
-                                  ModuleReferenceResolveSync moduleReferenceResolveSync,
-                                  IViewableProjectsCollection projects,
+        public PerProjectSettings(ISolution solution, ChangeManager changeManager,
                                   ISettingsSchema settingsSchema,
                                   SettingsStorageProvidersCollection settingsStorageProviders, IShellLocks locks,
                                   ILogger logger, InternKeyPathComponent interned,
-                                  UnityProjectFileCacheProvider unityProjectFileCache)
+                                  UnityProjectFileCacheProvider unityProjectFileCache,
+                                  ProjectReferenceChangeTracker changeTracker)
         {
             mySolution = solution;
             myChangeManager = changeManager;
@@ -64,52 +63,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
             myProjectLifetimes = new Dictionary<IProject, Lifetime>();
 
-            changeManager.RegisterChangeProvider(lifetime, this);
-            changeManager.AddDependency(lifetime, this, moduleReferenceResolveSync);
-
-            projects.Projects.View(lifetime, (projectLifetime, project) =>
-            {
-                myProjectLifetimes.Add(project, projectLifetime);
-
-                if (!project.IsUnityProject())
-                    return;
-
-                InitialiseProjectSettings(project);
-            });
+            changeTracker.RegisterProjectChangeHandler(InitialiseProjectSettings);
         }
 
-        object IChangeProvider.Execute(IChangeMap changeMap)
+        private void InitialiseProjectSettings(Lifetime projectLifetime, IProject project)
         {
-            var projectModelChange = changeMap.GetChange<ProjectModelChange>(mySolution);
-            if (projectModelChange == null)
-                return null;
-
-            // ReSharper hasn't necessarily processed all references when it adds the IProject
-            // to the IViewableProjectsCollection. Keep an eye on reference changes, add the
-            // project settings if/when the project becomes a unity project
-            var projects = new JetHashSet<IProject>();
-            var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames);
-            foreach (var change in changes)
-                projects.Add(change.GetNewProject());
-
-            foreach (var project in projects)
-            {
-                myChangeManager.ExecuteAfterChange(() =>
-                {
-                    if (project.IsUnityProject())
-                        InitialiseProjectSettings(project);
-                });
-            }
-
-            return null;
-        }
-
-        private void InitialiseProjectSettings(IProject project)
-        {
-            Lifetime projectLifetime;
-            if (!myProjectLifetimes.TryGetValue(project, out projectLifetime))
-                return;
-
             SettingsStorageMountPoint mountPoint;
             lock(myProjectMountPoints)
             {

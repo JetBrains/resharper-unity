@@ -1,0 +1,7 @@
+**NOTE**: This repo is a **Unity plugin to open projects in Rider**. It does not provide any functionality in Rider itself.
+
+Please raise issues here **only if it deals with integration between the Unity editor and Rider**, e.g. opening files.
+
+If the issue or feature request is **Unity specific** (e.g. highlighting Unity methods, working with Unity files, Unity specific code completion) please raise an issue in the [JetBrains/resharper-unity](https://www.github.com/JetBrains/resharper-unity) repo. That plugin is what powers the Unity specific content in Rider.
+
+If the issue of feature request relates to **Rider**, but not is not Unity specific (e.g. saving files, the UI, text editing, etc.) please raise an issue in the [Rider issue tracker](https://youtrack.jetbrains.com/issues/RIDER).
