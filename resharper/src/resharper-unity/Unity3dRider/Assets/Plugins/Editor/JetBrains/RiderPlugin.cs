@@ -108,7 +108,6 @@ namespace Plugins.Editor.JetBrains
 
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
-      UpdateUnitySettings(SlnFile);
 
       InitializeEditorInstanceJson(projectDirectory);
 
@@ -124,27 +123,6 @@ namespace Plugins.Editor.JetBrains
       var fileInfo = new FileInfo(path);
       var directoryInfo = new DirectoryInfo(path);
       return fileInfo.Exists || (SystemInfoRiderPlugin.operatingSystemFamily==OperatingSystemFamily.MacOSX && directoryInfo.Exists);
-    }
-
-    /// <summary>
-    /// Helps to open xml and txt files at least on Windows
-    /// </summary>
-    /// <param name="slnFile"></param>
-    private static void UpdateUnitySettings(string slnFile)
-    {
-      // For OSX - Unity doesn't use kScriptEditorArgs
-      // For Linux - escaping inside kScriptEditorArgs get broken. "SlnPath" "$(FilePath)" is transformed into 'SlnPath" "$(FilePath)'
-      if (SystemInfoRiderPlugin.operatingSystemFamily!=OperatingSystemFamily.Windows)
-        return;
-      
-      try
-      {
-        EditorPrefs.SetString("kScriptEditorArgs", string.Format("{0}{1}{0} {0}$(File){0}", "\"", slnFile));
-      }
-      catch (Exception e)
-      {
-        if (EnableLogging) Debug.Log("[Rider] " + ("Exception on updating kScriptEditorArgs: " + e.Message));
-      }
     }
 
     /// <summary>
@@ -196,20 +174,17 @@ namespace Plugins.Editor.JetBrains
 
         // determine asset that has been double clicked in the project view
         var selected = EditorUtility.InstanceIDToObject(instanceID);
-
-        if (selected.GetType().ToString() == "UnityEditor.MonoScript" ||
-            selected.GetType().ToString() == "UnityEngine.Shader")
+        SyncSolution(); // added to handle opening file, which was just recently created.
+        var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
+        if (!DetectPortAndOpenFile(line, assetFilePath,
+          SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
         {
-          SyncSolution(); // added to handle opening file, which was just recently created.
-          var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
-          {
-            var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-            return CallRider(args);
-          }
-          return true;
+          var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
+          return CallRider(args);
         }
+        return true;
       }
+
       return false;
     }
 
