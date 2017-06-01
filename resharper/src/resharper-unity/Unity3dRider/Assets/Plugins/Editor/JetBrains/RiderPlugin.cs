@@ -22,7 +22,7 @@ namespace Plugins.Editor.JetBrains
 
     private static string GetDefaultApp()
     {
-        var alreadySetPath = EditorPrefs.GetString("kScriptsDefaultApp");
+        var alreadySetPath = GetExternalScriptEditor();
         if (!string.IsNullOrEmpty(alreadySetPath) && alreadySetPath.ToLower().Contains("rider") &&
             RiderPathExist(alreadySetPath))
           return alreadySetPath;
@@ -43,7 +43,7 @@ namespace Plugins.Editor.JetBrains
               if (!string.IsNullOrEmpty(newPath.FullName))
               {
                 if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1} product version: {2}", alreadySetPath, newPath, FileVersionInfo.GetVersionInfo(newPath.FullName).ProductVersion));
-                EditorPrefs.SetString("kScriptsDefaultApp", newPath.FullName);
+                SetExternalScriptEditor(newPath.FullName);
               }
             }
             break;
@@ -59,13 +59,13 @@ namespace Plugins.Editor.JetBrains
               if (!string.IsNullOrEmpty(newPathMac.FullName))
               {
                 if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", alreadySetPath, newPathMac));
-                EditorPrefs.SetString("kScriptsDefaultApp", newPathMac.FullName);
+                SetExternalScriptEditor(newPathMac.FullName);
               }
             }           
             break;
         }
 
-        var riderPath = EditorPrefs.GetString("kScriptsDefaultApp");
+        var riderPath = GetExternalScriptEditor();
         if (!RiderPathExist(riderPath))
         {
           EditorUtility.DisplayDialog("Rider executable not found",
@@ -109,10 +109,21 @@ namespace Plugins.Editor.JetBrains
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
 
+      SetExternalScriptEditor(GetDefaultApp());
       InitializeEditorInstanceJson(projectDirectory);
 
       Debug.Log("[Rider] " + "Rider plugin initialized. You may enabled more Rider Debug output via Preferences -> Rider -> Enable Logging");
       Initialized = true;
+    }
+    
+    private static string GetExternalScriptEditor()
+    {
+      return EditorPrefs.GetString("kScriptsDefaultApp");
+    }
+
+    private static void SetExternalScriptEditor(string path)
+    {
+      EditorPrefs.SetString("kScriptsDefaultApp", path);
     }
 
     private static bool RiderPathExist(string path)
