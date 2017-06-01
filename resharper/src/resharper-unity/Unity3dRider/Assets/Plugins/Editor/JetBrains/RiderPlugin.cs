@@ -185,7 +185,6 @@ namespace Plugins.Editor.JetBrains
 
         // determine asset that has been double clicked in the project view
         var selected = EditorUtility.InstanceIDToObject(instanceID);
-        SyncSolution(); // added to handle opening file, which was just recently created.
         
         if (selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader" ||
