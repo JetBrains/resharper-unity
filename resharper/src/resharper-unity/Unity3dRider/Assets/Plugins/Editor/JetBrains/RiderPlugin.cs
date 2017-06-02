@@ -186,15 +186,15 @@ namespace Plugins.Editor.JetBrains
         // determine asset that has been double clicked in the project view
         var selected = EditorUtility.InstanceIDToObject(instanceID);
         
-        if (selected.GetType().ToString() != "UnityEditor.MonoScript" &&
-            selected.GetType().ToString() != "UnityEngine.Shader" &&
-            selected.GetType().ToString() != "UnityEngine.TextAsset") 
+        var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
+        if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
+            selected.GetType().ToString() == "UnityEngine.Shader" ||
+            (selected.GetType().ToString() == "UnityEngine.TextAsset" && 
+             EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1)))
+              )) 
           return false;
         
         SyncSolution(); // added to handle opening file, which was just recently created.
-        var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-        if (!EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1)))
-          return false;
         if (!DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
         {
           var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
