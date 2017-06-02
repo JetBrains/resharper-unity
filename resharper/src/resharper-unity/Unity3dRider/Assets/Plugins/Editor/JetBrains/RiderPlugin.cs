@@ -186,19 +186,21 @@ namespace Plugins.Editor.JetBrains
         // determine asset that has been double clicked in the project view
         var selected = EditorUtility.InstanceIDToObject(instanceID);
         
-        if (selected.GetType().ToString() == "UnityEditor.MonoScript" ||
-            selected.GetType().ToString() == "UnityEngine.Shader" ||
-            selected.GetType().ToString() == "UnityEngine.TextAsset")
+        if (selected.GetType().ToString() != "UnityEditor.MonoScript" &&
+            selected.GetType().ToString() != "UnityEngine.Shader" &&
+            selected.GetType().ToString() != "UnityEngine.TextAsset") 
+          return false;
+        
+        SyncSolution(); // added to handle opening file, which was just recently created.
+        var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
+        if (!EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1)))
+          return false;
+        if (!DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
         {
-          SyncSolution(); // added to handle opening file, which was just recently created.
-          var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-          if (!DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
-          {
-            var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-            return CallRider(args);
-          }
-          return true;
+          var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
+          return CallRider(args);
         }
+        return true;
       }
 
       return false;
