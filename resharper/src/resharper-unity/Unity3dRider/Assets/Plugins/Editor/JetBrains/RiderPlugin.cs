@@ -41,8 +41,9 @@ namespace Plugins.Editor.JetBrains
               var newPath = newPathLnks.Select(newPathLnk=> new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName))).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
               if (!string.IsNullOrEmpty(newPath.FullName))
               {
-                if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1} product version: {2}", alreadySetPath, newPath, FileVersionInfo.GetVersionInfo(newPath.FullName).ProductVersion));
-                SetExternalScriptEditor(newPath.FullName);
+                /*if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1} product version: {2}", alreadySetPath, newPath, FileVersionInfo.GetVersionInfo(newPath.FullName).ProductVersion));
+                SetExternalScriptEditor(newPath.FullName);*/
+                return newPath.FullName;
               }
             }
             break;
@@ -57,8 +58,9 @@ namespace Plugins.Editor.JetBrains
             {
               if (!string.IsNullOrEmpty(newPathMac.FullName))
               {
-                if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", alreadySetPath, newPathMac));
-                SetExternalScriptEditor(newPathMac.FullName);
+                /*if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", alreadySetPath, newPathMac));
+                SetExternalScriptEditor(newPathMac.FullName);*/
+                return newPathMac.FullName;
               }
             }           
             break;
@@ -100,6 +102,7 @@ namespace Plugins.Editor.JetBrains
       AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
       if (Enabled)
       {
+        SetExternalScriptEditor(riderPath);
         InitRiderPlugin();
       }
     }
