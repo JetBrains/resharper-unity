@@ -89,7 +89,7 @@ namespace Plugins.Editor.JetBrains
     {
       get
       {
-        var defaultApp = GetDefaultApp();
+        var defaultApp = GetExternalScriptEditor();
         return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
       }
     }
@@ -282,7 +282,8 @@ namespace Plugins.Editor.JetBrains
 
     private static bool CallRider(string args)
     {
-      var riderFileInfo = new FileInfo(GetDefaultApp());
+      var defaultApp = GetDefaultApp();
+      var riderFileInfo = new FileInfo(defaultApp);
       if (!RiderPathExist(riderFileInfo.FullName))
       {
         return false;
@@ -292,12 +293,12 @@ namespace Plugins.Editor.JetBrains
       if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.MacOSX)
       {
         proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + GetDefaultApp(), args);
+        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
         if (EnableLogging) Debug.Log("[Rider] " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
       }
       else
       {
-        proc.StartInfo.FileName = GetDefaultApp();
+        proc.StartInfo.FileName = defaultApp;
         proc.StartInfo.Arguments = args;
         if (EnableLogging)
           Debug.Log("[Rider] " + ("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments));
