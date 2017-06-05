@@ -67,9 +67,7 @@ namespace Plugins.Editor.JetBrains
         var riderPath = GetExternalScriptEditor();
         if (!RiderPathExist(riderPath))
         {
-          EditorUtility.DisplayDialog("Rider executable not found",
-            string.Format(@"Rider was not found in {0}{1}Please update 'External Script Editor'.", riderPath,
-              Environment.NewLine), "OK");
+          Debug.Log("[Rider] Rider plugin for Unity is present, but Rider executable was not found. Please update 'External Script Editor'.");
         }
 
         return riderPath;
@@ -87,14 +85,19 @@ namespace Plugins.Editor.JetBrains
       set { EditorPrefs.SetBool("Rider_EnableLogging", value); }
     }
 
-    public static bool Enabled
+    internal static bool Enabled
     {
-      get { return EditorPrefs.GetBool("Rider_Enabled", true); }
-      set { EditorPrefs.SetBool("Rider_Enabled", value); }
+      get
+      {
+        var defaultApp = GetDefaultApp();
+        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
+      }
     }
 
     static RiderPlugin()
     {
+      var riderPath = GetDefaultApp();
+      AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
       if (Enabled)
       {
         InitRiderPlugin();
@@ -108,9 +111,6 @@ namespace Plugins.Editor.JetBrains
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
 
-      var riderPath = GetDefaultApp();
-      SetExternalScriptEditor(riderPath);
-      AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
       InitializeEditorInstanceJson(projectDirectory);
 
       Debug.Log("[Rider] " + "Rider plugin initialized. You may enabled more Rider Debug output via Preferences -> Rider -> Enable Logging");
@@ -398,20 +398,13 @@ namespace Plugins.Editor.JetBrains
     {
       EditorGUILayout.BeginVertical();
 
-      var url = "https://github.com/JetBrains/Unity3dRider";
+      var url = "https://github.com/JetBrains/resharper-unity";
       if (GUILayout.Button(url))
       {
         Application.OpenURL(url);
       }
 
       EditorGUI.BeginChangeCheck();
-
-      var enabledMsg = @"Enable Unity3dRider.";
-      Enabled =
-        EditorGUILayout.Toggle(
-          new GUIContent("Enable Unity3dRider",
-            enabledMsg), Enabled);
-      EditorGUILayout.HelpBox(enabledMsg, MessageType.None);
 
       var help = @"For now target 4.5 is strongly recommended.
  - Without 4.5:
