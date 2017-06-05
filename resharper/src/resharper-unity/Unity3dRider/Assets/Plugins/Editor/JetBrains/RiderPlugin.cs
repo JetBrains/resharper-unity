@@ -23,8 +23,7 @@ namespace Plugins.Editor.JetBrains
     private static string GetDefaultApp()
     {
         var alreadySetPath = GetExternalScriptEditor();
-        if (!string.IsNullOrEmpty(alreadySetPath) && alreadySetPath.ToLower().Contains("rider") &&
-            RiderPathExist(alreadySetPath))
+        if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath))
           return alreadySetPath;
 
         switch (SystemInfoRiderPlugin.operatingSystemFamily)
@@ -145,6 +144,8 @@ namespace Plugins.Editor.JetBrains
         return false;
       // windows or mac
       var fileInfo = new FileInfo(path);
+      if (!fileInfo.Name.ToLower().Contains("rider"))
+        return false;
       var directoryInfo = new DirectoryInfo(path);
       return fileInfo.Exists || (SystemInfoRiderPlugin.operatingSystemFamily==OperatingSystemFamily.MacOSX && directoryInfo.Exists);
     }
