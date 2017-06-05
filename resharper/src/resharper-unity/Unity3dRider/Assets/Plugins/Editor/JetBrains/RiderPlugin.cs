@@ -109,11 +109,24 @@ namespace Plugins.Editor.JetBrains
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
 
-      SetExternalScriptEditor(GetDefaultApp());
+      var riderPath = GetDefaultApp();
+      SetExternalScriptEditor(riderPath);
+      AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
       InitializeEditorInstanceJson(projectDirectory);
 
       Debug.Log("[Rider] " + "Rider plugin initialized. You may enabled more Rider Debug output via Preferences -> Rider -> Enable Logging");
       Initialized = true;
+    }
+    
+    private static void AddRiderToRecentlyUsedScriptApp(string userAppPath, string recentAppsKey)
+    {
+      for (int index = 0; index < 10; ++index)
+      {
+        string path = EditorPrefs.GetString(recentAppsKey + (object) index);
+        if (File.Exists(path) && Path.GetFileName(path).ToLower().Contains("rider"))
+          return;
+      }
+      EditorPrefs.SetString(recentAppsKey + 9, userAppPath);
     }
     
     private static string GetExternalScriptEditor()
