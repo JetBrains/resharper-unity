@@ -42,8 +42,8 @@ This needs to be done for each project.
 
 ## Roadmap
 
-This plugin is intended to be lightweight and simple, and is not intended to do much more than it currently does. If you have any issues or feature suggestions with regard to plugin functionality inside Unity, please [file an issue](https://github.com/JetBrains/Unity3dRider/issues).
+This plugin is intended to be lightweight and simple, and is not intended to do much more than it currently does. If you have any issues or feature suggestions with regard to plugin functionality inside Unity, please [file an issue](https://github.com/JetBrains/resharper-unity/issues).
 
-If you have any issues or feature suggestion for Unity functionality inside Rider, please [file an issue with the ReSharper plugin](https://github.com/JetBrains/resharper-unity/issues).
+If you have any issues or feature suggestion for Unity functionality inside Rider, please [file an issue](https://github.com/JetBrains/resharper-unity/issues).
 
 Any issues or feature suggestion for Rider itself, please [file an issue with Rider](https://youtrack.jetbrains.com/issues/RIDER)
