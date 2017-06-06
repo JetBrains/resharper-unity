@@ -5,12 +5,12 @@ Rider support for Unity:
     * Use the Run &rarr; "Attach to local process" menu item to list available Unity instances.
     * Run &rarr; "Edit Configurations" &rarr; Add new "Mono remote" configuration to set everything manually.
 
-[From EAP13 - 163.7608] Additional Rider support for Unity via [ReSharper plugin](https://github.com/JetBrains/resharper-unity#readme) (File&rarr;Settings&rarr;Plugins&rarr;Type Unity&rarr;Press "search in repositories"&rarr;ReSharper Unity plugin will be found&rarr;Install.&rarr;Restart Rider.). 
+Additional Rider support for Unity via [ReSharper plugin](https://github.com/JetBrains/resharper-unity#readme) (File&rarr;Settings&rarr;Plugins&rarr;Type Unity&rarr;Press "search in repositories"&rarr;ReSharper Unity plugin will be found&rarr;Install.&rarr;Restart Rider.). 
 
 However, Unity does not currently support Rider. This plugin adds that support:
 
 * An "Open C# Project in Rider" item to the Assets menu.
-    * Open file is fast and Rider is always focused after opening file.
+    * Open file is fast and Rider is focused after opening file.
 * Double click a C# script file or error message in Unity will open Rider and navigate to the corresponding file and line.
 * Runs on Windows, Linux and macOS.
 * Sets language level when generating project files
@@ -25,7 +25,8 @@ However, Unity does not currently support Rider. This plugin adds that support:
 
 **Set Rider as the default External Script Editor**
 
-For MAC and Windows plugin will try to find Rider executable automatically, but if it fails, you may need to point it once.
+For MAC and Windows plugin will try to find Rider executable automatically and add it to known editors list, 
+but if it fails, you may need to point it once:
 
 1. Open Unity.
 2. Go to Edit &rarr; Preferences &rarr; External Tools.
@@ -42,7 +43,7 @@ This needs to be done for each project.
 
 ## Roadmap
 
-This plugin is intended to be lightweight and simple, and is not intended to do much more than it currently does. If you have any issues or feature suggestions with regard to plugin functionality inside Unity, please [file an issue](https://github.com/JetBrains/resharper-unity/issues).
+This plugin is intended to be lightweight and simple, and is not intended to do much more than it currently does. If you have any issues or feature suggestions with regard to plugin functionality inside Unity, please [file an issue with unity-plugin label](https://github.com/JetBrains/resharper-unity/issues).
 
 If you have any issues or feature suggestion for Unity functionality inside Rider, please [file an issue](https://github.com/JetBrains/resharper-unity/issues).
 
