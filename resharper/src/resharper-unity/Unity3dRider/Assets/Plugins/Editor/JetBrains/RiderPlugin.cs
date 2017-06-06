@@ -70,6 +70,7 @@ namespace Plugins.Editor.JetBrains
         if (!RiderPathExist(riderPath))
         {
           Debug.Log("[Rider] Rider plugin for Unity is present, but Rider executable was not found. Please update 'External Script Editor'.");
+          return null;
         }
 
         return riderPath;
@@ -86,6 +87,12 @@ namespace Plugins.Editor.JetBrains
       get { return EditorPrefs.GetBool("Rider_EnableLogging", false); }
       set { EditorPrefs.SetBool("Rider_EnableLogging", value); }
     }
+    
+    public static bool RiderInitializedOnce
+    {
+      get { return EditorPrefs.GetBool("RiderInitializedOnce", false); }
+      set { EditorPrefs.SetBool("RiderInitializedOnce", value); }
+    }
 
     internal static bool Enabled
     {
@@ -99,10 +106,17 @@ namespace Plugins.Editor.JetBrains
     static RiderPlugin()
     {
       var riderPath = GetDefaultApp();
+      if (!RiderPathExist(riderPath)) 
+        return;
+      
       AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
-      if (Enabled)
+      if (!RiderInitializedOnce)
       {
         SetExternalScriptEditor(riderPath);
+        RiderInitializedOnce = true;
+      }
+      if (Enabled)
+      {
         InitRiderPlugin();
       }
     }
@@ -286,8 +300,7 @@ namespace Plugins.Editor.JetBrains
     private static bool CallRider(string args)
     {
       var defaultApp = GetDefaultApp();
-      var riderFileInfo = new FileInfo(defaultApp);
-      if (!RiderPathExist(riderFileInfo.FullName))
+      if (!RiderPathExist(defaultApp))
       {
         return false;
       }
@@ -406,8 +419,8 @@ namespace Plugins.Editor.JetBrains
       if (GUILayout.Button(url))
       {
         Application.OpenURL(url);
-      }
-
+      }    
+      
       EditorGUI.BeginChangeCheck();
 
       var help = @"For now target 4.5 is strongly recommended.
@@ -435,6 +448,13 @@ All those problems will go away after Unity upgrades to mono4.";
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
       EditorGUI.EndChangeCheck();
+      
+/*      if (GUILayout.Button("reset RiderInitializedOnce = false"))
+      {
+        RiderInitializedOnce = false;
+      }*/
+      
+      EditorGUILayout.EndVertical();
     }
 
     #region SystemInfoRiderPlugin
