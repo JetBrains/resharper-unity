@@ -45,8 +45,8 @@ namespace Plugins.Editor.JetBrains
         if (line.StartsWith("Project("))
         {
           MatchCollection mc = Regex.Matches(line, "\"([^\"]*)\"");
-          //RiderPlugin.Log(mc[2].Value);
-          sb.Append(line.Replace(mc[1].Value, GetFileNameWithoutExtension(mc[2].Value)+"\""));
+          //Debug.Log("mc[1]: "+mc[1].Value); //Debug.Log("mc[2]: "+mc[2].Value);
+          sb.Append(line.Replace(mc[1].Value.TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray()), GetFileNameWithoutExtension(mc[2].Value).TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray())));
         }
         else
         {
