@@ -126,6 +126,15 @@ if (!$vspath) {
   Write-Error "Could not find Visual Studio 2017+ for MSBuild 15"
 }
 
+$baseVersion = GetBasePluginVersion "Packaging.props"
+if ($BuildCounter) {
+  $version = "$baseVersion.$BuildCounter"
+} else {
+  $version = $baseVersion
+}
+
+Invoke-Expression ".\merge-unity-3d-rider.ps1 -inputDir resharper\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains -version $version"
+
 $msbuild = join-path $vspath 'MSBuild\15.0\Bin\MSBuild.exe'
 if (!(test-path $msbuild)) {
   Write-Error "MSBuild 15 is expected at $msbuild"
@@ -147,13 +156,6 @@ Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.rider/b
 
 ### Pack Rider plugin directory
 SetIdeaVersion -file "rider/src/main/resources/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
-
-$baseVersion = GetBasePluginVersion "Packaging.props"
-if ($BuildCounter) {
-  $version = "$baseVersion.$BuildCounter"
-} else {
-  $version = $baseVersion
-}
 
 Write-Host "##teamcity[buildNumber '$version']"
 SetPluginVersion -file "rider/src/main/resources/META-INF/plugin.xml" -version $version
