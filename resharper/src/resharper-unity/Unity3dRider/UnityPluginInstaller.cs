@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.DataFlow;
@@ -16,8 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
 #endif
   public class UnityPluginInstaller
   {
-    public static readonly string[] PluginFiles = {"RiderAssetPostprocessor.cs", "RiderPlugin.cs"};
-    
     private readonly JetHashSet<FileSystemPath> myPluginInstallations;
     private readonly UnityPluginDetector myDetector;
     private readonly ILogger myLogger;
@@ -50,11 +49,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
       if (!installationInfo.ShouldInstallPlugin)
         return;
 
-      var currentVersion = new Version2(typeof(UnityPluginInstaller).Assembly.GetName().Version);
+      var currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
       if (currentVersion <= installationInfo.Version)
         return;
       
-      var isFreshInstall = installationInfo.InstalledFiles.Length == 0;
+      var isFreshInstall = installationInfo.Version == new Version();
       if (isFreshInstall)
         myLogger.LogMessage(LoggingLevel.INFO, "Fresh install");
 
@@ -62,8 +61,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
       {
         if (myPluginInstallations.Contains(project.ProjectFileLocation))
           return;
-        
-        if (TryInstall(installationInfo))
+
+        if (!TryInstall(installationInfo))
+        {
+          myLogger.LogMessage(LoggingLevel.WARN, "Plugin was not installed");
+        }
+        else
         {
           string logMessage;
           RdNotificationEntry notification;
@@ -83,14 +86,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
               true, RdNotificationEntryType.INFO);
           }
 
-          myPluginInstallations.Add(project.ProjectFileLocation);
           myLogger.LogMessage(LoggingLevel.INFO, logMessage);
           myNotifications.Notification.Fire(notification);
         }
-        else
-        {
-          myLogger.LogMessage(LoggingLevel.WARN, "Plugin was not installed");
-        }
+
+        myPluginInstallations.Add(project.ProjectFileLocation);
       }
     }
 
@@ -100,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
       {
         installation.PluginDirectory.CreateDirectory();
 
-        return CopyFiles(installation.PluginDirectory);
+        return DoInstall(installation);
       }
       catch (Exception e)
       {
@@ -109,30 +109,63 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
       }
     }
 
-    private bool CopyFiles(FileSystemPath pluginDir)
+    private bool DoInstall([NotNull] UnityPluginDetector.InstallationInfo installation)
     {
-      var updatedFileCount = 0;
-      foreach (var filename in PluginFiles)
+      var backups = installation.InstalledFiles.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+      
+      foreach (var originPath in installation.InstalledFiles)
       {
-        var path = pluginDir.Combine(filename);
-        var resourceName = ourResourceNamespace + filename;
+        var backupPath = backups[originPath];
+        originPath.MoveFile(backupPath, true);
+        myLogger.LogMessage(LoggingLevel.INFO, $"backing up: {originPath.Name} -> {backupPath.Name}");
+      }
+
+      try
+      {
+        var path = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
+
+        var resourceName = ourResourceNamespace + UnityPluginDetector.MergedPluginFile;
         using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
         {
           if (resourceStream == null)
           {
-            myLogger.LogMessage(LoggingLevel.ERROR, "Plugin file not found in manifest resources. " + filename);
+            myLogger.LogMessage(LoggingLevel.ERROR, "Plugin file not found in manifest resources. " + resourceName);
+            
+            RestoreFromBackup(backups);
+            
             return false;
           }
 
           using (var fileStream = path.OpenStream(FileMode.OpenOrCreate))
           {
             resourceStream.CopyTo(fileStream);
-            updatedFileCount++;
           }
         }
-      }
 
-      return updatedFileCount > 0;
+        foreach (var backup in backups)
+        {
+          backup.Value.DeleteFile();
+        }
+        
+        return true;
+      }
+      catch (Exception e)
+      {
+        myLogger.LogExceptionSilently(e);
+        
+        RestoreFromBackup(backups);
+        
+        return false;
+      }
+    }
+
+    private void RestoreFromBackup(Dictionary<FileSystemPath, FileSystemPath> backups)
+    {
+      foreach (var backup in backups)
+      {
+        myLogger.LogMessage(LoggingLevel.INFO, $"Restoring from backup {backup.Value} -> {backup.Key}");
+        backup.Value.MoveFile(backup.Key, true);
+      }
     }
   }
 }

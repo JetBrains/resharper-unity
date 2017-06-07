@@ -28,17 +28,17 @@ function SetPropertyValue($file, $name, $value)
   }
 }
 
-function GetBasePluginVersion($packagingPropsFile)
+function GetBasePluginVersion($packagingPropsFile, $nodeName)
 {
   $xml = New-Object xml
   $xml.Load($packagingPropsFile)
   
-  $node = $xml.SelectSingleNode("//Version")
-  if($node -eq $null) { Write-Error "//Version was not found in $packagingPropsFile" }
+  $node = $xml.SelectSingleNode("//$nodeName")
+  if($node -eq $null) { Write-Error "//$nodeName was not found in $packagingPropsFile" }
 
   $version = $node.InnerText
 
-  Write-Host "- ${packagingPropsFile}: version = $version"
+  Write-Host "- ${packagingPropsFile}: $nodeName = $version"
 
   return $version
 }
@@ -126,14 +126,8 @@ if (!$vspath) {
   Write-Error "Could not find Visual Studio 2017+ for MSBuild 15"
 }
 
-$baseVersion = GetBasePluginVersion "Packaging.props"
-if ($BuildCounter) {
-  $version = "$baseVersion.$BuildCounter"
-} else {
-  $version = $baseVersion
-}
-
-Invoke-Expression ".\merge-unity-3d-rider.ps1 -inputDir resharper\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains -version $version"
+$assemblyVersion = GetBasePluginVersion "Packaging.props" "AssemblyVersion"
+Invoke-Expression ".\merge-unity-3d-rider.ps1 -inputDir resharper\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains -version $assemblyVersion"
 
 $msbuild = join-path $vspath 'MSBuild\15.0\Bin\MSBuild.exe'
 if (!(test-path $msbuild)) {
@@ -155,6 +149,13 @@ if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastEx
 Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.rider/bin/$Configuration/*.nupkg']"
 
 ### Pack Rider plugin directory
+$baseVersion = GetBasePluginVersion "Packaging.props" "Version"
+if ($BuildCounter) {
+  $version = "$baseVersion.$BuildCounter"
+} else {
+  $version = $baseVersion
+}
+
 SetIdeaVersion -file "rider/src/main/resources/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
 
 Write-Host "##teamcity[buildNumber '$version']"
