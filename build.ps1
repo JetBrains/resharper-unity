@@ -9,6 +9,12 @@ param (
 )
 
 $isUnix = [System.Environment]::OSVersion.Platform -eq "Unix"
+if ($isUnix){
+    $platform = "Unix"
+}
+else{
+    $platform = "Windows"
+}
 
 Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 [System.IO.Directory]::SetCurrentDirectory($PSScriptRoot)
@@ -106,6 +112,58 @@ function GetPackageVersionFromFolder($folder, $name) {
   Write-Error "Package $name was not found in folder $folder"
 }
 
+$generatedNuspecs = {}.Invoke()
+
+function CreateConfigurationNuspec($nuspec){
+    $xml = [xml](Get-Content $nuspec)
+    foreach ($f in $xml.package.files.ChildNodes){
+        $f.src = $f.src.Replace("\Release\", "\$Configuration\")
+    }
+
+    $output = $nuspec.Replace(".nuspec", ".$Configuration.nuspec")
+    $xml.Save($output)
+    $generatedNuspecs.Add($output)
+    return $output
+}
+
+function CreatePlatformNuspec($nuspec){
+    $xml = [xml](Get-Content $nuspec)
+    if ($isUnix){
+        foreach ($f in $xml.package.files.ChildNodes){
+            $f.src = $f.src.Replace("\", "/")
+        }        
+    }
+
+    $output = $nuspec.Replace(".nuspec", ".$platform.nuspec")
+    $xml.Save($output)
+    $generatedNuspecs.Add($output)
+    return $output
+}
+
+function DeleteGeneratedNuspecs(){
+    foreach ($f in $generatedNuspecs){
+        Remove-Item $f
+    }
+}
+
+function PackNuget($id){
+    $nuspecPath = "resharper/src/resharper-unity/resharper-unity.$id.nuspec"
+    $nuspecPath = CreateConfigurationNuspec $nuspecPath
+    $nuspecPath = CreatePlatformNuspec $nuspecPath
+    Write-Host $nuspecPath
+
+    Write-Host "##teamcity[progressMessage 'Building and Packaging: $id']"
+    if ($isUnix){  
+      & nuget pack $nuspecPath -OutputDirectory resharper/build/resharper-unity.$id/bin/$Configuration
+    }
+    else{
+      $nuspecFilename = Split-Path $nuspecPath -leaf
+      & dotnet pack resharper/src/resharper-unity/resharper-unity.$id.csproj /p:Configuration=$Configuration /p:NuspecFile=$nuspecFilename --no-build  
+    }
+    if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
+    Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.$id/bin/$Configuration/*.nupkg']"    
+}
+
 if ($Source) {
   $sdkPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK"
   $sdkTestsPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK.Tests"
@@ -123,11 +181,6 @@ if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet restore: exit code $Las
 
 if ($NoBuild) { Exit 0 }
 
-#$vspath = .\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-#if (!$vspath) {
-#  Write-Error "Could not find Visual Studio 2017+ for MSBuild 15"
-#}
-
 $assemblyVersion = GetBasePluginVersion "Packaging.props" "AssemblyVersion"
 Invoke-Expression ".\merge-unity-3d-rider.ps1 -inputDir resharper\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains -version $assemblyVersion"
 
@@ -135,6 +188,10 @@ if ($isUnix){
   $msbuild = which msbuild
 }
 else{
+  $vspath = .\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+  if (!$vspath) {
+    Write-Error "Could not find Visual Studio 2017+ for MSBuild 15"
+  }
   $msbuild = join-path $vspath 'MSBuild\15.0\Bin\MSBuild.exe'
 }
 
@@ -146,25 +203,13 @@ Write-Host "##teamcity[progressMessage 'Building']"
 & $msbuild resharper\src\resharper-unity.sln /p:Configuration=$Configuration
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $LastExitCode" }
 
-Write-Host "##teamcity[progressMessage 'Building and Packaging: Wave08']"
-if ($isUnix){
-  & nuget pack resharper/src/resharper-unity/resharper-unity.wave08.$Configuration.nuspec resharper/build/resharper-unity.wave08/bin/$Configuration
+try{
+    PackNuget "wave08"
+    PackNuget "rider"
 }
-else{
-  & dotnet pack resharper/src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.wave08.$Configuration.nuspec --no-build
+finally{
+    DeleteGeneratedNuspecs
 }
-if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
-Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.wave08/bin/$Configuration/*.nupkg']"
-
-Write-Host "##teamcity[progressMessage 'Building and Packaging: Rider']"
-if ($isUnix){
-  nuget pack resharper/src/resharper-unity/resharper-unity.rider.$Configuration.nuspec -OutputDirectory resharper/build/resharper-unity.rider/bin/$Configuration
-}
-else{
-  & dotnet pack resharper/src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.rider.$Configuration.nuspec --no-build
-}
-if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
-Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.rider/bin/$Configuration/*.nupkg']"
 
 ### Pack Rider plugin directory
 $baseVersion = GetBasePluginVersion "Packaging.props" "Version"
