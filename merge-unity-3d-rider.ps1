@@ -34,7 +34,7 @@ New-Item $output -Force
 Add-Content $output "// $version"
 Add-Content $output "// This file was automatically generated"
 
-foreach($line in $usings | Sort | Get-Unique){
+foreach($line in $usings | Sort-Object | Get-Unique){
     Add-Content $output $line
 }
 

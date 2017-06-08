@@ -8,6 +8,8 @@ param (
   [switch]$NoBuild # Skip building and packing, just set package versions and restore packages
 )
 
+$isUnix = [System.Environment]::OSVersion.Platform -eq "Unix"
+
 Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 [System.IO.Directory]::SetCurrentDirectory($PSScriptRoot)
 
@@ -121,15 +123,21 @@ if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet restore: exit code $Las
 
 if ($NoBuild) { Exit 0 }
 
-$vspath = .\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-if (!$vspath) {
-  Write-Error "Could not find Visual Studio 2017+ for MSBuild 15"
-}
+#$vspath = .\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+#if (!$vspath) {
+#  Write-Error "Could not find Visual Studio 2017+ for MSBuild 15"
+#}
 
 $assemblyVersion = GetBasePluginVersion "Packaging.props" "AssemblyVersion"
 Invoke-Expression ".\merge-unity-3d-rider.ps1 -inputDir resharper\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains -version $assemblyVersion"
 
-$msbuild = join-path $vspath 'MSBuild\15.0\Bin\MSBuild.exe'
+if ($isUnix){
+  $msbuild = which msbuild
+}
+else{
+  $msbuild = join-path $vspath 'MSBuild\15.0\Bin\MSBuild.exe'
+}
+
 if (!(test-path $msbuild)) {
   Write-Error "MSBuild 15 is expected at $msbuild"
 }  
@@ -139,12 +147,22 @@ Write-Host "##teamcity[progressMessage 'Building']"
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $LastExitCode" }
 
 Write-Host "##teamcity[progressMessage 'Building and Packaging: Wave08']"
-& dotnet pack resharper/src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.wave08.$Configuration.nuspec --no-build
+if ($isUnix){
+  & nuget pack resharper/src/resharper-unity/resharper-unity.wave08.$Configuration.nuspec resharper/build/resharper-unity.wave08/bin/$Configuration
+}
+else{
+  & dotnet pack resharper/src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.wave08.$Configuration.nuspec --no-build
+}
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
 Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.wave08/bin/$Configuration/*.nupkg']"
 
 Write-Host "##teamcity[progressMessage 'Building and Packaging: Rider']"
-& dotnet pack resharper/src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.rider.$Configuration.nuspec --no-build
+if ($isUnix){
+  nuget pack resharper/src/resharper-unity/resharper-unity.rider.$Configuration.nuspec -OutputDirectory resharper/build/resharper-unity.rider/bin/$Configuration
+}
+else{
+  & dotnet pack resharper/src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.rider.$Configuration.nuspec --no-build
+}
 if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
 Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.rider/bin/$Configuration/*.nupkg']"
 
@@ -162,6 +180,11 @@ Write-Host "##teamcity[buildNumber '$version']"
 SetPluginVersion -file "rider/src/main/resources/META-INF/plugin.xml" -version $version
 
 Push-Location -Path rider
-.\gradlew.bat $GradleTask "-PpluginConfiguration=$Configuration"
+if ($isUnix){
+  .\gradlew $GradleTask "-PpluginConfiguration=$Configuration"
+}
+else{
+  .\gradlew.bat $GradleTask "-PpluginConfiguration=$Configuration"
+}
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
 Pop-Location
