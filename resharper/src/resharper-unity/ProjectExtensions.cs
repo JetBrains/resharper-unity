@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static bool IsUnityProject([CanBeNull] this IProject project)
         {
             // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
-            return project != null && (project.HasFlavour<UnityProjectFlavor>() || ReferencesUnity(project));
+            return project != null && project.HasSubItems("Assets") && (project.HasFlavour<UnityProjectFlavor>() || ReferencesUnity(project));
         }
 
         private static bool ReferencesUnity(IProject project)
