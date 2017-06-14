@@ -126,6 +126,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         private void InitLanguageLevelSettings(IProject project, SettingsStorageMountPoint mountPoint)
         {
+            if (!project.IsProjectCompiledByUnity())
+                return; // https://github.com/JetBrains/resharper-unity/issues/150
+            
             // Make sure ReSharper doesn't suggest code changes that won't compile in Unity
             // due to mismatched C# language levels (e.g. C#6 "elvis" operator)
             //
