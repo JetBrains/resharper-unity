@@ -1,0 +1,34 @@
+﻿using UnityEngine;
+
+public class A : MonoBehaviour
+{
+    public Rigidbody projectile;
+
+    private void LaunchProjectile()
+    {
+        Rigidbody instance = Instantiate(projectile);
+        instance.velocity = UnityEngine.Random.insideUnitSphere * 5;
+    }
+}
+
+public class B : MonoBehaviour
+{
+    private void DoSomething()
+    {
+    }
+
+    private void Example()
+    {
+        GetComponent<A>().Invoke("|LaunchProjectile|(0)", 2);
+        var a = GetComponent<A>();
+        a.Invoke("|LaunchProjectile|(1)", 2);
+        Invoke("|DoSomething|(2)", 3);
+        this.Invoke("|DoSomething|(3)", 3);
+    }
+}
+
+------------------------------------------------
+0: result=OK declaredElem=void A.LaunchProjectile()
+1: result=OK declaredElem=void A.LaunchProjectile()
+2: result=OK declaredElem=void B.DoSomething()
+3: result=OK declaredElem=void B.DoSomething()

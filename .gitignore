@@ -1,28 +1,53 @@
-# User-specific files
+# Rider code
+
+# User-specific stuff:
+**/.idea/**/workspace.xml
+**/.idea/**/tasks.xml
+**/.idea/dictionaries
+
+# Sensitive or high-churn files:
+**/.idea/**/dataSources/
+**/.idea/**/dataSources.ids
+**/.idea/**/dataSources.xml
+**/.idea/**/dataSources.local.xml
+**/.idea/**/sqlDataSources.xml
+**/.idea/**/dynamic.xml
+
+# Gradle:
+.gradle/
+**/.idea/**/gradle.xml
+**/.idea/**/libraries
+
+# IntelliJ
+build/
+out/
+
+# .idea
+rider/.idea/**
+
+# ReSharper code
+#
+# New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
+# Would be nice to download them somewhere outside of the source tree.
+Packages/*
+*.nupkg
+
 *.suo
 *.user
-
-# Build results
-[Dd]ebug/
-[Rr]elease/
-
-# Others
 [Bb]in
 [Oo]bj
 
-src/packages/*
-!src/packages/repositories.config
-*.nupkg
-src/resharper-unity/_Generated/
+resharper/src/resharper-unity/_Generated/
+resharper/src/.idea/**/workspace.xml
+resharper/src/**/*_lex.cs
+resharper/src/**/*_lex.depends
+resharper/test/data/**/*.tmp
 
-**/.idea/workspace.xml
-
-# In two minds about this - don't want test artefacts checked in,
-# but nice to see when they're there and they shouldn't be
-*.tmp
-
-# Backup & report files from converting an old project file to a newer
-# Visual Studio version. Backup files are not needed, because we have git ;-)
+# Backup & report files from converting an old project file to a newer Visual Studio version
 _UpgradeReport_Files/
 Backup*/
 UpgradeLog*.XML
+
+Thumbs.db
+Desktop.ini
+.DS_Store

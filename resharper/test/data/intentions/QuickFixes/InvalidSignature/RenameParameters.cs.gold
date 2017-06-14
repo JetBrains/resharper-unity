@@ -1,0 +1,11 @@
+﻿using System;
+using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public void OnAudioFilterRead(f{caret}loat[] data, int channels)
+    {
+        Console.WriteLine(channels);
+        Console.WriteLine(data);
+    }
+}

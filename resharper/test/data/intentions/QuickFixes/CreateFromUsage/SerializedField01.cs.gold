@@ -1,0 +1,11 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+  [SerializeField] private object foo{caret};
+
+  public void Whatever()
+  {
+    var thing = foo
+  }
+}

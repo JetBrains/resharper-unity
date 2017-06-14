@@ -1,0 +1,3 @@
+﻿<html>
+<body>
+<div style="float:right" align="right"><a href="http://goto/">go to</a><br/><a href="http://readmore/">read more</a></div><dl class="headers"><dt>parameter <a title="System.Int32" href="#" onclick="javascript:handleClick(event, 'cref://T:System.Int32');">int</a> <b> layerIndex</b></dt><dd>&nbsp;</dd><dt></dt></dl><br /><h1>Summary</h1><dl class="section_body">The index of the layer on which the IK solver is called.</dl></body></html>

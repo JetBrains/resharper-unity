@@ -1,0 +1,115 @@
+﻿using System;
+using System.Collections;
+using UnityEngine;
+using UnityEditor;
+
+public class |A|(0) : MonoBehaviour
+{
+    public object |unityField|(1);
+    private object notUnityField;
+
+    public object |unityField1|(2), |unityField2|(3);
+
+    [NonSerialized]
+    public object notUnityField2;
+
+    [SerializeField]
+    private object |unityField3|(4);
+
+    [SerializeField]
+    private object |unityField4|(5), |unityField5|(6);
+
+    // Unity function
+    private void |OnDestroy|(7)()
+    {
+    }
+
+    // Not a Unity function
+    private void NotMessage()
+    {
+    }
+
+    // Unity message as coroutine
+    private IEnumerator |Start|(8)()
+    {
+        return null;
+    }
+
+    // Optional parameter
+    private void |OnCollisionStay|(9)()
+    {
+    }
+}
+
+[InitializeOnLoad]
+public class Startup
+{
+    static |Startup|(10)()
+    {
+        Debug.Log("Up and running");
+    }
+
+    public Startup()
+    {
+        // Not used
+    }
+}
+
+class MyClass
+{
+    [RuntimeInitializeOnLoadMethod]
+    static void OnRuntimeMethodLoad()
+    {
+        Debug.Log("After scene is loaded and game is running");
+    }
+
+    [RuntimeInitializeOnLoadMethod]
+    public static void OnSecondRuntimeMethodLoad()
+    {
+        Debug.Log("SecondMethod After scene is loaded and game is running.");
+    }
+
+    [RuntimeInitializeOnLoadMethod]
+    public void NotAppliedToInstanceMethods()
+    {
+    }
+
+    [InitializeOnLoadMethod]
+    private static void OnProjectLoadedInEditor()
+    {
+        Debug.Log("Project loaded in Unity Editor");
+    }
+
+    [InitializeOnLoadMethod]
+    public static void OnProjectLoadedInEditor2()
+    {
+        Debug.Log("Project loaded in Unity Editor");
+    }
+
+    [InitializeOnLoadMethod]
+    public void NotAppliedToInstanceMethod()
+    {
+        Debug.Log("Project loaded in Unity Editor");
+    }
+}
+
+---------------------------------------------------------
+(0): Unity Gutter Icon: Unity scripting component
+(1): Unity Gutter Icon: This field is initialised by Unity
+(2): Unity Gutter Icon: This field is initialised by Unity
+(3): Unity Gutter Icon: This field is initialised by Unity
+(4): Unity Gutter Icon: This field is initialised by Unity
+(5): Unity Gutter Icon: This field is initialised by Unity
+(6): Unity Gutter Icon: This field is initialised by Unity
+(7): Unity Gutter Icon: Unity event function
+
+This function is called when the MonoBehaviour will be destroyed.
+(8): Unity Gutter Icon: Unity event function
+
+Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+This function can be a coroutine.
+(9): Unity Gutter Icon: Unity event function
+
+OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
+This function can be a coroutine.
+(10): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts

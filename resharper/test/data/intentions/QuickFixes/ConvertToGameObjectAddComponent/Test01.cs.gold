@@ -1,0 +1,9 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public static void DoSomething()
+    {
+        var foo = {selstart}gameObject{selend}.AddComponent<Foo>();
+    }
+}

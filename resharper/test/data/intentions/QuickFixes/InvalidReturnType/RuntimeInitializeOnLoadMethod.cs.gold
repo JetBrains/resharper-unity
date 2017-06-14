@@ -1,0 +1,10 @@
+﻿using UnityEngine;
+
+public class Foo
+{
+    [RuntimeInitializeOnLoadMethod]
+    public static voi{caret}d OnLoad()
+    {
+        return 0;
+    }
+}

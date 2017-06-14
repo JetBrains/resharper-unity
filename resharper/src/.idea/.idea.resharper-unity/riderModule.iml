@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RIDER_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../../../build/resharper-unity.rider/obj/Debug/net452">
+      <sourceFolder url="file://$MODULE_DIR$/../../../build/resharper-unity.rider/obj/Debug/net452" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../build/resharper-unity.rider/obj/Debug/net452" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../build/resharper-unity.wave08/obj/Debug/net452">
+      <sourceFolder url="file://$MODULE_DIR$/../../../build/resharper-unity.wave08/obj/Debug/net452" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../build/resharper-unity.wave08/obj/Debug/net452" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../build/tests.rider/obj/Debug/net461">
+      <sourceFolder url="file://$MODULE_DIR$/../../../build/tests.rider/obj/Debug/net461" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../build/tests.rider/obj/Debug/net461" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../build/tests.wave08/obj/Debug/net461">
+      <sourceFolder url="file://$MODULE_DIR$/../../../build/tests.wave08/obj/Debug/net461" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../build/tests.wave08/obj/Debug/net461" />
+    </content>
+    <content url="file://$MODULE_DIR$/../..">
+      <sourceFolder url="file://$MODULE_DIR$/../../resharper-unity" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../packages" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../test/src">
+      <sourceFolder url="file://$MODULE_DIR$/../../../test/src" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

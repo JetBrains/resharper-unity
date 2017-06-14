@@ -1,0 +1,20 @@
+﻿using UnityEditor;
+
+[InitializeOnLoad]
+public class WithConstructor
+{
+    static |WithConstructor|(0)()
+    {
+    }
+}
+
+------------------------------------------------
+0: Empty static constructor is redundant
+QUICKFIXES:
+Remove redundant constructor
+--Remove redundant constructors in file
+--Remove redundant constructors in project
+--Remove redundant constructors in solution
+Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution

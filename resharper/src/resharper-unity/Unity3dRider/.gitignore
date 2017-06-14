@@ -1,0 +1,10 @@
+.idea/*
+_ReSharper.Caches*
+*.csproj
+*.meta
+Library/*
+ProjectSettings/*
+obj/*
+Temp/*
+*.sln
+*.suo

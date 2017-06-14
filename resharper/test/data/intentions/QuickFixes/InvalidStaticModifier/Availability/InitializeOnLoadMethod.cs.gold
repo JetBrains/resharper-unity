@@ -1,0 +1,14 @@
+﻿using UnityEditor;
+
+public class Foo
+{
+    [InitializeOnLoadMethod]
+    public void |OnLoad|(0)()
+    {
+    }
+}
+
+------------------------------------------------
+0: Missing static modifier
+QUICKFIXES:
+Make 'OnLoad' static

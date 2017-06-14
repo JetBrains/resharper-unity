@@ -6,4 +6,3 @@ indent_size = 4
 
 [*.xml]
 indent_size = 2
-

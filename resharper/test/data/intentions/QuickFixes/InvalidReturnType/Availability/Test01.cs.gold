@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public |int|(0) Start()
+    {
+        return 0;
+    }
+}
+
+------------------------------------------------
+0: Incorrect return type. Expected 'void'
+QUICKFIXES:
+Change return type to 'void'

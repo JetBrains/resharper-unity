@@ -1,0 +1,11 @@
+﻿public class Foo : UnityEditor.AssetPostprocessor
+{
+    public |void|(0) OnAssignMaterialModel(UnityEngine.Material material, UnityEngine.Renderer renderer)
+    {
+    }
+}
+
+------------------------------------------------
+0: Incorrect return type. Expected 'Material'
+QUICKFIXES:
+Change return type to 'Material'

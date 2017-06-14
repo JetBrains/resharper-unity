@@ -1,0 +1,42 @@
+﻿using System;
+using UnityEngine;
+using UnityEngine.Networking;
+
+public class A : NetworkBehaviour
+{
+    [SyncVar(hook = "|OnIntValueChanged|(0)")]
+    public int IntValue;
+
+    public void OnIntValueChanged(int newValue)
+    {
+    }
+
+    [SyncVar(hook = "|OnStringValueChanged|(1)")]
+    public string StringValue;
+
+    private static void OnStringValueChanged(string newValue)
+    {
+    }
+
+    [SyncVar(hook = "|OnStructValueChanged|(2)")]
+    public MyStruct StructValue;
+
+    private static void OnStructValueChanged(MyStruct newValue)
+    {
+    }
+
+    public struct MyStruct
+    {
+        string s;
+        int i;
+    }
+
+    [SyncVar(hook = "|NoSuchMethod|(3)")]
+    public int Value;
+}
+
+------------------------------------------------
+0: result=OK declaredElem=void A.OnIntValueChanged(int newValue)
+1: result=OK declaredElem=void A.OnStringValueChanged(string newValue)
+2: result=OK declaredElem=void A.OnStructValueChanged(A.MyStruct newValue)
+3: result=NOT_RESOLVED declaredElem=null
