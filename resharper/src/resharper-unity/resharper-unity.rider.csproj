@@ -71,8 +71,8 @@
     <!-- Temp workaround until it's added as a dependency into JB.RS.SDK -->
     <PackageReference Include="JetBrains.Build.Platform.Tasks.ProxyToSolutionCompiledTask" Version="2.0.20170530.0" />
 
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
   </ItemGroup>
 </Project>
