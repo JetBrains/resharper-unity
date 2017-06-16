@@ -13,12 +13,9 @@
 
   <!-- ShaderLab language -->
   <PropertyGroup>
-    <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated\wave08</ParserGenOutputBase>
+    <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="_Generated\rider\**\*.cs" />
-    <None Remove="_Generated\rider\**\*" />
-
     <PsiLanguageNames Include="ShaderLab" />
 
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
