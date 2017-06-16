@@ -11,7 +11,6 @@
     <DefineConstants>TRACE;RELEASE;NET461;RIDER</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(RiderJetBrainsPsiFeaturesVisualStudioVersion)" />
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(RiderJetBrainsReSharperSDKTestsVersion)" />
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,6 @@
     <DefineConstants>TRACE;RELEASE;NET461;WAVE08</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="108.0.20170428.80128" />
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2017.1.20170428.83402" />
   </ItemGroup>
   <ItemGroup>
