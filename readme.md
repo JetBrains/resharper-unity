@@ -115,6 +115,32 @@ To install into Rider:
 
 Please watch the repo for updates, or follow [@citizenmatt](https://twitter.com/citizenmatt), [@resharper](https://twitter.com/resharper) or [@JetBrainsRider](https://twitter.com/JetBrainsRider) on twitter for updates.
 
+## Unity3dRider initialization for Rider
+
+### Clean installation
+
+* Open project in Unity
+* Select Rider as External Editor
+* Double click cs file
+* Rider starts and asks if sln is correct?
+* Agree
+Solution is opened. resharper-unity adds Unity3dRider to project as a single file Unity3dRider.cs, tries to remove older version.
+* Get back to Unity
+* If Solution is compilable, Unity3dRider is fully initialized
+* If Solution is not compilable, Opening files will still work, but some features may not work.
+
+### "Partially prepared"
+
+Here we expect that the user was already working with Solution and sln is already generated, Unity3dRider is already added (manually or as git submodule or by Opening in Rider once).
+
+* Get in Unity. 
+Unity3dRider finds Rider and adds it to known editors list.
+* If you are running Unity with plugin for the first time it will set Rider as default editor.
+
+Possible problems
+
+resharper-unity may add Unity3dRider second time, if previously user have added it to different location.
+
 ## Roadmap
 
 Check the [milestones](https://github.com/JetBrains/resharper-unity/milestones) for plans, and please [raise an issue](https://github.com/JetBrains/resharper-unity/issues) with feature requests or bugs.
