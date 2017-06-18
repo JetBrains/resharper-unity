@@ -2,7 +2,7 @@
 
 The "Unity Support" plugin adds [Unity](http://unity3d.com/) specific functionality to [ReSharper](https://www.jetbrains.com/resharper/) and [Rider](https://www.jetbrains.com/rider/).
 
-Rider is JetBrains' cross platform .NET IDE, based on ReSharper and the IntelliJ Platform. It can be used on Windows, Mac and Linux and together with the [Unity3dRider](https://www.github.com/JetBrains/Unity3dRider#readme) Unity plugin, can replace the default MonoDevelop editor with an IDE providing rich code navigation, inspections and refactorings.
+Rider is JetBrains' cross platform .NET IDE, based on ReSharper and the IntelliJ Platform. It can be used on Windows, Mac and Linux and together with the [Unity3dRider](https://github.com/JetBrains/resharper-unity/tree/master/resharper/src/resharper-unity/Unity3dRider) Unity plugin, can replace the default MonoDevelop editor with an IDE providing rich code navigation, inspections and refactorings.
 
 ## Features
 
