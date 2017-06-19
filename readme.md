@@ -2,7 +2,7 @@
 
 The "Unity Support" plugin adds [Unity](http://unity3d.com/) specific functionality to [ReSharper](https://www.jetbrains.com/resharper/) and [Rider](https://www.jetbrains.com/rider/).
 
-Rider is JetBrains' cross platform .NET IDE, based on ReSharper and the IntelliJ Platform. It can be used on Windows, Mac and Linux and together with the [Unity3dRider](https://www.github.com/JetBrains/Unity3dRider#readme) Unity plugin, can replace the default MonoDevelop editor with an IDE providing rich code navigation, inspections and refactorings.
+Rider is JetBrains' cross platform .NET IDE, based on ReSharper and the IntelliJ Platform. It can be used on Windows, Mac and Linux and together with the [Unity3dRider](https://github.com/JetBrains/resharper-unity/tree/master/resharper/src/resharper-unity/Unity3dRider) Unity plugin, can replace the default MonoDevelop editor with an IDE providing rich code navigation, inspections and refactorings.
 
 ## Features
 
@@ -114,6 +114,32 @@ To install into Rider:
 * Or, go to the Plugins page in Preferences, click Install JetBrains Plugin and search for "Unity". Rider will need to be restarted.
 
 Please watch the repo for updates, or follow [@citizenmatt](https://twitter.com/citizenmatt), [@resharper](https://twitter.com/resharper) or [@JetBrainsRider](https://twitter.com/JetBrainsRider) on twitter for updates.
+
+## Unity3dRider initialization for Rider
+
+### Clean installation
+
+* Open project in Unity
+* Select Rider as External Editor
+* Double click cs file
+* Rider starts and asks if sln is correct?
+* Agree
+Solution is opened. resharper-unity adds Unity3dRider to project as a single file Unity3dRider.cs, tries to remove older version.
+* Get back to Unity
+* If Solution is compilable, Unity3dRider is fully initialized
+* If Solution is not compilable, Opening files will still work, but some features may not work.
+
+### "Partially prepared"
+
+Here we expect that the user was already working with Solution and sln is already generated, Unity3dRider is already added (manually or as git submodule or by Opening in Rider once).
+
+* Get in Unity. 
+Unity3dRider finds Rider and adds it to known editors list.
+* If you are running Unity with plugin for the first time it will set Rider as default editor.
+
+Possible problems
+
+resharper-unity may add Unity3dRider second time, if previously user have added it to different location.
 
 ## Roadmap
 

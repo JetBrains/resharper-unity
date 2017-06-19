@@ -37,9 +37,7 @@ but if it fails, you may need to point it once:
 
 **Install the plugin into your project**
 
-This needs to be done for each project.
-
-1. Copy the folder `Assets/Plugins/Editor/JetBrains` from this repository into `Assets/Plugins/Editor/JetBrains` in your project.
+You don't need to manually copy Unity3dRider to your solution. After opening your solution in Rider the ReSharper Unity plugin will automatically copy Unity3dRider.cs into `Assets/Plugins/Editor/JetBrains`. Next foxusing Unity with opened Solution will compile and initialize Unity3dRider.
 
 ## Roadmap
 
