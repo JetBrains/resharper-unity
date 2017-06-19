@@ -4,9 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using JetBrains.Application.Settings;
+
+#if RIDER
+using JetBrains.Application.Threading;
+#endif
+
+#if WAVE08
+using JetBrains.Application;
+#endif
+
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 
@@ -18,9 +30,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
   public class UnityPluginInstaller
   {
     private readonly JetHashSet<FileSystemPath> myPluginInstallations;
+    private readonly Lifetime myLifetime;
+    private readonly ISolution mySolution;
+    private readonly IShellLocks myShellLocks;
     private readonly UnityPluginDetector myDetector;
     private readonly ILogger myLogger;
     private readonly RdNotificationsModel myNotifications;
+    private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
     private static readonly string ourResourceNamespace =
       typeof(UnityPluginInstaller).Namespace + ".Assets.Plugins.Editor.JetBrains.";
@@ -28,20 +44,57 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
     private readonly object mySyncObj = new object();
 
     public UnityPluginInstaller(
+      Lifetime lifetime,
+      ILogger logger,
+      ISolution solution,
+      IShellLocks shellLocks,
       UnityPluginDetector detector,
-      ProjectReferenceChangeTracker changeTracker,
       RdNotificationsModel notifications,
-      ILogger logger)
+      ISettingsStore settingsStore,
+      ProjectReferenceChangeTracker changeTracker)
     {
       myPluginInstallations = new JetHashSet<FileSystemPath>();
-      myDetector = detector;
+
+      myLifetime = lifetime;
       myLogger = logger;
+      mySolution = solution;
+      myShellLocks = shellLocks;
+      myDetector = detector;
       myNotifications = notifications;
+      myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
+      
+      BindToInstallationSettingChange();
+      
       changeTracker.RegisterProjectChangeHandler(InstallPluginIfRequired);
+    }
+
+    private void BindToInstallationSettingChange()
+    {
+      var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnityPluginSettings s) => s.InstallUnity3DRiderPlugin);
+      myBoundSettingsStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise(myLifetime, CheckAllProjectsIfAutoInstallEnabled);
+    }
+    
+    private void CheckAllProjectsIfAutoInstallEnabled(PropertyChangedEventArgs<bool> args)
+    {
+      if (!args.GetNewOrNull())
+        return;
+
+      myShellLocks.ReentrancyGuard.ExecuteOrQueue("UnityPluginInstaller.CheckAllProjects", () => myShellLocks.ExecuteWithReadLock(CheckAllProjects));
+    }
+
+    private void CheckAllProjects()
+    {
+      foreach (var project in mySolution.GetAllProjects())
+      {
+        InstallPluginIfRequired(myLifetime, project);
+      }
     }
 
     private void InstallPluginIfRequired(Lifetime lifetime, [NotNull] IProject project)
     {
+      if (!myBoundSettingsStore.GetValue((UnityPluginSettings s) => s.InstallUnity3DRiderPlugin))
+        return;
+      
       if (myPluginInstallations.Contains(project.ProjectFileLocation))
         return;
       
@@ -62,31 +115,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
         if (myPluginInstallations.Contains(project.ProjectFileLocation))
           return;
 
-        if (!TryInstall(installationInfo))
+        FileSystemPath installedPath;
+        
+        if (!TryInstall(installationInfo, out installedPath))
         {
           myLogger.LogMessage(LoggingLevel.WARN, "Plugin was not installed");
         }
         else
         {
-          string logMessage;
-          RdNotificationEntry notification;
+          string userTitle;
+          string userMessage;
 
           if (isFreshInstall)
           {
-            logMessage = "Plugin installed";
-            notification = new RdNotificationEntry("Plugin installed",
-              $"Unity -> Rider plugin v{currentVersion} was added to Unity project", true,
-              RdNotificationEntryType.INFO);
+            userTitle = "Plugin installed";
+            userMessage = 
+              $@"Rider plugin v{currentVersion} for the Unity Editor was automatically installed for the project '{mySolution.Name}'
+This allows better integration between the Unity Editor and Rider IDE.
+The plugin file can be found on the following path:
+{installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}";
+            
           }
           else
           {
-            logMessage = "Plugin updated";
-            notification = new RdNotificationEntry("Plugin updated",
-              $"Unity -> Rider plugin was updated in the Unity project.\n{installationInfo.Version} -> {currentVersion}",
-              true, RdNotificationEntryType.INFO);
+            userTitle = "Plugin updated";
+            userMessage = $"Rider plugin was succesfully upgraded from version {installationInfo.Version} to {currentVersion}";
           }
-
-          myLogger.LogMessage(LoggingLevel.INFO, logMessage);
+          
+          myLogger.LogMessage(LoggingLevel.INFO, userTitle);
+          
+          var notification = new RdNotificationEntry("Plugin installed",
+            userMessage, true,
+            RdNotificationEntryType.INFO);
           myNotifications.Notification.Fire(notification);
         }
 
@@ -94,13 +154,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
       }
     }
 
-    public bool TryInstall([NotNull] UnityPluginDetector.InstallationInfo installation)
+    public bool TryInstall([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
     {
+      installedPath = null;
       try
       {
         installation.PluginDirectory.CreateDirectory();
 
-        return DoInstall(installation);
+        return DoInstall(installation, out installedPath);
       }
       catch (Exception e)
       {
@@ -109,8 +170,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
       }
     }
 
-    private bool DoInstall([NotNull] UnityPluginDetector.InstallationInfo installation)
+    private bool DoInstall([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
     {
+      installedPath = null;
+      
       var backups = installation.InstalledFiles.ToDictionary(f => f, f => f.AddSuffix(".backup"));
       
       foreach (var originPath in installation.InstalledFiles)
@@ -146,6 +209,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
         {
           backup.Value.DeleteFile();
         }
+
+        installedPath = path;
         
         return true;
       }

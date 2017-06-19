@@ -10,6 +10,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <configurationType implementation="com.jetbrains.resharper.plugins.unity.run.configurations.UnityDebugConfigurationType" />
+    <applicationConfigurable groupId="language" instance="com.jetbrains.resharper.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
   </extensions>
 
   <project-components>
