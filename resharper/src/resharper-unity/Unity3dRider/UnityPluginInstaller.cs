@@ -4,9 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using JetBrains.Application.Settings;
+
+#if RIDER
+using JetBrains.Application.Threading;
+#endif
+
+#if WAVE08
+using JetBrains.Application;
+#endif
+
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 
@@ -18,9 +30,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
   public class UnityPluginInstaller
   {
     private readonly JetHashSet<FileSystemPath> myPluginInstallations;
+    private readonly Lifetime myLifetime;
+    private readonly ISolution mySolution;
+    private readonly IShellLocks myShellLocks;
     private readonly UnityPluginDetector myDetector;
     private readonly ILogger myLogger;
     private readonly RdNotificationsModel myNotifications;
+    private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
     private static readonly string ourResourceNamespace =
       typeof(UnityPluginInstaller).Namespace + ".Assets.Plugins.Editor.JetBrains.";
@@ -28,20 +44,57 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
     private readonly object mySyncObj = new object();
 
     public UnityPluginInstaller(
+      Lifetime lifetime,
+      ILogger logger,
+      ISolution solution,
+      IShellLocks shellLocks,
       UnityPluginDetector detector,
-      ProjectReferenceChangeTracker changeTracker,
       RdNotificationsModel notifications,
-      ILogger logger)
+      ISettingsStore settingsStore,
+      ProjectReferenceChangeTracker changeTracker)
     {
       myPluginInstallations = new JetHashSet<FileSystemPath>();
-      myDetector = detector;
+
+      myLifetime = lifetime;
       myLogger = logger;
+      mySolution = solution;
+      myShellLocks = shellLocks;
+      myDetector = detector;
       myNotifications = notifications;
+      myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
+      
+      BindToInstallationSettingChange();
+      
       changeTracker.RegisterProjectChangeHandler(InstallPluginIfRequired);
+    }
+
+    private void BindToInstallationSettingChange()
+    {
+      var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnityPluginSettings s) => s.InstallUnity3DRiderPlugin);
+      myBoundSettingsStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise(myLifetime, CheckAllProjectsIfAutoInstallEnabled);
+    }
+    
+    private void CheckAllProjectsIfAutoInstallEnabled(PropertyChangedEventArgs<bool> args)
+    {
+      if (!args.GetNewOrNull())
+        return;
+
+      myShellLocks.ReentrancyGuard.ExecuteOrQueue("UnityPluginInstaller.CheckAllProjects", () => myShellLocks.ExecuteWithReadLock(CheckAllProjects));
+    }
+
+    private void CheckAllProjects()
+    {
+      foreach (var project in mySolution.GetAllProjects())
+      {
+        InstallPluginIfRequired(myLifetime, project);
+      }
     }
 
     private void InstallPluginIfRequired(Lifetime lifetime, [NotNull] IProject project)
     {
+      if (!myBoundSettingsStore.GetValue((UnityPluginSettings s) => s.InstallUnity3DRiderPlugin))
+        return;
+      
       if (myPluginInstallations.Contains(project.ProjectFileLocation))
         return;
       
