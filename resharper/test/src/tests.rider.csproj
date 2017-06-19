@@ -11,9 +11,21 @@
     <DefineConstants>TRACE;RELEASE;NET461;RIDER</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(RiderJetBrainsPsiFeaturesVisualStudioVersion)" />
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(RiderJetBrainsReSharperSDKTestsVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.rider.csproj" />
   </ItemGroup>
+
+  <!-- Make sure we don't have the VS JetMetadata files, so the tests won't pick them up
+       They shouldn't anyway (the zones aren't active), but sometimes this happens on the build server -->
+  <Target Name="DeleteVsJetMetadata" AfterTargets="CopyJetMetadata">
+    <ItemGroup>
+      <_VsJetMetadata Include="$(OutDir)\JetBrains.Platform.Features.VisualStudio.JetMetadata.sstg" />
+      <_VsJetMetadata Include="$(OutDir)\JetBrains.Psi.Features.VisualStudio.JetMetadata.sstg" />
+    </ItemGroup>
+    <Message Importance="High" Text="@(_VsJetMetadata)" />
+    <Delete Files="@(_VsJetMetadata)" />
+  </Target>
 </Project>

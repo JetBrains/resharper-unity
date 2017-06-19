@@ -11,9 +11,21 @@
     <DefineConstants>TRACE;RELEASE;NET461;WAVE08</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="108.0.20170428.80128" />
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2017.1.20170428.83402" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.wave08.csproj" />
   </ItemGroup>
+
+  <!-- Make sure we don't have the VS JetMetadata files, so the tests won't pick them up
+       They shouldn't anyway (the zones aren't active), but sometimes this happens on the build server -->
+  <Target Name="DeleteVsJetMetadata" AfterTargets="CopyJetMetadata">
+    <ItemGroup>
+      <_VsJetMetadata Include="$(OutDir)\JetBrains.Platform.Features.VisualStudio.JetMetadata.sstg" />
+      <_VsJetMetadata Include="$(OutDir)\JetBrains.Psi.Features.VisualStudio.JetMetadata.sstg" />
+    </ItemGroup>
+    <Message Importance="High" Text="@(_VsJetMetadata)" />
+    <Delete Files="@(_VsJetMetadata)" />
+  </Target>
 </Project>
