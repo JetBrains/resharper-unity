@@ -36,7 +36,7 @@ namespace Plugins.Editor.JetBrains
       }
 
       var slnFile = Directory.GetFiles(currentDirectory, "*.sln").First();
-      if (RiderPlugin.EnableLogging) Debug.Log("[Rider] " + string.Format("Post-processing {0}", slnFile));
+      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Post-processing {0}", slnFile);
       string content = File.ReadAllText(slnFile);
       var lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
       var sb = new StringBuilder();
@@ -45,7 +45,8 @@ namespace Plugins.Editor.JetBrains
         if (line.StartsWith("Project("))
         {
           MatchCollection mc = Regex.Matches(line, "\"([^\"]*)\"");
-          //Debug.Log("mc[1]: "+mc[1].Value); //Debug.Log("mc[2]: "+mc[2].Value);
+          //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "mc[1]: "+mc[1].Value);
+          //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "mc[2]: "+mc[2].Value);
           sb.Append(line.Replace(mc[1].Value.TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray()), GetFileNameWithoutExtension(mc[2].Value).TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray())));
         }
         else
@@ -67,7 +68,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void UpgradeProjectFile(string projectFile)
     {
-      if (RiderPlugin.EnableLogging) Debug.Log("[Rider] " + string.Format("Post-processing {0}", projectFile));
+      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "[Rider] " + string.Format("Post-processing {0}", projectFile));
       var doc = XDocument.Load(projectFile);
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
