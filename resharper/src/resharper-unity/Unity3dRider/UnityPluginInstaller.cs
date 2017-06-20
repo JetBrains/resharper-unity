@@ -20,6 +20,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model.Notifications;
+using JetBrains.Threading;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
@@ -79,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
       if (!args.GetNewOrNull())
         return;
 
-      myShellLocks.ReentrancyGuard.ExecuteOrQueue("UnityPluginInstaller.CheckAllProjects", () => myShellLocks.ExecuteWithReadLock(CheckAllProjects));
+      myShellLocks.ReentrancyGuard.ExecuteOrQueueEx("UnityPluginInstaller.CheckAllProjects", () => myShellLocks.ExecuteWithReadLock(CheckAllProjects));
     }
 
     private void CheckAllProjects()
