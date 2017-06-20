@@ -20,6 +20,22 @@ namespace Plugins.Editor.JetBrains
     private static bool Initialized;
     private static string SlnFile;
 
+    public static void Log(LoggingLevel level, string format, params object[] args)
+    {
+      if (level < SelectedLoggingLevel) return;
+      
+      var text = "[Rider] [" + level + "] " + string.Format(format, args);
+      switch (level)
+      {
+        case LoggingLevel.Warning:
+          Debug.LogWarning(text);
+          break;
+        default:
+          Debug.Log(text);
+          break;
+      }
+    }
+    
     private static string GetDefaultApp()
     {
         var alreadySetPath = GetExternalScriptEditor();
@@ -41,7 +57,7 @@ namespace Plugins.Editor.JetBrains
               var newPath = newPathLnks.Select(newPathLnk=> new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName))).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
               if (!string.IsNullOrEmpty(newPath.FullName))
               {
-                /*if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1} product version: {2}", alreadySetPath, newPath, FileVersionInfo.GetVersionInfo(newPath.FullName).ProductVersion));
+                /*RiderPlugin.Log(LoggingLevel.Verbose, "Update {0} to {1} product version: {2}", alreadySetPath, newPath, FileVersionInfo.GetVersionInfo(newPath.FullName).ProductVersion);
                 SetExternalScriptEditor(newPath.FullName);*/
                 return newPath.FullName;
               }
@@ -58,7 +74,7 @@ namespace Plugins.Editor.JetBrains
             {
               if (!string.IsNullOrEmpty(newPathMac.FullName))
               {
-                /*if (EnableLogging) Debug.Log("[Rider] " + string.Format("Update {0} to {1}", alreadySetPath, newPathMac));
+                /*Log(LoggingLevel.Verbose, "Update {0} to {1}", alreadySetPath, newPathMac);
                 SetExternalScriptEditor(newPathMac.FullName);*/
                 return newPathMac.FullName;
               }
@@ -69,7 +85,7 @@ namespace Plugins.Editor.JetBrains
         var riderPath = GetExternalScriptEditor();
         if (!RiderPathExist(riderPath))
         {
-          Debug.Log("[Rider] Rider plugin for Unity is present, but Rider executable was not found. Please update 'External Script Editor'.");
+          Log(LoggingLevel.Warning, "Rider plugin for Unity is present, but Rider executable was not found. Please update 'External Script Editor'.");
           return null;
         }
 
@@ -82,10 +98,17 @@ namespace Plugins.Editor.JetBrains
       set { EditorPrefs.SetBool("Rider_TargetFrameworkVersion45", value); }
     }
 
-    public static bool EnableLogging
+    public enum LoggingLevel
     {
-      get { return EditorPrefs.GetBool("Rider_EnableLogging", false); }
-      set { EditorPrefs.SetBool("Rider_EnableLogging", value); }
+      Verbose = 0,
+      Info = 1,
+      Warning = 2
+    }
+    
+    public static LoggingLevel SelectedLoggingLevel
+    {
+      get { return (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1); }
+      set { EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value); }
     }
     
     public static bool RiderInitializedOnce
@@ -130,7 +153,7 @@ namespace Plugins.Editor.JetBrains
 
       InitializeEditorInstanceJson(projectDirectory);
 
-      Debug.Log("[Rider] " + "Rider plugin initialized. You may enabled more Rider Debug output via Preferences -> Rider -> Enable Logging");
+      Log(LoggingLevel.Info, "Rider plugin initialized. You may change the amount of Rider Debug output via Edit -> Preferences -> Rider -> Logging Level");
       Initialized = true;
     }
     
@@ -175,7 +198,7 @@ namespace Plugins.Editor.JetBrains
     {
       // Only manage EditorInstance.json for 4.x and 5.x - it's a native feature for 2017.x
 #if UNITY_4 || UNITY_5
-      if (EnableLogging) Debug.Log("[Rider] " + "Writing Library/EditorInstance.json");
+      Log(LoggingLevel.Verbose, "Writing Library/EditorInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
       var editorInstanceJsonPath = Path.Combine(library, "EditorInstance.json");
@@ -187,7 +210,7 @@ namespace Plugins.Editor.JetBrains
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
-        if (EnableLogging) Debug.Log("[Rider] " + "Deleting Library/EditorInstance.json");
+        Log(LoggingLevel.Verbose, "Deleting Library/EditorInstance.json");
         File.Delete(editorInstanceJsonPath);
       };
 #endif
@@ -265,7 +288,7 @@ namespace Plugins.Editor.JetBrains
           }
           catch (Exception e)
           {
-            if (EnableLogging) Debug.Log("[Rider] " + "Exception in DetectPortAndOpenFile: " + e);
+            Log(LoggingLevel.Verbose, "Exception in DetectPortAndOpenFile: " + e);
           }
         }
         return false;
@@ -283,7 +306,7 @@ namespace Plugins.Editor.JetBrains
         url = string.Format(@"http://localhost:{0}/api/file/{1}{2}", port, filePath, line < 0 ? "" : ":" + line);
 
       var uri = new Uri(url);
-      if (EnableLogging) Debug.Log("[Rider] " + string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
+      Log(LoggingLevel.Verbose, "HttpRequestOpenFile({0})", uri.AbsoluteUri);
 
       CallHttpApi(uri, client);
       ActivateWindow();
@@ -293,7 +316,7 @@ namespace Plugins.Editor.JetBrains
     private static string CallHttpApi(Uri uri, WebClient client)
     {
       var responseString = client.DownloadString(uri);
-      if (EnableLogging) Debug.Log("[Rider] HttpRequestOpenFile response: " + responseString);
+      Log(LoggingLevel.Verbose, "HttpRequestOpenFile response: " + responseString);
       return responseString;
     }
 
@@ -310,14 +333,13 @@ namespace Plugins.Editor.JetBrains
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
-        if (EnableLogging) Debug.Log("[Rider] " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+        Log(LoggingLevel.Verbose, proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
       }
       else
       {
         proc.StartInfo.FileName = defaultApp;
         proc.StartInfo.Arguments = args;
-        if (EnableLogging)
-          Debug.Log("[Rider] " + ("\"" + proc.StartInfo.FileName + "\"" + " " + proc.StartInfo.Arguments));
+        Log(LoggingLevel.Verbose, "\"{0}\"" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
       }
 
       proc.StartInfo.UseShellExecute = false;
@@ -343,7 +365,7 @@ namespace Plugins.Editor.JetBrains
             var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
             // Get process main window title
             var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
-            Debug.Log("[Rider] ActivateWindow: " + process.Id + " " + windowHandle);
+            Log(LoggingLevel.Info, "ActivateWindow: {0} {1}", process.Id, windowHandle);
             if (windowHandle != IntPtr.Zero)
             {
               //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
@@ -353,7 +375,7 @@ namespace Plugins.Editor.JetBrains
         }
         catch (Exception e)
         {
-          Debug.Log("[Rider] " + ("Exception on ActivateWindow: " + e));
+          Log(LoggingLevel.Warning, "[Rider] " + ("Exception on ActivateWindow: " + e));
         }
       }
     }
@@ -440,11 +462,8 @@ All those problems will go away after Unity upgrades to mono4.";
       EditorGUI.BeginChangeCheck();
 
       var loggingMsg =
-        @"Enable logging. If you are about to report an issue, please enable logging and attach Unity console output to the issue.";
-      EnableLogging =
-        EditorGUILayout.Toggle(
-          new GUIContent("Enable Logging",
-            loggingMsg), EnableLogging);
+        @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
+      SelectedLoggingLevel = (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg), SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
       EditorGUI.EndChangeCheck();
