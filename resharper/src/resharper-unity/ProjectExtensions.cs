@@ -23,6 +23,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return project != null && (project.HasFlavour<UnityProjectFlavor>() || ReferencesUnity(project));
         }
 
+        public static bool IsProjectCompiledByUnity([CanBeNull] this IProject project)
+        {
+            return project != null && project.HasSubItems("Assets") && IsUnityProject(project);
+        }
+
         private static bool ReferencesUnity(IProject project)
         {
             return ReferencesAssembly(project, ourUnityEngineReferenceName) ||

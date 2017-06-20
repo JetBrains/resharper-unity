@@ -8,6 +8,14 @@ param (
   [switch]$NoBuild # Skip building and packing, just set package versions and restore packages
 )
 
+$isUnix = [System.Environment]::OSVersion.Platform -eq "Unix"
+if ($isUnix){
+    $platform = "Unix"
+}
+else{
+    $platform = "Windows"
+}
+
 Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 [System.IO.Directory]::SetCurrentDirectory($PSScriptRoot)
 
@@ -28,17 +36,17 @@ function SetPropertyValue($file, $name, $value)
   }
 }
 
-function GetBasePluginVersion($packagingPropsFile)
+function GetBasePluginVersion($packagingPropsFile, $nodeName)
 {
   $xml = New-Object xml
   $xml.Load($packagingPropsFile)
   
-  $node = $xml.SelectSingleNode("//Version")
-  if($node -eq $null) { Write-Error "//Version was not found in $packagingPropsFile" }
+  $node = $xml.SelectSingleNode("//$nodeName")
+  if($node -eq $null) { Write-Error "//$nodeName was not found in $packagingPropsFile" }
 
   $version = $node.InnerText
 
-  Write-Host "- ${packagingPropsFile}: version = $version"
+  Write-Host "- ${packagingPropsFile}: $nodeName = $version"
 
   return $version
 }
@@ -104,6 +112,58 @@ function GetPackageVersionFromFolder($folder, $name) {
   Write-Error "Package $name was not found in folder $folder"
 }
 
+$generatedNuspecs = {}.Invoke()
+
+function CreateConfigurationNuspec($nuspec){
+    $xml = [xml](Get-Content $nuspec)
+    foreach ($f in $xml.package.files.ChildNodes){
+        $f.src = $f.src.Replace("\Release\", "\$Configuration\")
+    }
+
+    $output = $nuspec.Replace(".nuspec", ".$Configuration.nuspec")
+    $xml.Save($output)
+    $generatedNuspecs.Add($output)
+    return $output
+}
+
+function CreatePlatformNuspec($nuspec){
+    $xml = [xml](Get-Content $nuspec)
+    if ($isUnix){
+        foreach ($f in $xml.package.files.ChildNodes){
+            $f.src = $f.src.Replace("\", "/")
+        }        
+    }
+
+    $output = $nuspec.Replace(".nuspec", ".$platform.nuspec")
+    $xml.Save($output)
+    $generatedNuspecs.Add($output)
+    return $output
+}
+
+function DeleteGeneratedNuspecs(){
+    foreach ($f in $generatedNuspecs){
+        Remove-Item $f
+    }
+}
+
+function PackNuget($id){
+    $nuspecPath = "resharper/src/resharper-unity/resharper-unity.$id.nuspec"
+    $nuspecPath = CreateConfigurationNuspec $nuspecPath
+    $nuspecPath = CreatePlatformNuspec $nuspecPath
+    Write-Host $nuspecPath
+
+    Write-Host "##teamcity[progressMessage 'Building and Packaging: $id']"
+    if ($isUnix){  
+      & nuget pack $nuspecPath -OutputDirectory resharper/build/resharper-unity.$id/bin/$Configuration
+    }
+    else{
+      $nuspecFilename = Split-Path $nuspecPath -leaf
+      & dotnet pack resharper/src/resharper-unity/resharper-unity.$id.csproj /p:Configuration=$Configuration /p:NuspecFile=$nuspecFilename --no-build  
+    }
+    if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
+    Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.$id/bin/$Configuration/*.nupkg']"    
+}
+
 if ($Source) {
   $sdkPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK"
   $sdkTestsPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK.Tests"
@@ -121,12 +181,20 @@ if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet restore: exit code $Las
 
 if ($NoBuild) { Exit 0 }
 
-$vspath = .\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-if (!$vspath) {
-  Write-Error "Could not find Visual Studio 2017+ for MSBuild 15"
+$assemblyVersion = GetBasePluginVersion "Packaging.props" "AssemblyVersion"
+Invoke-Expression ".\merge-unity-3d-rider.ps1 -inputDir resharper\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains -version $assemblyVersion"
+
+if ($isUnix){
+  $msbuild = which msbuild
+}
+else{
+  $vspath = .\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+  if (!$vspath) {
+    Write-Error "Could not find Visual Studio 2017+ for MSBuild 15"
+  }
+  $msbuild = join-path $vspath 'MSBuild\15.0\Bin\MSBuild.exe'
 }
 
-$msbuild = join-path $vspath 'MSBuild\15.0\Bin\MSBuild.exe'
 if (!(test-path $msbuild)) {
   Write-Error "MSBuild 15 is expected at $msbuild"
 }  
@@ -135,30 +203,33 @@ Write-Host "##teamcity[progressMessage 'Building']"
 & $msbuild resharper\src\resharper-unity.sln /p:Configuration=$Configuration
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $LastExitCode" }
 
-Write-Host "##teamcity[progressMessage 'Building and Packaging: Wave08']"
-& dotnet pack resharper/src/resharper-unity/resharper-unity.wave08.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.wave08.$Configuration.nuspec --no-build
-if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
-Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.wave08/bin/$Configuration/*.nupkg']"
-
-Write-Host "##teamcity[progressMessage 'Building and Packaging: Rider']"
-& dotnet pack resharper/src/resharper-unity/resharper-unity.rider.csproj /p:Configuration=$Configuration /p:NuspecFile=resharper-unity.rider.$Configuration.nuspec --no-build
-if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
-Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.rider/bin/$Configuration/*.nupkg']"
+try{
+    PackNuget "wave08"
+    PackNuget "rider"
+}
+finally{
+    DeleteGeneratedNuspecs
+}
 
 ### Pack Rider plugin directory
-SetIdeaVersion -file "rider/src/main/resources/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
-
-$baseVersion = GetBasePluginVersion "Packaging.props"
+$baseVersion = GetBasePluginVersion "Packaging.props" "Version"
 if ($BuildCounter) {
   $version = "$baseVersion.$BuildCounter"
 } else {
   $version = $baseVersion
 }
 
+SetIdeaVersion -file "rider/src/main/resources/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
+
 Write-Host "##teamcity[buildNumber '$version']"
 SetPluginVersion -file "rider/src/main/resources/META-INF/plugin.xml" -version $version
 
 Push-Location -Path rider
-.\gradlew.bat $GradleTask "-PpluginConfiguration=$Configuration"
+if ($isUnix){
+  .\gradlew $GradleTask "-PpluginConfiguration=$Configuration"
+}
+else{
+  .\gradlew.bat $GradleTask "-PpluginConfiguration=$Configuration"
+}
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
 Pop-Location
