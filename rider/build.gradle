@@ -43,7 +43,7 @@ intellij {
       localPath = dir.absolutePath
     }
     else {
-      version = '171.4456.199'  // EAP22
+      version = '171.4456.575' // EAP23
     }
 
     // Sources aren't available for Rider
