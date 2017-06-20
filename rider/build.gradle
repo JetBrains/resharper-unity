@@ -6,16 +6,19 @@ plugins {
 
 group 'com.jetbrains'
 
-// TODO: Get this version from e.g. Packaging.props
-version '1.8.0'
-
-if(!ext.has("pluginConfiguration")) {
-    ext.pluginConfiguration = "Release"
+if (!ext.has("myArgs")){
+    ext.myArgs = "Release,1.9.0"
 }
-println("ext.pluginConfiguration=" +  ext.pluginConfiguration)
+
+ext.args = myArgs.split(',')
+ext.configuration = ext.args[0]
+ext.version = ext.args[1]
+
+println("ext.version=$ext.version")
+println("ext.configuration=$ext.configuration")
 
 ext.kotlin_version = '1.1.1'
-ext.nupkg_path = "$projectDir/../resharper/build/resharper-unity.rider/bin/$pluginConfiguration/JetBrains.Unity.$version-rider.nupkg"
+ext.nupkg_path = "$projectDir/../resharper/build/resharper-unity.rider/bin/$ext.configuration/JetBrains.Unity.$ext.version-rider.nupkg"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -31,6 +34,8 @@ intellij {
     // version = 'LATEST-TRUNK-SNAPSHOT'
     // If the build isn't available in intellij-repository, use an installed version via `localPath`
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
+    // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
+
 
 
     def dir = file('dependencies')
@@ -38,7 +43,7 @@ intellij {
       localPath = dir.absolutePath
     }
     else {
-      version = '171.4456.199'  // EAP22
+      version = '171.4456.575' // EAP23
     }
 
     // Sources aren't available for Rider

@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
         protected override string RelativeTestDataPath => @"codeCompletion\List";
         protected override bool CheckAutomaticCompletionDefault() => true;
 
-        [Test] public void MonoBehaviour01() { DoNamedTest(); }
+        //[Test] public void MonoBehaviour01() { DoNamedTest(); }
         [Test] public void MonoBehaviour02() { DoNamedTest(); }
         [Test] public void MonoBehaviour03() { DoNamedTest(); }
         [Test] public void MonoBehaviour04() { DoNamedTest(); }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests</AssemblyName>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests.Wave08</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Tests</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
