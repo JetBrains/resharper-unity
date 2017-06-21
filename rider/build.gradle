@@ -14,6 +14,8 @@ ext.args = myArgs.split(',')
 ext.configuration = ext.args[0]
 ext.version = ext.args[1]
 
+version ext.version
+
 println("ext.version=$ext.version")
 println("ext.configuration=$ext.configuration")
 
