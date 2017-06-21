@@ -2,12 +2,12 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>JetBrains.Unity</id>
-    <title>Unity Support</title>
+    <title>Unity® Support</title>
     <version>1.9.1</version>
     <authors>JetBrains</authors>
     <owners>JetBrains</owners>
-    <summary>ReSharper support for Unity</summary>
-    <description>Adds support for Unity.
+    <summary>ReSharper support for the Unity® engine</summary>
+    <description>Adds support for the Unity® engine.
 
 &#8226; Highlights Unity event functions and fields with an icon in the editor gutter.
 &#8226; Marks fields and methods implicitly used by Unity as in use.
