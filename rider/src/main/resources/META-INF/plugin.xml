@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <idea-plugin>
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
@@ -20,7 +21,7 @@
   </project-components>
 
   <description><![CDATA[
-<p>Adds support for the Unity® engine.</p>
+<p>Adds support for the Unity (R) engine.</p>
 <p></p>
 <p>Please make sure to add the <a href="https://github.com/JetBrains/Unity3dRider#readme">Unity3dRider plugin</a> to your Unity project.</p>
 <p><b>Features</b></p>
