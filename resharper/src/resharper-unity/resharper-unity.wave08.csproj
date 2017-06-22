@@ -11,6 +11,7 @@
     <DefineConstants>TRACE;RELEASE;NET452;WAVE08</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="Rider" />
     <Folder Include="Unity3dRider\Assets\Plugins\Editor\JetBrains" />
     <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderAssetPostprocessor.cs" />
     <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderPlugin.cs" />
