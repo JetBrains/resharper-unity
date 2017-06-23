@@ -17,7 +17,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
 
         protected override ILexer CreateLexer(StreamReader sr)
         {
-            return new ShaderLabLexerGenerated(new StringBuffer(sr.ReadToEnd()));
+            var text = sr.ReadToEnd();
+            text = NormaliseLindEndines(text);
+            return new ShaderLabLexerGenerated(new StringBuffer(text));
+        }
+
+        private string NormaliseLindEndines(string text)
+        {
+            // TeamCity doesn't respect .gitattributes and pulls everything out as
+            // LF, instead of CRLF. Normalise to CRLF
+            return !text.Contains("\r\n") ? text.Replace("\n", "\r\n") : text;
         }
 
         protected override void WriteToken(TextWriter writer, ILexer lexer)
