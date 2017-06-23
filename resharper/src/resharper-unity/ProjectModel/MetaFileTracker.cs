@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     [SolutionComponent]
     public class MetaFileTracker : IChangeProvider
     {
-        private static readonly DateTime UnixTime = new DateTime(1970, 1, 1, 0, 0, 0);
+        private static readonly DateTime ourUnixTime = new DateTime(1970, 1, 1, 0, 0, 0);
 
         private readonly ISolution mySolution;
         private readonly ILogger myLogger;
@@ -30,16 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             if (projectModelChange.IsOpeningSolution || projectModelChange.IsClosingSolution)
                 return null;
 
-            if (projectModelChange.GetNewProject().IsUnityProject()
-                || projectModelChange.GetOldProject().IsUnityProject())
-            {
-                return null;
-            }
-
-            myLogger.Verbose("resharper-unity: ProjectModelChange start");
-            myLogger.Verbose("resharper-unity: " + projectModelChange.Dump());
             projectModelChange.Accept(new Visitor(this, myLogger));
-            myLogger.Verbose("resharper-unity: ProjectModelChange end");
             return null;
         }
 
@@ -54,32 +45,48 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 myLogger = logger;
             }
 
+            // Note that this method is called recursively, for projects, folders and files
             public override void VisitItemDelta(ProjectItemChange change)
             {
-                // Ugh. There is an assert in ToString for ParentFolder != null, and the project folder has yes, ParentFolder == null
-                if (change.ProjectItem.ParentFolder == null)
-                    myLogger.Verbose("resharper-unity: Project item {0} {1}", change.ProjectItem.GetType().Name, change.ProjectItem.Name);
+                if (change.ProjectModelElement is IProject)
+                    VisitProjectDelta(change);
                 else
-                    myLogger.Verbose("resharper-unity: Project item {0}", change.ProjectItem);
+                    VisitFileOrFolderDelta(change);
+            }
+
+            private void VisitProjectDelta(ProjectItemChange projectChange)
+            {
+                var project = projectChange.ProjectModelElement as IProject;
 
                 // When a project is reloaded, we get a removal notification for it and all of its
                 // files, followed by a load of addition notifications. If we don't handle this
                 // properly, we'll delete a load of .meta files and create new ones, causing big problems.
                 // So ignore any project removal messages. We can safely ignore them, as a) Unity will
                 // never do this, and b) you can't delete a project from Visual Studio/Rider, only remove it
-                if (change.ProjectItem is IProject && change.IsRemoved)
+                if (projectChange.IsRemoved)
                     return;
 
-                var shouldRecurse = true;
-                if (IsRenamedAsset(change))
-                    shouldRecurse = OnItemRenamed(change);
-                else if (IsAddedAsset(change))
-                    OnItemAdded(change);
-                else if (IsRemovedAsset(change))
-                    OnItemRemoved(change);
+                // Don't recurse if this project isn't a Unity project. Note that we don't do this
+                // for the IsRemoved case above, as the project doesn't have a solution at that point,
+                // and IsUnityProject will throw
+                if (!project.IsUnityProject())
+                    return;
 
-                if (shouldRecurse)
-                    base.VisitItemDelta(change);
+                base.VisitItemDelta(projectChange);
+            }
+
+            private void VisitFileOrFolderDelta(ProjectItemChange fileOrFolderChange)
+            {
+                var shouldVisitChildren = true;
+                if (IsRenamedAsset(fileOrFolderChange))
+                    shouldVisitChildren = OnItemRenamed(fileOrFolderChange);
+                else if (IsAddedAsset(fileOrFolderChange))
+                    OnItemAdded(fileOrFolderChange);
+                else if (IsRemovedAsset(fileOrFolderChange))
+                    OnItemRemoved(fileOrFolderChange);
+
+                if (shouldVisitChildren)
+                    base.VisitItemDelta(fileOrFolderChange);
             }
 
             private static bool IsRenamedAsset(ProjectItemChange change)
@@ -103,7 +110,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             private static bool ShouldHandleChange(ProjectItemChange change)
             {
-                return !(change.ProjectItem is IProject) && change.GetOldProject().IsUnityProject() && IsAsset(change) && !IsItemMetaFile(change);
+                // String comparisons, treat as expensive if we're doing this very frequently
+                return IsAsset(change) && !IsItemMetaFile(change);
             }
 
             private static bool IsAsset(ProjectItemChange change)
@@ -115,9 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             private static IProjectFolder GetRootFolder(IProjectItem item)
             {
                 while (item?.ParentFolder != null && item.ParentFolder.Kind != ProjectItemKind.PROJECT)
-                {
                     item = item.ParentFolder;
-                }
                 return item as IProjectFolder;
             }
 
@@ -200,7 +206,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 try
                 {
                     var guid = Guid.NewGuid();
-                    var timestamp = (long)(DateTime.UtcNow - UnixTime).TotalSeconds;
+                    var timestamp = (long)(DateTime.UtcNow - ourUnixTime).TotalSeconds;
                     path.WriteAllText($"fileFormatVersion: 2\r\nguid: {guid:N}\r\ntimeCreated: {timestamp}");
                     myLogger.Info("*** resharper-unity: Meta added {0}", path);
                 }
