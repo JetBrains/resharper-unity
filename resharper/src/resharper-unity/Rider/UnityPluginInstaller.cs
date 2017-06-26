@@ -121,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
           if (isFreshInstall)
           {
-            userTitle = "Plugin installed";
+            userTitle = "Unity: plugin installed";
             userMessage = 
               $@"Rider plugin v{currentVersion} for the Unity Editor was automatically installed for the project '{mySolution.Name}'
 This allows better integration between the Unity Editor and Rider IDE.
@@ -131,13 +131,13 @@ The plugin file can be found on the following path:
           }
           else
           {
-            userTitle = "Plugin updated";
+            userTitle = "Unity: plugin updated";
             userMessage = $"Rider plugin was succesfully upgraded from version {installationInfo.Version} to {currentVersion}";
           }
           
           myLogger.LogMessage(LoggingLevel.INFO, userTitle);
           
-          var notification = new RdNotificationEntry("Plugin installed",
+          var notification = new RdNotificationEntry(userTitle,
             userMessage, true,
             RdNotificationEntryType.INFO);
           myNotifications.Notification.Fire(notification);
