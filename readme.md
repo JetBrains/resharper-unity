@@ -117,25 +117,23 @@ Please watch the repo for updates, or follow [@citizenmatt](https://twitter.com/
 
 ## Unity3dRider initialization for Rider
 
-### Clean installation
+### Unity version pre 2017.1.b5
 
-* Open project in Unity
-* Select Rider as External Editor
-* Double click cs file
-* Rider starts and asks if sln is correct?
-* Agree
+* Make Unity generate slnFile for you:
+  * Open project in Unity
+  * From Unity open project in MD
+* Open Rider, manually open sln file 
 Solution is opened. resharper-unity adds Unity3dRider to project as a single file Unity3dRider.cs, tries to remove older version.
 * Get back to Unity
-* If Solution is compilable, Unity3dRider is fully initialized
-* If Solution is not compilable, Opening files will still work, but some features may not work.
-
-### "Partially prepared"
-
-Here we expect that the user was already working with Solution and sln is already generated, Unity3dRider is already added (manually or as git submodule or by Opening in Rider once).
-
-* Get in Unity. 
+* Make Solution compilable at least once, so Unity3dRider is initialized
 Unity3dRider finds Rider and adds it to known editors list.
 * If you are running Unity with plugin for the first time it will set Rider as default editor.
+
+### Unity version 2017.1.b5 and after
+
+Either way you can:
+* Manully select Rider as an editor in Unity and it will work just fine
+* Or follow the "pre 2017.1.b5" instructions to avoid manual search for Rider executable
 
 Possible problems
 
