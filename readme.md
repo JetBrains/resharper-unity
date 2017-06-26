@@ -96,7 +96,7 @@ Other:
 The plugin also adds some functionality just for Rider:
 
 * The `Library` and `Temp` folders are automatically excluded from Rider's full text search, used for the "Find in Path" feature. These folders can become very large, and can take a long time to index if not excluded.
-* Rider will automatically create an "Attach to Unity Editor" run configuration. When the debug button is clicked, Rider will automatically attach to the editor and start debugging. Rider will look for a `Library/EditorInstance.json` file, created by Unity 2017.1, or by the latest versions of the [Unity3dRider plugin](https://github.com/JetBrains/Unity3dRider#readme). If the file doesn't exist and only a single instance of Unity is running, Rider will attach to this instance. If multiple instances are running, Rider will prompt for which instance to attach to.
+* Rider will automatically create an "Attach to Unity Editor" run configuration. When the debug button is clicked, Rider will automatically attach to the editor and start debugging. Rider will look for a `Library/EditorInstance.json` file, created by Unity 2017.1, or by [Unity3dRider plugin](https://github.com/JetBrains/resharper-unity/tree/master/resharper/src/resharper-unity/Unity3dRider). If the file doesn't exist and only a single instance of Unity is running, Rider will attach to this instance. If multiple instances are running, Rider will prompt for which instance to attach to.
 
   <img src="docs/attach_to_editor_run_config.png" width="514">
 
