@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab;
@@ -25,14 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages
 
         public ErrorStripeRequest NeedsErrorStripe(IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
         {
-            if (!IsSupported(sourceFile))
-                return ErrorStripeRequest.NONE;
-
-            var properties = sourceFile.Properties;
-            if (!properties.ProvidesCodeModel || properties.IsNonUserFile)
-                return ErrorStripeRequest.NONE;
-
-            return ErrorStripeRequest.STRIPE_AND_ERRORS;
+            throw new InvalidOperationException("This API is obsolete");
         }
 
         protected virtual bool IsSupported(IPsiSourceFile sourceFile)
