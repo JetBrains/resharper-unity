@@ -16,6 +16,7 @@
   <project-components>
     <component><implementation-class>com.jetbrains.resharper.UnityReferenceDiscoverer</implementation-class></component>
     <component><implementation-class>com.jetbrains.resharper.UnityConfigurationImpl</implementation-class></component>
+    <component><implementation-class>com.jetbrains.resharper.settings.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.resharper.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
   </project-components>
 

@@ -1,19 +1,11 @@
-﻿using System;
+﻿#if RIDER
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
-
-#if RIDER
-using JetBrains.Application.Threading;
-#endif
-
-#if WAVE08
-using JetBrains.Application;
-#endif
-
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -23,11 +15,11 @@ using JetBrains.Rider.Model.Notifications;
 using JetBrains.Threading;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
+using JetBrains.Application.Threading;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
-#if RIDER
   [SolutionComponent]
-#endif
   public class UnityPluginInstaller
   {
     private readonly JetHashSet<FileSystemPath> myPluginInstallations;
@@ -40,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
     private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
     private static readonly string ourResourceNamespace =
-      typeof(UnityPluginInstaller).Namespace + ".Assets.Plugins.Editor.JetBrains.";
+      typeof(KnownTypes).Namespace + ".Unity3dRider.Assets.Plugins.Editor.JetBrains.";
 
     private readonly object mySyncObj = new object();
 
@@ -129,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
 
           if (isFreshInstall)
           {
-            userTitle = "Plugin installed";
+            userTitle = "Unity: plugin installed";
             userMessage = 
               $@"Rider plugin v{currentVersion} for the Unity Editor was automatically installed for the project '{mySolution.Name}'
 This allows better integration between the Unity Editor and Rider IDE.
@@ -139,13 +131,13 @@ The plugin file can be found on the following path:
           }
           else
           {
-            userTitle = "Plugin updated";
+            userTitle = "Unity: plugin updated";
             userMessage = $"Rider plugin was succesfully upgraded from version {installationInfo.Version} to {currentVersion}";
           }
           
           myLogger.LogMessage(LoggingLevel.INFO, userTitle);
           
-          var notification = new RdNotificationEntry("Plugin installed",
+          var notification = new RdNotificationEntry(userTitle,
             userMessage, true,
             RdNotificationEntryType.INFO);
           myNotifications.Notification.Fire(notification);
@@ -235,3 +227,4 @@ The plugin file can be found on the following path:
     }
   }
 }
+#endif
