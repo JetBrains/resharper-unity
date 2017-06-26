@@ -104,15 +104,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         protected override void DoTest(IProject testProject)
         {
             var projectFile = testProject.GetAllProjectFiles().FirstNotNull();
+            Assert.NotNull(projectFile);
 
             var text = projectFile.Location.ReadAllText2();
             var buffer = new StringBuffer(text.Text);
 
-            var languageService = ShaderLabLanguage.Instance.LanguageService();
+            var languageService = ShaderLabLanguage.Instance.LanguageService().NotNull();
             var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(buffer);
             var psiModule = Solution.PsiModules().GetPrimaryPsiModule(testProject, TargetFrameworkId.Default);
             var parser = languageService.CreateParser(lexer, psiModule, null);
-            var psiFile = parser.ParseFile();
+            var psiFile = parser.ParseFile().NotNull();
 
             if (DebugUtil.HasErrorElements(psiFile))
             {
@@ -121,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
             }
 
             Assert.AreEqual(text.Text, psiFile.GetText(), "Reconstructed text mismatch");
-            //CheckRange(buffer, psiFile);
+            CheckRange(text.Text, psiFile);
         }
 
         private static void CheckRange(string documentText, ITreeNode node)
