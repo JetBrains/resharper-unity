@@ -38,8 +38,6 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
 
-
-
     def dir = file('dependencies')
     if (dir.exists()) {
       localPath = dir.absolutePath
@@ -67,6 +65,13 @@ prepareSandbox {
     from(nupkg_path, {
         into "$intellij.pluginName"
     })
+}
+
+runIde {
+    systemProperties = [
+        'rider.debug.mono.debug': true,
+        'rider.debug.mono.allowConnect': true
+    ]
 }
 
 // The current 171.4089.265 snapshot doesn't set the executable bit for
