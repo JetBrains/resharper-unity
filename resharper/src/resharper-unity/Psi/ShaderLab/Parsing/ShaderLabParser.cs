@@ -139,19 +139,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
             LeafElementBase element;
             if (tokenType == ShaderLabTokenType.NUMERIC_LITERAL
                 || tokenType == ShaderLabTokenType.STRING_LITERAL
-                || tokenType== ShaderLabTokenType.CG_CONTENT)
+                || tokenType == ShaderLabTokenType.IDENTIFIER
+                || tokenType.IsKeyword)
             {
+                // Interning the token text will allow us to reuse existing string instances.
+                // The IEqualityComparer implementation will generate a hash code and compare
+                // the current token text by looking directly into the lexer buffer, and does
+                // not allocate a new string from the lexer, unless the string isn't already
+                // interned.
                 var text = TokenIntern.Intern(myLexer);
-                element = new ShaderLabTokenType.GenericTokenElement(tokenType, text);
-            }
-            else if (tokenType.IsKeyword)
-            {
-                var text = TokenIntern.Intern(myLexer);
-                element = new ShaderLabTokenType.KeywordTokenElement(tokenType, text);
+                element = tokenType.Create(text);
             }
             else
-                element = tokenType.Create(myLexer.Buffer, new TreeOffset(myLexer.TokenStart),
+            {
+                element = tokenType.Create(myLexer.Buffer,
+                    new TreeOffset(myLexer.TokenStart),
                     new TreeOffset(myLexer.TokenEnd));
+            }
 
             myLexer.Advance();
 

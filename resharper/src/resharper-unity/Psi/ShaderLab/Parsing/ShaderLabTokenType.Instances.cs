@@ -17,8 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public static readonly TokenNodeType EOF = new GenericTokenNodeType("EOF", LAST_GENERATED_TOKEN_TYPE_INDEX + 14, "EOF");
 
         public static readonly TokenNodeType IDENTIFIER = new IdentifierNodeType(IDENTIFIER_NODE_TYPE_INDEX);
-        public static readonly TokenNodeType STRING_LITERAL = new GenericTokenNodeType("STRING_LITERAL", STRING_LITERAL_NODE_TYPE_INDEX, "\"XXX\"");
-        public static readonly TokenNodeType NUMERIC_LITERAL = new GenericTokenNodeType("NUMERIC_LITERAL", LAST_GENERATED_TOKEN_TYPE_INDEX + 7, "0.0");
+        public static readonly TokenNodeType STRING_LITERAL = new StringLiteralNodeType(STRING_LITERAL_NODE_TYPE_INDEX);
+        public static readonly TokenNodeType NUMERIC_LITERAL = new NumericLiteralNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 7);
         public static readonly TokenNodeType CG_CONTENT = new GenericTokenNodeType("CG_CONTENT", CG_CONTENT_NODE_TYPE_INDEX, "CG_CONTENT");
     }
 }
