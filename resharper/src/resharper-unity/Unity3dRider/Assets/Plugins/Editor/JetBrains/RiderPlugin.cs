@@ -268,9 +268,12 @@ namespace Plugins.Editor.JetBrains
 
     private static bool DetectPortAndOpenFile(int line, string filePath, bool isWindows)
     {
-      var process = GetRiderProcess();
-      if (process == null) 
-        return false;
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
+      {
+        var process = GetRiderProcess();
+        if (process == null) 
+          return false;  
+      }
       
       int[] ports = Enumerable.Range(63342, 20).ToArray();
       var res = ports.Any(port => 
