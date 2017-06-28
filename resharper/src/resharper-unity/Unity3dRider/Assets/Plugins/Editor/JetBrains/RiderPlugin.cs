@@ -23,8 +23,13 @@ namespace Plugins.Editor.JetBrains
     public static void Log(LoggingLevel level, string format, params object[] args)
     {
       if (level < SelectedLoggingLevel) return;
+
+      var text = string.Empty;
+      if (args.Length != 0)
+        text = "[Rider] [" + level + "] " + string.Format(format, args);
+      else
+        text = format;
       
-      var text = "[Rider] [" + level + "] " + string.Format(format, args);
       switch (level)
       {
         case LoggingLevel.Warning:
@@ -288,7 +293,7 @@ namespace Plugins.Editor.JetBrains
           }
           catch (Exception e)
           {
-            Log(LoggingLevel.Verbose, "Exception in DetectPortAndOpenFile: " + e);
+            Log(LoggingLevel.Verbose, "Exception in DetectPortAndOpenFile: {0}", e);
           }
         }
         return false;
@@ -316,7 +321,7 @@ namespace Plugins.Editor.JetBrains
     private static string CallHttpApi(Uri uri, WebClient client)
     {
       var responseString = client.DownloadString(uri);
-      Log(LoggingLevel.Verbose, "HttpRequestOpenFile response: " + responseString);
+      Log(LoggingLevel.Verbose, "HttpRequestOpenFile response: {0}", responseString);
       return responseString;
     }
 
@@ -333,7 +338,7 @@ namespace Plugins.Editor.JetBrains
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
-        Log(LoggingLevel.Verbose, proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+        Log(LoggingLevel.Verbose, "{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
       }
       else
       {
