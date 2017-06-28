@@ -20,11 +20,11 @@ namespace Plugins.Editor.JetBrains
     private static bool Initialized;
     private static string SlnFile;
 
-    public static void Log(LoggingLevel level, string format, params object[] args)
+    public static void Log(LoggingLevel level, string initialText)
     {
       if (level < SelectedLoggingLevel) return;
 
-      var text = "[Rider] [" + level + "] " + (args.Length > 0 ? string.Format(format, args) : format);
+      var text = "[Rider] [" + level + "] " +  initialText;
       
       switch (level)
       {
@@ -292,7 +292,7 @@ namespace Plugins.Editor.JetBrains
           }
           catch (Exception e)
           {
-            Log(LoggingLevel.Verbose, "Exception in DetectPortAndOpenFile: {0}", e);
+            Log(LoggingLevel.Verbose, string.Format("Exception in DetectPortAndOpenFile: {0}", e));
           }
         }
         return false;
@@ -310,7 +310,7 @@ namespace Plugins.Editor.JetBrains
         url = string.Format(@"http://localhost:{0}/api/file/{1}{2}", port, filePath, line < 0 ? "" : ":" + line);
 
       var uri = new Uri(url);
-      Log(LoggingLevel.Verbose, "HttpRequestOpenFile({0})", uri.AbsoluteUri);
+      Log(LoggingLevel.Verbose, string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
 
       CallHttpApi(uri, client);
       ActivateWindow();
@@ -320,7 +320,7 @@ namespace Plugins.Editor.JetBrains
     private static string CallHttpApi(Uri uri, WebClient client)
     {
       var responseString = client.DownloadString(uri);
-      Log(LoggingLevel.Verbose, "HttpRequestOpenFile response: {0}", responseString);
+      Log(LoggingLevel.Verbose, string.Format("HttpRequestOpenFile response: {0}", responseString));
       return responseString;
     }
 
@@ -337,13 +337,13 @@ namespace Plugins.Editor.JetBrains
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
-        Log(LoggingLevel.Verbose, "{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
+        Log(LoggingLevel.Verbose, string.Format("{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments));
       }
       else
       {
         proc.StartInfo.FileName = defaultApp;
         proc.StartInfo.Arguments = args;
-        Log(LoggingLevel.Verbose, "\"{0}\"" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
+        Log(LoggingLevel.Verbose, string.Format("{2}{0}{2}" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments, "\""));
       }
 
       proc.StartInfo.UseShellExecute = false;
@@ -369,7 +369,7 @@ namespace Plugins.Editor.JetBrains
             var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
             // Get process main window title
             var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
-            Log(LoggingLevel.Info, "ActivateWindow: {0} {1}", process.Id, windowHandle);
+            Log(LoggingLevel.Info, string.Format("ActivateWindow: {0} {1}", process.Id, windowHandle));
             if (windowHandle != IntPtr.Zero)
             {
               //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
