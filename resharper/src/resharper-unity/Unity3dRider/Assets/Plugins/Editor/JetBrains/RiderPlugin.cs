@@ -24,11 +24,7 @@ namespace Plugins.Editor.JetBrains
     {
       if (level < SelectedLoggingLevel) return;
 
-      var text = string.Empty;
-      if (args.Length != 0)
-        text = "[Rider] [" + level + "] " + string.Format(format, args);
-      else
-        text = format;
+      var text = "[Rider] [" + level + "] " + (args.Length > 0 ? string.Format(format, args) : format);
       
       switch (level)
       {
