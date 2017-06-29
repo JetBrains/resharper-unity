@@ -379,7 +379,7 @@ namespace Plugins.Editor.JetBrains
         }
         catch (Exception e)
         {
-          Log(LoggingLevel.Warning, "[Rider] " + ("Exception on ActivateWindow: " + e));
+          Log(LoggingLevel.Warning, "Exception on ActivateWindow: " + e);
         }
       }
     }
