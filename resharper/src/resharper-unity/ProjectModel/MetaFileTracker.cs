@@ -134,7 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             private bool OnItemRenamed(ProjectItemChange change)
             {
-                myLogger.Verbose("*** resharper-unity: Item renamed {0} -> {1}", change.OldLocation, change.ProjectItem.Location);
+                myLogger.Trace("*** resharper-unity: Item renamed {0} -> {1}", change.OldLocation, change.ProjectItem.Location);
 
                 var oldMetaFile = change.OldParentFolder.Location.Combine(change.OldLocation.Name + ".meta");
                 var newMetaFile = GetMetaFile(change.ProjectItem.Location);
@@ -150,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             private void OnItemAdded(ProjectItemChange change)
             {
-                myLogger.Verbose("*** resharper-unity: Item added {0}", change.ProjectItem.Location);
+                myLogger.Trace("*** resharper-unity: Item added {0}", change.ProjectItem.Location);
 
                 CreateMetaFile(GetMetaFile(change.ProjectItem.Location));
 
@@ -167,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             private void OnItemRemoved(ProjectItemChange change)
             {
-                myLogger.Verbose("*** resharper-unity: Item removed {0}", change.OldLocation);
+                myLogger.Trace("*** resharper-unity: Item removed {0}", change.OldLocation);
 
                 var metaFile = GetMetaFile(change.OldLocation);
                 if (!metaFile.ExistsFile) return;
