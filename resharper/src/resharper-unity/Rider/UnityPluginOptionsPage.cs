@@ -1,16 +1,10 @@
 ﻿#if RIDER
 using JetBrains.Application.UI.Options;
-#endif
-
-#if WAVE08
-using JetBrains.UI.Options;    
-#endif
-
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [OptionsPage(
         PID,
@@ -33,3 +27,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         }
     }
 }
+#endif

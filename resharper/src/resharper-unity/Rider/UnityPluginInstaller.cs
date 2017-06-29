@@ -10,7 +10,6 @@ using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Threading;
 using JetBrains.Util;
@@ -94,16 +93,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             
             if (!myBoundSettingsStore.GetValue((UnityPluginSettings s) => s.InstallUnity3DRiderPlugin))
                 return;
+
+            if (projects.Count == 0)
+                return;
             
-            foreach (var project in projects)
+            var installationDir = GetPreviousInstallationDir();
+            var installationInfo = myDetector.GetInstallationInfo(projects, installationDir);
+            if (!installationInfo.ShouldInstallPlugin)
             {
-                TryInstallForProject(project);
+                myLogger.Info("Plugin should not be installed.");
+                if (installationInfo.ExistingFiles.Count > 0)
+                    myLogger.Info("Already existing plugin files:\n{0}", string.Join("\n", installationInfo.ExistingFiles));
+            }
+            
+            Install(installationInfo);
+        }
+
+        [CanBeNull]
+        private FileSystemPath GetPreviousInstallationDir()
+        {
+            var installationDir = myBoundSettingsStore.GetValue((UnityPluginSettings s) => s.Unity3DRiderInstallationDirectory);
+            if (installationDir.IsNullOrEmpty()) return FileSystemPath.Empty;
+
+            try
+            {
+                return FileSystemPath.ParseRelativelyTo(installationDir, mySolution.SolutionFilePath.Directory);
+            }
+            catch (Exception e)
+            {
+                myLogger.LogExceptionSilently(e);
+                return null;
             }
         }
 
-        private void TryInstallForProject(IProject project)
+        private void Install(UnityPluginDetector.InstallationInfo installationInfo)
         {
-            var installationInfo = myDetector.GetInstallationInfo(project);
             if (!installationInfo.ShouldInstallPlugin)
                 return;
 
@@ -122,7 +146,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 FileSystemPath installedPath;
 
-                if (!TryInstall(installationInfo, out installedPath))
+                if (!TryCopyFiles(installationInfo, out installedPath))
                 {
                     myLogger.LogMessage(LoggingLevel.WARN, "Plugin was not installed");
                 }
@@ -135,9 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         userTitle = "Unity: plugin installed";
                         userMessage =
-                            $@"Rider plugin v{
-                                    currentVersion
-                                } for the Unity Editor was automatically installed for the project '{mySolution.Name}'
+                            $@"Rider plugin v{currentVersion} for the Unity Editor was automatically installed for the project '{mySolution.Name}'
 This allows better integration between the Unity Editor and Rider IDE.
 The plugin file can be found on the following path:
 {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}";
@@ -145,8 +167,7 @@ The plugin file can be found on the following path:
                     else
                     {
                         userTitle = "Unity: plugin updated";
-                        userMessage =
-                            $"Rider plugin was succesfully upgraded from version {installationInfo.Version} to {currentVersion}";
+                        userMessage = $"Rider plugin was succesfully upgraded to version {currentVersion}";
                     }
 
                     myLogger.LogMessage(LoggingLevel.INFO, userTitle);
@@ -161,15 +182,14 @@ The plugin file can be found on the following path:
             }
         }
 
-        public bool TryInstall([NotNull] UnityPluginDetector.InstallationInfo installation,
-            out FileSystemPath installedPath)
+        public bool TryCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
         {
             installedPath = null;
             try
             {
                 installation.PluginDirectory.CreateDirectory();
 
-                return DoInstall(installation, out installedPath);
+                return DoCopyFiles(installation, out installedPath);
             }
             catch (Exception e)
             {
@@ -178,14 +198,13 @@ The plugin file can be found on the following path:
             }
         }
 
-        private bool DoInstall([NotNull] UnityPluginDetector.InstallationInfo installation,
-            out FileSystemPath installedPath)
+        private bool DoCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
         {
             installedPath = null;
 
-            var backups = installation.InstalledFiles.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+            var backups = installation.ExistingFiles.ToDictionary(f => f, f => f.AddSuffix(".backup"));
 
-            foreach (var originPath in installation.InstalledFiles)
+            foreach (var originPath in installation.ExistingFiles)
             {
                 var backupPath = backups[originPath];
                 originPath.MoveFile(backupPath, true);

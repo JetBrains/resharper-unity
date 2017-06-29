@@ -1,23 +1,15 @@
-﻿using System;
+﻿#if RIDER
+using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
-
-#if RIDER
 using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions;
-#endif
-
-#if WAVE08
-using JetBrains.UI.Options;
-using JetBrains.UI.Options.OptionsDialog2.SimpleOptions;
-#endif
-
 using JetBrains.DataFlow;
 using JetBrains.UI.RichText;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     public class OptionsPageBase : CustomSimpleOptionsPage
     {
@@ -73,3 +65,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         #endregion
     }
 }
+#endif
