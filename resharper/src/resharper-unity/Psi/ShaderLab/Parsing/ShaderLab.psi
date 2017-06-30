@@ -635,6 +635,35 @@ errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
 ;
 
 
+interface blockCommand
+:
+  shaderCommand
+  | propertiesCommand
+  | categoryCommand
+  | subShaderCommand
+  | tagsCommand
+  | stencilCommand
+  | materialCommand
+  | setTextureCommand
+  | fogCommand
+  | bindChannelsCommand
+;
+
+interface blockValue
+:
+  shaderValue
+  | propertiesValue
+  | categoryValue
+  | subShaderValue
+  | tagsValue
+  | stencilValue
+  | materialValue
+  | setTextureValue
+  | fogValue
+  | bindChannelsValue
+;
+
+
 // **************************************************************************
 //
 // Shader
@@ -1038,7 +1067,7 @@ private legacyFogCommand
 
 private legacyBindChannelsCommand
 :
-   bindChannelsCommand<SHADER_LAB_COMMAND, Commands>
+  bindChannelsCommand<SHADER_LAB_COMMAND, Commands>
 ;
 
 
@@ -1712,17 +1741,28 @@ bindValue
 //
 // **************************************************************************
 
+interface cgBlock
+:
+  cgIncludeBlock
+  | cgProgramBlock
+;
+
+cgContent
+:
+  CG_CONTENT<CG_CONTENT, Content>
+;
+
 cgIncludeBlock
 :
   CG_INCLUDE<CG_INCLUDE, CgInclude>
-  CG_CONTENT<CG_CONTENT, CgContent>
+  cgContent<CG_CONTENT, CgContent>
   CG_END<CG_END, CgEnd>
 ;
 
 cgProgramBlock
 :
   CG_PROGRAM<CG_PROGRAM, CgProgram>
-  CG_CONTENT<CG_CONTENT, CgContent>
+  cgContent<CG_CONTENT, CgContent>
   CG_END<CG_END, CgEnd>
 ;
 
