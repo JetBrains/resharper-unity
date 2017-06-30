@@ -245,8 +245,12 @@ namespace Plugins.Editor.JetBrains
         if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader" ||
             (selected.GetType().ToString() == "UnityEngine.TextAsset" && 
-             EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1)))
-              )) 
+#if UNITY_5 || UNITY_5_5_OR_NEWER
+            EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1)
+#else
+            EditorSettings.externalVersionControl.Contains(Path.GetExtension(assetFilePath).Substring(1)
+#endif 
+            ))) 
           return false;
         
         SyncSolution(); // added to handle opening file, which was just recently created.
