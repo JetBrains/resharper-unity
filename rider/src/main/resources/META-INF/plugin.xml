@@ -17,7 +17,7 @@
     <lang.parserDefinition language="ShaderLab" implementationClass="com.jetbrains.resharper.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabParserDefinition" />
     <lang.syntaxHighlighterFactory language="ShaderLab" implementationClass="com.jetbrains.resharper.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabSyntaxHighlighterProvider" />
     <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.resharper.daemon.RiderMarkupAdapterFactory" />
-    <backend.actions.support language="VB" implementationClass="com.jetbrains.resharper.actions.RiderActionSupportPolicy" />
+    <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.resharper.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.resharper.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
   </extensions>
 
