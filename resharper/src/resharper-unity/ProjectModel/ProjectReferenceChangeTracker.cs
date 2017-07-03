@@ -1,10 +1,19 @@
-﻿using System;
+﻿#if RIDER
+using JetBrains.Application.Threading;
+#endif
+#if WAVE08
+using JetBrains.Application;
+#endif
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
+using JetBrains.ProjectModel.Tasks;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
@@ -12,37 +21,66 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     [SolutionComponent]
     public class ProjectReferenceChangeTracker : IChangeProvider
     {
+        private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
+        private readonly IShellLocks myShellLocks;
+        private readonly ModuleReferenceResolveSync myModuleReferenceResolveSync;
         private readonly ChangeManager myChangeManager;
-        private readonly ConcurrentBag<Action<Lifetime, IProject>> myHandlers;
+        private readonly IViewableProjectsCollection myProjects;
+        private readonly ICollection<IProjectChangeHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
-
+        
         public ProjectReferenceChangeTracker(
             Lifetime lifetime,
+            
+            IEnumerable<IProjectChangeHandler> handlers,
             ISolution solution,
+            
+            ISolutionLoadTasksScheduler scheduler,
+            IShellLocks shellLocks,
+            
             ModuleReferenceResolveSync moduleReferenceResolveSync,
             ChangeManager changeManager,
             IViewableProjectsCollection projects)
         {
-            myHandlers = new ConcurrentBag<Action<Lifetime, IProject>>();
             myProjectLifetimes = new Dictionary<IProject, Lifetime>();
-            
+
+            myHandlers = handlers.ToList();
+            myLifetime = lifetime;
             mySolution = solution;
+            myShellLocks = shellLocks;
+            myModuleReferenceResolveSync = moduleReferenceResolveSync;
             myChangeManager = changeManager;
-            myProjectLifetimes = new Dictionary<IProject, Lifetime>();
+            myProjects = projects;
             
-            myChangeManager.RegisterChangeProvider(lifetime, this);
-            myChangeManager.AddDependency(lifetime, this, moduleReferenceResolveSync);
-            
-            projects.Projects.View(lifetime, (projectLifetime, project) =>
+            scheduler.EnqueueTask(new SolutionLoadTask("Checking for Unity projects", SolutionLoadTaskKinds.Done, Register));
+        }
+
+        private void Register()
+        {
+            using (myShellLocks.UsingReadLock())
             {
-                myProjectLifetimes.Add(project, projectLifetime);
-
-                if (!project.IsUnityProject())
-                    return;
-
-                Handle(project);
-            });
+                var unityProjectLifetimes = new Dictionary<IProject, Lifetime>();
+                
+                myProjects.Projects.View(myLifetime, (projectLifetime, project) =>
+                {
+                    if (project.IsUnityProject())
+                    {
+                        unityProjectLifetimes.Add(project, projectLifetime);
+                    }
+                    
+                    myProjectLifetimes.Add(project, projectLifetime);
+                });
+                
+                var unityProjects = new UnityProjectsCollection(unityProjectLifetimes, mySolution.SolutionFilePath);
+                foreach (var handler in myHandlers)
+                {
+                    handler.OnSolutionLoaded(unityProjects);
+                }
+            }
+            
+            myChangeManager.RegisterChangeProvider(myLifetime, this);
+            myChangeManager.AddDependency(myLifetime, this, myModuleReferenceResolveSync);
         }
 
         private void Handle(IProject project)
@@ -56,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 try
                 {
-                    handler(projectLifetime, project);
+                    handler.OnProjectChanged(project, projectLifetime);
                 }
                 catch (Exception e)
                 {
@@ -68,11 +106,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 throw new AggregateException("Failed to handle project changes", exceptions.ToArray());
             }
-        }
-
-        public void RegisterProjectChangeHandler(Action<Lifetime, IProject> handler)
-        {
-            myHandlers.Add(handler);
         }
 
         object IChangeProvider.Execute(IChangeMap changeMap)
