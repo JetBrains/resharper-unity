@@ -309,7 +309,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Host.Features.Foldings
 #pragma warning disable 618
                 if (Shell.Instance.IsTestShell)
                 {
-                    return new TestableCodeFoldingHighlight(range, attributeId);
+                    return new CodeFoldingHighlighting(range, attributeId);
                 }
 #pragma warning restore 618
 
@@ -342,11 +342,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Host.Features.Foldings
             }
 
             [StaticSeverityHighlighting(Severity.INFO, "CodeFoldingHighlighting", OverlapResolve = OverlapResolveKind.NONE, ShowToolTipInStatusBar = false)]
-            private class TestableCodeFoldingHighlight : ICustomAttributeIdHighlighting
+            private class CodeFoldingHighlighting : ICustomAttributeIdHighlighting
             {
                 private readonly DocumentRange myRange;
 
-                public TestableCodeFoldingHighlight(DocumentRange range, string attributeId)
+                public CodeFoldingHighlighting(DocumentRange range, string attributeId)
                 {
                     myRange = range;
                     AttributeId = attributeId;

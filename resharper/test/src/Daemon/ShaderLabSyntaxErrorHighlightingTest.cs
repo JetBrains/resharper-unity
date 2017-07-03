@@ -2,7 +2,7 @@
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon
 {
-    public class SyntaxHighlightingTest : ShaderLabHighlightingTestBase
+    public class ShaderLabSyntaxErrorHighlightingTest : ShaderLabHighlightingTestBase
     {
         protected override string RelativeTestDataPath => @"daemon\SyntaxHighlighting";
 

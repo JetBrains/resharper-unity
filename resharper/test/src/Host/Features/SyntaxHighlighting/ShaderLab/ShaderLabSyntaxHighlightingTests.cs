@@ -7,21 +7,21 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Host.Features.Foldings.ShaderLab
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Host.Features.SyntaxHighlighting.ShaderLab
 {
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
-    public class ShaderLabFoldingTests : ShaderLabHighlightingTestBase
+    public class ShaderLabSyntaxHighlightingTests : ShaderLabHighlightingTestBase
     {
-        protected override string RelativeTestDataPath => @"foldings\shaderlab";
+        protected override string RelativeTestDataPath => @"syntaxHighlighting\shaderlab";
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
         {
-            // TODO: highlighting is CodeFoldingHighlighting
-            return highlighting.GetType().Name == "CodeFoldingHighlighting";
+            // TODO: highlighting is ReSharperSyntaxHighlighting
+            return highlighting.GetType().Name == "ReSharperSyntaxHighlighting";
         }
 
-        [Test] public void TestFoldings() { DoNamedTest2(); }
+        [Test] public void TestSyntaxHighlighting() { DoNamedTest2(); }
     }
 }
 
