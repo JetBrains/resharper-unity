@@ -246,9 +246,9 @@ namespace Plugins.Editor.JetBrains
             selected.GetType().ToString() == "UnityEngine.Shader" ||
             (selected.GetType().ToString() == "UnityEngine.TextAsset" && 
 #if UNITY_5 || UNITY_5_5_OR_NEWER
-            EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1)
+            EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
 #else
-            EditorSettings.externalVersionControl.Contains(Path.GetExtension(assetFilePath).Substring(1)
+            EditorSettings.externalVersionControl.Contains(Path.GetExtension(assetFilePath).Substring(1))
 #endif 
             ))) 
           return false;
