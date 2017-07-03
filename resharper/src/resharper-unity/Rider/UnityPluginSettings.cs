@@ -9,9 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         [SettingsEntry(true, "If this option is enabled, Rider plugin will be automatically installed for Unity projects.")]
         public bool InstallUnity3DRiderPlugin;
-        
-        [SettingsEntry(null, "Directory relative to solution file where the Unity3DRider should be installed.")]
-        public string Unity3DRiderInstallationDirectory;
     }
 }
 #endif

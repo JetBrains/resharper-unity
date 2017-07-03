@@ -13,6 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityPluginDetector
     {
+        public static readonly Version ZeroVersion = new Version();
+        
         private readonly ISolution mySolution;
         private readonly ILogger myLogger;
         private static readonly string[] ourPluginFilesV180 = {"RiderAssetPostprocessor.cs", "RiderPlugin.cs"};
@@ -22,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private static readonly Regex ourVersionRegex = new Regex(@"// ((?:[0-9]\.)+[0-9])", RegexOptions.Compiled);
 
         public static readonly InstallationInfo ShouldNotInstall = new InstallationInfo(false, FileSystemPath.Empty,
-            EmptyArray<FileSystemPath>.Instance, new Version());
+            EmptyArray<FileSystemPath>.Instance, ZeroVersion);
 
         public UnityPluginDetector(ISolution solution, ILogger logger)
         {
@@ -52,7 +54,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var isFirstInstall = previousInstallationDir.IsNullOrEmpty();
                 if (isFirstInstall)
                 {
-                    myLogger.Verbose("First install.");
                     // e.g.: fresh checkout from VCS
                     if (TryFindInSolution(unityProjects, out result))
                     {
@@ -168,7 +169,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         [NotNull]
         private static InstallationInfo NotInstalled(FileSystemPath pluginDir)
         {
-            return new InstallationInfo(true, pluginDir, EmptyArray<FileSystemPath>.Instance, new Version());
+            return new InstallationInfo(true, pluginDir, EmptyArray<FileSystemPath>.Instance, ZeroVersion);
         }
 
         [NotNull]
@@ -178,20 +179,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (parentDirs.Count > 1)
             {
                 myLogger.Warn("Plugin files detected in more than one directory.");
-                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, new Version(0, 0));
+                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, ZeroVersion);
             }
 
             if (parentDirs.Count == 0)
             {
                 myLogger.Warn("Plugin files do not have parent directory (?).");
-                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, new Version(0, 0));
+                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, ZeroVersion);
             }
 
             // v1.8 is two files, v1.9 is one
             if (pluginFiles.Count == 0 || pluginFiles.Count > 2)
             {
                 myLogger.Warn("Unsupported plugin file count: {0}", pluginFiles.Count);
-                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, new Version(0, 0));
+                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, ZeroVersion);
             }
             
             var pluginDir = parentDirs[0];
@@ -203,11 +204,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (pluginFiles[0].Name == MergedPluginFile)
                 {
                     var version = GetVersionFromFile(pluginFiles[0]);
-                    return new InstallationInfo(version.Major > 0, pluginDir, pluginFiles, version);
+                    return new InstallationInfo(version != ZeroVersion, pluginDir, pluginFiles, version);
                 }
                 
                 myLogger.Warn("One file found, but filename is not the same as v1.9.0+");
-                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, new Version());
+                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, ZeroVersion);
             }
             
             // v1.8 probably
@@ -219,10 +220,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
 
                 myLogger.Warn("Two files found, but filenames are not the same as in v1.8");
-                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, new Version());
+                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, ZeroVersion);
             }
             
-            return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, new Version());
+            return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, ZeroVersion);
         }
 
         private static Version GetVersionFromFile(FileSystemPath mergedFile)
@@ -234,14 +235,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 firstLine = sr.ReadLine();
             }
             if (firstLine == null)
-                return new Version();
+                return ZeroVersion;
 
             var match = ourVersionRegex.Match(firstLine);
             if (!match.Success)
-                return new Version();
+                return ZeroVersion;
 
             Version version;
-            return Version.TryParse(match.Groups[1].Value, out version) ? version : new Version();
+            return Version.TryParse(match.Groups[1].Value, out version) ? version : ZeroVersion;
         }
 
         public class InstallationInfo

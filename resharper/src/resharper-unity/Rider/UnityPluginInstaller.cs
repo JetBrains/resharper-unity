@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
@@ -11,9 +12,9 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Notifications;
-using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -32,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private static readonly string ourResourceNamespace =
             typeof(KnownTypes).Namespace + ".Unity3dRider.Assets.Plugins.Editor.JetBrains.";
 
-        private readonly object mySyncObj = new object();
+        private readonly ProcessingQueue myQueue;
 
         public UnityPluginInstaller(
             Lifetime lifetime,
@@ -51,19 +52,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myShellLocks = shellLocks;
             myDetector = detector;
             myNotifications = notifications;
+            
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
+            myQueue = new ProcessingQueue(myShellLocks, myLifetime);
         }
         
         public void OnSolutionLoaded(UnityProjectsCollection solution)
         {
-            InstallPluginIfRequired(solution.UnityProjectLifetimes.Keys);
+            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.OnSolutionLoaded", () => InstallPluginIfRequired(solution.UnityProjectLifetimes.Keys));
 
             BindToInstallationSettingChange();
         }
 
         public void OnProjectChanged(IProject unityProject, Lifetime projectLifetime)
         {
-            InstallPluginIfRequired(new[] {unityProject});
+            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.OnProjectChanged", () => InstallPluginIfRequired(new[] {unityProject}));
         }
 
         private void BindToInstallationSettingChange()
@@ -76,14 +79,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             if (!args.GetNewOrNull())
                 return;
-
-            myShellLocks.ReentrancyGuard.ExecuteOrQueueEx("UnityPluginInstaller.CheckAllProjects", () =>
-            {
-                myShellLocks.ExecuteWithReadLock(() =>
-                {
-                    InstallPluginIfRequired(mySolution.GetAllProjects().Where(p => p.IsUnityProject()).ToList());
-                });
-            });
+            
+            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", () => InstallPluginIfRequired(mySolution.GetAllProjects().Where(p => p.IsUnityProject()).ToList()));
         }
 
         private void InstallPluginIfRequired(ICollection<IProject> projects)
@@ -97,90 +94,85 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (projects.Count == 0)
                 return;
             
-            var installationDir = GetPreviousInstallationDir();
-            var installationInfo = myDetector.GetInstallationInfo(projects, installationDir);
+            // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
+            // ReSharper disable once ArgumentsStyleNamedExpression
+            var installationInfo = myDetector.GetInstallationInfo(projects, previousInstallationDir: FileSystemPath.Empty);
             if (!installationInfo.ShouldInstallPlugin)
             {
                 myLogger.Info("Plugin should not be installed.");
                 if (installationInfo.ExistingFiles.Count > 0)
                     myLogger.Info("Already existing plugin files:\n{0}", string.Join("\n", installationInfo.ExistingFiles));
+                
+                return;
             }
             
-            Install(installationInfo);
-        }
-
-        [CanBeNull]
-        private FileSystemPath GetPreviousInstallationDir()
-        {
-            var installationDir = myBoundSettingsStore.GetValue((UnityPluginSettings s) => s.Unity3DRiderInstallationDirectory);
-            if (installationDir.IsNullOrEmpty()) return FileSystemPath.Empty;
-
-            try
+            myQueue.Enqueue(() =>
             {
-                return FileSystemPath.ParseRelativelyTo(installationDir, mySolution.SolutionFilePath.Directory);
-            }
-            catch (Exception e)
-            {
-                myLogger.LogExceptionSilently(e);
-                return null;
-            }
+                Install(installationInfo);
+                myPluginInstallations.Add(mySolution.SolutionFilePath);
+            });
         }
 
         private void Install(UnityPluginDetector.InstallationInfo installationInfo)
         {
             if (!installationInfo.ShouldInstallPlugin)
+            {
+                Assertion.Assert(false, "Should not be here if installation is not required.");
                 return;
+            }
+            
+            if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
+            {
+                myLogger.Verbose("Installation already done.");
+                return;
+            }
 
             var currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
             if (currentVersion <= installationInfo.Version)
-                return;
-
-            var isFreshInstall = installationInfo.Version == new Version();
-            if (isFreshInstall)
-                myLogger.LogMessage(LoggingLevel.INFO, "Fresh install");
-
-            lock (mySyncObj)
             {
-                if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
-                    return;
+                myLogger.Verbose($"Plugin v{installationInfo.Version} already installed.");
+                return;
+            }
 
-                FileSystemPath installedPath;
+            var isFreshInstall = installationInfo.Version == UnityPluginDetector.ZeroVersion;
+            if (isFreshInstall)
+                myLogger.Info("Fresh install");
 
-                if (!TryCopyFiles(installationInfo, out installedPath))
+            FileSystemPath installedPath;
+
+            if (!TryCopyFiles(installationInfo, out installedPath))
+            {
+                myLogger.Warn("Plugin was not installed");
+            }
+            else
+            {
+                string userTitle;
+                string userMessage;
+
+                if (isFreshInstall)
                 {
-                    myLogger.LogMessage(LoggingLevel.WARN, "Plugin was not installed");
-                }
-                else
-                {
-                    string userTitle;
-                    string userMessage;
-
-                    if (isFreshInstall)
-                    {
-                        userTitle = "Unity: plugin installed";
-                        userMessage =
-                            $@"Rider plugin v{currentVersion} for the Unity Editor was automatically installed for the project '{mySolution.Name}'
+                    userTitle = "Unity: plugin installed";
+                    userMessage =
+                        $@"Rider plugin v{
+                                currentVersion
+                            } for the Unity Editor was automatically installed for the project '{mySolution.Name}'
 This allows better integration between the Unity Editor and Rider IDE.
 The plugin file can be found on the following path:
 {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}";
-                    }
-                    else
-                    {
-                        userTitle = "Unity: plugin updated";
-                        userMessage = $"Rider plugin was succesfully upgraded to version {currentVersion}";
-                    }
-
-                    myBoundSettingsStore.SetValue((UnityPluginSettings s) => s.Unity3DRiderInstallationDirectory, installationInfo.PluginDirectory.FullPath);
-                    
-                    myLogger.LogMessage(LoggingLevel.INFO, userTitle);
-
-                    var notification = new RdNotificationEntry(userTitle,
-                        userMessage, true,
-                        RdNotificationEntryType.INFO);
-                    myNotifications.Notification.Fire(notification);
+                }
+                else
+                {
+                    userTitle = "Unity: plugin updated";
+                    userMessage = $"Rider plugin was succesfully upgraded to version {currentVersion}";
                 }
 
-                myPluginInstallations.Add(mySolution.SolutionFilePath);
+                myLogger.Info(userTitle);
+
+                var notification = new RdNotificationEntry(userTitle,
+                    userMessage, true,
+                    RdNotificationEntryType.INFO);
+                
+                myShellLocks.ExecuteOrQueueEx(myLifetime, "UnityPluginInstaller.Notify", () => myNotifications.Notification.Fire(notification));
             }
         }
 
@@ -210,7 +202,7 @@ The plugin file can be found on the following path:
             {
                 var backupPath = backups[originPath];
                 originPath.MoveFile(backupPath, true);
-                myLogger.LogMessage(LoggingLevel.INFO, $"backing up: {originPath.Name} -> {backupPath.Name}");
+                myLogger.Info($"backing up: {originPath.Name} -> {backupPath.Name}");
             }
 
             try
@@ -222,8 +214,7 @@ The plugin file can be found on the following path:
                 {
                     if (resourceStream == null)
                     {
-                        myLogger.LogMessage(LoggingLevel.ERROR,
-                            "Plugin file not found in manifest resources. " + resourceName);
+                        myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
 
                         RestoreFromBackup(backups);
 
@@ -259,7 +250,7 @@ The plugin file can be found on the following path:
         {
             foreach (var backup in backups)
             {
-                myLogger.LogMessage(LoggingLevel.INFO, $"Restoring from backup {backup.Value} -> {backup.Key}");
+                myLogger.Info($"Restoring from backup {backup.Value} -> {backup.Key}");
                 backup.Value.MoveFile(backup.Key, true);
             }
         }
