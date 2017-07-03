@@ -16,7 +16,9 @@
     <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
   </PropertyGroup>
   <ItemGroup>
-    <PsiLanguageNames Include="ShaderLab" />
+    <PsiLanguageNames Include="ShaderLab">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
 
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Remove="Psi\ShaderLab\Parsing\ShaderLab_lex.depends" />
