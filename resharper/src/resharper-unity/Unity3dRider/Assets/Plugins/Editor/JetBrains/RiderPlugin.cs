@@ -20,11 +20,12 @@ namespace Plugins.Editor.JetBrains
     private static bool Initialized;
     private static string SlnFile;
 
-    public static void Log(LoggingLevel level, string format, params object[] args)
+    public static void Log(LoggingLevel level, string initialText)
     {
       if (level < SelectedLoggingLevel) return;
+
+      var text = "[Rider] [" + level + "] " +  initialText;
       
-      var text = "[Rider] [" + level + "] " + string.Format(format, args);
       switch (level)
       {
         case LoggingLevel.Warning:
@@ -244,8 +245,12 @@ namespace Plugins.Editor.JetBrains
         if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader" ||
             (selected.GetType().ToString() == "UnityEngine.TextAsset" && 
-             EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1)))
-              )) 
+#if UNITY_5 || UNITY_5_5_OR_NEWER
+            EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
+#else
+            EditorSettings.externalVersionControl.Contains(Path.GetExtension(assetFilePath).Substring(1))
+#endif 
+            ))) 
           return false;
         
         SyncSolution(); // added to handle opening file, which was just recently created.
@@ -263,9 +268,12 @@ namespace Plugins.Editor.JetBrains
 
     private static bool DetectPortAndOpenFile(int line, string filePath, bool isWindows)
     {
-      var process = GetRiderProcess();
-      if (process == null) 
-        return false;
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
+      {
+        var process = GetRiderProcess();
+        if (process == null) 
+          return false;  
+      }
       
       int[] ports = Enumerable.Range(63342, 20).ToArray();
       var res = ports.Any(port => 
@@ -288,7 +296,7 @@ namespace Plugins.Editor.JetBrains
           }
           catch (Exception e)
           {
-            Log(LoggingLevel.Verbose, "Exception in DetectPortAndOpenFile: " + e);
+            Log(LoggingLevel.Verbose, string.Format("Exception in DetectPortAndOpenFile: {0}", e));
           }
         }
         return false;
@@ -306,7 +314,7 @@ namespace Plugins.Editor.JetBrains
         url = string.Format(@"http://localhost:{0}/api/file/{1}{2}", port, filePath, line < 0 ? "" : ":" + line);
 
       var uri = new Uri(url);
-      Log(LoggingLevel.Verbose, "HttpRequestOpenFile({0})", uri.AbsoluteUri);
+      Log(LoggingLevel.Verbose, string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
 
       CallHttpApi(uri, client);
       ActivateWindow();
@@ -316,7 +324,7 @@ namespace Plugins.Editor.JetBrains
     private static string CallHttpApi(Uri uri, WebClient client)
     {
       var responseString = client.DownloadString(uri);
-      Log(LoggingLevel.Verbose, "HttpRequestOpenFile response: " + responseString);
+      Log(LoggingLevel.Verbose, string.Format("HttpRequestOpenFile response: {0}", responseString));
       return responseString;
     }
 
@@ -333,13 +341,13 @@ namespace Plugins.Editor.JetBrains
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
-        Log(LoggingLevel.Verbose, proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+        Log(LoggingLevel.Verbose, string.Format("{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments));
       }
       else
       {
         proc.StartInfo.FileName = defaultApp;
         proc.StartInfo.Arguments = args;
-        Log(LoggingLevel.Verbose, "\"{0}\"" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
+        Log(LoggingLevel.Verbose, string.Format("{2}{0}{2}" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments, "\""));
       }
 
       proc.StartInfo.UseShellExecute = false;
@@ -365,7 +373,7 @@ namespace Plugins.Editor.JetBrains
             var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
             // Get process main window title
             var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
-            Log(LoggingLevel.Info, "ActivateWindow: {0} {1}", process.Id, windowHandle);
+            Log(LoggingLevel.Info, string.Format("ActivateWindow: {0} {1}", process.Id, windowHandle));
             if (windowHandle != IntPtr.Zero)
             {
               //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
@@ -375,7 +383,7 @@ namespace Plugins.Editor.JetBrains
         }
         catch (Exception e)
         {
-          Log(LoggingLevel.Warning, "[Rider] " + ("Exception on ActivateWindow: " + e));
+          Log(LoggingLevel.Warning, "Exception on ActivateWindow: " + e);
         }
       }
     }

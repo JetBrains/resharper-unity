@@ -96,7 +96,7 @@ Other:
 The plugin also adds some functionality just for Rider:
 
 * The `Library` and `Temp` folders are automatically excluded from Rider's full text search, used for the "Find in Path" feature. These folders can become very large, and can take a long time to index if not excluded.
-* Rider will automatically create an "Attach to Unity Editor" run configuration. When the debug button is clicked, Rider will automatically attach to the editor and start debugging. Rider will look for a `Library/EditorInstance.json` file, created by Unity 2017.1, or by the latest versions of the [Unity3dRider plugin](https://github.com/JetBrains/Unity3dRider#readme). If the file doesn't exist and only a single instance of Unity is running, Rider will attach to this instance. If multiple instances are running, Rider will prompt for which instance to attach to.
+* Rider will automatically create an "Attach to Unity Editor" run configuration. When the debug button is clicked, Rider will automatically attach to the editor and start debugging. Rider will look for a `Library/EditorInstance.json` file, created by Unity 2017.1, or by [Unity3dRider plugin](https://github.com/JetBrains/resharper-unity/tree/master/resharper/src/resharper-unity/Unity3dRider). If the file doesn't exist and only a single instance of Unity is running, Rider will attach to this instance. If multiple instances are running, Rider will prompt for which instance to attach to.
 
   <img src="docs/attach_to_editor_run_config.png" width="514">
 
@@ -117,25 +117,23 @@ Please watch the repo for updates, or follow [@citizenmatt](https://twitter.com/
 
 ## Unity3dRider initialization for Rider
 
-### Clean installation
+### Unity version pre 2017.1.b5
 
-* Open project in Unity
-* Select Rider as External Editor
-* Double click cs file
-* Rider starts and asks if sln is correct?
-* Agree
+* Make Unity generate slnFile for you:
+  * Open project in Unity
+  * From Unity open project in MD
+* Open Rider, manually open sln file 
 Solution is opened. resharper-unity adds Unity3dRider to project as a single file Unity3dRider.cs, tries to remove older version.
 * Get back to Unity
-* If Solution is compilable, Unity3dRider is fully initialized
-* If Solution is not compilable, Opening files will still work, but some features may not work.
-
-### "Partially prepared"
-
-Here we expect that the user was already working with Solution and sln is already generated, Unity3dRider is already added (manually or as git submodule or by Opening in Rider once).
-
-* Get in Unity. 
+* Make Solution compilable at least once, so Unity3dRider is initialized
 Unity3dRider finds Rider and adds it to known editors list.
 * If you are running Unity with plugin for the first time it will set Rider as default editor.
+
+### Unity version 2017.1.b5 and after
+
+Either way you can:
+* Manully select Rider as an editor in Unity and it will work just fine
+* Or follow the "pre 2017.1.b5" instructions to avoid manual search for Rider executable
 
 Possible problems
 

@@ -131,6 +131,8 @@ function CreatePlatformNuspec($nuspec){
     if ($isUnix){
         foreach ($f in $xml.package.files.ChildNodes){
             $f.src = $f.src.Replace("\", "/")
+            # Nuget on mono doesn't like the '../..', so fix up the path, relative to current dir
+            $f.src = $f.src.Replace("../..", (Join-Path (Get-Location).Path "resharper"))
         }        
     }
 

@@ -36,7 +36,7 @@ namespace Plugins.Editor.JetBrains
       }
 
       var slnFile = Directory.GetFiles(currentDirectory, "*.sln").First();
-      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Post-processing {0}", slnFile);
+      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", slnFile));
       string content = File.ReadAllText(slnFile);
       var lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
       var sb = new StringBuilder();
@@ -68,7 +68,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void UpgradeProjectFile(string projectFile)
     {
-      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "[Rider] " + string.Format("Post-processing {0}", projectFile));
+      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", projectFile));
       var doc = XDocument.Load(projectFile);
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var

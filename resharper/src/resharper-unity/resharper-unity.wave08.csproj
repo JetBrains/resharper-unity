@@ -39,6 +39,7 @@
 
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
+    <Folder Include="Rider" />
     <Folder Include="Unity3dRider\Assets\Plugins\Editor\JetBrains" />
     <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderAssetPostprocessor.cs" />
     <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderPlugin.cs" />

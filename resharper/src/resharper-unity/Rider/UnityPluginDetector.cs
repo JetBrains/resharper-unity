@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if RIDER
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -6,11 +7,9 @@ using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
-#if RIDER
   [SolutionComponent]
-#endif
   public class UnityPluginDetector
   {
     private readonly ILogger myLogger;
@@ -129,3 +128,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.Unity3dRider
     }
   }
 }
+#endif

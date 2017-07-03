@@ -24,15 +24,14 @@
   <project-components>
     <component><implementation-class>com.jetbrains.resharper.UnityReferenceDiscoverer</implementation-class></component>
     <component><implementation-class>com.jetbrains.resharper.UnityConfigurationImpl</implementation-class></component>
+    <component><implementation-class>com.jetbrains.resharper.settings.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.resharper.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
   </project-components>
 
   <description><![CDATA[
-<p>Unity support for Rider.</p>
+<p>Adds support for the Unity engine.</p>
 <p></p>
-<p>Please make sure to add the <a href="https://github.com/JetBrains/Unity3dRider#readme">Unity3dRider plugin</a> to your Unity project.</p>
 <p><b>Features</b></p>
-<p></p>
 <p>
 <ul>
   <li>Highlights Unity event functions and fields with an icon in the editor gutter.</li>
@@ -69,7 +68,6 @@
 </p>
 <p></p>
 <p><b>Links</b></p>
-<p></p>
 <p>
 <ul>
   <li><a href="https://github.com/JetBrains/resharper-unity">GitHub</a>
