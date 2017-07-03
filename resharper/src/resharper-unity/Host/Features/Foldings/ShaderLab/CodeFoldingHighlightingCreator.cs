@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Foldings
+namespace JetBrains.ReSharper.Plugins.Unity.Host.Features.Foldings.ShaderLab
 {
     // TODO: We really need a proper reference to JetBrains.ReSharper.Host.exe
     // Then, we can just call new :)

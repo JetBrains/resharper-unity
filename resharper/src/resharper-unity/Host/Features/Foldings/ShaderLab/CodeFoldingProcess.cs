@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Foldings
+namespace JetBrains.ReSharper.Plugins.Unity.Host.Features.Foldings.ShaderLab
 {
     // TODO: Implement ICodeFoldingProcessorFactory and add tests once JetBrains.ReSharper.Host is part of SDK
     internal class CodeFoldingProcess : ShaderLabDaemonStageProcessBase
@@ -75,13 +76,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Foldings
                     10 /* Default priority */)
                 : null;
         }
-        
+
         private static bool IsNotEmptyNormalized(DocumentRange range)
         {
             var textRange = range.TextRange;
             return range.IsValid() && textRange.StartOffset < textRange.EndOffset;
         }
-        
+
         internal static IList<HighlightingInfo> AppendRangeWithOverlappingResolve(IList<HighlightingInfo> range)
         {
             var result = new List<HighlightingInfo>();
@@ -129,7 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Foldings
             }
             result.Insert(insertIndex, highlightingInfo);
         }
-        
+
         internal class FoldingComparer : IComparer<HighlightingInfo>
         {
             public static readonly FoldingComparer Instance = new FoldingComparer();
