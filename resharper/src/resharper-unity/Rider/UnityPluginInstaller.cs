@@ -170,6 +170,8 @@ The plugin file can be found on the following path:
                         userMessage = $"Rider plugin was succesfully upgraded to version {currentVersion}";
                     }
 
+                    myBoundSettingsStore.SetValue((UnityPluginSettings s) => s.Unity3DRiderInstallationDirectory, installationInfo.PluginDirectory.FullPath);
+                    
                     myLogger.LogMessage(LoggingLevel.INFO, userTitle);
 
                     var notification = new RdNotificationEntry(userTitle,
