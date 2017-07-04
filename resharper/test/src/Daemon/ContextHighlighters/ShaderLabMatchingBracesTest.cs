@@ -1,5 +1,3 @@
-#if RIDER
-
 using JetBrains.ReSharper.FeaturesTestFramework.ContextHighlighters;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.TestFramework;
@@ -28,5 +26,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.ContextHighlighters
         [Test] public void TestCg02() { DoNamedTest2(); }
     }
 }
-
-#endif

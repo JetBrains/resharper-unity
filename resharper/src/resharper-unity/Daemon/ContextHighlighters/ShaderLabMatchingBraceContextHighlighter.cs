@@ -1,5 +1,3 @@
-#if RIDER
-
 using System;
 using JetBrains.Annotations;
 using JetBrains.DataFlow;
@@ -133,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.ContextHighlighters
 
             return false;
         }
-        
+
         private static bool IsSingleCharToken(ITreeNode token)
         {
             var tokenType = token.NodeType;
@@ -153,5 +151,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.ContextHighlighters
         }
     }
 }
-
-#endif
