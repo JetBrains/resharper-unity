@@ -1,0 +1,83 @@
+// ${MatchingBracePosition:BOTH_SIDES}
+Shader "Foo" {
+  Properties {
+    _Color("Color", Color) = (1,1,1,1)
+    _MainText("Albedo", 2D) = "white" {}
+  }
+
+  |CGINCLUDE|(0:LMiddleInc)
+  |ENDCG|(1:LMiddleInc)
+
+  |CGINCLUDE|(2:LInnerInc)
+  |ENDCG|(3:LInnerInc)
+
+  |CGINCLUDE|(4:LOuterInc)
+  |ENDCG|(5:LOuterInc)
+
+  |CGINCLUDE|(6:ROuterInc)
+  |ENDCG|(7:ROuterInc)
+
+  |CGINCLUDE|(8:RInnerInc)
+  |ENDCG|(9:RInnerInc)
+
+  |CGINCLUDE|(10:RMiddleInc)
+  |ENDCG|(11:RMiddleInc)
+
+  SubShader {
+    Pass {
+      |CGPROGRAM|(12:LMiddleProg)
+      |ENDCG|(13:LMiddleProg)
+    }
+
+    Pass {
+      |CGPROGRAM|(14:LInnerProg)
+      |ENDCG|(15:LInnerProg)
+    }
+
+    Pass {
+      |CGPROGRAM|(16:LOuterProg)
+      |ENDCG|(17:LOuterProg)
+    }
+
+    Pass {
+      |CGPROGRAM|(18:ROuterProg)
+      |ENDCG|(19:ROuterProg)
+    }
+
+    Pass {
+      |CGPROGRAM|(20:RInnerProg)
+      |ENDCG|(21:RInnerProg)
+    }
+
+    Pass {
+      |CGPROGRAM|(22:RMiddleProg)
+      |ENDCG|(23:RMiddleProg)
+    }
+  }
+}
+
+---------------------------------------------------------
+(0:LMiddleInc): ReSharper Matched Brace
+(1:LMiddleInc): ReSharper Matched Brace
+(2:LInnerInc): ReSharper Matched Brace
+(3:LInnerInc): ReSharper Matched Brace
+(4:LOuterInc): ReSharper Matched Brace
+(5:LOuterInc): ReSharper Matched Brace
+(6:ROuterInc): ReSharper Matched Brace
+(7:ROuterInc): ReSharper Matched Brace
+(8:RInnerInc): ReSharper Matched Brace
+(9:RInnerInc): ReSharper Matched Brace
+(10:RMiddleInc): ReSharper Matched Brace
+(11:RMiddleInc): ReSharper Matched Brace
+(12:LMiddleProg): ReSharper Matched Brace
+(13:LMiddleProg): ReSharper Matched Brace
+(14:LInnerProg): ReSharper Matched Brace
+(15:LInnerProg): ReSharper Matched Brace
+(16:LOuterProg): ReSharper Matched Brace
+(17:LOuterProg): ReSharper Matched Brace
+(18:ROuterProg): ReSharper Matched Brace
+(19:ROuterProg): ReSharper Matched Brace
+(20:RInnerProg): ReSharper Matched Brace
+(21:RInnerProg): ReSharper Matched Brace
+(22:RMiddleProg): ReSharper Matched Brace
+(23:RMiddleProg): ReSharper Matched Brace
