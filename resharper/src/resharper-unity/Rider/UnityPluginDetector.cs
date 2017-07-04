@@ -37,7 +37,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             try
             {
-                var assetsDir = mySolution.SolutionFilePath.Directory.CombineWithShortName("Assets");
+                var solutionDir = mySolution.SolutionFilePath.Directory;
+                if (solutionDir.IsNullOrEmpty())
+                {
+                    myLogger.Warn("Solution dir is null or empty. Skipping installation.");
+                    return ShouldNotInstall;
+                }
+
+                if (!solutionDir.IsAbsolute)
+                {
+                    myLogger.Warn("Solution dir is not absolute. Skipping installation.");
+                }
+                
+                var assetsDir = solutionDir.CombineWithShortName("Assets");
                 if (!assetsDir.ExistsDirectory)
                 {
                     myLogger.Info("No Assets directory in the same directory as solution. Skipping installation.");
