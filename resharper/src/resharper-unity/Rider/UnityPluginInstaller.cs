@@ -19,7 +19,7 @@ using JetBrains.ReSharper.Plugins.Unity.Utils;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
-    public class UnityPluginInstaller : IProjectChangeHandler
+    public class UnityPluginInstaller : UnityReferencesTracker.IHandler, UnresolvedUnityReferencesTracker.IHandler
     {
         private readonly JetHashSet<FileSystemPath> myPluginInstallations;
         private readonly Lifetime myLifetime;
@@ -56,17 +56,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
         }
-        
-        public void OnSolutionLoaded(UnityProjectsCollection solution)
+
+        void UnityReferencesTracker.IHandler.OnSolutionLoaded(UnityProjectsCollection solution)
         {
             myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.OnSolutionLoaded", () => InstallPluginIfRequired(solution.UnityProjectLifetimes.Keys));
 
             BindToInstallationSettingChange();
         }
 
-        public void OnProjectChanged(IProject unityProject, Lifetime projectLifetime)
+        void UnityReferencesTracker.IHandler.OnReferenceAdded(IProject unityProject, Lifetime projectLifetime)
         {
-            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.OnProjectChanged", () => InstallPluginIfRequired(new[] {unityProject}));
+            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.ResolvedReferenceAdded", () => InstallPluginIfRequired(new[] {unityProject}));
+        }
+
+        void UnresolvedUnityReferencesTracker.IHandler.OnReferenceAdded(IProject unityProject)
+        {
+            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.UnresolvedReferenceAdded", () => InstallPluginIfRequired(new[] {unityProject}));
         }
 
         private void BindToInstallationSettingChange()
@@ -158,7 +163,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             } for the Unity Editor was automatically installed for the project '{mySolution.Name}'
 This allows better integration between the Unity Editor and Rider IDE.
 The plugin file can be found on the following path:
-{installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}";
+{installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.
+Please switch back to Unity to make plugin file appear in the solution.";
                 }
                 else
                 {
