@@ -7,7 +7,7 @@ plugins {
 group 'com.jetbrains'
 
 if (!ext.has("myArgs")){
-    ext.myArgs = "Debug,2.0.0"
+    ext.myArgs = "Release,2.0.0"
 }
 
 ext.args = myArgs.split(',')
@@ -35,7 +35,7 @@ intellij {
     // Note that there's no guarantee that these are kept up to date
     // version = 'LATEST-TRUNK-SNAPSHOT'
     // If the build isn't available in intellij-repository, use an installed version via `localPath`
-    localPath = 'C:\\Users\\ivan.pashchenko\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\copy'
+    // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
 
     def dir = file('dependencies')
