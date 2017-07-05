@@ -38,10 +38,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages
 
             // TODO: Resolve problem highlighter
 
-            var errorNode = node as IErrorElement;
-            if (errorNode != null)
+            // TODO: Move to ShaderLabSyntaxHighlightingStage
+            // (Not Rider's syntax highlighting though!)
+            // E.g. protobuf support has a SyntaxHighlightingStage that will do this,
+            // plus look for simple syntax validation errors, e.g. enums must have at
+            // least one value defined, correct value for `syntax "proto3"`, etc.
+            // And then a separate identifier
+            var errorElement = node as IErrorElement;
+            if (errorElement != null)
             {
-                context.AddHighlighting(new ShaderLabSyntaxError(errorNode.ErrorDescription, node.GetDocumentRange()));
+                var range = errorElement.GetDocumentRange();
+                if (!range.IsValid())
+                    range = node.Parent.GetDocumentRange();
+                if (range.TextRange.IsEmpty)
+                {
+                    if (range.TextRange.EndOffset < range.Document.GetTextLength())
+                        range = range.ExtendRight(1);
+                    else
+                        range = range.ExtendLeft(1);
+                }
+                context.AddHighlighting(new ShaderLabSyntaxError(errorElement.ErrorDescription, range));
             }
 
             base.VisitNode(node, context);
