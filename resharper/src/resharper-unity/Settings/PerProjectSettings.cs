@@ -29,7 +29,7 @@ using JetBrains.Application.Threading;
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class PerProjectSettings : IProjectChangeHandler
+    public class PerProjectSettings : UnityReferencesTracker.IHandler
     {
         private static readonly Version Version46 = new Version(4, 6);
         
@@ -59,11 +59,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         {
             foreach (var kv in solution.UnityProjectLifetimes)
             {
-                OnProjectChanged(kv.Key, kv.Value);
+                OnReferenceAdded(kv.Key, kv.Value);
             }
         }
 
-        public void OnProjectChanged(IProject unityProject, Lifetime projectLifetime)
+        public void OnReferenceAdded(IProject unityProject, Lifetime projectLifetime)
         {
             InitialiseProjectSettings(projectLifetime, unityProject);
         }

@@ -19,21 +19,28 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 {
     [SolutionComponent]
-    public class ProjectReferenceChangeTracker : IChangeProvider
+    public class UnityReferencesTracker : IChangeProvider
     {
+        public interface IHandler
+        {
+            void OnReferenceAdded(IProject unityProject, Lifetime projectLifetime);
+        
+            void OnSolutionLoaded(UnityProjectsCollection solution);
+        }
+        
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
         private readonly IShellLocks myShellLocks;
         private readonly ModuleReferenceResolveSync myModuleReferenceResolveSync;
         private readonly ChangeManager myChangeManager;
         private readonly IViewableProjectsCollection myProjects;
-        private readonly ICollection<IProjectChangeHandler> myHandlers;
+        private readonly ICollection<IHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
         
-        public ProjectReferenceChangeTracker(
+        public UnityReferencesTracker(
             Lifetime lifetime,
             
-            IEnumerable<IProjectChangeHandler> handlers,
+            IEnumerable<IHandler> handlers,
             ISolution solution,
             
             ISolutionLoadTasksScheduler scheduler,
@@ -77,10 +84,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 {
                     handler.OnSolutionLoaded(unityProjects);
                 }
+                
+                myChangeManager.RegisterChangeProvider(myLifetime, this);
+                myChangeManager.AddDependency(myLifetime, this, myModuleReferenceResolveSync);
             }
-            
-            myChangeManager.RegisterChangeProvider(myLifetime, this);
-            myChangeManager.AddDependency(myLifetime, this, myModuleReferenceResolveSync);
         }
 
         private void Handle(IProject project)
@@ -94,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 try
                 {
-                    handler.OnProjectChanged(project, projectLifetime);
+                    handler.OnReferenceAdded(project, projectLifetime);
                 }
                 catch (Exception e)
                 {
@@ -120,14 +127,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             var projects = new JetHashSet<IProject>();
             var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames);
             foreach (var change in changes)
-                projects.Add(change.GetNewProject());
+            {
+                if (change.IsAdded)
+                {
+                    var project = change.GetNewProject();
+                    if (project.IsUnityProject())
+                    {
+                        projects.Add(project);
+                    }
+                }
+            }
 
             foreach (var project in projects)
             {
                 myChangeManager.ExecuteAfterChange(() =>
                 {
-                    if (project.IsUnityProject())
-                        Handle(project);
+                    Handle(project);
                 });
             }
 
