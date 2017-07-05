@@ -1,7 +1,8 @@
+#if RIDER
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Resources.Settings;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SettingsKey(typeof(CodeEditingSettings), "Unity plugin settings")]
     public class UnityPluginSettings
@@ -10,3 +11,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         public bool InstallUnity3DRiderPlugin;
     }
 }
+#endif

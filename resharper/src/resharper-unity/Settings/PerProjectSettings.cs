@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
-using JetBrains.Application.changes;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
@@ -30,12 +29,10 @@ using JetBrains.Application.Threading;
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class PerProjectSettings
+    public class PerProjectSettings : UnityReferencesTracker.IHandler
     {
         private static readonly Version Version46 = new Version(4, 6);
-
-        private readonly ISolution mySolution;
-        private readonly ChangeManager myChangeManager;
+        
         private readonly ISettingsSchema mySettingsSchema;
         private readonly SettingsStorageProvidersCollection mySettingsStorageProviders;
         private readonly IShellLocks myLocks;
@@ -43,17 +40,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         private readonly InternKeyPathComponent myInterned;
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private readonly Dictionary<IProject, SettingsStorageMountPoint> myProjectMountPoints;
-        private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
 
-        public PerProjectSettings(ISolution solution, ChangeManager changeManager,
-                                  ISettingsSchema settingsSchema,
+        public PerProjectSettings(ISettingsSchema settingsSchema,
                                   SettingsStorageProvidersCollection settingsStorageProviders, IShellLocks locks,
                                   ILogger logger, InternKeyPathComponent interned,
-                                  UnityProjectFileCacheProvider unityProjectFileCache,
-                                  ProjectReferenceChangeTracker changeTracker)
+                                  UnityProjectFileCacheProvider unityProjectFileCache)
         {
-            mySolution = solution;
-            myChangeManager = changeManager;
             mySettingsSchema = settingsSchema;
             mySettingsStorageProviders = settingsStorageProviders;
             myLocks = locks;
@@ -61,9 +53,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             myInterned = interned;
             myUnityProjectFileCache = unityProjectFileCache;
             myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
-            myProjectLifetimes = new Dictionary<IProject, Lifetime>();
+        }
 
-            changeTracker.RegisterProjectChangeHandler(InitialiseProjectSettings);
+        public void OnSolutionLoaded(UnityProjectsCollection solution)
+        {
+            foreach (var kv in solution.UnityProjectLifetimes)
+            {
+                OnReferenceAdded(kv.Key, kv.Value);
+            }
+        }
+
+        public void OnReferenceAdded(IProject unityProject, Lifetime projectLifetime)
+        {
+            InitialiseProjectSettings(projectLifetime, unityProject);
         }
 
         private void InitialiseProjectSettings(Lifetime projectLifetime, IProject project)

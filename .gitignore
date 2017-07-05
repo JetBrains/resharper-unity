@@ -51,3 +51,4 @@ UpgradeLog*.XML
 Thumbs.db
 Desktop.ini
 .DS_Store
+resharper/src/.idea/shelf/*
