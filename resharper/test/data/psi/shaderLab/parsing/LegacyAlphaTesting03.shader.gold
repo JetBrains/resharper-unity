@@ -32,16 +32,20 @@ IShaderLabFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IVectorPropertyValue
               ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:.5)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:.5)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:.5)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:.5)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:.5)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:.5)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:.5)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:.5)
               ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
@@ -252,8 +256,9 @@ IShaderLabFile
               IZtestCommand
                 ShaderLabTokenType+KeywordTokenElement(type:ZTEST_KEYWORD, text:ZTest)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IComparisonFunctionValue
-                  ShaderLabTokenType+KeywordTokenElement(type:LESS_KEYWORD, text:Less)
+                IZtestValue
+                  IComparisonFunctionValue
+                    ShaderLabTokenType+KeywordTokenElement(type:LESS_KEYWORD, text:Less)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Only render pixels less or equal to the value) spaces: "// Only render pixels less or equal to the value"

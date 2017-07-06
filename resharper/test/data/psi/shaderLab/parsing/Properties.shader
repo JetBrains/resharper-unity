@@ -6,6 +6,8 @@
     _RefrColor ("Refraction color", Color) = (.34, .85, .92, 1) // color
     _ReflectionTex ("Environment Reflection", 2D) = "" {} // textures
     _RefractionTex ("Environment Refraction", 2D) = "" {}
+    // Not in the spec, but the block in the texture is optional
+    _RefractionTex ("Environment Refraction", 2D) = ""
     _Fresnel ("Fresnel (A) ", 2D) = "" {}
     _BumpMap ("Bumpmap (RGB) ", 2D) = "" {} 
     _MainTex ("Texture", any) = "" {}

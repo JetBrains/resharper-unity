@@ -42,8 +42,9 @@ IShaderLabFile
               IZtestCommand
                 ShaderLabTokenType+KeywordTokenElement(type:ZTEST_KEYWORD, text:ZTest)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IComparisonFunctionValue
-                  ShaderLabTokenType+KeywordTokenElement(type:LESS_KEYWORD, text:Less)
+                IZtestValue
+                  IComparisonFunctionValue
+                    ShaderLabTokenType+KeywordTokenElement(type:LESS_KEYWORD, text:Less)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IOffsetCommand
@@ -79,8 +80,9 @@ IShaderLabFile
               IZtestCommand
                 ShaderLabTokenType+KeywordTokenElement(type:ZTEST_KEYWORD, text:ZTest)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IComparisonFunctionValue
-                  ShaderLabTokenType+KeywordTokenElement(type:LEQUAL_KEYWORD, text:LEqual)
+                IZtestValue
+                  IComparisonFunctionValue
+                    ShaderLabTokenType+KeywordTokenElement(type:LEQUAL_KEYWORD, text:LEqual)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IOffsetCommand
@@ -123,8 +125,37 @@ IShaderLabFile
               IZtestCommand
                 ShaderLabTokenType+KeywordTokenElement(type:ZTEST_KEYWORD, text:ZTest)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IComparisonFunctionValue
-                  ShaderLabTokenType+KeywordTokenElement(type:ALWAYS_KEYWORD, text:Always)
+                IZtestValue
+                  IComparisonFunctionValue
+                    ShaderLabTokenType+KeywordTokenElement(type:ALWAYS_KEYWORD, text:Always)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+          IRegularPassDef
+            ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              ICullCommand
+                ShaderLabTokenType+KeywordTokenElement(type:CULL_KEYWORD, text:Cull)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ICullValue
+                  ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Not documented in the spec) spaces: "// Not documented in the spec"
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              IZtestCommand
+                ShaderLabTokenType+KeywordTokenElement(type:ZTEST_KEYWORD, text:ZTest)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                IZtestValue
+                  ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

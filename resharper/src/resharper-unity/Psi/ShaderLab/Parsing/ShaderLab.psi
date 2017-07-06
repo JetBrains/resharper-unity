@@ -178,7 +178,7 @@
 //   BEFORE it needs to implement errrorhandling
 // * Or, resync AFTER a token, not on it. E.g. don't resync on a closing paren, only on
 //   what follows a closing paren
-// * A private nonterminal can help with errorhandling without generating a node for the tree
+// * A private nonterminal with errorhandling can help without generating a node for the tree
 // * Use parsingContext when you have an errorhandling nested inside an errorhandling. The
 //   parsinngContext adds new follow rules to the inner errorhandling follow set. ParsingContext
 //   requires errorhandling somewhere, or no-one will ever check for the follow token override
@@ -678,7 +678,7 @@ shaderCommand
 
 shaderValue
 :
-  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  shaderValueName
   LBRACE<LBRACE, LBrace>
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
   cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>?
@@ -686,6 +686,13 @@ shaderValue
   subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>*
   shaderContents*
   RBRACE<RBRACE, RBrace>
+;
+
+// Errorhandling to resync on next following token - LBRACE
+// Swallows everything up to LBRACE
+private errorhandling shaderValueName
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
 ;
 
 private shaderContents
@@ -806,21 +813,18 @@ vectorPropertyValue
 // Private and error handling to allow resync on vectorPropertyValue::RPAREN
 private errorhandling vectorPropertyValues
 :
-  LIST NUMERIC_LITERAL<Number, Numbers> SEP COMMA<COMMA, Comma>
+  LIST numericValue<Number, Numbers> SEP COMMA<COMMA, Comma>
 ;
 
 texturePropertyValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   (
-    (
-      LBRACE<LBRACE, LBrace>
-      LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>?
-      errorTexturePropertyBlockValues
-      RBRACE<RBRACE, RBrace>
-    )
-    | errorPropertyValue
-  )
+    LBRACE<LBRACE, LBrace>
+    LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>?
+    errorTexturePropertyBlockValues
+    RBRACE<RBRACE, RBrace>
+  )?
 ;
 
 // The spec says there shouldn't be anything here. Use a custom parse function to eat 
@@ -1146,7 +1150,13 @@ zwriteCommand
 ztestCommand
 :
   ZTEST_KEYWORD<SHADER_LAB_KEYWORD, ZTestKeyword>
-  comparisonFunctionValue<SHADER_LAB_VALUE, Value>
+  ztestValue<SHADER_LAB_VALUE, Value>
+;
+
+ztestValue
+:
+  OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+  | comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
 offsetCommand

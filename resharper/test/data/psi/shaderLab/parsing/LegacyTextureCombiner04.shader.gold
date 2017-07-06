@@ -32,13 +32,17 @@ IShaderLabFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IVectorPropertyValue
               ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
@@ -58,13 +62,17 @@ IShaderLabFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IVectorPropertyValue
               ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
               ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
@@ -84,13 +92,17 @@ IShaderLabFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IVectorPropertyValue
               ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
               ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
@@ -110,13 +122,17 @@ IShaderLabFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IVectorPropertyValue
               ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
               ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
