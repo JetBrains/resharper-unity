@@ -1,6 +1,6 @@
 ﻿ Shader "test" {
-  Properties {||(0)
-    ("Wave scale", Range (0.02,0.15)) = 0.07 // Missing name
+  Properties {|
+|(0)    ("Wave scale", Range (0.02,0.15)) = 0.07 // Missing name
     _MissingOpenBrace |"Reflection distort", Range (0,1.5))|(1) = 0.5
     _DisplayNameNotStringLiteral (|1.0, Range (0,1.5))|(2) = 0.4
     _DisplayNameMissing (|, Range (0,1.5))|(3) = 0.4
@@ -20,8 +20,8 @@
     _ColorWithMissingOpenBrace ("Whatever", Color) = 0.3|,|(22) 0.3, .3, .3)
     _ColorWithMissingClosingBrace ("Whatever", Color) = (0.3, 0.3, .3, .3
     |_ColorWithTooManyValues ("Whatever", Color|(23))| |(24)= (0.3, 0.3, .3, .3, .3, .3)
-    _MissingValue ("Whatever", Int) =||(25)
-    _MissingEquals ("Whatever", Int) |0.2
+    _MissingValue ("Whatever", Int) =|
+|(25)    _MissingEquals ("Whatever", Int) |0.2
     _TextureWithMissingName ("Whatever", 2D)|(26) = |{}|(27)
     _TextureWithMissingBlock ("Whatever", 2D) = "Name"
     _TextureWithExtraBlockValues ("Whatever", 2D) = "Name" { |Thing|(28) }
