@@ -21,5 +21,11 @@
             Cull Off
             ZTest Always
         }
+        Pass
+        {
+            Cull Off
+            // Not documented in the spec
+            ZTest Off
+        }
     }
 }

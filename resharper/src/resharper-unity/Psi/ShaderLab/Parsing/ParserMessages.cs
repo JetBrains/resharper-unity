@@ -39,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_STENCIL_CONTENTS = "Stencil command";
         public const string IDS_STENCIL_OPERATION = "stencil operation";
         public const string IDS_SUB_SHADER_CONTENTS = "SubShader contents";
+        public const string IDS_ZTEST_VALUE = "ZTest value";
 
         public static string GetString(string id) => id;
 

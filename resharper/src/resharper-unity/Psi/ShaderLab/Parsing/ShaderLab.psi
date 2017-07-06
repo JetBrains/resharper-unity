@@ -813,21 +813,18 @@ vectorPropertyValue
 // Private and error handling to allow resync on vectorPropertyValue::RPAREN
 private errorhandling vectorPropertyValues
 :
-  LIST NUMERIC_LITERAL<Number, Numbers> SEP COMMA<COMMA, Comma>
+  LIST numericValue<Number, Numbers> SEP COMMA<COMMA, Comma>
 ;
 
 texturePropertyValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   (
-    (
-      LBRACE<LBRACE, LBrace>
-      LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>?
-      errorTexturePropertyBlockValues
-      RBRACE<RBRACE, RBrace>
-    )
-    | errorPropertyValue
-  )
+    LBRACE<LBRACE, LBrace>
+    LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>?
+    errorTexturePropertyBlockValues
+    RBRACE<RBRACE, RBrace>
+  )?
 ;
 
 // The spec says there shouldn't be anything here. Use a custom parse function to eat 
@@ -1153,7 +1150,13 @@ zwriteCommand
 ztestCommand
 :
   ZTEST_KEYWORD<SHADER_LAB_KEYWORD, ZTestKeyword>
-  comparisonFunctionValue<SHADER_LAB_VALUE, Value>
+  ztestValue<SHADER_LAB_VALUE, Value>
+;
+
+ztestValue
+:
+  OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+  | comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
 offsetCommand
