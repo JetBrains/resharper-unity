@@ -1,6 +1,10 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
+# TeamCity checks all files out as LF, ignoring this file
+# Make sure all of our test data matches here and in TC
+/resharper/test/data/**/* text eol=lf
+
 # Custom for Visual Studio
 *.cs     diff=csharp
 *.sln    merge=union
