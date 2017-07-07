@@ -7,7 +7,8 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
-    [StaticSeverityHighlighting(Severity.ERROR, "ShaderLabErrors", OverlapResolve = OverlapResolveKind.ERROR)]
+    [StaticSeverityHighlighting(Severity.ERROR, "ShaderLabErrors", Languages = "SHADERLAB",
+        AttributeId = HighlightingAttributeIds.ERROR_ATTRIBUTE, OverlapResolve = OverlapResolveKind.ERROR)]
     public class ShaderLabSyntaxError : SyntaxErrorBase
     {
         public ShaderLabSyntaxError(string toolTip, DocumentRange range)
