@@ -41,8 +41,6 @@
     <Token name="PLUS" representation="+" />
     <Token name="MINUS" representation="-" />
     <Token name="MULTIPLY" representation="*" />
-    
-    <Token name="BAD_CHARACTER" representation="💩" />
   </Tokens>
 
   <!-- TODO: Should these be a keyword or just a fixed token? -->
