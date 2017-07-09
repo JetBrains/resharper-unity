@@ -125,14 +125,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             // to the IViewableProjectsCollection. Keep an eye on reference changes, add the
             // project settings if/when the project becomes a unity project
             var projects = new JetHashSet<IProject>();
-            
-#if RIDER
-            var changesWithAssemblies = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames);
-            var changes = changesWithAssemblies.Select(kv => kv.Key);
-#endif
-#if WAVE08
+
             var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames);
-#endif
             
             foreach (var change in changes)
             {
