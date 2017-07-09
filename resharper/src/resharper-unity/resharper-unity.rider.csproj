@@ -51,7 +51,6 @@
 
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
-    <Folder Include="Unity3dRider\Assets\Plugins\Editor\JetBrains" />
     <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderAssetPostprocessor.cs" />
     <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderPlugin.cs" />
     <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\Unity3DRider.cs" />
