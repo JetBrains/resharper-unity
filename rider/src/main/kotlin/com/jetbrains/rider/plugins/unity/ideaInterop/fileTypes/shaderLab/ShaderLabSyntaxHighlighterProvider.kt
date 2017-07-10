@@ -13,7 +13,7 @@ class ShaderLabSyntaxHighlighterProvider : SyntaxHighlighterProvider, SyntaxHigh
     }
 
     override fun create(fileType: FileType, project: Project?, file: VirtualFile?): SyntaxHighlighter? {
-        if (fileType !is ShaderLabFileType) return null;
+        if (fileType !is ShaderLabFileType) return null
         return ShaderLabSyntaxHighlighter()
     }
 }
