@@ -28,8 +28,8 @@ public class UnityAttachToEditorFormLayout {
         downloadLabel = new HyperlinkLabel();
         downloadLabel.setAlignmentX(-2);
         downloadLabel.setIconTextGap(0);
-        downloadLabel.setHyperlinkText("Please ensure you have installed the latest version of the ", "Unity3dRider plugin", "");
-        downloadLabel.setHyperlinkTarget("https://github.com/JetBrains/Unity3dRider");
+        downloadLabel.setHyperlinkText("", "Unity3dRider plugin", " is required for the \"Attach to Unity Editor\" run configuration to work.");
+        downloadLabel.setHyperlinkTarget("https://github.com/JetBrains/resharper-unity/tree/master/resharper/src/resharper-unity/Unity3dRider#how-to-use");
     }
 
     {
