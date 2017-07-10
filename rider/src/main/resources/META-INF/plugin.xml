@@ -19,6 +19,7 @@
     <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
     <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
+    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabCompletionContributor" />
   </extensions>
 
   <project-components>
