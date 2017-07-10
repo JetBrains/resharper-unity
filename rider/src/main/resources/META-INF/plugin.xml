@@ -9,23 +9,23 @@
   <depends>com.intellij.modules.rider</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <configurationType implementation="com.jetbrains.resharper.plugins.unity.run.configurations.UnityDebugConfigurationType" />
-    <applicationConfigurable groupId="language" instance="com.jetbrains.resharper.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
+    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
+    <applicationConfigurable groupId="language" instance="com.jetbrains.rider.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
 
     <!-- ShaderLab support -->
-    <fileTypeFactory id="ShaderLab" implementation="com.jetbrains.resharper.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileTypeFactory" />
-    <lang.parserDefinition language="ShaderLab" implementationClass="com.jetbrains.resharper.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabParserDefinition" />
-    <lang.syntaxHighlighterFactory language="ShaderLab" implementationClass="com.jetbrains.resharper.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabSyntaxHighlighterProvider" />
-    <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.resharper.daemon.RiderMarkupAdapterFactory" />
-    <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.resharper.actions.RiderActionSupportPolicy" />
-    <iconProvider implementation="com.jetbrains.resharper.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
+    <fileTypeFactory id="ShaderLab" implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileTypeFactory" />
+    <lang.parserDefinition language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabParserDefinition" />
+    <lang.syntaxHighlighterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabSyntaxHighlighterProvider" />
+    <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
+    <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
+    <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
   </extensions>
 
   <project-components>
-    <component><implementation-class>com.jetbrains.resharper.UnityReferenceDiscoverer</implementation-class></component>
-    <component><implementation-class>com.jetbrains.resharper.UnityConfigurationImpl</implementation-class></component>
-    <component><implementation-class>com.jetbrains.resharper.settings.AutoSaveNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.resharper.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.UnityReferenceDiscoverer</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.settings.AutoSaveNotification</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
   </project-components>
 
   <description><![CDATA[
