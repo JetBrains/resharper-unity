@@ -1,7 +1,8 @@
 param (
   [string]$Configuration = "Debug", # Release / Debug
-  [string]$GradleTask = "runIde" # runIde / buildPlugin
+  [switch]$RunIde = $True # If true, builds and runs the Rider plugin, else packages whole solution
 )
 
 Push-Location ((Split-Path $MyInvocation.InvocationName) + "\..\..\")
-Invoke-Expression ".\build.ps1 -Configuration $Configuration -GradleTask $GradleTask"
+$runIdeArg = if ($RunIde) {"-RunIde"} else {""}
+Invoke-Expression ".\build.ps1 -Configuration $Configuration $runIdeArg"

@@ -4,8 +4,8 @@ param (
   [string]$SinceBuild, # Set since-build in Rider plugin descriptor
   [string]$UntilBuild, # Set until-build in Rider plugin descriptor
   [string]$Configuration = "Release", # Release / Debug
-  [string]$GradleTask = "buildPlugin", # buildPlugin / runIde
-  [switch]$NoBuild # Skip building and packing, just set package versions and restore packages
+  [switch]$NoBuild, # Skip building and packing, just set package versions and restore packages
+  [switch]$RunIde # Build Rider project only, then call gradle runIde
 )
 
 $isUnix = [System.Environment]::OSVersion.Platform -eq "Unix"
@@ -14,6 +14,13 @@ if ($isUnix){
 }
 else{
     $platform = "Windows"
+}
+
+if ($RunIde){
+    $gradleTask = "runIde"
+}
+else{
+    $gradleTask = "buildPlugin"
 }
 
 Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -154,7 +161,7 @@ function PackNuget($id){
     $nuspecPath = CreatePlatformNuspec $nuspecPath
     Write-Host $nuspecPath
 
-    Write-Host "##teamcity[progressMessage 'Building and Packaging: $id']"
+    ServiceMessage "progressMessage" "Building and Packaging: $id"
     if ($isUnix){  
       & nuget pack $nuspecPath -OutputDirectory resharper/build/resharper-unity.$id/bin/$Configuration
     }
@@ -163,8 +170,17 @@ function PackNuget($id){
       & dotnet pack resharper/src/resharper-unity/resharper-unity.$id.csproj /p:Configuration=$Configuration /p:NuspecFile=$nuspecFilename --no-build  
     }
     if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet pack: exit code $LastExitCode" }
-    Write-Host "##teamcity[publishArtifacts 'resharper/build/resharper-unity.$id/bin/$Configuration/*.nupkg']"    
+    ServiceMessage "publishArtifacts" "resharper/build/resharper-unity.$id/bin/$Configuration/*.nupkg"
 }
+
+function ServiceMessage($type, $message){
+    if (!($RunIde)){
+        Write-Host "##teamcity[$type '$message']"
+    }
+}
+
+
+
 
 if ($Source) {
   $sdkPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK"
@@ -173,13 +189,15 @@ if ($Source) {
   SetRiderSDKVersions -sdkPackageVersion $sdkPackageVersion -sdkTestsPackageVersion $sdkTestsPackageVersion -psiFeaturesVisualStudioVersion $psiFeaturesVisualStudioVersion
 }
 
-Write-Host "##teamcity[progressMessage 'Restoring packages']"
-if ($Source) {
-  & dotnet restore --source $Source --source https://api.nuget.org/v3/index.json resharper/src/resharper-unity.sln
-} else {
-  & dotnet restore resharper/src/resharper-unity.sln
+if (!$RunIde){
+    ServiceMessage "progressMessage" "Restoring packages"
+    if ($Source) {
+      & dotnet restore --source $Source --source https://api.nuget.org/v3/index.json resharper/src/resharper-unity.sln
+    } else {
+      & dotnet restore resharper/src/resharper-unity.sln
+    }
+    if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet restore: exit code $LastExitCode" }
 }
-if ($LastExitCode -ne 0) { throw "Exec: Unable to dotnet restore: exit code $LastExitCode" }
 
 if ($NoBuild) { Exit 0 }
 
@@ -201,12 +219,19 @@ if (!(test-path $msbuild)) {
   Write-Error "MSBuild 15 is expected at $msbuild"
 }  
 
-Write-Host "##teamcity[progressMessage 'Building']"
-& $msbuild resharper\src\resharper-unity.sln /p:Configuration=$Configuration
+ServiceMessage "progressMessage" "Building"
+if ($RunIde){
+    & $msbuild resharper\src\resharper-unity\resharper-unity.rider.csproj /p:Configuration=$Configuration
+}
+else{
+    & $msbuild resharper\src\resharper-unity.sln /p:Configuration=$Configuration
+}
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $LastExitCode" }
 
 try{
-    PackNuget "wave08"
+    if (!($RunIde)){
+        PackNuget "wave08"
+    }
     PackNuget "rider"
 }
 finally{
@@ -223,15 +248,15 @@ if ($BuildCounter) {
 
 SetIdeaVersion -file "rider/src/main/resources/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
 
-Write-Host "##teamcity[buildNumber '$version']"
+ServiceMessage "buildNumber" "$version"
 SetPluginVersion -file "rider/src/main/resources/META-INF/plugin.xml" -version $version
 
 Push-Location -Path rider
 if ($isUnix){
-  .\gradlew $GradleTask "-PmyArgs=$Configuration,$baseVersion"
+  .\gradlew $gradleTask "-PmyArgs=$Configuration,$baseVersion"
 }
 else{
-  .\gradlew.bat $GradleTask "-PmyArgs=$Configuration,$baseVersion"
+  .\gradlew.bat $gradleTask "-PmyArgs=$Configuration,$baseVersion"
 }
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
 Pop-Location
