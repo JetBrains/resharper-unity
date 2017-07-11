@@ -1,0 +1,75 @@
+// ${MatchingBracePosition:OUTER_SIDE}
+Shader "Foo" {
+  Properties {
+    _Color("Color", Color) = (1,1,1,1)
+    _MainText("Albedo", 2D) = "white" {}
+  }
+
+  |CGINCLUDE|(0:LMiddleInc)
+  |ENDCG|(1:LMiddleInc)
+
+  CGINCLUDE
+  ENDCG
+
+  |CGINCLUDE|(2:LOuterInc)
+  |ENDCG|(3:LOuterInc)
+
+  |CGINCLUDE|(4:ROuterInc)
+  |ENDCG|(5:ROuterInc)
+
+  CGINCLUDE
+  ENDCG
+
+  |CGINCLUDE|(6:RMiddleInc)
+  |ENDCG|(7:RMiddleInc)
+
+  SubShader {
+    Pass {
+      |CGPROGRAM|(8:LMiddleProg)
+      |ENDCG|(9:LMiddleProg)
+    }
+
+    Pass {
+      CGPROGRAM
+      ENDCG
+    }
+
+    Pass {
+      |CGPROGRAM|(10:LOuterProg)
+      |ENDCG|(11:LOuterProg)
+    }
+
+    Pass {
+      |CGPROGRAM|(12:ROuterProg)
+      |ENDCG|(13:ROuterProg)
+    }
+
+    Pass {
+      CGPROGRAM
+      ENDCG
+    }
+
+    Pass {
+      |CGPROGRAM|(14:RMiddleProg)
+      |ENDCG|(15:RMiddleProg)
+    }
+  }
+}
+
+---------------------------------------------------------
+(0:LMiddleInc): ReSharper Matched Brace
+(1:LMiddleInc): ReSharper Matched Brace
+(2:LOuterInc): ReSharper Matched Brace
+(3:LOuterInc): ReSharper Matched Brace
+(4:ROuterInc): ReSharper Matched Brace
+(5:ROuterInc): ReSharper Matched Brace
+(6:RMiddleInc): ReSharper Matched Brace
+(7:RMiddleInc): ReSharper Matched Brace
+(8:LMiddleProg): ReSharper Matched Brace
+(9:LMiddleProg): ReSharper Matched Brace
+(10:LOuterProg): ReSharper Matched Brace
+(11:LOuterProg): ReSharper Matched Brace
+(12:ROuterProg): ReSharper Matched Brace
+(13:ROuterProg): ReSharper Matched Brace
+(14:RMiddleProg): ReSharper Matched Brace
+(15:RMiddleProg): ReSharper Matched Brace

@@ -37,7 +37,10 @@ Packages/*
 [Bb]in
 [Oo]bj
 
+resharper/src/resharper-unity/_Generated/
 resharper/src/.idea/**/workspace.xml
+resharper/src/**/*_lex.cs
+resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp
 
 # Backup & report files from converting an old project file to a newer Visual Studio version

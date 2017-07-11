@@ -1,0 +1,13 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  Whitespace(type:WHITESPACE, text: ) spaces: " "
+  IShaderCommand
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
+    IShaderValue
+      ErrorElement:"XXX" expected
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

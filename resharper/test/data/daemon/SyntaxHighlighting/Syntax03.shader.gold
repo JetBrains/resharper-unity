@@ -1,0 +1,62 @@
+﻿ Shader "test" {
+  Properties {|
+|(0)    ("Wave scale", Range (0.02,0.15)) = 0.07 // Missing name
+    _MissingOpenBrace |"Reflection distort", Range (0,1.5))|(1) = 0.5
+    _DisplayNameNotStringLiteral (|1.0, Range (0,1.5))|(2) = 0.4
+    _DisplayNameMissing (|, Range (0,1.5))|(3) = 0.4
+    _PropertyTypeIncorrect ("Whatever", |Thing)|(4) = 0.5
+    _PropertyTypeMissing ("Whatever", |)|(5) = 0.5
+    _PropertyTypeMissing2 ("Whatever"|)|(6) = 0.5
+    _TooManyParameters ("Whatever", Int|, SomethingElse)|(7) = 0.5
+    _RangeMissingOpenBrace ("Whatever", Range |0.3, 0.1|(8))|)|(9) = 0.3
+    _RangeMissingFirstParameter ("Whatever", Range (|, 0.1|(10))|)|(11) = 0.3
+    _RangeFirstParameterIncorrectType ("Whatever", Range (|Whatever, 0.1|(12))|)|(13) = 0.3
+    _RangeMissingSecondParameter ("Whatever", Range (0.1,|)|(14)|)|(15) = 0.3
+    _RangeSecondParameterIncorrectType ("Whatever", Range (0.1, |Whatever|(16))|)|(17) = 0.3
+    _RangeMissingClosingBrace ("Whatever", Range (0.1, 0.3)| |(18)= 0.3
+    _RangeMissingAllClosingBraces ("Whatever", Range (0.1, 0.3| |(19)= 0.3
+    _ColorWithWrongType ("Whatever", Color) = (|Thing, 0.3, .3, .3|(20))
+    _ColorWithMissingValue ("Whatever", Color) = (|, 0.3, .3, .3|(21))
+    _ColorWithMissingOpenBrace ("Whatever", Color) = 0.3|,|(22) 0.3, .3, .3)
+    _ColorWithMissingClosingBrace ("Whatever", Color) = (0.3, 0.3, .3, .3
+    |_ColorWithTooManyValues ("Whatever", Color|(23))| |(24)= (0.3, 0.3, .3, .3, .3, .3)
+    _MissingValue ("Whatever", Int) =|
+|(25)    _MissingEquals ("Whatever", Int) |0.2
+    _TextureWithMissingName ("Whatever", 2D)|(26) = |{}|(27)
+    _TextureWithMissingBlock ("Whatever", 2D) = "Name"
+    _TextureWithExtraBlockValues ("Whatever", 2D) = "Name" { |Thing|(28) }
+    _TextureWithExtraBlockValues2 ("Whatever", 2D) = "Name" { |Thing, Whatever(), Stuff( ,,|(29)  }
+  }
+}
+
+---------------------------------------------------------
+(0): ReSharper Underlined Error Highlighting: Unexpected token
+(1): ReSharper Underlined Error Highlighting: ( expected
+(2): ReSharper Underlined Error Highlighting: "XXX" expected
+(3): ReSharper Underlined Error Highlighting: "XXX" expected
+(4): ReSharper Underlined Error Highlighting: Property type expected
+(5): ReSharper Underlined Error Highlighting: Property type expected
+(6): ReSharper Underlined Error Highlighting: , expected
+(7): ReSharper Underlined Error Highlighting: ) expected
+(8): ReSharper Underlined Error Highlighting: ( expected
+(9): ReSharper Underlined Error Highlighting: '=' expected
+(10): ReSharper Underlined Error Highlighting: 0.0 expected
+(11): ReSharper Underlined Error Highlighting: '=' expected
+(12): ReSharper Underlined Error Highlighting: 0.0 expected
+(13): ReSharper Underlined Error Highlighting: '=' expected
+(14): ReSharper Underlined Error Highlighting: 0.0 expected
+(15): ReSharper Underlined Error Highlighting: '=' expected
+(16): ReSharper Underlined Error Highlighting: 0.0 expected
+(17): ReSharper Underlined Error Highlighting: '=' expected
+(18): ReSharper Underlined Error Highlighting: ) expected
+(19): ReSharper Underlined Error Highlighting: ) expected
+(20): ReSharper Underlined Error Highlighting: Numeric literal or referenced property expected
+(21): ReSharper Underlined Error Highlighting: Numeric literal or referenced property expected
+(22): ReSharper Underlined Error Highlighting: Unexpected token
+(23): ReSharper Underlined Error Highlighting: ')' expected
+(24): ReSharper Underlined Error Highlighting: Unexpected token
+(25): ReSharper Underlined Error Highlighting: Unexpected token
+(26): ReSharper Underlined Error Highlighting: '=' expected
+(27): ReSharper Underlined Error Highlighting: Unexpected token
+(28): ReSharper Underlined Error Highlighting: Unexpected token
+(29): ReSharper Underlined Error Highlighting: Unexpected token

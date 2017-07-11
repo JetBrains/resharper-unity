@@ -7,7 +7,7 @@ plugins {
 group 'com.jetbrains'
 
 if (!ext.has("myArgs")){
-    ext.myArgs = "Release,1.9.1"
+    ext.myArgs = "Release,2.0.0"
 }
 
 ext.args = myArgs.split(',')

@@ -1,0 +1,34 @@
+﻿// ${MatchingBracePosition:OUTER_SIDE}
+Shader "Foo" |{|(0:LBraceOuter)
+  Properties {
+    _Color("Color", Color) = (1,1,1,1)
+    _MainText("Albedo", 2D) = "white" {}
+  }
+
+  CGINCLUDE
+  ENDCG
+
+  SubShader |{|(1:RBraceOuter)
+    Tags { "Queue" = "Transparent" }
+    LOD 300
+
+    Pass {
+      Name "Thing"
+      Tags { "LightMode" = "ForwardBase" }
+
+      Blend [_SrcBlend] [_DstBlend]
+      ZWrite [_ZWrite]
+
+      CGPROGRAM
+#pragma target 3.0
+
+      ENDCG
+    }
+  |}|(2:RBraceOuter)
+|}|(3:LBraceOuter)
+
+---------------------------------------------------------
+(0:LBraceOuter): ReSharper Matched Brace
+(1:RBraceOuter): ReSharper Matched Brace
+(2:RBraceOuter): ReSharper Matched Brace
+(3:LBraceOuter): ReSharper Matched Brace

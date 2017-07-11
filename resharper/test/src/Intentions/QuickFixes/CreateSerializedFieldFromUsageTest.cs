@@ -30,11 +30,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     {
         protected override Func<IList<IntentionAction>, IBulbAction> GetBulbItemSelector(ITextControl textControl)
         {
+#pragma warning disable 618
             return menu =>
                 menu.Select(a =>
                         (a.BulbAction as PartSelectionBulbItemProxy).IfNotNull(
                             proxy => proxy.UnproxyItem(GetPartSelectionNumber()), a.BulbAction)).
                     Single(_ => _.GetType() == typeof(T));
+#pragma warning restore 618
         }
     }
 }

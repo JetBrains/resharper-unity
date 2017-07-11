@@ -1,0 +1,145 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"VertexLit Simple")
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      IPropertiesCommand
+        ShaderLabTokenType+KeywordTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPropertiesValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_Color)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Main Color")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:COLOR_KEYWORD, text:COLOR)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IVectorPropertyValue
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              INumericValue
+                ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_ColorComponent)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Color Component")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.65)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      ISubShaderCommand
+        ShaderLabTokenType+KeywordTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        ISubShaderValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+          IRegularPassDef
+            ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              IMaterialCommand
+                ShaderLabTokenType+KeywordTokenElement(type:MATERIAL_KEYWORD, text:Material)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                IMaterialValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                  IDiffuseCommand
+                    ShaderLabTokenType+KeywordTokenElement(type:DIFFUSE_KEYWORD, text:Diffuse)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    IColorValue
+                      IReferencedProperty
+                        ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                        IShaderLabIdentifier
+                          Identifier(type:IDENTIFIER, text:_Color)
+                        ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                  IAmbientCommand
+                    ShaderLabTokenType+KeywordTokenElement(type:AMBIENT_KEYWORD, text:Ambient)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    IColorValue
+                      IVectorPropertyValue
+                        ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                        INumericValue
+                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        INumericValue
+                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        INumericValue
+                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        INumericValue
+                          IReferencedProperty
+                            ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                            IShaderLabIdentifier
+                              Identifier(type:IDENTIFIER, text:_ColorComponent)
+                            ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+                        ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              ILightingCommand
+                ShaderLabTokenType+KeywordTokenElement(type:LIGHTING_KEYWORD, text:Lighting)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                IOnOffValue
+                  ShaderLabTokenType+KeywordTokenElement(type:ON_KEYWORD, text:On)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

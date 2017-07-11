@@ -1,0 +1,8 @@
+﻿0000: SHADER_KEYWORD 'Shader'
+0006: WHITESPACE ' '
+0007: STRING_LITERAL '"MyShader"'
+0017: NEW_LINE '\r\n'
+0019: LBRACE '{'
+0020: NEW_LINE '\r\n'
+0022: WHITESPACE '  '
+0024: MULTI_LINE_COMMENT '/* Unterminated comment\r\n}\r\n'
