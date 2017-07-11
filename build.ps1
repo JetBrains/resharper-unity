@@ -9,6 +9,7 @@ param (
 )
 
 $isUnix = [System.Environment]::OSVersion.Platform -eq "Unix"
+
 if ($isUnix){
     $platform = "Unix"
 }
@@ -116,35 +117,43 @@ function GetPackageVersionFromFolder($folder, $name) {
       return $match.Groups[1].Value
     }
   }
+
   Write-Error "Package $name was not found in folder $folder"
 }
 
 $generatedNuspecs = {}.Invoke()
 
+# XML parser will unescape the characters and they will be saved unescaped. bad for us
+function SetNuspecVersion($nuspec, $versionToSet){
+    $content = [IO.File]::ReadAllText($nuspec)
+
+    $content = $content -replace "\<version\>(\d+\.)+\d+(.*)\<\/version\>", "<version>$versionToSet`${2}</version>"
+
+    [IO.File]::WriteAllText($nuspec, $content)
+    return $nuspec
+}
+
 function CreateConfigurationNuspec($nuspec){
-    $xml = [xml](Get-Content $nuspec)
-    foreach ($f in $xml.package.files.ChildNodes){
-        $f.src = $f.src.Replace("\Release\", "\$Configuration\")
-    }
+    $content = [IO.File]::ReadAllText($nuspec)
+
+    $content = $content -replace "(\<file src=`"[^`"]*)Release([^`"]*)", "`${1}$Configuration`${2}"
 
     $output = $nuspec.Replace(".nuspec", ".$Configuration.nuspec")
-    $xml.Save($output)
+    [IO.File]::WriteAllText($output, $content)
     $generatedNuspecs.Add($output)
     return $output
 }
 
-function CreatePlatformNuspec($nuspec){
-    $xml = [xml](Get-Content $nuspec)
+function CreatePlatformNuspec($nuspec){  
+    $content = [IO.File]::ReadAllText($nuspec)
     if ($isUnix){
-        foreach ($f in $xml.package.files.ChildNodes){
-            $f.src = $f.src.Replace("\", "/")
-            # Nuget on mono doesn't like the '../..', so fix up the path, relative to current dir
-            $f.src = $f.src.Replace("../..", (Join-Path (Get-Location).Path "resharper"))
-        }        
+      # Nuget on mono doesn't like the '../..', so fix up the path, relative to current dir
+      $content = $content -replace "\.\.\\\.\.", (Join-Path (Get-Location).Path "resharper")
+      $content = $content -replace "\\", "/"      
     }
 
     $output = $nuspec.Replace(".nuspec", ".$platform.nuspec")
-    $xml.Save($output)
+    [IO.File]::WriteAllText($output, $content)
     $generatedNuspecs.Add($output)
     return $output
 }
@@ -154,12 +163,12 @@ function DeleteGeneratedNuspecs(){
         Remove-Item $f
     }
 }
-
-function PackNuget($id){
-    $nuspecPath = "resharper/src/resharper-unity/resharper-unity.$id.nuspec"
+function PackNuget($id, $versionToSet){    
+    $nuspecPath = "resharper/src/resharper-unity/resharper-unity.$id.nuspec"    
+    $nuspecPath = SetNuspecVersion $nuspecPath $versionToSet        
     $nuspecPath = CreateConfigurationNuspec $nuspecPath
     $nuspecPath = CreatePlatformNuspec $nuspecPath
-    Write-Host $nuspecPath
+    Write-Host $nuspecPath        
 
     ServiceMessage "progressMessage" "Building and Packaging: $id"
     if ($isUnix){  
@@ -178,9 +187,6 @@ function ServiceMessage($type, $message){
         Write-Host "##teamcity[$type '$message']"
     }
 }
-
-
-
 
 if ($Source) {
   $sdkPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK"
@@ -228,23 +234,24 @@ else{
 }
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $LastExitCode" }
 
+$baseVersion = GetBasePluginVersion "Packaging.props" "Version"
+if ($BuildCounter) {
+  $version = "$baseVersion.$BuildCounter"
+} else {
+  $version = "$baseVersion"
+}
+
 try{
     if (!($RunIde)){
-        PackNuget "wave08"
+        PackNuget "wave08" $version
     }
-    PackNuget "rider"
+    PackNuget "rider" $version
 }
 finally{
     DeleteGeneratedNuspecs
 }
 
 ### Pack Rider plugin directory
-$baseVersion = GetBasePluginVersion "Packaging.props" "Version"
-if ($BuildCounter) {
-  $version = "$baseVersion.$BuildCounter"
-} else {
-  $version = $baseVersion
-}
 
 SetIdeaVersion -file "rider/src/main/resources/META-INF/plugin.xml" -since $SinceBuild -until $UntilBuild
 
