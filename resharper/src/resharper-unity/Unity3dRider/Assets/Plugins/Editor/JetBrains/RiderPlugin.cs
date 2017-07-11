@@ -198,7 +198,7 @@ namespace Plugins.Editor.JetBrains
     private static void InitializeEditorInstanceJson(string projectDirectory)
     {
       // Only manage EditorInstance.json for 4.x and 5.x - it's a native feature for 2017.x
-#if UNITY_4 || UNITY_5
+#if !UNITY_2017_1_OR_NEWER
       Log(LoggingLevel.Verbose, "Writing Library/EditorInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
@@ -407,7 +407,7 @@ namespace Plugins.Editor.JetBrains
       return process;
     }
 
-#if UNITY_4 || UNITY_5
+#if !UNITY_2017_1_OR_NEWER
     // The default "Open C# Project" menu item will use the external script editor to load the .sln
     // file, but unless Unity knows the external script editor can properly load solutions, it will
     // also launch MonoDevelop (or the OS registered app for .sln files). This menu item side steps
