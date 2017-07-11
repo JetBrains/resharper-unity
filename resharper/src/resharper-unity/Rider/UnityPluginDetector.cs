@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public static readonly string MergedPluginFile = "Unity3DRider.cs";
 
-        private static readonly Regex ourVersionRegex = new Regex(@"// ((?:[0-9]\.)+[0-9])", RegexOptions.Compiled);
+        private static readonly Regex ourVersionRegex = new Regex(@"//\s+(?:Version:)?\s*((?:[0-9]\.)+[0-9])", RegexOptions.Compiled);
 
         public static readonly InstallationInfo ShouldNotInstall = new InstallationInfo(false, FileSystemPath.Empty,
             EmptyArray<FileSystemPath>.Instance, ZeroVersion);
@@ -240,16 +241,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private static Version GetVersionFromFile(FileSystemPath mergedFile)
         {
-            string firstLine;
+            var blockBuilder = new StringBuilder();
             using (var fs = mergedFile.OpenStream(FileMode.Open, FileAccess.Read))
             using (var sr = new StreamReader(fs))
             {
-                firstLine = sr.ReadLine();
+                string line;
+                do
+                {
+                    line = sr.ReadLine();
+                    blockBuilder.AppendLine(line);
+                } while (line != null && line.StartsWith("//"));
             }
-            if (firstLine == null)
+
+            var commentBlock = blockBuilder.ToString();
+            if (string.IsNullOrWhiteSpace(commentBlock))
                 return ZeroVersion;
 
-            var match = ourVersionRegex.Match(firstLine);
+            var match = ourVersionRegex.Match(commentBlock);
             if (!match.Success)
                 return ZeroVersion;
 
