@@ -28,12 +28,12 @@ The ReSharper plugin is installed via the ReSharper &rarr; Extension Manager. Si
 
 ## Features
 
-The plugin adds knowledge of Unity based classes to ReSharper/Rider's analysis:
+**Unity API knowledge:**
 
 * The plugin knows about all Unity based classes (`MonoBehaviour`, `ScriptableObject`, `EditorWindow`, etc.) and their event functions via analysis of the Unity API surface and documentation.
 * Support for Unity API versions 5.0 - 5.6, as well as 2017.1.
 
-Event functions:
+**Event functions:**
 
 * [Event functions](https://docs.unity3d.com/Manual/EventFunctions.html) and fields implicitly used by Unity are marked with an icon in the gutter.
 * Empty event functions are marked as dead code, with a Quick Fix to remove the method.
@@ -60,7 +60,7 @@ Event functions:
 
 * "Read more" in [QuickDoc](https://www.jetbrains.com/help/resharper/2016.2/Coding_Assistance__Quick_Documentation.html) will navigate to the Unity API documentation, locally if available, or via the Unity website.
 
-Coroutines and invokable methods:
+**Coroutines and invokable methods:**
 
 * Event functions that can be coroutines are called out in tooltips.
 * Context Action on methods that can be coroutines to convert method signature to/from coroutine.
@@ -69,12 +69,12 @@ Coroutines and invokable methods:
 
   <img src="docs/invoke_completion.png" width="209">
 
-Networking:
+**Networking:**
 
 * Code completion, find usages and rename support for string literals in `[SyncVar(hook = "OnValueChanged")]`.
 * Highlight usage of `SyncVarAttribute` in any class other than `NetworkBehaviour` as an error.
 
-Inspections and Quick Fixes:
+**Inspections and Quick Fixes:**
 
 * Empty event functions are shown as dead code, with a quick fix to remove the method.
 * Using the `SyncVarAttribute` inside any class other than `NetworkBehaviour` is treated as an error.
@@ -94,7 +94,38 @@ Inspections and Quick Fixes:
 * Inspections for incorrectly calling `new` on a `MonoBehaviour` or `ScriptableObject`. Quick Fixes will convert to calls to `GameObject.AddComponent<T>()` and `ScriptableObject.CreateInstance<T>()`.
 * Inspection for unused coroutine return value.
 
-[External Annotations](https://www.jetbrains.com/help/resharper/2016.2/Code_Analysis__External_Annotations.html):
+**ShaderLab support:**
+
+Initial support for [ShaderLab](https://docs.unity3d.com/Manual/SL-Shader.html) syntax in `.shader` files, with limited support for Cg/HLSL blocks.
+
+ShaderLab:
+
+* Syntax and syntax error highlighting for ShaderLab syntax.
+
+  <img src="docs/shader_syntax_highlighting.png" width="719">
+
+* Simple word based completion (so called ["hippie completion"](https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion)). This provides completion based on words found in the current file.
+
+  <img src="docs/shader_word_completion.png" width="462">
+
+* Brace matching and highlighting, comment/uncomment, and to-do explorer support.
+
+  <img src="docs/shader_brace_matching_todo.png" width="247">
+
+* Code folding in Rider.
+
+  <img src="docs/shader_folding.png" width="249">
+
+Cg/HLSL:
+
+* Keyword based highlighting. Currently no syntax error highlighting.
+* Simple word based completion (so called ["hippie completion"](https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion)).
+
+  <img src="docs/cg_word_completion.png" width="196">
+
+**External Annotations:**
+
+See the ReSharper help for [more details on External Annotations](https://www.jetbrains.com/help/resharper/2016.2/Code_Analysis__External_Annotations.html).
 
 * Treat code marked with attributes from UnityEngine.dll, UnityEngine.Networking.dll and UnityEditor.dll as implicitly used.
 * Mark `Component.gameObject` and `Object.name` as not-nullable.
@@ -104,7 +135,7 @@ Inspections and Quick Fixes:
 * `EditorTestsWithLogParser.ExpectLogLineRegex` gets regular expression helper functionality.
 * Various attributes now require the class they are applied to derive from a specific base type. E.g. `[CustomEditor]` requires a base class of `Editor`).
 
-Other:
+**Other:**
 
 * Synchronise .meta files on creation, deletion, rename and refactoring.
 * Automatically sets correct C# language version, if not already specified in .csproj - ReSharper will no longer suggest code fixes that won't compile! Supports the default C# 4 compiler, Unity 5.5's optional C# 6 compiler and the C# 6/7.0 compiler in the [CSharp60Support](https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src) plugin.
