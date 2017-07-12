@@ -132,9 +132,9 @@ When Rider opens a Unity project, it will automatically install a Unity Editor p
 
 * Automatically set Rider as the default external script editor.
 * Ensure the C# solution and project files are up to date, and make minor changes required by Rider:
-    * Set the `TargetFrameworkVersion` to 4.5. This is required to fix missing references to various assemblies when running on Mac and Linux, and is not required when Unity is targeting .NET 4.6. See this GitHub issue for more details. This can be disabled in _Preferences_. Note that this affects how Rider resolves references, and does not change how Unity builds a project.
+    * Set the `TargetFrameworkVersion` to 4.5. This is required to fix missing references to various assemblies when running on Mac and Linux (because Rider uses a different Mono version of msbuild than Unity), and is not required when Unity is targeting .NET 4.6. [See this YouTrack issue for more details](https://youtrack.jetbrains.com/issue/RIDER-573). This can be disabled in _Preferences_. Note that this affects how Rider resolves references, and does not change how Unity builds a project.
     * Set the `LangVersion` correctly, so that Rider does not suggest C# 6 features when Unity is targeting C# 4, or C# 7 features when Unity is targeting C# 6.
-    * Add references to `UnityEditor.iOS.Extensions.Xcode.dll` and `UnityEditor.iOS.Extensions.Common.dll`, which are missing on Mac with the default generated project files.
+    * Add references to `UnityEditor.iOS.Extensions.Xcode.dll` and `UnityEditor.iOS.Extensions.Common.dll`, which are referenced when Unity builds, but not included in the generated project files. [See this GitHub issue for more details](https://github.com/JetBrains/Unity3dRider/issues/15).
     * Add options defined in `smcs.rsp` and `gmcs.rsp` files, such as conditional compilation defines and the `unsafe` keyword. Adding them to the project file makes the information available to Rider's analysis.
 * Use interprocess communication to speed up opening C# scripts, `.shader` files and text assets in Rider, if it's already running. It will launch Rider and load the solution if it isn't.
 * Add a _Rider_ Preference pane:
