@@ -1,12 +1,13 @@
-package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg
+package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab
 
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.tree.IElementType
 import com.jetbrains.rider.ideaInterop.fileTypes.RiderTableBasedSyntaxHighlighter
+import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgKeywords
 
-class CgSyntaxHighlighter : RiderTableBasedSyntaxHighlighter(keywords.table) {
+class ShaderLabSyntaxHighlighter : RiderTableBasedSyntaxHighlighter(keywords.table) {
     companion object {
-        val keywords = CgKeywords(true)
+        val keywords = CgKeywords(false)
     }
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
