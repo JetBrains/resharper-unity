@@ -24,7 +24,7 @@ The solution can be loaded directly with the _Assets &rarr; Open C# Project_ men
 
 Rider will install the Unity Editor plugin in each Unity project it opens. [See below for more details](#unity-editor-plugin).
 
-The ReSharper plugin is installed via the ReSharper &rarr; Extension Manager. Simply search for "Unity Support".
+The ReSharper plugin is installed via the _ReSharper &rarr; Extension Manager_. Simply search for "Unity Support".
 
 ## Features
 
@@ -114,7 +114,7 @@ ShaderLab:
 
 * Code folding in Rider.
 
-  <img src="docs/shader_folding.png" width="249">
+  <img src="docs/shader_code_folding.png" width="249">
 
 Cg/HLSL:
 
