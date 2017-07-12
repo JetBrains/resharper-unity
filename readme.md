@@ -1,8 +1,30 @@
 # Unity Support for ReSharper and Rider
 
-The "Unity Support" plugin adds [Unity](http://unity3d.com/) specific functionality to [ReSharper](https://www.jetbrains.com/resharper/) and [Rider](https://www.jetbrains.com/rider/).
+The "Unity Support" plugin adds specific functionality for the [Unity game engine](http://unity3d.com/) to [ReSharper](https://www.jetbrains.com/resharper/) and [Rider](https://www.jetbrains.com/rider/).
 
-Rider is JetBrains' cross platform .NET IDE, based on ReSharper and the IntelliJ Platform. It can be used on Windows, Mac and Linux and together with the [Unity3dRider](https://github.com/JetBrains/resharper-unity/tree/master/resharper/src/resharper-unity/Unity3dRider) Unity plugin, can replace the default MonoDevelop editor with an IDE providing rich code navigation, inspections and refactorings.
+Rider is JetBrains' cross platform .NET IDE, based on ReSharper and the IntelliJ Platform. It can be used on Windows, Mac and Linux and this plugin can replace the default MonoDevelop editor with an IDE providing rich code navigation, inspections and refactorings.
+
+The plugin adds code completion and generation of Unity event functions, inspections for common errors, quick fixes, support for `.shader` files, automatic handling of `.meta` files and more. The Rider plugin includes additional support for attaching the debugger to the Editor instance and a Unity Editor plugin to improve integration.
+
+## Installation
+
+This plugin comes bundled with Rider, and manual installation is not required. However, it is necessary to configure Unity to use Rider as the external script editor:
+
+* Start Rider and open the `.sln` file of an existing Unity project.
+* Rider will install a Unity Editor plugin into the project ([see below for more details](#unity-editor-plugin)).
+* Switch back to the Unity Editor, with the same Unity project open. The new Unity Editor plugin will automatically configure Rider as the external script editor.
+
+This only needs to be done once, and can also be done manually, via the Unity Editor's _External Editor_ Preference pane.
+
+Double clicking on C# scripts and `.shader` files will now automatically open Rider, load the solution and navigate to the file. More file types can be associated with Rider by editing _Additional extensions_ in the _Edit &rarr; Project Settings &rarr; Editor_ settings pane.
+
+The solution can be loaded directly with the _Assets &rarr; Open C# Project_ menu item.
+
+> Note that Rider will add an _Assets &rarr; Open C# Project in Rider_ menu item for older versions of Unity. This is because prior to 2017.1, the Unity Editor doesn't recognise Rider as an editor that can load C# solutions, and will also launch MonoDevelop. Other than not launching MonoDevelop, these menu items are identical.
+
+Rider will install the Unity Editor plugin in each Unity project it opens. [See below for more details](#unity-editor-plugin).
+
+The ReSharper plugin is installed via the ReSharper &rarr; Extension Manager. Simply search for "Unity Support".
 
 ## Features
 
@@ -100,44 +122,33 @@ The plugin also adds some functionality just for Rider:
 
   <img src="docs/attach_to_editor_run_config.png" width="514">
 
+* Rider will install a Unity Editor plugin whenever a Unity project is opened. [See below for more details](#unity-editor-plugin).
+
 Please [suggest new features in the issues](https://github.com/JetBrains/resharper-unity/issues)!
 
-## Installing
+## Unity Editor plugin
 
-To install into ReSharper:
+When Rider opens a Unity project, it will automatically install a Unity Editor plugin. This plugin does the following:
 
-* Use ReSharper's Extension Manager (ReSharper &rarr; Extension Manager), search for "Unity" and install. Restart, and it'll just start working.
+* Automatically set Rider as the default external script editor.
+* Ensure the C# solution and project files are up to date, and make minor changes required by Rider:
+    * Set the `TargetFrameworkVersion` to 4.5. This is required to fix missing references to various assemblies when running on Mac and Linux, and is not required when Unity is targeting .NET 4.6. See this GitHub issue for more details. This can be disabled in _Preferences_. Note that this affects how Rider resolves references, and does not change how Unity builds a project.
+    * Set the `LangVersion` correctly, so that Rider does not suggest C# 6 features when Unity is targeting C# 4, or C# 7 features when Unity is targeting C# 6.
+    * Add references to `UnityEditor.iOS.Extensions.Xcode.dll` and `UnityEditor.iOS.Extensions.Common.dll`, which are missing on Mac with the default generated project files.
+    * Add options defined in `smcs.rsp` and `gmcs.rsp` files, such as conditional compilation defines and the `unsafe` keyword. Adding them to the project file makes the information available to Rider's analysis.
+* Use interprocess communication to speed up opening C# scripts, `.shader` files and text assets in Rider, if it's already running. It will launch Rider and load the solution if it isn't.
+* Add a _Rider_ Preference pane:
+    * Enable logging to the console for troubleshooting. Please use this before logging an issue.
+    * Disable Rider from setting the `TargetFrameworkVersion` to 4.5. Use this if you require 3.5, and do not encounter the missing references described in this issue. Note that this only affects how Rider resolves references, and does not change how Unity builds a project.
+* Provide extra functionality for older versions of the Unity Editor (prior to Unity 2017.1):
+    * Create a file called `Library/EditorInstance.json` that contains process information for debugging the Unity Editor. This file is created natively by Unity since 2017.1.
+    * Add an _Assets &rarr; Open C# Project in Rider_ menu item. Earlier versions of Unity do not recognise Rider as an editor that can correctly open solutions, and so will launch both Rider and MonoDevelop when the _Assets &rarr; Open C# Project_ menu item is selected.
 
-To install into Rider:
+Rider will automatically add this plugin to all Unity projects that are opened. It will initially install the plugin to `Assets/Plugins/Editor/JetBrains/Unity3DRider.cs`, but will look for the file by name if it is moved.
 
-* Install from the "featured plugins" page of the welcome screen.
-* Or, go to the Plugins page in Preferences, click Install JetBrains Plugin and search for "Unity". Rider will need to be restarted.
+Rider will automatically keep this file up to date, installing newer versions when available. The file should be modified with caution, as any changes will be overwritten.
 
-Please watch the repo for updates, or follow [@citizenmatt](https://twitter.com/citizenmatt), [@resharper](https://twitter.com/resharper) or [@JetBrainsRider](https://twitter.com/JetBrainsRider) on twitter for updates.
-
-## Unity3dRider initialization for Rider
-
-### Unity version pre 2017.1.b5
-
-* Make Unity generate slnFile for you:
-  * Open project in Unity
-  * From Unity open project in MD
-* Open Rider, manually open sln file 
-Solution is opened. resharper-unity adds Unity3dRider to project as a single file Unity3dRider.cs, tries to remove older version.
-* Get back to Unity
-* Make Solution compilable at least once, so Unity3dRider is initialized
-Unity3dRider finds Rider and adds it to known editors list.
-* If you are running Unity with plugin for the first time it will set Rider as default editor.
-
-### Unity version 2017.1.b5 and after
-
-Either way you can:
-* Manully select Rider as an editor in Unity and it will work just fine
-* Or follow the "pre 2017.1.b5" instructions to avoid manual search for Rider executable
-
-Possible problems
-
-resharper-unity may add Unity3dRider second time, if previously user have added it to different location.
+This behaviour can be disabled in Rider's _Unity_ Preferences page.
 
 ## Roadmap
 
