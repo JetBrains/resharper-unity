@@ -260,10 +260,10 @@ SetPluginVersion -file "rider/src/main/resources/META-INF/plugin.xml" -version $
 
 Push-Location -Path rider
 if ($isUnix){
-  .\gradlew $gradleTask "-PmyArgs=$Configuration,$baseVersion"
+  .\gradlew $gradleTask "-PmyArgs=$Configuration,$version"
 }
 else{
-  .\gradlew.bat $gradleTask "-PmyArgs=$Configuration,$baseVersion"
+  .\gradlew.bat $gradleTask "-PmyArgs=$Configuration,$version"
 }
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
 Pop-Location
