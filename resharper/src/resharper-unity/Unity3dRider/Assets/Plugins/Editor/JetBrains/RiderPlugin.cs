@@ -198,7 +198,7 @@ namespace Plugins.Editor.JetBrains
     private static void InitializeEditorInstanceJson(string projectDirectory)
     {
       // Only manage EditorInstance.json for 4.x and 5.x - it's a native feature for 2017.x
-#if UNITY_4 || UNITY_5
+#if !UNITY_2017_1_OR_NEWER
       Log(LoggingLevel.Verbose, "Writing Library/EditorInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
@@ -407,6 +407,13 @@ namespace Plugins.Editor.JetBrains
       return process;
     }
 
+#if !UNITY_2017_1_OR_NEWER
+    // The default "Open C# Project" menu item will use the external script editor to load the .sln
+    // file, but unless Unity knows the external script editor can properly load solutions, it will
+    // also launch MonoDevelop (or the OS registered app for .sln files). This menu item side steps
+    // that issue, and opens the solution in Rider without opening MonoDevelop as well.
+    // Unity 2017.1 and later recognise Rider as an app that can load solutions, so this menu isn't
+    // needed in newer versions.
     [MenuItem("Assets/Open C# Project in Rider", false, 1000)]
     static void MenuOpenProject()
     {
@@ -422,6 +429,7 @@ namespace Plugins.Editor.JetBrains
     {
       return Enabled;
     }
+#endif
 
     /// <summary>
     /// Force Unity To Write Project File
@@ -773,7 +781,7 @@ return SystemInfo.operatingSystemFamily;
       {
         ShellLink link = new ShellLink();
         ((IPersistFile) link).Load(filename, STGM_READ);
-        // TODO: if I can get hold of the hwnd call resolve first. This handles moved and renamed files.  
+        // If I can get hold of the hwnd call resolve first. This handles moved and renamed files.  
         // ((IShellLinkW)link).Resolve(hwnd, 0) 
         StringBuilder sb = new StringBuilder(MAX_PATH);
         WIN32_FIND_DATAW data = new WIN32_FIND_DATAW();
