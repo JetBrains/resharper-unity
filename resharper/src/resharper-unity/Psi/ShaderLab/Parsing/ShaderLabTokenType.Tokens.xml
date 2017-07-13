@@ -26,6 +26,18 @@
     <!-- This doesn't seem to be documented -->
     <FragmentDelimiter name="CG_INCLUDE" representation="CGINCLUDE" />
     <FragmentDelimiter name="CG_END" representation="ENDCG" />
+    
+    <!-- Shader code written in OpenGL https://docs.unity3d.com/Manual/SL-GLSLShaderPrograms.html -->
+    <FragmentDelimiter name="GLSL_PROGRAM" representation="GLSLPROGRAM" />
+    <FragmentDelimiter name="GLSL_INCLUDE" representation="GLSLINCLUDE" />
+    <FragmentDelimiter name="GLSL_END" representation="ENDGLSL" />
+    
+    <!-- Identical to CGPROGRAM/GCINCLUDE but some includes are not automatically included
+         HLSLSupport.cginc, UnityShaderVariables.cginc and UnityShaderUtilties.cginc (This info direct from Unity devs)
+         Added in 5.6.0 - https://unity3d.com/unity/whats-new/unity-5.6.0 -->
+    <FragmentDelimiter name="HLSL_PROGRAM" representation="HLSLPROGRAM" />
+    <FragmentDelimiter name="HLSL_INCLUDE" representation="HLSLINCLUDE" />
+    <FragmentDelimiter name="HLSL_END" representation="ENDHLSL" />
   </FragmentDelimiters>
 
   <Tokens NodeType="FixedTokenNodeType">
