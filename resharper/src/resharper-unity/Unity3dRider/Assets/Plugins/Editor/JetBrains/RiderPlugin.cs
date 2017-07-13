@@ -323,8 +323,8 @@ namespace Plugins.Editor.JetBrains
 
     private static string CallHttpApi(Uri uri, WebClient client)
     {
-      var responseString = client.DownloadString(uri);
-      Log(LoggingLevel.Verbose, string.Format("HttpRequestOpenFile response: {0}", responseString));
+      var responseString = client.DownloadString(uri.AbsoluteUri);
+      Log(LoggingLevel.Verbose, string.Format("CallHttpApi {0} response: {1}", uri.AbsoluteUri, responseString));
       return responseString;
     }
 
