@@ -1,6 +1,6 @@
 param (
   [string]$Source, # Rider SDK Packages folder, optional
-  [string]$BuildCounter, # Set Rider plugin version to version from Packaging.Props + $BuildCounter, optional
+  [string]$BuildCounter = 9999, # Sets Rider plugin version to version from Packaging.Props with the last zero replaced by $BuildCounter
   [string]$SinceBuild, # Set since-build in Rider plugin descriptor
   [string]$UntilBuild, # Set until-build in Rider plugin descriptor
   [string]$Configuration = "Release", # Release / Debug
@@ -57,6 +57,27 @@ function GetBasePluginVersion($packagingPropsFile, $nodeName)
   Write-Host "- ${packagingPropsFile}: $nodeName = $version"
 
   return $version
+}
+
+function SetPackagingPropsVersion($buildCounter){
+  $packagingPropsPath = ".\Packaging.props"
+  $xml = [xml] (Get-Content $packagingPropsPath)
+  # 2.0.0.0 -> 2.0.0.$buildCounter
+  $xml.Project.PropertyGroup.Version = $xml.Project.PropertyGroup.Version -replace "((\d+\.)+)\d+", "`${1}$buildCounter"
+  $xml.Project.PropertyGroup.AssemblyVersion = $xml.Project.PropertyGroup.AssemblyVersion -replace "((\d+\.)+)\d+", "`${1}$buildCounter"
+  $xml.Save($packagingPropsPath)  
+  Write-Host "- ${packagingPropsPath}: buildCounter set to $buildCounter"
+}
+
+# this is for the ease of local debugging
+function SetDefaultExtsInBuildGradle($version, $configuration){
+    $buildGradlePath = ".\rider\build.gradle"
+    $content = [IO.File]::ReadAllText($buildGradlePath)
+
+    # ext.myArgs = "Release,1.0.0" -> ext.myArgs = "$configuration,$version"
+    $content = $content -replace "(ext\.myArgs = )`"[^,]+,(\d+\.)+\d+`"", "`${1}`"$configuration,$version`""
+
+    [IO.File]::WriteAllText($buildGradlePath, $content)    
 }
 
 function SetIdeaVersion($file, $since, $until)
@@ -127,6 +148,9 @@ $generatedNuspecs = {}.Invoke()
 function SetNuspecVersion($nuspec, $versionToSet){
     $content = [IO.File]::ReadAllText($nuspec)
 
+    # ${2} match is -rider suffix or nothing
+    # <version>1.0.0-rider</version> -> <version>2.0.0.500</version>
+    # <version>1.0.0</version> -> <version>2.0.0.500</version>
     $content = $content -replace "\<version\>(\d+\.)+\d+(.*)\<\/version\>", "<version>$versionToSet`${2}</version>"
 
     [IO.File]::WriteAllText($nuspec, $content)
@@ -136,6 +160,9 @@ function SetNuspecVersion($nuspec, $versionToSet){
 function CreateConfigurationNuspec($nuspec){
     $content = [IO.File]::ReadAllText($nuspec)
 
+    # <file src="..\..\build\resharper-unity.rider\bin\Release\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+    # to
+    # <file src="..\..\build\resharper-unity.rider\bin\$Configuration\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
     $content = $content -replace "(\<file src=`"[^`"]*)Release([^`"]*)", "`${1}$Configuration`${2}"
 
     $output = $nuspec.Replace(".nuspec", ".$Configuration.nuspec")
@@ -149,6 +176,7 @@ function CreatePlatformNuspec($nuspec){
     if ($isUnix){
       # Nuget on mono doesn't like the '../..', so fix up the path, relative to current dir
       $content = $content -replace "\.\.\\\.\.", (Join-Path (Get-Location).Path "resharper")
+      # fixup DOS-style slashes
       $content = $content -replace "\\", "/"      
     }
 
@@ -207,8 +235,10 @@ if (!$RunIde){
 
 if ($NoBuild) { Exit 0 }
 
-$assemblyVersion = GetBasePluginVersion "Packaging.props" "AssemblyVersion"
-Invoke-Expression ".\merge-unity-3d-rider.ps1 -inputDir resharper\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains -version $assemblyVersion"
+SetPackagingPropsVersion($BuildCounter)
+$version = GetBasePluginVersion "Packaging.props" "Version"
+
+Invoke-Expression ".\merge-unity-3d-rider.ps1 -inputDir resharper\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains -version $version"
 
 if ($isUnix){
   $msbuild = which msbuild
@@ -234,13 +264,6 @@ else{
 }
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $LastExitCode" }
 
-$baseVersion = GetBasePluginVersion "Packaging.props" "Version"
-if ($BuildCounter) {
-  $version = "$baseVersion.$BuildCounter"
-} else {
-  $version = "$baseVersion"
-}
-
 try{
     if (!($RunIde)){
         PackNuget "wave08" $version
@@ -250,6 +273,8 @@ try{
 finally{
     DeleteGeneratedNuspecs
 }
+
+SetDefaultExtsInBuildGradle -version $version -configuration $Configuration
 
 ### Pack Rider plugin directory
 
