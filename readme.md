@@ -104,7 +104,7 @@ ShaderLab:
 
   <img src="docs/shader_syntax_highlighting.png" width="719">
 
-* Simple word based completion (so called ["hippie completion"](https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion)). This provides completion based on words found in the current file.
+* Rider includes simple word based completion (so called ["hippie completion"](https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion)). This provides completion based on words found in the current file. This is not available in ReSharper.
 
   <img src="docs/shader_word_completion.png" width="462">
 
@@ -116,7 +116,7 @@ ShaderLab:
 
   <img src="docs/shader_code_folding.png" width="249">
 
-Cg/HLSL:
+Cg/HLSL (Rider only):
 
 * Keyword based highlighting. Currently no syntax error highlighting.
 * Simple word based completion (so called ["hippie completion"](https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion)).
@@ -159,7 +159,9 @@ Please [suggest new features in the issues](https://github.com/JetBrains/resharp
 
 ## Unity Editor plugin
 
-When Rider opens a Unity project, it will automatically install a Unity Editor plugin. This plugin does the following:
+By default, when Rider opens a Unity project, it will automatically install a Unity Editor plugin, and keep it up to date with new versions. This behaviour can be disabled in Rider's _Preferences &rarr; Languages &amp; Frameworks &rarr; Unity Engine_.
+
+This plugin does the following:
 
 * Automatically set Rider as the default external script editor.
 * Ensure the C# solution and project files are up to date, and make minor changes required by Rider:
@@ -179,7 +181,7 @@ Rider will automatically add this plugin to all Unity projects that are opened. 
 
 Rider will automatically keep this file up to date, installing newer versions when available. The file should be modified with caution, as any changes will be overwritten.
 
-This behaviour can be disabled in Rider's _Unity_ Preferences page.
+This behaviour can be disabled in Rider's _Preferences &rarr; Languages &amp; Frameworks &rarr; Unity Engine_ page.
 
 ## Roadmap
 
