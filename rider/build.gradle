@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.1.1'
-    id 'org.jetbrains.intellij' version '0.2.8'
+    id 'org.jetbrains.intellij' version '0.2.14'
 }
 
 group 'com.jetbrains'
@@ -26,7 +26,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 intellij {
-    type = 'RS'
+    type = 'RD'
 
     // Download a version of Rider to compile and run with. Either set `version` to
     // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
@@ -44,7 +44,7 @@ intellij {
       localPath = dir.absolutePath
     }
     else {
-      version = '171.4456.575' // EAP23
+      version = '171.4456.1432' // 2017.1 RC
     }
 
     // Sources aren't available for Rider
