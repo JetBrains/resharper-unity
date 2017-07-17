@@ -12,17 +12,6 @@ namespace Plugins.Editor.JetBrains
 {
   public class RiderAssetPostprocessor : AssetPostprocessor
   {
-    private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
-    private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
-    private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
-    private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private const string PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "smcs.rsp";
-    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
-      = Path.Combine(UnityEngine.Application.dataPath, PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
-    private const string EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "gmcs.rsp";
-    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
-      = Path.Combine(UnityEngine.Application.dataPath, EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
-
     public static void OnGeneratedCSProjectFiles()
     {
       if (!RiderPlugin.Enabled)
@@ -38,7 +27,7 @@ namespace Plugins.Editor.JetBrains
       var slnFile = Directory.GetFiles(currentDirectory, "*.sln").First();
       RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", slnFile));
       string content = File.ReadAllText(slnFile);
-      var lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+      var lines = content.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
       var sb = new StringBuilder();
       foreach (var line in lines)
       {
@@ -55,7 +44,7 @@ namespace Plugins.Editor.JetBrains
         }
         sb.Append(Environment.NewLine);
       }
-      File.WriteAllText(slnFile,sb.ToString());
+      File.WriteAllText(slnFile, sb.ToString());
     }
 
     private static string GetFileNameWithoutExtension(string path)
@@ -75,14 +64,28 @@ namespace Plugins.Editor.JetBrains
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
+#if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself 
       SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
-
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
-
+#endif
       doc.Save(projectFile);
     }
 
+#if !UNITY_2017_1_OR_NEWER  // Unity 2017.1 and later has this features by itself
+{
+    private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
+    private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
+    private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
+    private const string UNITY_DEFINE_KEYWORD = "-define:";
+    private const string PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "smcs.rsp";
+    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
+      = Path.Combine(UnityEngine.Application.dataPath, PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
+    private const string EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "gmcs.rsp";
+    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
+      = Path.Combine(UnityEngine.Application.dataPath, EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
+
+}
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
       string configPath;
@@ -170,64 +173,7 @@ namespace Plugins.Editor.JetBrains
     {
       return Path.GetFileName(projectFile) == UNITY_EDITOR_PROJECT_NAME;
     }
-
-    // Helps resolve System.Linq under mono 4 - RIDER-573
-    private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
-    {
-      var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup").
-        Elements(xmlns + "TargetFrameworkVersion").FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
-      if (targetFrameworkVersion != null)
-      {
-        var version = new Version(targetFrameworkVersion.Value.Substring(1));
-        if (RiderPlugin.TargetFrameworkVersion45)
-        {
-          if (version < new Version(4, 5))
-            targetFrameworkVersion.SetValue("v4.5");  
-        }
-        else
-        {
-          targetFrameworkVersion.SetValue("v3.5");
-        }
-      }
-    }
-
-    private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
-    {
-      // Add LangVersion to the .csproj. Unity doesn't generate it (although VSTU does).
-      // Not strictly necessary, as the Unity plugin for Rider will work it out, but setting
-      // it makes Rider work if it's not installed.
-      var langVersion = projectElement.Elements(xmlns + "PropertyGroup").
-        Elements(xmlns + "LangVersion").FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
-      if (langVersion != null)
-      {
-        langVersion.SetValue(GetLanguageLevel());
-      }
-      else
-      {
-        projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
-          new XElement(xmlns + "LangVersion", GetLanguageLevel())));  
-      }
-    }
-
-    private static string GetLanguageLevel()
-    {
-      // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
-      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp70Support")))
-        return "7";
-      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp60Support")))
-        return "6";
-
-      // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-      #if !UNITY_5_6_OR_NEWER
-      if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
-      #else
-      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
-      #endif
-        return "6";
-
-      return "4";
-    }
-
+  
     private static void SetXCodeDllReference(string name, XNamespace xmlns, XElement projectContentElement)
     {
       string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
@@ -245,6 +191,64 @@ namespace Plugins.Editor.JetBrains
         itemGroup.Add(reference);
         projectContentElement.Add(itemGroup);
       }
+    }
+#endif
+    // Helps resolve System.Linq under mono 4 - RIDER-573
+    private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
+    {
+      var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
+        .Elements(xmlns + "TargetFrameworkVersion")
+        .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
+      if (targetFrameworkVersion != null)
+      {
+        var version = new Version(targetFrameworkVersion.Value.Substring(1));
+        if (RiderPlugin.TargetFrameworkVersion45)
+        {
+          if (version < new Version(4, 5))
+            targetFrameworkVersion.SetValue("v4.5");
+        }
+        else
+        {
+          targetFrameworkVersion.SetValue("v3.5");
+        }
+      }
+    }
+
+    private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
+    {
+      // Add LangVersion to the .csproj. Unity doesn't generate it (although VSTU does).
+      // Not strictly necessary, as the Unity plugin for Rider will work it out, but setting
+      // it makes Rider work if it's not installed.
+      var langVersion = projectElement.Elements(xmlns + "PropertyGroup").Elements(xmlns + "LangVersion")
+        .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
+      if (langVersion != null)
+      {
+        langVersion.SetValue(GetLanguageLevel());
+      }
+      else
+      {
+        projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
+          new XElement(xmlns + "LangVersion", GetLanguageLevel())));
+      }
+    }
+
+    private static string GetLanguageLevel()
+    {
+      // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
+      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp70Support")))
+        return "7";
+      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp60Support")))
+        return "6";
+
+      // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
+#if !UNITY_5_6_OR_NEWER
+      if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
+      #else
+      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
+#endif
+        return "6";
+
+      return "4";
     }
   }
 }
