@@ -682,6 +682,8 @@ shaderValue
   LBRACE<LBRACE, LBrace>
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
   cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>?
+  glslIncludeBlock<GLSLINCLUDE_BLOCK, GlslIncludes>?
+  hlslIncludeBlock<HLSLINCLUDE_BLOCK, HlslIncludes>?
   categoryCommand<CATEGORY_COMMAND, CategoryCommand>?
   subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>*
   shaderContents*
@@ -951,6 +953,8 @@ private categoryContents
   | renderStateCommand
   | legacyRenderStateCommand
   | cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>
+  | glslIncludeBlock<GLSLINCLUDE_BLOCK, GlslIncludes>
+  | hlslIncludeBlock<HLSLINCLUDE_BLOCK, HlslIncludes>
   | subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>
 ;
 
@@ -981,6 +985,8 @@ private subShaderContents
   | renderStateCommand
   | legacyRenderStateCommand
   | cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>
+  | glslIncludeBlock<GLSLINCLUDE_BLOCK, GlslIncludes>
+  | hlslIncludeBlock<HLSLINCLUDE_BLOCK, HlslIncludes>
   | passDef<PASSDEF, PassDefinitions>
 ;
 
@@ -1748,6 +1754,8 @@ bindValue
 // **************************************************************************
 //
 // CGINCLUDE/CGPROGRAM
+// GLSLINCLUDE/GLSLPROGRAM
+// HLSLINCLUDE/HLSLPROGRAM
 //
 // **************************************************************************
 
@@ -1755,6 +1763,10 @@ interface cgBlock
 :
   cgIncludeBlock
   | cgProgramBlock
+  | glslIncludeBlock
+  | glslProgramBlock
+  | hlslIncludeBlock
+  | hlslProgramBlock
 ;
 
 cgContent
@@ -1776,6 +1788,34 @@ cgProgramBlock
   CG_END<CG_END, CgEnd>
 ;
 
+glslIncludeBlock
+:
+  GLSL_INCLUDE<GLSL_INCLUDE, GlslInclude>
+  cgContent<GLSL_CONTENT, GlslContent>
+  GLSL_END<GLSL_END, GlslEnd>
+;
+
+glslProgramBlock
+:
+  GLSL_PROGRAM<GLSL_PROGRAM, GlslProgram>
+  cgContent<GLSL_CONTENT, GlslContent>
+  GLSL_END<GLSL_END, GlslEnd>
+;
+
+hlslIncludeBlock
+:
+  HLSL_INCLUDE<HLSL_INCLUDE, HlslInclude>
+  cgContent<HLSL_CONTENT, HlslContent>
+  HLSL_END<HLSL_END, HlslEnd>
+;
+
+hlslProgramBlock
+:
+  HLSL_PROGRAM<HLSL_PROGRAM, HlslProgram>
+  cgContent<HLSL_CONTENT, HlslContent>
+  HLSL_END<HLSL_END, HlslEnd>
+;
+
 
 // **************************************************************************
 //
@@ -1789,6 +1829,8 @@ interface passDef
   | grabPassDef
   | regularPassDef
   | cgProgramPassDef
+  | glslProgramPassDef
+  | hlslProgramPassDef
 ;
 
 usePassDef
@@ -1827,6 +1869,16 @@ cgProgramPassDef
   cgProgramBlock<CG_PROGRAM, CgProgram>
 ;
 
+glslProgramPassDef
+:
+  glslProgramBlock<GLSL_PROGRAM, GlslProgram>
+;
+
+hlslProgramPassDef
+:
+  hlslProgramBlock<HLSL_PROGRAM, HlslProgram>
+;
+
 regularPassDef
 :
   PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
@@ -1847,6 +1899,8 @@ private regularPassContents
   | renderStateCommand
   | legacyRenderStateCommand
   | cgProgramBlock<CGPROGRAM_BLOCK, CgPrograms>
+  | glslProgramBlock<GLSLPROGRAM_BLOCK, GlslPrograms>
+  | hlslProgramBlock<HLSLPROGRAM_BLOCK, HlslPrograms>
 ;
 
 

@@ -73,9 +73,13 @@ IDENTIFIER_PART_CHAR=({IDENTIFIER_START_CHAR}|{DECIMAL_DIGIT})
 IDENTIFIER=({IDENTIFIER_START_CHAR}{IDENTIFIER_PART_CHAR}*|"2D"|"3D")
 
 CG_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^C])|(ENDC[^G]))+)
+GLSL_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^G])|(ENDG[^L])|(ENDGL[^S])|(ENDGLS[^L]))+)
+HLSL_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^H])|(ENDH[^L])|(ENDHL[^S])|(ENDHLS[^L]))+)
 
 %state YYSHADERLAB
 %state YYCGPROGRAM
+%state YYGLSLPROGRAM
+%state YYHLSLPROGRAM
 
 %%
 
@@ -97,6 +101,12 @@ CG_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^C])|(ENDC[^G]))+)
 <YYSHADERLAB>   "CGPROGRAM"             { yybegin(YYCGPROGRAM); return ShaderLabTokenType.CG_PROGRAM; }
 <YYSHADERLAB>   "CGINCLUDE"             { yybegin(YYCGPROGRAM); return ShaderLabTokenType.CG_INCLUDE; }
 
+<YYSHADERLAB>   "GLSLPROGRAM"           { yybegin(YYGLSLPROGRAM); return ShaderLabTokenType.GLSL_PROGRAM; }
+<YYSHADERLAB>   "GLSLINCLUDE"           { yybegin(YYGLSLPROGRAM); return ShaderLabTokenType.GLSL_INCLUDE; }
+
+<YYSHADERLAB>   "HLSLPROGRAM"           { yybegin(YYHLSLPROGRAM); return ShaderLabTokenType.HLSL_PROGRAM; }
+<YYSHADERLAB>   "HLSLINCLUDE"           { yybegin(YYHLSLPROGRAM); return ShaderLabTokenType.HLSL_INCLUDE; }
+
 <YYSHADERLAB>   {INTEGER_LITERAL}       { return ShaderLabTokenType.NUMERIC_LITERAL; }
 <YYSHADERLAB>   {FLOAT_LITERAL}         { return ShaderLabTokenType.NUMERIC_LITERAL; }
 <YYSHADERLAB>   {STRING_LITERAL}        { return ShaderLabTokenType.STRING_LITERAL; }
@@ -110,5 +120,11 @@ CG_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^C])|(ENDC[^G]))+)
 
 <YYCGPROGRAM>   {CG_BLOCK}              { return ShaderLabTokenType.CG_CONTENT; }
 <YYCGPROGRAM>   "ENDCG"                 { yybegin(YYSHADERLAB); return ShaderLabTokenType.CG_END; }
+
+<YYGLSLPROGRAM> {GLSL_BLOCK}            { return ShaderLabTokenType.CG_CONTENT; }
+<YYGLSLPROGRAM> "ENDGLSL"               { yybegin(YYSHADERLAB); return ShaderLabTokenType.GLSL_END; }
+
+<YYHLSLPROGRAM> {HLSL_BLOCK}            { return ShaderLabTokenType.CG_CONTENT; }
+<YYHLSLPROGRAM> "ENDHLSL"               { yybegin(YYSHADERLAB); return ShaderLabTokenType.HLSL_END; }
 
 <YYSHADERLAB>   .                       { return ShaderLabTokenType.BAD_CHARACTER; }
