@@ -36,7 +36,12 @@ namespace Plugins.Editor.JetBrains
           MatchCollection mc = Regex.Matches(line, "\"([^\"]*)\"");
           //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "mc[1]: "+mc[1].Value);
           //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "mc[2]: "+mc[2].Value);
-          sb.Append(line.Replace(mc[1].Value.TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray()), GetFileNameWithoutExtension(mc[2].Value).TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray())));
+          var to = GetFileNameWithoutExtension(mc[2].Value.Substring(1, mc[2].Value.Length-1)); // remove quotes
+          //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "to:" + to);
+          //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, line);
+          var newLine = line.Substring(0, mc[1].Index + 1) + to + line.Substring(mc[1].Index + mc[1].Value.Length - 1);
+          sb.Append(newLine);
+          //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, newLine);
         }
         else
         {
