@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public static readonly string MergedPluginFile = "Unity3DRider.cs";
 
-        private static readonly Regex ourVersionRegex = new Regex(@"//\s+(?:Version:)?\s*((?:[0-9]\.)+[0-9])", RegexOptions.Compiled);
+        private static readonly Regex ourVersionRegex = new Regex(@"//\s+(?:Version:)?\s*((?:[0-9]+\.)+[0-9]+)", RegexOptions.Compiled);
 
         public static readonly InstallationInfo ShouldNotInstall = new InstallationInfo(false, FileSystemPath.Empty,
             EmptyArray<FileSystemPath>.Instance, ZeroVersion);
