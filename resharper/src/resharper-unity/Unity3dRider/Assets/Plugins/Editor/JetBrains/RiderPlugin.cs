@@ -55,7 +55,12 @@ namespace Plugins.Editor.JetBrains
             var newPathLnks = folders.Select(b=>new DirectoryInfo(b)).Where(a => a.Exists).SelectMany(c=>c.GetFiles("*Rider*.lnk"));
             if (newPathLnks.Any())
             {
-              var newPath = newPathLnks.Select(newPathLnk=> new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName))).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
+              var newPath = newPathLnks
+                .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
+                .Where(fi => File.Exists(fi.FullName))
+                .OrderBy(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
+                .LastOrDefault();
+              
               if (!string.IsNullOrEmpty(newPath.FullName))
               {
                 /*RiderPlugin.Log(LoggingLevel.Verbose, "Update {0} to {1} product version: {2}", alreadySetPath, newPath, FileVersionInfo.GetVersionInfo(newPath.FullName).ProductVersion);
