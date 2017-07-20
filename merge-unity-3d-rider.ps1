@@ -52,3 +52,8 @@ foreach($line in $usings | Sort-Object | Get-Unique){
 foreach($line in $content){
     Add-Content $output $line
 }
+
+# normalize line endings, RIDER-7992
+$text = [IO.File]::ReadAllText($output)
+$text = $text -replace "`r`n", "`n"
+[IO.File]::WriteAllText($output, $text)
