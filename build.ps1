@@ -60,7 +60,7 @@ function GetBasePluginVersion($packagingPropsFile, $nodeName)
 }
 
 function SetPackagingPropsVersion($buildCounter){
-  $packagingPropsPath = ".\Packaging.props"
+  $packagingPropsPath = "./Packaging.props"
   $xml = [xml] (Get-Content $packagingPropsPath)
   # 2.0.0.0 -> 2.0.0.$buildCounter
   $xml.Project.PropertyGroup.Version = $xml.Project.PropertyGroup.Version -replace "((\d+\.)+)\d+", "`${1}$buildCounter"
@@ -71,7 +71,7 @@ function SetPackagingPropsVersion($buildCounter){
 
 # this is for the ease of local debugging
 function SetDefaultExtsInBuildGradle($version, $configuration){
-    $buildGradlePath = ".\rider\build.gradle"
+    $buildGradlePath = "./rider/build.gradle"
     $content = [IO.File]::ReadAllText($buildGradlePath)
 
     # ext.myArgs = "Release,1.0.0" -> ext.myArgs = "$configuration,$version"
