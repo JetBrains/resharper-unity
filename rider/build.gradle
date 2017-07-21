@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.1.1'
-    id 'org.jetbrains.intellij' version '0.2.14'
+    id 'org.jetbrains.intellij' version '0.2.15'
 }
 
 group 'com.jetbrains'
@@ -74,19 +74,4 @@ runIde {
         'rider.debug.mono.allowConnect': true,
         'idea.platform.prefix' : "Rider"
     ]
-}
-
-// The current 171.4089.265 snapshot doesn't set the executable bit for
-// lib/ReSharperHost/runtime.sh, and is missing macos-x64
-project.afterEvaluate {
-    if (System.getProperty('os.name').toLowerCase().contains('mac os')) {
-        def dep = file("$projectDir/build/rider$intellij.type-$intellij.version")
-        if (dep.exists()) {
-            exec {
-                it.commandLine 'chmod', '744', "$projectDir/build/rider$intellij.type-$intellij.version/lib/ReSharperHost/runtime.sh"
-            }
-        }
-
-        // TODO: Copy macos-x64 from somewhere. But where?
-    }
 }
