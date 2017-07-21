@@ -43,6 +43,9 @@ Packages/*
 [Bb]in
 [Oo]bj
 
+# Rider auto-generates .iml files. We don't need to track them, unlike most IntelliJ projects
+resharper/src/.idea/**/*.iml
+
 resharper/src/resharper-unity/_Generated/
 resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
