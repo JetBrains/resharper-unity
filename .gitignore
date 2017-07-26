@@ -1,8 +1,9 @@
-# Rider code
+# Common IntelliJ Platform excludes
 
 # User-specific stuff:
 **/.idea/**/workspace.xml
 **/.idea/**/tasks.xml
+**/.idea/shelf/*
 **/.idea/dictionaries
 
 # Sensitive or high-churn files:
@@ -13,17 +14,22 @@
 **/.idea/**/sqlDataSources.xml
 **/.idea/**/dynamic.xml
 
+# Rider code
+
 # Gradle:
+# NOTE: gradle.xml is often also ignored here. This is only required if the gradle.xml
+# contains path information, but we've got it configured to use the default wrapper.
+# See https://youtrack.jetbrains.com/issue/IDEA-55923 for some more information
 .gradle/
-**/.idea/**/gradle.xml
 **/.idea/**/libraries
+
+# NOTE: We normally include *.iml for JetBrains IDEs, but Gradle based projects auto generate
+# this on import, so we can happily ignore them. Don't do this for the Rider controlled project!
+rider/.idea/**/modules/*.iml
 
 # IntelliJ
 build/
 out/
-
-# .idea
-rider/.idea/**
 
 # ReSharper code
 #
@@ -37,8 +43,10 @@ Packages/*
 [Bb]in
 [Oo]bj
 
+# Rider auto-generates .iml files. We don't need to track them, unlike most IntelliJ projects
+resharper/src/.idea/**/*.iml
+
 resharper/src/resharper-unity/_Generated/
-resharper/src/.idea/**/workspace.xml
 resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp
@@ -51,4 +59,3 @@ UpgradeLog*.XML
 Thumbs.db
 Desktop.ini
 .DS_Store
-resharper/src/.idea/shelf/*
