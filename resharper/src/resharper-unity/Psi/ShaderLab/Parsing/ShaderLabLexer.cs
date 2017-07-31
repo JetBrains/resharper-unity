@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
         public void Start()
         {
-            Start(0, yy_buffer.Length, YYSHADERLAB);
+            Start(0, yy_buffer.Length, YYINITIAL);
         }
 
         public void Start(int startOffset, int endOffset, uint state)
