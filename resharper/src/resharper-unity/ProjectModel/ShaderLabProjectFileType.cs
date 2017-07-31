@@ -6,12 +6,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     public class ShaderLabProjectFileType : KnownProjectFileType
     {
         public new const string Name = "SHADERLAB";
-        public const string SHADER_EXTENSION = ".shader";
+        public const string SHADERLAB_EXTENSION = ".shader";
 
         public new static readonly ShaderLabProjectFileType Instance = null;
 
         public ShaderLabProjectFileType()
-            : base(Name, "ShaderLab", new[] {SHADER_EXTENSION})
+            : base(Name, "ShaderLab", new[] {SHADERLAB_EXTENSION})
         {
         }
     }

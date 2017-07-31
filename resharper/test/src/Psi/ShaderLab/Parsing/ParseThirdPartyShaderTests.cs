@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
 
     [Explicit]
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public abstract class ThirdPartyShaderTests : BaseTestWithSingleProject
     {
         // NOTE: Requires downloading the built in shaders from Unity

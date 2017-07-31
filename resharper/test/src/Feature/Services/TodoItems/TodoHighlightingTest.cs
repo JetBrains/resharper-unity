@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.TodoItems
 {
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class TodoHighlightingTest : ClrTodoHighlightingTestBase
     {
         protected override PsiLanguageType CompilerIdsLanguage => ShaderLabLanguage.Instance;

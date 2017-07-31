@@ -7,7 +7,7 @@ using JetBrains.ReSharper.TestFramework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon
 {
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public abstract class ShaderLabHighlightingTestBase : HighlightingTestBase
     {
         protected override PsiLanguageType CompilerIdsLanguage => ShaderLabLanguage.Instance;

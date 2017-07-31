@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ProjectModel
         public void ProjectFileTypeFromExtension()
         {
             var projectFileExtensions = Shell.Instance.GetComponent<IProjectFileExtensions>();
-            Assert.AreSame(ShaderLabProjectFileType.Instance, projectFileExtensions.GetFileType(ShaderLabProjectFileType.SHADER_EXTENSION));
+            Assert.AreSame(ShaderLabProjectFileType.Instance, projectFileExtensions.GetFileType(ShaderLabProjectFileType.SHADERLAB_EXTENSION));
         }
     }
 }

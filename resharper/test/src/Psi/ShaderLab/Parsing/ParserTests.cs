@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
 {
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ParserTests : ParserTestBase<ShaderLabLanguage>
     {
         protected override string RelativeTestDataPath => @"psi\shaderLab\parsing";

@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.ContextHighlighters
 {
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabMatchingBracesTest : ContextHighlighterTestBase
     {
         protected override string ExtraPath => @"Braces\ShaderLab";
