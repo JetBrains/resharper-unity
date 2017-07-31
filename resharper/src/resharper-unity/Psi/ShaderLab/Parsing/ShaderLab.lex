@@ -27,7 +27,7 @@ using JetBrains.Util;
 %{
   /* Offsets error messages by 61 lines */
 %}
-%include Chars.lex
+%include ../../Chars.lex
 
 %{ /* TODO: Does Unity support crazy Unicode chars? */ 
 %}

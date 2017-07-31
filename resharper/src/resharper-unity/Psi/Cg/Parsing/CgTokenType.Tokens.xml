@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- About this file
+
+     The root node can be anything. TokenGenerator doesn't care. It uses whatever the root node is,
+     and then looks for `BaseTokenNodeTypeIndex`, `TokenTypeNamespace` and `TokenTypeClass` child elements.
+     It will also look for `Import` elements which are used to add arbitrary using namespaces.
+     It will then loop over all other children of the root node, and treat them like sections. Each
+     child node must have a `NodeType` attribute, and optionally a `TokenElement` attribute. If there
+     is no `TokenElement` attribute, the token is generated as an instance of the `NodeType` class. If
+     there is a `TokenElement` attribute, then a new class is generated for the node type and the element.
+     There is no real difference between the two - identification is carried out based on reference equality
+     to a singleton instance and and generated types are private. The only difference is the derived classes
+     will have a smaller footprint - no text or node type fields. But that's negligible. On the flip side,
+     there will be fewer classes. Micro-optimisation swings and roundabouts.
+     When generating, TokenGenerator will look for `name` and `representation` attributes.
+-->
+<CgTokens>
+
+  <!-- Default is 1000 -->
+  <BaseTokenNodeTypeIndex>1000</BaseTokenNodeTypeIndex>
+  <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing</TokenTypeNamespace>
+  <TokenTypeClass>CgTokenType</TokenTypeClass>  
+</CgTokens>

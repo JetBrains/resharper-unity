@@ -28,6 +28,20 @@
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
     </PsiLanguageNames>
+    <PsiLanguageNames Include="Cg">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="Psi\Cg\Parsing\Cg.lex" />
+    <None Remove="Psi\Cg\Parsing\Cg_lex.depends" />
+    <Compile Update="Psi\Cg\Parsing\Cg_lex.cs">
+      <DependentUpon>Cg.lex</DependentUpon>
+    </Compile>
+    <TokenGenerator Include="Psi\Cg\Parsing\CgTokenType.Tokens.xml">
+      <OutputFile>Psi\Cg\Parsing\CgTokenType.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <Compile Update="Psi\Cg\Parsing\CgTokenType.Tokens.generated.cs">
+      <DependentUpon>CgTokenType.Tokens.xml</DependentUpon>
+    </Compile>
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Remove="Psi\ShaderLab\Parsing\ShaderLab_lex.depends" />
     <Compile Update="Psi\ShaderLab\Parsing\ShaderLab_lex.cs">
@@ -69,6 +83,9 @@
          version major, minor and patch numbers, e.g. 2017.1.0-* or it will match incorrectly
          See https://github.com/NuGet/Home/issues/4859-->
     <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(RiderJetBrainsPsiFeaturesVisualStudioVersion)" />
+    <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(RiderJetBrainsReSharperSDKVersion)" />
+    <PackageReference Include="JetBrains.Build.Platform.Tasks.ProxyToSolutionCompiledTask" Version="2.0.20170530.0" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />

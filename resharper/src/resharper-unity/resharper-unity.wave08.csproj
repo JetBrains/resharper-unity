@@ -18,6 +18,20 @@
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
     </PsiLanguageNames>
+    <PsiLanguageNames Include="Cg">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="Psi\Cg\Parsing\Cg.lex" />
+    <None Remove="Psi\Cg\Parsing\Cg_lex.depends" />
+    <Compile Update="Psi\Cg\Parsing\Cg_lex.cs">
+      <DependentUpon>Cg.lex</DependentUpon>
+    </Compile>
+    <TokenGenerator Include="Psi\Cg\Parsing\CgTokenType.Tokens.xml">
+      <OutputFile>Psi\Cg\Parsing\CgTokenType.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <Compile Update="Psi\Cg\Parsing\CgTokenType.Tokens.generated.cs">
+      <DependentUpon>CgTokenType.Tokens.xml</DependentUpon>
+    </Compile>
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Remove="Psi\ShaderLab\Parsing\ShaderLab_lex.depends" />
     <Compile Update="Psi\ShaderLab\Parsing\ShaderLab_lex.cs">
@@ -51,6 +65,7 @@
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
   </ItemGroup>
+  <!-- References -->   
   <!-- References -->
   <ItemGroup>
     <!-- It would be nice to use floating versions here during EAP, but that would require fixed

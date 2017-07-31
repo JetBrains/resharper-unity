@@ -24,8 +24,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
         int ILexer<int>.CurrentPosition
         {
-            get { return ((ILexer<int>) myLexer).CurrentPosition; }
-            set { ((ILexer<int>) myLexer).CurrentPosition = value; }
+            get => ((ILexer<int>) myLexer).CurrentPosition;
+            set => ((ILexer<int>) myLexer).CurrentPosition = value;
         }
     }
 }

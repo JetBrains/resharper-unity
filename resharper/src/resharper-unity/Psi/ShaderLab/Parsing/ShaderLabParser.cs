@@ -13,7 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     internal class ShaderLabParser : ShaderLabParserGenerated, IParser
     {
-        [NotNull] private readonly ILexer<int> myOriginalLexer;
+        [NotNull]
+        private readonly ILexer<int> myOriginalLexer;
+        
         private readonly CommonIdentifierIntern myIntern;
         private readonly ShaderLabPreProcessor myPreProcessor;
         private ITokenIntern myTokenIntern;
