@@ -20,18 +20,17 @@
     <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
     <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
+    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
 
     <!-- Cg support -->
     <fileTypeFactory id="Cg" implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgFileTypeFactory" />
     <lang.parserDefinition language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgParserDefinition" />
-    <lang.syntaxHighlighterFactory language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgSyntaxHighlighterProvider" />
+<!--    <lang.syntaxHighlighterFactory language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgSyntaxHighlighterProvider" /> -->
     <backend.markup.adapterFactory language="Cg" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
     <backend.actions.support language="Cg" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgIconProvider" />
-
-    <!-- ShaderLab / Cg shared -->
-    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
     <completion.contributor language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
+
   </extensions>
 
   <project-components>
