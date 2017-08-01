@@ -58,6 +58,7 @@ namespace Plugins.Editor.JetBrains
               var newPath = newPathLnks
                 .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
                 .Where(fi => File.Exists(fi.FullName))
+                .ToArray()
                 .OrderBy(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
                 .LastOrDefault();
               
