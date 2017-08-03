@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Linq;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
@@ -52,6 +53,32 @@ namespace Plugins.Editor.JetBrains
       File.WriteAllText(slnFile, sb.ToString());
     }
 
+    private static void AddPackagesConfig(string currentDirectory)
+    {
+      if (!Directory.GetFiles(currentDirectory, "packages.config").Any())
+      {
+        XmlDocument doc = new XmlDocument();
+        XmlNode docNode = doc.CreateXmlDeclaration("1.0", "utf-8", null);
+        doc.AppendChild(docNode);
+
+        XmlNode packages = doc.CreateElement("packages");
+        doc.AppendChild(packages);
+
+        XmlNode packagElement = doc.CreateElement("package");
+        var idAttribute = doc.CreateAttribute("id");
+        idAttribute.Value = "NUnit";
+        packagElement.Attributes.Append(idAttribute);
+        var version = doc.CreateAttribute("version");
+        version.Value = "3.5.0";
+        packagElement.Attributes.Append(version);
+        var targetFramework = doc.CreateAttribute("targetFramework");
+        targetFramework.Value = "net35";
+        packagElement.Attributes.Append(targetFramework);
+        packages.AppendChild(packagElement);
+        doc.Save(Path.Combine(currentDirectory, "packages.config"));
+      }
+    }
+
     private static string GetFileNameWithoutExtension(string path)
     {
       if (string.IsNullOrEmpty(path))
@@ -69,12 +96,31 @@ namespace Plugins.Editor.JetBrains
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
+      ChangeNunitReference(new FileInfo(projectFile).DirectoryName, projectContentElement, xmlns);
+      
 #if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself 
       SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
 #endif
       doc.Save(projectFile);
+    }
+
+    private static void ChangeNunitReference(string baseDir, XElement projectContentElement, XNamespace xmlns)
+    {
+      var el = projectContentElement
+        .Elements(xmlns+"ItemGroup")
+        .Elements(xmlns+"Reference")
+        .FirstOrDefault(a => a.Attribute("Include").Value=="nunit.framework");
+      if (el != null)
+      {
+        AddPackagesConfig(baseDir);
+        var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
+        if (hintPath != null)
+        {
+          hintPath.Value = @"packages\NUnit.3.5.0\lib\net35\nunit.framework.dll";
+        }
+      }
     }
 
 #if !UNITY_2017_1_OR_NEWER  // Unity 2017.1 and later has this features by itself
