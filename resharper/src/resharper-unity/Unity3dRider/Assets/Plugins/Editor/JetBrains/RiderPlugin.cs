@@ -74,7 +74,7 @@ namespace Plugins.Editor.JetBrains
           case OperatingSystemFamily.MacOSX:
             // "/Applications/*Rider*.app"
             //"~/Applications/JetBrains Toolbox/*Rider*.app"
-            string[] foldersMac = {"/Applications",Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications")};
+            string[] foldersMac = {"/Applications",Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications/JetBrains Toolbox")};
             var newPathMac = foldersMac.Select(b=>new DirectoryInfo(b)).Where(a => a.Exists)
               .SelectMany(c=>c.GetDirectories("*Rider*.app")).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
             if (newPathMac != null)
