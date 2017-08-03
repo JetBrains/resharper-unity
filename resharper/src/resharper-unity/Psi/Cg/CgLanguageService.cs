@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
@@ -30,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg
 
         public override IParser CreateParser(ILexer lexer, IPsiModule module, IPsiSourceFile sourceFile)
         {
-            throw new NotImplementedException();
+            return new DummyParser();
         }
 
         public override IEnumerable<ITypeDeclaration> FindTypeDeclarations(IFile file)
@@ -38,19 +40,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg
             return EmptyList<ITypeDeclaration>.Enumerable; // TODO: probably want to fix that
         }
 
-        public override ILanguageCacheProvider CacheProvider { get; }
-        
-        public override bool IsCaseSensitive { get; }
-        
-        public override bool SupportTypeMemberCache { get; }
-        
-        public override ITypePresenter TypePresenter { get; }
+        public override ILanguageCacheProvider CacheProvider => null;
+
+        public override bool IsCaseSensitive => true;
+
+        public override bool SupportTypeMemberCache => false;
+
+        public override ITypePresenter TypePresenter => DefaultTypePresenter.Instance;
 
         private class CgLexerFactory : ILexerFactory
         {
             public ILexer CreateLexer(IBuffer buffer)
             {
-                throw new System.NotImplementedException();
+                return new CgLexerGenerated(buffer);
+            }
+        }
+        
+        private class DummyParser : IParser
+        {
+            public IFile ParseFile()
+            {
+                return new DummyFile();
+            }
+
+            private class DummyFile : FileElementBase
+            {
+                public override NodeType NodeType => CgTokenType.BAD_CHARACTER;
+                public override PsiLanguageType Language => (PsiLanguageType) CgLanguage.Instance ?? UnknownLanguage.Instance;
             }
         }
     }
