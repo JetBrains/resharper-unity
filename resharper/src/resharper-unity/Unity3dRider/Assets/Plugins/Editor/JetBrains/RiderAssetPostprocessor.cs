@@ -78,19 +78,15 @@ namespace Plugins.Editor.JetBrains
     }
 
 #if !UNITY_2017_1_OR_NEWER  // Unity 2017.1 and later has this features by itself
-{
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
     private const string PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "smcs.rsp";
-    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
-      = Path.Combine(UnityEngine.Application.dataPath, PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
+    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
     private const string EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "gmcs.rsp";
-    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH
-      = Path.Combine(UnityEngine.Application.dataPath, EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
+    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
 
-}
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
       string configPath;
