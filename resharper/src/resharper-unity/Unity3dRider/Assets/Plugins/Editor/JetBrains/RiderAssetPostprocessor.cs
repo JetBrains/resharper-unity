@@ -67,6 +67,7 @@ namespace Plugins.Editor.JetBrains
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
+      FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
       ChangeNunitReference(new FileInfo(projectFile).DirectoryName, projectContentElement, xmlns);
       
@@ -76,6 +77,18 @@ namespace Plugins.Editor.JetBrains
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
 #endif
       doc.Save(projectFile);
+    }
+    
+    private static void FixSystemXml(XElement projectContentElement, XNamespace xmlns)
+    {
+      var el = projectContentElement
+        .Elements(xmlns+"ItemGroup")
+        .Elements(xmlns+"Reference")
+        .FirstOrDefault(a => a.Attribute("Include").Value=="System.XML");
+      if (el != null)
+      {
+        el.Attribute("Include").Value = "System.Xml";
+      }
     }
 
     private static void ChangeNunitReference(string baseDir, XElement projectContentElement, XNamespace xmlns)
