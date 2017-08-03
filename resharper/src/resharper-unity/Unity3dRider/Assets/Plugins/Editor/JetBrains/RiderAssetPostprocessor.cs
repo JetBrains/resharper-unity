@@ -90,7 +90,7 @@ namespace Plugins.Editor.JetBrains
         if (hintPath != null)
         {
           string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-          hintPath.Value = Path.Combine(unityAppBaseFolder, "Managed/nunit.framework.dll");
+          hintPath.Value = Path.Combine(unityAppBaseFolder, "Data/Managed/nunit.framework.dll");
         }
       }
     }
