@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi.Parsing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg
+namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
 {
     public class CgFilteringLexer : FilteringLexer, ILexer<int>
     {

@@ -1,4 +1,5 @@
 using System;
+using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.Util;
@@ -96,4 +97,4 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 
 %%
 
-<YYCG>   .                       { return CgTokenType.BAD_CHARACTER; }
+<YYCG>   .                       { return CgTokenNodeType.BAD_CHARACTER; }

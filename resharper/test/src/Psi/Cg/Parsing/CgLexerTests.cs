@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg.Parsing
 {
     [TestUnity]
     [TestFileExtension(CgProjectFileType.CG_EXTENSION)]
-    public class LexerTests : LexerTestBase
+    public class CgLexerTests : LexerTestBase
     {
         protected override string RelativeTestDataPath => @"psi\cg\lexing";
 

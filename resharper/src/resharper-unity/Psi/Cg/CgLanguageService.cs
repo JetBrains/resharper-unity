@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -65,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg
 
             private class DummyFile : FileElementBase
             {
-                public override NodeType NodeType => CgTokenType.BAD_CHARACTER;
+                public override NodeType NodeType => CgTokenNodeType.BAD_CHARACTER;
                 public override PsiLanguageType Language => (PsiLanguageType) CgLanguage.Instance ?? UnknownLanguage.Instance;
             }
         }

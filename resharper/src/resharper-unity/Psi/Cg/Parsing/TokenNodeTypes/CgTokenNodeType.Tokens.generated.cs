@@ -10,9 +10,9 @@ using JetBrains.Text;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes
 {
-  public partial class CgTokenType
+  public partial class CgTokenNodeType
   {
     private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1000;  }
 }
