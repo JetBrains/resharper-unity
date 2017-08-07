@@ -69,7 +69,11 @@ namespace Plugins.Editor.JetBrains
       FixTargetFrameworkVersion(projectContentElement, xmlns);
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
+      // Unity_5_6_OR_NEWER switched to nunit 3.5
+      // Fix helps only for Windows, on mac and linux I get https://youtrack.jetbrains.com/issue/RSRP-459932
+#if UNITY_5_6_OR_NEWER && UNITY_STANDALONE_WIN
       ChangeNunitReference(new FileInfo(projectFile).DirectoryName, projectContentElement, xmlns);
+#endif
       
 #if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself 
       SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
