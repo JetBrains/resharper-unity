@@ -71,7 +71,6 @@ prepareSandbox {
 runIde {
     systemProperties = [
         'rider.debug.mono.debug': true,
-        'rider.debug.mono.allowConnect': true,
-        'idea.platform.prefix' : "Rider"
+        'rider.debug.mono.allowConnect': true
     ]
 }
