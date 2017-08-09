@@ -239,7 +239,7 @@ namespace Plugins.Editor.JetBrains
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        targetFrameworkVersion.SetValue(RiderPlugin.TargetFrameworkVersion);
+        targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
       }
     }
 
