@@ -50,6 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("LOD")]
 
         [TestCase("Blending")]
+        [TestCase("BlendOp")] 
 
         [TestCase("LegacyLighting01")]
         [TestCase("LegacyLighting02")]
