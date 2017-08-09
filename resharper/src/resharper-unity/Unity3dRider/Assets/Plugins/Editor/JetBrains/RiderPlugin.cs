@@ -99,10 +99,10 @@ namespace Plugins.Editor.JetBrains
         return riderPath;
     }
 
-    public static bool TargetFrameworkVersion45
+    public static string TargetFrameworkVersion
     {
-      get { return EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true); }
-      set { EditorPrefs.SetBool("Rider_TargetFrameworkVersion45", value); }
+      get { return EditorPrefs.GetString("Rider_TargetFrameworkVersion", EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true)?"4.5":"3.5"); }
+      set { EditorPrefs.SetString("Rider_TargetFrameworkVersion", value); }
     }
 
     public enum LoggingLevel
@@ -467,16 +467,17 @@ namespace Plugins.Editor.JetBrains
       
       EditorGUI.BeginChangeCheck();
 
-      var help = @"For now target 4.5 is strongly recommended.
+      var help = @"TargetFramework >= 4.5 is strongly recommended.
  - Without 4.5:
     - Rider will fail to resolve System.Linq on Mac/Linux
     - Rider will fail to resolve Firebase Analytics.
  - With 4.5 Rider will show ambiguous references in UniRx.
 All those problems will go away after Unity upgrades to mono4.";
-      TargetFrameworkVersion45 =
-        EditorGUILayout.Toggle(
-          new GUIContent("TargetFrameworkVersion 4.5",
-            help), TargetFrameworkVersion45);
+           
+      TargetFrameworkVersion =
+        EditorGUILayout.TextField(
+          new GUIContent("TargetFrameworkVersion",
+            help), TargetFrameworkVersion);
       EditorGUILayout.HelpBox(help, MessageType.None);
 
       EditorGUI.EndChangeCheck();
