@@ -1239,11 +1239,17 @@ blendOpValue
 :
   NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
   // Treat Op enum value as an identifier, rather than a keyword
-  shaderLabIdentifier<OP_COLOR, OpColor>
+  (
+    shaderLabIdentifier<OP_COLOR, OpColor>
+    | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  )
   (
     COMMA<COMMA, Comma>
-    shaderLabIdentifier<OP_ALPHA, OpAlpha>
-  )?
+    (
+      shaderLabIdentifier<OP_ALPHA, OpAlpha>
+      | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+    )
+  )? 
 ;
 
 alphaToMaskCommand
