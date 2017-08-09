@@ -102,7 +102,20 @@ namespace Plugins.Editor.JetBrains
     public static string TargetFrameworkVersion
     {
       get { return EditorPrefs.GetString("Rider_TargetFrameworkVersion", EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true)?"4.5":"3.5"); }
-      set { EditorPrefs.SetString("Rider_TargetFrameworkVersion", value); }
+      set
+      {
+        var isVersion = true;
+        try
+        {
+          new Version(value); // mono 2.6 doesn't support Version.TryParse
+        }
+        catch (Exception)
+        {
+          isVersion = false;
+        }
+        if (isVersion)
+          EditorPrefs.SetString("Rider_TargetFrameworkVersion", value);
+      }
     }
 
     public enum LoggingLevel
