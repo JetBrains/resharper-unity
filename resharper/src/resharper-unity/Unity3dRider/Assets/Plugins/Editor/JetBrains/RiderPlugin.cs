@@ -99,19 +99,50 @@ namespace Plugins.Editor.JetBrains
         return riderPath;
     }
 
+    private static string TargetFrameworkVersionDefault
+    {
+      get
+      {
+        var defaultValue = "4.5";
+        if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
+        {
+          var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
+          if (dir.Exists)
+          {
+            var availableVersions = dir.GetDirectories("v*").Select(a => a.Name.Substring(1))
+              .Where(v => TryCatch(v, s => {} )).ToArray();
+            if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
+            {
+              defaultValue = availableVersions.OrderBy(a => new Version(a)).Last();
+            }
+          }
+        }
+        return defaultValue;
+      }
+    }
     public static string TargetFrameworkVersion
     {
-      get { return EditorPrefs.GetString("Rider_TargetFrameworkVersion", EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true)?"4.5":"3.5"); }
-      set
+      get
       {
-        try
-        {
-          new Version(value); // mono 2.6 doesn't support Version.TryParse
-          EditorPrefs.SetString("Rider_TargetFrameworkVersion", value);
-        }
-        catch (ArgumentException){} // can't put loggin here because ot fire on every symbol
-        catch (FormatException){}
+        return EditorPrefs.GetString("Rider_TargetFrameworkVersion", EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true)?TargetFrameworkVersionDefault:"3.5"); 
       }
+      set { TryCatch(value, val =>
+      {
+        EditorPrefs.SetString("Rider_TargetFrameworkVersion", val);
+      }); }
+    }
+
+    private static bool TryCatch(string value, Action<string> action)
+    {
+      try
+      {
+        new Version(value); // mono 2.6 doesn't support Version.TryParse
+        action(value);
+        return true;
+      }
+      catch (ArgumentException){} // can't put loggin here because ot fire on every symbol
+      catch (FormatException){}
+      return false;
     }
 
     public enum LoggingLevel
