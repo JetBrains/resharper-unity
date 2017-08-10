@@ -466,10 +466,17 @@ namespace Plugins.Editor.JetBrains
         int index = Array.IndexOf(alternatives,RiderPath);
         var alts = alternatives.Select(s => s.Replace("/",":")).ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
         RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index==-1?0:index, alts)];
-        if(EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), Enabled))
-          SetExternalScriptEditor(RiderPath); 
+        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), Enabled))
+        {
+          SetExternalScriptEditor(RiderPath);
+          EditorGUILayout.HelpBox("Unckecking will restore default external editor.", MessageType.None);
+        }
         else
+        {
           SetExternalScriptEditor(string.Empty);
+          EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
+        }
+        
       }
 
       var help = @"For now target 4.5 is strongly recommended.
