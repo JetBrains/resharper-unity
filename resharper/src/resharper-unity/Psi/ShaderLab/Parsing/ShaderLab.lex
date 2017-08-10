@@ -75,54 +75,70 @@ CG_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^C])|(ENDC[^G]))+)
 GLSL_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^G])|(ENDG[^L])|(ENDGL[^S])|(ENDGLS[^L]))+)
 HLSL_BLOCK=(([^E]|(E[^N])|(EN[^D])|(END[^H])|(ENDH[^L])|(ENDHL[^S])|(ENDHLS[^L]))+)
 
+PP_MESSAGE={NOT_NEW_LINE}*
+PP_DIGITS={DECIMAL_DIGIT}(({WHITESPACE})*{DECIMAL_DIGIT})*
+
+%state PPMESSAGE, PPDIGITS
+
 %state CGPROGRAM
 %state GLSLPROGRAM
 %state HLSLPROGRAM
 
 %%
 
-<YYINITIAL>   {WHITESPACE}            { return ShaderLabTokenType.WHITESPACE; }
-<YYINITIAL>   {NEW_LINE}              { return ShaderLabTokenType.NEW_LINE; }
+<YYINITIAL,PPMESSAGE,PPDIGITS>    {WHITESPACE}  { return ShaderLabTokenType.WHITESPACE; }
+<YYINITIAL>    {NEW_LINE}                       { return ShaderLabTokenType.NEW_LINE; }
 
-<YYINITIAL>   "="                     { return ShaderLabTokenType.EQUALS; }
-<YYINITIAL>   ","                     { return ShaderLabTokenType.COMMA; }
-<YYINITIAL>   "."                     { return ShaderLabTokenType.DOT; }
-<YYINITIAL>   "+"                     { return ShaderLabTokenType.PLUS; }
-<YYINITIAL>   "*"                     { return ShaderLabTokenType.MULTIPLY; }
-<YYINITIAL>   "("                     { return ShaderLabTokenType.LPAREN; }
-<YYINITIAL>   ")"                     { return ShaderLabTokenType.RPAREN; }
-<YYINITIAL>   "{"                     { return ShaderLabTokenType.LBRACE; }
-<YYINITIAL>   "}"                     { return ShaderLabTokenType.RBRACE; }
-<YYINITIAL>   "["                     { return ShaderLabTokenType.LBRACK; }
-<YYINITIAL>   "]"                     { return ShaderLabTokenType.RBRACK; }
+<YYINITIAL>     "="                             { return ShaderLabTokenType.EQUALS; }
+<YYINITIAL>     ","                             { return ShaderLabTokenType.COMMA; }
+<YYINITIAL>     "."                             { return ShaderLabTokenType.DOT; }
+<YYINITIAL>     "+"                             { return ShaderLabTokenType.PLUS; }
+<YYINITIAL>     "*"                             { return ShaderLabTokenType.MULTIPLY; }
+<YYINITIAL>     "("                             { return ShaderLabTokenType.LPAREN; }
+<YYINITIAL>     ")"                             { return ShaderLabTokenType.RPAREN; }
+<YYINITIAL>     "{"                             { return ShaderLabTokenType.LBRACE; }
+<YYINITIAL>     "}"                             { return ShaderLabTokenType.RBRACE; }
+<YYINITIAL>     "["                             { return ShaderLabTokenType.LBRACK; }
+<YYINITIAL>     "]"                             { return ShaderLabTokenType.RBRACK; }
+              
+<YYINITIAL>     "#warning"                      { yybegin(PPMESSAGE); return ShaderLabTokenType.PP_WARNING; }
+<YYINITIAL>     "#error"                        { yybegin(PPMESSAGE); return ShaderLabTokenType.PP_ERROR; }
+<YYINITIAL>     "#line"                         { yybegin(PPDIGITS); return ShaderLabTokenType.PP_LINE; }
 
-<YYINITIAL>   "CGPROGRAM"             { yybegin(CGPROGRAM); return ShaderLabTokenType.CG_PROGRAM; }
-<YYINITIAL>   "CGINCLUDE"             { yybegin(CGPROGRAM); return ShaderLabTokenType.CG_INCLUDE; }
+<PPMESSAGE>     {PP_MESSAGE}                    { yybegin(YYINITIAL); return ShaderLabTokenType.PP_MESSAGE; }
+<PPMESSAGE>     {NEW_LINE}                      { yybegin(YYINITIAL); return ShaderLabTokenType.NEW_LINE; }
 
-<YYINITIAL>   "GLSLPROGRAM"           { yybegin(GLSLPROGRAM); return ShaderLabTokenType.GLSL_PROGRAM; }
-<YYINITIAL>   "GLSLINCLUDE"           { yybegin(GLSLPROGRAM); return ShaderLabTokenType.GLSL_INCLUDE; }
+<PPDIGITS>      {PP_DIGITS}                     { /* Digits can contain whitespace. Lexing continues at end, but next char is swallowed */ return ShaderLabTokenType.PP_DIGITS; }
+<PPDIGITS>      {NEW_LINE}                      { yybegin(YYINITIAL); return ShaderLabTokenType.NEW_LINE; }
+<PPDIGITS>      .                               { yybegin(YYINITIAL); return ShaderLabTokenType.PP_SWALLOWED; }
 
-<YYINITIAL>   "HLSLPROGRAM"           { yybegin(HLSLPROGRAM); return ShaderLabTokenType.HLSL_PROGRAM; }
-<YYINITIAL>   "HLSLINCLUDE"           { yybegin(HLSLPROGRAM); return ShaderLabTokenType.HLSL_INCLUDE; }
+<YYINITIAL>     "CGPROGRAM"                     { yybegin(CGPROGRAM); return ShaderLabTokenType.CG_PROGRAM; }
+<YYINITIAL>     "CGINCLUDE"                     { yybegin(CGPROGRAM); return ShaderLabTokenType.CG_INCLUDE; }
 
-<YYINITIAL>   {INTEGER_LITERAL}       { return ShaderLabTokenType.NUMERIC_LITERAL; }
-<YYINITIAL>   {FLOAT_LITERAL}         { return ShaderLabTokenType.NUMERIC_LITERAL; }
-<YYINITIAL>   {STRING_LITERAL}        { return ShaderLabTokenType.STRING_LITERAL; }
+<YYINITIAL>     "GLSLPROGRAM"                   { yybegin(GLSLPROGRAM); return ShaderLabTokenType.GLSL_PROGRAM; }
+<YYINITIAL>     "GLSLINCLUDE"                   { yybegin(GLSLPROGRAM); return ShaderLabTokenType.GLSL_INCLUDE; }
 
-<YYINITIAL>   {UNFINISHED_STRING_LITERAL}        { return ShaderLabTokenType.STRING_LITERAL; }
-<YYINITIAL>   {SINGLE_LINE_COMMENT}   { return ShaderLabTokenType.END_OF_LINE_COMMENT; }
-<YYINITIAL>   {DELIMITED_COMMENT}     { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
-<YYINITIAL>   {UNFINISHED_DELIMITED_COMMENT}     { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
+<YYINITIAL>     "HLSLPROGRAM"                   { yybegin(HLSLPROGRAM); return ShaderLabTokenType.HLSL_PROGRAM; }
+<YYINITIAL>     "HLSLINCLUDE"                   { yybegin(HLSLPROGRAM); return ShaderLabTokenType.HLSL_INCLUDE; }
 
-<YYINITIAL>   {IDENTIFIER}            { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
+<YYINITIAL>     {INTEGER_LITERAL}               { return ShaderLabTokenType.NUMERIC_LITERAL; }
+<YYINITIAL>     {FLOAT_LITERAL}                 { return ShaderLabTokenType.NUMERIC_LITERAL; }
+<YYINITIAL>     {STRING_LITERAL}                { return ShaderLabTokenType.STRING_LITERAL; }
 
-<CGPROGRAM>   {CG_BLOCK}              { return ShaderLabTokenType.CG_CONTENT; }
-<CGPROGRAM>   "ENDCG"                 { yybegin(YYINITIAL); return ShaderLabTokenType.CG_END; }
+<YYINITIAL>     {UNFINISHED_STRING_LITERAL}     { return ShaderLabTokenType.STRING_LITERAL; }
+<YYINITIAL>     {SINGLE_LINE_COMMENT}           { return ShaderLabTokenType.END_OF_LINE_COMMENT; }
+<YYINITIAL>     {DELIMITED_COMMENT}             { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
+<YYINITIAL>     {UNFINISHED_DELIMITED_COMMENT}  { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
 
-<GLSLPROGRAM> {GLSL_BLOCK}            { return ShaderLabTokenType.CG_CONTENT; }
-<GLSLPROGRAM> "ENDGLSL"               { yybegin(YYINITIAL); return ShaderLabTokenType.GLSL_END; }
+<YYINITIAL>     {IDENTIFIER}                    { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
 
-<HLSLPROGRAM> {HLSL_BLOCK}            { return ShaderLabTokenType.CG_CONTENT; }
-<HLSLPROGRAM> "ENDHLSL"               { yybegin(YYINITIAL); return ShaderLabTokenType.HLSL_END; }
+<CGPROGRAM>     {CG_BLOCK}                      { return ShaderLabTokenType.CG_CONTENT; }
+<CGPROGRAM>     "ENDCG"                         { yybegin(YYINITIAL); return ShaderLabTokenType.CG_END; }
 
-<YYINITIAL>   .                       { return ShaderLabTokenType.BAD_CHARACTER; }
+<GLSLPROGRAM>   {GLSL_BLOCK}                    { return ShaderLabTokenType.CG_CONTENT; }
+<GLSLPROGRAM>   "ENDGLSL"                       { yybegin(YYINITIAL); return ShaderLabTokenType.GLSL_END; }
+
+<HLSLPROGRAM>   {HLSL_BLOCK}                    { return ShaderLabTokenType.CG_CONTENT; }
+<HLSLPROGRAM>   "ENDHLSL"                       { yybegin(YYINITIAL); return ShaderLabTokenType.HLSL_END; }
+
+<YYINITIAL>     .                               { return ShaderLabTokenType.BAD_CHARACTER; }

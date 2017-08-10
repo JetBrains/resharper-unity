@@ -24,7 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         }
 
         // An instance of a fixed length token node type that will be added to the PSI tree
-        private class FixedTokenElement : ShaderLabTokenBase
+        private abstract class FixedTokenElementBase : ShaderLabTokenBase
+        {
+        }
+
+        private class FixedTokenElement : FixedTokenElementBase
         {
             private readonly FixedTokenNodeType myTokenNodeType;
 

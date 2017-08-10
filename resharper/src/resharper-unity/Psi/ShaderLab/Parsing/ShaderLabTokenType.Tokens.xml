@@ -54,6 +54,14 @@
     <Token name="MINUS" representation="-" />
     <Token name="MULTIPLY" representation="*" />
   </Tokens>
+  
+  <!-- Specifying the TokenElement generates subtypes of NodeType and TokenElement,
+       and the filtered="true" overrides IsFiltered -->
+  <Tokens NodeType="FixedTokenNodeType" TokenElement="FixedTokenElementBase">
+    <Token name="PP_WARNING" representation="#warning" filtered="true" />
+    <Token name="PP_ERROR" representation="#error" filtered="true" />
+    <Token name="PP_LINE" representation="#line" filtered="true" />
+  </Tokens>
 
   <!-- TODO: Should these be a keyword or just a fixed token? -->
   <Commands NodeType="KeywordTokenNodeType">
