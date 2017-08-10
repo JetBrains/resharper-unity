@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.1.1'
-    id 'org.jetbrains.intellij' version '0.2.15'
+    id 'org.jetbrains.intellij' version '0.2.16'
 }
 
 group 'com.jetbrains'
@@ -66,11 +66,4 @@ prepareSandbox {
     from(nupkg_path, {
         into "$intellij.pluginName"
     })
-}
-
-runIde {
-    systemProperties = [
-        'rider.debug.mono.debug': true,
-        'rider.debug.mono.allowConnect': true
-    ]
 }

@@ -86,10 +86,50 @@ namespace Plugins.Editor.JetBrains
       return new string[0];
     }
 
-    public static bool TargetFrameworkVersion45
+    private static string TargetFrameworkVersionDefault
     {
-      get { return EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true); }
-      set { EditorPrefs.SetBool("Rider_TargetFrameworkVersion45", value); }
+      get
+      {
+        var defaultValue = "4.5";
+        if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
+        {
+          var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
+          if (dir.Exists)
+          {
+            var availableVersions = dir.GetDirectories("v*").Select(a => a.Name.Substring(1))
+              .Where(v => TryCatch(v, s => {} )).ToArray();
+            if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
+            {
+              defaultValue = availableVersions.OrderBy(a => new Version(a)).Last();
+            }
+          }
+        }
+        return defaultValue;
+      }
+    }
+    public static string TargetFrameworkVersion
+    {
+      get
+      {
+        return EditorPrefs.GetString("Rider_TargetFrameworkVersion", EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true)?TargetFrameworkVersionDefault:"3.5"); 
+      }
+      set { TryCatch(value, val =>
+      {
+        EditorPrefs.SetString("Rider_TargetFrameworkVersion", val);
+      }); }
+    }
+
+    private static bool TryCatch(string value, Action<string> action)
+    {
+      try
+      {
+        new Version(value); // mono 2.6 doesn't support Version.TryParse
+        action(value);
+        return true;
+      }
+      catch (ArgumentException){} // can't put loggin here because ot fire on every symbol
+      catch (FormatException){}
+      return false;
     }
 
     public static string RiderPath
@@ -479,16 +519,16 @@ namespace Plugins.Editor.JetBrains
         
       }
 
-      var help = @"For now target 4.5 is strongly recommended.
  - Without 4.5:
     - Rider will fail to resolve System.Linq on Mac/Linux
     - Rider will fail to resolve Firebase Analytics.
  - With 4.5 Rider will show ambiguous references in UniRx.
 All those problems will go away after Unity upgrades to mono4.";
-      TargetFrameworkVersion45 =
-        EditorGUILayout.Toggle(
-          new GUIContent("TargetFrameworkVersion 4.5",
-            help), TargetFrameworkVersion45);
+           
+      TargetFrameworkVersion =
+        EditorGUILayout.TextField(
+          new GUIContent("TargetFrameworkVersion",
+            help), TargetFrameworkVersion);
       EditorGUILayout.HelpBox(help, MessageType.None);
 
       EditorGUI.EndChangeCheck();
