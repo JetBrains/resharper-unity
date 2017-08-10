@@ -550,8 +550,6 @@ All those problems will go away after Unity upgrades to mono4.";
       EditorGUILayout.EndVertical();
     }
 
-    public static bool RiderIsDefaultEditor { get; set; }
-
     #region SystemInfoRiderPlugin
     static class SystemInfoRiderPlugin
     {
