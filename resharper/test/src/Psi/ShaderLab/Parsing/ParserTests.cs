@@ -69,6 +69,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("LegacyFog")]
 
         [TestCase("LegacyBindChannels")]
+
+        [TestCase("Preprocessor")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

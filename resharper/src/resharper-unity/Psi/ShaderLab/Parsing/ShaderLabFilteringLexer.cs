@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
         protected override bool Skip(TokenNodeType tokenType)
         {
-            return tokenType.IsWhitespace || tokenType.IsComment;
+            return tokenType.IsWhitespace || tokenType.IsComment || tokenType.IsFiltered;
         }
 
         int ILexer<int>.CurrentPosition
