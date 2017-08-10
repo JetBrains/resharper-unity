@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         public ShaderLabSupport(Lifetime lifetime, ISettingsStore settingsStore)
         {
             var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
-            IsParsingEnabled = boundStore.GetValueProperty(lifetime, (UnityPluginSettings s) => s.EnableShaderLabParsing);
+            IsParsingEnabled = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.EnableShaderLabParsing);
         }
     }
 }
