@@ -464,7 +464,8 @@ namespace Plugins.Editor.JetBrains
       if (alternatives.Any())
       {
         int index = Array.IndexOf(alternatives,RiderPath);
-        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index==-1?0:index, alternatives)];
+        var alts = alternatives.Select(s => s.Replace("/",":")).ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
+        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index==-1?0:index, alts)]; 
         if (GUILayout.Button("Set as a default editor"))
         {
           SetExternalScriptEditor(RiderPath);
