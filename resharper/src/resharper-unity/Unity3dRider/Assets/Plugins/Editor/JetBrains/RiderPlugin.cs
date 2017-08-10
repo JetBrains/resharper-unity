@@ -80,7 +80,7 @@ namespace Plugins.Editor.JetBrains
             {"/Applications", Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications/JetBrains Toolbox")};
           var newPathsMac = foldersMac.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
             .SelectMany(c => c.GetDirectories("*Rider*.app"))
-            .OrderByDescending(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).Select(a=>a.FullName).ToArray();
+            .Select(a=>a.FullName).ToArray();
           return newPathsMac;
       }
       return null;
