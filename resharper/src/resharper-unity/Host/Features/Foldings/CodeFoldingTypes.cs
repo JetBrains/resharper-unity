@@ -12,15 +12,6 @@ namespace JetBrains.ReSharper.Host.Features.Foldings
     {
         ICodeFoldingProcessor CreateProcessor();
     }
-
-    public interface ICodeFoldingProcessor : IRecursiveElementProcessor<IHighlightingConsumer>
-    {
-    }
-
-    public static class CodeFoldingAttributes
-    {
-        public const string DEFAULT_FOLDING_ATTRIBUTE = "ReSharper Default Folding";
-    }
 }
 
 #endif
