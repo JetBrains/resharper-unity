@@ -465,11 +465,11 @@ namespace Plugins.Editor.JetBrains
       {
         int index = Array.IndexOf(alternatives,RiderPath);
         var alts = alternatives.Select(s => s.Replace("/",":")).ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index==-1?0:index, alts)]; 
-        if (GUILayout.Button("Set as a default editor"))
-        {
-          SetExternalScriptEditor(RiderPath);
-        }  
+        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index==-1?0:index, alts)];
+        if(EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), Enabled))
+          SetExternalScriptEditor(RiderPath); 
+        else
+          SetExternalScriptEditor(string.Empty);
       }
 
       var help = @"For now target 4.5 is strongly recommended.
@@ -502,6 +502,8 @@ All those problems will go away after Unity upgrades to mono4.";
       
       EditorGUILayout.EndVertical();
     }
+
+    public static bool RiderIsDefaultEditor { get; set; }
 
     #region SystemInfoRiderPlugin
     static class SystemInfoRiderPlugin
