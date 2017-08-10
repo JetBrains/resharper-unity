@@ -83,7 +83,7 @@ namespace Plugins.Editor.JetBrains
             .Select(a=>a.FullName).ToArray();
           return newPathsMac;
       }
-      return null;
+      return new string[0];
     }
 
     public static bool TargetFrameworkVersion45
