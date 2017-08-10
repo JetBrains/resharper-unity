@@ -36,11 +36,11 @@
     <Compile Update="Psi\Cg\Parsing\Cg_lex.cs">
       <DependentUpon>Cg.lex</DependentUpon>
     </Compile>
-    <TokenGenerator Include="Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeType.Tokens.xml">
-      <OutputFile>Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeType.Tokens.generated.cs</OutputFile>
+    <TokenGenerator Include="Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
+      <OutputFile>Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
-    <Compile Update="Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeType.Tokens.generated.cs">
-      <DependentUpon>CgTokenNodeType.Tokens.xml</DependentUpon>
+    <Compile Update="Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
+      <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
     </Compile>
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Remove="Psi\ShaderLab\Parsing\ShaderLab_lex.depends" />

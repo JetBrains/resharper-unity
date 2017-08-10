@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Parsing;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes
 {
-  public partial class CgTokenNodeType
+  public partial class CgTokenNodeTypes
   {
     private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1000;  }
 }

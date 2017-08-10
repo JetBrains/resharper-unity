@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg
 
             private class DummyFile : FileElementBase
             {
-                public override NodeType NodeType => CgTokenNodeType.BAD_CHARACTER;
+                public override NodeType NodeType => CgTokenNodeTypes.BAD_CHARACTER;
                 public override PsiLanguageType Language => (PsiLanguageType) CgLanguage.Instance ?? UnknownLanguage.Instance;
             }
         }

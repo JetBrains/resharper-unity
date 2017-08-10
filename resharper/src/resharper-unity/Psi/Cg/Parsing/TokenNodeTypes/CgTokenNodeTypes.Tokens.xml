@@ -19,5 +19,5 @@
   <!-- Default is 1000 -->
   <BaseTokenNodeTypeIndex>1000</BaseTokenNodeTypeIndex>
   <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes</TokenTypeNamespace>
-  <TokenTypeClass>CgTokenNodeType</TokenTypeClass>  
+  <TokenTypeClass>CgTokenNodeTypes</TokenTypeClass>  
 </CgTokens>
