@@ -43,60 +43,47 @@ namespace Plugins.Editor.JetBrains
         if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath))
           return alreadySetPath;
 
-        switch (SystemInfoRiderPlugin.operatingSystemFamily)
-        {
-          case OperatingSystemFamily.Windows:
-            //"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains\*Rider*.lnk"
-            //%appdata%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox\*Rider*.lnk
-            string[] folders = {@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains", Path.Combine(
+        return RiderPath;
+    }
+
+    private static string[] GetAllRiderPaths()
+    {
+      switch (SystemInfoRiderPlugin.operatingSystemFamily)
+      {
+        case OperatingSystemFamily.Windows:
+          string[] folders =
+          {
+            @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains", Path.Combine(
               Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-              @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")};
+              @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")
+          };
 
-            var newPathLnks = folders.Select(b=>new DirectoryInfo(b)).Where(a => a.Exists).SelectMany(c=>c.GetFiles("*Rider*.lnk"));
-            if (newPathLnks.Any())
-            {
-              var newPath = newPathLnks
-                .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
-                .Where(fi => File.Exists(fi.FullName))
-                .ToArray()
-                .OrderBy(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
-                .LastOrDefault();
-              
-              if (!string.IsNullOrEmpty(newPath.FullName))
-              {
-                /*RiderPlugin.Log(LoggingLevel.Verbose, "Update {0} to {1} product version: {2}", alreadySetPath, newPath, FileVersionInfo.GetVersionInfo(newPath.FullName).ProductVersion);
-                SetExternalScriptEditor(newPath.FullName);*/
-                return newPath.FullName;
-              }
-            }
-            break;
+          var newPathLnks = folders.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
+            .SelectMany(c => c.GetFiles("*Rider*.lnk")).ToArray();
+          if (newPathLnks.Any())
+          {
+            var newPaths = newPathLnks
+              .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
+              .Where(fi => File.Exists(fi.FullName))
+              .ToArray()
+              .OrderByDescending(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
+              .Select(a=>a.FullName).ToArray();
 
-          case OperatingSystemFamily.MacOSX:
-            // "/Applications/*Rider*.app"
-            //"~/Applications/JetBrains Toolbox/*Rider*.app"
-            string[] foldersMac = {"/Applications",Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications/JetBrains Toolbox")};
-            var newPathMac = foldersMac.Select(b=>new DirectoryInfo(b)).Where(a => a.Exists)
-              .SelectMany(c=>c.GetDirectories("*Rider*.app")).LastOrDefault();
-            if (newPathMac != null)
-            {
-              if (!string.IsNullOrEmpty(newPathMac.FullName))
-              {
-                /*Log(LoggingLevel.Verbose, "Update {0} to {1}", alreadySetPath, newPathMac);
-                SetExternalScriptEditor(newPathMac.FullName);*/
-                return newPathMac.FullName;
-              }
-            }           
-            break;
-        }
+            return newPaths;
+          }
+          break;
 
-        var riderPath = GetExternalScriptEditor();
-        if (!RiderPathExist(riderPath))
-        {
-          Log(LoggingLevel.Warning, "Rider plugin for Unity is present, but Rider executable was not found. Please update 'External Script Editor'.");
-          return null;
-        }
-
-        return riderPath;
+        case OperatingSystemFamily.MacOSX:
+          // "/Applications/*Rider*.app"
+          //"~/Applications/JetBrains Toolbox/*Rider*.app"
+          string[] foldersMac =
+            {"/Applications", Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications/JetBrains Toolbox")};
+          var newPathsMac = foldersMac.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
+            .SelectMany(c => c.GetDirectories("*Rider*.app"))
+            .Select(a=>a.FullName).ToArray();
+          return newPathsMac;
+      }
+      return new string[0];
     }
 
     private static string TargetFrameworkVersionDefault
@@ -145,6 +132,12 @@ namespace Plugins.Editor.JetBrains
       return false;
     }
 
+    public static string RiderPath
+    {
+      get { return EditorPrefs.GetString("Rider_RiderPath", GetAllRiderPaths().FirstOrDefault()); }
+      set { EditorPrefs.SetString("Rider_RiderPath", value); }
+    }
+    
     public enum LoggingLevel
     {
       Verbose = 0,
@@ -507,7 +500,25 @@ namespace Plugins.Editor.JetBrains
       
       EditorGUI.BeginChangeCheck();
 
-      var help = @"TargetFramework >= 4.5 is strongly recommended.
+      var alternatives = GetAllRiderPaths();
+      if (alternatives.Any())
+      {
+        int index = Array.IndexOf(alternatives,RiderPath);
+        var alts = alternatives.Select(s => s.Replace("/",":")).ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
+        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index==-1?0:index, alts)];
+        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), Enabled))
+        {
+          SetExternalScriptEditor(RiderPath);
+          EditorGUILayout.HelpBox("Unckecking will restore default external editor.", MessageType.None);
+        }
+        else
+        {
+          SetExternalScriptEditor(string.Empty);
+          EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
+        }
+        
+      }
+      var help = @"For now target 4.5 is strongly recommended.
  - Without 4.5:
     - Rider will fail to resolve System.Linq on Mac/Linux
     - Rider will fail to resolve Firebase Analytics.
