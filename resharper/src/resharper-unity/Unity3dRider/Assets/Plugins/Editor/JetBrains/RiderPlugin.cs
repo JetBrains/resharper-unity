@@ -463,7 +463,8 @@ namespace Plugins.Editor.JetBrains
       var alternatives = GetAllRiderPaths();
       if (alternatives.Any())
       {
-        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", Array.IndexOf(alternatives,RiderPath), alternatives)];
+        int index = Array.IndexOf(alternatives,RiderPath);
+        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index==-1?0:index, alternatives)];
         if (GUILayout.Button("Set as a default editor"))
         {
           SetExternalScriptEditor(RiderPath);
