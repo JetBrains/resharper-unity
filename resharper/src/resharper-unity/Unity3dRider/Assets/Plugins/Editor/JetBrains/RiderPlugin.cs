@@ -461,13 +461,14 @@ namespace Plugins.Editor.JetBrains
       EditorGUI.BeginChangeCheck();
 
       var alternatives = GetAllRiderPaths();
-      GUI.enabled = alternatives.Any();
-      RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", Array.IndexOf(alternatives,RiderPath), alternatives)];
-      if (GUILayout.Button("Set as a default editor"))
+      if (alternatives.Any())
       {
-        SetExternalScriptEditor(RiderPath);
+        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", Array.IndexOf(alternatives,RiderPath), alternatives)];
+        if (GUILayout.Button("Set as a default editor"))
+        {
+          SetExternalScriptEditor(RiderPath);
+        }  
       }
-      GUI.enabled = true;
 
       var help = @"For now target 4.5 is strongly recommended.
  - Without 4.5:
