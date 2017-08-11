@@ -1,7 +1,5 @@
 ﻿<Project>
-
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
@@ -13,7 +11,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RELEASE;NET452;RIDER</DefineConstants>
   </PropertyGroup>
-
   <!-- ShaderLab language -->
   <PropertyGroup>
     <!-- Write to the same location as wave08.
@@ -31,24 +28,19 @@
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
     </PsiLanguageNames>
-
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Remove="Psi\ShaderLab\Parsing\ShaderLab_lex.depends" />
-
     <Compile Update="Psi\ShaderLab\Parsing\ShaderLab_lex.cs">
       <DependentUpon>ShaderLab.lex</DependentUpon>
     </Compile>
-
     <TokenGenerator Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.xml">
       <OutputFile>Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
     <Compile Update="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs">
       <DependentUpon>ShaderLabTokenType.Tokens.xml</DependentUpon>
     </Compile>
-
     <ParserGen Include="Psi\ShaderLab\Parsing\ShaderLab.psi" />
   </ItemGroup>
-
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
     <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderAssetPostprocessor.cs" />
@@ -71,23 +63,17 @@
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
   </ItemGroup>
-
   <!-- References -->
   <ItemGroup>
     <!-- It would be nice to use floating versions here during EAP, but that would require fixed
          version major, minor and patch numbers, e.g. 2017.1.0-* or it will match incorrectly
          See https://github.com/NuGet/Home/issues/4859-->
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(RiderJetBrainsPsiFeaturesVisualStudioVersion)" />
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(RiderJetBrainsReSharperSDKVersion)" />
-    <PackageReference Include="JetBrains.Build.Platform.Tasks.ProxyToSolutionCompiledTask" Version="2.0.20170530.0" />
-
+    <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
   </ItemGroup>
-
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-
   <!-- The original version of this can fail if wave08 is compiled first - the wrong
        PsiGen.exe is resolved from Assembly.LoadFrom. I don't think we really need to
        do anything here other than record the newly written files for clean - the new
@@ -97,7 +83,6 @@
     <ItemGroup>
       <!-- Clean prev run results (if more than one parsergen in this project). -->
       <ParserGenOutputSrc Remove="%(ParserGenOutputSrc.Identity)" />
-      
       <!-- Re-query for the files generated during the run. -->
       <ParserGenOutputSrc Include="$(ParserGenOutputBase)/Parsing/%(PsiLanguageNames.Identity)/**/*">
         <AutoGen>True</AutoGen>
@@ -108,12 +93,10 @@
       <ParserGenOutputSrc Include="$(ParserGenOutputBase)/Psi/Test/%(PsiLanguageNames.Identity)/**/*">
         <AutoGen>True</AutoGen>
       </ParserGenOutputSrc>
-
       <!-- Support incremental clean for our files. -->
       <FileWrites Include="%(ParserGenOutputSrc.FullPath)" />
     </ItemGroup>
   </Target>
-
   <ItemGroup>
     <!-- The JetBrains.Psi.Features.Tasks 108.0.20170615.212549-eap08 package incorrectly
          includes $(PsiGenToolsDir)/TokenGenerator.exe in the inputs, but that file doesn't

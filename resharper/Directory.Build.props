@@ -29,9 +29,7 @@
 
   <!-- Specify Rider SDK version in one place -->
   <PropertyGroup>
-    <RiderJetBrainsPsiFeaturesVisualStudioVersion>[108.0.20170709.150036-eap08]</RiderJetBrainsPsiFeaturesVisualStudioVersion>
-    <RiderJetBrainsReSharperSDKVersion>[2017.1.20170709.153610-eap08]</RiderJetBrainsReSharperSDKVersion>
-    <RiderJetBrainsReSharperSDKTestsVersion>[2017.1.20170709.153610-eap08]</RiderJetBrainsReSharperSDKTestsVersion>
+    <RiderSDKVersion>[2017.1.0-eap08]</RiderSDKVersion>
   </PropertyGroup>  
 
   <Import Project="..\Packaging.props" />

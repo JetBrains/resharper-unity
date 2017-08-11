@@ -13,26 +13,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         typeof(LogoThemedIcons.UnityLogo),
         Sequence = 0.01,
         ParentId = CodeEditingPage.PID)]
-    public class UnityPluginOptionsPage : OptionsPageBase
+    public class UnityOptionsPage : OptionsPageBase
     {
         public const string PID = "UnityPluginSettings";
         
-        public UnityPluginOptionsPage(Lifetime lifetime, OptionsSettingsSmartContext optionsSettingsSmartContext)
+        public UnityOptionsPage(Lifetime lifetime, OptionsSettingsSmartContext optionsSettingsSmartContext)
             : base(lifetime, optionsSettingsSmartContext)
         {
             Header("General");
             
-            CheckBox((UnityPluginSettings s) => s.InstallUnity3DRiderPlugin, "Install or update Rider plugin automatically");
+            CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin, "Install or update Rider plugin automatically");
             
             Header("ShaderLab");
-
-            CheckBox((UnityPluginSettings s) => s.EnableShaderLabParsing, "Parse ShaderLab files for syntax errors");
+            
+            CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion, "Enable simple word-based completion in ShaderLab files");
+            AddEmptyLine();
+            
+            CheckBox((UnitySettings s) => s.EnableShaderLabParsing,
+                "Parse ShaderLab files for syntax errors");
+            
             AddEmptyLine();
             AddText("Disable this to avoid incorrect syntax error highlighting in .shader files.");
             AddText("The solution must be reopened when changed.");
             AddEmptyLine();
             AddText("Note that CGPROGRAM blocks are not currently checked for syntax errors.");
-
+            
             FinishPage();
         }
     }

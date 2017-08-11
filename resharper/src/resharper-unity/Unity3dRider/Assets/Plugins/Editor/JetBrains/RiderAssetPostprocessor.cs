@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
-using Debug = UnityEngine.Debug;
 
 namespace Plugins.Editor.JetBrains
 {
@@ -68,13 +67,51 @@ namespace Plugins.Editor.JetBrains
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
+      FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
+      // Unity_5_6_OR_NEWER switched to nunit 3.5
+      // Fix helps only for Windows, on mac and linux I get https://youtrack.jetbrains.com/issue/RSRP-459932
+#if UNITY_5_6_OR_NEWER && UNITY_STANDALONE_WIN
+      ChangeNunitReference(new FileInfo(projectFile).DirectoryName, projectContentElement, xmlns);
+#endif
+      
 #if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself 
       SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
 #endif
       doc.Save(projectFile);
+    }
+    
+    private static void FixSystemXml(XElement projectContentElement, XNamespace xmlns)
+    {
+      var el = projectContentElement
+        .Elements(xmlns+"ItemGroup")
+        .Elements(xmlns+"Reference")
+        .FirstOrDefault(a => a.Attribute("Include").Value=="System.XML");
+      if (el != null)
+      {
+        el.Attribute("Include").Value = "System.Xml";
+      }
+    }
+
+    private static void ChangeNunitReference(string baseDir, XElement projectContentElement, XNamespace xmlns)
+    {
+      var el = projectContentElement
+        .Elements(xmlns+"ItemGroup")
+        .Elements(xmlns+"Reference")
+        .FirstOrDefault(a => a.Attribute("Include").Value=="nunit.framework");
+      if (el != null)
+      {
+        var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
+        if (hintPath != null)
+        {
+          string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+          var path = Path.Combine(unityAppBaseFolder, "Data/Managed/nunit.framework.dll");
+          if (new FileInfo(path).Exists)
+            hintPath.Value = path;
+        }
+      }
     }
 
 #if !UNITY_2017_1_OR_NEWER  // Unity 2017.1 and later has this features by itself
@@ -202,16 +239,7 @@ namespace Plugins.Editor.JetBrains
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        var version = new Version(targetFrameworkVersion.Value.Substring(1));
-        if (RiderPlugin.TargetFrameworkVersion45)
-        {
-          if (version < new Version(4, 5))
-            targetFrameworkVersion.SetValue("v4.5");
-        }
-        else
-        {
-          targetFrameworkVersion.SetValue("v3.5");
-        }
+        targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
       }
     }
 

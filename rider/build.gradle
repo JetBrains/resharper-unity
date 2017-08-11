@@ -1,13 +1,13 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.1.1'
-    id 'org.jetbrains.intellij' version '0.2.15'
+    id 'org.jetbrains.intellij' version '0.2.16'
 }
 
 group 'com.jetbrains'
 
 if (!ext.has("myArgs")){
-    ext.myArgs = "Release,2.0.3.9999"
+    ext.myArgs = "Debug,2.0.3.9999"
 }
 
 ext.args = myArgs.split(',')
@@ -44,7 +44,7 @@ intellij {
       localPath = dir.absolutePath
     }
     else {
-      version = '171.4456.1432' // 2017.1 RC
+      version = '171.4456.2169' // 2017.1 RTM
     }
 
     // Sources aren't available for Rider
@@ -66,12 +66,4 @@ prepareSandbox {
     from(nupkg_path, {
         into "$intellij.pluginName"
     })
-}
-
-runIde {
-    systemProperties = [
-        'rider.debug.mono.debug': true,
-        'rider.debug.mono.allowConnect': true,
-        'idea.platform.prefix' : "Rider"
-    ]
 }

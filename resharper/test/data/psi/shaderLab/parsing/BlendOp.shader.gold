@@ -1,0 +1,270 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Test")
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      IPropertiesCommand
+        ShaderLabTokenType+KeywordTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+        IPropertiesValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_Op)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_Op")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_ColorOp)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_ColorOp")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_AlphaOp)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_AlphaOp")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      ISubShaderCommand
+        ShaderLabTokenType+KeywordTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+        ISubShaderValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_Op)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+          Whitespace(type:WHITESPACE, text:	) spaces: "	"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_ColorOp)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_AlphaOp)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_ColorOp)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_AlphaOp)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_ColorOp)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_AlphaOp)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_ColorOp)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_AlphaOp)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IReferencedProperty
+                ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                IShaderLabIdentifier
+                  Identifier(type:IDENTIFIER, text:_Op)
+                ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
+          IBlendOpCommand
+            ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IBlendOpValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Min)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+          IRegularPassDef
+            ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+

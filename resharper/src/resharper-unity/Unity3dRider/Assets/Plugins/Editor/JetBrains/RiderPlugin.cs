@@ -16,7 +16,7 @@ namespace Plugins.Editor.JetBrains
 {
   [InitializeOnLoad]
   public static class RiderPlugin
-  {   
+  {
     private static bool Initialized;
     private static string SlnFile;
 
@@ -24,8 +24,8 @@ namespace Plugins.Editor.JetBrains
     {
       if (level < SelectedLoggingLevel) return;
 
-      var text = "[Rider] [" + level + "] " +  initialText;
-      
+      var text = "[Rider] [" + level + "] " + initialText;
+
       switch (level)
       {
         case LoggingLevel.Warning:
@@ -36,72 +36,117 @@ namespace Plugins.Editor.JetBrains
           break;
       }
     }
-    
+
     private static string GetDefaultApp()
     {
-        var alreadySetPath = GetExternalScriptEditor();
-        if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath))
-          return alreadySetPath;
+      var alreadySetPath = GetExternalScriptEditor();
+      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath))
+        return alreadySetPath;
 
-        switch (SystemInfoRiderPlugin.operatingSystemFamily)
-        {
-          case OperatingSystemFamily.Windows:
-            //"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains\*Rider*.lnk"
-            //%appdata%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox\*Rider*.lnk
-            string[] folders = {@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains", Path.Combine(
-              Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-              @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")};
-
-            var newPathLnks = folders.Select(b=>new DirectoryInfo(b)).Where(a => a.Exists).SelectMany(c=>c.GetFiles("*Rider*.lnk"));
-            if (newPathLnks.Any())
-            {
-              var newPath = newPathLnks
-                .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
-                .Where(fi => File.Exists(fi.FullName))
-                .OrderBy(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
-                .LastOrDefault();
-              
-              if (!string.IsNullOrEmpty(newPath.FullName))
-              {
-                /*RiderPlugin.Log(LoggingLevel.Verbose, "Update {0} to {1} product version: {2}", alreadySetPath, newPath, FileVersionInfo.GetVersionInfo(newPath.FullName).ProductVersion);
-                SetExternalScriptEditor(newPath.FullName);*/
-                return newPath.FullName;
-              }
-            }
-            break;
-
-          case OperatingSystemFamily.MacOSX:
-            // "/Applications/*Rider*.app"
-            //"~/Applications/JetBrains Toolbox/*Rider*.app"
-            string[] foldersMac = {"/Applications",Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications")};
-            var newPathMac = foldersMac.Select(b=>new DirectoryInfo(b)).Where(a => a.Exists)
-              .SelectMany(c=>c.GetDirectories("*Rider*.app")).OrderBy(a => FileVersionInfo.GetVersionInfo(a.FullName).ProductVersion).LastOrDefault();
-            if (newPathMac != null)
-            {
-              if (!string.IsNullOrEmpty(newPathMac.FullName))
-              {
-                /*Log(LoggingLevel.Verbose, "Update {0} to {1}", alreadySetPath, newPathMac);
-                SetExternalScriptEditor(newPathMac.FullName);*/
-                return newPathMac.FullName;
-              }
-            }           
-            break;
-        }
-
-        var riderPath = GetExternalScriptEditor();
-        if (!RiderPathExist(riderPath))
-        {
-          Log(LoggingLevel.Warning, "Rider plugin for Unity is present, but Rider executable was not found. Please update 'External Script Editor'.");
-          return null;
-        }
-
-        return riderPath;
+      return RiderPath;
     }
 
-    public static bool TargetFrameworkVersion45
+    private static string[] GetAllRiderPaths()
     {
-      get { return EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true); }
-      set { EditorPrefs.SetBool("Rider_TargetFrameworkVersion45", value); }
+      switch (SystemInfoRiderPlugin.operatingSystemFamily)
+      {
+        case OperatingSystemFamily.Windows:
+          string[] folders =
+          {
+            @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains", Path.Combine(
+              Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+              @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")
+          };
+
+          var newPathLnks = folders.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
+            .SelectMany(c => c.GetFiles("*Rider*.lnk")).ToArray();
+          if (newPathLnks.Any())
+          {
+            var newPaths = newPathLnks
+              .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
+              .Where(fi => File.Exists(fi.FullName))
+              .ToArray()
+              .OrderByDescending(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
+              .Select(a => a.FullName).ToArray();
+
+            return newPaths;
+          }
+          break;
+
+        case OperatingSystemFamily.MacOSX:
+          // "/Applications/*Rider*.app"
+          //"~/Applications/JetBrains Toolbox/*Rider*.app"
+          string[] foldersMac =
+          {
+            "/Applications", Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications/JetBrains Toolbox")
+          };
+          var newPathsMac = foldersMac.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
+            .SelectMany(c => c.GetDirectories("*Rider*.app"))
+            .Select(a => a.FullName).ToArray();
+          return newPathsMac;
+      }
+      return new string[0];
+    }
+
+    private static string TargetFrameworkVersionDefault
+    {
+      get
+      {
+        var defaultValue = "4.5";
+        if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
+        {
+          var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
+          if (dir.Exists)
+          {
+            var availableVersions = dir.GetDirectories("v*").Select(a => a.Name.Substring(1))
+              .Where(v => TryCatch(v, s => { })).ToArray();
+            if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
+            {
+              defaultValue = availableVersions.OrderBy(a => new Version(a)).Last();
+            }
+          }
+        }
+        return defaultValue;
+      }
+    }
+
+    public static string TargetFrameworkVersion
+    {
+      get
+      {
+        return EditorPrefs.GetString("Rider_TargetFrameworkVersion",
+          EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true) ? TargetFrameworkVersionDefault : "3.5");
+      }
+      set
+      {
+        TryCatch(value, val =>
+        {
+          EditorPrefs.SetString("Rider_TargetFrameworkVersion", val);
+        });
+      }
+    }
+
+    private static bool TryCatch(string value, Action<string> action)
+    {
+      try
+      {
+        new Version(value); // mono 2.6 doesn't support Version.TryParse
+        action(value);
+        return true;
+      }
+      catch (ArgumentException)
+      {
+      } // can't put loggin here because ot fire on every symbol
+      catch (FormatException)
+      {
+      }
+      return false;
+    }
+
+    public static string RiderPath
+    {
+      get { return EditorPrefs.GetString("Rider_RiderPath", GetAllRiderPaths().FirstOrDefault()); }
+      set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
 
     public enum LoggingLevel
@@ -110,13 +155,13 @@ namespace Plugins.Editor.JetBrains
       Info = 1,
       Warning = 2
     }
-    
+
     public static LoggingLevel SelectedLoggingLevel
     {
       get { return (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1); }
       set { EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value); }
     }
-    
+
     public static bool RiderInitializedOnce
     {
       get { return EditorPrefs.GetBool("RiderInitializedOnce", false); }
@@ -135,9 +180,9 @@ namespace Plugins.Editor.JetBrains
     static RiderPlugin()
     {
       var riderPath = GetDefaultApp();
-      if (!RiderPathExist(riderPath)) 
+      if (!RiderPathExist(riderPath))
         return;
-      
+
       AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
       if (!RiderInitializedOnce)
       {
@@ -162,7 +207,7 @@ namespace Plugins.Editor.JetBrains
       Log(LoggingLevel.Info, "Rider plugin initialized. You may change the amount of Rider Debug output via Edit -> Preferences -> Rider -> Logging Level");
       Initialized = true;
     }
-    
+
     private static void AddRiderToRecentlyUsedScriptApp(string userAppPath, string recentAppsKey)
     {
       for (int index = 0; index < 10; ++index)
@@ -173,7 +218,7 @@ namespace Plugins.Editor.JetBrains
       }
       EditorPrefs.SetString(recentAppsKey + 9, userAppPath);
     }
-    
+
     private static string GetExternalScriptEditor()
     {
       return EditorPrefs.GetString("kScriptsDefaultApp");
@@ -193,7 +238,8 @@ namespace Plugins.Editor.JetBrains
       if (!fileInfo.Name.ToLower().Contains("rider"))
         return false;
       var directoryInfo = new DirectoryInfo(path);
-      return fileInfo.Exists || (SystemInfoRiderPlugin.operatingSystemFamily==OperatingSystemFamily.MacOSX && directoryInfo.Exists);
+      return fileInfo.Exists || (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.MacOSX &&
+                                 directoryInfo.Exists);
     }
 
     /// <summary>
@@ -245,21 +291,22 @@ namespace Plugins.Editor.JetBrains
 
         // determine asset that has been double clicked in the project view
         var selected = EditorUtility.InstanceIDToObject(instanceID);
-        
+
         var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
         if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
-            selected.GetType().ToString() == "UnityEngine.Shader" ||
-            (selected.GetType().ToString() == "UnityEngine.TextAsset" && 
+              selected.GetType().ToString() == "UnityEngine.Shader" ||
+              (selected.GetType().ToString() == "UnityEngine.TextAsset" &&
 #if UNITY_5 || UNITY_5_5_OR_NEWER
-            EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
+               EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
 #else
             EditorSettings.externalVersionControl.Contains(Path.GetExtension(assetFilePath).Substring(1))
-#endif 
-            ))) 
+#endif
+              )))
           return false;
-        
+
         SyncSolution(); // added to handle opening file, which was just recently created.
-        if (!DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
+        if (!DetectPortAndOpenFile(line, assetFilePath,
+          SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
         {
           var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
           return CallRider(args);
@@ -276,12 +323,12 @@ namespace Plugins.Editor.JetBrains
       if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
       {
         var process = GetRiderProcess();
-        if (process == null) 
-          return false;  
+        if (process == null)
+          return false;
       }
-      
+
       int[] ports = Enumerable.Range(63342, 20).ToArray();
-      var res = ports.Any(port => 
+      var res = ports.Any(port =>
       {
         var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
         var aboutUri = new Uri(aboutUrl);
@@ -400,7 +447,8 @@ namespace Plugins.Editor.JetBrains
         string processName;
         try
         {
-          processName = p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
+          processName =
+            p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
         }
         catch (Exception)
         {
@@ -457,25 +505,38 @@ namespace Plugins.Editor.JetBrains
     static void RiderPreferencesItem()
     {
       EditorGUILayout.BeginVertical();
-
-      var url = "https://github.com/JetBrains/resharper-unity";
-      if (GUILayout.Button(url))
-      {
-        Application.OpenURL(url);
-      }    
-      
       EditorGUI.BeginChangeCheck();
 
-      var help = @"For now target 4.5 is strongly recommended.
+      var alternatives = GetAllRiderPaths();
+      if (alternatives.Any())
+      {
+        int index = Array.IndexOf(alternatives, RiderPath);
+        var alts = alternatives.Select(s => s.Replace("/", ":"))
+          .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
+        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
+        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), Enabled))
+        {
+          SetExternalScriptEditor(RiderPath);
+          EditorGUILayout.HelpBox("Unckecking will restore default external editor.", MessageType.None);
+        }
+        else
+        {
+          SetExternalScriptEditor(string.Empty);
+          EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
+        }
+
+      }
+      var help = @"TargetFramework >= 4.5 is strongly recommended.
  - Without 4.5:
     - Rider will fail to resolve System.Linq on Mac/Linux
     - Rider will fail to resolve Firebase Analytics.
  - With 4.5 Rider will show ambiguous references in UniRx.
 All those problems will go away after Unity upgrades to mono4.";
-      TargetFrameworkVersion45 =
-        EditorGUILayout.Toggle(
-          new GUIContent("TargetFrameworkVersion 4.5",
-            help), TargetFrameworkVersion45);
+
+      TargetFrameworkVersion =
+        EditorGUILayout.TextField(
+          new GUIContent("TargetFrameworkVersion",
+            help), TargetFrameworkVersion);
       EditorGUILayout.HelpBox(help, MessageType.None);
 
       EditorGUI.EndChangeCheck();
@@ -488,13 +549,32 @@ All those problems will go away after Unity upgrades to mono4.";
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
       EditorGUI.EndChangeCheck();
-      
+
+      var url = "https://github.com/JetBrains/resharper-unity";
+      LinkButton(url, url);
+
 /*      if (GUILayout.Button("reset RiderInitializedOnce = false"))
       {
         RiderInitializedOnce = false;
       }*/
-      
+
       EditorGUILayout.EndVertical();
+    }
+
+    private static void LinkButton(string caption, string url)
+    {
+      var style = GUI.skin.label;
+      style.richText = true;
+      caption = string.Format("<color=#0000FF>{0}</color>", caption);
+
+      bool bClicked = GUILayout.Button(caption, style);
+
+      var rect = GUILayoutUtility.GetLastRect();
+      rect.width = style.CalcSize(new GUIContent(caption)).x;
+      EditorGUIUtility.AddCursorRect(rect, MouseCursor.Link);
+
+      if (bClicked)
+        Application.OpenURL(url);
     }
 
     #region SystemInfoRiderPlugin

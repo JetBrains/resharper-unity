@@ -19,7 +19,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.UsageChecking
         protected override void DoTest(IProject project)
         {
             var swea = SolutionAnalysisService.GetInstance(Solution);
+            #if RIDER
+            using (TestPresentationMap.Cookie())
+            #else
             using (new TestPresentationMap())
+            #endif
             using (TestPsiConfigurationSettings.Instance.PersistCachesCookie())
             using (swea.RunAnalysisCookie())
             {

@@ -10,6 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_BIND_COMMAND = "Bind command";
         public const string IDS_BIND_VALUE = "Bind value";
         public const string IDS_BLEND_FACTOR = "Blend factor";
+        public const string IDS_BLEND_OP_VALUE = "Blend op value";
         public const string IDS_BLEND_VALUE = "Blend value";
         public const string IDS_BLOCK_COMMAND = "Block command";
         public const string IDS_BLOCK_VALUE = "Block value";
@@ -32,6 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_PASS_DEF = "pass definition";
         public const string IDS_PREPROCESSOR_DIRECTIVE = "preprocessor directive";
         public const string IDS_PROPERTY_TYPE = "property type";
+        public const string IDS_REFERENCED_PROPERTY = "referenced property";
         public const string IDS_RENDER_STATE_COMMAND = "render state command";
         public const string IDS_REGULAR_PASS_CONTENTS = "Pass command";
         public const string IDS_SHADER_CONTENTS = "Shader contents";

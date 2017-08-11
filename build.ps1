@@ -119,16 +119,13 @@ function SetPluginVersion($file, $version)
   $xml.Save($file)
 }
 
-function SetRiderSDKVersions($sdkPackageVersion, $sdkTestsPackageVersion, $psiFeaturesVisualStudioVersion)
+function SetRiderSDKVersions($sdkPackageVersion)
 {
   Write-Host "Setting versions:"
-  Write-Host "  JetBrains.ReSharper.SDK -> $sdkPackageVersion"
-  Write-Host "  JetBrains.ReSharper.SDK.Tests -> $sdkTestsPackageVersion"
-  Write-Host "  JetBrains.Psi.Features.VisualStudio -> $psiFeaturesVisualStudioVersion"  
+  Write-Host "  JetBrains.Rider.SDK -> $sdkPackageVersion"
+  Write-Host "  JetBrains.Rider.SDK.Tests -> $sdkPackageVersion"  
 
-  SetPropertyValue  "resharper/Directory.Build.props" "RiderJetBrainsPsiFeaturesVisualStudioVersion" "[$psiFeaturesVisualStudioVersion]"
-  SetPropertyValue  "resharper/Directory.Build.props" "RiderJetBrainsReSharperSDKVersion" "[$sdkPackageVersion]"
-  SetPropertyValue  "resharper/Directory.Build.props" "RiderJetBrainsReSharperSDKTestsVersion" "[$sdkTestsPackageVersion]"
+  SetPropertyValue  "resharper/Directory.Build.props" "RiderSDKVersion" "[$sdkPackageVersion]"  
 }
 
 function GetPackageVersionFromFolder($folder, $name) {
@@ -217,10 +214,8 @@ function ServiceMessage($type, $message){
 }
 
 if ($Source) {
-  $sdkPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK"
-  $sdkTestsPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.ReSharper.SDK.Tests"
-  $psiFeaturesVisualStudioVersion = GetPackageVersionFromFolder $Source "JetBrains.Psi.Features.VisualStudio"
-  SetRiderSDKVersions -sdkPackageVersion $sdkPackageVersion -sdkTestsPackageVersion $sdkTestsPackageVersion -psiFeaturesVisualStudioVersion $psiFeaturesVisualStudioVersion
+  $sdkPackageVersion = GetPackageVersionFromFolder $Source "JetBrains.Rider.SDK"
+  SetRiderSDKVersions -sdkPackageVersion $sdkPackageVersion
 }
 
 if (!$RunIde){

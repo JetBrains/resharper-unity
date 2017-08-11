@@ -10,7 +10,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RELEASE;NET452;WAVE08</DefineConstants>
   </PropertyGroup>
-
   <!-- ShaderLab language -->
   <PropertyGroup>
     <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
@@ -19,24 +18,19 @@
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
     </PsiLanguageNames>
-
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Remove="Psi\ShaderLab\Parsing\ShaderLab_lex.depends" />
-
     <Compile Update="Psi\ShaderLab\Parsing\ShaderLab_lex.cs">
       <DependentUpon>ShaderLab.lex</DependentUpon>
     </Compile>
-
     <TokenGenerator Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.xml">
       <OutputFile>Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
     <Compile Update="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs">
       <DependentUpon>ShaderLabTokenType.Tokens.xml</DependentUpon>
     </Compile>
-
     <ParserGen Include="Psi\ShaderLab\Parsing\ShaderLab.psi" />
   </ItemGroup>
-
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
     <Folder Include="Rider" />
@@ -57,18 +51,16 @@
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
   </ItemGroup>
-
-  <!-- References -->
+  <!-- References -->   
   <ItemGroup>
     <!-- It would be nice to use floating versions here during EAP, but that would require fixed
          version major, minor and patch numbers, e.g. 2017.1.0-* or it will match incorrectly
          See https://github.com/NuGet/Home/issues/4859 -->
     <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="108.0.20170428.80128" />
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170428.83402" />
-
     <!-- Temp workaround until it's added as a dependency into JB.RS.SDK -->
     <PackageReference Include="JetBrains.Build.Platform.Tasks.ProxyToSolutionCompiledTask" Version="2.0.20170530.0" />
-
+      
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
