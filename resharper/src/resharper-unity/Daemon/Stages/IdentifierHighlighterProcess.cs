@@ -37,6 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages
             }
 
             // TODO: Resolve problem highlighter
+            // That is, highlight problems with resolve
 
             // TODO: Move to ShaderLabSyntaxHighlightingStage
             // (Not Rider's syntax highlighting though!)
@@ -54,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages
                 {
                     if (range.TextRange.EndOffset < range.Document.GetTextLength())
                         range = range.ExtendRight(1);
-                    else
+                    else if (range.TextRange.StartOffset > 0)
                         range = range.ExtendLeft(1);
                 }
                 context.AddHighlighting(new ShaderLabSyntaxError(errorElement.ErrorDescription, range));

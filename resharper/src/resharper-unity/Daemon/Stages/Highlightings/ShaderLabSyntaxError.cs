@@ -3,7 +3,9 @@ using JetBrains.ReSharper.Daemon.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 
 // TODO: Where should this live?
+// Also, where does it get used?
 [assembly: RegisterStaticHighlightingsGroup("ShaderLabErrors", "ShaderLab Errors", true)]
+[assembly: RegisterStaticHighlightingsGroup("ShaderLabWarnings", "ShaderLab Warnings", true)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {

@@ -642,23 +642,26 @@ interface preprocessorDirective
 
 ppWarningDirective
 :
-  PP_WARNING<PP_WARNING, Warning>
+  PP_WARNING<PP_DIRECTIVE, Directive>
   WHITESPACE*
-  PP_MESSAGE<PP_MESSAGE, Message>
+  // Message isn't optional, but I want control of the error message if it's missing
+  PP_MESSAGE<PP_MESSAGE, Message>?
 ;
 
 ppErrorDirective
 :
-  PP_ERROR<PP_ERROR, Error>
+  PP_ERROR<PP_DIRECTIVE, Directive>
   WHITESPACE*
-  PP_MESSAGE<PP_MESSAGE, Message>
+  // Message isn't optional, but I want control of the error message if it's missing
+  PP_MESSAGE<PP_MESSAGE, Message>?
 ;
 
 ppLineDirective
 :
-  PP_LINE<PP_LINE, Line>
-  WHITESPACE+
-  PP_DIGITS<PP_DIGITS, Digits>
+  PP_LINE<PP_DIRECTIVE, Directive>
+  WHITESPACE*
+  // Missing digits is legal, and treated the same as 0
+  PP_DIGITS<PP_DIGITS, Digits>?
   WHITESPACE*
   // The #line directive keeps reading until it's out of digits, but that last non-digit
   // character (usually a new line) gets swallowed. We can track it and warn 

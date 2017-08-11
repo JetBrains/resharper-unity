@@ -125,6 +125,25 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Errors!) spaces: "// Errors!"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPpErrorDirective
+            ShaderLabTokenType+PpErrorTokenElement(type:PP_ERROR, text:#error)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPpWarningDirective
+            ShaderLabTokenType+PpWarningTokenElement(type:PP_WARNING, text:#warning)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Valid, means 0) spaces: "// Valid, means 0"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPpLineDirective
+            ShaderLabTokenType+PpLineTokenElement(type:PP_LINE, text:#line)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

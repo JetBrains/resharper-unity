@@ -1,23 +1,23 @@
-#error This is an error!
+﻿|#error|(0) This is an error!
 
-#warning This is a warning!
+|#warning|(1) This is a warning!
 
 #line 23
 {caret}Shader "Unlit/SingleColor"
 {
-    #error Another error!
-    #warning And another warning!
+    |#error|(2) Another error!
+    |#warning|(3) And another warning!
     #line 34 23 23 32 
     Properties
     {
         // Color property for material inspector, default to white
         #ValidName ("Another Color", Color) = (1,1,1,1)
-        #warning This is not a valid name!
+        |#warning|(4) This is not a valid name!
     }
     SubShader
     {
         // Unity's lexer doesn't require a new line, but it does eat the last character
-        #line 23 PPass
+        #line 23 |P|(5)Pass
         {
             CGPROGRAM
             #pragma vertex vert
@@ -43,10 +43,20 @@
             ENDCG
         }
     // Errors!
-    #error
-    #warning
+    |#error|(6)
+    |#warning|(7)
 
     // Valid, means 0
     #line
     }
 }
+
+---------------------------------------------------------
+(0): ReSharper Underlined Error Highlighting: This is an error!
+(1): ReSharper Warning: This is a warning!
+(2): ReSharper Underlined Error Highlighting: Another error!
+(3): ReSharper Warning: And another warning!
+(4): ReSharper Warning: This is not a valid name!
+(5): ReSharper Dead Code: Ignored character. Consider replacing with new line
+(6): ReSharper Underlined Error Highlighting: #error not terminated
+(7): ReSharper Underlined Error Highlighting: #warning not terminated
