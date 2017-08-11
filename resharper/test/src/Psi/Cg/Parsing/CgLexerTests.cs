@@ -37,7 +37,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg.Parsing
             Console.WriteLine(str2);
         }
 
-        [TestCase("Foo")]
+        [TestCase("Basic_00")]
+        
+        [TestCase("Comment_00")]
+        [TestCase("Comment_01")]
+        
+        [TestCase("Identifier_00")]
         public void TestLexer(string name) => DoOneTest(name);
     }
 }
