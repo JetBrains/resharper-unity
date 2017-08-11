@@ -1,3 +1,6 @@
+#error This is an error
+#warning This is a warning
+#line 23
 Shader "Unlit/SingleColor"
 {
     /* Block comment. Should have different highlighting to single line comment */
@@ -6,6 +9,9 @@ Shader "Unlit/SingleColor"
         // Color property for material inspector, default to white
         _Color ("Main Color", Color) = (1,1.0,1,1)
     }
+    #error Another error
+    #warning Another warning
+    #line 42
     SubShader
     {
         Pass

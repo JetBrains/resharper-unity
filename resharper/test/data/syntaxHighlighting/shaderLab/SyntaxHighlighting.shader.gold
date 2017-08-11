@@ -1,11 +1,17 @@
-﻿Shader "Unlit/SingleColor"
+﻿|#error|(0) This is an error
+|#warning|(1) This is a warning
+|#line|(2) |23|(3)
+Shader "Unlit/SingleColor"
 {
-    |/* Block comment. Should have different highlighting to single line comment */|(0)
+    |/* Block comment. Should have different highlighting to single line comment */|(4)
     Properties
     {
         // Color property for material inspector, default to white
-        _Color ("Main Color", Color) = (|1|(1),|1.0|(2),|1|(3),|1|(4))
+        _Color ("Main Color", Color) = (|1|(5),|1.0|(6),|1|(7),|1|(8))
     }
+    |#error|(9) Another error
+    |#warning|(10) Another warning
+    |#line|(11) |42|(12)
     SubShader
     {
         Pass
@@ -31,15 +37,23 @@
             {
                 return _Color; // just return it
             }
-            |(5)ENDCG
+            |(13)ENDCG
         }
     }
 }
 
 ---------------------------------------------------------
-(0): ReSharper Block Comment: 
-(1): number: 
-(2): number: 
+(0): keyword: 
+(1): keyword: 
+(2): keyword: 
 (3): number: 
-(4): number: 
-(5): ReSharper Injected Language Background: 
+(4): ReSharper Block Comment: 
+(5): number: 
+(6): number: 
+(7): number: 
+(8): number: 
+(9): keyword: 
+(10): keyword: 
+(11): keyword: 
+(12): number: 
+(13): ReSharper Injected Language Background: 

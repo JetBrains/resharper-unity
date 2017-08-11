@@ -72,6 +72,7 @@ namespace JetBrains.ReSharper.Host.Features.SyntaxHighlighting
             // GetAttributeId)
             if (IsBlockComment(tokenType)) return HighlightingAttributeIds.BLOCK_COMMENT;
             if (IsNumber(tokenType)) return HighlightingAttributeIds.NUMBER;
+            if (IsKeyword(tokenType)) return HighlightingAttributeIds.KEYWORD;
             return null;
         }
 
@@ -81,6 +82,11 @@ namespace JetBrains.ReSharper.Host.Features.SyntaxHighlighting
         }
 
         protected virtual bool IsNumber(TokenNodeType tokenType)
+        {
+            return false;
+        }
+
+        protected virtual bool IsKeyword(TokenNodeType tokenType)
         {
             return false;
         }

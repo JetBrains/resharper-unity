@@ -33,7 +33,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Host.Features.SyntaxHighlighting.Sha
 
         protected override bool IsNumber(TokenNodeType tokenType)
         {
-            return tokenType == ShaderLabTokenType.NUMERIC_LITERAL;
+            return tokenType == ShaderLabTokenType.NUMERIC_LITERAL || tokenType == ShaderLabTokenType.PP_DIGITS;
+        }
+
+        protected override bool IsKeyword(TokenNodeType tokenType)
+        {
+            return tokenType == ShaderLabTokenType.PP_ERROR
+                   || tokenType == ShaderLabTokenType.PP_WARNING
+                   || tokenType == ShaderLabTokenType.PP_LINE;
         }
     }
 }
