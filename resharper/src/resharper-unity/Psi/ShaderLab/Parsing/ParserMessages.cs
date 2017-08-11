@@ -30,6 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_ON_OFF_VALUE = "On or Off";
         public const string IDS_OPERATOR = "operator";
         public const string IDS_PASS_DEF = "pass definition";
+        public const string IDS_PREPROCESSOR_DIRECTIVE = "preprocessor directive";
         public const string IDS_PROPERTY_TYPE = "property type";
         public const string IDS_RENDER_STATE_COMMAND = "render state command";
         public const string IDS_REGULAR_PASS_CONTENTS = "Pass command";

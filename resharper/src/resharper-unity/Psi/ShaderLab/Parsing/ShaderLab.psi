@@ -625,6 +625,50 @@ options {
 
 // **************************************************************************
 //
+// Preprocessor
+//
+// **************************************************************************
+
+// Note, not called by any other part of this parser, called directly by
+// ShaderLabPreProcessor. Also note that we're parsing this without a filtered
+// lexer, so handle whitespace! Fortunately, it's easy and we don't care about
+// new lines or comments
+interface preprocessorDirective
+:
+  ppWarningDirective
+  | ppErrorDirective
+  | ppLineDirective
+;
+
+ppWarningDirective
+:
+  PP_WARNING<PP_WARNING, Warning>
+  WHITESPACE*
+  PP_MESSAGE<PP_MESSAGE, Message>
+;
+
+ppErrorDirective
+:
+  PP_ERROR<PP_ERROR, Error>
+  WHITESPACE*
+  PP_MESSAGE<PP_MESSAGE, Message>
+;
+
+ppLineDirective
+:
+  PP_LINE<PP_LINE, Line>
+  WHITESPACE+
+  PP_DIGITS<PP_DIGITS, Digits>
+  WHITESPACE*
+  // The #line directive keeps reading until it's out of digits, but that last non-digit
+  // character (usually a new line) gets swallowed. We can track it and warn 
+  PP_SWALLOWED<PP_SWALLOWED, Swallowed>?
+;
+
+
+
+// **************************************************************************
+//
 // ShaderLab
 //
 // **************************************************************************

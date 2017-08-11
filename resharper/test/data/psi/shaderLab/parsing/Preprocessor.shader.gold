@@ -1,16 +1,19 @@
 ﻿Language: PsiLanguageType:SHADERLAB
 IShaderLabFile
-  ShaderLabTokenType+PpErrorTokenElement(type:PP_ERROR, text:#error)
-  ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: This is an error!)
+  IPpErrorDirective
+    ShaderLabTokenType+PpErrorTokenElement(type:PP_ERROR, text:#error)
+    ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: This is an error!)
   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-  ShaderLabTokenType+PpWarningTokenElement(type:PP_WARNING, text:#warning)
-  ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: This is a warning!)
+  IPpWarningDirective
+    ShaderLabTokenType+PpWarningTokenElement(type:PP_WARNING, text:#warning)
+    ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: This is a warning!)
   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-  ShaderLabTokenType+PpLineTokenElement(type:PP_LINE, text:#line)
-  Whitespace(type:WHITESPACE, text: ) spaces: " "
-  ShaderLabTokenType+GenericTokenElement(type:PP_DIGITS, text:23)
+  IPpLineDirective
+    ShaderLabTokenType+PpLineTokenElement(type:PP_LINE, text:#line)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    ShaderLabTokenType+GenericTokenElement(type:PP_DIGITS, text:23)
   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
   IShaderCommand
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
@@ -21,18 +24,21 @@ IShaderLabFile
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
-      ShaderLabTokenType+PpErrorTokenElement(type:PP_ERROR, text:#error)
-      ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: Another error!)
+      IPpErrorDirective
+        ShaderLabTokenType+PpErrorTokenElement(type:PP_ERROR, text:#error)
+        ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: Another error!)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
-      ShaderLabTokenType+PpWarningTokenElement(type:PP_WARNING, text:#warning)
-      ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: And another warning!)
+      IPpWarningDirective
+        ShaderLabTokenType+PpWarningTokenElement(type:PP_WARNING, text:#warning)
+        ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: And another warning!)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
-      ShaderLabTokenType+PpLineTokenElement(type:PP_LINE, text:#line)
-      Whitespace(type:WHITESPACE, text: ) spaces: " "
-      ShaderLabTokenType+GenericTokenElement(type:PP_DIGITS, text:34 23 23 32)
-      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      IPpLineDirective
+        ShaderLabTokenType+PpLineTokenElement(type:PP_LINE, text:#line)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        ShaderLabTokenType+GenericTokenElement(type:PP_DIGITS, text:34 23 23 32)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
       IPropertiesCommand
@@ -76,8 +82,9 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-          ShaderLabTokenType+PpWarningTokenElement(type:PP_WARNING, text:#warning)
-          ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: This is not a valid name!)
+          IPpWarningDirective
+            ShaderLabTokenType+PpWarningTokenElement(type:PP_WARNING, text:#warning)
+            ShaderLabTokenType+GenericTokenElement(type:PP_MESSAGE, text: This is not a valid name!)
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:    ) spaces: "    "
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -94,11 +101,12 @@ IShaderLabFile
           EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Unity's lexer doesn't require a new line, but it does eat the last character) spaces: "// Unity's lexer doesn't require a new line, but it does eat the last character"
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-          ShaderLabTokenType+PpLineTokenElement(type:PP_LINE, text:#line)
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
-          ShaderLabTokenType+GenericTokenElement(type:PP_DIGITS, text:23)
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
-          ShaderLabTokenType+GenericTokenElement(type:PP_SWALLOWED, text:P)
+          IPpLineDirective
+            ShaderLabTokenType+PpLineTokenElement(type:PP_LINE, text:#line)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+GenericTokenElement(type:PP_DIGITS, text:23)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+GenericTokenElement(type:PP_SWALLOWED, text:P)
           IRegularPassDef
             ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
