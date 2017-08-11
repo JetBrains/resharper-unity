@@ -99,4 +99,9 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 
 <YYCG>   {WHITESPACE}            { return CgTokenNodeTypes.WHITESPACE; }
 <YYCG>   {NEW_LINE}              { return CgTokenNodeTypes.NEW_LINE; }
+
+<YYCG>   {SINGLE_LINE_COMMENT}   { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }
+
+<YYCG>   {IDENTIFIER}            { return CgTokenNodeTypes.IDENTIFIER; }
+
 <YYCG>   .                       { return CgTokenNodeTypes.BAD_CHARACTER; }
