@@ -1,5 +1,6 @@
 using System.Text;
 using JetBrains.Application;
+using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
