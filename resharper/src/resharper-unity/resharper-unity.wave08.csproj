@@ -51,7 +51,7 @@
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
   </ItemGroup>
-  <!-- References -->   
+  <!-- References -->
   <ItemGroup>
     <!-- It would be nice to use floating versions here during EAP, but that would require fixed
          version major, minor and patch numbers, e.g. 2017.1.0-* or it will match incorrectly
@@ -60,7 +60,6 @@
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170428.83402" />
     <!-- Temp workaround until it's added as a dependency into JB.RS.SDK -->
     <PackageReference Include="JetBrains.Build.Platform.Tasks.ProxyToSolutionCompiledTask" Version="2.0.20170530.0" />
-      
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />

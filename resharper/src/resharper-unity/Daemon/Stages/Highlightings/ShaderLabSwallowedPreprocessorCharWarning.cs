@@ -10,17 +10,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
         OverlapResolve = OverlapResolveKind.DEADCODE, ToolTipFormatString = MESSAGE)]
     public class ShaderLabSwallowedPreprocessorCharWarning : IHighlighting, IUnityHighlighting
     {
-        private readonly ITokenNode mySwallowedToken;
-
         public ShaderLabSwallowedPreprocessorCharWarning(ITokenNode swallowedToken)
         {
-            mySwallowedToken = swallowedToken;
+            SwallowedToken = swallowedToken;
         }
 
-        public const string MESSAGE = "Ignored character. Consider replacing with new line";
+        public const string MESSAGE = "Ignored character. Consider inserting new line for clarity";
 
-        public bool IsValid() => mySwallowedToken == null || mySwallowedToken.IsValid();
-        public DocumentRange CalculateRange() => mySwallowedToken.GetHighlightingRange();
+        public ITokenNode SwallowedToken { get; }
+
+        public bool IsValid() => SwallowedToken == null || SwallowedToken.IsValid();
+        public DocumentRange CalculateRange() => SwallowedToken.GetHighlightingRange();
         public string ToolTip => MESSAGE;
         public string ErrorStripeToolTip => ToolTip;
     }
