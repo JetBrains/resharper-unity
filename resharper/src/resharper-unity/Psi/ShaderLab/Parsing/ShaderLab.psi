@@ -629,11 +629,21 @@ options {
 //
 // **************************************************************************
 
-// Note, not called by any other part of this parser, called directly by
-// ShaderLabPreProcessor. Also note that we're parsing this without a filtered
-// lexer, so handle whitespace! Fortunately, it's easy and we don't care about
-// new lines or comments
-interface preprocessorDirective
+// This rule isn't used by anything. It forces a following token set of any token
+// which allows us to use `errorhandling`. If we don't have this rule, the following
+// token is expected to be null, and then we don't get `errorhandling` and would
+// have to handle thrown syntax errors manually
+errorhandling preprocessorDirectiveForceFollows
+:
+  preprocessorDirective
+  (errorElement | WHITESPACE | NEW_LINE)
+;
+
+// This rule isn't called by anything in the generated parser, but is used by the
+// preprocessor. Note that have to handle whitespace here, because the preprocessor
+// doesn't use the filtering lexer. Fortunately, this is easy because we don't need
+// to handle comments
+errorhandling interface preprocessorDirective
 :
   ppWarningDirective
   | ppErrorDirective
