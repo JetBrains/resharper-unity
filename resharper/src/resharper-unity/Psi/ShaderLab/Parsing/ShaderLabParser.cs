@@ -29,8 +29,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
             myPreProcessor = new ShaderLabPreProcessor();
             myPreProcessor.Run(myOriginalLexer, this, new SeldomInterruptChecker());
 
-            // Reset the lexer to the beginning, and use the filtered lexer
-            SetLexer(new ShaderLabFilteringLexer(lexer));
+            // Reset the lexer to the beginning, and use the filtered lexer. Pass in the
+            // preprocessor, so we can filter on CG_CONTENT and CG_END when they're used
+            // for include blocks (they're not filtered tokens normally)
+            SetLexer(new ShaderLabFilteringLexer(lexer, myPreProcessor));
         }
 
         public ITokenIntern TokenIntern => myTokenIntern ?? (myTokenIntern = new LexerTokenIntern(10));

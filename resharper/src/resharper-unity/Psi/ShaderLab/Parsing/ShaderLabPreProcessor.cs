@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
@@ -30,14 +32,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     internal class ShaderLabPreProcessor
     {
         private readonly Dictionary<int, TreeElement> myPpDirectivesByOffset = new Dictionary<int, TreeElement>();
+        private readonly List<TextRange> myRanges = new List<TextRange>();
 
-        public TreeElement GetPPDirectiveAtOffset(int offset)
+        public TreeElement GetPPDirectiveAtOffset(int startOffset)
         {
             TreeElement element;
-            return myPpDirectivesByOffset.TryGetValue(offset, out element) ? element : null;
+            return myPpDirectivesByOffset.TryGetValue(startOffset, out element) ? element : null;
         }
 
-        // The pre-processor tokens are filtered, so don't get parsed by the 
+        public bool IsInPPTokenRange(int startOffset)
+        {
+            return myRanges.BinarySearch(new TextRange(startOffset), TextRangeSearchingComparer.Instance) >= 0;
+        }
+
         public void Run(ILexer<int> lexer, ShaderLabParser parser, SeldomInterruptChecker interruptChecker)
         {
             for (var tokenType = lexer.TokenType; tokenType != null; tokenType = lexer.TokenType)
@@ -51,11 +58,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                     var startOffset = lexer.TokenStart;
                     var directive = parser.ParsePreprocessorDirective();
                     myPpDirectivesByOffset[startOffset] = directive;
+                    myRanges.Add(new TextRange(startOffset, lexer.TokenStart));
+                }
+                else if (tokenType == ShaderLabTokenType.CG_INCLUDE
+                         || tokenType == ShaderLabTokenType.GLSL_INCLUDE
+                         || tokenType == ShaderLabTokenType.HLSL_INCLUDE)
+                {
+                    var startOffset = lexer.TokenStart;
+                    var include = parser.ParseIncludeBlock();
+                    myPpDirectivesByOffset[startOffset] = include;
+                    myRanges.Add(new TextRange(startOffset, lexer.TokenStart));
                 }
                 else
                 {
                     lexer.Advance();
                 }
+            }
+        }
+
+        private class TextRangeSearchingComparer : IComparer<TextRange>
+        {
+            [NotNull]
+            public static readonly TextRangeSearchingComparer Instance = new TextRangeSearchingComparer();
+
+            public int Compare(TextRange x, TextRange y)
+            {
+                int startOffset = y.StartOffset;
+                if (x.EndOffset <= startOffset)
+                    return -1;
+                return x.StartOffset > startOffset ? 1 : 0;
             }
         }
     }

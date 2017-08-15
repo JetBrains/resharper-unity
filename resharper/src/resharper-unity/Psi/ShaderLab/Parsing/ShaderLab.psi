@@ -728,9 +728,6 @@ shaderValue
   shaderValueName
   LBRACE<LBRACE, LBrace>
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
-  cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>?
-  glslIncludeBlock<GLSLINCLUDE_BLOCK, GlslIncludes>?
-  hlslIncludeBlock<HLSLINCLUDE_BLOCK, HlslIncludes>?
   categoryCommand<CATEGORY_COMMAND, CategoryCommand>?
   subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>*
   shaderContents*
@@ -999,9 +996,6 @@ private categoryContents
   tagsCommand<TAGS_COMMAND, TagsCommands>
   | renderStateCommand
   | legacyRenderStateCommand
-  | cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>
-  | glslIncludeBlock<GLSLINCLUDE_BLOCK, GlslIncludes>
-  | hlslIncludeBlock<HLSLINCLUDE_BLOCK, HlslIncludes>
   | subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>
 ;
 
@@ -1031,9 +1025,6 @@ private subShaderContents
   tagsCommand<TAGS_COMMAND, TagsCommands>
   | renderStateCommand
   | legacyRenderStateCommand
-  | cgIncludeBlock<CGINCLUDE_BLOCK, CgIncludes>
-  | glslIncludeBlock<GLSLINCLUDE_BLOCK, GlslIncludes>
-  | hlslIncludeBlock<HLSLINCLUDE_BLOCK, HlslIncludes>
   | passDef<PASSDEF, PassDefinitions>
 ;
 
@@ -1812,26 +1803,61 @@ bindValue
 //
 // **************************************************************************
 
-interface cgBlock
+// This rule isn't used by anything. It forces a following token set of any token
+// which allows us to use `errorhandling`. If we don't have this rule, the following
+// token is expected to be null, and then we don't get `errorhandling` and would
+// have to handle thrown syntax errors manually
+errorhandling includeBlockForceFollows
 :
-  cgIncludeBlock
-  | cgProgramBlock
-  | glslIncludeBlock
-  | glslProgramBlock
-  | hlslIncludeBlock
-  | hlslProgramBlock
+  includeBlock
+  (errorElement | WHITESPACE | NEW_LINE)
 ;
 
-cgContent
+// This rule isn't called by anything in the generated parser, but is used
+// by the preprocessor. When a shader is compiled, the CG_INCLUDE blocks et al
+// are pre-processed and removed. This means they can appear anywhere in the
+// file. We treat them like pre-processor directive tokens, parse them separately
+// filter them, and then reinsert them after normal parsing. Also note that we
+// have to handl whitespace here, as the pre-processor doesn't use the filtering
+// lexer. As it happens, this construct doesn't care about whitespace
+// (Technically, this is also true of CG_PROGRAM et al; they are pre-processed
+// and replaced with a GpuProgramId command that takes the index of the
+// compiled shader code. But they can only appear inside a Pass, so we can
+// treat them as normal)
+errorhandling interface includeBlock
 :
-  CG_CONTENT<CG_CONTENT, Content>
+  cgIncludeBlock
+  | glslIncludeBlock
+  | hlslIncludeBlock
 ;
 
 cgIncludeBlock
 :
-  CG_INCLUDE<CG_INCLUDE, CgInclude>
-  cgContent<CG_CONTENT, CgContent>
-  CG_END<CG_END, CgEnd>
+  CG_INCLUDE<START_DELIMITER, StartDelimiter>
+  cgContent<CONTENT, Content>
+  CG_END<END_DELIMITER, EndDelimiter>
+;
+
+glslIncludeBlock
+:
+  GLSL_INCLUDE<START_DELIMITER, StartDelimiter>
+  cgContent<GLSL_CONTENT, Content>
+  GLSL_END<END_DELIMITER, EndDelimiter>
+;
+
+hlslIncludeBlock
+:
+  HLSL_INCLUDE<START_DELIMITER, StartDelimiter>
+  cgContent<CONTENT, Content>
+  HLSL_END<END_DELIMITER, EndDelimiter>
+;
+
+
+interface programBlock
+:
+  cgProgramBlock
+  | glslProgramBlock
+  | hlslProgramBlock
 ;
 
 cgProgramBlock
@@ -1841,13 +1867,6 @@ cgProgramBlock
   CG_END<CG_END, CgEnd>
 ;
 
-glslIncludeBlock
-:
-  GLSL_INCLUDE<GLSL_INCLUDE, GlslInclude>
-  cgContent<GLSL_CONTENT, GlslContent>
-  GLSL_END<GLSL_END, GlslEnd>
-;
-
 glslProgramBlock
 :
   GLSL_PROGRAM<GLSL_PROGRAM, GlslProgram>
@@ -1855,18 +1874,16 @@ glslProgramBlock
   GLSL_END<GLSL_END, GlslEnd>
 ;
 
-hlslIncludeBlock
-:
-  HLSL_INCLUDE<HLSL_INCLUDE, HlslInclude>
-  cgContent<HLSL_CONTENT, HlslContent>
-  HLSL_END<HLSL_END, HlslEnd>
-;
-
 hlslProgramBlock
 :
   HLSL_PROGRAM<HLSL_PROGRAM, HlslProgram>
   cgContent<HLSL_CONTENT, HlslContent>
   HLSL_END<HLSL_END, HlslEnd>
+;
+
+cgContent
+:
+  CG_CONTENT<CG_CONTENT, Content>
 ;
 
 

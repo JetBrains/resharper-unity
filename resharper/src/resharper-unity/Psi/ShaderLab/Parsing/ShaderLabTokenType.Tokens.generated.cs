@@ -14,25 +14,99 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
   public partial class ShaderLabTokenType
   {
-    //FragmentDelimiters
+    //ProgramDelimiters
     public const int CG_PROGRAM_NODE_TYPE_INDEX = 1000;
     public static readonly TokenNodeType CG_PROGRAM = new KeywordTokenNodeType("CG_PROGRAM", CG_PROGRAM_NODE_TYPE_INDEX, representation: "CGPROGRAM");
-    public const int CG_INCLUDE_NODE_TYPE_INDEX = 1001;
-    public static readonly TokenNodeType CG_INCLUDE = new KeywordTokenNodeType("CG_INCLUDE", CG_INCLUDE_NODE_TYPE_INDEX, representation: "CGINCLUDE");
-    public const int CG_END_NODE_TYPE_INDEX = 1002;
+    public const int CG_END_NODE_TYPE_INDEX = 1001;
     public static readonly TokenNodeType CG_END = new KeywordTokenNodeType("CG_END", CG_END_NODE_TYPE_INDEX, representation: "ENDCG");
-    public const int GLSL_PROGRAM_NODE_TYPE_INDEX = 1003;
+    public const int GLSL_PROGRAM_NODE_TYPE_INDEX = 1002;
     public static readonly TokenNodeType GLSL_PROGRAM = new KeywordTokenNodeType("GLSL_PROGRAM", GLSL_PROGRAM_NODE_TYPE_INDEX, representation: "GLSLPROGRAM");
-    public const int GLSL_INCLUDE_NODE_TYPE_INDEX = 1004;
-    public static readonly TokenNodeType GLSL_INCLUDE = new KeywordTokenNodeType("GLSL_INCLUDE", GLSL_INCLUDE_NODE_TYPE_INDEX, representation: "GLSLINCLUDE");
-    public const int GLSL_END_NODE_TYPE_INDEX = 1005;
+    public const int GLSL_END_NODE_TYPE_INDEX = 1003;
     public static readonly TokenNodeType GLSL_END = new KeywordTokenNodeType("GLSL_END", GLSL_END_NODE_TYPE_INDEX, representation: "ENDGLSL");
-    public const int HLSL_PROGRAM_NODE_TYPE_INDEX = 1006;
+    public const int HLSL_PROGRAM_NODE_TYPE_INDEX = 1004;
     public static readonly TokenNodeType HLSL_PROGRAM = new KeywordTokenNodeType("HLSL_PROGRAM", HLSL_PROGRAM_NODE_TYPE_INDEX, representation: "HLSLPROGRAM");
-    public const int HLSL_INCLUDE_NODE_TYPE_INDEX = 1007;
-    public static readonly TokenNodeType HLSL_INCLUDE = new KeywordTokenNodeType("HLSL_INCLUDE", HLSL_INCLUDE_NODE_TYPE_INDEX, representation: "HLSLINCLUDE");
-    public const int HLSL_END_NODE_TYPE_INDEX = 1008;
+    public const int HLSL_END_NODE_TYPE_INDEX = 1005;
     public static readonly TokenNodeType HLSL_END = new KeywordTokenNodeType("HLSL_END", HLSL_END_NODE_TYPE_INDEX, representation: "ENDHLSL");
+
+    //IncludeBlockDelimiters
+    #region CG_INCLUDE
+    
+    public static readonly TokenNodeType CG_INCLUDE = new CgIncludeNodeType();
+    public const int CG_INCLUDE_NODE_TYPE_INDEX = 1006;
+    
+    private class CgIncludeNodeType : FixedTokenNodeType
+    {
+      public CgIncludeNodeType() : base("CG_INCLUDE", CG_INCLUDE_NODE_TYPE_INDEX, "CGINCLUDE") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new CgIncludeTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class CgIncludeTokenElement : FixedTokenElementBase
+    {
+      public override NodeType NodeType { get { return CG_INCLUDE; } }
+    
+      public override int GetTextLength() { return 9; }
+      public override string GetText() { return "CGINCLUDE"; }
+    }
+    
+    #endregion
+    #region GLSL_INCLUDE
+    
+    public static readonly TokenNodeType GLSL_INCLUDE = new GlslIncludeNodeType();
+    public const int GLSL_INCLUDE_NODE_TYPE_INDEX = 1007;
+    
+    private class GlslIncludeNodeType : FixedTokenNodeType
+    {
+      public GlslIncludeNodeType() : base("GLSL_INCLUDE", GLSL_INCLUDE_NODE_TYPE_INDEX, "GLSLINCLUDE") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new GlslIncludeTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class GlslIncludeTokenElement : FixedTokenElementBase
+    {
+      public override NodeType NodeType { get { return GLSL_INCLUDE; } }
+    
+      public override int GetTextLength() { return 11; }
+      public override string GetText() { return "GLSLINCLUDE"; }
+    }
+    
+    #endregion
+    #region HLSL_INCLUDE
+    
+    public static readonly TokenNodeType HLSL_INCLUDE = new HlslIncludeNodeType();
+    public const int HLSL_INCLUDE_NODE_TYPE_INDEX = 1008;
+    
+    private class HlslIncludeNodeType : FixedTokenNodeType
+    {
+      public HlslIncludeNodeType() : base("HLSL_INCLUDE", HLSL_INCLUDE_NODE_TYPE_INDEX, "HLSLINCLUDE") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new HlslIncludeTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class HlslIncludeTokenElement : FixedTokenElementBase
+    {
+      public override NodeType NodeType { get { return HLSL_INCLUDE; } }
+    
+      public override int GetTextLength() { return 11; }
+      public override string GetText() { return "HLSLINCLUDE"; }
+    }
+    
+    #endregion
 
     //Tokens
     public const int LPAREN_NODE_TYPE_INDEX = 1009;
