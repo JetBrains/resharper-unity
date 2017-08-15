@@ -3,6 +3,10 @@
 #line 23
 Shader "Unlit/SingleColor"
 {
+CGINCLUDE
+#pragma foo
+ENDCG
+
     /* Block comment. Should have different highlighting to single line comment */
     Properties
     {

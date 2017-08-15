@@ -3,15 +3,19 @@
 |#line|(2) |23|(3)
 Shader "Unlit/SingleColor"
 {
-    |/* Block comment. Should have different highlighting to single line comment */|(4)
+|CGINCLUDE|(4)|
+#pragma foo
+|(5)ENDCG
+
+    |/* Block comment. Should have different highlighting to single line comment */|(6)
     Properties
     {
         // Color property for material inspector, default to white
-        _Color ("Main Color", Color) = (|1|(5),|1.0|(6),|1|(7),|1|(8))
+        _Color ("Main Color", Color) = (|1|(7),|1.0|(8),|1|(9),|1|(10))
     }
-    |#error|(9) Another error
-    |#warning|(10) Another warning
-    |#line|(11) |42|(12)
+    |#error|(11) Another error
+    |#warning|(12) Another warning
+    |#line|(13) |42|(14)
     SubShader
     {
         Pass
@@ -37,7 +41,7 @@ Shader "Unlit/SingleColor"
             {
                 return _Color; // just return it
             }
-            |(13)ENDCG
+            |(15)ENDCG
         }
     }
 }
@@ -47,13 +51,15 @@ Shader "Unlit/SingleColor"
 (1): keyword: 
 (2): keyword: 
 (3): number: 
-(4): ReSharper Block Comment: 
-(5): number: 
-(6): number: 
+(4): keyword: 
+(5): ReSharper Injected Language Background: 
+(6): ReSharper Block Comment: 
 (7): number: 
 (8): number: 
-(9): keyword: 
-(10): keyword: 
+(9): number: 
+(10): number: 
 (11): keyword: 
-(12): number: 
-(13): ReSharper Injected Language Background: 
+(12): keyword: 
+(13): keyword: 
+(14): number: 
+(15): ReSharper Injected Language Background: 
