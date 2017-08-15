@@ -194,7 +194,7 @@
 //   ParseCSharpArgumentInternal doesn't get called. Custom function calls error handler
 
 
-// Matches all tokens, but doesn't advance!
+// Matches all (non-filtered) tokens, but doesn't advance!
 abstract errorElement
 options {
   interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
@@ -202,10 +202,13 @@ options {
 }
 :
   IDENTIFIER?
+  
+  | STRING_LITERAL | NUMERIC_LITERAL
 
-  | CG_PROGRAM
-  | CG_INCLUDE
-  | CG_END
+  | CG_PROGRAM | CG_INCLUDE | CG_END
+  | GLSL_PROGRAM | GLSL_INCLUDE | GLSL_END
+  | HLSL_PROGRAM | HLSL_INCLUDE | HLSL_END
+  | CG_CONTENT
 
   | LPAREN
   | RPAREN
@@ -226,6 +229,7 @@ options {
   | SUB_SHADER_KEYWORD
   | FALLBACK_KEYWORD
   | CUSTOM_EDITOR_KEYWORD
+  | DEPENDENCY_KEYWORD
 
   | COLOR_KEYWORD
   | CUBE_KEYWORD
@@ -345,10 +349,13 @@ options {
 }
 :
   IDENTIFIER?
+  
+  | STRING_LITERAL | NUMERIC_LITERAL
 
-  | CG_PROGRAM
-  | CG_INCLUDE
-  | CG_END
+  | CG_PROGRAM | CG_INCLUDE | CG_END
+  | GLSL_PROGRAM | GLSL_INCLUDE | GLSL_END
+  | HLSL_PROGRAM | HLSL_INCLUDE | HLSL_END
+  | CG_CONTENT
 
   | LPAREN
   | RPAREN
@@ -368,6 +375,7 @@ options {
   | SUB_SHADER_KEYWORD
   | FALLBACK_KEYWORD
   | CUSTOM_EDITOR_KEYWORD
+  | DEPENDENCY_KEYWORD
 
   | COLOR_KEYWORD
   | CUBE_KEYWORD
