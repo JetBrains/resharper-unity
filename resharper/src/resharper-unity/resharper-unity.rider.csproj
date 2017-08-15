@@ -42,6 +42,7 @@
     <Compile Update="Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
       <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
     </Compile>
+    <ParserGen Include="Psi\Cg\Parsing\Cg.psi" />
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Remove="Psi\ShaderLab\Parsing\ShaderLab_lex.depends" />
     <Compile Update="Psi\ShaderLab\Parsing\ShaderLab_lex.cs">
