@@ -1832,8 +1832,8 @@ errorhandling includeBlockForceFollows
 // lexer. As it happens, this construct doesn't care about whitespace
 // (Technically, this is also true of CG_PROGRAM et al; they are pre-processed
 // and replaced with a GpuProgramId command that takes the index of the
-// compiled shader code. But they can only appear inside a SubShader, so we can
-// treat them as normal)
+// compiled shader code. But this still has to be in a Pass or SubShader, so we
+// can treat them as normal tokens)
 errorhandling interface includeBlock
 :
   cgIncludeBlock
