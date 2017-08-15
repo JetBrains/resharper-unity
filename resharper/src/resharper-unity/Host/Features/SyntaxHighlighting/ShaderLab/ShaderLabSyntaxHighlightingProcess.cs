@@ -40,7 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Host.Features.SyntaxHighlighting.Sha
         {
             return tokenType == ShaderLabTokenType.PP_ERROR
                    || tokenType == ShaderLabTokenType.PP_WARNING
-                   || tokenType == ShaderLabTokenType.PP_LINE;
+                   || tokenType == ShaderLabTokenType.PP_LINE
+                   || tokenType == ShaderLabTokenType.CG_INCLUDE
+                   || tokenType == ShaderLabTokenType.GLSL_INCLUDE
+                   || tokenType == ShaderLabTokenType.HLSL_INCLUDE;
         }
     }
 }

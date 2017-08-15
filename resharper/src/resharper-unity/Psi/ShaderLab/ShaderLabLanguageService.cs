@@ -30,7 +30,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
 
         public override ILexer CreateFilteringLexer(ILexer lexer)
         {
-            return new ShaderLabFilteringLexer(lexer);
+            // TODO: Is it ok that this is without preprocessor state?
+            // This is what the C# language service does
+            return new ShaderLabFilteringLexer(lexer, null);
         }
 
         public override IParser CreateParser(ILexer lexer, IPsiModule module, IPsiSourceFile sourceFile)
