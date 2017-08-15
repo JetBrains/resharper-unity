@@ -7,7 +7,7 @@ plugins {
 group 'com.jetbrains'
 
 if (!ext.has("myArgs")){
-    ext.myArgs = "Debug,2.0.3.9999"
+    ext.myArgs = "Release,2.0.3.9999"
 }
 
 ext.args = myArgs.split(',')
@@ -44,7 +44,7 @@ intellij {
       localPath = dir.absolutePath
     }
     else {
-      version = '171.4456.2169' // 2017.1 RTM
+      version = 'LATEST-TRUNK-SNAPSHOT' // 2017.1 RTM
     }
 
     // Sources aren't available for Rider

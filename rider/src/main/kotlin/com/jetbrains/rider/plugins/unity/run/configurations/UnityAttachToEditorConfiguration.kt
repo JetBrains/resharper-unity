@@ -42,6 +42,8 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
         return UnityAttachToEditorProfileState(this, environment)
     }
 
+    override var listenPortForConnections: Boolean = false
+
     override fun checkSettingsBeforeRun() {
 
         // We could do this in getState, but if we throw an error there, it just shows a balloon
