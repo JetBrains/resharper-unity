@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
 {
     // The default implementation doesn't handle resolving overlapping highlightings
     [Category("Daemon")]
-    public class IdentifierTooltipTestBase : BaseTestWithTextControl
+    public abstract class IdentifierTooltipTestBase : BaseTestWithTextControl
     {
         protected override void DoTestSolution(params string[] fileSet)
         {

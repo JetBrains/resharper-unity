@@ -23,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_CULL_VALUE = "cull value";
         public const string IDS_FOG_CONTENTS = "Fog command";
         public const string IDS_GRAB_PASS_CONTENTS = "GrabPass command";
+        public const string IDS_INCLUDE_BLOCK = "include block";
         public const string IDS_LEGACY_LIGHTING_COMMAND = "lighting command";
         public const string IDS_LEGACY_RENDER_STATE_COMMAND = "render state command";
         public const string IDS_MATERIAL_CONTENTS = "Material command";
@@ -31,6 +32,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_ON_OFF_VALUE = "On or Off";
         public const string IDS_OPERATOR = "operator";
         public const string IDS_PASS_DEF = "pass definition";
+        public const string IDS_PREPROCESSOR_DIRECTIVE = "preprocessor directive";
+        public const string IDS_PROGRAM_BLOCK = "program block";
         public const string IDS_PROPERTY_TYPE = "property type";
         public const string IDS_REFERENCED_PROPERTY = "referenced property";
         public const string IDS_RENDER_STATE_COMMAND = "render state command";

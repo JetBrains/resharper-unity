@@ -21,24 +21,27 @@
   <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing</TokenTypeNamespace>
   <TokenTypeClass>ShaderLabTokenType</TokenTypeClass>
 
-  <FragmentDelimiters NodeType="KeywordTokenNodeType">
-    <FragmentDelimiter name="CG_PROGRAM" representation="CGPROGRAM" /> 
-    <!-- This doesn't seem to be documented -->
-    <FragmentDelimiter name="CG_INCLUDE" representation="CGINCLUDE" />
-    <FragmentDelimiter name="CG_END" representation="ENDCG" />
+  <ProgramDelimiters NodeType="KeywordTokenNodeType">
+    <Token name="CG_PROGRAM" representation="CGPROGRAM" /> 
+    <Token name="CG_END" representation="ENDCG" />
     
     <!-- Shader code written in OpenGL https://docs.unity3d.com/Manual/SL-GLSLShaderPrograms.html -->
-    <FragmentDelimiter name="GLSL_PROGRAM" representation="GLSLPROGRAM" />
-    <FragmentDelimiter name="GLSL_INCLUDE" representation="GLSLINCLUDE" />
-    <FragmentDelimiter name="GLSL_END" representation="ENDGLSL" />
+    <Token name="GLSL_PROGRAM" representation="GLSLPROGRAM" />
+    <Token name="GLSL_END" representation="ENDGLSL" />
     
     <!-- Identical to CGPROGRAM/GCINCLUDE but some includes are not automatically included
          HLSLSupport.cginc, UnityShaderVariables.cginc and UnityShaderUtilties.cginc (This info direct from Unity devs)
          Added in 5.6.0 - https://unity3d.com/unity/whats-new/unity-5.6.0 -->
-    <FragmentDelimiter name="HLSL_PROGRAM" representation="HLSLPROGRAM" />
-    <FragmentDelimiter name="HLSL_INCLUDE" representation="HLSLINCLUDE" />
-    <FragmentDelimiter name="HLSL_END" representation="ENDHLSL" />
-  </FragmentDelimiters>
+    <Token name="HLSL_PROGRAM" representation="HLSLPROGRAM" />
+    <Token name="HLSL_END" representation="ENDHLSL" />
+  </ProgramDelimiters>
+
+  <!-- We need to treat CG_INCLUDE et al as filtered tokens. They can be anywhere in the file -->
+  <IncludeBlockDelimiters NodeType="FixedTokenNodeType" TokenElement="FixedTokenElementBase">
+    <Token name="CG_INCLUDE" representation="CGINCLUDE" filtered="true" />
+    <Token name="GLSL_INCLUDE" representation="GLSLINCLUDE" filtered="true" />
+    <Token name="HLSL_INCLUDE" representation="HLSLINCLUDE" filtered="true" />
+  </IncludeBlockDelimiters>
 
   <Tokens NodeType="FixedTokenNodeType">
     <Token name="LPAREN" representation="(" />
@@ -53,6 +56,14 @@
     <Token name="PLUS" representation="+" />
     <Token name="MINUS" representation="-" />
     <Token name="MULTIPLY" representation="*" />
+  </Tokens>
+  
+  <!-- Specifying the TokenElement generates subtypes of NodeType and TokenElement,
+       and the filtered="true" overrides IsFiltered -->
+  <Tokens NodeType="FixedTokenNodeType" TokenElement="FixedTokenElementBase">
+    <Token name="PP_WARNING" representation="#warning" filtered="true" />
+    <Token name="PP_ERROR" representation="#error" filtered="true" />
+    <Token name="PP_LINE" representation="#line" filtered="true" />
   </Tokens>
 
   <!-- TODO: Should these be a keyword or just a fixed token? -->

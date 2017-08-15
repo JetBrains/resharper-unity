@@ -14,6 +14,7 @@
 
     <!-- ShaderLab support -->
     <fileTypeFactory id="ShaderLab" implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileTypeFactory" />
+    <lang.altEnter language="ShaderLab" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterActionHandler" />
     <lang.parserDefinition language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabParserDefinition" />
     <lang.syntaxHighlighterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabSyntaxHighlighterProvider" />
     <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
@@ -91,13 +92,13 @@
   <change-notes>
 <![CDATA[
 <ul>
-  <li>Automatically create "Attach to Unity Editor" run configuration (<a href="https://github.com/JetBrains/resharper-unity/issues/141">#141</a>)</li>
-  <li>Automatically exclude Library and Temp from Rider's text index (<a href="https://github.com/JetBrains/resharper-unity/issues/117">#117</a>)</li>
-  <li>Added implicit use annotations for UnityEngine.Networking attributes (<a href="https://github.com/JetBrains/resharper-unity/issues/136">#136</a>)</li>
-  <li>Code completion, find usages and rename support for SyncVarAttribute hook function (<a href="https://github.com/JetBrains/resharper-unity/issues/135">#135</a>)</li>
-  <li>Mark empty event functions as dead code, with Quick Fix to remove (<a href="https://github.com/JetBrains/resharper-unity/issues/137">#137</a>)</li>
-  <li>Fix incorrect signatures in known API (<a href="https://github.com/JetBrains/resharper-unity/issues/128">#128</a>)</li>
-  <li>Treats Assertion.Assert as assertion methods (<a href="https://github.com/JetBrains/resharper-unity/issues/129">#129</a>)</li>
+  <li>Parse pre-processor directives in ShaderLab (<a href="https://github.com/JetBrains/resharper-unity/issues/186">#186</a>)</li>
+  <li>Parse property references for BlendOp in ShaderLab files (<a href="https://youtrack.jetbrains.com/issue/RIDER-8386">RIDER-8386</a>)</li>
+  <li>Allow disabling simple word completion for .shader and .cginc files (<a href="https://youtrack.jetbrains.com/issue/RIDER-5996">RIDER-5996</a>)</li>
+  <li>Choose path and set Rider as default editor from the Unity3dRider plugin</li>
+  <li>Customise the target framework version in the Unity3dRider plugin options</li>
+  <li>Fix path to finding Rider installed by Toolbox on Mac<li>
+  <li>Updates the reference to nunit.framework.dll to a version shipped by Unity that works in the Rider test runner (<a href="https://github.com/JetBrains/resharper-unity/issues/194">#194</a>)</li>
 </ul>
 ]]>
   </change-notes>

@@ -1,17 +1,25 @@
-﻿using JetBrains.ReSharper.Psi.Parsing;
+﻿using JetBrains.Annotations;
+using JetBrains.ReSharper.Psi.Parsing;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
-    public class ShaderLabFilteringLexer : FilteringLexer, ILexer<int>
+    internal class ShaderLabFilteringLexer : FilteringLexer, ILexer<int>
     {
-        public ShaderLabFilteringLexer(ILexer lexer)
+        [CanBeNull]
+        private readonly ShaderLabPreProcessor myPreProcessor;
+
+        public ShaderLabFilteringLexer(ILexer lexer, [CanBeNull] ShaderLabPreProcessor preProcessor)
             : base(lexer)
         {
+            myPreProcessor = preProcessor;
         }
 
         protected override bool Skip(TokenNodeType tokenType)
         {
-            return tokenType.IsWhitespace || tokenType.IsComment;
+            if (tokenType.IsWhitespace || tokenType.IsComment || tokenType.IsFiltered)
+                return true;
+
+            return myPreProcessor != null && myPreProcessor.IsInPPTokenRange(TokenStart);
         }
 
         int ILexer<int>.CurrentPosition

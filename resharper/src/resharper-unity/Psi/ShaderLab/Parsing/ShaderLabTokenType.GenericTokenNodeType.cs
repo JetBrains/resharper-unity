@@ -25,6 +25,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
             public override string TokenRepresentation { get; }
         }
 
+        private class FilteredGenericTokenNodeType : GenericTokenNodeType
+        {
+            public FilteredGenericTokenNodeType(string s, int index, string representation)
+                : base(s, index, representation)
+            {
+            }
+
+            public override bool IsFiltered => true;
+        }
+
         // An instance of a fixed length token node type that will be added to the PSI tree
         public class GenericTokenElement : ShaderLabTokenBase
         {

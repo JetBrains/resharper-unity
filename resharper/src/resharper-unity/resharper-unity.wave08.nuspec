@@ -40,6 +40,30 @@
 &#8226; Marks empty event functions as dead code, with Quick Fix to remove.
 </description>
 <releaseNotes>
+&#8226; Parse pre-processor directives in ShaderLab (#186)
+&#8226; Parse property reference for BlendOp (RIDER-8386)
+
+From 2.0.2:
+&#8226; Add ability to disable advanced ShaderLab syntax (#183)
+
+From 2.0.1:
+&#8226; Add support for HLSL and GLSL blocks
+
+From 2.0.0:
+&#8226; Parse ShaderLab files, show syntax error highlighting
+&#8226; Brace matching for ShaderLab files
+&#8226; TODO comments support for ShaderLab files
+
+From 1.9.1:
+&#8226; Reduce logging and change tracking for non Unity projects
+
+From 1.9.0:
+&#8226; Only set C# language level if Unity project has an Assets folder (#150)
+&#8226; Navigate to correct local documentation page, or Unity's search page (#152)
+
+Merge Unity3dRider plugin
+
+From 1.8.0:
 &#8226; Inspection and quick fix for calling new on ScriptableObject and MonoBehaviour (#142)
 &#8226; Inspections and quick fixes for incorrect method signature for InitializeOnLoad attributes (#143)
 &#8226; Added base type required annotations for various attributes (#145)

@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("LOD")]
 
         [TestCase("Blending")]
-        [TestCase("BlendOp")] 
+        [TestCase("BlendOp")]
 
         [TestCase("LegacyLighting01")]
         [TestCase("LegacyLighting02")]
@@ -70,6 +70,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("LegacyFog")]
 
         [TestCase("LegacyBindChannels")]
+
+        [TestCase("Preprocessor")]
+
+        [TestCase("CgInclude")]
+        [TestCase("GlslInclude")]
+        [TestCase("HlslInclude")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

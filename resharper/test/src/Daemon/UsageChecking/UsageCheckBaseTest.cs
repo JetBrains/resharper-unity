@@ -14,7 +14,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.UsageChecking
 {
-    public class UsageCheckBaseTest : BaseTestWithSingleProject
+    public abstract class UsageCheckBaseTest : BaseTestWithSingleProject
     {
         protected override void DoTest(IProject project)
         {

@@ -1,26 +1,25 @@
-﻿|#error|(0) This is an error
-|#warning|(1) This is a warning
-|#line|(2) |23|(3)
-Shader "Unlit/SingleColor"
-{
-|CGINCLUDE|(4)|
-#pragma foo
-|(5)ENDCG
+#error This is an error!
 
-    |/* Block comment. Should have different highlighting to single line comment */|(6)
+#warning This is a warning!
+
+#line 23
+{caret}Shader "Unlit/SingleColor"
+{
+    #error Another error!
+    #warning And another warning!
+    #line 34 23 23 32 
     Properties
     {
         // Color property for material inspector, default to white
-        _Color ("Main Color", Color) = (|1|(7),|1.0|(8),|1|(9),|1|(10))
+        #ValidName ("Another Color", Color) = (1,1,1,1)
+        #warning This is not a valid name!
     }
-    |#error|(11) Another error
-    |#warning|(12) Another warning
-    |#line|(13) |42|(14)
     SubShader
     {
-        Pass
+        // Unity's lexer doesn't require a new line, but it does eat the last character
+        #line 23 PPass
         {
-            CGPROGRAM|
+            CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             
@@ -41,25 +40,13 @@ Shader "Unlit/SingleColor"
             {
                 return _Color; // just return it
             }
-            |(15)ENDCG
+            ENDCG
         }
+    // Errors!
+    #error
+    #warning
+
+    // Valid, means 0
+    #line
     }
 }
-
----------------------------------------------------------
-(0): keyword: 
-(1): keyword: 
-(2): keyword: 
-(3): number: 
-(4): keyword: 
-(5): ReSharper Injected Language Background: 
-(6): ReSharper Block Comment: 
-(7): number: 
-(8): number: 
-(9): number: 
-(10): number: 
-(11): keyword: 
-(12): keyword: 
-(13): keyword: 
-(14): number: 
-(15): ReSharper Injected Language Background: 

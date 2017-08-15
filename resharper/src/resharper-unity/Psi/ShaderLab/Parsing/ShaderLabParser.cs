@@ -15,13 +15,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     {
         [NotNull] private readonly ILexer<int> myOriginalLexer;
         private readonly CommonIdentifierIntern myIntern;
+        private readonly ShaderLabPreProcessor myPreProcessor;
         private ITokenIntern myTokenIntern;
 
         public ShaderLabParser([NotNull] ILexer<int> lexer, CommonIdentifierIntern intern)
         {
             myOriginalLexer = lexer;
             myIntern = intern;
-            SetLexer(new ShaderLabFilteringLexer(lexer));
+
+            // Create the pre-processor elements, using the unfiltered lexer, so we'll see the
+            // preprocessor tokens!
+            SetLexer(myOriginalLexer);
+            myPreProcessor = new ShaderLabPreProcessor();
+            myPreProcessor.Run(myOriginalLexer, this, new SeldomInterruptChecker());
+
+            // Reset the lexer to the beginning, and use the filtered lexer. Pass in the
+            // preprocessor, so we can filter on CG_CONTENT and CG_END when they're used
+            // for include blocks (they're not filtered tokens normally)
+            SetLexer(new ShaderLabFilteringLexer(lexer, myPreProcessor));
         }
 
         public ITokenIntern TokenIntern => myTokenIntern ?? (myTokenIntern = new LexerTokenIntern(10));
@@ -129,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         private void InsertMissingTokens(TreeElement root, ITokenIntern intern)
         {
             var interruptChecker = new SeldomInterruptChecker();
-            ShaderLabMissingTokensInserter.Run(root, myOriginalLexer, this, interruptChecker, intern);
+            ShaderLabMissingTokensInserter.Run(root, myOriginalLexer, this, myPreProcessor, interruptChecker, intern);
         }
 
         private TreeElement CreateToken(TokenNodeType tokenType)

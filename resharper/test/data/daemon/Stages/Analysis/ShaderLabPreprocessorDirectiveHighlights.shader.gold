@@ -1,0 +1,62 @@
+﻿|#error|(0) This is an error!
+
+|#warning|(1) This is a warning!
+
+#line 23
+{caret}Shader "Unlit/SingleColor"
+{
+    |#error|(2) Another error!
+    |#warning|(3) And another warning!
+    #line 34 23 23 32 
+    Properties
+    {
+        // Color property for material inspector, default to white
+        #ValidName ("Another Color", Color) = (1,1,1,1)
+        |#warning|(4) This is not a valid name!
+    }
+    SubShader
+    {
+        // Unity's lexer doesn't require a new line, but it does eat the last character
+        #line 23 |P|(5)Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            
+            // vertex shader
+            // this time instead of using "appdata" struct, just spell inputs manually,
+            // and instead of returning v2f struct, also just return a single output
+            // float4 clip position
+            float4 vert (float4 vertex : POSITION) : SV_POSITION
+            {
+                return mul(UNITY_MATRIX_MVP, vertex);
+            }
+            
+            // color from the material
+            fixed4 _Color;
+
+            // pixel shader, no inputs needed
+            fixed4 frag () : SV_Target
+            {
+                return _Color; // just return it
+            }
+            ENDCG
+        }
+    // Errors!
+    |#error|(6)
+    |#warning|(7)
+
+    // Valid, means 0
+    #line
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Underlined Error Highlighting: This is an error!
+(1): ReSharper Warning: This is a warning!
+(2): ReSharper Underlined Error Highlighting: Another error!
+(3): ReSharper Warning: And another warning!
+(4): ReSharper Warning: This is not a valid name!
+(5): ReSharper Dead Code: Ignored character. Consider inserting new line for clarity
+(6): ReSharper Underlined Error Highlighting: #error not terminated
+(7): ReSharper Underlined Error Highlighting: #warning not terminated

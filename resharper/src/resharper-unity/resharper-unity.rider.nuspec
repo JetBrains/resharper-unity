@@ -40,6 +40,44 @@
 &#8226; Marks empty event functions as dead code, with Quick Fix to remove.
 </description>
 <releaseNotes>
+&#8226; Parse pre-processor directives in ShaderLab (#186)
+&#8226; Parse property reference for BlendOp (RIDER-8386)
+&#8226; Unity3dRider: Fix path to Toolbox on Mac
+&#8226; Unity3dRider: Fix reference to nunit.framework.dll, as the Unity distributed version doesn't run tests correctly with Rider (#194)
+&#8226; Unity3dRider: Option to disable hippie completion (RIDER-5996)
+&#8226; Unity3dRider: Option to select Rider path and make default
+
+From 2.0.2:
+&#8226; Add ability to disable advanced ShaderLab syntax (#183)
+
+From 2.0.1:
+&#8226; Add support for HLSL and GLSL blocks
+&#8226; Unity3dRider: Support for Unity 2017.x
+&#8226; Unity3dRider: Add Assembly Definition file for Unity 2017.2
+&#8226; Unity3dRider: Normalise line endings (RIDER-7992)
+
+From 2.0.0:
+&#8226; Parse ShaderLab files, show syntax error highlighting
+&#8226; Brace matching for ShaderLab files
+&#8226; TODO comments support for ShaderLab files
+&#8226; Rider: ShaderLab syntax highlighting, code folding and simple word completion
+&#8226; Rider: Cg block keyword based syntax highlighting and simple word completion
+&#8226; Unity3dRider: Auto detect installed plugin location
+&#8226; Install Unity3dRider plugin if Unity references are present but unresolved (#160)
+&#8226; Mark Unity3dRider as an auto generated file so inspections are disabled
+&#8226; Unity3dRider: Remove TODO comments
+&#8226; Unity3dRider: Remove "Open C# Project In Rider" from Unity 2017
+
+From 1.9.1:
+&#8226; Reduce logging and change tracking for non Unity projects
+&#8226; Unity3dRider: Replace logging checkbox with level drop down (#166)
+
+From 1.9.0:
+&#8226; Only set C# language level if Unity project has an Assets folder (#150)
+&#8226; Navigate to correct local documentation page, or Unity's search page (#152)
+&#8226; Bundles Unity3dRider plugin
+
+From 1.8.0:
 &#8226; Inspection and quick fix for calling new on ScriptableObject and MonoBehaviour (#142)
 &#8226; Inspections and quick fixes for incorrect method signature for InitializeOnLoad attributes (#143)
 &#8226; Added base type required annotations for various attributes (#145)

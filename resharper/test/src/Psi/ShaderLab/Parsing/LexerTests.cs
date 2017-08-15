@@ -38,6 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         }
 
         [TestCase("Everything")]
+        [TestCase("Preprocessor")]
         [TestCase("Properties")]
         [TestCase("PropertyAttributes")]
         [TestCase("Tags")]

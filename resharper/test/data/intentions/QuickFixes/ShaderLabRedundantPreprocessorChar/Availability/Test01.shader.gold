@@ -1,0 +1,7 @@
+﻿#line 23|S|(0)Shader "Foo" {
+}
+
+------------------------------------------------
+0: Ignored character. Consider inserting new line for clarity
+QUICKFIXES:
+Insert new line
