@@ -460,7 +460,6 @@ namespace Plugins.Editor.JetBrains
       return process;
     }
 
-#if !UNITY_2017_1_OR_NEWER
     // The default "Open C# Project" menu item will use the external script editor to load the .sln
     // file, but unless Unity knows the external script editor can properly load solutions, it will
     // also launch MonoDevelop (or the OS registered app for .sln files). This menu item side steps
@@ -482,7 +481,6 @@ namespace Plugins.Editor.JetBrains
     {
       return Enabled;
     }
-#endif
 
     /// <summary>
     /// Force Unity To Write Project File
