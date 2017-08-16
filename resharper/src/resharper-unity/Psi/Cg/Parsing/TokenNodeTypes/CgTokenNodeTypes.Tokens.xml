@@ -20,4 +20,10 @@
   <BaseTokenNodeTypeIndex>1000</BaseTokenNodeTypeIndex>
   <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes</TokenTypeNamespace>
   <TokenTypeClass>CgTokenNodeTypes</TokenTypeClass>
+
+  <Tokens NodeType="CgFixedLengthTokenNodeType">
+    <Token name="LBRACE" representation="{" />
+    <Token name="RBRACE" representation="}" />
+    <Token name="SEMICOLON" representation=";" />
+  </Tokens>
 </CgTokens>

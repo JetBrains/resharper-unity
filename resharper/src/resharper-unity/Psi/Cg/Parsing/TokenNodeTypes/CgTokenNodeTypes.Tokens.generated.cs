@@ -14,5 +14,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes
 {
   public partial class CgTokenNodeTypes
   {
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1000;  }
+    //Tokens
+    public const int LBRACE_NODE_TYPE_INDEX = 1000;
+    public static readonly TokenNodeType LBRACE = new CgFixedLengthTokenNodeType("LBRACE", LBRACE_NODE_TYPE_INDEX, representation: "{");
+    public const int RBRACE_NODE_TYPE_INDEX = 1001;
+    public static readonly TokenNodeType RBRACE = new CgFixedLengthTokenNodeType("RBRACE", RBRACE_NODE_TYPE_INDEX, representation: "}");
+    public const int SEMICOLON_NODE_TYPE_INDEX = 1002;
+    public static readonly TokenNodeType SEMICOLON = new CgFixedLengthTokenNodeType("SEMICOLON", SEMICOLON_NODE_TYPE_INDEX, representation: ";");
+
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1003;  }
 }
