@@ -50,8 +50,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.UsageChecking
                                 (highlighting, settingsStore) =>
                                 {
                                     var attribute = highlightingSettingsManager.GetHighlightingAttribute(highlighting);
-                                    return highlightingSettingsManager.GetSeverity(highlighting, settingsStore) !=
+                                    var severity =
+#if RIDER
+                                        highlightingSettingsManager.GetSeverity(highlighting, file, Solution);
+                                        #else
+                                            highlightingSettingsManager.GetSeverity(highlighting, settingsStore);
+                                        #endif
+                                    return severity !=
                                            Severity.INFO || attribute.OverlapResolve != OverlapResolveKind.NONE;
+                                    
                                 },
                                 CSharpLanguage.Instance);
                             process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);

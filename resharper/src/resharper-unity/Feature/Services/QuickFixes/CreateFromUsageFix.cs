@@ -13,6 +13,7 @@ using JetBrains.Util;
 
 #if WAVE08
 using JetBrains.UI.BulbMenu;
+using ICreateFromUsageActionProvider = JetBrains.ReSharper.Intentions.CreateFromUsage.ICreateFromUsageAction;
 #else
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Positions;
@@ -37,8 +38,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
         private static readonly InvisibleAnchor AfterCreateFromUsageOthersAnchor = new InvisibleAnchor(
             CreateFromUsageFixBase.CreateFromUsageOthersAnchor, AnchorPosition.BasePosition.GetNext());
 
-        private readonly List<ICreateFromUsageAction> myUnfilteredItems;
-
+        private readonly List<ICreateFromUsageActionProvider> myUnfilteredItems;
+        
         // Unresolved variable/field name
         public CreateFromUsageFix(NotResolvedError error)
             : this(error.Reference)
@@ -59,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 
         public CreateFromUsageFix(RedundantInitializeOnLoadAttributeWarning warning)
         {
-            myUnfilteredItems = new List<ICreateFromUsageAction>
+            myUnfilteredItems = new List<ICreateFromUsageActionProvider>
             {
                 new CreateStaticConstructorFromUsageAction(warning.Attribute)
             };
@@ -67,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 
         private CreateFromUsageFix(IReference reference)
         {
-            myUnfilteredItems = new List<ICreateFromUsageAction>();
+            myUnfilteredItems = new List<ICreateFromUsageActionProvider>();
 
             var treeNode = reference.GetTreeNode();
             if (treeNode.IsFromUnityProject())
@@ -99,7 +100,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
             var firstLevelItemsList = new List<IBulbAction>();
             var secondLevelItemsList = new List<IBulbAction>();
 
-            var unorderedItems = myUnfilteredItems.Select(a => Tuple.Create(a, a.GetBulbItem()))
+            var unorderedItems = myUnfilteredItems
+#if RIDER                
+                .SelectMany(a => a.GetBulbItems().Select(bi => Tuple.Create(a, bi)))
+#else
+                .Select(a => Tuple.Create(a, a.GetBulbItem()))
+#endif
                 .Where(i => i.Item2 != null)
                 .ToList();
 

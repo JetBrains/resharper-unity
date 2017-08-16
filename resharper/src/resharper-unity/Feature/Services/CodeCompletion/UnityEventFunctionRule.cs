@@ -59,7 +59,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
         public override CompletionMode SupportedCompletionMode => CompletionMode.All;
         public override EvaluationMode SupportedEvaluationMode => EvaluationMode.LightAndFull;
 
+        #if RIDER
+        protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
+        #else
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, GroupedItemsCollector collector)
+        #endif
         {
             IClassLikeDeclaration declaration;
             bool hasVisibilityModifier;
