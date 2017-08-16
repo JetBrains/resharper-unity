@@ -1,4 +1,5 @@
 using System.Text;
+using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -7,7 +8,7 @@ using JetBrains.Text;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodes
 {
-    public abstract class CgTokenNodeBase : LeafElementBase, ITokenNode
+    public abstract class CgTokenNodeBase : LeafElementBase, ITokenNode, ICgTreeNode
     {
         public override PsiLanguageType Language => LanguageFromParent;
         
@@ -30,6 +31,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodes
         public override IBuffer GetTextAsBuffer()
         {
             return new StringBuffer(GetText());
+        }
+
+        public void Accept(TreeNodeVisitor visitor)
+        {
+            visitor.VisitNode(this);
+        }
+
+        public void Accept<TContext>(TreeNodeVisitor<TContext> visitor, TContext context)
+        {
+            visitor.VisitNode(this, context);
+        }
+
+        public TReturn Accept<TContext, TReturn>(TreeNodeVisitor<TContext, TReturn> visitor, TContext context)
+        {
+            return visitor.VisitNode(this, context);
         }
     }
 }
