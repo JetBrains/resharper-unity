@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg
 
         public override IParser CreateParser(ILexer lexer, IPsiModule module, IPsiSourceFile sourceFile)
         {
-            return new DummyParser();
+            return new CgParser(lexer);
         }
 
         public override IEnumerable<ITypeDeclaration> FindTypeDeclarations(IFile file)
@@ -54,20 +54,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg
             public ILexer CreateLexer(IBuffer buffer)
             {
                 return new CgLexerGenerated(buffer);
-            }
-        }
-        
-        private class DummyParser : IParser
-        {
-            public IFile ParseFile()
-            {
-                return new DummyFile();
-            }
-
-            private class DummyFile : FileElementBase
-            {
-                public override NodeType NodeType => CgTokenNodeTypes.BAD_CHARACTER;
-                public override PsiLanguageType Language => (PsiLanguageType) CgLanguage.Instance ?? UnknownLanguage.Instance;
             }
         }
     }
