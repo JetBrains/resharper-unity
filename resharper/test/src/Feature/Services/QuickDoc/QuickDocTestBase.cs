@@ -25,7 +25,11 @@ using JetBrains.Application.UI.Actions.ActionManager;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.QuickDoc
 {
     [Category("QuickDoc")]
+#if RIDER
+    [TestReferences("System.Core", DoesNotInherit = false)]
+#else
     [TestReferences(PlatformManager.SystemCore, DoesNotInherit = false)]
+#endif    
     public abstract class QuickDocTestBase : BaseTestWithTextControl
     {
         protected override void DoTest(IProject testProject)

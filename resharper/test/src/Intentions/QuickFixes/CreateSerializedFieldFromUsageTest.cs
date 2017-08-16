@@ -11,6 +11,10 @@ using JetBrains.TextControl;
 using JetBrains.Util.Special;
 using NUnit.Framework;
 
+#if WAVE08
+using ICreateFromUsageActionProvider = JetBrains.ReSharper.Intentions.CreateFromUsage.ICreateFromUsageAction;
+#endif
+
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
 {
     [TestUnity]
@@ -26,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     }
 
     public abstract class CSharpCreateFromUsageTestBase<T> : CSharpQuickFixTestBase<CreateFromUsageFix>
-        where T : ICreateFromUsageAction
+        where T : ICreateFromUsageActionProvider
     {
         protected override Func<IList<IntentionAction>, IBulbAction> GetBulbItemSelector(ITextControl textControl)
         {
