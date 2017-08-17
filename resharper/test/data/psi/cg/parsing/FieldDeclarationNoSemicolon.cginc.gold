@@ -2,7 +2,8 @@
 ICgFile
   ICgFieldDeclaration
     ICgTypeName
-      CgIdentifier(type:IDENTIFIER, text:float)
+      ICgBuiltInType
+        CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
     ICgFieldName
       CgIdentifier(type:IDENTIFIER, text:foo)
   ErrorElement:; expected

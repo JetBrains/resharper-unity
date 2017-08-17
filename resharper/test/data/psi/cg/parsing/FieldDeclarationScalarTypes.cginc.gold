@@ -1,0 +1,52 @@
+﻿Language: PsiLanguageType:CG
+ICgFile
+  ICgFieldDeclaration
+    ICgTypeName
+      ICgBuiltInType
+        CgKeywordTokenNode(type:BOOL_KEYWORD, text:bool)
+    ICgFieldName
+      CgIdentifier(type:IDENTIFIER, text:b)
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  ICgFieldDeclaration
+    ICgTypeName
+      ICgBuiltInType
+        CgKeywordTokenNode(type:INT_KEYWORD, text:int)
+    ICgFieldName
+      CgIdentifier(type:IDENTIFIER, text:i)
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  ICgFieldDeclaration
+    ICgTypeName
+      ICgBuiltInType
+        CgKeywordTokenNode(type:UINT_KEYWORD, text:uint)
+    ICgFieldName
+      CgIdentifier(type:IDENTIFIER, text:ui)
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  ICgFieldDeclaration
+    ICgTypeName
+      ICgBuiltInType
+        CgKeywordTokenNode(type:DWORD_KEYWORD, text:dword)
+    ICgFieldName
+      CgIdentifier(type:IDENTIFIER, text:dw)
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  ICgFieldDeclaration
+    ICgTypeName
+      ICgBuiltInType
+        CgKeywordTokenNode(type:HALF_KEYWORD, text:half)
+    ICgFieldName
+      CgIdentifier(type:IDENTIFIER, text:h)
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  ICgFieldDeclaration
+    ICgTypeName
+      ICgBuiltInType
+        CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+    ICgFieldName
+      CgIdentifier(type:IDENTIFIER, text:f)
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  ICgFieldDeclaration
+    ICgTypeName
+      ICgBuiltInType
+        CgKeywordTokenNode(type:DOUBLE_KEYWORD, text:double)
+    ICgFieldName
+      CgIdentifier(type:IDENTIFIER, text:d)
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+
