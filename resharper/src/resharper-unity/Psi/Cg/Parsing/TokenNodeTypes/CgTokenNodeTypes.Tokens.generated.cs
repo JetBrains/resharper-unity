@@ -38,5 +38,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes
     public const int DOUBLE_KEYWORD_NODE_TYPE_INDEX = 1009;
     public static readonly TokenNodeType DOUBLE_KEYWORD = new CgKeywordTokenNodeType("DOUBLE_KEYWORD", DOUBLE_KEYWORD_NODE_TYPE_INDEX, representation: "double");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1010;  }
+    //TypeDeclarationKeywords
+    public const int STRUCT_KEYWORD_NODE_TYPE_INDEX = 1010;
+    public static readonly TokenNodeType STRUCT_KEYWORD = new CgKeywordTokenNodeType("STRUCT_KEYWORD", STRUCT_KEYWORD_NODE_TYPE_INDEX, representation: "struct");
+
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1011;  }
 }

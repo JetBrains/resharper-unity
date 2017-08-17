@@ -1,0 +1,16 @@
+﻿Language: PsiLanguageType:CG
+ICgFile
+  ICgStructDeclaration
+    CgKeywordTokenNode(type:STRUCT_KEYWORD, text:struct)
+    CgIdentifier(type:IDENTIFIER, text:foo)
+    CgFixedLengthTokenNode(type:LBRACE, text:{)
+    ICgFieldDeclaration
+      ICgTypeName
+        ICgBuiltInType
+          CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+      ICgFieldName
+        CgIdentifier(type:IDENTIFIER, text:f)
+      CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+    CgFixedLengthTokenNode(type:RBRACE, text:})
+  ErrorElement:; expected
+

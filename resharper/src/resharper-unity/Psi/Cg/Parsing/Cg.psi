@@ -52,8 +52,9 @@ options
   stubBase="CgFileElement";
 }
   :
-    (      
-      cgFieldDeclaration
+    (
+      cgFieldDeclaration            
+      | cgStructDeclaration
     )*
 // struct
 // function
@@ -65,13 +66,12 @@ cgFieldDeclaration
     cgTypeName
     cgFieldName
     SEMICOLON
-  ;  
+  ;
 
 cgTypeName
   :
     cgBuiltInType
-// or user-defined one
-// TODO: maybe allow identifiers here due to all cg flavors
+    | cgUserDeclaredType
   ;
 
 cgBuiltInType
@@ -85,7 +85,22 @@ cgBuiltInType
     | DOUBLE_KEYWORD
   ;
 
+cgUserDeclaredType
+  :
+    IDENTIFIER // TODO: not sure about that
+  ;
+
 cgFieldName
   :
     IDENTIFIER
+  ;
+
+cgStructDeclaration
+  :
+    STRUCT_KEYWORD
+    IDENTIFIER
+    LBRACE
+    cgFieldDeclaration*
+    RBRACE
+    SEMICOLON
   ;

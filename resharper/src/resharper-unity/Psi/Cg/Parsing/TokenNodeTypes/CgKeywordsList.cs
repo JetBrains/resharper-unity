@@ -9,6 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes
         static CgKeywordsList()
         {
             ALL = new NodeTypeSet(
+                CgTokenNodeTypes.STRUCT_KEYWORD,
+                
                 CgTokenNodeTypes.BOOL_KEYWORD,
                 CgTokenNodeTypes.INT_KEYWORD,
                 CgTokenNodeTypes.UINT_KEYWORD,

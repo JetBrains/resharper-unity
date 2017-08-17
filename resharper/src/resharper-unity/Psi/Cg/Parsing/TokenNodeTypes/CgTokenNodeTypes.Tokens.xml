@@ -36,4 +36,8 @@
     <Keyword name="FLOAT_KEYWORD" representation="float" />
     <Keyword name="DOUBLE_KEYWORD" representation="double" />    
   </FieldTypeKeywords>
+  
+  <TypeDeclarationKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="STRUCT_KEYWORD" representation="struct" />
+  </TypeDeclarationKeywords>
 </CgTokens>
