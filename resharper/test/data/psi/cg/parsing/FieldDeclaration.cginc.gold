@@ -1,0 +1,9 @@
+﻿Language: PsiLanguageType:CG
+ICgFile
+  ICgFieldDeclaration
+    ICgTypeName
+      CgIdentifier(type:IDENTIFIER, text:float)
+    ICgFieldName
+      CgIdentifier(type:IDENTIFIER, text:foo)
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+
