@@ -13,6 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
         
         public static string IDS_STRUCT_DECLARATION => "struct declaration";
         
+        public static string IDS_FUNCTION_RETURN_TYPE => "function return type";
+        
         public static string GetString(string id) => id;
         
         public static string GetUnexpectedTokenMessage() => "Unexpected token";

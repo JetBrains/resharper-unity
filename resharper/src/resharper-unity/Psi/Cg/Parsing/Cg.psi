@@ -53,8 +53,9 @@ options
 }
   :
     (
-      fieldDeclaration            
-      | structDeclaration
+      fieldDeclaration
+      | functionDeclaration
+      | structDeclaration      
     )*
   ;
 
@@ -118,4 +119,67 @@ structName
 structFieldList
   :
     fieldDeclaration*
+  ;
+
+/* void foo(arg1, arg2){
+    ...
+   }
+*/
+functionDeclaration
+  :
+    functionReturnType
+    functionName
+    LPAREN
+    functionArgList
+    RPAREN
+    LBRACE
+    functionBody
+    RBRACE
+  ;
+
+functionReturnType
+  :
+    VOID_KEYWORD
+    | typeName
+  ;
+
+functionName
+  :
+    IDENTIFIER
+  ;
+
+functionArgList
+  :
+    (
+      argument
+      (
+        COMMA
+        argument
+      )*
+    )?
+  ;
+
+argument
+  :    
+    argumentType
+    argumentName
+  ;
+
+argumentType
+  :
+    typeName
+  ;
+
+argumentName
+  :
+    IDENTIFIER
+  ;
+
+functionBody
+  :
+    // TODO: impl
+    (
+      IDENTIFIER*
+      SEMICOLON    
+    )*
   ;

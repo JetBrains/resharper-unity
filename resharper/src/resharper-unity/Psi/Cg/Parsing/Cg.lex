@@ -102,6 +102,9 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 
 <YYCG>   "{"                     { return CgTokenNodeTypes.LBRACE; }
 <YYCG>   "}"                     { return CgTokenNodeTypes.RBRACE; }
+<YYCG>   "("                     { return CgTokenNodeTypes.LPAREN; }
+<YYCG>   ")"                     { return CgTokenNodeTypes.RPAREN; }
+<YYCG>   ","                     { return CgTokenNodeTypes.COMMA; }
 <YYCG>   ";"                     { return CgTokenNodeTypes.SEMICOLON; }
 
 <YYCG>   {SINGLE_LINE_COMMENT}   { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }

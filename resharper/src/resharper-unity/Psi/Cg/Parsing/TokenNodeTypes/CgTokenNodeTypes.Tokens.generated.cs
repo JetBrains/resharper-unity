@@ -19,28 +19,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes
     public static readonly TokenNodeType LBRACE = new CgFixedLengthTokenNodeType("LBRACE", LBRACE_NODE_TYPE_INDEX, representation: "{");
     public const int RBRACE_NODE_TYPE_INDEX = 1001;
     public static readonly TokenNodeType RBRACE = new CgFixedLengthTokenNodeType("RBRACE", RBRACE_NODE_TYPE_INDEX, representation: "}");
-    public const int SEMICOLON_NODE_TYPE_INDEX = 1002;
+    public const int LPAREN_NODE_TYPE_INDEX = 1002;
+    public static readonly TokenNodeType LPAREN = new CgFixedLengthTokenNodeType("LPAREN", LPAREN_NODE_TYPE_INDEX, representation: "(");
+    public const int RPAREN_NODE_TYPE_INDEX = 1003;
+    public static readonly TokenNodeType RPAREN = new CgFixedLengthTokenNodeType("RPAREN", RPAREN_NODE_TYPE_INDEX, representation: ")");
+    public const int COMMA_NODE_TYPE_INDEX = 1004;
+    public static readonly TokenNodeType COMMA = new CgFixedLengthTokenNodeType("COMMA", COMMA_NODE_TYPE_INDEX, representation: ",");
+    public const int SEMICOLON_NODE_TYPE_INDEX = 1005;
     public static readonly TokenNodeType SEMICOLON = new CgFixedLengthTokenNodeType("SEMICOLON", SEMICOLON_NODE_TYPE_INDEX, representation: ";");
 
     //FieldTypeKeywords
-    public const int BOOL_KEYWORD_NODE_TYPE_INDEX = 1003;
+    public const int BOOL_KEYWORD_NODE_TYPE_INDEX = 1006;
     public static readonly TokenNodeType BOOL_KEYWORD = new CgKeywordTokenNodeType("BOOL_KEYWORD", BOOL_KEYWORD_NODE_TYPE_INDEX, representation: "bool");
-    public const int INT_KEYWORD_NODE_TYPE_INDEX = 1004;
+    public const int INT_KEYWORD_NODE_TYPE_INDEX = 1007;
     public static readonly TokenNodeType INT_KEYWORD = new CgKeywordTokenNodeType("INT_KEYWORD", INT_KEYWORD_NODE_TYPE_INDEX, representation: "int");
-    public const int UINT_KEYWORD_NODE_TYPE_INDEX = 1005;
+    public const int UINT_KEYWORD_NODE_TYPE_INDEX = 1008;
     public static readonly TokenNodeType UINT_KEYWORD = new CgKeywordTokenNodeType("UINT_KEYWORD", UINT_KEYWORD_NODE_TYPE_INDEX, representation: "uint");
-    public const int DWORD_KEYWORD_NODE_TYPE_INDEX = 1006;
+    public const int DWORD_KEYWORD_NODE_TYPE_INDEX = 1009;
     public static readonly TokenNodeType DWORD_KEYWORD = new CgKeywordTokenNodeType("DWORD_KEYWORD", DWORD_KEYWORD_NODE_TYPE_INDEX, representation: "dword");
-    public const int HALF_KEYWORD_NODE_TYPE_INDEX = 1007;
+    public const int HALF_KEYWORD_NODE_TYPE_INDEX = 1010;
     public static readonly TokenNodeType HALF_KEYWORD = new CgKeywordTokenNodeType("HALF_KEYWORD", HALF_KEYWORD_NODE_TYPE_INDEX, representation: "half");
-    public const int FLOAT_KEYWORD_NODE_TYPE_INDEX = 1008;
+    public const int FLOAT_KEYWORD_NODE_TYPE_INDEX = 1011;
     public static readonly TokenNodeType FLOAT_KEYWORD = new CgKeywordTokenNodeType("FLOAT_KEYWORD", FLOAT_KEYWORD_NODE_TYPE_INDEX, representation: "float");
-    public const int DOUBLE_KEYWORD_NODE_TYPE_INDEX = 1009;
+    public const int DOUBLE_KEYWORD_NODE_TYPE_INDEX = 1012;
     public static readonly TokenNodeType DOUBLE_KEYWORD = new CgKeywordTokenNodeType("DOUBLE_KEYWORD", DOUBLE_KEYWORD_NODE_TYPE_INDEX, representation: "double");
 
+    //FunctionReturnTypeKeywords
+    public const int VOID_KEYWORD_NODE_TYPE_INDEX = 1013;
+    public static readonly TokenNodeType VOID_KEYWORD = new CgKeywordTokenNodeType("VOID_KEYWORD", VOID_KEYWORD_NODE_TYPE_INDEX, representation: "void");
+
     //TypeDeclarationKeywords
-    public const int STRUCT_KEYWORD_NODE_TYPE_INDEX = 1010;
+    public const int STRUCT_KEYWORD_NODE_TYPE_INDEX = 1014;
     public static readonly TokenNodeType STRUCT_KEYWORD = new CgKeywordTokenNodeType("STRUCT_KEYWORD", STRUCT_KEYWORD_NODE_TYPE_INDEX, representation: "struct");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1011;  }
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1015;  }
 }
