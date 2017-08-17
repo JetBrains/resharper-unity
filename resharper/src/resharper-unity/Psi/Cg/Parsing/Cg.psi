@@ -52,20 +52,29 @@ options
   stubBase="CgFileElement";
 }
   :
-    (
-      fieldDeclaration
-      | functionDeclaration
-      | structDeclaration      
-    )*
+    declaration*    
   ;
 
+interface declaration
+  :       
+      structDeclaration
+      | 
+      (
+        !(#type:typeName)
+        !(#name:IDENTIFIER)
+        (
+          fieldDeclaration[type, name]
+          | functionDeclaration[type, name]
+        )
+      )
+  ;
 /*
   float foo;
 */
-fieldDeclaration
+fieldDeclaration[typeName type, IDENTIFIER name]
   :
-    typeName
-    fieldName
+    &type
+    &name
     SEMICOLON
   ;
 
@@ -84,16 +93,12 @@ builtInType
     | HALF_KEYWORD
     | FLOAT_KEYWORD
     | DOUBLE_KEYWORD
+    | VOID_KEYWORD // TODO: fix void fields
   ;
 
 userDeclaredType
   :
     IDENTIFIER // TODO: not sure about that
-  ;
-
-fieldName
-  :
-    IDENTIFIER
   ;
 
 /* 
@@ -118,17 +123,23 @@ structName
 
 structFieldList
   :
-    fieldDeclaration*
+    (
+      !(#type:typeName)
+      !(#name:IDENTIFIER)
+      fieldDeclaration[type, name]
+    )*
   ;
 
 /* void foo(arg1, arg2){
     ...
    }
 */
-functionDeclaration
-  :
-    functionReturnType
-    functionName
+
+functionDeclaration[typeName type, IDENTIFIER name]
+  :  
+    VOID_KEYWORD    
+    | &type
+    &name
     LPAREN
     functionArgList
     RPAREN

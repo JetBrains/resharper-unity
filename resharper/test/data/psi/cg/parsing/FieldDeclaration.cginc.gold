@@ -4,7 +4,6 @@ ICgFile
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:foo)
+    CgIdentifier(type:IDENTIFIER, text:foo)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
 

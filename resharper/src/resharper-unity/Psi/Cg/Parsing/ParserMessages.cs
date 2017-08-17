@@ -5,6 +5,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
 {
     public static class ParserMessages
     {
+        public static string IDS_DECLARATION => "Field, function or structure declaration";
+        
+        public static string IDS_FIELD_OR_FUNCTION_DECLARATION => "field or function declaration";
+        
         public static string IDS_FIELD_DECLARATION => "field declaration";
 
         public static string IDS_BUILT_IN_TYPE => "built-in type";
@@ -14,6 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
         public static string IDS_STRUCT_DECLARATION => "struct declaration";
         
         public static string IDS_FUNCTION_RETURN_TYPE => "function return type";
+        
+        public static string IDS_FUNCTION_DECLARATION => "function declaration";
         
         public static string GetString(string id) => id;
         

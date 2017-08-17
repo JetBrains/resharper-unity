@@ -4,49 +4,42 @@ ICgFile
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:BOOL_KEYWORD, text:bool)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:b)
+    CgIdentifier(type:IDENTIFIER, text:b)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:INT_KEYWORD, text:int)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:i)
+    CgIdentifier(type:IDENTIFIER, text:i)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:UINT_KEYWORD, text:uint)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:ui)
+    CgIdentifier(type:IDENTIFIER, text:ui)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:DWORD_KEYWORD, text:dword)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:dw)
+    CgIdentifier(type:IDENTIFIER, text:dw)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:HALF_KEYWORD, text:half)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:h)
+    CgIdentifier(type:IDENTIFIER, text:h)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:f)
+    CgIdentifier(type:IDENTIFIER, text:f)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:DOUBLE_KEYWORD, text:double)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:d)
+    CgIdentifier(type:IDENTIFIER, text:d)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
 

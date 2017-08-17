@@ -10,8 +10,7 @@ ICgFile
         ITypeName
           IBuiltInType
             CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
-        IFieldName
-          CgIdentifier(type:IDENTIFIER, text:f)
+        CgIdentifier(type:IDENTIFIER, text:f)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
     CgFixedLengthTokenNode(type:RBRACE, text:})
   ErrorElement:; expected

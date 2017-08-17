@@ -1,12 +1,10 @@
 ﻿Language: PsiLanguageType:CG
 ICgFile
   IFunctionDeclaration
-    IFunctionReturnType
-      ITypeName
-        IBuiltInType
-          CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
-    IFunctionName
-      CgIdentifier(type:IDENTIFIER, text:foo)
+    ITypeName
+      IBuiltInType
+        CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+    CgIdentifier(type:IDENTIFIER, text:foo)
     CgFixedLengthTokenNode(type:LPAREN, text:()
     IFunctionArgList
     CgFixedLengthTokenNode(type:RPAREN, text:))

@@ -10,8 +10,7 @@ ICgFile
         ITypeName
           IBuiltInType
             CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
-        IFieldName
-          CgIdentifier(type:IDENTIFIER, text:f)
+        CgIdentifier(type:IDENTIFIER, text:f)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
     CgFixedLengthTokenNode(type:RBRACE, text:})
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
@@ -19,7 +18,6 @@ ICgFile
     ITypeName
       IUserDeclaredType
         CgIdentifier(type:IDENTIFIER, text:foo)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:field)
+    CgIdentifier(type:IDENTIFIER, text:field)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
 

@@ -1,10 +1,5 @@
 ﻿Language: PsiLanguageType:CG
 ICgFile
-  IFieldDeclaration
-    ITypeName
-      IBuiltInType
-        CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
-    IFieldName
-      CgIdentifier(type:IDENTIFIER, text:foo)
-  ErrorElement:; expected
+  CgIdentifier(type:IDENTIFIER, text:foo)
+  ErrorElement:Field declaration or function declaration expected
 
