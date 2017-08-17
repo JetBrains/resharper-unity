@@ -4,31 +4,44 @@ ICgFile
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:field)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IStructDeclaration
     CgKeywordTokenNode(type:STRUCT_KEYWORD, text:struct)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     IStructName
       CgIdentifier(type:IDENTIFIER, text:hello)
     CgFixedLengthTokenNode(type:LBRACE, text:{)
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+    CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
     IStructFieldList
       IFieldDeclaration
         ITypeName
           IBuiltInType
             CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
         CgIdentifier(type:IDENTIFIER, text:foo)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
     CgFixedLengthTokenNode(type:RBRACE, text:})
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IFunctionDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:main)
     CgFixedLengthTokenNode(type:LPAREN, text:()
     IFunctionArgList
     CgFixedLengthTokenNode(type:RPAREN, text:))
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
     CgFixedLengthTokenNode(type:LBRACE, text:{)
     IFunctionBody
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
     CgFixedLengthTokenNode(type:RBRACE, text:})
 

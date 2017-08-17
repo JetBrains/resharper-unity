@@ -1,5 +1,7 @@
 ﻿Language: PsiLanguageType:CG
 ICgFile
+  CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+  CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
   CgIdentifier(type:IDENTIFIER, text:foo)
   ErrorElement:Field declaration or function declaration expected
 

@@ -13,5 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes
         public static readonly TokenNodeType IDENTIFIER = new CgIdentifierTokenNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 4);
         
         public static readonly TokenNodeType SINGLE_LINE_COMMENT = new CgSingleLineCommentTokenNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 5);
+        
+        public static readonly TokenNodeType EOF = new CgGenericTokenNodeType("EOF", LAST_GENERATED_TOKEN_TYPE_INDEX + 6, "EOF");
     }
 }

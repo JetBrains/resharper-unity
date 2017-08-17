@@ -4,11 +4,14 @@ ICgFile
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:foo)
     CgFixedLengthTokenNode(type:LPAREN, text:()
     IFunctionArgList
     CgFixedLengthTokenNode(type:RPAREN, text:))
     CgFixedLengthTokenNode(type:LBRACE, text:{)
     IFunctionBody
+    CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
     CgFixedLengthTokenNode(type:RBRACE, text:})
 

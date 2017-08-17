@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 using JetBrains.Util;
 
@@ -16,9 +17,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg
     [Language(typeof(CgLanguage))]
     public class CgLanguageService : LanguageService
     {
-        public CgLanguageService(PsiLanguageType psiLanguageType, IConstantValueService constantValueService)
+        private readonly CommonIdentifierIntern myIntern;
+
+        public CgLanguageService(PsiLanguageType psiLanguageType, IConstantValueService constantValueService, CommonIdentifierIntern intern)
             : base(psiLanguageType, constantValueService)
         {
+            myIntern = intern;
         }
 
         public override ILexerFactory GetPrimaryLexerFactory()
@@ -33,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg
 
         public override IParser CreateParser(ILexer lexer, IPsiModule module, IPsiSourceFile sourceFile)
         {
-            return new CgParser(lexer);
+            return new CgParser(lexer, myIntern);
         }
 
         public override IEnumerable<ITypeDeclaration> FindTypeDeclarations(IFile file)

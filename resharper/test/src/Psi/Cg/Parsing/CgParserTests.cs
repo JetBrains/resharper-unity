@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg.Parsing
     {
         protected override string RelativeTestDataPath => @"psi\cg\parsing";
         
-        [TestCase("AllDefinitions")]
+        [TestCase("AllDeclarations")]
         
         [TestCase("Comment")]
         

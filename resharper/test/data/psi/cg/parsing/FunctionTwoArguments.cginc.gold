@@ -1,9 +1,11 @@
 ﻿Language: PsiLanguageType:CG
 ICgFile
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IFunctionDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:foo)
     CgFixedLengthTokenNode(type:LPAREN, text:()
     IFunctionArgList
@@ -12,18 +14,24 @@ ICgFile
           ITypeName
             IBuiltInType
               CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
         IArgumentName
           CgIdentifier(type:IDENTIFIER, text:first)
       CgFixedLengthTokenNode(type:COMMA, text:,)
+      CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
       IArgument
         IArgumentType
           ITypeName
             IBuiltInType
               CgKeywordTokenNode(type:BOOL_KEYWORD, text:bool)
+        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
         IArgumentName
           CgIdentifier(type:IDENTIFIER, text:second)
     CgFixedLengthTokenNode(type:RPAREN, text:))
     CgFixedLengthTokenNode(type:LBRACE, text:{)
     IFunctionBody
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+    CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
     CgFixedLengthTokenNode(type:RBRACE, text:})
 

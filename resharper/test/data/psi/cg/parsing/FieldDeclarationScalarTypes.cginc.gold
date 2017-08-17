@@ -1,45 +1,59 @@
 ﻿Language: PsiLanguageType:CG
 ICgFile
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:BOOL_KEYWORD, text:bool)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:b)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:INT_KEYWORD, text:int)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:i)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:UINT_KEYWORD, text:uint)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:ui)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:DWORD_KEYWORD, text:dword)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:dw)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:HALF_KEYWORD, text:half)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:h)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:f)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IFieldDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:DOUBLE_KEYWORD, text:double)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     CgIdentifier(type:IDENTIFIER, text:d)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
 
