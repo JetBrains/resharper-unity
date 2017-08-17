@@ -6,6 +6,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
     public static class ParserMessages
     {
         public static string IDS_CG_FIELD_DECLARATION => "field declaration";
+
+        public static string IDS_CG_BUILT_IN_TYPE => "built-in type";
         
         public static string GetString(string id) => id;
         

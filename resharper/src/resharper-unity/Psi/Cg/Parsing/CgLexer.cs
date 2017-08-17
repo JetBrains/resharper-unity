@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.Util;
@@ -8,6 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
 {
     public partial class CgLexerGenerated
     {
+        private static readonly LexerDictionary<TokenNodeType> Keywords = new LexerDictionary<TokenNodeType>();
+        private readonly ReusableBufferRange myBufferRange = new ReusableBufferRange();
+        
         // ReSharper disable once InconsistentNaming
         private TokenNodeType currentTokenType;
 
@@ -18,6 +22,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
             public int YyBufferStart;
             public int YyBufferEnd;
             public int YyLexicalState;
+        }
+
+        static CgLexerGenerated()
+        {
+            foreach (var nodeType in CgKeywordsList.ALL)
+            {
+                var keyword = (TokenNodeType) nodeType;
+                Keywords[keyword.TokenRepresentation] = keyword;
+            }
         }
 
         public void Start()
@@ -113,6 +126,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
             }
 
             return currentTokenType;
+        }
+        
+        private TokenNodeType FindKeywordByCurrentToken()
+        {
+            return Keywords.GetValueSafe(myBufferRange, yy_buffer, yy_buffer_start, yy_buffer_end);
         }
     }
 }

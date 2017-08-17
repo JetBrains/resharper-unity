@@ -69,7 +69,20 @@ cgFieldDeclaration
 
 cgTypeName
   :
-    IDENTIFIER
+    cgBuiltInType
+// or user-defined one
+// TODO: maybe allow identifiers here due to all cg flavors
+  ;
+
+cgBuiltInType
+  :
+    BOOL_KEYWORD
+    | INT_KEYWORD
+    | UINT_KEYWORD
+    | DWORD_KEYWORD
+    | HALF_KEYWORD
+    | FLOAT_KEYWORD
+    | DOUBLE_KEYWORD
   ;
 
 cgFieldName

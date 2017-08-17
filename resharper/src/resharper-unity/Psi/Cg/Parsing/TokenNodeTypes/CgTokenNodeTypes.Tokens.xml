@@ -26,4 +26,14 @@
     <Token name="RBRACE" representation="}" />
     <Token name="SEMICOLON" representation=";" />
   </Tokens>
+
+  <FieldTypeKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="BOOL_KEYWORD" representation="bool" />
+    <Keyword name="INT_KEYWORD" representation="int" />
+    <Keyword name="UINT_KEYWORD" representation="uint" />
+    <Keyword name="DWORD_KEYWORD" representation="dword" />
+    <Keyword name="HALF_KEYWORD" representation="half" />
+    <Keyword name="FLOAT_KEYWORD" representation="float" />
+    <Keyword name="DOUBLE_KEYWORD" representation="double" />    
+  </FieldTypeKeywords>
 </CgTokens>
