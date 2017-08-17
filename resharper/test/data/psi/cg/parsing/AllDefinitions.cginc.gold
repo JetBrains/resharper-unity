@@ -1,0 +1,34 @@
+﻿Language: PsiLanguageType:CG
+ICgFile
+  IFieldDeclaration
+    ITypeName
+      IBuiltInType
+        CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+    CgIdentifier(type:IDENTIFIER, text:field)
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  IStructDeclaration
+    CgKeywordTokenNode(type:STRUCT_KEYWORD, text:struct)
+    IStructName
+      CgIdentifier(type:IDENTIFIER, text:hello)
+    CgFixedLengthTokenNode(type:LBRACE, text:{)
+    IStructFieldList
+      IFieldDeclaration
+        ITypeName
+          IBuiltInType
+            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+        CgIdentifier(type:IDENTIFIER, text:foo)
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+    CgFixedLengthTokenNode(type:RBRACE, text:})
+    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  IFunctionDeclaration
+    ITypeName
+      IBuiltInType
+        CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+    CgIdentifier(type:IDENTIFIER, text:main)
+    CgFixedLengthTokenNode(type:LPAREN, text:()
+    IFunctionArgList
+    CgFixedLengthTokenNode(type:RPAREN, text:))
+    CgFixedLengthTokenNode(type:LBRACE, text:{)
+    IFunctionBody
+    CgFixedLengthTokenNode(type:RBRACE, text:})
+

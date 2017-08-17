@@ -25,7 +25,7 @@
     <!-- Cg support -->
     <fileTypeFactory id="Cg" implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgFileTypeFactory" />
     <lang.parserDefinition language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgParserDefinition" />
-<!--    <lang.syntaxHighlighterFactory language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgSyntaxHighlighterProvider" /> -->
+    <lang.syntaxHighlighterFactory language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgSyntaxHighlighterProvider" />
     <backend.markup.adapterFactory language="Cg" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
     <backend.actions.support language="Cg" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgIconProvider" />
