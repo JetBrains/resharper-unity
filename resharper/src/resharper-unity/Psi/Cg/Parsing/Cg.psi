@@ -53,28 +53,28 @@ options
 }
   :
     (
-      cgFieldDeclaration            
-      | cgStructDeclaration
+      fieldDeclaration            
+      | structDeclaration
     )*
-// struct
-// function
-// field
   ;
 
-cgFieldDeclaration
+/*
+  float foo;
+*/
+fieldDeclaration
   :
-    cgTypeName
-    cgFieldName
+    typeName
+    fieldName
     SEMICOLON
   ;
 
-cgTypeName
+typeName
   :
-    cgBuiltInType
-    | cgUserDeclaredType
+    builtInType
+    | userDeclaredType
   ;
 
-cgBuiltInType
+builtInType
   :
     BOOL_KEYWORD
     | INT_KEYWORD
@@ -85,22 +85,37 @@ cgBuiltInType
     | DOUBLE_KEYWORD
   ;
 
-cgUserDeclaredType
+userDeclaredType
   :
     IDENTIFIER // TODO: not sure about that
   ;
 
-cgFieldName
+fieldName
   :
     IDENTIFIER
   ;
 
-cgStructDeclaration
+/* 
+  struct foo {
+    float field;
+  };
+*/
+structDeclaration
   :
     STRUCT_KEYWORD
-    IDENTIFIER
+    structName
     LBRACE
-    cgFieldDeclaration*
+    structFieldList    
     RBRACE
     SEMICOLON
+  ;
+
+structName
+  :
+    IDENTIFIER
+  ;
+
+structFieldList
+  :
+    fieldDeclaration*
   ;
