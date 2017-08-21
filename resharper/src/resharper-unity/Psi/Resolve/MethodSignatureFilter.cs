@@ -1,6 +1,9 @@
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.Resolve;
+#if RIDER
+using JetBrains.ReSharper.Psi.CSharp.Conversions;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 {

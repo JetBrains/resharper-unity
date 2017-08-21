@@ -15,6 +15,10 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Special;
 
+#if RIDER
+using JetBrains.ReSharper.Psi.CSharp.Conversions;
+#endif
+
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Color
 {
     public class UnityColorHighlighterProcess : CSharpIncrementalDaemonStageProcessBase
