@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodes;
 using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes;

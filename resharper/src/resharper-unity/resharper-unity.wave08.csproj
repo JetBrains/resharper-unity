@@ -26,12 +26,13 @@
     <Compile Update="Psi\Cg\Parsing\Cg_lex.cs">
       <DependentUpon>Cg.lex</DependentUpon>
     </Compile>
-    <TokenGenerator Include="Psi\Cg\Parsing\CgTokenType.Tokens.xml">
-      <OutputFile>Psi\Cg\Parsing\CgTokenType.Tokens.generated.cs</OutputFile>
+    <TokenGenerator Include="Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
+      <OutputFile>Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
-    <Compile Update="Psi\Cg\Parsing\CgTokenType.Tokens.generated.cs">
-      <DependentUpon>CgTokenType.Tokens.xml</DependentUpon>
+    <Compile Update="Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
+      <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
     </Compile>
+    <ParserGen Include="Psi\Cg\Parsing\Cg.psi" />
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Remove="Psi\ShaderLab\Parsing\ShaderLab_lex.depends" />
     <Compile Update="Psi\ShaderLab\Parsing\ShaderLab_lex.cs">
@@ -78,5 +79,6 @@
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
 </Project>

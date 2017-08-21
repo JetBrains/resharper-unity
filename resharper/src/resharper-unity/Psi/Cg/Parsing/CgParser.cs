@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Gen;
 using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes;
