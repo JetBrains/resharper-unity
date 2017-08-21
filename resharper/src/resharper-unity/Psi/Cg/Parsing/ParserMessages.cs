@@ -5,7 +5,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
 {
     public static class ParserMessages
     {
-        public static string IDS_DECLARATION => "Field, function or structure declaration";
+        public static string IDS_CONSTANT_VALUE => "constant value";
+        
+        public static string IDS_DECLARATION => "field, function or structure declaration";
         
         public static string IDS_FIELD_OR_FUNCTION_DECLARATION => "field or function declaration";
         

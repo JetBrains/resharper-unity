@@ -75,7 +75,21 @@ fieldDeclaration[typeName type, IDENTIFIER name]
   :
     &type
     &name
+    fieldInitializer?
     SEMICOLON
+  ;
+
+fieldInitializer
+  :
+    EQUALS
+    constantValue
+  ;
+
+constantValue
+  :
+    NUMERIC_LITERAL
+    | FALSE_KEYWORD
+    | TRUE_KEYWORD
   ;
 
 typeName

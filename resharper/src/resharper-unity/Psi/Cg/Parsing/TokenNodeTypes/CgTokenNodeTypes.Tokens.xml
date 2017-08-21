@@ -28,6 +28,8 @@
     <Token name="RPAREN" representation=")" />
     <Token name="COMMA" representation="," />
     <Token name="SEMICOLON" representation=";" />
+    
+    <Token name="EQUALS" representation="=" />
   </Tokens>
 
   <FieldTypeKeywords NodeType="CgKeywordTokenNodeType">
@@ -43,6 +45,11 @@
   <FunctionReturnTypeKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="VOID_KEYWORD" representation="void" />
   </FunctionReturnTypeKeywords>
+  
+  <BooleanConstants NodeType="CgKeywordTokenNodeType">
+    <Keyword name="FALSE_KEYWORD" representation="false" />
+    <Keyword name="TRUE_KEYWORD" representation="true" />
+  </BooleanConstants>
   
   <TypeDeclarationKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="STRUCT_KEYWORD" representation="struct" />

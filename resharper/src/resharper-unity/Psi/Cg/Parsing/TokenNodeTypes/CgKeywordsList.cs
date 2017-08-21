@@ -19,7 +19,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes
                 CgTokenNodeTypes.FLOAT_KEYWORD,
                 CgTokenNodeTypes.DOUBLE_KEYWORD,
                 
-                CgTokenNodeTypes.VOID_KEYWORD
+                CgTokenNodeTypes.VOID_KEYWORD,
+                
+                CgTokenNodeTypes.FALSE_KEYWORD,
+                CgTokenNodeTypes.TRUE_KEYWORD
             );
         }
     }

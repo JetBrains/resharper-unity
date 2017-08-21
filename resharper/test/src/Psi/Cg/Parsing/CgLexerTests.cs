@@ -39,16 +39,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg.Parsing
 
         [TestCase("Basic_00")]
         
+        [TestCase("Comment_00")]
+        [TestCase("Comment_01")]
+        
         [TestCase("Field_00")]
         
         [TestCase("Function_00")]
         
-        [TestCase("Comment_00")]
-        [TestCase("Comment_01")]
+        [TestCase("Identifier_00")]
+        
+        [TestCase("NumericLiteral_00")]
         
         [TestCase("Struct_00")]
-        
-        [TestCase("Identifier_00")]
         public void TestLexer(string name) => DoOneTest(name);
     }
 }

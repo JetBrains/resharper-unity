@@ -59,8 +59,7 @@ MINUS="-"
 PLUS="+"
 DOT="."
 DECIMAL_DIGIT=[0-9]
-INTEGER_LITERAL=({MINUS}|{PLUS})?{DECIMAL_DIGIT}+
-FLOAT_LITERAL=({MINUS}|{PLUS})?{DECIMAL_DIGIT}*{DOT}{DECIMAL_DIGIT}*"f"
+NUMERIC_LITERAL=({MINUS}|{PLUS})?{DECIMAL_DIGIT}+
 
 UNDERSCORE="_"
 LETTER_CHAR={UNICODE_LL}|{UNICODE_LM}|{UNICODE_LO}|{UNICODE_LT}|{UNICODE_LU}|{UNICODE_NL}
@@ -107,8 +106,11 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 <YYCG>   ","                     { return CgTokenNodeTypes.COMMA; }
 <YYCG>   ";"                     { return CgTokenNodeTypes.SEMICOLON; }
 
+<YYCG>   "="                     { return CgTokenNodeTypes.EQUALS; }
+
 <YYCG>   {SINGLE_LINE_COMMENT}   { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }
 
 <YYCG>   {IDENTIFIER}            { return FindKeywordByCurrentToken() ?? CgTokenNodeTypes.IDENTIFIER; }
+<YYCG>   {NUMERIC_LITERAL}        { return CgTokenNodeTypes.NUMERIC_LITERAL; }
 
 <YYCG>   .                       { return CgTokenNodeTypes.BAD_CHARACTER; }

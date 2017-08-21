@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg.Parsing
         [TestCase("FieldDeclarationNoSemicolon")]
         [TestCase("FieldDeclarationScalarTypes")]
         [TestCase("FieldDeclarationReferencedType")]
+        [TestCase("FieldDeclarationWithInitializer")]
         
         [TestCase("FunctionBuiltInReturnType")]
         [TestCase("FunctionOneArgument")]
