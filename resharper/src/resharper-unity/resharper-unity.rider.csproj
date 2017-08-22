@@ -84,9 +84,6 @@
          version major, minor and patch numbers, e.g. 2017.1.0-* or it will match incorrectly
          See https://github.com/NuGet/Home/issues/4859-->
     <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(RiderJetBrainsPsiFeaturesVisualStudioVersion)" />
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(RiderJetBrainsReSharperSDKVersion)" />
-    <PackageReference Include="JetBrains.Build.Platform.Tasks.ProxyToSolutionCompiledTask" Version="2.0.20170530.0" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
