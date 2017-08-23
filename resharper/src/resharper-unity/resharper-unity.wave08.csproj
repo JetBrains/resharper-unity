@@ -66,7 +66,7 @@
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
   </ItemGroup>
-  <!-- References -->   
+  <!-- References -->
   <!-- References -->
   <ItemGroup>
     <!-- It would be nice to use floating versions here during EAP, but that would require fixed

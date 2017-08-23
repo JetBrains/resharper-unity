@@ -1,11 +1,10 @@
 ﻿using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodes;
 using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Tree.Impl
 {
-    internal class CgIdentifier : CgTokenNodeBase, IIdentifier
+    internal class CgIdentifier : CgTokenNodeBase
     {
         private readonly string myText;
 

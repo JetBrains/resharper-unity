@@ -61,20 +61,25 @@ interface declaration
       | 
       (
         !(#type:typeName)
-        !(#name:IDENTIFIER)
+        !(#name:identifier)
         (
           fieldDeclaration[type, name]
           | functionDeclaration[type, name]
         )
       )
   ;
+
+identifier
+  :
+    IDENTIFIER<CG_NAME, NameToken>
+  ;
 /*
   float foo;
 */
-fieldDeclaration[typeName type, IDENTIFIER name]
+fieldDeclaration[typeName type, identifier name]
   :
     &type
-    &name
+    &name<CG_NAME, NameNode>
     fieldInitializer?
     SEMICOLON
   ;
@@ -123,23 +128,18 @@ userDeclaredType
 structDeclaration
   :
     STRUCT_KEYWORD
-    structName
+    identifier<CG_NAME, NameNode>
     LBRACE
     structFieldList    
     RBRACE
     SEMICOLON
   ;
 
-structName
-  :
-    IDENTIFIER
-  ;
-
 structFieldList
   :
     (
       !(#type:typeName)
-      !(#name:IDENTIFIER)
+      !(#name:identifier)
       fieldDeclaration[type, name]
     )*
   ;
@@ -149,28 +149,17 @@ structFieldList
    }
 */
 
-functionDeclaration[typeName type, IDENTIFIER name]
+functionDeclaration[typeName type, identifier name]
   :  
     VOID_KEYWORD    
     | &type
-    &name
+    &name<CG_NAME, NameNode>
     LPAREN
     functionArgList
     RPAREN
     LBRACE
     functionBody
     RBRACE
-  ;
-
-functionReturnType
-  :
-    VOID_KEYWORD
-    | typeName
-  ;
-
-functionName
-  :
-    IDENTIFIER
   ;
 
 functionArgList
@@ -186,18 +175,8 @@ functionArgList
 
 argument
   :    
-    argumentType
-    argumentName
-  ;
-
-argumentType
-  :
-    typeName
-  ;
-
-argumentName
-  :
-    IDENTIFIER
+    identifier<CG_NAME, TypeNode>
+    identifier<CG_NAME, NameNode>
   ;
 
 functionBody
