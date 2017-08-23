@@ -44,7 +44,7 @@ intellij {
       localPath = dir.absolutePath
     }
     else {
-      version = 'LATEST-TRUNK-SNAPSHOT' // 2017.1 RTM
+      version = '171.4456.2169' // 2017.1 RTM
     }
 
     // Sources aren't available for Rider
