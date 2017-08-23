@@ -2007,7 +2007,13 @@ fallbackCommand
 
 fallbackValue
 :
-  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  (
+    STRING_LITERAL<SHADER_LAB_NAME, Name>
+    (
+      COMMA<COMMA, Comma>
+      lodValue<SHADER_LAB_VALUE, Value> // legacy, not actually used by Unity
+    )?
+  )
   | OFF_KEYWORD<SHADER_LAB_KEYWORD, OffKeyword>
   | errorElementWithoutRBrace   // TODO: Will this match `CustomEditor`?
 ;
