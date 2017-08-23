@@ -42,6 +42,7 @@
 <releaseNotes>
 &#8226; Parse pre-processor directives in ShaderLab (#186)
 &#8226; Parse property reference for BlendOp (RIDER-8386)
+&#8226; Add annotations for modularised UnityEngine assemblies (#207)
 &#8226; Unity3dRider: Fix path to Toolbox on Mac
 &#8226; Unity3dRider: Fix reference to nunit.framework.dll, as the Unity distributed version doesn't run tests correctly with Rider (#194)
 &#8226; Unity3dRider: Option to disable hippie completion (RIDER-5996)
@@ -159,9 +160,7 @@ From previous releases:
   </metadata>
   <files>
     <file src="..\..\build\resharper-unity.rider\bin\Release\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
-    <file src="annotations\UnityEngine.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.xml" />
-    <file src="annotations\UnityEngine.Networking.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.Networking.xml" />
-    <file src="annotations\UnityEditor.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.xml" />
-    <file src="annotations\UnityEditor.EditorTestsRunner.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.EditorTestsRunner.xml" />
+    <file src="annotations\UnityEngine*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
+    <file src="annotations\UnityEditor*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
   </files>
 </package>

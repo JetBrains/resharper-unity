@@ -1,0 +1,7 @@
+<assembly name="UnityEngine.IMGUIModule">
+
+  <member name="T:UnityEngine.GUITargetAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+
+</assembly>
