@@ -42,6 +42,7 @@
 <releaseNotes>
 &#8226; Parse pre-processor directives in ShaderLab (#186)
 &#8226; Parse property reference for BlendOp (RIDER-8386)
+&#8226; Add annotations for modularised UnityEngine assemblies (#207)
 
 From 2.0.2:
 &#8226; Add ability to disable advanced ShaderLab syntax (#183)
@@ -144,9 +145,7 @@ From previous releases:
   </metadata>
   <files>
     <file src="..\..\build\resharper-unity.wave08\bin\Release\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
-    <file src="annotations\UnityEngine.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.xml" />
-    <file src="annotations\UnityEngine.Networking.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEngine.Networking.xml" />
-    <file src="annotations\UnityEditor.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.xml" />
-    <file src="annotations\UnityEditor.EditorTestsRunner.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations\UnityEditor.EditorTestsRunner.xml" />
+      <file src="annotations\UnityEngine*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
+      <file src="annotations\UnityEditor*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
   </files>
 </package>
