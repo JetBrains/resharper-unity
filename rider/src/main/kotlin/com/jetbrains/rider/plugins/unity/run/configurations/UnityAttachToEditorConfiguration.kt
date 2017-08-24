@@ -10,6 +10,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
 import com.jetbrains.rider.util.catch
@@ -57,7 +58,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
                 ?: findUnityEditorInstance(processList)
                 ?: throw throw RuntimeConfigurationError("Cannot find Unity Editor instance")
 
-        port = 56000 + pid!! % 1000
+        port = convertPortToDebuggerPort(pid!!)
     }
 
     private fun checkValidEditorInstance(pid: Int?, processList: Array<ProcessInfo>): Int? {

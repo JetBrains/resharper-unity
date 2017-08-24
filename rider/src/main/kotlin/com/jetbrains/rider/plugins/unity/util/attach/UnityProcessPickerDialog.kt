@@ -13,6 +13,7 @@ import com.intellij.ui.components.JBList
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.panel
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToPlayerConfiguration
+import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import java.awt.*
 import javax.swing.*
 
@@ -56,7 +57,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         if (okAction.isEnabled) {
             val player = list.selectedValue
             if (player != null) {
-                val port = if (player.debuggerPort != 0) player.debuggerPort else (player.guid % 1000).toInt() + 56000
+                val port = if (player.debuggerPort != 0) player.debuggerPort else convertPortToDebuggerPort(player.guid)
                 val configuration = UnityAttachToPlayerConfiguration(player.id, port, player.host)
                 val environment = ExecutionEnvironmentBuilder
                         .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), configuration)
@@ -123,7 +124,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 class UnityProcessCellRenderer : ColoredListCellRenderer<UnityPlayer>() {
     override fun customizeCellRenderer(list: JList<out UnityPlayer>, player: UnityPlayer?, index: Int, selected: Boolean, hasFocus: Boolean) {
         player ?: return
-        val port = if (player.debuggerPort != 0) player.debuggerPort else (player.guid % 1000).toInt() + 56000
+        val port = if (player.debuggerPort != 0) player.debuggerPort else convertPortToDebuggerPort(player.guid)
         append(player.id, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
         append(" (${player.host}:$port)")
     }

@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.util.attach
 
 import com.intellij.execution.process.OSProcessUtil
+import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
 import com.jetbrains.rider.util.idea.getLogger
 import java.net.*
@@ -54,9 +55,8 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
             refreshUnityPlayersList()
         })
 
-        OSProcessUtil.getProcessList().filter {UnityProcessUtil.isUnityEditorProcess(it)}.map {
-            processInfo ->
-            val port = processInfo.pid % 1000 + 56000
+        OSProcessUtil.getProcessList().filter { UnityProcessUtil.isUnityEditorProcess(it) }.map { processInfo ->
+            val port = convertPortToDebuggerPort(processInfo.pid)
             UnityPlayer("127.0.0.1", port, 0, port.toLong(), port.toLong(), 0, processInfo.executableName, true, port)
         }.forEach {
             onPlayerAdded(it)
@@ -78,8 +78,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
                 var debuggerPort = 0
                 try {
                     debuggerPort = matcher.group("debuggerPort").toInt()
-                }
-                catch (e: Exception){
+                } catch (e: Exception) {
                     //ignore errors on debuggerPort matching or parsing
                 }
                 return UnityPlayer(ip, port, flags, guid, editorGuid, version, id, allowDebugging, debuggerPort)
@@ -98,8 +97,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
                 if (currentPlayerTimeout <= 0) {
                     unityPlayerDescriptorsHeartbeats.remove(playerDescriptor)
                     onPlayerRemoved(parseUnityPlayer(playerDescriptor))
-                }
-                else
+                } else
                     unityPlayerDescriptorsHeartbeats.put(playerDescriptor, currentPlayerTimeout - 1)
             }
 
