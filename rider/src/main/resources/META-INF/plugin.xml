@@ -41,6 +41,13 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
   </project-components>
 
+  <actions>
+    <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction"
+            text="Attach to Unity Process...">
+      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess"/>
+    </action>
+  </actions>
+
   <description><![CDATA[
 <p>Adds support for the Unity engine.</p>
 <p></p>
