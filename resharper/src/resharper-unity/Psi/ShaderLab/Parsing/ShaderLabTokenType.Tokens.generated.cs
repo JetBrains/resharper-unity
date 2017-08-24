@@ -291,6 +291,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     public static readonly TokenNodeType ANY_KEYWORD = new KeywordTokenNodeType("ANY_KEYWORD", ANY_KEYWORD_NODE_TYPE_INDEX, representation: "Any");
     public const int LIGHTMAP_MODE_KEYWORD_NODE_TYPE_INDEX = 1120;
     public static readonly TokenNodeType LIGHTMAP_MODE_KEYWORD = new KeywordTokenNodeType("LIGHTMAP_MODE_KEYWORD", LIGHTMAP_MODE_KEYWORD_NODE_TYPE_INDEX, representation: "LightmapMode");
+    public const int TEXGEN_KEYWORD_NODE_TYPE_INDEX = 1121;
+    public static readonly TokenNodeType TEXGEN_KEYWORD = new KeywordTokenNodeType("TEXGEN_KEYWORD", TEXGEN_KEYWORD_NODE_TYPE_INDEX, representation: "TexGen");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1121;  }
+    //TexGenModeKeywords
+    public const int CUBE_REFLECT_KEYWORD_NODE_TYPE_INDEX = 1122;
+    public static readonly TokenNodeType CUBE_REFLECT_KEYWORD = new KeywordTokenNodeType("CUBE_REFLECT_KEYWORD", CUBE_REFLECT_KEYWORD_NODE_TYPE_INDEX, representation: "CubeReflect");
+    public const int CUBE_NORMAL_KEYWORD_NODE_TYPE_INDEX = 1123;
+    public static readonly TokenNodeType CUBE_NORMAL_KEYWORD = new KeywordTokenNodeType("CUBE_NORMAL_KEYWORD", CUBE_NORMAL_KEYWORD_NODE_TYPE_INDEX, representation: "CubeNormal");
+    public const int OBJECT_LINEAR_KEYWORD_NODE_TYPE_INDEX = 1124;
+    public static readonly TokenNodeType OBJECT_LINEAR_KEYWORD = new KeywordTokenNodeType("OBJECT_LINEAR_KEYWORD", OBJECT_LINEAR_KEYWORD_NODE_TYPE_INDEX, representation: "ObjectLinear");
+    public const int EYE_LINEAR_KEYWORD_NODE_TYPE_INDEX = 1125;
+    public static readonly TokenNodeType EYE_LINEAR_KEYWORD = new KeywordTokenNodeType("EYE_LINEAR_KEYWORD", EYE_LINEAR_KEYWORD_NODE_TYPE_INDEX, representation: "EyeLinear");
+    public const int SPHERE_MAP_KEYWORD_NODE_TYPE_INDEX = 1126;
+    public static readonly TokenNodeType SPHERE_MAP_KEYWORD = new KeywordTokenNodeType("SPHERE_MAP_KEYWORD", SPHERE_MAP_KEYWORD_NODE_TYPE_INDEX, representation: "SphereMap");
+
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1127;  }
 }
