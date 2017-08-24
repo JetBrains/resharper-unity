@@ -202,5 +202,14 @@
     <Keyword name="MATRIX_KEYWORD" representation="Matrix" />
     <Keyword name="ANY_KEYWORD" representation="Any" />
     <Keyword name="LIGHTMAP_MODE_KEYWORD" representation="LightmapMode" />
+    <Keyword name="TEXGEN_KEYWORD" representation="TexGen" />    
   </Keywords>
+
+  <TexGenModeKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="CUBE_REFLECT_KEYWORD" representation="CubeReflect" />
+    <Keyword name="CUBE_NORMAL_KEYWORD" representation="CubeNormal" />
+    <Keyword name="OBJECT_LINEAR_KEYWORD" representation="ObjectLinear" />
+    <Keyword name="EYE_LINEAR_KEYWORD" representation="EyeLinear" />
+    <Keyword name="SPHERE_MAP_KEYWORD" representation="SphereMap" />
+  </TexGenModeKeywords>
 </ShaderLabTokens>

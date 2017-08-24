@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("Properties")]
         [TestCase("PropertiesWithAttributes")]
         [TestCase("PropertiesWithErrors")]
+        [TestCase("PropertiesTextureValue")]
 
         [TestCase("FallbackNamed")]
         [TestCase("FallbackNone")]
