@@ -59,18 +59,15 @@ IShaderLabFile
                 ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                 IAttributeParameterValues
                   IStringAttributeParameterValue
-                    IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:None)
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:None)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IStringAttributeParameterValue
-                    IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:Add)
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Add)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IStringAttributeParameterValue
-                    IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:Multiply)
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Multiply)
                 ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
               ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -126,15 +123,8 @@ IShaderLabFile
               IAttributeParameters
                 ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                 IAttributeParameterValues
-                  IQualifiedAttributeParameterValue
-                    IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:UnityEngine)
-                    ShaderLabTokenType+FixedTokenElement(type:DOT, text:.)
-                    IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:Rendering)
-                    ShaderLabTokenType+FixedTokenElement(type:DOT, text:.)
-                    IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:BlendMode)
+                  IStringAttributeParameterValue
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:UnityEngine.Rendering.BlendMode)
                 ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
               ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -168,15 +158,13 @@ IShaderLabFile
                 ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                 IAttributeParameterValues
                   IStringAttributeParameterValue
-                    IShaderLabIdentifier
-                      ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:One)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   INumberAttributeParameterValue
                     ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   IStringAttributeParameterValue
-                    IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:SrcAlpha)
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:SrcAlpha)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   INumberAttributeParameterValue
                     ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:5)
@@ -251,11 +239,7 @@ IShaderLabFile
                 ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                 IAttributeParameterValues
                   IStringAttributeParameterValue
-                    IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:Header)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IShaderLabIdentifier
-                      Identifier(type:IDENTIFIER, text:Text)
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Header Text)
                 ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
               ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
             Whitespace(type:WHITESPACE, text: ) spaces: " "
