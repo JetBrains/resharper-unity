@@ -203,7 +203,7 @@ options {
 :
   IDENTIFIER?
   
-  | STRING_LITERAL | NUMERIC_LITERAL
+  | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
 
   | CG_PROGRAM | CG_INCLUDE | CG_END
   | GLSL_PROGRAM | GLSL_INCLUDE | GLSL_END
@@ -357,7 +357,7 @@ options {
 :
   IDENTIFIER?
   
-  | STRING_LITERAL | NUMERIC_LITERAL
+  | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
 
   | CG_PROGRAM | CG_INCLUDE | CG_END
   | GLSL_PROGRAM | GLSL_INCLUDE | GLSL_END
@@ -525,7 +525,7 @@ options {
   customImpl;
 }
 :
-  IDENTIFIER
+  IDENTIFIER | UNQUOTED_STRING_LITERAL
 
   | SHADER_KEYWORD
   | PROPERTIES_KEYWORD
@@ -991,17 +991,7 @@ attributeParameterValues
 interface attributeParameterValue
 :
   numberAttributeParameterValue
-  |
-    (
-      // Parse the common shaderLabIdentifier, then pass it through to the rule
-      // This allows switching on the next token - DOT for qualifiedAttributeParameterValue
-      // or shaderLabIdentifier for stringAttributeParameterValue
-      !(#id:shaderLabIdentifier)
-      (
-        qualifiedAttributeParameterValue[id]
-        | stringAttributeParameterValue[id]
-      )
-    )
+  | stringAttributeParameterValue
 ;
 
 numberAttributeParameterValue
@@ -1009,21 +999,9 @@ numberAttributeParameterValue
   NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
-qualifiedAttributeParameterValue[shaderLabIdentifier id]
+stringAttributeParameterValue
 :
-  &id<SHADER_LAB_IDENTIFIER, Identifiers>
-  (
-    DOT<DOT, Dots>
-    shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>
-  )+
-;
-
-// TODO: Perhaps a custom interface to allow retrieving exact text?
-stringAttributeParameterValue[shaderLabIdentifier id]
-:
-  // One or more, separated by whitespace
-  &id<SHADER_LAB_IDENTIFIER, Identifiers>
-  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>*
+  UNQUOTED_STRING_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
 

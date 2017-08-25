@@ -29,5 +29,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
             public override bool IsStringLiteral => true;
         }
+
+        private sealed class UnquotedStringLiteralNodeType : ShaderLabTokenNodeType
+        {
+            public UnquotedStringLiteralNodeType(int index)
+                : base("UNQUOTED_STRING_LITERAL", index)
+            {
+            }
+
+            public override string TokenRepresentation => "string value";
+
+            public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+            {
+                return new GenericTokenElement(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
+            }
+
+            public override LeafElementBase Create(string token)
+            {
+                return new GenericTokenElement(this, token);
+            }
+
+            public override bool IsStringLiteral => true;
+        }
     }
 }
