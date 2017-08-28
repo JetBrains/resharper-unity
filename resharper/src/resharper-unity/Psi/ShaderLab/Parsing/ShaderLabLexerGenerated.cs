@@ -95,6 +95,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         }
 
         public IBuffer Buffer => yy_buffer;
+
+        protected int BufferStart
+        {
+            get => yy_buffer_start;
+            set => yy_buffer_start = value;
+        }
+
+        protected int BufferEnd
+        {
+            get => yy_buffer_end;
+            set => yy_buffer_end = value;
+        }
+
+        protected void SetState(int lexerState)
+        {
+            yy_lexical_state = lexerState;
+        }
+
         public int EOFPos => yy_eof_pos;
         public int LexemIndent => 7;    // No, I don't know why
         public uint LexerStateEx => (uint) yy_lexical_state;

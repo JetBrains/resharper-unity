@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab
         {
             public ILexer CreateLexer(IBuffer buffer)
             {
-                return new ShaderLabLexerGenerated(buffer);
+                return new ShaderLabLexer(buffer);
             }
         }
     }

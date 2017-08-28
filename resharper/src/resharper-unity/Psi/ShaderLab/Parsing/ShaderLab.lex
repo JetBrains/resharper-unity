@@ -97,23 +97,22 @@ PP_DIGITS={DECIMAL_DIGIT}(({WHITESPACE})*{DECIMAL_DIGIT})*
 <YYINITIAL>    {NEW_LINE}                       { return ShaderLabTokenType.NEW_LINE; }
 
 <YYINITIAL>     "="                             { return ShaderLabTokenType.EQUALS; }
-<YYINITIAL,BRACKETS,PARENS> ","                 { return ShaderLabTokenType.COMMA; }
+<YYINITIAL,PARENS>          ","                 { return ShaderLabTokenType.COMMA; }
 <YYINITIAL>     "."                             { return ShaderLabTokenType.DOT; }
 <YYINITIAL>     "+"                             { return ShaderLabTokenType.PLUS; }
 <YYINITIAL>     "*"                             { return ShaderLabTokenType.MULTIPLY; }
 <YYINITIAL>     "{"                             { return ShaderLabTokenType.LBRACE; }
 <YYINITIAL>     "}"                             { return ShaderLabTokenType.RBRACE; }
+
 <YYINITIAL>     "("                             { return ShaderLabTokenType.LPAREN; }
-<YYINITIAL>     ")"                             { return ShaderLabTokenType.RPAREN; }
+<YYINITIAL,BRACKETS,PARENS> ")"                 { return ShaderLabTokenType.RPAREN; }
 
 <YYINITIAL>     "["                             { yybegin(BRACKETS); return ShaderLabTokenType.LBRACK; }
 <YYINITIAL,BRACKETS,PARENS> "]"                 { yybegin(YYINITIAL); return ShaderLabTokenType.RBRACK; }
 
 <BRACKETS>      "("                             { yybegin(PARENS); return ShaderLabTokenType.LPAREN; }
-<BRACKETS>      ")"                             { return ShaderLabTokenType.RPAREN; }
-
 <PARENS>        {UNQUOTED_STRING_LITERAL}       { return ShaderLabTokenType.UNQUOTED_STRING_LITERAL; }
-<PARENS>        ")"                             { yybegin(BRACKETS); return ShaderLabTokenType.RPAREN; }
+<BRACKETS,PARENS>           {NEW_LINE}          { yybegin(YYINITIAL); return ShaderLabTokenType.NEW_LINE; }
 
 <YYINITIAL>     "#warning"                      { yybegin(PPMESSAGE); return ShaderLabTokenType.PP_WARNING; }
 <YYINITIAL>     "#error"                        { yybegin(PPMESSAGE); return ShaderLabTokenType.PP_ERROR; }
@@ -137,8 +136,8 @@ PP_DIGITS={DECIMAL_DIGIT}(({WHITESPACE})*{DECIMAL_DIGIT})*
 
 <YYINITIAL,BRACKETS,PARENS> {INTEGER_LITERAL}   { return ShaderLabTokenType.NUMERIC_LITERAL; }
 <YYINITIAL,BRACKETS,PARENS> {FLOAT_LITERAL}     { return ShaderLabTokenType.NUMERIC_LITERAL; }
-<YYINITIAL,BRACKETS,PARENS> {STRING_LITERAL}    { return ShaderLabTokenType.STRING_LITERAL; }
-<YYINITIAL,BRACKETS,PARENS> {UNFINISHED_STRING_LITERAL} { return ShaderLabTokenType.STRING_LITERAL; }
+<YYINITIAL,BRACKETS>        {STRING_LITERAL}    { return ShaderLabTokenType.STRING_LITERAL; }
+<YYINITIAL,BRACKETS>        {UNFINISHED_STRING_LITERAL} { return ShaderLabTokenType.STRING_LITERAL; }
 
 <YYINITIAL>     {SINGLE_LINE_COMMENT}           { return ShaderLabTokenType.END_OF_LINE_COMMENT; }
 <YYINITIAL>     {DELIMITED_COMMENT}             { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
