@@ -41,6 +41,7 @@
 </description>
 <releaseNotes>
 &#8226; Parse pre-processor directives in ShaderLab (#186)
+&#8226; Correctly handle property attributes in shader file (#187)
 &#8226; Parse CGINCLUDE blocks at any point in shader file (#188)
 &#8226; Parse property reference for BlendOp (RIDER-8386)
 &#8226; Add annotations for modularised UnityEngine assemblies (#207)

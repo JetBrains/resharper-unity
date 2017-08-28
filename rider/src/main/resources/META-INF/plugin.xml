@@ -100,6 +100,7 @@
 <![CDATA[
 <ul>
   <li>Parse pre-processor directives in ShaderLab (<a href="https://github.com/JetBrains/resharper-unity/issues/186">#186</a>)</li>
+  <li>Correctly handle property attributes in shader file (<a href="https://github.com/JetBrains/resharper-unity/issues/187">#187</a>)</li>
   <li>Parse CGINCLUDE blocks at any point in shader file (<a href="https://github.com/JetBrains/resharper-unity/issues/188">#188</a>)</li>
   <li>Parse property references for BlendOp in ShaderLab files (<a href="https://youtrack.jetbrains.com/issue/RIDER-8386">RIDER-8386</a>)</li>
   <li>Add annotations for modularised UnityEngine assemblies (<a href="https://github.com/JetBrains/resharper-unity/issues/207">#207</a>)</li>
