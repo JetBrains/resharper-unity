@@ -4,6 +4,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     public static class ParserMessages
     {
+        public const string IDS_TEXTURE_PROPERTY_VALUE_TEXTURE_DIMENSION = "Texture dimension";
         public const string IDS_ALPHA_TO_MASK_VALUE = "AlphaToMask value";
         public const string IDS_ALPHA_TEST_VALUE = "AlphaTest value";
         public const string IDS_ATTRIBUTE_PARAMETER_VALUE = "parameter value";

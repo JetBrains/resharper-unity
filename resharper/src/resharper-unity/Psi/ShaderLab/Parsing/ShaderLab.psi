@@ -338,6 +338,13 @@ options {
   | BACK_KEYWORD
   | FRONT_KEYWORD
   | LIGHTMAP_MODE_KEYWORD
+  | TEXGEN_KEYWORD
+
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | SPHERE_MAP_KEYWORD
 
   | BAD_CHARACTER
 ;
@@ -484,6 +491,13 @@ options {
   | BACK_KEYWORD
   | FRONT_KEYWORD
   | LIGHTMAP_MODE_KEYWORD
+  | TEXGEN_KEYWORD
+
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | SPHERE_MAP_KEYWORD
 
   | BAD_CHARACTER
 ;
@@ -628,6 +642,13 @@ options {
   | BACK_KEYWORD
   | FRONT_KEYWORD
   | LIGHTMAP_MODE_KEYWORD
+  | TEXGEN_KEYWORD
+
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | SPHERE_MAP_KEYWORD
 ;
 
 
@@ -884,11 +905,35 @@ texturePropertyValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   (
-    LBRACE<LBRACE, LBrace>
-    LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>?
+    LBRACE<LBRACE, LBrace>    
+    (
+      texturePropertyValueTextureDimension
+      | texturePropertyValueTexGen
+      | matrixCommand // Legacy
+      | LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>
+    )?
     errorTexturePropertyBlockValues
     RBRACE<RBRACE, RBrace>
   )?
+;
+
+texturePropertyValueTextureDimension
+:
+  TEXTURE_2D_KEYWORD
+  | TEXTURE_3D_KEYWORD
+  | CUBE_KEYWORD
+;
+
+texturePropertyValueTexGen // Legacy 5.0
+:
+  TEXGEN_KEYWORD
+  (
+    CUBE_REFLECT_KEYWORD
+    | CUBE_NORMAL_KEYWORD
+    | OBJECT_LINEAR_KEYWORD
+    | EYE_LINEAR_KEYWORD
+    | SPHERE_MAP_KEYWORD
+  )
 ;
 
 // The spec says there shouldn't be anything here. Use a custom parse function to eat 
