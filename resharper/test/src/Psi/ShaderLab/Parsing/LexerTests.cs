@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         {
             var text = sr.ReadToEnd();
             text = NormaliseLindEndines(text);
-            return new ShaderLabLexerGenerated(new StringBuffer(text));
+            return new ShaderLabLexer(new StringBuffer(text));
         }
 
         private string NormaliseLindEndines(string text)
