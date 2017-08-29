@@ -19,12 +19,8 @@
     <BaseIntermediateOutputPath Condition=" '$(OS)' != 'Unix' ">$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\Debug</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\Release</OutputPath>
+  <PropertyGroup>
+    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
   <!-- Specify Rider SDK version in one place -->
