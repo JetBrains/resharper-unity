@@ -77,7 +77,7 @@ IShaderLabFile
               ILightingCommand
                 ShaderLabTokenType+KeywordTokenElement(type:LIGHTING_KEYWORD, text:Lighting)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IOnOffValue
+                IBoolLiteral
                   ShaderLabTokenType+KeywordTokenElement(type:ON_KEYWORD, text:On)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "

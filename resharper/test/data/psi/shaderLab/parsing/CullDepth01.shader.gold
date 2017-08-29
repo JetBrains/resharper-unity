@@ -35,7 +35,7 @@ IShaderLabFile
               IZwriteCommand
                 ShaderLabTokenType+KeywordTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IOnOffValue
+                IBoolValue
                   ShaderLabTokenType+KeywordTokenElement(type:ON_KEYWORD, text:On)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
@@ -100,7 +100,7 @@ IShaderLabFile
               IZwriteCommand
                 ShaderLabTokenType+KeywordTokenElement(type:ZWRITE_KEYWORD, text:ZWrite)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IOnOffValue
+                IBoolValue
                   ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "

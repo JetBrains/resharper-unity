@@ -431,20 +431,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     //Keywords
     public const int TRUE_KEYWORD_NODE_TYPE_INDEX = 1116;
     public static readonly TokenNodeType TRUE_KEYWORD = new KeywordTokenNodeType("TRUE_KEYWORD", TRUE_KEYWORD_NODE_TYPE_INDEX, representation: "True");
-    public const int ON_KEYWORD_NODE_TYPE_INDEX = 1117;
+    public const int FALSE_KEYWORD_NODE_TYPE_INDEX = 1117;
+    public static readonly TokenNodeType FALSE_KEYWORD = new KeywordTokenNodeType("FALSE_KEYWORD", FALSE_KEYWORD_NODE_TYPE_INDEX, representation: "False");
+    public const int ON_KEYWORD_NODE_TYPE_INDEX = 1118;
     public static readonly TokenNodeType ON_KEYWORD = new KeywordTokenNodeType("ON_KEYWORD", ON_KEYWORD_NODE_TYPE_INDEX, representation: "On");
-    public const int OFF_KEYWORD_NODE_TYPE_INDEX = 1118;
+    public const int OFF_KEYWORD_NODE_TYPE_INDEX = 1119;
     public static readonly TokenNodeType OFF_KEYWORD = new KeywordTokenNodeType("OFF_KEYWORD", OFF_KEYWORD_NODE_TYPE_INDEX, representation: "Off");
-    public const int BACK_KEYWORD_NODE_TYPE_INDEX = 1119;
+    public const int BACK_KEYWORD_NODE_TYPE_INDEX = 1120;
     public static readonly TokenNodeType BACK_KEYWORD = new KeywordTokenNodeType("BACK_KEYWORD", BACK_KEYWORD_NODE_TYPE_INDEX, representation: "Back");
-    public const int FRONT_KEYWORD_NODE_TYPE_INDEX = 1120;
+    public const int FRONT_KEYWORD_NODE_TYPE_INDEX = 1121;
     public static readonly TokenNodeType FRONT_KEYWORD = new KeywordTokenNodeType("FRONT_KEYWORD", FRONT_KEYWORD_NODE_TYPE_INDEX, representation: "Front");
-    public const int MATRIX_KEYWORD_NODE_TYPE_INDEX = 1121;
+    public const int MATRIX_KEYWORD_NODE_TYPE_INDEX = 1122;
     public static readonly TokenNodeType MATRIX_KEYWORD = new KeywordTokenNodeType("MATRIX_KEYWORD", MATRIX_KEYWORD_NODE_TYPE_INDEX, representation: "Matrix");
-    public const int ANY_KEYWORD_NODE_TYPE_INDEX = 1122;
+    public const int ANY_KEYWORD_NODE_TYPE_INDEX = 1123;
     public static readonly TokenNodeType ANY_KEYWORD = new KeywordTokenNodeType("ANY_KEYWORD", ANY_KEYWORD_NODE_TYPE_INDEX, representation: "Any");
-    public const int LIGHTMAP_MODE_KEYWORD_NODE_TYPE_INDEX = 1123;
+    public const int LIGHTMAP_MODE_KEYWORD_NODE_TYPE_INDEX = 1124;
     public static readonly TokenNodeType LIGHTMAP_MODE_KEYWORD = new KeywordTokenNodeType("LIGHTMAP_MODE_KEYWORD", LIGHTMAP_MODE_KEYWORD_NODE_TYPE_INDEX, representation: "LightmapMode");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1124;  }
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1125;  }
 }

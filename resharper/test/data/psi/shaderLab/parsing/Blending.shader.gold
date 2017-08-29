@@ -192,7 +192,7 @@ IShaderLabFile
               IAlphaToMaskCommand
                 ShaderLabTokenType+KeywordTokenElement(type:ALPHA_TO_MASK_KEYWORD, text:AlphaToMask)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IAlphaToMaskValue
+                IBoolValue
                   ShaderLabTokenType+KeywordTokenElement(type:ON_KEYWORD, text:On)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

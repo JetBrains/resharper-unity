@@ -638,6 +638,14 @@ options {
 //
 // **************************************************************************
 
+boolLiteral
+:
+  TRUE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | ON_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | FALSE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | OFF_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+;
+
 variableReference
 :
   LBRACK<LBRACK, LBRack>
@@ -649,7 +657,16 @@ interface value
 :
   numericValue
   | colorValue
-  | onOffValue
+  | boolValue
+;
+
+boolValue
+:
+  TRUE_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | ON_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | FALSE_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | OFF_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 numericValue
@@ -661,13 +678,6 @@ numericValue
 colorValue
 :
   vectorPropertyValue<SHADER_LAB_CONSTANT, Constant>
-  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
-;
-
-onOffValue
-:
-  ON_KEYWORD<SHADER_LAB_CONSTANT, Constant>
-  | OFF_KEYWORD<SHADER_LAB_CONSTANT, Constant>
   | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
@@ -1200,7 +1210,7 @@ cullValue
 zwriteCommand
 :
   ZWRITE_KEYWORD<SHADER_LAB_KEYWORD, ZWriteKeyword>
-  onOffValue<SHADER_LAB_VALUE, Value>
+  boolValue<SHADER_LAB_VALUE, Value>
 ;
 
 ztestCommand
@@ -1305,14 +1315,9 @@ blendOpValue
 alphaToMaskCommand
 :
   ALPHA_TO_MASK_KEYWORD<SHADER_LAB_KEYWORD, AlphaToMaskKeyword>
-  alphaToMaskValue<SHADER_LAB_VALUE, Value>
+  boolValue<SHADER_LAB_VALUE, Value>
 ;
 
-alphaToMaskValue
-:
-  ON_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | TRUE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-;
 
 
 // **************************************************************************
@@ -1508,13 +1513,13 @@ colorCommand
 lightingCommand
 :
   LIGHTING_KEYWORD<SHADER_LAB_KEYWORD, LightingKeyword>
-  onOffValue<SHADER_LAB_VALUE, Value>
+  boolLiteral<SHADER_LAB_VALUE, Value>
 ;
 
 separateSpecularCommand
 :
   SEPARATE_SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, SeparateSpecularKeyword>
-  onOffValue<SHADER_LAB_VALUE, Value>
+  boolLiteral<SHADER_LAB_VALUE, Value>
 ;
 
 colorMaterialCommand
