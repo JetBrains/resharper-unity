@@ -152,7 +152,7 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ISetTextureValue
-                  IReferencedProperty
+                  IVariableReference
                     ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                     IShaderLabIdentifier
                       Identifier(type:IDENTIFIER, text:_MainTex)
@@ -168,7 +168,7 @@ IShaderLabFile
                     ShaderLabTokenType+KeywordTokenElement(type:CONSTANT_COLOR_KEYWORD, text:constantColor)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IColorValue
-                      IReferencedProperty
+                      IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                         IShaderLabIdentifier
                           Identifier(type:IDENTIFIER, text:_IlluminCol)
@@ -210,7 +210,7 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ISetTextureValue
-                  IReferencedProperty
+                  IVariableReference
                     ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                     IShaderLabIdentifier
                       Identifier(type:IDENTIFIER, text:_MainTex)

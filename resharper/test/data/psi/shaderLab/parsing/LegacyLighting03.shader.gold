@@ -91,7 +91,7 @@ IShaderLabFile
                     ShaderLabTokenType+KeywordTokenElement(type:DIFFUSE_KEYWORD, text:Diffuse)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IColorValue
-                      IReferencedProperty
+                      IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                         IShaderLabIdentifier
                           Identifier(type:IDENTIFIER, text:_Color)
@@ -117,7 +117,7 @@ IShaderLabFile
                         ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         INumericValue
-                          IReferencedProperty
+                          IVariableReference
                             ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                             IShaderLabIdentifier
                               Identifier(type:IDENTIFIER, text:_ColorComponent)

@@ -256,7 +256,7 @@ IShaderLabFile
                     ShaderLabTokenType+KeywordTokenElement(type:COLOR_KEYWORD, text:Color)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IColorValue
-                      IReferencedProperty
+                      IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                         IShaderLabIdentifier
                           Identifier(type:IDENTIFIER, text:_Color)
@@ -267,7 +267,7 @@ IShaderLabFile
                     ShaderLabTokenType+KeywordTokenElement(type:DENSITY_KEYWORD, text:Density)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     INumericValue
-                      IReferencedProperty
+                      IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                         IShaderLabIdentifier
                           Identifier(type:IDENTIFIER, text:_Density)
@@ -279,7 +279,7 @@ IShaderLabFile
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IRangeValue
                       INumericValue
-                        IReferencedProperty
+                        IVariableReference
                           ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                           IShaderLabIdentifier
                             Identifier(type:IDENTIFIER, text:_Min)
@@ -287,7 +287,7 @@ IShaderLabFile
                       ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
                       INumericValue
-                        IReferencedProperty
+                        IVariableReference
                           ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                           IShaderLabIdentifier
                             Identifier(type:IDENTIFIER, text:_Max)

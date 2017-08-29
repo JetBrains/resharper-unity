@@ -35,7 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_PREPROCESSOR_DIRECTIVE = "preprocessor directive";
         public const string IDS_PROGRAM_BLOCK = "program block";
         public const string IDS_PROPERTY_TYPE = "property type";
-        public const string IDS_REFERENCED_PROPERTY = "referenced property";
         public const string IDS_RENDER_STATE_COMMAND = "render state command";
         public const string IDS_REGULAR_PASS_CONTENTS = "Pass command";
         public const string IDS_SHADER_CONTENTS = "Shader contents";
@@ -45,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_STENCIL_OPERATION = "stencil operation";
         public const string IDS_SUB_SHADER_CONTENTS = "SubShader contents";
         public const string IDS_VALUE = "value";
+        public const string IDS_VARIABLE_REFERENCE = "variable reference";
         public const string IDS_ZTEST_VALUE = "ZTest value";
 
         public static string GetString(string id) => id;

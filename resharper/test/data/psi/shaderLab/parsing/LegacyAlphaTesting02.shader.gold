@@ -92,7 +92,7 @@ IShaderLabFile
                     ShaderLabTokenType+KeywordTokenElement(type:GREATER_KEYWORD, text:Greater)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   INumericValue
-                    IReferencedProperty
+                    IVariableReference
                       ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                       IShaderLabIdentifier
                         Identifier(type:IDENTIFIER, text:_Cutoff)
@@ -160,7 +160,7 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ISetTextureValue
-                  IReferencedProperty
+                  IVariableReference
                     ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                     IShaderLabIdentifier
                       Identifier(type:IDENTIFIER, text:_MainTex)

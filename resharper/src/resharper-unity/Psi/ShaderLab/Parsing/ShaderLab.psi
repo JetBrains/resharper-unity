@@ -638,7 +638,7 @@ options {
 //
 // **************************************************************************
 
-referencedProperty
+variableReference
 :
   LBRACK<LBRACK, LBRack>
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
@@ -655,20 +655,20 @@ interface value
 numericValue
 :
   NUMERIC_LITERAL<SHADER_LAB_CONSTANT, Constant>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 colorValue
 :
   vectorPropertyValue<SHADER_LAB_CONSTANT, Constant>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 onOffValue
 :
   ON_KEYWORD<SHADER_LAB_CONSTANT, Constant>
   | OFF_KEYWORD<SHADER_LAB_CONSTANT, Constant>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 
@@ -1173,7 +1173,7 @@ comparisonFunctionValue
   | NOT_EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
   | ALWAYS_KEYWORD<SHADER_LAB_VALUE, Value>
   | NEVER_KEYWORD<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 
@@ -1194,7 +1194,7 @@ cullValue
   FRONT_KEYWORD<SHADER_LAB_VALUE, Value>
   | BACK_KEYWORD<SHADER_LAB_VALUE, Value>
   | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 zwriteCommand
@@ -1239,7 +1239,7 @@ colorMaskValue
   // RBG, A, 0, any combination of R, G, B, A
   shaderLabIdentifier<SHADER_LAB_VALUE, Value>
   | NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 
@@ -1276,7 +1276,7 @@ private blendValues
 blendFactor
 :
   shaderLabIdentifier<FACTOR, Factor>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 blendOpCommand
@@ -1291,13 +1291,13 @@ blendOpValue
   // Treat Op enum value as an identifier, rather than a keyword
   (
     shaderLabIdentifier<OP_COLOR, OpColor>
-    | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+    | variableReference<SHADER_LAB_REFERENCE, VariableReference>
   )
   (
     COMMA<COMMA, Comma>
     (
       shaderLabIdentifier<OP_ALPHA, OpAlpha>
-      | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+      | variableReference<SHADER_LAB_REFERENCE, VariableReference>
     )
   )? 
 ;
@@ -1331,7 +1331,7 @@ stencilOperation
   | INVERT_KEYWORD<SHADER_LAB_VALUE, Value>
   | INCR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
   | DECR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 stencilCommand
@@ -1596,7 +1596,7 @@ setTextureCommand
 
 setTextureValue
 :
-  referencedProperty<SHADER_LAB_REFERENCE, TextureName>
+  variableReference<SHADER_LAB_REFERENCE, VariableReference>
   LBRACE<LBRACE, LBrace>
   matrixCommand<MATRIX_COMMAND, MatrixCommand>?
   constantColorCommand<CONSTANT_COLOR_COMMAND, ConstantColorCommand>?
@@ -1607,7 +1607,7 @@ setTextureValue
 matrixCommand
 :
   MATRIX_KEYWORD<SHADER_LAB_KEYWORD, MatrixKeyword>
-  referencedProperty<SHADER_LAB_REFERENCE, Value>
+  variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 combineCommand
