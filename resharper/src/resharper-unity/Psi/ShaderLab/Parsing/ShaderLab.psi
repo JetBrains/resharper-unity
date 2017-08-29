@@ -631,6 +631,48 @@ options {
 ;
 
 
+
+// **************************************************************************
+//
+// Values
+//
+// **************************************************************************
+
+referencedProperty
+:
+  LBRACK<LBRACK, LBRack>
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  RBRACK<RBRACK, RBrack>
+;
+
+interface value
+:
+  numericValue
+  | colorValue
+  | onOffValue
+;
+
+numericValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_CONSTANT, Constant>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+;
+
+colorValue
+:
+  vectorPropertyValue<SHADER_LAB_CONSTANT, Constant>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+;
+
+onOffValue
+:
+  ON_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | OFF_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+;
+
+
+
 // **************************************************************************
 //
 // Preprocessor
@@ -1131,32 +1173,6 @@ comparisonFunctionValue
   | NOT_EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
   | ALWAYS_KEYWORD<SHADER_LAB_VALUE, Value>
   | NEVER_KEYWORD<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
-;
-
-numericValue
-:
-  NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
-;
-
-colorValue
-:
-  vectorPropertyValue<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
-;
-
-referencedProperty
-:
-  LBRACK<LBRACK, LBRack>
-  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
-  RBRACK<RBRACK, RBrack>
-;
-
-onOffValue
-:
-  ON_KEYWORD<SHADER_LAB_VALUE, Value>
-  | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
   | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
 ;
 
