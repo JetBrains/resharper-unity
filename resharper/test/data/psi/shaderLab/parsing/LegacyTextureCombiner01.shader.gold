@@ -24,7 +24,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Base (RGB)")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -45,7 +45,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Alpha Blended (RGBA) ")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "

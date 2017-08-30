@@ -646,6 +646,19 @@ boolLiteral
   | OFF_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
 ;
 
+colorLiteral
+:
+  LPAREN<LPAREN, LParen>
+  colorLiteralValues
+  RPAREN<RPAREN, RParen>
+;
+
+// Private and error handling to allow resync on colorLiteralValue::RPAREN
+private errorhandling colorLiteralValues
+:
+  LIST numericValue<Number, Numbers> SEP COMMA<COMMA, Comma>
+;
+
 variableReference
 :
   LBRACK<LBRACK, LBRack>
@@ -677,7 +690,7 @@ numericValue
 
 colorValue
 :
-  vectorPropertyValue<SHADER_LAB_CONSTANT, Constant>
+  colorLiteral<SHADER_LAB_CONSTANT, Constant>
   | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
@@ -880,19 +893,21 @@ private propertyParameters
 interface propertyType
 :
   simplePropertyType
+  | textureDimensionPropertyType
   | rangePropertyType
 ;
 
 simplePropertyType
 :
   COLOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | CUBE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
   | FLOAT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | INT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | TEXTURE_2D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | TEXTURE_3D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | INT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>    // Note, treated same as FLOAT_KEYWORD
   | VECTOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | ANY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>    // TODO: This is not documented, but used in builtin shaders (e.g. Internal-BlitCopy.shader)
+;
+
+textureDimensionPropertyType
+:
+  textureDimensionKeyword
 ;
 
 // Errorhandling to allow resync on RPAREN in propertyParameters
@@ -909,7 +924,7 @@ errorhandling rangePropertyType
 interface propertyValue
 :
   scalarPropertyValue
-  | vectorPropertyValue
+  | colorPropertyValue
   | texturePropertyValue
   | errorPropertyValue
 ;
@@ -919,17 +934,9 @@ scalarPropertyValue
   NUMERIC_LITERAL<SHADER_LAB_VALUE, Number>
 ;
 
-vectorPropertyValue
+colorPropertyValue
 :
-  LPAREN<LPAREN, LParen>
-  vectorPropertyValues
-  RPAREN<RPAREN, RParen>
-;
-
-// Private and error handling to allow resync on vectorPropertyValue::RPAREN
-private errorhandling vectorPropertyValues
-:
-  LIST numericValue<Number, Numbers> SEP COMMA<COMMA, Comma>
+  colorLiteral<SHADER_LAB_VALUE, Color>
 ;
 
 texturePropertyValue
@@ -937,10 +944,65 @@ texturePropertyValue
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   (
     LBRACE<LBRACE, LBrace>
-    LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>?
+    texEnvProperty<TEX_ENV_PROPERTY, TexEnvProperty>*
     errorTexturePropertyBlockValues
     RBRACE<RBRACE, RBrace>
   )?
+;
+
+interface texEnvProperty
+:
+  textureDimensionTexEnvProperty
+  | texGenTexEnvProperty
+  | matrixTexEnvProperty
+  | lightmapTexEnvProperty
+;
+
+textureDimensionTexEnvProperty
+:
+  textureDimensionKeyword
+;
+
+private textureDimensionKeyword
+:
+  TEXTURE_2D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_3D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | CUBE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_2D_ARRAY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | CUBE_ARRAY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | RECT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | ANY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+;
+
+// TODO: Shader compiler error - obsolete
+// "Fixed function TexGen used; it doesn't do anything now"
+texGenTexEnvProperty
+:
+  TEX_GEN_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  texGenMode
+;
+
+private texGenMode
+:
+  SPHERE_MAP_KEYWORD<MODE, Mode>
+  | EYE_LINEAR_KEYWORD<MODE, Mode>
+  | CUBE_REFLECT_KEYWORD<MODE, Mode>
+  | CUBE_NORMAL_KEYWORD<MODE, Mode>
+  | OBJECT_LINEAR_KEYWORD<MODE, Mode>
+;
+
+// TODO: Shader compiler error - obsolete
+// "Fixed function text matrix '...' used; they don't do anything now"
+matrixTexEnvProperty
+:
+  MATRIX_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+// TODO: Does nothing, ignored
+lightmapTexEnvProperty
+:
+  LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD>
 ;
 
 // The spec says there shouldn't be anything here. Use a custom parse function to eat 

@@ -24,7 +24,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Base (RGB) Transparency (A)")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -110,7 +110,7 @@ IShaderLabFile
                     ShaderLabTokenType+KeywordTokenElement(type:DIFFUSE_KEYWORD, text:Diffuse)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IColorValue
-                      IVectorPropertyValue
+                      IColorLiteral
                         ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                         INumericValue
                           ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
@@ -130,7 +130,7 @@ IShaderLabFile
                     ShaderLabTokenType+KeywordTokenElement(type:AMBIENT_KEYWORD, text:Ambient)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IColorValue
-                      IVectorPropertyValue
+                      IColorLiteral
                         ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                         INumericValue
                           ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)

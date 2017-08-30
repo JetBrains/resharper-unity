@@ -79,14 +79,21 @@
 
   <PropertyTypeKeywords NodeType="KeywordTokenNodeType">
     <Keyword name="COLOR_KEYWORD" representation="Color" />
-    <Keyword name="CUBE_KEYWORD" representation="Cube" />
     <Keyword name="FLOAT_KEYWORD" representation="Float" />
     <Keyword name="INT_KEYWORD" representation="Int" />
     <Keyword name="RANGE_KEYWORD" representation="Range" />
-    <Keyword name="TEXTURE_2D_KEYWORD" representation="2D" />
-    <Keyword name="TEXTURE_3D_KEYWORD" representation="3D" />
     <Keyword name="VECTOR_KEYWORD" representation="Vector" />
   </PropertyTypeKeywords>
+  
+  <TextureDimensionKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="ANY_KEYWORD" representation="Any" />
+    <Keyword name="CUBE_KEYWORD" representation="Cube" />
+    <Keyword name="CUBE_ARRAY_KEYWORD" representation="CubeArray" />
+    <Keyword name="RECT_KEYWORD" representation="Rect" />
+    <Keyword name="TEXTURE_2D_KEYWORD" representation="2D" />
+    <Keyword name="TEXTURE_2D_ARRAY_KEYWORD" representation="2DArray" />
+    <Keyword name="TEXTURE_3D_KEYWORD" representation="3D" />
+  </TextureDimensionKeywords>
 
   <SubShaderCommands NodeType="KeywordTokenNodeType">
     <Command name="TAGS_KEYWORD" representation="Tags" />
@@ -109,6 +116,11 @@
     <Command name="LOD_KEYWORD" representation="LOD" />
     <Command name="BIND_CHANNELS_KEYWORD" representation="BindChannels" />
   </RenderStateCommands>
+  
+  <CullModeKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="BACK_KEYWORD" representation="Back" />
+    <Keyword name="FRONT_KEYWORD" representation="Front" />
+  </CullModeKeywords>
 
   <LegacyFixedFunctionCommands NodeType="KeywordTokenNodeType">
     <Command name="LIGHTING_KEYWORD" representation="Lighting" />
@@ -128,8 +140,11 @@
   </LegacyMaterialCommands>
 
   <LegacyTextureCommands NodeType="KeywordTokenNodeType">
-    <Keywords name="COMBINE_KEYWORD" representation="Combine" />
-    <Keywords name="CONSTANT_COLOR_KEYWORD" representation="ConstantColor" />
+    <Keyword name="COMBINE_KEYWORD" representation="Combine" />
+    <Keyword name="CONSTANT_COLOR_KEYWORD" representation="ConstantColor" />
+    <Keyword name="MATRIX_KEYWORD" representation="Matrix" />
+    <Keyword name="LIGHTMAP_MODE_KEYWORD" representation="LightmapMode" />
+    <Keyword name="TEX_GEN_KEYWORD" representation="TexGen" />
   </LegacyTextureCommands>
 
   <LegacyTextureCombinerKeywords NodeType="KeywordTokenNodeType">
@@ -143,6 +158,14 @@
     <Keyword name="ONE_KEYWORD" representation="One" />
     <Keyword name="ALPHA_KEYWORD" representation="Alpha" />
   </LegacyTextureCombinerKeywords>
+
+  <LegacyTexGenModeKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="SPHERE_MAP_KEYWORD" representation="SphereMap" />
+    <Keyword name="EYE_LINEAR_KEYWORD" representation="EyeLinear" />
+    <Keyword name="CUBE_REFLECT_KEYWORD" representation="CubeReflect" />
+    <Keyword name="CUBE_NORMAL_KEYWORD" representation="CubeNormal" />
+    <Keyword name="OBJECT_LINEAR_KEYWORD" representation="ObjectLinear" />
+  </LegacyTexGenModeKeywords>
 
   <LegacyBindChannelsCommands NodeType="KeywordTokenNodeType">
     <Command name="BIND_KEYWORD" representation="Bind" />
@@ -204,15 +227,10 @@
     <Keyword name="DECR_WRAP_KEYWORD" representation="DecrWrap" />
   </StencilOperationKeywords>
 
-  <Keywords NodeType="KeywordTokenNodeType">
+  <BoolKeywords NodeType="KeywordTokenNodeType">
     <Keyword name="TRUE_KEYWORD" representation="True" />
     <Keyword name="FALSE_KEYWORD" representation="False" />
     <Keyword name="ON_KEYWORD" representation="On" />
     <Keyword name="OFF_KEYWORD" representation="Off" />
-    <Keyword name="BACK_KEYWORD" representation="Back" />
-    <Keyword name="FRONT_KEYWORD" representation="Front" />
-    <Keyword name="MATRIX_KEYWORD" representation="Matrix" />
-    <Keyword name="ANY_KEYWORD" representation="Any" />
-    <Keyword name="LIGHTMAP_MODE_KEYWORD" representation="LightmapMode" />
-  </Keywords>
+  </BoolKeywords>
 </ShaderLabTokens>

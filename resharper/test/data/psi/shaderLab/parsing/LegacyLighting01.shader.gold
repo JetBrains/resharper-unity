@@ -27,7 +27,7 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:COLOR_KEYWORD, text:Color)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IColorValue
-                  IVectorPropertyValue
+                  IColorLiteral
                     ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                     INumericValue
                       ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)

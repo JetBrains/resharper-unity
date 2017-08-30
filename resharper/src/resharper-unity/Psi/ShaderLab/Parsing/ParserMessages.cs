@@ -4,20 +4,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
     public static class ParserMessages
     {
-        public const string IDS_ALPHA_TO_MASK_VALUE = "AlphaToMask value";
         public const string IDS_ALPHA_TEST_VALUE = "AlphaTest value";
         public const string IDS_ATTRIBUTE_PARAMETER_VALUE = "parameter value";
         public const string IDS_BIND_COMMAND = "Bind command";
         public const string IDS_BIND_VALUE = "Bind value";
         public const string IDS_BLEND_FACTOR = "Blend factor";
-        public const string IDS_BLEND_OP_VALUE = "Blend op value";
         public const string IDS_BLEND_VALUE = "Blend value";
         public const string IDS_BLOCK_COMMAND = "Block command";
         public const string IDS_BLOCK_VALUE = "Block value";
         public const string IDS_BOOL_LITERAL = "bool";
         public const string IDS_BOOL_VALUE = "bool";
         public const string IDS_CATEGORY_CONTENTS = "Category command";
-        public const string IDS_CG_BLOCK = "CG block";
         public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
         public const string IDS_COLOR_MASK_VALUE = "ColorMask value";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";
@@ -31,7 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_MATERIAL_CONTENTS = "Material command";
         public const string IDS_MODE_VALUE = "Mode value";
         public const string IDS_NUMERIC_VALUE = "numeric literal or referenced property";
-        public const string IDS_ON_OFF_VALUE = "On or Off";
         public const string IDS_OPERATOR = "operator";
         public const string IDS_PASS_DEF = "pass definition";
         public const string IDS_PREPROCESSOR_DIRECTIVE = "preprocessor directive";
@@ -44,6 +40,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_SIMPLE_PROPERTY_TYPE = "property type";
         public const string IDS_STENCIL_CONTENTS = "Stencil command";
         public const string IDS_STENCIL_OPERATION = "stencil operation";
+        public const string IDS_TEX_ENV_PROPERTY = "TexEnv property";
+        public const string IDS_TEX_GEN_MODE = "TexGen mode";
+        public const string IDS_TEXTURE_DIMENSION_KEYWORD = "Texture dimension keyword";
         public const string IDS_SUB_SHADER_CONTENTS = "SubShader contents";
         public const string IDS_VALUE = "value";
         public const string IDS_VARIABLE_REFERENCE = "variable reference";
