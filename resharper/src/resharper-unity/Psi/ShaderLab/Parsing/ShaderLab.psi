@@ -827,8 +827,8 @@ private errorhandling shaderValueName
 private shaderContents
 :
   fallbackCommand<FALLBACK_COMMAND, FallbackCommands>
-  | customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommands>
   | dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>
+  | customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommands>
 ;
 
 
@@ -1179,7 +1179,8 @@ private renderStateCommand
   cullCommand<SHADER_LAB_COMMAND, Commands>
   | zwriteCommand<SHADER_LAB_COMMAND, Commands>
   | ztestCommand<SHADER_LAB_COMMAND, Commands>
-  | offsetCommand<SHADER_LAB_COMMAND, Command>
+  | zclipCommand<SHADER_LAB_COMMAND, Commands>
+  | offsetCommand<SHADER_LAB_COMMAND, Commands>
   | colorMaskCommand<SHADER_LAB_COMMAND, Commands>
   // Do these 3 make sense outside of Pass?
   | blendCommand<SHADER_LAB_COMMAND, Commands>
@@ -1272,6 +1273,12 @@ cullValue
 zwriteCommand
 :
   ZWRITE_KEYWORD<SHADER_LAB_KEYWORD, ZWriteKeyword>
+  boolValue<SHADER_LAB_VALUE, Value>
+;
+
+zclipCommand
+:
+  ZCLIP_KEYWORD<SHADER_LAB_KEYWORD, ZClipKeyword>
   boolValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2072,7 +2079,7 @@ fallbackValue
     STRING_LITERAL<SHADER_LAB_NAME, Name>
     (
       COMMA<COMMA, Comma>
-      lodValue<SHADER_LAB_VALUE, Value> // legacy, not actually used by Unity
+      lodValue<SHADER_LAB_VALUE, LodValue> // legacy, not actually used by Unity
     )?
   )
   | OFF_KEYWORD<SHADER_LAB_KEYWORD, OffKeyword>

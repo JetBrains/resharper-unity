@@ -104,6 +104,7 @@
 
   <RenderStateCommands NodeType="KeywordTokenNodeType">
     <Command name="CULL_KEYWORD" representation="Cull" />
+    <Command name="ZCLIP_KEYWORD" representation="ZClip" />
     <Command name="ZTEST_KEYWORD" representation="ZTest" />
     <Command name="ZWRITE_KEYWORD" representation="ZWrite" />
     <Command name="OFFSET_KEYWORD" representation="Offset" />
