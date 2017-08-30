@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_BLEND_FACTOR = "Blend factor";
         public const string IDS_BLEND_VALUE = "Blend value";
         public const string IDS_BLOCK_COMMAND = "Block command";
+        public const string IDS_BLEND_OP_VALUE_AUX = "BlendOp value";
         public const string IDS_BLOCK_VALUE = "Block value";
         public const string IDS_BOOL_LITERAL = "bool";
         public const string IDS_BOOL_VALUE = "bool";

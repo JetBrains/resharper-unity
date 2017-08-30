@@ -1386,13 +1386,13 @@ blendCommand
 
 blendValue
 :
-  OFF_KEYWORD<OFF_KEYWORD, OffKeyword>
+  falseLiteral{FALSE_LITERAL, FalseLiteral}
   | blendValues
 ;
 
 private blendValues
 :
-  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?  // TODO: Can this also be a reference?
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
   blendFactor<SRCFACTOR, SrcFactor>
   blendFactor<DSTFACTOR, DstFactor>
   (
@@ -1417,18 +1417,18 @@ blendOpCommand
 blendOpValue
 :
   NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
-  // Treat Op enum value as an identifier, rather than a keyword
-  (
-    shaderLabIdentifier<OP_COLOR, OpColor>
-    | variableReference<SHADER_LAB_REFERENCE, VariableReference>
-  )
+  blendOpValueAux{OP_COLOR, OpColor, OP_COLOR_REFERENCE, OpColorReference}
   (
     COMMA<COMMA, Comma>
-    (
-      shaderLabIdentifier<OP_ALPHA, OpAlpha>
-      | variableReference<SHADER_LAB_REFERENCE, VariableReference>
-    )
+    blendOpValueAux{OP_ALPHA, OpAlpha, OP_ALPHA_REFERENCE, OpAlphaReference}
   )? 
+;
+
+private blendOpValueAux{OP_ROLE, OpGetter, OP_REFERENCE_ROLE, OpReferenceGetter}
+:
+  // TODO: Add keywords for expected op mode?
+  shaderLabIdentifier{@OP_ROLE, @OpGetter}
+  | variableReference{@OP_REFERENCE_ROLE, @OpReferenceGetter}
 ;
 
 alphaToMaskCommand
