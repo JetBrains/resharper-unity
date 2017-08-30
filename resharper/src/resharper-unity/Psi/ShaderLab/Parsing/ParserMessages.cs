@@ -42,6 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_SIMPLE_PROPERTY_TYPE = "property type";
         public const string IDS_STENCIL_CONTENTS = "Stencil command";
         public const string IDS_STENCIL_OPERATION = "stencil operation";
+        public const string IDS_TAG_DECLARATION = "tag";
         public const string IDS_TEX_ENV_PROPERTY = "TexEnv property";
         public const string IDS_TEX_GEN_MODE = "TexGen mode";
         public const string IDS_TEXTURE_DIMENSION_KEYWORD = "Texture dimension keyword";

@@ -38,12 +38,12 @@ IShaderLabFile
             ITagsValue
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITagDeclaration
+              IStringLiteralTagDeclaration
                 ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderType")
                 ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
                 ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Opaque")
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITagDeclaration
+              IStringLiteralTagDeclaration
                 ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Queue")
                 ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
                 ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Overlay+1")

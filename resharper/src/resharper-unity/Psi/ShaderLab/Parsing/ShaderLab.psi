@@ -1181,11 +1181,24 @@ tagsValue
   RBRACE<RBRACE, RBrace>
 ;
 
-tagDeclaration
+interface tagDeclaration
+:
+  stringLiteralTagDeclaration
+  | identifierTagDeclaration
+;
+
+stringLiteralTagDeclaration
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   EQUALS<EQUALS, Equals>
   STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+identifierTagDeclaration
+:
+  shaderLabIdentifier<SHADER_LAB_NAME, Name>
+  EQUALS<EQUALS, Equals>
+  shaderLabIdentifier<SHADER_LAB_VALUE, Value>
 ;
 
 
@@ -1914,6 +1927,7 @@ bindValue
 :
   STRING_LITERAL<SOURCE, Source>
   COMMA<COMMA, Comma>
+  // TODO: Make these into keywords as channel type?
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Target>
 ;
 
