@@ -1,5 +1,6 @@
 {caret}Shader "Blah"
 {
+    Properties { _CullValue ("Cull value", Float) = 0 }
     SubShader
     {
         Pass
@@ -23,9 +24,17 @@
         }
         Pass
         {
-            Cull Off
-            // Not documented in the spec
+            Cull False
+            // ZTest bool value not documented
             ZTest Off
+            // ZClip not documented
+            ZClip On
+        }
+        Pass
+        {
+            Cull [_CullValue]
+            // ZClip not documented
+            ZClip False
         }
     }
 }

@@ -296,7 +296,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     public const int BIND_CHANNELS_KEYWORD_NODE_TYPE_INDEX = 1059;
     public static readonly TokenNodeType BIND_CHANNELS_KEYWORD = new KeywordTokenNodeType("BIND_CHANNELS_KEYWORD", BIND_CHANNELS_KEYWORD_NODE_TYPE_INDEX, representation: "BindChannels");
 
-    //CullModeKeywords
+    //CullOrientationKeywords
     public const int BACK_KEYWORD_NODE_TYPE_INDEX = 1060;
     public static readonly TokenNodeType BACK_KEYWORD = new KeywordTokenNodeType("BACK_KEYWORD", BACK_KEYWORD_NODE_TYPE_INDEX, representation: "Back");
     public const int FRONT_KEYWORD_NODE_TYPE_INDEX = 1061;

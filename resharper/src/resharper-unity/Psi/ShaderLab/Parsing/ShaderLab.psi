@@ -130,7 +130,16 @@
 // where the first part is the token type and the second is the name. Multiple parameters can be sepcified,
 // separated by commas. The captured element is used in the rules with an ampersand, and can have normal
 // role definitions, e.g. &id or &id<IDENTIFIER, Identifier>. A rule may also pass null 
-
+//
+// nonterminal({ROLE, Getter})*
+//
+// Allows declaring a private nonterminal (that's expanded inline) without having to specify the roles and
+// getter names up front. Can be specified multiple times. Referenced in the rules with `@`. E.g.:
+//
+//     private theThing{ROLE, Getter}
+//     :
+//       MY_KEYWORD{@ROLE, @Getter}
+//     ;
 
 
 // The Tao of Error Handling
@@ -333,6 +342,7 @@ options {
   | DECR_WRAP_KEYWORD
 
   | TRUE_KEYWORD
+  | FALSE_KEYWORD
   | ON_KEYWORD
   | OFF_KEYWORD
   | BACK_KEYWORD
@@ -479,6 +489,7 @@ options {
   | DECR_WRAP_KEYWORD
 
   | TRUE_KEYWORD
+  | FALSE_KEYWORD
   | ON_KEYWORD
   | OFF_KEYWORD
   | BACK_KEYWORD
@@ -623,6 +634,7 @@ options {
   | DECR_WRAP_KEYWORD
 
   | TRUE_KEYWORD
+  | FALSE_KEYWORD
   | ON_KEYWORD
   | OFF_KEYWORD
   | BACK_KEYWORD
@@ -638,12 +650,22 @@ options {
 //
 // **************************************************************************
 
+private trueLiteral{ROLE, Getter}
+:
+  TRUE_KEYWORD<@ROLE, @Getter>
+  | ON_KEYWORD<@ROLE, @Getter>
+;
+
+private falseLiteral{ROLE, Getter}
+:
+  FALSE_KEYWORD<@ROLE, @Getter>
+  | OFF_KEYWORD<@ROLE, @Getter>
+;
+
 boolLiteral
 :
-  TRUE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | ON_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | FALSE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | OFF_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  trueLiteral{SHADER_LAB_KEYWORD, Keyword}
+  | falseLiteral{SHADER_LAB_KEYWORD, Keyword}
 ;
 
 colorLiteral
@@ -1264,10 +1286,15 @@ cullCommand
 
 cullValue
 :
-  FRONT_KEYWORD<SHADER_LAB_VALUE, Value>
-  | BACK_KEYWORD<SHADER_LAB_VALUE, Value>
-  | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
-  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+  falseLiteral{FALSE_LITERAL, FalseLiteral}
+  | cullOrientation<ORIENTATION, Orientation>
+;
+
+cullOrientation
+:
+  FRONT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | BACK_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>  // Reference to float, but which value is front and which back?
 ;
 
 zwriteCommand

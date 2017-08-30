@@ -19,7 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_COLOR_MASK_VALUE = "ColorMask value";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";
         public const string IDS_COLOR_VALUE = "color value";
+        public const string IDS_CULL_ORIENTATION = "cull orientation";
         public const string IDS_CULL_VALUE = "cull value";
+        public const string IDS_FALSE_LITERAL = "false/off";
         public const string IDS_FOG_CONTENTS = "Fog command";
         public const string IDS_GRAB_PASS_CONTENTS = "GrabPass command";
         public const string IDS_INCLUDE_BLOCK = "include block";
@@ -43,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_TEX_ENV_PROPERTY = "TexEnv property";
         public const string IDS_TEX_GEN_MODE = "TexGen mode";
         public const string IDS_TEXTURE_DIMENSION_KEYWORD = "Texture dimension keyword";
+        public const string IDS_TRUE_LITERAL = "true/on";
         public const string IDS_SUB_SHADER_CONTENTS = "SubShader contents";
         public const string IDS_VALUE = "value";
         public const string IDS_VARIABLE_REFERENCE = "variable reference";

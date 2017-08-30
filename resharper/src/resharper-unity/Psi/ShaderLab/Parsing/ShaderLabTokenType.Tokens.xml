@@ -118,10 +118,10 @@
     <Command name="BIND_CHANNELS_KEYWORD" representation="BindChannels" />
   </RenderStateCommands>
   
-  <CullModeKeywords NodeType="KeywordTokenNodeType">
+  <CullOrientationKeywords NodeType="KeywordTokenNodeType">
     <Keyword name="BACK_KEYWORD" representation="Back" />
     <Keyword name="FRONT_KEYWORD" representation="Front" />
-  </CullModeKeywords>
+  </CullOrientationKeywords>
 
   <LegacyFixedFunctionCommands NodeType="KeywordTokenNodeType">
     <Command name="LIGHTING_KEYWORD" representation="Lighting" />

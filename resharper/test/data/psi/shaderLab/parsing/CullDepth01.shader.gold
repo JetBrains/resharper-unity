@@ -9,6 +9,32 @@ IShaderLabFile
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      IPropertiesCommand
+        ShaderLabTokenType+KeywordTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPropertiesValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_CullValue)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Cull value")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
       ISubShaderCommand
         ShaderLabTokenType+KeywordTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -29,7 +55,8 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:CULL_KEYWORD, text:Cull)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ICullValue
-                  ShaderLabTokenType+KeywordTokenElement(type:FRONT_KEYWORD, text:Front)
+                  ICullOrientation
+                    ShaderLabTokenType+KeywordTokenElement(type:FRONT_KEYWORD, text:Front)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IZwriteCommand
@@ -74,7 +101,8 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:CULL_KEYWORD, text:Cull)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ICullValue
-                  ShaderLabTokenType+KeywordTokenElement(type:BACK_KEYWORD, text:Back)
+                  ICullOrientation
+                    ShaderLabTokenType+KeywordTokenElement(type:BACK_KEYWORD, text:Back)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IZtestCommand
@@ -145,10 +173,10 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:CULL_KEYWORD, text:Cull)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ICullValue
-                  ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
+                  ShaderLabTokenType+KeywordTokenElement(type:FALSE_KEYWORD, text:False)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-              EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Not documented in the spec) spaces: "// Not documented in the spec"
+              EndOfLineComment(type:END_OF_LINE_COMMENT, text:// ZTest bool value not documented) spaces: "// ZTest bool value not documented"
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IZtestCommand
@@ -156,6 +184,49 @@ IShaderLabFile
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IZtestValue
                   ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              EndOfLineComment(type:END_OF_LINE_COMMENT, text:// ZClip not documented) spaces: "// ZClip not documented"
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              IZclipCommand
+                ShaderLabTokenType+KeywordTokenElement(type:ZCLIP_KEYWORD, text:ZClip)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                IBoolValue
+                  ShaderLabTokenType+KeywordTokenElement(type:ON_KEYWORD, text:On)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+          IRegularPassDef
+            ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IRegularPassValue
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              ICullCommand
+                ShaderLabTokenType+KeywordTokenElement(type:CULL_KEYWORD, text:Cull)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ICullValue
+                  ICullOrientation
+                    IVariableReference
+                      ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                      IShaderLabIdentifier
+                        Identifier(type:IDENTIFIER, text:_CullValue)
+                      ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              EndOfLineComment(type:END_OF_LINE_COMMENT, text:// ZClip not documented) spaces: "// ZClip not documented"
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              IZclipCommand
+                ShaderLabTokenType+KeywordTokenElement(type:ZCLIP_KEYWORD, text:ZClip)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                IBoolValue
+                  ShaderLabTokenType+KeywordTokenElement(type:FALSE_KEYWORD, text:False)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
