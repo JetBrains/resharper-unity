@@ -63,7 +63,8 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IColorMaskValue
-                  ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+                  IColorMaskRgbaFlags
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               IStencilCommand

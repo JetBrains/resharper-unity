@@ -1342,10 +1342,20 @@ colorMaskCommand
 
 colorMaskValue
 :
-  // RBG, A, 0, any combination of R, G, B, A
-  shaderLabIdentifier<SHADER_LAB_VALUE, Value>
-  | NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
-  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+  (
+    // Order is important. `False` could get parsed as an identifier
+    falseLiteral{FALSE_LITERAL, FalseLiteral}
+    | colorMaskRgbaFlags<RGBA_FLAGS, RgbaFlags>
+    | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+  )
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
+;
+
+colorMaskRgbaFlags
+:
+  // RGB, A, 0, any combination of R, G, B, A
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  | NUMERIC_LITERAL<ZERO_LITERAL, ZeroLiteral>
 ;
 
 
