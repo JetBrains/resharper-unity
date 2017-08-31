@@ -81,6 +81,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 LERP_KEYWORD,
                 ONE_KEYWORD,
                 ALPHA_KEYWORD,
+                DOT3_KEYWORD,
+                DOT3RGBA_KEYWORD,
 
                 SPHERE_MAP_KEYWORD,
                 EYE_LINEAR_KEYWORD,

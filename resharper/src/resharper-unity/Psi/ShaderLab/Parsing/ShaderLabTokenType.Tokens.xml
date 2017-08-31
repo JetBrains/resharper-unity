@@ -56,6 +56,7 @@
     <Token name="PLUS" representation="+" />
     <Token name="MINUS" representation="-" />
     <Token name="MULTIPLY" representation="*" />
+    <Token name="PLUS_MINUS" representation="+-" />
   </Tokens>
   
   <!-- Specifying the TokenElement generates subtypes of NodeType and TokenElement,
@@ -158,6 +159,8 @@
     <Keyword name="LERP_KEYWORD" representation="Lerp" />
     <Keyword name="ONE_KEYWORD" representation="One" />
     <Keyword name="ALPHA_KEYWORD" representation="Alpha" />
+    <Keyword name="DOT3_KEYWORD" representation="Dot3" />
+    <Keyword name="DOT3RGBA_KEYWORD" representation="Dot3Rgba" />
   </LegacyTextureCombinerKeywords>
 
   <LegacyTexGenModeKeywords NodeType="KeywordTokenNodeType">

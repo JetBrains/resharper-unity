@@ -1723,17 +1723,33 @@ setTextureCommand
 setTextureValue
 :
   variableReference<SHADER_LAB_REFERENCE, VariableReference>
-  LBRACE<LBRACE, LBrace>
-  matrixCommand<MATRIX_COMMAND, MatrixCommand>?
-  constantColorCommand<CONSTANT_COLOR_COMMAND, ConstantColorCommand>?
-  combineCommand<COMBINE_COMMAND, CombineCommand>?
-  RBRACE<RBRACE, RBrace>
+  (
+    LBRACE<LBRACE, LBrace>
+    textureBinding<BINDINGS, Bindings>*
+    RBRACE<RBRACE, RBrace>
+  )?
+;
+
+interface textureBinding
+:
+  matrixCommand
+  | constantColorCommand
+  | combineCommand
 ;
 
 matrixCommand
 :
+  // TODO: The only supported value is [unity_LightmapMatrix]
+  // Otherwise compiler error:
+  // "Fixed function texture '{varref}' used; they don't do anything now"
   MATRIX_KEYWORD<SHADER_LAB_KEYWORD, MatrixKeyword>
   variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+constantColorCommand
+:
+  CONSTANT_COLOR_KEYWORD<SHADER_LAB_KEYWORD, ConstantColorKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
 ;
 
 combineCommand
@@ -1744,7 +1760,7 @@ combineCommand
 
 combineValue
 :
-  combineCalculation<DEFAULT_COMBINE_CALCULATION, DefaultCalculation>
+  combineCalculation<DEFAULT_CALCULATION, DefaultCalculation>
   (
     COMMA<COMMA, Comma>
     combineCalculation<ALPHA_CALCULATION, AlphaCalculation>
@@ -1753,15 +1769,21 @@ combineValue
 
 combineCalculation
 :
+  // Both operation and interpolation start with combineSrc, so match it
+  // and pass in so it can be owned by that type, and so we can match on
+  // the second token (operator or `lerp`)
   !(#src1:combineSrc)
   (
     combineOperation<OPERATION, Operation>[src1]
     | combineInterpolation<INTERPOLATION, Interpolation>[src1]
   )
-  (
-    DOUBLE_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
-    | QUAD_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
-  )?
+  brightnessModifier?
+;
+
+private brightnessModifier
+:
+  DOUBLE_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
+  | QUAD_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
 ;
 
 combineOperation[combineSrc src1]
@@ -1782,6 +1804,16 @@ private operator
   PLUS<OPERATOR, Operator>
   | MINUS<OPERATOR, Operator>
   | MULTIPLY<OPERATOR, Operator>
+  | legacyOperator{OPERATOR, Operator}
+;
+
+private legacyOperator{ROLE, Getter}
+:
+  // Compiler errors
+  // "Support for SetTexture combiner '{Operator}' has been removed"
+  PLUS_MINUS{ROLE, Getter}
+  | DOT3_KEYWORD{ROLE, Getter}
+  | DOT3RGBA_KEYWORD{ROLE, Getter}
 ;
 
 combineInterpolation[combineSrc src1]
@@ -1796,7 +1828,7 @@ combineInterpolation[combineSrc src1]
 
 combineSrc
 :
-  ONE_KEYWORD<COLOR_NEGATION_MODIFIER, ColorNegationModifier>?
+  colorNegationModifier<COLOR_NEGATION_MODIFIER, ColorNegationModifier>?
   (
     PREVIOUS_KEYWORD<SRC, Src>
     | PRIMARY_KEYWORD<SRC, Src>
@@ -1806,10 +1838,10 @@ combineSrc
   ALPHA_KEYWORD<ALPHA_CHANNEL_MODIFIER, AlphaChannelModifier>?
 ;
 
-constantColorCommand
+colorNegationModifier
 :
-  CONSTANT_COLOR_KEYWORD<SHADER_LAB_KEYWORD, ConstantColorKeyword>
-  colorValue<SHADER_LAB_VALUE, Value>
+  ONE_KEYWORD<SHADER_LAB_KEYWORD, OneKeyword>
+  MINUS<MINUS, Minus>
 ;
 
 

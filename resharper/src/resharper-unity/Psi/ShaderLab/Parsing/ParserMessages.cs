@@ -15,6 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_BLOCK_VALUE = "Block value";
         public const string IDS_BOOL_LITERAL = "bool";
         public const string IDS_BOOL_VALUE = "bool";
+        public const string IDS_BRIGHTNESS_MODIFIER = "Brightness modifier";
         public const string IDS_CATEGORY_CONTENTS = "Category command";
         public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
         public const string IDS_COLOR_MASK_RGBA_FLAGS = "RGBA flags";
@@ -27,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_GRAB_PASS_CONTENTS = "GrabPass command";
         public const string IDS_INCLUDE_BLOCK = "include block";
         public const string IDS_LEGACY_LIGHTING_COMMAND = "lighting command";
+        public const string IDS_LEGACY_OPERATOR = "Legacy operator";
         public const string IDS_LEGACY_RENDER_STATE_COMMAND = "render state command";
         public const string IDS_MATERIAL_CONTENTS = "Material command";
         public const string IDS_MODE_VALUE = "Mode value";
@@ -46,11 +48,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_TAG_DECLARATION = "tag";
         public const string IDS_TEX_ENV_PROPERTY = "TexEnv property";
         public const string IDS_TEX_GEN_MODE = "TexGen mode";
+        public const string IDS_TEXTURE_BINDING = "Texture binding";
         public const string IDS_TEXTURE_DIMENSION_KEYWORD = "Texture dimension keyword";
         public const string IDS_TRUE_LITERAL = "true/on";
         public const string IDS_SUB_SHADER_CONTENTS = "SubShader contents";
         public const string IDS_VALUE = "value";
-        public const string IDS_VARIABLE_REFERENCE = "variable reference";
         public const string IDS_ZTEST_VALUE = "ZTest value";
 
         public static string GetString(string id) => id;

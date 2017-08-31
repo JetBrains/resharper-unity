@@ -142,6 +142,17 @@ IShaderLabFile
                   Whitespace(type:WHITESPACE, text:            ) spaces: "            "
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              ISetTextureCommand
+                ShaderLabTokenType+KeywordTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ISetTextureValue
+                  IVariableReference
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                    IShaderLabIdentifier
+                      Identifier(type:IDENTIFIER, text:_BlendTex)
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"

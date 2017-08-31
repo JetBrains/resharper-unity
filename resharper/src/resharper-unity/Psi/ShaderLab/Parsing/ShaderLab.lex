@@ -100,6 +100,8 @@ PP_DIGITS={DECIMAL_DIGIT}(({WHITESPACE})*{DECIMAL_DIGIT})*
 <YYINITIAL,PARENS>          ","                 { return ShaderLabTokenType.COMMA; }
 <YYINITIAL>     "."                             { return ShaderLabTokenType.DOT; }
 <YYINITIAL>     "+"                             { return ShaderLabTokenType.PLUS; }
+<YYINITIAL>     "-"                             { return ShaderLabTokenType.MINUS; }
+<YYINITIAL>     "+-"                            { return ShaderLabTokenType.PLUS_MINUS; }
 <YYINITIAL>     "*"                             { return ShaderLabTokenType.MULTIPLY; }
 <YYINITIAL>     "{"                             { return ShaderLabTokenType.LBRACE; }
 <YYINITIAL>     "}"                             { return ShaderLabTokenType.RBRACE; }
