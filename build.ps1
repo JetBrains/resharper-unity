@@ -261,7 +261,7 @@ if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $Las
 
 try{
     if (!($RunIde)){
-        PackNuget "wave08" $version
+        PackNuget "wave09" $version
     }
     PackNuget "rider" $version
 }
