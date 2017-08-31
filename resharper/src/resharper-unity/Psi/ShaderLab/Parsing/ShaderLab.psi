@@ -1467,6 +1467,8 @@ stencilCommand
 stencilValue
 :
   LBRACE<LBRACE, LBrace>
+  // TODO: Something here needs to set a role/getter
+  // Currently, doesn't get accessors in the tree node classes
   stencilContents*
   RBRACE<RBRACE, RBrace>
 ;
@@ -1825,8 +1827,16 @@ alphaTestCommand
 
 alphaTestValue
 :
-  OFF_KEYWORD<OFF_KEYWORD, OffKeyword>
+  falseLiteral{SHADER_LAB_KEYWORD, BoolKeyword}
+  | alphaTestLEqualValue
   | alphaTestComparisonValue
+;
+
+private alphaTestLEqualValue
+:
+  // Treated as LEQUAL
+  trueLiteral{SHADER_LAB_KEYWORD, BoolKeyword}
+  numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 private alphaTestComparisonValue

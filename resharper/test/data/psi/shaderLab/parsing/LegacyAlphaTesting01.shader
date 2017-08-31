@@ -8,5 +8,14 @@
             AlphaTest Greater 0.5
             SetTexture [_MainTex] { combine texture }
         }
+        Pass {
+            AlphaTest Off
+            SetTexture [_MainTex] { combine texture }
+        }
+        Pass {
+            // Treated as LEqual
+            AlphaTest True 0
+            SetTexture [_MainTex] { combine texture }
+        }
     }
 }
