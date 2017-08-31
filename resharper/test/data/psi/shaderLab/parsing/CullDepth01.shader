@@ -33,6 +33,8 @@
         Pass
         {
             Cull [_CullValue]
+            // ZTest bool value not documented
+            ZTest True
             // ZClip not documented
             ZClip False
         }

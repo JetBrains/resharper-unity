@@ -1330,7 +1330,8 @@ ztestCommand
 
 ztestValue
 :
-  OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+  // True -> LEqual, False -> Disabled (not same as never)
+  boolLiteral<SHADER_LAB_VALUE, Value>
   | comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1467,29 +1468,27 @@ stencilCommand
 stencilValue
 :
   LBRACE<LBRACE, LBrace>
-  // TODO: Something here needs to set a role/getter
-  // Currently, doesn't get accessors in the tree node classes
-  stencilContents*
+  stencilContents{COMMAND, Commands}*
   RBRACE<RBRACE, RBrace>
 ;
 
-private stencilContents
+private stencilContents{ROLE, Getter}
 :
-  refCommand
-  | readMaskCommand
-  | writeMaskCommand
-  | compCommand
-  | compFrontCommand
-  | compBackCommand
-  | passCommand
-  | passFrontCommand
-  | passBackCommand
-  | failCommand
-  | failFrontCommand
-  | failBackCommand
-  | zfailCommand
-  | zfailFrontCommand
-  | zfailBackCommand
+  refCommand{ROLE, Getter}
+  | readMaskCommand{ROLE, Getter}
+  | writeMaskCommand{ROLE, Getter}
+  | compCommand{ROLE, Getter}
+  | compFrontCommand{ROLE, Getter}
+  | compBackCommand{ROLE, Getter}
+  | passCommand{ROLE, Getter}
+  | passFrontCommand{ROLE, Getter}
+  | passBackCommand{ROLE, Getter}
+  | failCommand{ROLE, Getter}
+  | failFrontCommand{ROLE, Getter}
+  | failBackCommand{ROLE, Getter}
+  | zfailCommand{ROLE, Getter}
+  | zfailFrontCommand{ROLE, Getter}
+  | zfailBackCommand{ROLE, Getter}
 ;
 
 refCommand

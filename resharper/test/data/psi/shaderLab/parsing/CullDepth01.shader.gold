@@ -183,7 +183,8 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:ZTEST_KEYWORD, text:ZTest)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IZtestValue
-                  ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
+                  IBoolLiteral
+                    ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               EndOfLineComment(type:END_OF_LINE_COMMENT, text:// ZClip not documented) spaces: "// ZClip not documented"
@@ -217,6 +218,17 @@ IShaderLabFile
                       IShaderLabIdentifier
                         Identifier(type:IDENTIFIER, text:_CullValue)
                       ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              EndOfLineComment(type:END_OF_LINE_COMMENT, text:// ZTest bool value not documented) spaces: "// ZTest bool value not documented"
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+              IZtestCommand
+                ShaderLabTokenType+KeywordTokenElement(type:ZTEST_KEYWORD, text:ZTest)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                IZtestValue
+                  IBoolLiteral
+                    ShaderLabTokenType+KeywordTokenElement(type:TRUE_KEYWORD, text:True)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:            ) spaces: "            "
               EndOfLineComment(type:END_OF_LINE_COMMENT, text:// ZClip not documented) spaces: "// ZClip not documented"
