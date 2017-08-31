@@ -1,15 +1,8 @@
-﻿#if RIDER
-using JetBrains.Application.Threading;
-#endif
-#if WAVE08
-using JetBrains.Application;
-#endif
-
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
@@ -24,10 +17,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         public interface IHandler
         {
             void OnReferenceAdded(IProject unityProject, Lifetime projectLifetime);
-        
             void OnSolutionLoaded(UnityProjectsCollection solution);
         }
-        
+
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
         private readonly IShellLocks myShellLocks;
@@ -36,16 +28,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly IViewableProjectsCollection myProjects;
         private readonly ICollection<IHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
-        
+
         public UnityReferencesTracker(
             Lifetime lifetime,
-            
+
             IEnumerable<IHandler> handlers,
             ISolution solution,
-            
+
             ISolutionLoadTasksScheduler scheduler,
             IShellLocks shellLocks,
-            
+
             ModuleReferenceResolveSync moduleReferenceResolveSync,
             ChangeManager changeManager,
             IViewableProjectsCollection projects)
@@ -59,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             myModuleReferenceResolveSync = moduleReferenceResolveSync;
             myChangeManager = changeManager;
             myProjects = projects;
-            
+
             scheduler.EnqueueTask(new SolutionLoadTask("Checking for Unity projects", SolutionLoadTaskKinds.Done, Register));
         }
 
@@ -68,23 +60,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             using (myShellLocks.UsingReadLock())
             {
                 var unityProjectLifetimes = new Dictionary<IProject, Lifetime>();
-                
+
                 myProjects.Projects.View(myLifetime, (projectLifetime, project) =>
                 {
                     if (project.IsUnityProject())
                     {
                         unityProjectLifetimes.Add(project, projectLifetime);
                     }
-                    
+
                     myProjectLifetimes.Add(project, projectLifetime);
                 });
-                
+
                 var unityProjects = new UnityProjectsCollection(unityProjectLifetimes, mySolution.SolutionFilePath);
                 foreach (var handler in myHandlers)
                 {
                     handler.OnSolutionLoaded(unityProjects);
                 }
-                
+
                 myChangeManager.RegisterChangeProvider(myLifetime, this);
                 myChangeManager.AddDependency(myLifetime, this, myModuleReferenceResolveSync);
             }
@@ -127,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             var projects = new JetHashSet<IProject>();
 
             var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames);
-            
+
             foreach (var change in changes)
             {
                 if (change.IsAdded)

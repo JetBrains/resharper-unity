@@ -30,10 +30,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             myEventFunction = eventFunction;
         }
 
-        public override void Accept(ITextControl textControl, TextRange nameRange, LookupItemInsertType lookupItemInsertType, Suffix suffix,
+#if RIDER
+        public override void Accept(ITextControl textControl, TextRange nameRange,
+            LookupItemInsertType lookupItemInsertType, Suffix suffix,
             ISolution solution, bool keepCaretStill)
         {
             var rangeMarker = nameRange.CreateRangeMarkerWithMappingToDocument(textControl.Document);
+            Accept(textControl, rangeMarker, solution);
+        }
+#else
+        public override void Accept(ITextControl textControl, DocumentRange nameRange, LookupItemInsertType lookupItemInsertType, Suffix suffix,
+            ISolution solution, bool keepCaretStill)
+        {
+            var rangeMarker = nameRange.CreateRangeMarkerWithMappingToDocument();
+            Accept(textControl, rangeMarker, solution);
+        }
+#endif
+
+        private void Accept(ITextControl textControl, IRangeMarker rangeMarker, ISolution solution)
+        {
 
             var identifierNode = TextControlToPsi.GetElement<ITreeNode>(solution, textControl);
             var psiServices = solution.GetPsiServices();

@@ -1,13 +1,8 @@
 ﻿using System;
 using JetBrains.Application;
 using JetBrains.Application.StdApplicationUI;
-using JetBrains.Util;
-
-#if WAVE08
-using JetBrains.UI.Application;
-#else
 using JetBrains.Application.UI.Help;
-#endif
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Help
 {

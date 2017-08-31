@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application;
+using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Application.UI.Controls.BulbMenu.Positions;
 using JetBrains.ReSharper.Daemon.CSharp.Errors;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
@@ -10,14 +12,6 @@ using JetBrains.ReSharper.Intentions.CreateFromUsage;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
-
-#if WAVE08
-using JetBrains.UI.BulbMenu;
-using ICreateFromUsageActionProvider = JetBrains.ReSharper.Intentions.CreateFromUsage.ICreateFromUsageAction;
-#else
-using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
-using JetBrains.Application.UI.Controls.BulbMenu.Positions;
-#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 {
@@ -39,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
             CreateFromUsageFixBase.CreateFromUsageOthersAnchor, AnchorPosition.BasePosition.GetNext());
 
         private readonly List<ICreateFromUsageActionProvider> myUnfilteredItems;
-        
+
         // Unresolved variable/field name
         public CreateFromUsageFix(NotResolvedError error)
             : this(error.Reference)
@@ -101,11 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
             var secondLevelItemsList = new List<IBulbAction>();
 
             var unorderedItems = myUnfilteredItems
-#if RIDER                
                 .SelectMany(a => a.GetBulbItems().Select(bi => Tuple.Create(a, bi)))
-#else
-                .Select(a => Tuple.Create(a, a.GetBulbItem()))
-#endif
                 .Where(i => i.Item2 != null)
                 .ToList();
 

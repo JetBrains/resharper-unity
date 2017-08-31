@@ -44,12 +44,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
                     Assertion.AssertNotNull(highlightingInfo, "Highlighting not found");
                     var markupModel = Solution.GetComponent<IDocumentMarkupManager>().GetMarkupModel(document);
                     var highlighterTooltipProvider = DaemonUtil.GetHighlighterTooltipProvider(highlightingInfo.Highlighting, Solution);
-                    #if RIDER
-                        var attributeId = HighlightingSettingsManager.Instance.GetAttributeId(highlightingInfo.Highlighting, psiSourceFile, Solution).NotNull();
-                    #else
-                        var attributeId = HighlightingSettingsManager.Instance.GetAttributeId(highlightingInfo.Highlighting, psiSourceFile).NotNull();
-                    #endif
-                    var highlighter = markupModel.AddHighlighter("test", highlightingInfo.Range.TextRange, AreaType.EXACT_RANGE, 0, attributeId, new ErrorStripeAttributes(), highlighterTooltipProvider, null);
+                    var attributeId = HighlightingSettingsManager.Instance.GetAttributeId(highlightingInfo.Highlighting, psiSourceFile, Solution).NotNull();
+                    var highlighter = markupModel.AddHighlighter("test", highlightingInfo.Range.TextRange, AreaType.EXACT_RANGE, 0, attributeId, new ErrorStripeAttributes(), highlighterTooltipProvider);
                     ExecuteWithGold(writer => writer.WriteLine(highlighter.ToolTip));
                 }
             }
@@ -72,12 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
                 HighlightingSettingsManager instance = HighlightingSettingsManager.Instance;
                 foreach (HighlightingInfo highlightingInfo in context.HighlightingsToAdd)
                 {
-                    var severity =
-                        #if RIDER
-                            instance.GetSeverity(highlightingInfo.Highlighting, SourceFile, Solution);
-                        #else
-                            instance.GetSeverity(highlightingInfo.Highlighting, SourceFile);
-                        #endif
+                    var severity = instance.GetSeverity(highlightingInfo.Highlighting, SourceFile, Solution);
                     if (highlightingInfo.Range.Contains(myCaretRange) && severity == Severity.INFO)
                     {
                         if (highlightingInfo.Highlighting is CSharpIdentifierHighlighting)
