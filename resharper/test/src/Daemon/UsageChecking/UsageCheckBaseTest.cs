@@ -19,11 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.UsageChecking
         protected override void DoTest(IProject project)
         {
             var swea = SolutionAnalysisService.GetInstance(Solution);
-            #if RIDER
             using (TestPresentationMap.Cookie())
-            #else
-            using (new TestPresentationMap())
-            #endif
             using (TestPsiConfigurationSettings.Instance.PersistCachesCookie())
             using (swea.RunAnalysisCookie())
             {
@@ -50,15 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.UsageChecking
                                 (highlighting, settingsStore) =>
                                 {
                                     var attribute = highlightingSettingsManager.GetHighlightingAttribute(highlighting);
-                                    var severity =
-#if RIDER
-                                        highlightingSettingsManager.GetSeverity(highlighting, file, Solution);
-                                        #else
-                                            highlightingSettingsManager.GetSeverity(highlighting, settingsStore);
-                                        #endif
-                                    return severity !=
-                                           Severity.INFO || attribute.OverlapResolve != OverlapResolveKind.NONE;
-                                    
+                                    var severity = highlightingSettingsManager.GetSeverity(highlighting, file, Solution);
+                                    return severity != Severity.INFO || attribute.OverlapResolve != OverlapResolveKind.NONE;
                                 },
                                 CSharpLanguage.Instance);
                             process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);

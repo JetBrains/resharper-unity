@@ -1,4 +1,4 @@
-﻿#if WAVE08
+﻿#if !RIDER
 
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.VsIntegration.Shell.Zones;

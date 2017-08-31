@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using JetBrains.Application.DataContext;
+using JetBrains.Application.UI.Components.Theming;
+using JetBrains.Application.UI.Help;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel.DataContext;
 using JetBrains.ProjectModel;
@@ -11,14 +13,6 @@ using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.Util;
-
-#if WAVE08
-using JetBrains.UI.Application;
-using JetBrains.UI.Theming;
-#else
-using JetBrains.Application.UI.Components.Theming;
-using JetBrains.Application.UI.Help;
-#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
 {
