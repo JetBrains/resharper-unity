@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2.0.4.9999</version>
+  <version>2.1.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
   <idea-version since-build="171.3655" until-build="171.3655.*" />
@@ -42,9 +42,8 @@
   </project-components>
 
   <actions>
-    <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction"
-            text="Attach to Unity Process...">
-      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess"/>
+    <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
+      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>
   </actions>
 
