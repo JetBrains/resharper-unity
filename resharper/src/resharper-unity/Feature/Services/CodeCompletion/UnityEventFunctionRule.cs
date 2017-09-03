@@ -142,13 +142,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                 return null;
 
             var instance = new DeclaredElementInstance(method.DeclaredElement);
-#if RIDER
-            var declaredElementInfo = new DeclaredElementInfo(method.DeclaredName, instance, CSharpLanguage.Instance,
-                context.BasicContext.LookupItemsOwner, context, context.BasicContext);
-#else
+
             var declaredElementInfo = new DeclaredElementInfo(method.DeclaredName, instance, CSharpLanguage.Instance,
                 context.BasicContext.LookupItemsOwner, context);
-#endif
 
             return LookupItemFactory.CreateLookupItem(declaredElementInfo).
                 WithPresentation(
@@ -156,9 +152,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                 WithBehavior(_ =>
                 {
                     var behavior = new UnityEventFunctionBehavior(declaredElementInfo, eventFunction);
-#if RIDER
-                    behavior.InitializeRanges(context.CompletionRanges, context.BasicContext);
-#endif
                     return behavior;
                 }).
                 WithMatcher(_ => new DeclaredElementMatcher(declaredElementInfo, context.BasicContext.IdentifierMatchingStyle));

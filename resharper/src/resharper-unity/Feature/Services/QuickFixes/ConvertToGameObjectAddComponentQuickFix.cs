@@ -51,11 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
                 };
 
                 var manager = LiveTemplatesManager.Instance;
-#if RIDER
-                var invalidRange = TextRange.InvalidRange;
-#else
                 var invalidRange = DocumentRange.InvalidRange;
-#endif
+
                 var session = manager.CreateHotspotSessionAtopExistingText(solution, invalidRange,
                     textControl, LiveTemplatesManager.EscapeAction.LeaveTextAndCaret, fieldInfos);
                 session.Execute();

@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 
             using (WriteLockCookie.Create())
             {
-                textControl.Document.InsertText(rangeMarker.Range.StartOffset, "void Foo(){}");
+                textControl.Document.InsertText(rangeMarker.DocumentRange.StartOffset, "void Foo(){}");
             }
 
             psiServices.Files.CommitAllDocuments();
