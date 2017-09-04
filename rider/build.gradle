@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.1.1'
-    id 'org.jetbrains.intellij' version '0.2.16'
+    id 'org.jetbrains.kotlin.jvm' version '1.1.4'
+    id 'org.jetbrains.intellij' version '0.2.17'
 }
 
 group 'com.jetbrains'
@@ -19,7 +19,7 @@ version ext.version
 println("ext.version=$ext.version")
 println("ext.configuration=$ext.configuration")
 
-ext.kotlin_version = '1.1.1'
+ext.kotlin_version = '1.1.4'
 ext.nupkg_path = "$projectDir/../resharper/build/resharper-unity.rider/bin/$ext.configuration/JetBrains.Unity.$ext.version-rider.nupkg"
 
 sourceCompatibility = 1.8
