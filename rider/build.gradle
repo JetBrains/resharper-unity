@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.1.4'
-    id 'org.jetbrains.intellij' version '0.2.16'
+    id 'org.jetbrains.intellij' version '0.2.17'
 }
 
 group 'com.jetbrains'
@@ -38,14 +38,13 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
     // localPath = "C:\\Users\\ivan.pashchenko\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\dev"
-    // localPath = "C:\\Rider\\3111"
 
     def dir = file('dependencies')
     if (dir.exists()) {
       localPath = dir.absolutePath
     }
     else {
-      version = '171.4456.2813' // 2017.1.1 RTM
+      version = 'LATEST-TRUNK-SNAPSHOT' // Trunk until we have release
     }
 
     // Sources aren't available for Rider
