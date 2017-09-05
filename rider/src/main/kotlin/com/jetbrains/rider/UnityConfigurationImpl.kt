@@ -1,24 +1,22 @@
 package com.jetbrains.rider
 
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.projectView.contentModel.RiderContentModelStore
 
-class UnityConfigurationImpl(project: Project, unityReferenceDiscoverer: UnityReferenceDiscoverer, contentModelStore: RiderContentModelStore) {
+class UnityConfigurationImpl(project: Project, unityReferenceDiscoverer: UnityReferenceDiscoverer) {
 
     init {
         unityReferenceDiscoverer.addUnityReferenceListener(object : UnityReferenceListener {
             override fun HasUnityReference() {
-
-                ExcludeFolderFromContentStore(contentModelStore, project, "Library")
-                ExcludeFolderFromContentStore(contentModelStore, project, "Temp")
+                ExcludeFolderFromContentStore(project, "Library")
+                ExcludeFolderFromContentStore(project, "Temp")
             }
         })
     }
 
-    private fun ExcludeFolderFromContentStore(contentModelStore: RiderContentModelStore, project: Project, folderName: String) {
-        val libraryFolder = project.baseDir.findChild(folderName)
-        if (libraryFolder != null && !contentModelStore.hasExcludedFile(libraryFolder)) {
-            contentModelStore.addExcludedFile(libraryFolder)
-        }
+    private fun ExcludeFolderFromContentStore(project: Project, folderName: String) {
+//        val libraryFolder = project.baseDir.findChild(folderName)
+//        if (libraryFolder != null && !contentModelStore.hasExcludedFile(libraryFolder)) {
+//            contentModelStore.addExcludedFile(libraryFolder)
+//        }
     }
 }
