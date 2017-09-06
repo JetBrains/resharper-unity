@@ -4,7 +4,7 @@
   <version>2.1.1.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
-  <idea-version since-build="171.3655" until-build="171.3655.*" />
+  <idea-version since-build="172.4144" until-build="172.4144.*" />
 
   <depends>com.intellij.modules.rider</depends>
 
