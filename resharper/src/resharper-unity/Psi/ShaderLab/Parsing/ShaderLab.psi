@@ -100,6 +100,23 @@
 //   also check this follow set when skipping tokens after an error
 // `stubBase="Foo"` - use `Foo` as the base class for the generated element instance. Overrides
 //   `psiStubsBaseClass` global option
+// `customVisit`
+// `customNavigator`
+// `customConstructor`
+// `customToString`
+// `interfaceName`
+// `elementType`
+// `elementTypeSet`
+// `stubBase`
+// `fakeStub`
+// `result`
+// `multilevel`
+// `interfaceBaseName`
+// `customFollows`
+// `hasSemanticInterface`
+// `noInterface`
+// `expectedSymbol`
+// `overrideGetters`
 //
 // Rules:
 //
@@ -787,6 +804,7 @@ errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
 ;
 
 
+// Identify commands that have block values. Used for brace matching and folding
 interface blockCommand
 :
   shaderCommand
@@ -805,6 +823,7 @@ interface blockValue
 :
   shaderValue
   | propertiesValue
+  | texturePropertyValue
   | categoryValue
   | subShaderValue
   | tagsValue
@@ -813,6 +832,8 @@ interface blockValue
   | setTextureValue
   | fogValue
   | bindChannelsValue
+  | grabPassValue
+  | texturePassValue
 ;
 
 
@@ -833,10 +854,17 @@ shaderValue
   shaderValueName
   LBRACE<LBRACE, LBrace>
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
-  categoryCommand<CATEGORY_COMMAND, CategoryCommand>?
-  subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>*
-  shaderContents*
+  shaderBlock<SHADER_BLOCK, ShaderBlocks>*
   RBRACE<RBRACE, RBrace>
+;
+
+shaderBlock
+:
+  categoryCommand<CATEGORY_COMMAND, CategoryCommand>
+  | subShaderCommand<SUBSHADER_COMMAND, SubShaderCommand>
+  | fallbackCommand<FALLBACK_COMMAND, FallbackCommands>
+  | dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>
+  | customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommands>
 ;
 
 // Errorhandling to resync on next following token - LBRACE
@@ -846,12 +874,6 @@ private errorhandling shaderValueName
   STRING_LITERAL<SHADER_LAB_NAME, Name>
 ;
 
-private shaderContents
-:
-  fallbackCommand<FALLBACK_COMMAND, FallbackCommands>
-  | dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>
-  | customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommands>
-;
 
 
 // **************************************************************************
@@ -1119,17 +1141,11 @@ categoryCommand
 categoryValue
 :
   LBRACE<LBRACE, LBrace>
-  categoryContents*
+  stateCommand<STATE_COMMAND, StateCommands>*
+  shaderBlock<SHADER_BLOCK, ShaderBlocks>*
   RBRACE<RBRACE, RBrace>
 ;
 
-private categoryContents
-:
-  tagsCommand<TAGS_COMMAND, TagsCommands>
-  | renderStateCommand
-  | legacyRenderStateCommand
-  | subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>
-;
 
 
 // **************************************************************************
@@ -1148,16 +1164,21 @@ subShaderCommand
 subShaderValue
 :
   LBRACE<LBRACE, LBrace>
-  subShaderContents*
+  pass<PASS, Passes>*
   RBRACE<RBRACE, RBrace>
 ;
 
-private subShaderContents
+pass
 :
-  tagsCommand<TAGS_COMMAND, TagsCommands>
+  stateCommand<STATE_COMMANDS, StateCommands>*
+  passDef<PASSDEF, PassDefinition>
+;
+
+interface stateCommand
+:
+  tagsCommand
   | renderStateCommand
   | legacyRenderStateCommand
-  | passDef<PASSDEF, PassDefinitions>
 ;
 
 
@@ -1209,60 +1230,39 @@ identifierTagDeclaration
 //
 // **************************************************************************
 
-private renderStateCommand
+interface renderStateCommand
 :
-  cullCommand<SHADER_LAB_COMMAND, Commands>
-  | zwriteCommand<SHADER_LAB_COMMAND, Commands>
-  | ztestCommand<SHADER_LAB_COMMAND, Commands>
-  | zclipCommand<SHADER_LAB_COMMAND, Commands>
-  | offsetCommand<SHADER_LAB_COMMAND, Commands>
-  | colorMaskCommand<SHADER_LAB_COMMAND, Commands>
-  // Do these 3 make sense outside of Pass?
-  | blendCommand<SHADER_LAB_COMMAND, Commands>
-  | blendOpCommand<SHADER_LAB_COMMAND, Commands>
-  | alphaToMaskCommand<SHADER_LAB_COMMAND, Commands>
-  | stencilCommand<SHADER_LAB_COMMAND, Commands>
-  | nameCommand<SHADER_LAB_COMMAND, Commands>
-  | lodCommand<SHADER_LAB_COMMAND, Commands>
+  cullCommand
+  | zwriteCommand
+  | ztestCommand
+  | zclipCommand
+  | offsetCommand
+  | colorMaskCommand
+  | blendCommand
+  | blendOpCommand
+  | alphaToMaskCommand
+  | stencilCommand
+  | nameCommand
+  | lodCommand
 ;
 
-private legacyRenderStateCommand
+interface legacyRenderStateCommand
 :
   legacyLightingCommand
-  | legacyTextureCombinersCommand
-  | legacyAlphaTestingCommand
-  | legacyFogCommand
-  | legacyBindChannelsCommand
+  | alphaTestCommand
+  | fogCommand
+  | bindChannelsCommand
 ;
 
-private legacyLightingCommand
+interface legacyLightingCommand
 :
-  colorCommand<SHADER_LAB_COMMAND, Commands>
-  | lightingCommand<SHADER_LAB_COMMAND, Commands>
-  | separateSpecularCommand<SHADER_LAB_COMMAND, Commands>
-  | colorMaterialCommand<SHADER_LAB_COMMAND, Commands>
-  | materialCommand<SHADER_LAB_COMMAND, Commands>
+  colorCommand
+  | lightingCommand
+  | separateSpecularCommand
+  | colorMaterialCommand
+  | materialCommand
 ;
 
-private legacyTextureCombinersCommand
-:
-  setTextureCommand<SHADER_LAB_COMMAND, Commands>
-;
-
-private legacyAlphaTestingCommand
-:
-  alphaTestCommand<SHADER_LAB_COMMAND, Commands>
-;
-
-private legacyFogCommand
-:
-  fogCommand<SHADER_LAB_COMMAND, Commands>
-;
-
-private legacyBindChannelsCommand
-:
-  bindChannelsCommand<SHADER_LAB_COMMAND, Commands>
-;
 
 
 // **************************************************************************
@@ -1961,7 +1961,7 @@ bindChannelsValue
 bindCommand
 :
   BIND_KEYWORD<SHADER_LAB_KEYWORD, BindKeyword>
-  bindValue<SHADER_LAB_VALUE, Values>+
+  bindValue<SHADER_LAB_VALUE, Values>
 ;
 
 bindValue
@@ -2040,23 +2040,23 @@ interface programBlock
 
 cgProgramBlock
 :
-  CG_PROGRAM<CG_PROGRAM, CgProgram>
-  cgContent<CG_CONTENT, CgContent>
-  CG_END<CG_END, CgEnd>
+  CG_PROGRAM<CG_PROGRAM, Program>
+  cgContent<CG_CONTENT, Content>
+  CG_END<CG_END, End>
 ;
 
 glslProgramBlock
 :
-  GLSL_PROGRAM<GLSL_PROGRAM, GlslProgram>
-  cgContent<GLSL_CONTENT, GlslContent>
-  GLSL_END<GLSL_END, GlslEnd>
+  GLSL_PROGRAM<GLSL_PROGRAM, Program>
+  cgContent<GLSL_CONTENT, Content>
+  GLSL_END<GLSL_END, End>
 ;
 
 hlslProgramBlock
 :
-  HLSL_PROGRAM<HLSL_PROGRAM, HlslProgram>
-  cgContent<HLSL_CONTENT, HlslContent>
-  HLSL_END<HLSL_END, HlslEnd>
+  HLSL_PROGRAM<HLSL_PROGRAM, Program>
+  cgContent<HLSL_CONTENT, Content>
+  HLSL_END<HLSL_END, End>
 ;
 
 cgContent
@@ -2075,10 +2075,10 @@ interface passDef
 :
   usePassDef
   | grabPassDef
-  | regularPassDef
-  | cgProgramPassDef
-  | glslProgramPassDef
-  | hlslProgramPassDef
+  | texturePassDef
+  // TODO: GC_PROGRAM can exist anywhere in StateCommands
+  // Should probably make this a pre-processor thing
+  | programPassDef
 ;
 
 usePassDef
@@ -2112,43 +2112,54 @@ optionalNameCommand
   STRING_LITERAL<SHADER_LAB_NAME, Name>
 ;
 
+interface programPassDef
+:
+  cgProgramPassDef
+  | glslProgramPassDef
+  | hlslProgramPassDef
+;
+
 cgProgramPassDef
 :
-  cgProgramBlock<CG_PROGRAM, CgProgram>
+  cgProgramBlock<CG_PROGRAM, Program>
 ;
 
 glslProgramPassDef
 :
-  glslProgramBlock<GLSL_PROGRAM, GlslProgram>
+  glslProgramBlock<GLSL_PROGRAM, Program>
 ;
 
 hlslProgramPassDef
 :
-  hlslProgramBlock<HLSL_PROGRAM, HlslProgram>
+  hlslProgramBlock<HLSL_PROGRAM, Program>
 ;
 
-regularPassDef
+texturePassDef
 :
   PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
-  regularPassValue<SHADER_LAB_VALUE, Value>
+  texturePassValue<SHADER_LAB_VALUE, Value>
 ;
 
-regularPassValue
+texturePassValue
 :
   LBRACE<LBRACE, LBrace>
-  STRING_LITERAL<SHADER_LAB_NAME, Name>?
-  regularPassContents*
+  texturePassContents
   RBRACE<RBRACE, RBrace>
 ;
 
-private regularPassContents
+private texturePassContents
 :
-  tagsCommand<TAG, TagsCommands>
-  | renderStateCommand
-  | legacyRenderStateCommand
-  | cgProgramBlock<CGPROGRAM_BLOCK, CgPrograms>
-  | glslProgramBlock<GLSLPROGRAM_BLOCK, GlslPrograms>
-  | hlslProgramBlock<HLSLPROGRAM_BLOCK, HlslPrograms>
+  // TODO: Handle CG blocks as pre-processor tokens
+  (
+    stateCommand<STATE_COMMAND, StateCommands>*
+    setTextureCommand<SET_TEXTURE_COMMAND, SetTextureCommands>*
+
+    (
+      cgProgramBlock<CGPROGRAM_BLOCK, CgPrograms>
+      | glslProgramBlock<GLSLPROGRAM_BLOCK, GlslPrograms>
+      | hlslProgramBlock<HLSLPROGRAM_BLOCK, HlslPrograms>
+    )?
+  )*
 ;
 
 

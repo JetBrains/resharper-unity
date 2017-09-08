@@ -37,12 +37,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_PASS_DEF = "pass definition";
         public const string IDS_PREPROCESSOR_DIRECTIVE = "preprocessor directive";
         public const string IDS_PROGRAM_BLOCK = "program block";
+        public const string IDS_PROGRAM_PASS_DEF = "program passDef";
         public const string IDS_PROPERTY_TYPE = "property type";
         public const string IDS_RENDER_STATE_COMMAND = "render state command";
         public const string IDS_REGULAR_PASS_CONTENTS = "Pass command";
+        public const string IDS_SHADER_BLOCK = "shader block";
         public const string IDS_SHADER_CONTENTS = "Shader contents";
         public const string IDS_SHADER_LAB_IDENTIFIER = "identifier";
         public const string IDS_SIMPLE_PROPERTY_TYPE = "property type";
+        public const string IDS_STATE_COMMAND = "state command";
         public const string IDS_STENCIL_CONTENTS = "Stencil command";
         public const string IDS_STENCIL_OPERATION = "stencil operation";
         public const string IDS_TAG_DECLARATION = "tag";
@@ -51,7 +54,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_TEXTURE_BINDING = "Texture binding";
         public const string IDS_TEXTURE_DIMENSION_KEYWORD = "Texture dimension keyword";
         public const string IDS_TRUE_LITERAL = "true/on";
-        public const string IDS_SUB_SHADER_CONTENTS = "SubShader contents";
         public const string IDS_VALUE = "value";
         public const string IDS_ZTEST_VALUE = "ZTest value";
 
