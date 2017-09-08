@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using JetBrains.Application.Components;
 using JetBrains.Application.DataContext;
-using JetBrains.Application.platforms;
+using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.DataContext;
@@ -16,20 +16,10 @@ using JetBrains.TextControl;
 using JetBrains.TextControl.DataContext;
 using NUnit.Framework;
 
-#if WAVE08
-using JetBrains.ActionManagement;
-#else
-using JetBrains.Application.UI.Actions.ActionManager;
-#endif
-
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.QuickDoc
 {
     [Category("QuickDoc")]
-#if RIDER
     [TestReferences("System.Core", DoesNotInherit = false)]
-#else
-    [TestReferences(PlatformManager.SystemCore, DoesNotInherit = false)]
-#endif    
     public abstract class QuickDocTestBase : BaseTestWithTextControl
     {
         protected override void DoTest(IProject testProject)
@@ -71,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.QuickDoc
             }
         }
 
-        public static IDataContext CreateDataContext(IComponentContainer componentContainer, ISolution solution, ITextControl control)
+        private static IDataContext CreateDataContext(IComponentContainer componentContainer, ISolution solution, ITextControl control)
         {
             var actionManager = componentContainer.GetComponent<IActionManager>();
 

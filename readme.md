@@ -1,3 +1,5 @@
+[![official JetBrains project](http://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+
 # Unity Support for ReSharper and Rider
 
 The "Unity Support" plugin adds specific functionality for the [Unity game engine](http://unity3d.com/) to [ReSharper](https://www.jetbrains.com/resharper/) and [Rider](https://www.jetbrains.com/rider/).

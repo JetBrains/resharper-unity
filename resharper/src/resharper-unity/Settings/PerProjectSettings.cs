@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
+using JetBrains.Application.Settings.Implementation;
+using JetBrains.Application.Settings.Storage.DefaultBody;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -15,24 +18,13 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.Util;
 
-#if WAVE08
-using JetBrains.Application;
-using JetBrains.Application.Settings.Storage;
-using JetBrains.Application.Settings.Store;
-using JetBrains.Application.Settings.Store.Implementation;
-#else
-using JetBrains.Application.Settings.Implementation;
-using JetBrains.Application.Settings.Storage.DefaultBody;
-using JetBrains.Application.Threading;
-#endif
-
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
     public class PerProjectSettings : UnityReferencesTracker.IHandler
     {
-        private static readonly Version Version46 = new Version(4, 6);
-        
+        private static readonly Version ourVersion46 = new Version(4, 6);
+
         private readonly ISettingsSchema mySettingsSchema;
         private readonly SettingsStorageProvidersCollection mySettingsStorageProviders;
         private readonly IShellLocks myLocks;
@@ -130,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         {
             if (!project.IsProjectCompiledByUnity())
                 return; // https://github.com/JetBrains/resharper-unity/issues/150
-            
+
             // Make sure ReSharper doesn't suggest code changes that won't compile in Unity
             // due to mismatched C# language levels (e.g. C#6 "elvis" operator)
             //
@@ -224,7 +216,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         private bool IsTargetFrameworkAtLeast46(IProject project)
         {
             // ReSharper disable once PossibleNullReferenceException (never null for real project)
-            return project.PlatformID.Version >= Version46;
+            return project.PlatformID.Version >= ourVersion46;
         }
 
         private void SetValue<TKeyClass, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,

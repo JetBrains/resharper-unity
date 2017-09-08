@@ -4,11 +4,10 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
-using JetBrains.Application;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
-using JetBrains.PsiFeatures.VisualStudio.Core.ProjectModel.PropertiesExtender;
-using JetBrains.VsIntegration.ProjectModel.PropertiesExtender;
+using JetBrains.ProjectModel.PropertiesExtender;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
 {
@@ -28,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
             myUnityApi = unityApi;
         }
 
-        public bool CanExtend(IProjectItem projectItem)
+        public bool CanExtend(IProjectItem projectItem, PropertiesLocation location)
         {
             var project = projectItem as IProject;
             return project != null && project.IsUnityProject();

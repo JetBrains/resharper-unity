@@ -1,10 +1,10 @@
 <idea-plugin>
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2.0.3.9999</version>
+  <version>2.1.1.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
-  <idea-version since-build="171.3655" until-build="171.3655.*" />
+  <idea-version since-build="172.4144" until-build="172.4144.*" />
 
   <depends>com.intellij.modules.rider</depends>
 
@@ -39,6 +39,12 @@
     <component><implementation-class>com.jetbrains.rider.settings.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
   </project-components>
+
+  <actions>
+    <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
+      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
+    </action>
+  </actions>
 
   <description><![CDATA[
 <p>Adds support for the Unity engine.</p>
@@ -92,7 +98,10 @@
 <![CDATA[
 <ul>
   <li>Parse pre-processor directives in ShaderLab (<a href="https://github.com/JetBrains/resharper-unity/issues/186">#186</a>)</li>
+  <li>Correctly handle property attributes in shader file (<a href="https://github.com/JetBrains/resharper-unity/issues/187">#187</a>)</li>
+  <li>Parse CGINCLUDE blocks at any point in shader file (<a href="https://github.com/JetBrains/resharper-unity/issues/188">#188</a>)</li>
   <li>Parse property references for BlendOp in ShaderLab files (<a href="https://youtrack.jetbrains.com/issue/RIDER-8386">RIDER-8386</a>)</li>
+  <li>Add annotations for modularised UnityEngine assemblies (<a href="https://github.com/JetBrains/resharper-unity/issues/207">#207</a>)</li>
   <li>Allow disabling simple word completion for .shader and .cginc files (<a href="https://youtrack.jetbrains.com/issue/RIDER-5996">RIDER-5996</a>)</li>
   <li>Choose path and set Rider as default editor from the Unity3dRider plugin</li>
   <li>Customise the target framework version in the Unity3dRider plugin options</li>

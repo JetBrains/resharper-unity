@@ -123,7 +123,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 OFF_KEYWORD,
                 BACK_KEYWORD,
                 FRONT_KEYWORD,
-                LIGHTMAP_MODE_KEYWORD
+                LIGHTMAP_MODE_KEYWORD,
+                TEXGEN_KEYWORD,
+                
+                CUBE_REFLECT_KEYWORD,
+                CUBE_NORMAL_KEYWORD,
+                OBJECT_LINEAR_KEYWORD,
+                EYE_LINEAR_KEYWORD,
+                SPHERE_MAP_KEYWORD
               );
         }
     }

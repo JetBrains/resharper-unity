@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Application.Progress;
+using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Hotspots;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.LiveTemplates;
@@ -50,7 +51,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
                 };
 
                 var manager = LiveTemplatesManager.Instance;
-                var session = manager.CreateHotspotSessionAtopExistingText(solution, TextRange.InvalidRange,
+                var invalidRange = DocumentRange.InvalidRange;
+
+                var session = manager.CreateHotspotSessionAtopExistingText(solution, invalidRange,
                     textControl, LiveTemplatesManager.EscapeAction.LeaveTextAndCaret, fieldInfos);
                 session.Execute();
             };

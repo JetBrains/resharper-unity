@@ -9,15 +9,11 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Psi.Colors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
-using JetBrains.ReSharper.Psi.CSharp.Impl;
+using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Special;
-
-#if RIDER
-using JetBrains.ReSharper.Psi.CSharp.Conversions;
-#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Color
 {

@@ -1,135 +1,106 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using JetBrains.ReSharper.Psi.Parsing;
+﻿using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
-    public partial class ShaderLabLexerGenerated
+    public class ShaderLabLexer : ShaderLabLexerGenerated
     {
-        private static readonly LexerDictionary<TokenNodeType> Keywords = new LexerDictionary<TokenNodeType>(false);
-
-        private readonly ReusableBufferRange myBufferRange = new ReusableBufferRange();
-        // ReSharper disable once InconsistentNaming
-        private TokenNodeType currentTokenType;
-
-        private struct TokenPosition
+        public ShaderLabLexer(IBuffer buffer)
+            : base(buffer)
         {
-            public TokenNodeType CurrentTokenType;
-            public int YyBufferIndex;
-            public int YyBufferStart;
-            public int YyBufferEnd;
-            public int YyLexicalState;
         }
 
-        static ShaderLabLexerGenerated()
+        public ShaderLabLexer(IBuffer buffer, int startOffset, int endOffset)
+            : base(buffer, startOffset, endOffset)
         {
-            foreach (var nodeType in ShaderLabTokenType.KEYWORDS)
+        }
+
+        public override TokenNodeType _locateToken()
+        {
+            var token = base._locateToken();
+
+            // The "unquoted string literal" inside a property attribute is both
+            // delimited by parens, and can contain them, mismatched. We can't do
+            // that solely with regex in the .lex file. Note that we can only get
+            // this while in PARENS lexical state, so we have had an LPAREN
+            if (token == ShaderLabTokenType.UNQUOTED_STRING_LITERAL)
             {
-                var keyword = (TokenNodeType) nodeType;
-                Keywords[keyword.TokenRepresentation] = keyword;
-            }
-        }
+                var unquotedStringLiteralStart = BufferStart;
+                var lastNonWhitespaceCookie = LexerStateCookie.Create(this);
+                LexerStateCookie.Common? beforeLastRParenCookie = null;
+                LexerStateCookie.Common? beforeCommaCookie = null;
 
-        public void Start()
-        {
-            Start(0, yy_buffer.Length, YYINITIAL);
-        }
-
-        public void Start(int startOffset, int endOffset, uint state)
-        {
-            yy_buffer_index = yy_buffer_start = yy_buffer_end = startOffset;
-            yy_eof_pos = endOffset;
-            yy_lexical_state = (int) state;
-            currentTokenType = null;
-        }
-
-        public void Advance()
-        {
-            LocateToken();
-            currentTokenType = null;
-        }
-
-        public object CurrentPosition
-        {
-            get
-            {
-                TokenPosition tokenPosition;
-                tokenPosition.CurrentTokenType = currentTokenType;
-                tokenPosition.YyBufferIndex = yy_buffer_index;
-                tokenPosition.YyBufferStart = yy_buffer_start;
-                tokenPosition.YyBufferEnd = yy_buffer_end;
-                tokenPosition.YyLexicalState = yy_lexical_state;
-                return tokenPosition;
-            }
-            set
-            {
-                var tokenPosition = (TokenPosition) value;
-                currentTokenType = tokenPosition.CurrentTokenType;
-                yy_buffer_index = tokenPosition.YyBufferIndex;
-                yy_buffer_start = tokenPosition.YyBufferStart;
-                yy_buffer_end = tokenPosition.YyBufferEnd;
-                yy_lexical_state = tokenPosition.YyLexicalState;
-            }
-        }
-
-        public TokenNodeType TokenType => LocateToken();
-
-        public int TokenStart
-        {
-            get
-            {
-                LocateToken();
-                return yy_buffer_start;
-            }
-        }
-
-        public int TokenEnd
-        {
-            get
-            {
-                LocateToken();
-                return yy_buffer_end;
-            }
-        }
-
-        public IBuffer Buffer => yy_buffer;
-        public int EOFPos => yy_eof_pos;
-        public int LexemIndent => 7;    // No, I don't know why
-        public uint LexerStateEx => (uint) yy_lexical_state;
-
-        private TokenNodeType LocateToken()
-        {
-            if (currentTokenType == null)
-            {
-                try
+                do
                 {
-                    currentTokenType = _locateToken();
-                }
-                catch (Exception e)
-                {
-                    e.AddData("TokenType", () => currentTokenType);
-                    e.AddData("LexerState", () => LexerStateEx);
-                    e.AddData("TokenStart", () => yy_buffer_start);
-                    e.AddData("TokenPos", () => yy_buffer_index);
-                    e.AddData("Buffer", () =>
+                    // Get the next token. This will update TokenStart and TokenEnd
+                    var nextToken = base._locateToken();
+
+                    // BAD_CHARACTER is a hard delimiter for unquoted string literal.
+                    // Roll back, avoiding trailing whitespace
+                    if (nextToken == ShaderLabTokenType.BAD_CHARACTER)
                     {
-                        var start = Math.Max(0, yy_buffer_end);
-                        var tokenText = yy_buffer.GetText(new TextRange(start, yy_buffer_index));
-                        tokenText = Regex.Replace(tokenText, @"\p{Cc}", a => string.Format("[{0:X2}]", (byte)a.Value[0]));
-                        return tokenText;
-                    });
-                    throw;
-                }
+                        lastNonWhitespaceCookie.Dispose();
+                        BufferStart = unquotedStringLiteralStart;
+                        return token;
+                    }
+
+                    // COMMA should be a hard delimiter, but it messes up checking for the
+                    // last RPAREN. E.g. `[Header(something), foo]` should roll back to
+                    // beforeLastRParenCookie, while `[Header(something, whatever)]` should
+                    // roll back to beforeCommaCookie
+                    if (nextToken == ShaderLabTokenType.COMMA)
+                    {
+                        if (beforeCommaCookie.HasValue)
+                        {
+                            beforeCommaCookie.Value.Dispose();
+                            BufferStart = unquotedStringLiteralStart;
+                            return token;
+                        }
+                        beforeCommaCookie = lastNonWhitespaceCookie;
+                    }
+
+                    // This RPAREN might be part of the unquoted string literal, or it
+                    // might be the last RPAREN in the attribute. If we've seen a comma
+                    // before this, this RPAREN is likely the end of the attribute, but
+                    // the unquoted string literal ends at the COMMA, so roll back there
+                    if (nextToken == ShaderLabTokenType.RPAREN)
+                    {
+                        if (beforeCommaCookie.HasValue)
+                        {
+                            beforeCommaCookie.Value.Dispose();
+                            BufferStart = unquotedStringLiteralStart;
+                            return token;
+                        }
+
+                        beforeLastRParenCookie = lastNonWhitespaceCookie;
+                    }
+
+                    // Found the end of the attribute, roll back to the last RPAREN if
+                    // there is one, else to the last non-whitespace token. Also, switch
+                    // to BRACKETS (we're not consuming RBRACK, or whatever followed the
+                    // final RPAREN right now)
+                    if (nextToken == ShaderLabTokenType.RBRACK
+                        || nextToken == ShaderLabTokenType.NEW_LINE)
+                    {
+                        if (beforeLastRParenCookie.HasValue)
+                        {
+                            beforeLastRParenCookie.Value.Dispose();
+                            SetState(PARENS);
+                        }
+                        else
+                            lastNonWhitespaceCookie.Dispose();
+                        BufferStart = unquotedStringLiteralStart;
+                        return token;
+                    }
+
+                    // Track the last bit of non-whitespace
+                    if (nextToken != ShaderLabTokenType.WHITESPACE)
+                        lastNonWhitespaceCookie = LexerStateCookie.Create(this);
+
+                } while (BufferEnd < EOFPos);
             }
 
-            return currentTokenType;
-        }
-
-        private TokenNodeType FindKeywordByCurrentToken()
-        {
-            return Keywords.GetValueSafe(myBufferRange, yy_buffer, yy_buffer_start, yy_buffer_end);
+            return token;
         }
     }
 }

@@ -203,7 +203,7 @@ options {
 :
   IDENTIFIER?
   
-  | STRING_LITERAL | NUMERIC_LITERAL
+  | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
 
   | CG_PROGRAM | CG_INCLUDE | CG_END
   | GLSL_PROGRAM | GLSL_INCLUDE | GLSL_END
@@ -338,6 +338,13 @@ options {
   | BACK_KEYWORD
   | FRONT_KEYWORD
   | LIGHTMAP_MODE_KEYWORD
+  | TEXGEN_KEYWORD
+
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | SPHERE_MAP_KEYWORD
 
   | BAD_CHARACTER
 ;
@@ -350,7 +357,7 @@ options {
 :
   IDENTIFIER?
   
-  | STRING_LITERAL | NUMERIC_LITERAL
+  | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
 
   | CG_PROGRAM | CG_INCLUDE | CG_END
   | GLSL_PROGRAM | GLSL_INCLUDE | GLSL_END
@@ -484,6 +491,13 @@ options {
   | BACK_KEYWORD
   | FRONT_KEYWORD
   | LIGHTMAP_MODE_KEYWORD
+  | TEXGEN_KEYWORD
+
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | SPHERE_MAP_KEYWORD
 
   | BAD_CHARACTER
 ;
@@ -511,7 +525,7 @@ options {
   customImpl;
 }
 :
-  IDENTIFIER
+  IDENTIFIER | UNQUOTED_STRING_LITERAL
 
   | SHADER_KEYWORD
   | PROPERTIES_KEYWORD
@@ -628,6 +642,13 @@ options {
   | BACK_KEYWORD
   | FRONT_KEYWORD
   | LIGHTMAP_MODE_KEYWORD
+  | TEXGEN_KEYWORD
+
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | SPHERE_MAP_KEYWORD
 ;
 
 
@@ -884,11 +905,35 @@ texturePropertyValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   (
-    LBRACE<LBRACE, LBrace>
-    LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>?
+    LBRACE<LBRACE, LBrace>    
+    (
+      texturePropertyValueTextureDimension
+      | texturePropertyValueTexGen
+      | matrixCommand // Legacy
+      | LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>
+    )?
     errorTexturePropertyBlockValues
     RBRACE<RBRACE, RBrace>
   )?
+;
+
+texturePropertyValueTextureDimension
+:
+  TEXTURE_2D_KEYWORD
+  | TEXTURE_3D_KEYWORD
+  | CUBE_KEYWORD
+;
+
+texturePropertyValueTexGen // Legacy 5.0
+:
+  TEXGEN_KEYWORD
+  (
+    CUBE_REFLECT_KEYWORD
+    | CUBE_NORMAL_KEYWORD
+    | OBJECT_LINEAR_KEYWORD
+    | EYE_LINEAR_KEYWORD
+    | SPHERE_MAP_KEYWORD
+  )
 ;
 
 // The spec says there shouldn't be anything here. Use a custom parse function to eat 
@@ -946,17 +991,7 @@ attributeParameterValues
 interface attributeParameterValue
 :
   numberAttributeParameterValue
-  |
-    (
-      // Parse the common shaderLabIdentifier, then pass it through to the rule
-      // This allows switching on the next token - DOT for qualifiedAttributeParameterValue
-      // or shaderLabIdentifier for stringAttributeParameterValue
-      !(#id:shaderLabIdentifier)
-      (
-        qualifiedAttributeParameterValue[id]
-        | stringAttributeParameterValue[id]
-      )
-    )
+  | stringAttributeParameterValue
 ;
 
 numberAttributeParameterValue
@@ -964,21 +999,9 @@ numberAttributeParameterValue
   NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
-qualifiedAttributeParameterValue[shaderLabIdentifier id]
+stringAttributeParameterValue
 :
-  &id<SHADER_LAB_IDENTIFIER, Identifiers>
-  (
-    DOT<DOT, Dots>
-    shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>
-  )+
-;
-
-// TODO: Perhaps a custom interface to allow retrieving exact text?
-stringAttributeParameterValue[shaderLabIdentifier id]
-:
-  // One or more, separated by whitespace
-  &id<SHADER_LAB_IDENTIFIER, Identifiers>
-  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifiers>*
+  UNQUOTED_STRING_LITERAL<SHADER_LAB_VALUE, Value>
 ;
 
 
@@ -1062,19 +1085,24 @@ tagsCommand
 
 tagsValue
 :
-  LBRACE<LBRACE, LBrace>
-  tagDeclaration<TAG_DECLARATIONS, Declarations>*
+  LBRACE<LBRACE, LBrace>  
+  tagDeclaration<TAG_DECLARATIONS, Declarations>*    
   RBRACE<RBRACE, RBrace>
 ;
 
 tagDeclaration
 :
-  STRING_LITERAL<SHADER_LAB_NAME, Name>
-  EQUALS<EQUALS, Equals>
-  STRING_LITERAL<SHADER_LAB_VALUE, Value>
+  (
+    STRING_LITERAL<SHADER_LAB_NAME, Name>
+    EQUALS<EQUALS, Equals>
+    STRING_LITERAL<SHADER_LAB_VALUE, Value>
+  )
+  | (
+      shaderLabIdentifier<SHADER_LAB_NAME, Name>  
+      EQUALS<EQUALS, Equals>
+      shaderLabIdentifier<SHADER_LAB_VALUE, Value>  
+    )
 ;
-
-
 
 // **************************************************************************
 //
@@ -2007,7 +2035,13 @@ fallbackCommand
 
 fallbackValue
 :
-  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  (
+    STRING_LITERAL<SHADER_LAB_NAME, Name>
+    (
+      COMMA<COMMA, Comma>
+      lodValue<SHADER_LAB_VALUE, Value> // legacy, not actually used by Unity
+    )?
+  )
   | OFF_KEYWORD<SHADER_LAB_KEYWORD, OffKeyword>
   | errorElementWithoutRBrace   // TODO: Will this match `CustomEditor`?
 ;

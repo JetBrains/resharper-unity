@@ -10,9 +10,10 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
-import com.jetbrains.rider.util.catch
+import org.apache.commons.logging.LogFactory
 import org.jdom.Element
 
 class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToEditorFactory)
@@ -57,7 +58,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
                 ?: findUnityEditorInstance(processList)
                 ?: throw throw RuntimeConfigurationError("Cannot find Unity Editor instance")
 
-        port = 56000 + pid!! % 1000
+        port = convertPortToDebuggerPort(pid!!)
     }
 
     private fun checkValidEditorInstance(pid: Int?, processList: Array<ProcessInfo>): Int? {
@@ -77,15 +78,17 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
 
     private fun findUnityEditorInstanceFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
         project.baseDir.findFileByRelativePath("Library/EditorInstance.json")?.let { file ->
-            // Not a RuntimeConfigurationError, mainly because we can recover
-            catch("Error reading EditorInstance.json", {
+            try {
+                // Not a RuntimeConfigurationError, mainly because we can recover
                 file.inputStream.reader().use { reader ->
                     val jsonObject = JsonParser().parse(reader).asJsonObject
                     val processId = jsonObject["process_id"].asInt
 
                     return checkValidEditorInstance(processId, processList)
                 }
-            })
+            } catch (e: Throwable) {
+                LogFactory.getLog("catch").warn("Error reading EditorInstance.json", e)
+            }
         }
 
         return null

@@ -11,10 +11,6 @@ using JetBrains.TextControl;
 using JetBrains.Util.Special;
 using NUnit.Framework;
 
-#if WAVE08
-using ICreateFromUsageActionProvider = JetBrains.ReSharper.Intentions.CreateFromUsage.ICreateFromUsageAction;
-#endif
-
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
 {
     [TestUnity]
