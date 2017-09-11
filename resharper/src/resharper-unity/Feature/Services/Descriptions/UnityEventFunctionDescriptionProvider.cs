@@ -21,11 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
         public RichTextBlock GetElementDescription(IDeclaredElement element, DeclaredElementDescriptionStyle style,
             PsiLanguageType language, IPsiModule module = null)
         {
-            if (!element.IsFromUnityProject())
-                return null;
-
             var method = element as IMethod;
-            if (method != null)
+            if (method != null && (method.GetContainingType()?.IsFromUnityProject() ?? false))
             {
                 var eventFunction = myUnityApi.GetUnityEventFunction(method);
                 if (eventFunction?.Description != null)
@@ -41,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
 
             var parameter = element as IParameter;
             var owner = parameter?.ContainingParametersOwner as IMethod;
-            if (owner != null)
+            if (owner != null && (owner.GetContainingType()?.IsFromUnityProject() ?? false))
             {
                 EventFunctionMatch match;
                 var eventFunction = myUnityApi.GetUnityEventFunction(owner, out match);
