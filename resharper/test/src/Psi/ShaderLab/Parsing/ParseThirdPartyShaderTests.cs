@@ -23,6 +23,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         protected override string ShaderFolderName => "builtin_shaders-5.6.2f1";
     }
 
+    public class ParseMixedRealityToolkitShadersTests : ThirdPartyShaderTests
+    {
+        // NOTE: Requires cloning - https://github.com/Microsoft/MixedRealityToolkit-Unity
+        // File names might be too long for Windows to handle. If so, just copy .shader
+        // files into `test\data\psi\shaderLab\parsing\external\MixedRealityToolkit-Unity`
+        protected override string ShaderFolderName => "MixedRealityToolkit-Unity";
+    }
+
     [Explicit]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
