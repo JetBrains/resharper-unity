@@ -33,8 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Cg.Stages
 
             public override void VisitNode(ITreeNode node, IHighlightingConsumer context)
             {
-                var tokenNode = node as ITokenNode;
-                if (tokenNode != null && tokenNode.GetTokenType().IsWhitespace)
+                if (node is ITokenNode tokenNode && tokenNode.GetTokenType().IsWhitespace)
                     return;
                 
                 myIdentifierHighlighter.Highlight(node, context);

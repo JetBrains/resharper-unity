@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.Psi.Cg;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Cg.Stages
 {
+    [SolutionComponent]
     public class CgIdentifierTooltipProvider : IdentifierTooltipProvider<CgLanguage>
     {
         public CgIdentifierTooltipProvider(Lifetime lifetime, ISolution solution, IDeclaredElementDescriptionPresenter presenter)

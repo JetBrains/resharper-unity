@@ -53,8 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Cg.Stages
 
         public virtual void ProcessAfterInterior(ITreeNode element, IHighlightingConsumer context)
         {
-            var cgElement = element as ICgTreeNode;
-            if (cgElement != null)
+            if (element is ICgTreeNode cgElement)
             {
                 var tokenNode = cgElement as ITokenNode;
                 if (tokenNode == null || !tokenNode.GetTokenType().IsWhitespace)

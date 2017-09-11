@@ -63,7 +63,7 @@ interface declaration
         !(#type:typeName)
         !(#name:identifier)
         (
-          fieldDeclaration[type, name]
+          globalVariableDeclaration[type, name]
           | functionDeclaration[type, name]
         )
       )
@@ -74,17 +74,26 @@ identifier
     IDENTIFIER<CG_NAME, NameToken>
   ;
 /*
-  float foo;
+  float foo : COLOR = 0;
 */
-fieldDeclaration[typeName type, identifier name]
+globalVariableDeclaration[typeName type, identifier name]
   :
     &type
     &name<CG_NAME, NameNode>
-    fieldInitializer?
+    (
+      COLON
+      semantic
+    )?
+    globalVariableInitializer?
     SEMICOLON
   ;
 
-fieldInitializer
+semantic // e.g. TEXCOORD, COLOR
+  :
+    identifier // TODO: keyword list, after that different keywords for vertex/pixel shaders 
+  ;
+
+globalVariableInitializer
   :
     EQUALS
     constantValue
@@ -112,12 +121,12 @@ builtInType
     | HALF_KEYWORD
     | FLOAT_KEYWORD
     | DOUBLE_KEYWORD
-    | VOID_KEYWORD // TODO: fix void fields
+    | VOID_KEYWORD // TODO: fix void variables
   ;
 
 userDeclaredType
   :
-    IDENTIFIER // TODO: not sure about that
+    identifier<CG_NAME, NameNode>
   ;
 
 /* 
@@ -130,18 +139,25 @@ structDeclaration
     STRUCT_KEYWORD
     identifier<CG_NAME, NameNode>
     LBRACE
-    structFieldList    
+    structFieldList
     RBRACE
     SEMICOLON
   ;
 
 structFieldList
   :
+    fieldDeclaration*
+  ;
+
+fieldDeclaration
+  :
+    typeName
+    identifier<CG_NAME, NameNode>
     (
-      !(#type:typeName)
-      !(#name:identifier)
-      fieldDeclaration[type, name]
-    )*
+      COLON
+      semantic      
+    )?
+    SEMICOLON
   ;
 
 /* void foo(arg1, arg2){

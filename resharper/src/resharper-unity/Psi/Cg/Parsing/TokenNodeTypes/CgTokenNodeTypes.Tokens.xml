@@ -28,7 +28,7 @@
     <Token name="RPAREN" representation=")" />
     <Token name="COMMA" representation="," />
     <Token name="SEMICOLON" representation=";" />
-    
+    <Token name="COLON" representation=":" />
     <Token name="EQUALS" representation="=" />
   </Tokens>
 
