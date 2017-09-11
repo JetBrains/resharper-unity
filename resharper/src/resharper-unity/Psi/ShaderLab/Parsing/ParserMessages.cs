@@ -7,7 +7,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_ALPHA_TEST_VALUE = "AlphaTest value";
         public const string IDS_ATTRIBUTE_PARAMETER_VALUE = "parameter value";
         public const string IDS_BIND_COMMAND = "Bind command";
-        public const string IDS_BIND_VALUE = "Bind value";
         public const string IDS_BLEND_FACTOR = "Blend factor";
         public const string IDS_BLEND_VALUE = "Blend value";
         public const string IDS_BLOCK_COMMAND = "Block command";
@@ -16,7 +15,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_BOOL_LITERAL = "bool";
         public const string IDS_BOOL_VALUE = "bool";
         public const string IDS_BRIGHTNESS_MODIFIER = "Brightness modifier";
-        public const string IDS_CATEGORY_CONTENTS = "Category command";
         public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
         public const string IDS_COLOR_MASK_RGBA_FLAGS = "RGBA flags";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";
@@ -37,12 +35,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         public const string IDS_PASS_DEF = "pass definition";
         public const string IDS_PREPROCESSOR_DIRECTIVE = "preprocessor directive";
         public const string IDS_PROGRAM_BLOCK = "program block";
-        public const string IDS_PROGRAM_PASS_DEF = "program passDef";
         public const string IDS_PROPERTY_TYPE = "property type";
         public const string IDS_RENDER_STATE_COMMAND = "render state command";
-        public const string IDS_REGULAR_PASS_CONTENTS = "Pass command";
         public const string IDS_SHADER_BLOCK = "shader block";
-        public const string IDS_SHADER_CONTENTS = "Shader contents";
         public const string IDS_SHADER_LAB_IDENTIFIER = "identifier";
         public const string IDS_SIMPLE_PROPERTY_TYPE = "property type";
         public const string IDS_STATE_COMMAND = "state command";

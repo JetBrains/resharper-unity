@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing;
 using NUnit.Framework;
 
@@ -10,8 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [Test]
         public void EnsureKeywordTokenSet()
         {
-            var keywords = typeof(ShaderLabTokenType).GetFields().Where(f => f.Name.EndsWith("_KEYWORD"))
-                .Select(f => f.GetValue(null)).ToHashSet();
+            var keywords = new JetHashSet<object>(typeof(ShaderLabTokenType).GetFields().Where(f => f.Name.EndsWith("_KEYWORD"))
+                .Select(f => f.GetValue(null)));
 
             var missingKeywords = keywords.Except(ShaderLabTokenType.KEYWORDS);
             CollectionAssert.IsEmpty(missingKeywords);

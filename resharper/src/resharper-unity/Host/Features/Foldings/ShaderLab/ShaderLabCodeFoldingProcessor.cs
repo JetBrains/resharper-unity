@@ -30,7 +30,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Host.Features.Foldings.ShaderLab
                 ShaderLabTokenType.MULTI_LINE_COMMENT, ShaderLabTokenType.NEW_LINE);
         }
 
+#pragma warning disable 672
+        // Obsolete warning tells us to also implement VisitTexturePropertyValueNode
         public override void VisitBlockValueNode(IBlockValue blockValue, IHighlightingConsumer consumer)
+#pragma warning restore 672
         {
             var containingNode = blockValue.GetContainingNode<IBlockCommand>();
             Assertion.AssertNotNull(containingNode, "containingNode != null");
@@ -38,20 +41,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Host.Features.Foldings.ShaderLab
                 consumer.AddFoldingForBracedConstruct(blockValue.LBrace, blockValue.RBrace, containingNode);
         }
 
-        public override void VisitGrabPassValueNode(IGrabPassValue grabPassValue, IHighlightingConsumer consumer)
+        public override void VisitTexturePropertyValueNode(ITexturePropertyValue texturePropertyValue, IHighlightingConsumer consumer)
         {
-            var containingNode = grabPassValue.GetContainingNode<IGrabPassDef>();
-            Assertion.AssertNotNull(containingNode, "containingNode != null");
-            if (containingNode != null)
-                consumer.AddFoldingForBracedConstruct(grabPassValue.LBrace, grabPassValue.RBrace, containingNode);
-        }
-
-        public override void VisitRegularPassValueNode(IRegularPassValue regularPassValue, IHighlightingConsumer consumer)
-        {
-            var containingNode = regularPassValue.GetContainingNode<IRegularPassDef>();
-            Assertion.AssertNotNull(containingNode, "containingNode != null");
-            if (containingNode != null)
-                consumer.AddFoldingForBracedConstruct(regularPassValue.LBrace, regularPassValue.RBrace, containingNode);
+            VisitBlockValueNode(texturePropertyValue, consumer);
         }
 
         public override void VisitCgContentNode(ICgContent cgContent, IHighlightingConsumer consumer)
