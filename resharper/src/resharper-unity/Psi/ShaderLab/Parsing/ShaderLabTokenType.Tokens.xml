@@ -21,27 +21,31 @@
   <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing</TokenTypeNamespace>
   <TokenTypeClass>ShaderLabTokenType</TokenTypeClass>
 
-  <ProgramDelimiters NodeType="KeywordTokenNodeType">
-    <Token name="CG_PROGRAM" representation="CGPROGRAM" /> 
-    <Token name="CG_END" representation="ENDCG" />
+  <!-- CG_INCLUDE/CG_PROGRAM et al are handled by a pre-processor. *INCLUDE can be anywhere in the
+       file, and are simply removed by the pre-processor. When *PROGRAM is processed by the shader
+       compiler, the content is prepended with any and all *INCLUDE blocks, and compiled/stored in
+       memory. The pre-processor replaces the *PROGRAM block with a `GpuProgramId <index>` command
+       where <index> is the index of the program in memory. We never see this command in the file,
+       and never need to parse it. We could actually parse *PROGRAM blocks in the parser, as
+       GpuProgramId can only be in the stateCommand parse rule. But we might as well treat it like
+       the pre-processor token it is -->
+  <CgBlockDelimiters NodeType="FixedTokenNodeType" TokenElement="FixedTokenElementBase">
+    <Token name="CG_PROGRAM" representation="CGPROGRAM" filtered="true" /> 
+    <Token name="CG_INCLUDE" representation="CGINCLUDE" filtered="true" />
+    <Token name="CG_END" representation="ENDCG" filtered="true" />
     
     <!-- Shader code written in OpenGL https://docs.unity3d.com/Manual/SL-GLSLShaderPrograms.html -->
-    <Token name="GLSL_PROGRAM" representation="GLSLPROGRAM" />
-    <Token name="GLSL_END" representation="ENDGLSL" />
+    <Token name="GLSL_PROGRAM" representation="GLSLPROGRAM" filtered="true" />
+    <Token name="GLSL_INCLUDE" representation="GLSLINCLUDE" filtered="true" />
+    <Token name="GLSL_END" representation="ENDGLSL" filtered="true" />
     
     <!-- Identical to CGPROGRAM/GCINCLUDE but some includes are not automatically included
          HLSLSupport.cginc, UnityShaderVariables.cginc and UnityShaderUtilties.cginc (This info direct from Unity devs)
          Added in 5.6.0 - https://unity3d.com/unity/whats-new/unity-5.6.0 -->
-    <Token name="HLSL_PROGRAM" representation="HLSLPROGRAM" />
-    <Token name="HLSL_END" representation="ENDHLSL" />
-  </ProgramDelimiters>
-
-  <!-- We need to treat CG_INCLUDE et al as filtered tokens. They can be anywhere in the file -->
-  <IncludeBlockDelimiters NodeType="FixedTokenNodeType" TokenElement="FixedTokenElementBase">
-    <Token name="CG_INCLUDE" representation="CGINCLUDE" filtered="true" />
-    <Token name="GLSL_INCLUDE" representation="GLSLINCLUDE" filtered="true" />
+    <Token name="HLSL_PROGRAM" representation="HLSLPROGRAM" filtered="true" />
     <Token name="HLSL_INCLUDE" representation="HLSLINCLUDE" filtered="true" />
-  </IncludeBlockDelimiters>
+    <Token name="HLSL_END" representation="ENDHLSL" filtered="true" />
+  </CgBlockDelimiters>
 
   <Tokens NodeType="FixedTokenNodeType">
     <Token name="LPAREN" representation="(" />

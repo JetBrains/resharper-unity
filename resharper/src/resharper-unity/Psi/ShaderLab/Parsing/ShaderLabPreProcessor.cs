@@ -36,8 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
         public TreeElement GetPPDirectiveAtOffset(int startOffset)
         {
-            TreeElement element;
-            return myPpDirectivesByOffset.TryGetValue(startOffset, out element) ? element : null;
+            return myPpDirectivesByOffset.TryGetValue(startOffset, out var element) ? element : null;
         }
 
         public bool IsInPPTokenRange(int startOffset)
@@ -56,8 +55,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                     || tokenType == ShaderLabTokenType.PP_LINE)
                 {
                     var startOffset = lexer.TokenStart;
-                    var directive = parser.ParsePreprocessorDirective();
-                    myPpDirectivesByOffset[startOffset] = directive;
+                    var directiveElement = parser.ParsePreprocessorDirective();
+                    myPpDirectivesByOffset[startOffset] = directiveElement;
                     myRanges.Add(new TextRange(startOffset, lexer.TokenStart));
                 }
                 else if (tokenType == ShaderLabTokenType.CG_INCLUDE
@@ -65,8 +64,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                          || tokenType == ShaderLabTokenType.HLSL_INCLUDE)
                 {
                     var startOffset = lexer.TokenStart;
-                    var include = parser.ParseIncludeBlock();
-                    myPpDirectivesByOffset[startOffset] = include;
+                    var includeElement = parser.ParseIncludeBlock();
+                    myPpDirectivesByOffset[startOffset] = includeElement;
+                    myRanges.Add(new TextRange(startOffset, lexer.TokenStart));
+                }
+                else if (tokenType == ShaderLabTokenType.CG_PROGRAM
+                         || tokenType == ShaderLabTokenType.GLSL_PROGRAM
+                         || tokenType == ShaderLabTokenType.HLSL_PROGRAM)
+                {
+                    var startOffset = lexer.TokenStart;
+                    var programElement = parser.ParseProgramBlock();
+                    myPpDirectivesByOffset[startOffset] = programElement ;
                     myRanges.Add(new TextRange(startOffset, lexer.TokenStart));
                 }
                 else

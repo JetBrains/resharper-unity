@@ -1171,7 +1171,8 @@ subShaderValue
 pass
 :
   stateCommand<STATE_COMMANDS, StateCommands>*
-  passDef<PASSDEF, PassDefinition>
+  // We require at least one pass, but one might get generated from a CGPROGRAM
+  passDef<PASSDEF, PassDefinition>?
 ;
 
 interface stateCommand
@@ -1985,9 +1986,9 @@ bindValue
 // which allows us to use `errorhandling`. If we don't have this rule, the following
 // token is expected to be null, and then we don't get `errorhandling` and would
 // have to handle thrown syntax errors manually
-errorhandling includeBlockForceFollows
+errorhandling cgBlockForceFollows
 :
-  includeBlock
+  (includeBlock | programBlock)
   (errorElement | WHITESPACE | NEW_LINE)
 ;
 
@@ -2031,7 +2032,7 @@ hlslIncludeBlock
 ;
 
 
-interface programBlock
+errorhandling interface programBlock
 :
   cgProgramBlock
   | glslProgramBlock
@@ -2076,9 +2077,6 @@ interface passDef
   usePassDef
   | grabPassDef
   | texturePassDef
-  // TODO: GC_PROGRAM can exist anywhere in StateCommands
-  // Should probably make this a pre-processor thing
-  | programPassDef
 ;
 
 usePassDef
@@ -2112,28 +2110,6 @@ optionalNameCommand
   STRING_LITERAL<SHADER_LAB_NAME, Name>
 ;
 
-interface programPassDef
-:
-  cgProgramPassDef
-  | glslProgramPassDef
-  | hlslProgramPassDef
-;
-
-cgProgramPassDef
-:
-  cgProgramBlock<CG_PROGRAM, Program>
-;
-
-glslProgramPassDef
-:
-  glslProgramBlock<GLSL_PROGRAM, Program>
-;
-
-hlslProgramPassDef
-:
-  hlslProgramBlock<HLSL_PROGRAM, Program>
-;
-
 texturePassDef
 :
   PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
@@ -2149,17 +2125,8 @@ texturePassValue
 
 private texturePassContents
 :
-  // TODO: Handle CG blocks as pre-processor tokens
-  (
-    stateCommand<STATE_COMMAND, StateCommands>*
-    setTextureCommand<SET_TEXTURE_COMMAND, SetTextureCommands>*
-
-    (
-      cgProgramBlock<CGPROGRAM_BLOCK, CgPrograms>
-      | glslProgramBlock<GLSLPROGRAM_BLOCK, GlslPrograms>
-      | hlslProgramBlock<HLSLPROGRAM_BLOCK, HlslPrograms>
-    )?
-  )*
+  stateCommand<STATE_COMMAND, StateCommands>*
+  setTextureCommand<SET_TEXTURE_COMMAND, SetTextureCommands>*
 ;
 
 

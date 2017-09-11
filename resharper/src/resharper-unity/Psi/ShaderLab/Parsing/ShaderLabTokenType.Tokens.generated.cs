@@ -14,25 +14,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {
   public partial class ShaderLabTokenType
   {
-    //ProgramDelimiters
+    //CgBlockDelimiters
+    #region CG_PROGRAM
+    
+    public static readonly TokenNodeType CG_PROGRAM = new CgProgramNodeType();
     public const int CG_PROGRAM_NODE_TYPE_INDEX = 1000;
-    public static readonly TokenNodeType CG_PROGRAM = new KeywordTokenNodeType("CG_PROGRAM", CG_PROGRAM_NODE_TYPE_INDEX, representation: "CGPROGRAM");
-    public const int CG_END_NODE_TYPE_INDEX = 1001;
-    public static readonly TokenNodeType CG_END = new KeywordTokenNodeType("CG_END", CG_END_NODE_TYPE_INDEX, representation: "ENDCG");
-    public const int GLSL_PROGRAM_NODE_TYPE_INDEX = 1002;
-    public static readonly TokenNodeType GLSL_PROGRAM = new KeywordTokenNodeType("GLSL_PROGRAM", GLSL_PROGRAM_NODE_TYPE_INDEX, representation: "GLSLPROGRAM");
-    public const int GLSL_END_NODE_TYPE_INDEX = 1003;
-    public static readonly TokenNodeType GLSL_END = new KeywordTokenNodeType("GLSL_END", GLSL_END_NODE_TYPE_INDEX, representation: "ENDGLSL");
-    public const int HLSL_PROGRAM_NODE_TYPE_INDEX = 1004;
-    public static readonly TokenNodeType HLSL_PROGRAM = new KeywordTokenNodeType("HLSL_PROGRAM", HLSL_PROGRAM_NODE_TYPE_INDEX, representation: "HLSLPROGRAM");
-    public const int HLSL_END_NODE_TYPE_INDEX = 1005;
-    public static readonly TokenNodeType HLSL_END = new KeywordTokenNodeType("HLSL_END", HLSL_END_NODE_TYPE_INDEX, representation: "ENDHLSL");
-
-    //IncludeBlockDelimiters
+    
+    private class CgProgramNodeType : FixedTokenNodeType
+    {
+      public CgProgramNodeType() : base("CG_PROGRAM", CG_PROGRAM_NODE_TYPE_INDEX, "CGPROGRAM") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new CgProgramTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class CgProgramTokenElement : FixedTokenElementBase
+    {
+      public override NodeType NodeType { get { return CG_PROGRAM; } }
+    
+      public override int GetTextLength() { return 9; }
+      public override string GetText() { return "CGPROGRAM"; }
+    }
+    
+    #endregion
     #region CG_INCLUDE
     
     public static readonly TokenNodeType CG_INCLUDE = new CgIncludeNodeType();
-    public const int CG_INCLUDE_NODE_TYPE_INDEX = 1006;
+    public const int CG_INCLUDE_NODE_TYPE_INDEX = 1001;
     
     private class CgIncludeNodeType : FixedTokenNodeType
     {
@@ -55,10 +67,62 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     }
     
     #endregion
+    #region CG_END
+    
+    public static readonly TokenNodeType CG_END = new CgEndNodeType();
+    public const int CG_END_NODE_TYPE_INDEX = 1002;
+    
+    private class CgEndNodeType : FixedTokenNodeType
+    {
+      public CgEndNodeType() : base("CG_END", CG_END_NODE_TYPE_INDEX, "ENDCG") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new CgEndTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class CgEndTokenElement : FixedTokenElementBase
+    {
+      public override NodeType NodeType { get { return CG_END; } }
+    
+      public override int GetTextLength() { return 5; }
+      public override string GetText() { return "ENDCG"; }
+    }
+    
+    #endregion
+    #region GLSL_PROGRAM
+    
+    public static readonly TokenNodeType GLSL_PROGRAM = new GlslProgramNodeType();
+    public const int GLSL_PROGRAM_NODE_TYPE_INDEX = 1003;
+    
+    private class GlslProgramNodeType : FixedTokenNodeType
+    {
+      public GlslProgramNodeType() : base("GLSL_PROGRAM", GLSL_PROGRAM_NODE_TYPE_INDEX, "GLSLPROGRAM") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new GlslProgramTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class GlslProgramTokenElement : FixedTokenElementBase
+    {
+      public override NodeType NodeType { get { return GLSL_PROGRAM; } }
+    
+      public override int GetTextLength() { return 11; }
+      public override string GetText() { return "GLSLPROGRAM"; }
+    }
+    
+    #endregion
     #region GLSL_INCLUDE
     
     public static readonly TokenNodeType GLSL_INCLUDE = new GlslIncludeNodeType();
-    public const int GLSL_INCLUDE_NODE_TYPE_INDEX = 1007;
+    public const int GLSL_INCLUDE_NODE_TYPE_INDEX = 1004;
     
     private class GlslIncludeNodeType : FixedTokenNodeType
     {
@@ -81,10 +145,62 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     }
     
     #endregion
+    #region GLSL_END
+    
+    public static readonly TokenNodeType GLSL_END = new GlslEndNodeType();
+    public const int GLSL_END_NODE_TYPE_INDEX = 1005;
+    
+    private class GlslEndNodeType : FixedTokenNodeType
+    {
+      public GlslEndNodeType() : base("GLSL_END", GLSL_END_NODE_TYPE_INDEX, "ENDGLSL") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new GlslEndTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class GlslEndTokenElement : FixedTokenElementBase
+    {
+      public override NodeType NodeType { get { return GLSL_END; } }
+    
+      public override int GetTextLength() { return 7; }
+      public override string GetText() { return "ENDGLSL"; }
+    }
+    
+    #endregion
+    #region HLSL_PROGRAM
+    
+    public static readonly TokenNodeType HLSL_PROGRAM = new HlslProgramNodeType();
+    public const int HLSL_PROGRAM_NODE_TYPE_INDEX = 1006;
+    
+    private class HlslProgramNodeType : FixedTokenNodeType
+    {
+      public HlslProgramNodeType() : base("HLSL_PROGRAM", HLSL_PROGRAM_NODE_TYPE_INDEX, "HLSLPROGRAM") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new HlslProgramTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class HlslProgramTokenElement : FixedTokenElementBase
+    {
+      public override NodeType NodeType { get { return HLSL_PROGRAM; } }
+    
+      public override int GetTextLength() { return 11; }
+      public override string GetText() { return "HLSLPROGRAM"; }
+    }
+    
+    #endregion
     #region HLSL_INCLUDE
     
     public static readonly TokenNodeType HLSL_INCLUDE = new HlslIncludeNodeType();
-    public const int HLSL_INCLUDE_NODE_TYPE_INDEX = 1008;
+    public const int HLSL_INCLUDE_NODE_TYPE_INDEX = 1007;
     
     private class HlslIncludeNodeType : FixedTokenNodeType
     {
@@ -104,6 +220,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
     
       public override int GetTextLength() { return 11; }
       public override string GetText() { return "HLSLINCLUDE"; }
+    }
+    
+    #endregion
+    #region HLSL_END
+    
+    public static readonly TokenNodeType HLSL_END = new HlslEndNodeType();
+    public const int HLSL_END_NODE_TYPE_INDEX = 1008;
+    
+    private class HlslEndNodeType : FixedTokenNodeType
+    {
+      public HlslEndNodeType() : base("HLSL_END", HLSL_END_NODE_TYPE_INDEX, "ENDHLSL") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new HlslEndTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class HlslEndTokenElement : FixedTokenElementBase
+    {
+      public override NodeType NodeType { get { return HLSL_END; } }
+    
+      public override int GetTextLength() { return 7; }
+      public override string GetText() { return "ENDHLSL"; }
     }
     
     #endregion

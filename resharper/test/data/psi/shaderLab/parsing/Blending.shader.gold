@@ -19,10 +19,10 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              IRegularPassDef
+              ITexturePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IRegularPassValue
+                ITexturePassValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IBlendCommand
@@ -35,10 +35,10 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              IRegularPassDef
+              ITexturePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IRegularPassValue
+                ITexturePassValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IBlendCommand
@@ -57,10 +57,10 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              IRegularPassDef
+              ITexturePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IRegularPassValue
+                ITexturePassValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IBlendCommand
@@ -79,10 +79,10 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              IRegularPassDef
+              ITexturePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IRegularPassValue
+                ITexturePassValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IBlendCommand
@@ -110,10 +110,10 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              IRegularPassDef
+              ITexturePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IRegularPassValue
+                ITexturePassValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IBlendCommand
@@ -134,10 +134,10 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              IRegularPassDef
+              ITexturePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IRegularPassValue
+                ITexturePassValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IBlendOpCommand
@@ -151,10 +151,10 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              IRegularPassDef
+              ITexturePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IRegularPassValue
+                ITexturePassValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IBlendOpCommand
@@ -170,10 +170,10 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              IRegularPassDef
+              ITexturePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IRegularPassValue
+                ITexturePassValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IBlendOpCommand
@@ -193,10 +193,10 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              IRegularPassDef
+              ITexturePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IRegularPassValue
+                ITexturePassValue
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IAlphaToMaskCommand
