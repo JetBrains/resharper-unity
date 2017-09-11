@@ -221,7 +221,7 @@ if ($Source) {
 if (!$RunIde){
     ServiceMessage "progressMessage" "Restoring packages"
     if ($Source) {
-      & dotnet restore --source $Source --source https://api.nuget.org/v3/index.json resharper/src/resharper-unity.sln
+      & dotnet restore --source https://api.nuget.org/v3/index.json --source $Source resharper/src/resharper-unity.sln
     } else {
       & dotnet restore resharper/src/resharper-unity.sln
     }
@@ -261,7 +261,7 @@ if ($LastExitCode -ne 0) { throw "Exec: Unable to build solution: exit code $Las
 
 try{
     if (!($RunIde)){
-        PackNuget "wave08" $version
+        PackNuget "wave09" $version
     }
     PackNuget "rider" $version
 }

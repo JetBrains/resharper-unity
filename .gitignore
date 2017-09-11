@@ -59,3 +59,6 @@ UpgradeLog*.XML
 Thumbs.db
 Desktop.ini
 .DS_Store
+**/.idea/workspace.xml
+**/.idea/vcs.xml
+**/.idea/contentModel.xml

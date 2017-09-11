@@ -1,4 +1,4 @@
-﻿using JetBrains.Util;
+﻿﻿using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 {

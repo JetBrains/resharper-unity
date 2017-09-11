@@ -113,9 +113,11 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 synchronized(listModelLock) {
                     listModel.addElement(player)
                     list.selectedIndex = listModel.size() - 1
-                    doOKAction()
+                    return@dialog true
                 }
             }
+
+            return@dialog false
         }
         dialog.showAndGet()
     }

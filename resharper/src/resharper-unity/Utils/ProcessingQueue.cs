@@ -2,17 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.DataFlow;
 using JetBrains.Util;
-
-#if RIDER
-using JetBrains.Application.Threading;
-#endif
-    
-#if WAVE08
-using JetBrains.Application;
-#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Utils
 {
@@ -20,9 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
     {
         private readonly Lifetime myLifetime;
         private readonly IShellLocks myLocks;
-        
+
         private readonly object mySync = new object();
-        
+
         private readonly Queue<Action> myElements = new Queue<Action>();
         private bool myIsActive;
 
@@ -39,10 +32,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                 myElements.Enqueue(request);
                 if (myIsActive)
                     return;
-                
+
                 myIsActive = true;
             }
-            
+
             myLocks.Tasks.StartNew(myLifetime, Scheduling.FreeThreaded, ProcessAllAsync);
         }
 
@@ -52,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             {
                 if (myLifetime.IsTerminated)
                     break;
-                
+
                 Task task;
                 lock(mySync)
                 {
@@ -61,10 +54,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                         myIsActive = false;
                         break;
                     }
-                    
+
                     task = Task.Run(myElements.Dequeue());
                 }
-                    
+
                 await task;
             }
         }

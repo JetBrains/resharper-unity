@@ -19,17 +19,13 @@
     <BaseIntermediateOutputPath Condition=" '$(OS)' != 'Unix' ">$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\Debug</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\Release</OutputPath>
+  <PropertyGroup>
+    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
   <!-- Specify Rider SDK version in one place -->
   <PropertyGroup>
-    <RiderSDKVersion>[2017.2.20170821.130939-eap01internal]</RiderSDKVersion>
+    <RiderSDKVersion>[2017.2.20170903.124051]</RiderSDKVersion>
   </PropertyGroup>  
 
   <Import Project="..\Packaging.props" />

@@ -9,7 +9,6 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectL
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Presentations;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
-using JetBrains.ReSharper.Features.Intellisense.CodeCompletion;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.AspectLookupItems.Generate;
 using JetBrains.ReSharper.Psi;
@@ -59,11 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
         public override CompletionMode SupportedCompletionMode => CompletionMode.All;
         public override EvaluationMode SupportedEvaluationMode => EvaluationMode.LightAndFull;
 
-        #if RIDER
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
-        #else
-        protected override bool AddLookupItems(CSharpCodeCompletionContext context, GroupedItemsCollector collector)
-        #endif
         {
             IClassLikeDeclaration declaration;
             bool hasVisibilityModifier;
@@ -147,8 +142,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                 return null;
 
             var instance = new DeclaredElementInstance(method.DeclaredElement);
+
             var declaredElementInfo = new DeclaredElementInfo(method.DeclaredName, instance, CSharpLanguage.Instance,
-                context.BasicContext.LookupItemsOwner, context, context.BasicContext);
+                context.BasicContext.LookupItemsOwner, context);
 
             return LookupItemFactory.CreateLookupItem(declaredElementInfo).
                 WithPresentation(
@@ -156,7 +152,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                 WithBehavior(_ =>
                 {
                     var behavior = new UnityEventFunctionBehavior(declaredElementInfo, eventFunction);
-                    behavior.InitializeRanges(context.CompletionRanges, context.BasicContext);
                     return behavior;
                 }).
                 WithMatcher(_ => new DeclaredElementMatcher(declaredElementInfo, context.BasicContext.IdentifierMatchingStyle));
