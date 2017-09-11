@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("LegacyBindChannels")]
 
         [TestCase("Preprocessor")]
-        
+
         [TestCase("TagDeclaration")]
 
         [TestCase("CgInclude")]
