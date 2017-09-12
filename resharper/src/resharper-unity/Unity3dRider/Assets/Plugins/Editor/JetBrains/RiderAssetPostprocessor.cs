@@ -140,7 +140,7 @@ namespace Plugins.Editor.JetBrains
 #endif
 
       //Only use gmcs.rps and smcs.rsp if mcs.rps is not used
-      if (configPath != null)
+      if (configPath == null)
       {
         if (IsPlayerProjectFile(projectFile))
           configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
