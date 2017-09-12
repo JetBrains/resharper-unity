@@ -15,27 +15,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing.TokenNodes
         }
 
         public override NodeType NodeType => CgTokenNodeTypes.SINGLE_LINE_COMMENT;
-        
-        public override int GetTextLength()
-        {
-            return myText.Length;
-        }
 
-        public override string GetText()
-        {
-            return myText;
-        }
+        public override int GetTextLength() => myText.Length;
+        public override string GetText() => myText;
+        public override bool IsFiltered() => true;
         
         public TreeTextRange GetCommentRange()
         {
             // remove two slashes
             var start = GetTreeStartOffset();
             return new TreeTextRange(start + 2, start + GetTextLength());
-        }
-
-        public override bool IsFiltered()
-        {
-            return true;
         }
 
         // remove two slashes
