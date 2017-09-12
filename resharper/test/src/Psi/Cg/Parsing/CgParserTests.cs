@@ -23,6 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg.Parsing
         [TestCase("FieldDeclarationReferencedType")]
         [TestCase("FieldDeclarationWithInitializer")]
         
+        [TestCase("FunctionBody")]
+        
         [TestCase("FunctionBuiltInReturnType")]
         [TestCase("FunctionOneArgument")]
         [TestCase("FunctionTwoArguments")]

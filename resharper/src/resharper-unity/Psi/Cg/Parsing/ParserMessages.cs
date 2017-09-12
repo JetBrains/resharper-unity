@@ -5,6 +5,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
 {
     public static class ParserMessages
     {
+        public static string IDS_EXPRESSION => "expression";
+        
         public static string IDS_GLOBAL_VARIABLE_DECLARATION => "global variable";
         
         public static string IDS_CONSTANT_VALUE => "constant value";

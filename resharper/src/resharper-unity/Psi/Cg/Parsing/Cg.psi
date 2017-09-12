@@ -197,9 +197,32 @@ argument
 
 functionBody
   :
-    // TODO: impl
+    // TODO: remove IDENTIFIER match when all is done
     (
-      IDENTIFIER*
-      SEMICOLON    
+      localVariableDeclaration
+      | IDENTIFIER* 
     )*
+  ;
+
+localVariableDeclaration
+  :
+    typeName
+    identifier<CG_NAME, NameNode>
+    (
+      EQUALS
+      expression
+    )?
+    SEMICOLON
+  ;
+
+// TODO: extend
+expression 
+  :
+    constantValue
+    | valueReference
+  ;
+
+valueReference
+  :
+    identifier<CG_NAME, NameNode>
   ;
