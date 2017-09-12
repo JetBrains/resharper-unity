@@ -105,7 +105,7 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 <YYCG>   ")"                     { return CgTokenNodeTypes.RPAREN; }
 <YYCG>   ","                     { return CgTokenNodeTypes.COMMA; }
 <YYCG>   ";"                     { return CgTokenNodeTypes.SEMICOLON; }
-<YYCG>   ";"                     { return CgTokenNodeTypes.COLON; }
+<YYCG>   ":"                     { return CgTokenNodeTypes.COLON; }
 <YYCG>   "="                     { return CgTokenNodeTypes.EQUALS; }
 
 <YYCG>   {SINGLE_LINE_COMMENT}   { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }

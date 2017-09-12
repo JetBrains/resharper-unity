@@ -3,7 +3,7 @@ ICgFile
   IStructDeclaration
     CgKeywordTokenNode(type:STRUCT_KEYWORD, text:struct)
     CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-    IStructName
+    IIdentifier
       CgIdentifier(type:IDENTIFIER, text:foo)
     CgFixedLengthTokenNode(type:LBRACE, text:{)
     CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -14,7 +14,8 @@ ICgFile
           IBuiltInType
             CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
         CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-        CgIdentifier(type:IDENTIFIER, text:f)
+        IIdentifier
+          CgIdentifier(type:IDENTIFIER, text:f)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
     CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
     CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"

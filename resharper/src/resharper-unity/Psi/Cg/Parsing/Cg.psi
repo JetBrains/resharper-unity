@@ -109,7 +109,7 @@ constantValue
 typeName
   :
     builtInType
-    | userDeclaredType
+    | typeReference
   ;
 
 builtInType
@@ -124,7 +124,7 @@ builtInType
     | VOID_KEYWORD // TODO: fix void variables
   ;
 
-userDeclaredType
+typeReference
   :
     identifier<CG_NAME, NameNode>
   ;
@@ -191,7 +191,7 @@ functionArgList
 
 argument
   :    
-    identifier<CG_NAME, TypeNode>
+    typeName
     identifier<CG_NAME, NameNode>
   ;
 

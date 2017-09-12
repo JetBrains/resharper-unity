@@ -5,7 +5,8 @@ ICgFile
       IBuiltInType
         CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
     CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-    CgIdentifier(type:IDENTIFIER, text:foo)
+    IIdentifier
+      CgIdentifier(type:IDENTIFIER, text:foo)
     CgFixedLengthTokenNode(type:LPAREN, text:()
     IFunctionArgList
     CgFixedLengthTokenNode(type:RPAREN, text:))

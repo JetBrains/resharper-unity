@@ -2,6 +2,7 @@
 ICgFile
   CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
   CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-  CgIdentifier(type:IDENTIFIER, text:foo)
-  ErrorElement:Field declaration or function declaration expected
+  IIdentifier
+    CgIdentifier(type:IDENTIFIER, text:foo)
+  ErrorElement:Function declaration or global variable expected
 

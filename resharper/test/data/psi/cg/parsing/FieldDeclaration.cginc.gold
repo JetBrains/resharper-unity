@@ -1,10 +1,11 @@
 ﻿Language: PsiLanguageType:CG
 ICgFile
-  IFieldDeclaration
+  IGlobalVariableDeclaration
     ITypeName
       IBuiltInType
         CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
     CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-    CgIdentifier(type:IDENTIFIER, text:foo)
+    IIdentifier
+      CgIdentifier(type:IDENTIFIER, text:foo)
     CgFixedLengthTokenNode(type:SEMICOLON, text:;)
 

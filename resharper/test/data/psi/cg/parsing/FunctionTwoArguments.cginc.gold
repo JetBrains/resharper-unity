@@ -6,26 +6,25 @@ ICgFile
       IBuiltInType
         CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
     CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-    CgIdentifier(type:IDENTIFIER, text:foo)
+    IIdentifier
+      CgIdentifier(type:IDENTIFIER, text:foo)
     CgFixedLengthTokenNode(type:LPAREN, text:()
     IFunctionArgList
       IArgument
-        IArgumentType
-          ITypeName
-            IBuiltInType
-              CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+        ITypeName
+          IBuiltInType
+            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
         CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-        IArgumentName
+        IIdentifier
           CgIdentifier(type:IDENTIFIER, text:first)
       CgFixedLengthTokenNode(type:COMMA, text:,)
       CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
       IArgument
-        IArgumentType
-          ITypeName
-            IBuiltInType
-              CgKeywordTokenNode(type:BOOL_KEYWORD, text:bool)
+        ITypeName
+          IBuiltInType
+            CgKeywordTokenNode(type:BOOL_KEYWORD, text:bool)
         CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-        IArgumentName
+        IIdentifier
           CgIdentifier(type:IDENTIFIER, text:second)
     CgFixedLengthTokenNode(type:RPAREN, text:))
     CgFixedLengthTokenNode(type:LBRACE, text:{)

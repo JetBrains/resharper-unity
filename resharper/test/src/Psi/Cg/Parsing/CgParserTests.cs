@@ -28,6 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg.Parsing
         [TestCase("FunctionTwoArguments")]
         [TestCase("FunctionVoidReturnType")]
         
+        [TestCase("Semantics")]
+        
         [TestCase("StructDeclaration")]
         [TestCase("StructDeclarationNoSemicolon")]
         [TestCase("StructDeclarationReferencedType")]
