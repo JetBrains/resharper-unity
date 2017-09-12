@@ -65,6 +65,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Cg.Stages
             }
         }
 
-        public abstract void Execute(Action<DaemonStageResult> committer);
+        public void Execute(Action<DaemonStageResult> committer)
+        {
+            HighlightInFile((file, consumer) => file.ProcessDescendants(this, consumer), committer);
+        }
     }
 }

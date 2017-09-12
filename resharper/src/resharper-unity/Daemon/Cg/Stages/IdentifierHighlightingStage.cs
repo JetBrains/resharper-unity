@@ -38,11 +38,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Cg.Stages
                 
                 myIdentifierHighlighter.Highlight(node, context);
             }
-
-            public override void Execute(Action<DaemonStageResult> committer)
-            {
-                HighlightInFile((file, context) => file.ProcessDescendants(this, context), committer);
-            }
         }
     }
 }

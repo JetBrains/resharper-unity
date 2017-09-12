@@ -57,7 +57,6 @@ DELIMITED_COMMENT={UNFINISHED_DELIMITED_COMMENT}{ASTERISKS}{SLASH}
 
 MINUS="-"
 PLUS="+"
-DOT="."
 DECIMAL_DIGIT=[0-9]
 NUMERIC_LITERAL=({MINUS}|{PLUS})?{DECIMAL_DIGIT}+
 
@@ -103,6 +102,7 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 <YYCG>   "}"                     { return CgTokenNodeTypes.RBRACE; }
 <YYCG>   "("                     { return CgTokenNodeTypes.LPAREN; }
 <YYCG>   ")"                     { return CgTokenNodeTypes.RPAREN; }
+<YYCG>   "."                     { return CgTokenNodeTypes.DOT; }
 <YYCG>   ","                     { return CgTokenNodeTypes.COMMA; }
 <YYCG>   ";"                     { return CgTokenNodeTypes.SEMICOLON; }
 <YYCG>   ":"                     { return CgTokenNodeTypes.COLON; }

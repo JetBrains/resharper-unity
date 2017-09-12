@@ -46,6 +46,38 @@ options
   generateWorkingPsi;
 }
 
+abstract errorElement
+options {
+  interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
+  elementType="ERROR_ELEMENT";
+}
+  :
+    IDENTIFIER?
+    | LBRACE
+    | RBRACE
+    | LPAREN
+    | RPAREN
+    | COMMA
+    | SEMICOLON
+    | COLON
+    | EQUALS
+
+    | BOOL_KEYWORD
+    | INT_KEYWORD
+    | UINT_KEYWORD
+    | DWORD_KEYWORD
+    | HALF_KEYWORD
+    | FLOAT_KEYWORD
+    | DOUBLE_KEYWORD
+
+    | VOID_KEYWORD
+
+    | FALSE_KEYWORD
+    | TRUE_KEYWORD
+    
+    | STRUCT_KEYWORD
+  ;
+
 errorhandling cgFile
 options
 {
@@ -128,7 +160,7 @@ typeReference
   :
     identifier<CG_NAME, NameNode>
   ;
-
+  
 /* 
   struct foo {
     float field;
@@ -199,12 +231,51 @@ functionBody
   :
     // TODO: remove IDENTIFIER match when all is done
     (
-      localVariableDeclaration
-      | IDENTIFIER* 
+      !(#name:identifier)
+      (
+        localVariableDeclaration[name]
+        | assignmentExpression[name]
+      )
+      | IDENTIFIER*
     )*
   ;
 
-localVariableDeclaration
+assignmentExpression
+  :
+    lvalue
+    EQUALS
+    expression
+    SEMICOLON
+  ;
+
+lvalue
+  :
+    variableReference
+    | fieldReference
+  ;
+
+variableReference
+  :
+    identifier<CG_NAME, NameNode>    
+  ;
+
+fieldReference
+  :
+    variableReference
+    (
+      DOT
+      identifier<CG_NAME, FieldNode>      
+    )+
+  ;
+
+expression 
+  :
+    constantValue
+    | variableReference
+    | fieldReference
+  ;
+
+localVariableDeclaration[identifier typeRef]
   :
     typeName
     identifier<CG_NAME, NameNode>
@@ -213,16 +284,4 @@ localVariableDeclaration
       expression
     )?
     SEMICOLON
-  ;
-
-// TODO: extend
-expression 
-  :
-    constantValue
-    | valueReference
-  ;
-
-valueReference
-  :
-    identifier<CG_NAME, NameNode>
   ;

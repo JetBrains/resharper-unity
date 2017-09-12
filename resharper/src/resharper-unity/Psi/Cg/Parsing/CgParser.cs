@@ -89,5 +89,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing
 
             return element;
         }
+
+        public override TreeElement ParseErrorElement()
+        {
+            // doesn't advance
+            var result = TreeElementFactory.CreateErrorElement(ParserMessages.GetUnexpectedTokenMessage());
+            return result;
+        }
     }
 }
