@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.Util;

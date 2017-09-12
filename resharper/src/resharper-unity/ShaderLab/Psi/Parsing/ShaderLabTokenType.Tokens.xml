@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- About this file
+
+     The root node can be anything. TokenGenerator doesn't care. It uses whatever the root node is,
+     and then looks for `BaseTokenNodeTypeIndex`, `TokenTypeNamespace` and `TokenTypeClass` child elements.
+     It will also look for `Import` elements which are used to add arbitrary using namespaces.
+     It will then loop over all other children of the root node, and treat them like sections. Each
+     child node must have a `NodeType` attribute, and optionally a `TokenElement` attribute. If there
+     is no `TokenElement` attribute, the token is generated as an instance of the `NodeType` class. If
+     there is a `TokenElement` attribute, then a new class is generated for the node type and the element.
+     There is no real difference between the two - identification is carried out based on reference equality
+     to a singleton instance and and generated types are private. The only difference is the derived classes
+     will have a smaller footprint - no text or node type fields. But that's negligible. On the flip side,
+     there will be fewer classes. Micro-optimisation swings and roundabouts.
+     When generating, TokenGenerator will look for `name` and `representation` attributes.
+-->
+<ShaderLabTokens>
+
+  <!-- Default is 1000 -->
+  <BaseTokenNodeTypeIndex>1000</BaseTokenNodeTypeIndex>
+  <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing</TokenTypeNamespace>
+  <TokenTypeClass>ShaderLabTokenType</TokenTypeClass>
+
+  <!-- CG_INCLUDE/CG_PROGRAM et al are handled by a pre-processor. *INCLUDE can be anywhere in the
+       file, and are simply removed by the pre-processor. When *PROGRAM is processed by the shader
+       compiler, the content is prepended with any and all *INCLUDE blocks, and compiled/stored in
+       memory. The pre-processor replaces the *PROGRAM block with a `GpuProgramId <index>` command
+       where <index> is the index of the program in memory. We never see this command in the file,
+       and never need to parse it. We could actually parse *PROGRAM blocks in the parser, as
+       GpuProgramId can only be in the stateCommand parse rule. But we might as well treat it like
+       the pre-processor token it is -->
+  <CgBlockDelimiters NodeType="FixedTokenNodeType" TokenElement="FixedTokenElementBase">
+    <Token name="CG_PROGRAM" representation="CGPROGRAM" filtered="true" /> 
+    <Token name="CG_INCLUDE" representation="CGINCLUDE" filtered="true" />
+    <Token name="CG_END" representation="ENDCG" filtered="true" />
+    
+    <!-- Shader code written in OpenGL https://docs.unity3d.com/Manual/SL-GLSLShaderPrograms.html -->
+    <Token name="GLSL_PROGRAM" representation="GLSLPROGRAM" filtered="true" />
+    <Token name="GLSL_INCLUDE" representation="GLSLINCLUDE" filtered="true" />
+    <Token name="GLSL_END" representation="ENDGLSL" filtered="true" />
+    
+    <!-- Identical to CGPROGRAM/GCINCLUDE but some includes are not automatically included
+         HLSLSupport.cginc, UnityShaderVariables.cginc and UnityShaderUtilties.cginc (This info direct from Unity devs)
+         Added in 5.6.0 - https://unity3d.com/unity/whats-new/unity-5.6.0 -->
+    <Token name="HLSL_PROGRAM" representation="HLSLPROGRAM" filtered="true" />
+    <Token name="HLSL_INCLUDE" representation="HLSLINCLUDE" filtered="true" />
+    <Token name="HLSL_END" representation="ENDHLSL" filtered="true" />
+  </CgBlockDelimiters>
+
+  <Tokens NodeType="FixedTokenNodeType">
+    <Token name="LPAREN" representation="(" />
+    <Token name="RPAREN" representation=")" />
+    <Token name="LBRACK" representation="[" />
+    <Token name="RBRACK" representation="]" />
+    <Token name="LBRACE" representation="{" />
+    <Token name="RBRACE" representation="}" />
+    <Token name="COMMA" representation="," />
+    <Token name="DOT" representation="." />
+    <Token name="EQUALS" representation="=" />
+    <Token name="PLUS" representation="+" />
+    <Token name="MINUS" representation="-" />
+    <Token name="MULTIPLY" representation="*" />
+    <Token name="PLUS_MINUS" representation="+-" />
+  </Tokens>
+  
+  <!-- Specifying the TokenElement generates subtypes of NodeType and TokenElement,
+       and the filtered="true" overrides IsFiltered -->
+  <Tokens NodeType="FixedTokenNodeType" TokenElement="FixedTokenElementBase">
+    <Token name="PP_WARNING" representation="#warning" filtered="true" />
+    <Token name="PP_ERROR" representation="#error" filtered="true" />
+    <Token name="PP_LINE" representation="#line" filtered="true" />
+  </Tokens>
+
+  <!-- TODO: Should these be a keyword or just a fixed token? -->
+  <Commands NodeType="KeywordTokenNodeType">
+    <Command name="SHADER_KEYWORD" representation="Shader" />
+    <Command name="PROPERTIES_KEYWORD" representation="Properties" />
+    <Command name="CATEGORY_KEYWORD" representation="Category" />
+    <Command name="SUB_SHADER_KEYWORD" representation="SubShader" />
+    <Command name="FALLBACK_KEYWORD" representation="Fallback" />
+    <Command name="CUSTOM_EDITOR_KEYWORD" representation="CustomEditor" />
+    <Command name="DEPENDENCY_KEYWORD" representation="Dependency" />
+  </Commands>
+
+  <PropertyTypeKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="COLOR_KEYWORD" representation="Color" />
+    <Keyword name="FLOAT_KEYWORD" representation="Float" />
+    <Keyword name="INT_KEYWORD" representation="Int" />
+    <Keyword name="RANGE_KEYWORD" representation="Range" />
+    <Keyword name="VECTOR_KEYWORD" representation="Vector" />
+  </PropertyTypeKeywords>
+  
+  <TextureDimensionKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="ANY_KEYWORD" representation="Any" />
+    <Keyword name="CUBE_KEYWORD" representation="Cube" />
+    <Keyword name="CUBE_ARRAY_KEYWORD" representation="CubeArray" />
+    <Keyword name="RECT_KEYWORD" representation="Rect" />
+    <Keyword name="TEXTURE_2D_KEYWORD" representation="2D" />
+    <Keyword name="TEXTURE_2D_ARRAY_KEYWORD" representation="2DArray" />
+    <Keyword name="TEXTURE_3D_KEYWORD" representation="3D" />
+  </TextureDimensionKeywords>
+
+  <SubShaderCommands NodeType="KeywordTokenNodeType">
+    <Command name="TAGS_KEYWORD" representation="Tags" />
+    <Command name="PASS_KEYWORD" representation="Pass" />
+    <Command name="USEPASS_KEYWORD" representation="UsePass" />
+    <Command name="GRABPASS_KEYWORD" representation="GrabPass" />
+  </SubShaderCommands>
+
+  <RenderStateCommands NodeType="KeywordTokenNodeType">
+    <Command name="CULL_KEYWORD" representation="Cull" />
+    <Command name="ZCLIP_KEYWORD" representation="ZClip" />
+    <Command name="ZTEST_KEYWORD" representation="ZTest" />
+    <Command name="ZWRITE_KEYWORD" representation="ZWrite" />
+    <Command name="OFFSET_KEYWORD" representation="Offset" />
+    <Command name="BLEND_KEYWORD" representation="Blend" />
+    <Command name="BLEND_OP_KEYWORD" representation="BlendOp" />
+    <Command name="ALPHA_TO_MASK_KEYWORD" representation="AlphaToMask" />
+    <Command name="COLOR_MASK_KEYWORD" representation="ColorMask" />
+    <Command name="STENCIL_KEYWORD" representation="Stencil" />
+    <Command name="NAME_KEYWORD" representation="Name" />
+    <Command name="LOD_KEYWORD" representation="LOD" />
+    <Command name="BIND_CHANNELS_KEYWORD" representation="BindChannels" />
+  </RenderStateCommands>
+  
+  <CullOrientationKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="BACK_KEYWORD" representation="Back" />
+    <Keyword name="FRONT_KEYWORD" representation="Front" />
+  </CullOrientationKeywords>
+
+  <LegacyFixedFunctionCommands NodeType="KeywordTokenNodeType">
+    <Command name="LIGHTING_KEYWORD" representation="Lighting" />
+    <Command name="MATERIAL_KEYWORD" representation="Material" />
+    <Command name="SEPARATE_SPECULAR_KEYWORD" representation="SeparateSpecular" />
+    <Command name="COLOR_MATERIAL_KEYWORD" representation="ColorMaterial" />
+    <Command name="FOG_KEYWORD" representation="Fog" />
+    <Command name="ALPHA_TEST_KEYWORD" representation="AlphaTest" />
+    <Command name="SET_TEXTURE_KEYWORD" representation="SetTexture" />
+  </LegacyFixedFunctionCommands>
+
+  <LegacyMaterialCommands NodeType="KeywordTokenNodeType">
+    <Command name="DIFFUSE_KEYWORD" representation="Diffuse" />
+    <Command name="AMBIENT_KEYWORD" representation="Ambient" />
+    <Command name="SPECULAR_KEYWORD" representation="Specular" />
+    <Command name="SHININESS_KEYWORD" representation="Shininess" />
+  </LegacyMaterialCommands>
+
+  <LegacyTextureCommands NodeType="KeywordTokenNodeType">
+    <Keyword name="COMBINE_KEYWORD" representation="Combine" />
+    <Keyword name="CONSTANT_COLOR_KEYWORD" representation="ConstantColor" />
+    <Keyword name="MATRIX_KEYWORD" representation="Matrix" />
+    <Keyword name="LIGHTMAP_MODE_KEYWORD" representation="LightmapMode" />
+    <Keyword name="TEX_GEN_KEYWORD" representation="TexGen" />
+  </LegacyTextureCommands>
+
+  <LegacyTextureCombinerKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="PREVIOUS_KEYWORD" representation="Previous" />
+    <Keyword name="PRIMARY_KEYWORD" representation="Primary" />
+    <Keyword name="TEXTURE_KEYWORD" representation="Texture" />
+    <Keyword name="CONSTANT_KEYWORD" representation="Constant" />
+    <Keyword name="DOUBLE_KEYWORD" representation="Double" />
+    <Keyword name="QUAD_KEYWORD" representation="Quad" />
+    <Keyword name="LERP_KEYWORD" representation="Lerp" />
+    <Keyword name="ONE_KEYWORD" representation="One" />
+    <Keyword name="ALPHA_KEYWORD" representation="Alpha" />
+    <Keyword name="DOT3_KEYWORD" representation="Dot3" />
+    <Keyword name="DOT3RGBA_KEYWORD" representation="Dot3Rgba" />
+  </LegacyTextureCombinerKeywords>
+
+  <LegacyTexGenModeKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="SPHERE_MAP_KEYWORD" representation="SphereMap" />
+    <Keyword name="EYE_LINEAR_KEYWORD" representation="EyeLinear" />
+    <Keyword name="CUBE_REFLECT_KEYWORD" representation="CubeReflect" />
+    <Keyword name="CUBE_NORMAL_KEYWORD" representation="CubeNormal" />
+    <Keyword name="OBJECT_LINEAR_KEYWORD" representation="ObjectLinear" />
+  </LegacyTexGenModeKeywords>
+
+  <LegacyBindChannelsCommands NodeType="KeywordTokenNodeType">
+    <Command name="BIND_KEYWORD" representation="Bind" />
+  </LegacyBindChannelsCommands>
+
+  <ColorMaterialKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="AMBIENT_AND_DIFFUSE_KEYWORD" representation="AmbientAndDiffuse" />
+    <Keyword name="EMISSION_KEYWORD" representation="Emission" />
+  </ColorMaterialKeywords>
+
+  <LegacyFogCommands NodeType="KeywordTokenNodeType">
+    <Command name="MODE_KEYWORD" representation="Mode" />
+    <Command name="DENSITY_KEYWORD" representation="Density" />
+  </LegacyFogCommands>
+
+  <FogModeKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="GLOBAL_KEYWORD" representation="Global" />
+    <Keyword name="LINEAR_KEYWORD" representation="Linear" />
+    <Keyword name="EXP_KEYWORD" representation="Exp" />
+    <Keyword name="EXP2_KEYWORD" representation="Exp2" />
+  </FogModeKeywords>
+
+  <StencilCommands NodeType="KeywordTokenNodeType">
+    <Command name="REF_KEYWORD" representation="Ref" />
+    <Command name="READ_MASK_KEYWORD" representation="ReadMask" />
+    <Command name="WRITE_MASK_KEYWORD" representation="WriteMask" />
+    <Command name="PASS_FRONT_KEYWORD" representation="PassFront" />
+    <Command name="PASS_BACK_KEYWORD" representation="PassBack" />
+    <Command name="COMP_KEYWORD" representation="Comp" />
+    <Command name="COMP_FRONT_KEYWORD" representation="CompFront" />
+    <Command name="COMP_BACK_KEYWORD" representation="CompBack" />
+    <Command name="FAIL_KEYWORD" representation="Fail" />
+    <Command name="FAIL_FRONT_KEYWORD" representation="FailFront" />
+    <Command name="FAIL_BACK_KEYWORD" representation="FailBack" />
+    <Command name="ZFAIL_KEYWORD" representation="ZFail" />
+    <Command name="ZFAIL_FRONT_KEYWORD" representation="ZFailFront" />
+    <Command name="ZFAIL_BACK_KEYWORD" representation="ZFailBack" />
+  </StencilCommands>
+
+  <ComparisonFunctionKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="GREATER_KEYWORD" representation="Greater" />
+    <Keyword name="GEQUAL_KEYWORD" representation="GEqual" />
+    <Keyword name="LESS_KEYWORD" representation="Less" />
+    <Keyword name="LEQUAL_KEYWORD" representation="LEqual" />
+    <Keyword name="EQUAL_KEYWORD" representation="Equal" />
+    <Keyword name="NOT_EQUAL_KEYWORD" representation="NotEqual" />
+    <Keyword name="ALWAYS_KEYWORD" representation="Always" />
+    <Keyword name="NEVER_KEYWORD" representation="Never" />
+  </ComparisonFunctionKeywords>
+
+  <StencilOperationKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="KEEP_KEYWORD" representation="Keep" />
+    <Keyword name="ZERO_KEYWORD" representation="Zero" />
+    <Keyword name="REPLACE_KEYWORD" representation="Replace" />
+    <Keyword name="INCR_SAT_KEYWORD" representation="IncrSat" />
+    <Keyword name="DECR_SAT_KEYWORD" representation="DecrSat" />
+    <Keyword name="INVERT_KEYWORD" representation="Invert" />
+    <Keyword name="INCR_WRAP_KEYWORD" representation="IncrWrap" />
+    <Keyword name="DECR_WRAP_KEYWORD" representation="DecrWrap" />
+  </StencilOperationKeywords>
+
+  <BoolKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="TRUE_KEYWORD" representation="True" />
+    <Keyword name="FALSE_KEYWORD" representation="False" />
+    <Keyword name="ON_KEYWORD" representation="On" />
+    <Keyword name="OFF_KEYWORD" representation="Off" />
+  </BoolKeywords>
+</ShaderLabTokens>
