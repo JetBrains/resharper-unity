@@ -121,7 +121,7 @@ namespace Plugins.Editor.JetBrains
     private const string UNITY_DEFINE_KEYWORD = "-define:";
 #if UNITY_5_5_OR_NEWER
     private const string PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "mcs.rsp";
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
+    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
 #endif
     private const string PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "smcs.rsp";
     private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
