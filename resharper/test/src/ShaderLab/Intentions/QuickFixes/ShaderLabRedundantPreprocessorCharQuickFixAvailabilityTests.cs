@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Intentions.QuickFixe
     [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
     public class ShaderLabRedundantPreprocessorCharQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\ShaderLabRedundantPreprocessorChar\Availability";
+        protected override string RelativeTestDataPath=> @"ShaderLab\Intentions\QuickFixes\ShaderLabRedundantPreprocessorChar\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
     }
@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Intentions.QuickFixe
     [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
     public class ShaderLabRedundantPreprocessorCharQuickFixQuickFixTests : CSharpQuickFixTestBase<ShaderLabRedundantPreprocessorCharQuickFix>
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\ShaderLabRedundantPreprocessorChar";
+        protected override string RelativeTestDataPath=> @"ShaderLab\Intentions\QuickFixes\ShaderLabRedundantPreprocessorChar";
 
         [Test] public void Test01() { DoNamedTest(); }
     }

@@ -8,7 +8,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon.ContextHighli
     [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
     public class ShaderLabMatchingBracesTest : ContextHighlighterTestBase
     {
-        protected override string ExtraPath => @"Braces\ShaderLab";
+        protected override string RelativeTestDataPath => @"ShaderLab\" + base.RelativeTestDataPath;
+        protected override string ExtraPath => @"Braces";
 
         [Test] public void TestBraces01() { DoNamedTest2(); }
         [Test] public void TestBraces02() { DoNamedTest2(); }

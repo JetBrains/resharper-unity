@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Feature.Services.Com
     [TestFixture]
     public class ShaderLabCommentActionTests : ExecuteActionTestBase
     {
-        protected override string RelativeTestDataPath => @"comment";
+        protected override string RelativeTestDataPath => @"ShaderLab\Comment";
 
         [Test] public void TestLineComment() { DoNamedTest2(); }
         [Test] public void TestLineUncomment() { DoNamedTest2(); }

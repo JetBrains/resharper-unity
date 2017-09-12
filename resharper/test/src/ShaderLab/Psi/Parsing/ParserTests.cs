@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
     [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
     public class ParserTests : ParserTestBase<ShaderLabLanguage>
     {
-        protected override string RelativeTestDataPath => @"psi\shaderLab\parsing";
+        protected override string RelativeTestDataPath => @"ShaderLab\Psi\Parsing";
 
         [TestCase("First")]
 

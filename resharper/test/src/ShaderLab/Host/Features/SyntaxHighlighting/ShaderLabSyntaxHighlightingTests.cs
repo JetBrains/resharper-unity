@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Host.Features.Syntax
     [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
     public class ShaderLabSyntaxHighlightingTests : ShaderLabHighlightingTestBase
     {
-        protected override string RelativeTestDataPath => @"syntaxHighlighting\shaderlab";
+        protected override string RelativeTestDataPath => @"ShaderLab\SyntaxHighlighting";
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
         {

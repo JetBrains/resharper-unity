@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
     public abstract class ThirdPartyShaderTests : BaseTestWithSingleProject
     {
         // NOTE: Requires downloading the built in shaders from Unity
-        protected override string RelativeTestDataPath => @"psi\shaderLab\parsing\external\" + ShaderFolderName;
+        protected override string RelativeTestDataPath => @"ShaderLab\Psi\Parsing\External\" + ShaderFolderName;
         protected abstract string ShaderFolderName { get; }
 
         [TestCaseSource(nameof(ThirdPartyShadersSource))]

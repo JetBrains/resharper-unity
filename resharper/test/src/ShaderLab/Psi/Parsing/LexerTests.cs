@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
     [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
     public class LexerTests : LexerTestBase
     {
-        protected override string RelativeTestDataPath => @"psi\shaderLab\lexing";
+        protected override string RelativeTestDataPath => @"ShaderLab\Psi\Lexing";
 
         protected override ILexer CreateLexer(StreamReader sr)
         {

@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Host.Features.Foldin
     [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
     public class ShaderLabFoldingTests : ShaderLabHighlightingTestBase
     {
-        protected override string RelativeTestDataPath => @"foldings\shaderlab";
+        protected override string RelativeTestDataPath => @"ShaderLab\Foldings";
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
         {
