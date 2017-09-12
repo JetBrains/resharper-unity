@@ -51,6 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("GlslProgram")]
         [TestCase("UnterminatedString")]
         [TestCase("UnterminatedComment")]
+        [TestCase("UnterminatedComment2")]
         [TestCase("UnterminatedCgInclude")]
         [TestCase("UnterminatedCgProgram")]
         [TestCase("UnterminatedHlslInclude")]
@@ -58,6 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.ShaderLab.Parsing
         [TestCase("UnterminatedGlslInclude")]
         [TestCase("UnterminatedGlslProgram")]
         [TestCase("MultilineComment")]
+        [TestCase("MismatchedMultilineComment")]
         [TestCase("Float")]
         public void TestLexer(string name) => DoOneTest(name);
     }

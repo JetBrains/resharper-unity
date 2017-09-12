@@ -8,7 +8,7 @@
     |SubShXXXader
     {
         Pass
-        {
+        {|(0)
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -30,7 +30,7 @@
             {
                 return _Color; // just return it
             }
-            ENDCG|(0)
+            ENDCG
         }
     |}
 }|(1)

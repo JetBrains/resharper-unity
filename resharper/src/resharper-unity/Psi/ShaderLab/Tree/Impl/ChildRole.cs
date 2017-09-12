@@ -6,9 +6,10 @@
         public const short SHADER_LAB_COMMAND = 1;
         public const short SHADER_LAB_KEYWORD = 2;
         public const short SHADER_LAB_VALUE = 3;
-        public const short SHADER_LAB_IDENTIFIER = 4;
-        public const short SHADER_LAB_NAME = 5;
-        public const short SHADER_LAB_REFERENCE = 6;
+        public const short SHADER_LAB_CONSTANT = 4;
+        public const short SHADER_LAB_IDENTIFIER = 5;
+        public const short SHADER_LAB_NAME = 6;
+        public const short SHADER_LAB_REFERENCE = 7;
         public const short LAST = 100;
     }
 }

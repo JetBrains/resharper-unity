@@ -48,10 +48,7 @@ NOT_ASTERISK=[^{ASTERISK}]
 ASTERISKS={ASTERISK}+
 
 SINGLE_LINE_COMMENT=({SLASH}{SLASH}{INPUT_CHARACTER}*)
-NOT_ASTERISK_OR_SLASH=[^{ASTERISK}{SLASH}]
-COMMENT_CONTENT=({NOT_ASTERISK}|({ASTERISKS}{NOT_ASTERISK_OR_SLASH}))
-UNFINISHED_DELIMITED_COMMENT={SLASH}{ASTERISK}{COMMENT_CONTENT}*
-DELIMITED_COMMENT={UNFINISHED_DELIMITED_COMMENT}{ASTERISKS}{SLASH}
+MULTI_LINE_COMMENT_START={SLASH}{ASTERISK}
 
 MINUS="-"
 DOT="."
@@ -100,6 +97,8 @@ PP_DIGITS={DECIMAL_DIGIT}(({WHITESPACE})*{DECIMAL_DIGIT})*
 <YYINITIAL,PARENS>          ","                 { return ShaderLabTokenType.COMMA; }
 <YYINITIAL>     "."                             { return ShaderLabTokenType.DOT; }
 <YYINITIAL>     "+"                             { return ShaderLabTokenType.PLUS; }
+<YYINITIAL>     "-"                             { return ShaderLabTokenType.MINUS; }
+<YYINITIAL>     "+-"                            { return ShaderLabTokenType.PLUS_MINUS; }
 <YYINITIAL>     "*"                             { return ShaderLabTokenType.MULTIPLY; }
 <YYINITIAL>     "{"                             { return ShaderLabTokenType.LBRACE; }
 <YYINITIAL>     "}"                             { return ShaderLabTokenType.RBRACE; }
@@ -140,8 +139,7 @@ PP_DIGITS={DECIMAL_DIGIT}(({WHITESPACE})*{DECIMAL_DIGIT})*
 <YYINITIAL,BRACKETS>        {UNFINISHED_STRING_LITERAL} { return ShaderLabTokenType.STRING_LITERAL; }
 
 <YYINITIAL>     {SINGLE_LINE_COMMENT}           { return ShaderLabTokenType.END_OF_LINE_COMMENT; }
-<YYINITIAL>     {DELIMITED_COMMENT}             { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
-<YYINITIAL>     {UNFINISHED_DELIMITED_COMMENT}  { return ShaderLabTokenType.MULTI_LINE_COMMENT; }
+<YYINITIAL>     {MULTI_LINE_COMMENT_START}      { return HandleNestedMultiLineComment(); }
 
 <YYINITIAL,BRACKETS,PARENS> {IDENTIFIER}        { return FindKeywordByCurrentToken() ?? ShaderLabTokenType.IDENTIFIER; }
 

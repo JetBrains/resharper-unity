@@ -100,6 +100,23 @@
 //   also check this follow set when skipping tokens after an error
 // `stubBase="Foo"` - use `Foo` as the base class for the generated element instance. Overrides
 //   `psiStubsBaseClass` global option
+// `customVisit`
+// `customNavigator`
+// `customConstructor`
+// `customToString`
+// `interfaceName`
+// `elementType`
+// `elementTypeSet`
+// `stubBase`
+// `fakeStub`
+// `result`
+// `multilevel`
+// `interfaceBaseName`
+// `customFollows`
+// `hasSemanticInterface`
+// `noInterface`
+// `expectedSymbol`
+// `overrideGetters`
 //
 // Rules:
 //
@@ -129,8 +146,17 @@
 // qualifiedValue[id] and the parameter must be part of the nonterminal declaration, e.g. qualifiedValue[identifier id]
 // where the first part is the token type and the second is the name. Multiple parameters can be sepcified,
 // separated by commas. The captured element is used in the rules with an ampersand, and can have normal
-// role definitions, e.g. &id or &id<IDENTIFIER, Identifier>. A rule may also pass null 
-
+// role definitions, e.g. &id or &id<IDENTIFIER, Identifier>. A rule may also pass null
+//
+// nonterminal({ROLE, Getter})*
+//
+// Allows declaring a private nonterminal (that's expanded inline) without having to specify the roles and
+// getter names up front. Can be specified multiple times. Referenced in the rules with `@`. E.g.:
+//
+//     private theThing{ROLE, Getter}
+//     :
+//       MY_KEYWORD{@ROLE, @Getter}
+//     ;
 
 
 // The Tao of Error Handling
@@ -202,7 +228,7 @@ options {
 }
 :
   IDENTIFIER?
-  
+
   | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
 
   | CG_PROGRAM | CG_INCLUDE | CG_END
@@ -222,6 +248,7 @@ options {
   | PLUS
   | MINUS
   | MULTIPLY
+  | PLUS_MINUS
 
   | SHADER_KEYWORD
   | PROPERTIES_KEYWORD
@@ -232,14 +259,18 @@ options {
   | DEPENDENCY_KEYWORD
 
   | COLOR_KEYWORD
-  | CUBE_KEYWORD
   | FLOAT_KEYWORD
   | INT_KEYWORD
   | RANGE_KEYWORD
-  | TEXTURE_2D_KEYWORD
-  | TEXTURE_3D_KEYWORD
   | VECTOR_KEYWORD
+
   | ANY_KEYWORD
+  | CUBE_KEYWORD
+  | CUBE_ARRAY_KEYWORD
+  | RECT_KEYWORD
+  | TEXTURE_2D_KEYWORD
+  | TEXTURE_2D_ARRAY_KEYWORD
+  | TEXTURE_3D_KEYWORD
 
   | TAGS_KEYWORD
   | PASS_KEYWORD
@@ -247,6 +278,7 @@ options {
   | GRABPASS_KEYWORD
 
   | CULL_KEYWORD
+  | ZCLIP_KEYWORD
   | ZTEST_KEYWORD
   | ZWRITE_KEYWORD
   | OFFSET_KEYWORD
@@ -259,6 +291,9 @@ options {
   | LOD_KEYWORD
   | BIND_CHANNELS_KEYWORD
 
+  | BACK_KEYWORD
+  | FRONT_KEYWORD
+
   | LIGHTING_KEYWORD
   | MATERIAL_KEYWORD
   | SEPARATE_SPECULAR_KEYWORD
@@ -266,7 +301,6 @@ options {
   | FOG_KEYWORD
   | ALPHA_TEST_KEYWORD
   | SET_TEXTURE_KEYWORD
-  | MATRIX_KEYWORD
 
   | DIFFUSE_KEYWORD
   | AMBIENT_KEYWORD
@@ -275,6 +309,9 @@ options {
 
   | COMBINE_KEYWORD
   | CONSTANT_COLOR_KEYWORD
+  | MATRIX_KEYWORD
+  | LIGHTMAP_MODE_KEYWORD
+  | TEX_GEN_KEYWORD
 
   | PREVIOUS_KEYWORD
   | PRIMARY_KEYWORD
@@ -285,6 +322,14 @@ options {
   | LERP_KEYWORD
   | ONE_KEYWORD
   | ALPHA_KEYWORD
+  | DOT3_KEYWORD
+  | DOT3RGBA_KEYWORD
+
+  | SPHERE_MAP_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
 
   | BIND_KEYWORD
 
@@ -333,18 +378,9 @@ options {
   | DECR_WRAP_KEYWORD
 
   | TRUE_KEYWORD
+  | FALSE_KEYWORD
   | ON_KEYWORD
   | OFF_KEYWORD
-  | BACK_KEYWORD
-  | FRONT_KEYWORD
-  | LIGHTMAP_MODE_KEYWORD
-  | TEXGEN_KEYWORD
-
-  | CUBE_REFLECT_KEYWORD
-  | CUBE_NORMAL_KEYWORD
-  | OBJECT_LINEAR_KEYWORD
-  | EYE_LINEAR_KEYWORD
-  | SPHERE_MAP_KEYWORD
 
   | BAD_CHARACTER
 ;
@@ -356,7 +392,7 @@ options {
 }
 :
   IDENTIFIER?
-  
+
   | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
 
   | CG_PROGRAM | CG_INCLUDE | CG_END
@@ -375,6 +411,7 @@ options {
   | PLUS
   | MINUS
   | MULTIPLY
+  | PLUS_MINUS
 
   | SHADER_KEYWORD
   | PROPERTIES_KEYWORD
@@ -385,14 +422,18 @@ options {
   | DEPENDENCY_KEYWORD
 
   | COLOR_KEYWORD
-  | CUBE_KEYWORD
   | FLOAT_KEYWORD
   | INT_KEYWORD
   | RANGE_KEYWORD
-  | TEXTURE_2D_KEYWORD
-  | TEXTURE_3D_KEYWORD
   | VECTOR_KEYWORD
+
   | ANY_KEYWORD
+  | CUBE_KEYWORD
+  | CUBE_ARRAY_KEYWORD
+  | RECT_KEYWORD
+  | TEXTURE_2D_KEYWORD
+  | TEXTURE_2D_ARRAY_KEYWORD
+  | TEXTURE_3D_KEYWORD
 
   | TAGS_KEYWORD
   | PASS_KEYWORD
@@ -400,6 +441,7 @@ options {
   | GRABPASS_KEYWORD
 
   | CULL_KEYWORD
+  | ZCLIP_KEYWORD
   | ZTEST_KEYWORD
   | ZWRITE_KEYWORD
   | OFFSET_KEYWORD
@@ -419,7 +461,6 @@ options {
   | FOG_KEYWORD
   | ALPHA_TEST_KEYWORD
   | SET_TEXTURE_KEYWORD
-  | MATRIX_KEYWORD
 
   | DIFFUSE_KEYWORD
   | AMBIENT_KEYWORD
@@ -428,6 +469,9 @@ options {
 
   | COMBINE_KEYWORD
   | CONSTANT_COLOR_KEYWORD
+  | MATRIX_KEYWORD
+  | LIGHTMAP_MODE_KEYWORD
+  | TEX_GEN_KEYWORD
 
   | PREVIOUS_KEYWORD
   | PRIMARY_KEYWORD
@@ -438,6 +482,14 @@ options {
   | LERP_KEYWORD
   | ONE_KEYWORD
   | ALPHA_KEYWORD
+  | DOT3_KEYWORD
+  | DOT3RGBA_KEYWORD
+
+  | SPHERE_MAP_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
 
   | BIND_KEYWORD
 
@@ -486,18 +538,9 @@ options {
   | DECR_WRAP_KEYWORD
 
   | TRUE_KEYWORD
+  | FALSE_KEYWORD
   | ON_KEYWORD
   | OFF_KEYWORD
-  | BACK_KEYWORD
-  | FRONT_KEYWORD
-  | LIGHTMAP_MODE_KEYWORD
-  | TEXGEN_KEYWORD
-
-  | CUBE_REFLECT_KEYWORD
-  | CUBE_NORMAL_KEYWORD
-  | OBJECT_LINEAR_KEYWORD
-  | EYE_LINEAR_KEYWORD
-  | SPHERE_MAP_KEYWORD
 
   | BAD_CHARACTER
 ;
@@ -536,14 +579,18 @@ options {
   | DEPENDENCY_KEYWORD
 
   | COLOR_KEYWORD
-  | CUBE_KEYWORD
   | FLOAT_KEYWORD
   | INT_KEYWORD
   | RANGE_KEYWORD
-  | TEXTURE_2D_KEYWORD
-  | TEXTURE_3D_KEYWORD
   | VECTOR_KEYWORD
+
   | ANY_KEYWORD
+  | CUBE_KEYWORD
+  | CUBE_ARRAY_KEYWORD
+  | RECT_KEYWORD
+  | TEXTURE_2D_KEYWORD
+  | TEXTURE_2D_ARRAY_KEYWORD
+  | TEXTURE_3D_KEYWORD
 
   | TAGS_KEYWORD
   | PASS_KEYWORD
@@ -551,6 +598,7 @@ options {
   | GRABPASS_KEYWORD
 
   | CULL_KEYWORD
+  | ZCLIP_KEYWORD
   | ZTEST_KEYWORD
   | ZWRITE_KEYWORD
   | OFFSET_KEYWORD
@@ -563,6 +611,9 @@ options {
   | LOD_KEYWORD
   | BIND_CHANNELS_KEYWORD
 
+  | BACK_KEYWORD
+  | FRONT_KEYWORD
+
   | LIGHTING_KEYWORD
   | MATERIAL_KEYWORD
   | SEPARATE_SPECULAR_KEYWORD
@@ -570,7 +621,6 @@ options {
   | FOG_KEYWORD
   | ALPHA_TEST_KEYWORD
   | SET_TEXTURE_KEYWORD
-  | MATRIX_KEYWORD
 
   | DIFFUSE_KEYWORD
   | AMBIENT_KEYWORD
@@ -579,6 +629,9 @@ options {
 
   | COMBINE_KEYWORD
   | CONSTANT_COLOR_KEYWORD
+  | MATRIX_KEYWORD
+  | LIGHTMAP_MODE_KEYWORD
+  | TEX_GEN_KEYWORD
 
   | PREVIOUS_KEYWORD
   | PRIMARY_KEYWORD
@@ -589,6 +642,14 @@ options {
   | LERP_KEYWORD
   | ONE_KEYWORD
   | ALPHA_KEYWORD
+  | DOT3_KEYWORD
+  | DOT3RGBA_KEYWORD
+
+  | SPHERE_MAP_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
 
   | BIND_KEYWORD
 
@@ -637,19 +698,85 @@ options {
   | DECR_WRAP_KEYWORD
 
   | TRUE_KEYWORD
+  | FALSE_KEYWORD
   | ON_KEYWORD
   | OFF_KEYWORD
-  | BACK_KEYWORD
-  | FRONT_KEYWORD
-  | LIGHTMAP_MODE_KEYWORD
-  | TEXGEN_KEYWORD
-
-  | CUBE_REFLECT_KEYWORD
-  | CUBE_NORMAL_KEYWORD
-  | OBJECT_LINEAR_KEYWORD
-  | EYE_LINEAR_KEYWORD
-  | SPHERE_MAP_KEYWORD
 ;
+
+
+
+// **************************************************************************
+//
+// Values
+//
+// **************************************************************************
+
+private trueLiteral{ROLE, Getter}
+:
+  TRUE_KEYWORD<@ROLE, @Getter>
+  | ON_KEYWORD<@ROLE, @Getter>
+;
+
+private falseLiteral{ROLE, Getter}
+:
+  FALSE_KEYWORD<@ROLE, @Getter>
+  | OFF_KEYWORD<@ROLE, @Getter>
+;
+
+boolLiteral
+:
+  trueLiteral{SHADER_LAB_KEYWORD, Keyword}
+  | falseLiteral{SHADER_LAB_KEYWORD, Keyword}
+;
+
+colorLiteral
+:
+  LPAREN<LPAREN, LParen>
+  colorLiteralValues
+  RPAREN<RPAREN, RParen>
+;
+
+// Private and error handling to allow resync on colorLiteralValue::RPAREN
+private errorhandling colorLiteralValues
+:
+  LIST numericValue<Number, Numbers> SEP COMMA<COMMA, Comma>
+;
+
+variableReference
+:
+  LBRACK<LBRACK, LBRack>
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  RBRACK<RBRACK, RBrack>
+;
+
+interface value
+:
+  numericValue
+  | colorValue
+  | boolValue
+;
+
+boolValue
+:
+  TRUE_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | ON_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | FALSE_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | OFF_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+numericValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_CONSTANT, Constant>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+colorValue
+:
+  colorLiteral<SHADER_LAB_CONSTANT, Constant>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
 
 
 // **************************************************************************
@@ -703,7 +830,7 @@ ppLineDirective
   PP_DIGITS<PP_DIGITS, Digits>?
   WHITESPACE*
   // The #line directive keeps reading until it's out of digits, but that last non-digit
-  // character (usually a new line) gets swallowed. We can track it and warn 
+  // character (usually a new line) gets swallowed. We can track it and warn
   PP_SWALLOWED<PP_SWALLOWED, Swallowed>?
 ;
 
@@ -721,6 +848,7 @@ errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
 ;
 
 
+// Identify commands that have block values. Used for brace matching and folding
 interface blockCommand
 :
   shaderCommand
@@ -739,6 +867,7 @@ interface blockValue
 :
   shaderValue
   | propertiesValue
+  | texturePropertyValue
   | categoryValue
   | subShaderValue
   | tagsValue
@@ -747,6 +876,8 @@ interface blockValue
   | setTextureValue
   | fogValue
   | bindChannelsValue
+  | grabPassValue
+  | texturePassValue
 ;
 
 
@@ -767,10 +898,17 @@ shaderValue
   shaderValueName
   LBRACE<LBRACE, LBrace>
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
-  categoryCommand<CATEGORY_COMMAND, CategoryCommand>?
-  subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>*
-  shaderContents*
+  shaderBlock<SHADER_BLOCK, ShaderBlocks>*
   RBRACE<RBRACE, RBrace>
+;
+
+shaderBlock
+:
+  categoryCommand<CATEGORY_COMMAND, CategoryCommand>
+  | subShaderCommand<SUBSHADER_COMMAND, SubShaderCommand>
+  | fallbackCommand<FALLBACK_COMMAND, FallbackCommands>
+  | dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>
+  | customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommands>
 ;
 
 // Errorhandling to resync on next following token - LBRACE
@@ -780,12 +918,6 @@ private errorhandling shaderValueName
   STRING_LITERAL<SHADER_LAB_NAME, Name>
 ;
 
-private shaderContents
-:
-  fallbackCommand<FALLBACK_COMMAND, FallbackCommands>
-  | customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommands>
-  | dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>
-;
 
 
 // **************************************************************************
@@ -849,19 +981,21 @@ private propertyParameters
 interface propertyType
 :
   simplePropertyType
+  | textureDimensionPropertyType
   | rangePropertyType
 ;
 
 simplePropertyType
 :
   COLOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | CUBE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
   | FLOAT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | INT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | TEXTURE_2D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | TEXTURE_3D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | INT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>    // Note, treated same as FLOAT_KEYWORD
   | VECTOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | ANY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>    // TODO: This is not documented, but used in builtin shaders (e.g. Internal-BlitCopy.shader)
+;
+
+textureDimensionPropertyType
+:
+  textureDimensionKeyword
 ;
 
 // Errorhandling to allow resync on RPAREN in propertyParameters
@@ -878,7 +1012,7 @@ errorhandling rangePropertyType
 interface propertyValue
 :
   scalarPropertyValue
-  | vectorPropertyValue
+  | colorPropertyValue
   | texturePropertyValue
   | errorPropertyValue
 ;
@@ -888,55 +1022,78 @@ scalarPropertyValue
   NUMERIC_LITERAL<SHADER_LAB_VALUE, Number>
 ;
 
-vectorPropertyValue
+colorPropertyValue
 :
-  LPAREN<LPAREN, LParen>
-  vectorPropertyValues
-  RPAREN<RPAREN, RParen>
-;
-
-// Private and error handling to allow resync on vectorPropertyValue::RPAREN
-private errorhandling vectorPropertyValues
-:
-  LIST numericValue<Number, Numbers> SEP COMMA<COMMA, Comma>
+  colorLiteral<SHADER_LAB_VALUE, Color>
 ;
 
 texturePropertyValue
 :
   STRING_LITERAL<SHADER_LAB_NAME, Name>
   (
-    LBRACE<LBRACE, LBrace>    
-    (
-      texturePropertyValueTextureDimension
-      | texturePropertyValueTexGen
-      | matrixCommand // Legacy
-      | LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD, LightmapModeKeyword>
-    )?
+    LBRACE<LBRACE, LBrace>
+    texEnvProperty<TEX_ENV_PROPERTY, TexEnvProperty>*
     errorTexturePropertyBlockValues
     RBRACE<RBRACE, RBrace>
   )?
 ;
 
-texturePropertyValueTextureDimension
+interface texEnvProperty
 :
-  TEXTURE_2D_KEYWORD
-  | TEXTURE_3D_KEYWORD
-  | CUBE_KEYWORD
+  textureDimensionTexEnvProperty
+  | texGenTexEnvProperty
+  | matrixTexEnvProperty
+  | lightmapTexEnvProperty
 ;
 
-texturePropertyValueTexGen // Legacy 5.0
+textureDimensionTexEnvProperty
 :
-  TEXGEN_KEYWORD
-  (
-    CUBE_REFLECT_KEYWORD
-    | CUBE_NORMAL_KEYWORD
-    | OBJECT_LINEAR_KEYWORD
-    | EYE_LINEAR_KEYWORD
-    | SPHERE_MAP_KEYWORD
-  )
+  textureDimensionKeyword
 ;
 
-// The spec says there shouldn't be anything here. Use a custom parse function to eat 
+private textureDimensionKeyword
+:
+  TEXTURE_2D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_3D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | CUBE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_2D_ARRAY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | CUBE_ARRAY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | RECT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | ANY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+;
+
+// TODO: Shader compiler error - obsolete
+// "Fixed function TexGen used; it doesn't do anything now"
+texGenTexEnvProperty
+:
+  TEX_GEN_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  texGenMode
+;
+
+private texGenMode
+:
+  SPHERE_MAP_KEYWORD<MODE, Mode>
+  | EYE_LINEAR_KEYWORD<MODE, Mode>
+  | CUBE_REFLECT_KEYWORD<MODE, Mode>
+  | CUBE_NORMAL_KEYWORD<MODE, Mode>
+  | OBJECT_LINEAR_KEYWORD<MODE, Mode>
+;
+
+// TODO: Shader compiler error - obsolete
+// "Fixed function text matrix '...' used; they don't do anything now"
+matrixTexEnvProperty
+:
+  MATRIX_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+// TODO: Does nothing, ignored
+lightmapTexEnvProperty
+:
+  LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD>
+;
+
+// The spec says there shouldn't be anything here. Use a custom parse function to eat
 // everything up to RBRACE
 private abstract errorTexturePropertyBlockValues
 options {
@@ -1028,17 +1185,11 @@ categoryCommand
 categoryValue
 :
   LBRACE<LBRACE, LBrace>
-  categoryContents*
+  stateCommand<STATE_COMMAND, StateCommands>*
+  shaderBlock<SHADER_BLOCK, ShaderBlocks>*
   RBRACE<RBRACE, RBrace>
 ;
 
-private categoryContents
-:
-  tagsCommand<TAGS_COMMAND, TagsCommands>
-  | renderStateCommand
-  | legacyRenderStateCommand
-  | subShaderCommand<SUBSHADER_COMMAND, SubShaderCommands>
-;
 
 
 // **************************************************************************
@@ -1057,16 +1208,23 @@ subShaderCommand
 subShaderValue
 :
   LBRACE<LBRACE, LBrace>
-  subShaderContents*
+  pass<PASS, Passes>*
   RBRACE<RBRACE, RBrace>
 ;
 
-private subShaderContents
+pass
 :
-  tagsCommand<TAGS_COMMAND, TagsCommands>
+  stateCommand<STATE_COMMANDS, StateCommands>*
+  // ShaderLab syntax requires at least one Pass definition, but this might
+  // be automatically generated by a CGPROGRAM surface shader
+  passDef<PASSDEF, PassDefinition>?
+;
+
+interface stateCommand
+:
+  tagsCommand
   | renderStateCommand
   | legacyRenderStateCommand
-  | passDef<PASSDEF, PassDefinitions>
 ;
 
 
@@ -1085,24 +1243,32 @@ tagsCommand
 
 tagsValue
 :
-  LBRACE<LBRACE, LBrace>  
-  tagDeclaration<TAG_DECLARATIONS, Declarations>*    
+  LBRACE<LBRACE, LBrace>
+  tagDeclaration<TAG_DECLARATIONS, Declarations>*
   RBRACE<RBRACE, RBrace>
 ;
 
-tagDeclaration
+interface tagDeclaration
 :
-  (
-    STRING_LITERAL<SHADER_LAB_NAME, Name>
-    EQUALS<EQUALS, Equals>
-    STRING_LITERAL<SHADER_LAB_VALUE, Value>
-  )
-  | (
-      shaderLabIdentifier<SHADER_LAB_NAME, Name>  
-      EQUALS<EQUALS, Equals>
-      shaderLabIdentifier<SHADER_LAB_VALUE, Value>  
-    )
+  stringLiteralTagDeclaration
+  | identifierTagDeclaration
 ;
+
+stringLiteralTagDeclaration
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  EQUALS<EQUALS, Equals>
+  STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+identifierTagDeclaration
+:
+  shaderLabIdentifier<SHADER_LAB_NAME, Name>
+  EQUALS<EQUALS, Equals>
+  shaderLabIdentifier<SHADER_LAB_VALUE, Value>
+;
+
+
 
 // **************************************************************************
 //
@@ -1110,59 +1276,39 @@ tagDeclaration
 //
 // **************************************************************************
 
-private renderStateCommand
+interface renderStateCommand
 :
-  cullCommand<SHADER_LAB_COMMAND, Commands>
-  | zwriteCommand<SHADER_LAB_COMMAND, Commands>
-  | ztestCommand<SHADER_LAB_COMMAND, Commands>
-  | offsetCommand<SHADER_LAB_COMMAND, Command>
-  | colorMaskCommand<SHADER_LAB_COMMAND, Commands>
-  // Do these 3 make sense outside of Pass?
-  | blendCommand<SHADER_LAB_COMMAND, Commands>
-  | blendOpCommand<SHADER_LAB_COMMAND, Commands>
-  | alphaToMaskCommand<SHADER_LAB_COMMAND, Commands>
-  | stencilCommand<SHADER_LAB_COMMAND, Commands>
-  | nameCommand<SHADER_LAB_COMMAND, Commands>
-  | lodCommand<SHADER_LAB_COMMAND, Commands>
+  cullCommand
+  | zwriteCommand
+  | ztestCommand
+  | zclipCommand
+  | offsetCommand
+  | colorMaskCommand
+  | blendCommand
+  | blendOpCommand
+  | alphaToMaskCommand
+  | stencilCommand
+  | nameCommand
+  | lodCommand
 ;
 
-private legacyRenderStateCommand
+interface legacyRenderStateCommand
 :
   legacyLightingCommand
-  | legacyTextureCombinersCommand
-  | legacyAlphaTestingCommand
-  | legacyFogCommand
-  | legacyBindChannelsCommand
+  | alphaTestCommand
+  | fogCommand
+  | bindChannelsCommand
 ;
 
-private legacyLightingCommand
+interface legacyLightingCommand
 :
-  colorCommand<SHADER_LAB_COMMAND, Commands>
-  | lightingCommand<SHADER_LAB_COMMAND, Commands>
-  | separateSpecularCommand<SHADER_LAB_COMMAND, Commands>
-  | colorMaterialCommand<SHADER_LAB_COMMAND, Commands>
-  | materialCommand<SHADER_LAB_COMMAND, Commands>
+  colorCommand
+  | lightingCommand
+  | separateSpecularCommand
+  | colorMaterialCommand
+  | materialCommand
 ;
 
-private legacyTextureCombinersCommand
-:
-  setTextureCommand<SHADER_LAB_COMMAND, Commands>
-;
-
-private legacyAlphaTestingCommand
-:
-  alphaTestCommand<SHADER_LAB_COMMAND, Commands>
-;
-
-private legacyFogCommand
-:
-  fogCommand<SHADER_LAB_COMMAND, Commands>
-;
-
-private legacyBindChannelsCommand
-:
-  bindChannelsCommand<SHADER_LAB_COMMAND, Commands>
-;
 
 
 // **************************************************************************
@@ -1181,33 +1327,7 @@ comparisonFunctionValue
   | NOT_EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
   | ALWAYS_KEYWORD<SHADER_LAB_VALUE, Value>
   | NEVER_KEYWORD<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
-;
-
-numericValue
-:
-  NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
-;
-
-colorValue
-:
-  vectorPropertyValue<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
-;
-
-referencedProperty
-:
-  LBRACK<LBRACK, LBRack>
-  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
-  RBRACK<RBRACK, RBrack>
-;
-
-onOffValue
-:
-  ON_KEYWORD<SHADER_LAB_VALUE, Value>
-  | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 
@@ -1225,16 +1345,27 @@ cullCommand
 
 cullValue
 :
-  FRONT_KEYWORD<SHADER_LAB_VALUE, Value>
-  | BACK_KEYWORD<SHADER_LAB_VALUE, Value>
-  | OFF_KEYWORD<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  falseLiteral{FALSE_LITERAL, FalseLiteral}
+  | cullOrientation<ORIENTATION, Orientation>
+;
+
+cullOrientation
+:
+  FRONT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | BACK_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>  // See UnityEngine.Rendering.CullMode for values
 ;
 
 zwriteCommand
 :
   ZWRITE_KEYWORD<SHADER_LAB_KEYWORD, ZWriteKeyword>
-  onOffValue<SHADER_LAB_VALUE, Value>
+  boolValue<SHADER_LAB_VALUE, Value>
+;
+
+zclipCommand
+:
+  ZCLIP_KEYWORD<SHADER_LAB_KEYWORD, ZClipKeyword>
+  boolValue<SHADER_LAB_VALUE, Value>
 ;
 
 ztestCommand
@@ -1245,7 +1376,8 @@ ztestCommand
 
 ztestValue
 :
-  OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+  // True -> LEqual, False -> Disabled (not same as never)
+  boolLiteral<SHADER_LAB_VALUE, Value>
   | comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1270,10 +1402,20 @@ colorMaskCommand
 
 colorMaskValue
 :
-  // RBG, A, 0, any combination of R, G, B, A
-  shaderLabIdentifier<SHADER_LAB_VALUE, Value>
-  | NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  (
+    // Order is important. `False` could get parsed as an identifier
+    falseLiteral{FALSE_LITERAL, FalseLiteral}
+    | colorMaskRgbaFlags<RGBA_FLAGS, RgbaFlags>
+    | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+  )
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
+;
+
+colorMaskRgbaFlags
+:
+  // RGB, A, 0, any combination of R, G, B, A
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  | NUMERIC_LITERAL<ZERO_LITERAL, ZeroLiteral>
 ;
 
 
@@ -1291,13 +1433,13 @@ blendCommand
 
 blendValue
 :
-  OFF_KEYWORD<OFF_KEYWORD, OffKeyword>
+  falseLiteral{FALSE_LITERAL, FalseLiteral}
   | blendValues
 ;
 
 private blendValues
 :
-  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?  // TODO: Can this also be a reference?
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
   blendFactor<SRCFACTOR, SrcFactor>
   blendFactor<DSTFACTOR, DstFactor>
   (
@@ -1310,7 +1452,7 @@ private blendValues
 blendFactor
 :
   shaderLabIdentifier<FACTOR, Factor>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 blendOpCommand
@@ -1322,31 +1464,26 @@ blendOpCommand
 blendOpValue
 :
   NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
-  // Treat Op enum value as an identifier, rather than a keyword
-  (
-    shaderLabIdentifier<OP_COLOR, OpColor>
-    | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
-  )
+  blendOpValueAux{OP_COLOR, OpColor, OP_COLOR_REFERENCE, OpColorReference}
   (
     COMMA<COMMA, Comma>
-    (
-      shaderLabIdentifier<OP_ALPHA, OpAlpha>
-      | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
-    )
-  )? 
+    blendOpValueAux{OP_ALPHA, OpAlpha, OP_ALPHA_REFERENCE, OpAlphaReference}
+  )?
+;
+
+private blendOpValueAux{OP_ROLE, OpGetter, OP_REFERENCE_ROLE, OpReferenceGetter}
+:
+  // TODO: Add keywords for expected op mode?
+  shaderLabIdentifier{@OP_ROLE, @OpGetter}
+  | variableReference{@OP_REFERENCE_ROLE, @OpReferenceGetter}
 ;
 
 alphaToMaskCommand
 :
   ALPHA_TO_MASK_KEYWORD<SHADER_LAB_KEYWORD, AlphaToMaskKeyword>
-  alphaToMaskValue<SHADER_LAB_VALUE, Value>
+  boolValue<SHADER_LAB_VALUE, Value>
 ;
 
-alphaToMaskValue
-:
-  ON_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | TRUE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-;
 
 
 // **************************************************************************
@@ -1365,7 +1502,7 @@ stencilOperation
   | INVERT_KEYWORD<SHADER_LAB_VALUE, Value>
   | INCR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
   | DECR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
-  | referencedProperty<SHADER_LAB_REFERENCE, ReferencedProperty>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 stencilCommand
@@ -1377,27 +1514,27 @@ stencilCommand
 stencilValue
 :
   LBRACE<LBRACE, LBrace>
-  stencilContents*
+  stencilContents{COMMAND, Commands}*
   RBRACE<RBRACE, RBrace>
 ;
 
-private stencilContents
+private stencilContents{ROLE, Getter}
 :
-  refCommand
-  | readMaskCommand
-  | writeMaskCommand
-  | compCommand
-  | compFrontCommand
-  | compBackCommand
-  | passCommand
-  | passFrontCommand
-  | passBackCommand
-  | failCommand
-  | failFrontCommand
-  | failBackCommand
-  | zfailCommand
-  | zfailFrontCommand
-  | zfailBackCommand
+  refCommand{ROLE, Getter}
+  | readMaskCommand{ROLE, Getter}
+  | writeMaskCommand{ROLE, Getter}
+  | compCommand{ROLE, Getter}
+  | compFrontCommand{ROLE, Getter}
+  | compBackCommand{ROLE, Getter}
+  | passCommand{ROLE, Getter}
+  | passFrontCommand{ROLE, Getter}
+  | passBackCommand{ROLE, Getter}
+  | failCommand{ROLE, Getter}
+  | failFrontCommand{ROLE, Getter}
+  | failBackCommand{ROLE, Getter}
+  | zfailCommand{ROLE, Getter}
+  | zfailFrontCommand{ROLE, Getter}
+  | zfailBackCommand{ROLE, Getter}
 ;
 
 refCommand
@@ -1542,13 +1679,13 @@ colorCommand
 lightingCommand
 :
   LIGHTING_KEYWORD<SHADER_LAB_KEYWORD, LightingKeyword>
-  onOffValue<SHADER_LAB_VALUE, Value>
+  boolLiteral<SHADER_LAB_VALUE, Value>
 ;
 
 separateSpecularCommand
 :
   SEPARATE_SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, SeparateSpecularKeyword>
-  onOffValue<SHADER_LAB_VALUE, Value>
+  boolLiteral<SHADER_LAB_VALUE, Value>
 ;
 
 colorMaterialCommand
@@ -1630,18 +1767,34 @@ setTextureCommand
 
 setTextureValue
 :
-  referencedProperty<SHADER_LAB_REFERENCE, TextureName>
-  LBRACE<LBRACE, LBrace>
-  matrixCommand<MATRIX_COMMAND, MatrixCommand>?
-  constantColorCommand<CONSTANT_COLOR_COMMAND, ConstantColorCommand>?
-  combineCommand<COMBINE_COMMAND, CombineCommand>?
-  RBRACE<RBRACE, RBrace>
+  variableReference<SHADER_LAB_REFERENCE, VariableReference>
+  (
+    LBRACE<LBRACE, LBrace>
+    textureBinding<BINDINGS, Bindings>*
+    RBRACE<RBRACE, RBrace>
+  )?
+;
+
+interface textureBinding
+:
+  matrixCommand
+  | constantColorCommand
+  | combineCommand
 ;
 
 matrixCommand
 :
+  // TODO: The only supported value is [unity_LightmapMatrix]
+  // Otherwise compiler error:
+  // "Fixed function texture '{varref}' used; they don't do anything now"
   MATRIX_KEYWORD<SHADER_LAB_KEYWORD, MatrixKeyword>
-  referencedProperty<SHADER_LAB_REFERENCE, Value>
+  variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+constantColorCommand
+:
+  CONSTANT_COLOR_KEYWORD<SHADER_LAB_KEYWORD, ConstantColorKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
 ;
 
 combineCommand
@@ -1652,7 +1805,7 @@ combineCommand
 
 combineValue
 :
-  combineCalculation<DEFAULT_COMBINE_CALCULATION, DefaultCalculation>
+  combineCalculation<DEFAULT_CALCULATION, DefaultCalculation>
   (
     COMMA<COMMA, Comma>
     combineCalculation<ALPHA_CALCULATION, AlphaCalculation>
@@ -1661,15 +1814,21 @@ combineValue
 
 combineCalculation
 :
+  // Both operation and interpolation start with combineSrc, so match it
+  // and pass in so it can be owned by that type, and so we can match on
+  // the second token (operator or `lerp`)
   !(#src1:combineSrc)
   (
     combineOperation<OPERATION, Operation>[src1]
     | combineInterpolation<INTERPOLATION, Interpolation>[src1]
   )
-  (
-    DOUBLE_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
-    | QUAD_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
-  )?
+  brightnessModifier?
+;
+
+private brightnessModifier
+:
+  DOUBLE_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
+  | QUAD_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
 ;
 
 combineOperation[combineSrc src1]
@@ -1690,6 +1849,16 @@ private operator
   PLUS<OPERATOR, Operator>
   | MINUS<OPERATOR, Operator>
   | MULTIPLY<OPERATOR, Operator>
+  | legacyOperator{OPERATOR, Operator}
+;
+
+private legacyOperator{ROLE, Getter}
+:
+  // Compiler errors
+  // "Support for SetTexture combiner '{Operator}' has been removed"
+  PLUS_MINUS{ROLE, Getter}
+  | DOT3_KEYWORD{ROLE, Getter}
+  | DOT3RGBA_KEYWORD{ROLE, Getter}
 ;
 
 combineInterpolation[combineSrc src1]
@@ -1704,7 +1873,7 @@ combineInterpolation[combineSrc src1]
 
 combineSrc
 :
-  ONE_KEYWORD<COLOR_NEGATION_MODIFIER, ColorNegationModifier>?
+  colorNegationModifier<COLOR_NEGATION_MODIFIER, ColorNegationModifier>?
   (
     PREVIOUS_KEYWORD<SRC, Src>
     | PRIMARY_KEYWORD<SRC, Src>
@@ -1714,10 +1883,10 @@ combineSrc
   ALPHA_KEYWORD<ALPHA_CHANNEL_MODIFIER, AlphaChannelModifier>?
 ;
 
-constantColorCommand
+colorNegationModifier
 :
-  CONSTANT_COLOR_KEYWORD<SHADER_LAB_KEYWORD, ConstantColorKeyword>
-  colorValue<SHADER_LAB_VALUE, Value>
+  ONE_KEYWORD<SHADER_LAB_KEYWORD, OneKeyword>
+  MINUS<MINUS, Minus>
 ;
 
 
@@ -1735,8 +1904,16 @@ alphaTestCommand
 
 alphaTestValue
 :
-  OFF_KEYWORD<OFF_KEYWORD, OffKeyword>
+  falseLiteral{SHADER_LAB_KEYWORD, BoolKeyword}
+  | alphaTestLEqualValue
   | alphaTestComparisonValue
+;
+
+private alphaTestLEqualValue
+:
+  // Treated as LEQUAL
+  trueLiteral{SHADER_LAB_KEYWORD, BoolKeyword}
+  numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 private alphaTestComparisonValue
@@ -1830,13 +2007,14 @@ bindChannelsValue
 bindCommand
 :
   BIND_KEYWORD<SHADER_LAB_KEYWORD, BindKeyword>
-  bindValue<SHADER_LAB_VALUE, Values>+
+  bindValue<SHADER_LAB_VALUE, Values>
 ;
 
 bindValue
 :
   STRING_LITERAL<SOURCE, Source>
   COMMA<COMMA, Comma>
+  // TODO: Make these into keywords as channel type?
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Target>
 ;
 
@@ -1853,9 +2031,9 @@ bindValue
 // which allows us to use `errorhandling`. If we don't have this rule, the following
 // token is expected to be null, and then we don't get `errorhandling` and would
 // have to handle thrown syntax errors manually
-errorhandling includeBlockForceFollows
+errorhandling cgBlockForceFollows
 :
-  includeBlock
+  (includeBlock | programBlock)
   (errorElement | WHITESPACE | NEW_LINE)
 ;
 
@@ -1899,7 +2077,7 @@ hlslIncludeBlock
 ;
 
 
-interface programBlock
+errorhandling interface programBlock
 :
   cgProgramBlock
   | glslProgramBlock
@@ -1908,23 +2086,23 @@ interface programBlock
 
 cgProgramBlock
 :
-  CG_PROGRAM<CG_PROGRAM, CgProgram>
-  cgContent<CG_CONTENT, CgContent>
-  CG_END<CG_END, CgEnd>
+  CG_PROGRAM<CG_PROGRAM, Program>
+  cgContent<CG_CONTENT, Content>
+  CG_END<CG_END, End>
 ;
 
 glslProgramBlock
 :
-  GLSL_PROGRAM<GLSL_PROGRAM, GlslProgram>
-  cgContent<GLSL_CONTENT, GlslContent>
-  GLSL_END<GLSL_END, GlslEnd>
+  GLSL_PROGRAM<GLSL_PROGRAM, Program>
+  cgContent<GLSL_CONTENT, Content>
+  GLSL_END<GLSL_END, End>
 ;
 
 hlslProgramBlock
 :
-  HLSL_PROGRAM<HLSL_PROGRAM, HlslProgram>
-  cgContent<HLSL_CONTENT, HlslContent>
-  HLSL_END<HLSL_END, HlslEnd>
+  HLSL_PROGRAM<HLSL_PROGRAM, Program>
+  cgContent<HLSL_CONTENT, Content>
+  HLSL_END<HLSL_END, End>
 ;
 
 cgContent
@@ -1943,10 +2121,7 @@ interface passDef
 :
   usePassDef
   | grabPassDef
-  | regularPassDef
-  | cgProgramPassDef
-  | glslProgramPassDef
-  | hlslProgramPassDef
+  | texturePassDef
 ;
 
 usePassDef
@@ -1980,43 +2155,23 @@ optionalNameCommand
   STRING_LITERAL<SHADER_LAB_NAME, Name>
 ;
 
-cgProgramPassDef
-:
-  cgProgramBlock<CG_PROGRAM, CgProgram>
-;
-
-glslProgramPassDef
-:
-  glslProgramBlock<GLSL_PROGRAM, GlslProgram>
-;
-
-hlslProgramPassDef
-:
-  hlslProgramBlock<HLSL_PROGRAM, HlslProgram>
-;
-
-regularPassDef
+texturePassDef
 :
   PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
-  regularPassValue<SHADER_LAB_VALUE, Value>
+  texturePassValue<SHADER_LAB_VALUE, Value>
 ;
 
-regularPassValue
+texturePassValue
 :
   LBRACE<LBRACE, LBrace>
-  STRING_LITERAL<SHADER_LAB_NAME, Name>?
-  regularPassContents*
+  texturePassContents
   RBRACE<RBRACE, RBrace>
 ;
 
-private regularPassContents
+private texturePassContents
 :
-  tagsCommand<TAG, TagsCommands>
-  | renderStateCommand
-  | legacyRenderStateCommand
-  | cgProgramBlock<CGPROGRAM_BLOCK, CgPrograms>
-  | glslProgramBlock<GLSLPROGRAM_BLOCK, GlslPrograms>
-  | hlslProgramBlock<HLSLPROGRAM_BLOCK, HlslPrograms>
+  stateCommand<STATE_COMMAND, StateCommands>*
+  setTextureCommand<SET_TEXTURE_COMMAND, SetTextureCommands>*
 ;
 
 
@@ -2039,10 +2194,10 @@ fallbackValue
     STRING_LITERAL<SHADER_LAB_NAME, Name>
     (
       COMMA<COMMA, Comma>
-      lodValue<SHADER_LAB_VALUE, Value> // legacy, not actually used by Unity
+      lodValue<SHADER_LAB_VALUE, LodValue> // legacy, not actually used by Unity
     )?
   )
-  | OFF_KEYWORD<SHADER_LAB_KEYWORD, OffKeyword>
+  | falseLiteral{FALSE_LITERAL, FalseLiteral}
   | errorElementWithoutRBrace   // TODO: Will this match `CustomEditor`?
 ;
 

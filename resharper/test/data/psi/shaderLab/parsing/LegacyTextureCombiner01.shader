@@ -13,6 +13,7 @@
             SetTexture [_BlendTex] {
                 combine texture lerp (texture) previous
             }
+            SetTexture [_BlendTex]
         }
     }
 }

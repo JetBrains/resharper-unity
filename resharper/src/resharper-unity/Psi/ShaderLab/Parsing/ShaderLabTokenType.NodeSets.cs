@@ -18,14 +18,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 DEPENDENCY_KEYWORD,
 
                 COLOR_KEYWORD,
-                CUBE_KEYWORD,
                 FLOAT_KEYWORD,
                 INT_KEYWORD,
                 RANGE_KEYWORD,
-                TEXTURE_2D_KEYWORD,
-                TEXTURE_3D_KEYWORD,
                 VECTOR_KEYWORD,
+
                 ANY_KEYWORD,
+                CUBE_KEYWORD,
+                CUBE_ARRAY_KEYWORD,
+                RECT_KEYWORD,
+                TEXTURE_2D_KEYWORD,
+                TEXTURE_2D_ARRAY_KEYWORD,
+                TEXTURE_3D_KEYWORD,
 
                 TAGS_KEYWORD,
                 PASS_KEYWORD,
@@ -33,6 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 GRABPASS_KEYWORD,
 
                 CULL_KEYWORD,
+                ZCLIP_KEYWORD,
                 ZTEST_KEYWORD,
                 ZWRITE_KEYWORD,
                 OFFSET_KEYWORD,
@@ -45,6 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 LOD_KEYWORD,
                 BIND_CHANNELS_KEYWORD,
 
+                BACK_KEYWORD,
+                FRONT_KEYWORD,
+
                 LIGHTING_KEYWORD,
                 MATERIAL_KEYWORD,
                 SEPARATE_SPECULAR_KEYWORD,
@@ -52,7 +60,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 FOG_KEYWORD,
                 ALPHA_TEST_KEYWORD,
                 SET_TEXTURE_KEYWORD,
-                MATRIX_KEYWORD,
 
                 DIFFUSE_KEYWORD,
                 AMBIENT_KEYWORD,
@@ -61,6 +68,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
 
                 COMBINE_KEYWORD,
                 CONSTANT_COLOR_KEYWORD,
+                MATRIX_KEYWORD,
+                LIGHTMAP_MODE_KEYWORD,
+                TEX_GEN_KEYWORD,
 
                 PREVIOUS_KEYWORD,
                 PRIMARY_KEYWORD,
@@ -71,6 +81,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 LERP_KEYWORD,
                 ONE_KEYWORD,
                 ALPHA_KEYWORD,
+                DOT3_KEYWORD,
+                DOT3RGBA_KEYWORD,
+
+                SPHERE_MAP_KEYWORD,
+                EYE_LINEAR_KEYWORD,
+                CUBE_REFLECT_KEYWORD,
+                CUBE_NORMAL_KEYWORD,
+                OBJECT_LINEAR_KEYWORD,
 
                 BIND_KEYWORD,
 
@@ -119,18 +137,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
                 DECR_WRAP_KEYWORD,
 
                 TRUE_KEYWORD,
+                FALSE_KEYWORD,
                 ON_KEYWORD,
-                OFF_KEYWORD,
-                BACK_KEYWORD,
-                FRONT_KEYWORD,
-                LIGHTMAP_MODE_KEYWORD,
-                TEXGEN_KEYWORD,
-                
-                CUBE_REFLECT_KEYWORD,
-                CUBE_NORMAL_KEYWORD,
-                OBJECT_LINEAR_KEYWORD,
-                EYE_LINEAR_KEYWORD,
-                SPHERE_MAP_KEYWORD
+                OFF_KEYWORD
               );
         }
     }

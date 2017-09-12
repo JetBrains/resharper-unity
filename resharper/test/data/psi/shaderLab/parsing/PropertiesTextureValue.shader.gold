@@ -25,7 +25,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTexture2")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -36,7 +36,7 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITexturePropertyValueTextureDimension
+              ITextureDimensionTexEnvProperty
                 ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -50,7 +50,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTexture3")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -61,7 +61,7 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITexturePropertyValueTextureDimension
+              ITextureDimensionTexEnvProperty
                 ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_3D_KEYWORD, text:3D)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -75,7 +75,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureCube")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -86,7 +86,7 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITexturePropertyValueTextureDimension
+              ITextureDimensionTexEnvProperty
                 ShaderLabTokenType+KeywordTokenElement(type:CUBE_KEYWORD, text:Cube)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -102,7 +102,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenCubeReflect")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -113,8 +113,8 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITexturePropertyValueTexGen
-                ShaderLabTokenType+KeywordTokenElement(type:TEXGEN_KEYWORD, text:TexGen)
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TexGen)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ShaderLabTokenType+KeywordTokenElement(type:CUBE_REFLECT_KEYWORD, text:CubeReflect)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -129,7 +129,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenCubeNormal")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -140,8 +140,8 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITexturePropertyValueTexGen
-                ShaderLabTokenType+KeywordTokenElement(type:TEXGEN_KEYWORD, text:TexGen)
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TexGen)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ShaderLabTokenType+KeywordTokenElement(type:CUBE_NORMAL_KEYWORD, text:CubeNormal)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -156,7 +156,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenObjectLinear")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -167,8 +167,8 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITexturePropertyValueTexGen
-                ShaderLabTokenType+KeywordTokenElement(type:TEXGEN_KEYWORD, text:TexGen)
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TexGen)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ShaderLabTokenType+KeywordTokenElement(type:OBJECT_LINEAR_KEYWORD, text:ObjectLinear)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -183,7 +183,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenEyeLinear")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -194,8 +194,8 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITexturePropertyValueTexGen
-                ShaderLabTokenType+KeywordTokenElement(type:TEXGEN_KEYWORD, text:TexGen)
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TexGen)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ShaderLabTokenType+KeywordTokenElement(type:EYE_LINEAR_KEYWORD, text:EyeLinear)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -210,7 +210,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenSphereMap")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -221,8 +221,8 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ITexturePropertyValueTexGen
-                ShaderLabTokenType+KeywordTokenElement(type:TEXGEN_KEYWORD, text:TEXGEN)
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TEXGEN)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 ShaderLabTokenType+KeywordTokenElement(type:SPHERE_MAP_KEYWORD, text:SphereMap)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -239,7 +239,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureMatrix")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -250,10 +250,10 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              IMatrixCommand
+              IMatrixTexEnvProperty
                 ShaderLabTokenType+KeywordTokenElement(type:MATRIX_KEYWORD, text:Matrix)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                IReferencedProperty
+                IVariableReference
                   ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
                   IShaderLabIdentifier
                     Identifier(type:IDENTIFIER, text:_Color)
@@ -272,7 +272,7 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureLigthMap")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ISimplePropertyType
+            ITextureDimensionPropertyType
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -283,7 +283,8 @@ IShaderLabFile
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ShaderLabTokenType+KeywordTokenElement(type:LIGHTMAP_MODE_KEYWORD, text:LIGHTMAPMODE)
+              ILightmapTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:LIGHTMAP_MODE_KEYWORD, text:LIGHTMAPMODE)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           Whitespace(type:WHITESPACE, text:				) spaces: "				"

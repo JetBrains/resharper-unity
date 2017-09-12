@@ -10,10 +10,11 @@ IShaderLabFile
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:  ) spaces: "  "
-      IFallbackCommand
-        ShaderLabTokenType+KeywordTokenElement(type:FALLBACK_KEYWORD, text:Fallback)
-        IFallbackValue
-          ErrorElement:Unexpected token
+      IShaderBlock
+        IFallbackCommand
+          ShaderLabTokenType+KeywordTokenElement(type:FALLBACK_KEYWORD, text:Fallback)
+          IFallbackValue
+            ErrorElement:Unexpected token
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

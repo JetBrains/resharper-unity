@@ -25,9 +25,28 @@
                 constantColor [_IlluminCol]
                 combine constant lerp(texture) previous
             }
-            // Multiply in texture
+
+            // postmul
             SetTexture [_MainTex] {
-                combine previous * texture
+                combine previous quad
+                combine previous double
+                combine previous * texture quad
+                combine previous * texture alpha quad
+            }
+
+            // Operators
+            SetTexture [_MainTex] {
+                combine previous * texture + primary alpha
+                combine previous alpha * texture alpha + primary alpha
+                combine previous - texture
+            }
+
+            // Legacy operators
+            SetTexture [_MainTex] {
+                combine previous +- texture
+                combine previous dot3 texture
+                combine previous dot3rgba texture
+                combine previous * texture +- primary alpha
             }
         }
     }

@@ -149,5 +149,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.ShaderLab.Parsing
         {
             return Keywords.GetValueSafe(myBufferRange, yy_buffer, yy_buffer_start, yy_buffer_end);
         }
+
+        private TokenNodeType HandleNestedMultiLineComment()
+        {
+            var depth = 1;
+            while (depth > 0)
+            {
+                var c = yy_buffer[yy_buffer_index++];
+                if (yy_buffer_index >= yy_eof_pos)
+                    break;
+                var c2 = yy_buffer[yy_buffer_index];
+                if (c == '*' && c2 == '/')
+                    depth--;
+                if (c == '/' && c2 == '*')
+                    depth++;
+            }
+            yy_buffer_index++;
+            if (yy_buffer_index > yy_eof_pos)
+                yy_buffer_index = yy_eof_pos;
+            yy_buffer_end = yy_buffer_index;
+
+            return ShaderLabTokenType.MULTI_LINE_COMMENT;
+        }
     }
 }
