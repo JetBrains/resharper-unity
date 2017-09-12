@@ -119,37 +119,30 @@ namespace Plugins.Editor.JetBrains
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-#if UNITY_5_5_OR_NEWER
-    private const string PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "mcs.rsp";
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
-#endif
-    private const string PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "smcs.rsp";
-    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, PLAYER_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
-    private const string EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH = "gmcs.rsp";
-    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, EDITOR_PROJECT_MANUAL_CONFIG_RELATIVE_FILE_PATH);
+    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "mcs.rsp");
+    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "smcs.rsp");
+    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "gmcs.rsp");
 
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
       string configPath = null;
 
-#if UNITY_5_5_OR_NEWER
-      if (File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
+      if (IsPlayerProjectFile(projectFile) || IsEditorProjectFile(projectFile))
       {
-        configPath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
-      }
-#endif
-
-      //Only use gmcs.rsp and smcs.rsp if mcs.rsp is not used
-      if (configPath == null)
-      {
-        if (IsPlayerProjectFile(projectFile))
-          configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
-        else if (IsEditorProjectFile(projectFile))
-          configPath = EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+        //Prefer mcs.rsp if it exists
+        if (File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
+        {
+          configPath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+        }
         else
-          configPath = null;
+        {
+          if (IsPlayerProjectFile(projectFile))
+            configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+          else if (IsEditorProjectFile(projectFile))
+            configPath = EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;          
+        }
       }
-      
+
       if(!string.IsNullOrEmpty(configPath))
         ApplyManualCompilingSettings(configPath
           , projectContentElement
