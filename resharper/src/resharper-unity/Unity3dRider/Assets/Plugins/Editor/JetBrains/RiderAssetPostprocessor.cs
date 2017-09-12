@@ -139,7 +139,7 @@ namespace Plugins.Editor.JetBrains
       }
 #endif
 
-      //Only use gmcs.rps and smcs.rsp if mcs.rps is not used
+      //Only use gmcs.rsp and smcs.rsp if mcs.rsp is not used
       if (configPath == null)
       {
         if (IsPlayerProjectFile(projectFile))
