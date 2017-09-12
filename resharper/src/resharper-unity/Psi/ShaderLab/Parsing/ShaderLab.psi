@@ -146,7 +146,7 @@
 // qualifiedValue[id] and the parameter must be part of the nonterminal declaration, e.g. qualifiedValue[identifier id]
 // where the first part is the token type and the second is the name. Multiple parameters can be sepcified,
 // separated by commas. The captured element is used in the rules with an ampersand, and can have normal
-// role definitions, e.g. &id or &id<IDENTIFIER, Identifier>. A rule may also pass null 
+// role definitions, e.g. &id or &id<IDENTIFIER, Identifier>. A rule may also pass null
 //
 // nonterminal({ROLE, Getter})*
 //
@@ -228,7 +228,7 @@ options {
 }
 :
   IDENTIFIER?
-  
+
   | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
 
   | CG_PROGRAM | CG_INCLUDE | CG_END
@@ -392,7 +392,7 @@ options {
 }
 :
   IDENTIFIER?
-  
+
   | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
 
   | CG_PROGRAM | CG_INCLUDE | CG_END
@@ -830,7 +830,7 @@ ppLineDirective
   PP_DIGITS<PP_DIGITS, Digits>?
   WHITESPACE*
   // The #line directive keeps reading until it's out of digits, but that last non-digit
-  // character (usually a new line) gets swallowed. We can track it and warn 
+  // character (usually a new line) gets swallowed. We can track it and warn
   PP_SWALLOWED<PP_SWALLOWED, Swallowed>?
 ;
 
@@ -1093,7 +1093,7 @@ lightmapTexEnvProperty
   LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD>
 ;
 
-// The spec says there shouldn't be anything here. Use a custom parse function to eat 
+// The spec says there shouldn't be anything here. Use a custom parse function to eat
 // everything up to RBRACE
 private abstract errorTexturePropertyBlockValues
 options {
@@ -1243,8 +1243,8 @@ tagsCommand
 
 tagsValue
 :
-  LBRACE<LBRACE, LBrace>  
-  tagDeclaration<TAG_DECLARATIONS, Declarations>*    
+  LBRACE<LBRACE, LBrace>
+  tagDeclaration<TAG_DECLARATIONS, Declarations>*
   RBRACE<RBRACE, RBrace>
 ;
 
@@ -1353,7 +1353,7 @@ cullOrientation
 :
   FRONT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
   | BACK_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
-  | variableReference<SHADER_LAB_REFERENCE, VariableReference>  // Reference to float, but which value is front and which back?
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>  // See UnityEngine.Rendering.CullMode for values
 ;
 
 zwriteCommand
@@ -1468,7 +1468,7 @@ blendOpValue
   (
     COMMA<COMMA, Comma>
     blendOpValueAux{OP_ALPHA, OpAlpha, OP_ALPHA_REFERENCE, OpAlphaReference}
-  )? 
+  )?
 ;
 
 private blendOpValueAux{OP_ROLE, OpGetter, OP_REFERENCE_ROLE, OpReferenceGetter}
