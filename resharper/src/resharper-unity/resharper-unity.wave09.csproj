@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
@@ -21,18 +21,18 @@
     <PsiLanguageNames Include="Cg">
       <Visible>False</Visible>
     </PsiLanguageNames>
-    <CsLex Include="Psi\Cg\Parsing\Cg.lex" />
-    <None Remove="Psi\Cg\Parsing\Cg_lex.depends" />
-    <Compile Update="Psi\Cg\Parsing\Cg_lex.cs">
+    <CsLex Include="Cg\Psi\Parsing\Cg.lex" />
+    <None Remove="Cg\Psi\Parsing\Cg_lex.depends" />
+    <Compile Update="Cg\Psi\Parsing\Cg_lex.cs">
       <DependentUpon>Cg.lex</DependentUpon>
     </Compile>
-    <TokenGenerator Include="Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
-      <OutputFile>Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
+    <TokenGenerator Include="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
+      <OutputFile>Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
-    <Compile Update="Psi\Cg\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
+    <Compile Update="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
       <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
     </Compile>
-    <ParserGen Include="Psi\Cg\Parsing\Cg.psi" />    
+    <ParserGen Include="Cg\Psi\Parsing\Cg.psi" />
     <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" />
     <None Remove="ShaderLab\Psi\Parsing\ShaderLab_lex.depends" />
     <Compile Update="ShaderLab\Psi\Parsing\ShaderLab_lex.cs">

@@ -1,4 +1,4 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Psi.Cg;
+﻿using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 

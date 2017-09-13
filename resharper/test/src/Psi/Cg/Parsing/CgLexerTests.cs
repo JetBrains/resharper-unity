@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Psi.Cg.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;
