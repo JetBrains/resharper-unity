@@ -3,13 +3,13 @@ using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
 {
     [TestUnity]
     [TestFileExtension(CgProjectFileType.CG_EXTENSION)]
     public class CgParserTests : ParserTestBase<CgLanguage>
     {
-        protected override string RelativeTestDataPath => @"psi\cg\parsing";
+        protected override string RelativeTestDataPath => @"Cg\Psi\Parsing";
         
         [TestCase("AllDeclarations")]
         

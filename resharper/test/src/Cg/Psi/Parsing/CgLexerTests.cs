@@ -7,13 +7,13 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
 {
     [TestUnity]
     [TestFileExtension(CgProjectFileType.CG_EXTENSION)]
     public class CgLexerTests : LexerTestBase
     {
-        protected override string RelativeTestDataPath => @"psi\cg\lexing";
+        protected override string RelativeTestDataPath => @"Cg\Psi\Lexing";
 
         protected override ILexer CreateLexer(StreamReader sr)
         {

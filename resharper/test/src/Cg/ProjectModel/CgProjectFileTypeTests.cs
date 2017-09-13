@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.ProjectModel
 {
     [TestFixture]
     public class CgProjectFileTypeTests

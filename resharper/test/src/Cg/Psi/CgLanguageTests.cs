@@ -2,7 +2,7 @@
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Cg
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi
 {
     [TestFixture]
     public class CgLanguageTests
