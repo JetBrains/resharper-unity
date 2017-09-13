@@ -1,0 +1,296 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RIDER-8917")
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:	) spaces: "	"
+      IPropertiesCommand
+        ShaderLabTokenType+KeywordTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPropertiesValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          Whitespace(type:WHITESPACE, text:	     ) spaces: "	     "
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTexture2)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTexture2")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ITextureDimensionTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTexture3)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTexture3")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ITextureDimensionTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_3D_KEYWORD, text:3D)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTextureCube)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureCube")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ITextureDimensionTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:CUBE_KEYWORD, text:Cube)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTextureTexGenCubeReflect)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenCubeReflect")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TexGen)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ShaderLabTokenType+KeywordTokenElement(type:CUBE_REFLECT_KEYWORD, text:CubeReflect)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTextureTexGenCubeNormal)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenCubeNormal")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TexGen)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ShaderLabTokenType+KeywordTokenElement(type:CUBE_NORMAL_KEYWORD, text:CubeNormal)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTextureTexGenObjectLinear)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenObjectLinear")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TexGen)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ShaderLabTokenType+KeywordTokenElement(type:OBJECT_LINEAR_KEYWORD, text:ObjectLinear)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTextureTexGenEyeLinear)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenEyeLinear")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TexGen)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ShaderLabTokenType+KeywordTokenElement(type:EYE_LINEAR_KEYWORD, text:EyeLinear)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTextureTexGenSphereMap)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureTexGenSphereMap")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ITexGenTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:TEX_GEN_KEYWORD, text:TEXGEN)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ShaderLabTokenType+KeywordTokenElement(type:SPHERE_MAP_KEYWORD, text:SphereMap)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTextureMatrix)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureMatrix")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IMatrixTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:MATRIX_KEYWORD, text:Matrix)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                IVariableReference
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                  IShaderLabIdentifier
+                    Identifier(type:IDENTIFIER, text:_Color)
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:		) spaces: "		"
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_RenderTextureLightMap)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderTextureLigthMap")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITextureDimensionPropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ITexturePropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"black")
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ILightmapTexEnvProperty
+                ShaderLabTokenType+KeywordTokenElement(type:LIGHTMAP_MODE_KEYWORD, text:LIGHTMAPMODE)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+          Whitespace(type:WHITESPACE, text:				) spaces: "				"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:	) spaces: "	"
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+

@@ -7,7 +7,6 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
-using NuGet;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {

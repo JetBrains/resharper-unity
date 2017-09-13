@@ -1,0 +1,122 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"GrabPassInvert")
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      IShaderBlock
+        ISubShaderCommand
+          ShaderLabTokenType+KeywordTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          ISubShaderValue
+            ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Draw ourselves after all opaque geometry) spaces: "// Draw ourselves after all opaque geometry"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              ITagsCommand
+                ShaderLabTokenType+KeywordTokenElement(type:TAGS_KEYWORD, text:Tags)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ITagsValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  IStringLiteralTagDeclaration
+                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Queue")
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Transparent")
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+              EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Grab the screen behind the object into _BackgroundTexture) spaces: "// Grab the screen behind the object into _BackgroundTexture"
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+              IGrabPassDef
+                ShaderLabTokenType+KeywordTokenElement(type:GRABPASS_KEYWORD, text:GrabPass)
+                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                IGrabPassValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                  IOptionalNameCommand
+                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_BackgroundTexture")
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              IGrabPassDef
+                ShaderLabTokenType+KeywordTokenElement(type:GRABPASS_KEYWORD, text:GrabPass)
+                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                IGrabPassValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                  IOptionalNameCommand
+                    ShaderLabTokenType+KeywordTokenElement(type:NAME_KEYWORD, text:Name)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_OtherTexture")
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                  ITagsCommand
+                    ShaderLabTokenType+KeywordTokenElement(type:TAGS_KEYWORD, text:Tags)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ITagsValue
+                      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IStringLiteralTagDeclaration
+                        ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Other")
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            EndOfLineComment(type:END_OF_LINE_COMMENT, text:// Render the object with the texture generated above, and invert the colors) spaces: "// Render the object with the texture generated above, and invert the colors"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              ITexturePassDef
+                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                ITexturePassValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                  ICgProgramBlock
+                    ShaderLabTokenType+CgProgramTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
+                    ICgContent
+                      ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            #include "UnityCG.cginc"\n\n            struct v2f\n            {\n                float4 grabPos : TEXCOORD0;\n                float4 pos : SV_POSITION;\n            };\n\n            v2f vert(appdata_base v) {\n                v2f o;\n                // use UnityObjectToClipPos from UnityCG.cginc to calculate \n                // the clip-space of the vertex\n                o.pos = UnityObjectToClipPos(v.vertex);\n                // use ComputeGrabScreenPos function from UnityCG.cginc\n                // to get the correct texture coordinate\n                o.grabPos = ComputeGrabScreenPos(o.pos);\n                return o;\n            }\n\n            sampler2D _BackgroundTexture;\n\n            half4 frag(v2f i) : SV_Target\n            {\n                half4 bgcolor = tex2Dproj(_BackgroundTexture, i.grabPos);\n                return 1 - bgcolor;\n            }\n            )
+                    ShaderLabTokenType+CgEndTokenElement(type:CG_END, text:ENDCG)
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+            ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

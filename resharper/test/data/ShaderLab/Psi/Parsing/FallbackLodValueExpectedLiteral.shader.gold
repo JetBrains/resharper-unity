@@ -1,0 +1,25 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"FallbackLodValue")
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      IShaderBlock
+        IFallbackCommand
+          ShaderLabTokenType+KeywordTokenElement(type:FALLBACK_KEYWORD, text:Fallback)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IFallbackValue
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"fallbackShader")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            ILodValue
+  Whitespace(type:WHITESPACE, text: ) spaces: " "
+  ErrorElement:0.0 expected
+    Identifier(type:IDENTIFIER, text:ID)
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+

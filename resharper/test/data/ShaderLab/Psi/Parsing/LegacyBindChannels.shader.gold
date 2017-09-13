@@ -1,0 +1,80 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  IShaderCommand
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Solid Red")
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      IShaderBlock
+        ISubShaderCommand
+          ShaderLabTokenType+KeywordTokenElement(type:SUB_SHADER_KEYWORD, text:SubShader)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          ISubShaderValue
+            ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              ITexturePassDef
+                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                ITexturePassValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                  IBindChannelsCommand
+                    ShaderLabTokenType+KeywordTokenElement(type:BIND_CHANNELS_KEYWORD, text:BindChannels)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    IBindChannelsValue
+                      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                      Whitespace(type:WHITESPACE, text:               ) spaces: "               "
+                      IBindCommand
+                        ShaderLabTokenType+KeywordTokenElement(type:BIND_KEYWORD, text:Bind)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBindValue
+                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Vertex")
+                          ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:vertex)
+                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                      Whitespace(type:WHITESPACE, text:               ) spaces: "               "
+                      IBindCommand
+                        ShaderLabTokenType+KeywordTokenElement(type:BIND_KEYWORD, text:Bind)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBindValue
+                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"texcoord")
+                          ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:texcoord0)
+                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                      Whitespace(type:WHITESPACE, text:               ) spaces: "               "
+                      IBindCommand
+                        ShaderLabTokenType+KeywordTokenElement(type:BIND_KEYWORD, text:Bind)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBindValue
+                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"texcoord1")
+                          ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:texcoord1)
+                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                      Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+            ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

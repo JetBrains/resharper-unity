@@ -36,15 +36,18 @@
     <CsLex Include="Psi\ShaderLab\Parsing\ShaderLab.lex" />
     <None Remove="Psi\ShaderLab\Parsing\ShaderLab_lex.depends" />
     <Compile Update="Psi\ShaderLab\Parsing\ShaderLab_lex.cs">
+    <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" />
+    <None Remove="ShaderLab\Psi\Parsing\ShaderLab_lex.depends" />
+    <Compile Update="ShaderLab\Psi\Parsing\ShaderLab_lex.cs">
       <DependentUpon>ShaderLab.lex</DependentUpon>
     </Compile>
-    <TokenGenerator Include="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.xml">
-      <OutputFile>Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
+    <TokenGenerator Include="ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.xml">
+      <OutputFile>ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
-    <Compile Update="Psi\ShaderLab\Parsing\ShaderLabTokenType.Tokens.generated.cs">
+    <Compile Update="ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.generated.cs">
       <DependentUpon>ShaderLabTokenType.Tokens.xml</DependentUpon>
     </Compile>
-    <ParserGen Include="Psi\ShaderLab\Parsing\ShaderLab.psi" />
+    <ParserGen Include="ShaderLab\Psi\Parsing\ShaderLab.psi" />
   </ItemGroup>
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
