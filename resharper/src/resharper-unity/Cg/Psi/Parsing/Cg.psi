@@ -24,11 +24,11 @@ options
 // tokenTypeBaseIndex=2000;
 // Tree node interface namespace + target folder (also target folder for navigators + visitors)
   psiInterfacePackageName="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree";
-  psiInterfacesTargetSubdir="Cg/Psi/Tree";
+  psiInterfacesTargetSubdir="Psi/Cg/Tree";
 // Tree node implementation namespace, base type and target folder
   psiStubsPackageName="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.Impl";
   psiStubsBaseClass="CgCompositeElement";
-  psiStubsTargetSubdir="Cg/Psi/Tree/Impl";
+  psiStubsTargetSubdir="Psi/Cg/Tree/Impl";
 // Existing composite node type base class
   elementTypeBaseClass="CgCompositeNodeType";
 // Namespace for generating custom interface when `customInterface` option used
