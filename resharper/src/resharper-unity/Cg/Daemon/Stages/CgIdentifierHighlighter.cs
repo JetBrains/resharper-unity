@@ -10,6 +10,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
     {
         public void Highlight(ITreeNode node, IHighlightingConsumer context)
         {
+            // don't process a lot of things inside of a conditional directive
+            if (node.Parent is IDirectiveInternalContent)
+            {
+                if (!(node is IDirective))
+                    return;
+            }
+            
             // TODO: separate to different stages
             // also for proper value reference highligthing we'll need to resolve references to differentiate between field, variable and argument
             
@@ -35,6 +42,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                     break;
                 case IFunctionDeclaration f:
                     context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.METHOD_IDENTIFIER_ATTRIBUTE, f.NameNode.GetDocumentRange()));
+                    break;
+                case IDirective d:
+                    context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.KEYWORD, d.HeaderNode.GetDocumentRange()));
+                    context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.COMMENT, d.ContentNode.GetDocumentRange())); // TODO: change to something nice
+                    break;
+                case IDirectiveInternalContent dc:
+                    context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.INJECT_STRING_BACKGROUND, dc.GetDocumentRange()));
                     break;
             }
         }

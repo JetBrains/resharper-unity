@@ -6,6 +6,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
     {
         public const int IDENTIFIER_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 4;
         
+        public const int META_DIRECTIVE_CONTENT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 9;
+        
+        public const int CODE_DIRECTIVE_CONTENT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 10;
+        
+        public const int INCLUDE_DIRECTIVE_CONTENT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 11;
+        
         public static readonly TokenNodeType BAD_CHARACTER = new CgGenericTokenNodeType("BAD_CHARACTER", LAST_GENERATED_TOKEN_TYPE_INDEX + 1, "�");
         
         public static readonly TokenNodeType WHITESPACE = new CgWhitespaceTokenNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 2);
@@ -20,10 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
         
         public static readonly TokenNodeType NUMERIC_LITERAL = new CgNumericLiteralTokenNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 7);
         
-        public static readonly TokenNodeType DIRECTIVE_CONTENT = new CgFilteredGenericTokenNodeType("DIRECTIVE_CONTENT", LAST_GENERATED_TOKEN_TYPE_INDEX + 9, "directive");
+        public static readonly TokenNodeType META_DIRECTIVE_CONTENT = new CgGenericTokenNodeType("DIRECTIVE_CONTENT", META_DIRECTIVE_CONTENT_NODE_TYPE_INDEX, "meta");
         
-        public static readonly TokenNodeType CODE_DIRECTIVE_CONTENT = new CgFilteredGenericTokenNodeType("CODE_DIRECTIVE_CONTENT", LAST_GENERATED_TOKEN_TYPE_INDEX + 10, "code");
+        public static readonly TokenNodeType CODE_DIRECTIVE_CONTENT = new CgGenericTokenNodeType("CODE_DIRECTIVE_CONTENT", CODE_DIRECTIVE_CONTENT_NODE_TYPE_INDEX, "code");
         
-        public static readonly TokenNodeType INCLUDE_DIRECTIVE_CONTENT = new CgFilteredGenericTokenNodeType("INCLUDE_DIRECTIVE_CONTENT", LAST_GENERATED_TOKEN_TYPE_INDEX + 11, "include");
+        public static readonly TokenNodeType INCLUDE_DIRECTIVE_CONTENT = new CgGenericTokenNodeType("INCLUDE_DIRECTIVE_CONTENT", INCLUDE_DIRECTIVE_CONTENT_NODE_TYPE_INDEX + 11, "include");
     }
 }

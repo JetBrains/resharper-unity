@@ -5,6 +5,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
     public static class ParserMessages
     {
+        public static string IDS_CONDITIONAL_DIRECTIVE => "conditional preprocessor directive ";
+        
+        public static string IDS_ELIF_DIRECTIVE => "elif directive";
+        
+        public static string IDS_NON_CONDITIONAL_DIRECTIVE => "non-conditional directive";
+
+        public static string IDS_CONDITIONAL_DIRECTIVE_HEADER => "conditional preprocessor directive header";
+        
+        public static string IDS_DIRECTIVE => "preprocessor directive";
+        
         public static string IDS_LVALUE => "lvalue";
         
         public static string IDS_EXPRESSION => "expression";

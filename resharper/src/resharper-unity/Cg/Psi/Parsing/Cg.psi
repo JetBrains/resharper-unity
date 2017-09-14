@@ -83,8 +83,114 @@ options
 {
   stubBase="CgFileElement";
 }
+  :    
+    (
+      declaration
+      | directive
+    )*
+  ;
+
+interface directive
   :
-    declaration*    
+    conditionalDirective
+    | nonConditionalDirective
+  ;
+
+conditionalDirective
+  :    
+    (
+      IF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+      | IFDEF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+      | IFNDEF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    )
+    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+    directiveInternalContent
+    ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
+    | elseDirective
+    | elifDirective
+  ;
+
+directiveInternalContent
+  :
+    (
+      declaration
+      | directive
+    )*
+  ;
+
+elseDirective
+  :
+    ELSE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+    directiveInternalContent
+    ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
+  ;
+
+elifDirective
+  :
+    ELIF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+    directiveInternalContent
+    ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
+    | elseDirective
+    | elifDirective
+  ;
+
+interface nonConditionalDirective
+// options
+// {
+//   stubBase="CgNonConditionalDirectiveElement";
+// }
+  :
+    includeDirective
+    | defineDirective
+    | undefDirective
+    | lineDirective
+    | errorDirective
+    | warningDirective
+    | pragmaDirective    
+  ;
+
+includeDirective
+  :
+    INCLUDE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    INCLUDE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+  ;
+
+defineDirective
+  :
+    DEFINE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+  ;
+
+undefDirective
+  :
+    INCLUDE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+  ;
+
+lineDirective
+  :
+    LINE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    META_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+  ;
+
+errorDirective
+  :
+    ERROR_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    META_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+  ;
+
+warningDirective
+  :
+    WARNING_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    META_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+  ;
+
+pragmaDirective
+  :
+    PRAGMA_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    META_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
   ;
 
 interface declaration
