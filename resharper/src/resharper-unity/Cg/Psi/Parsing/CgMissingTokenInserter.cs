@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
             }
 
             var leafEndOffset = leafOffset + leafElement.GetTextLength();
-            while (myLexer.TokenType != null && myLexer.TokenStart < leafEndOffset)
+            while (myLexer.TokenType != null && (myLexer.TokenStart < leafEndOffset || myLexer.GetTokenLength() == 0 && myLexer.TokenStart == leafEndOffset))
                 myLexer.Advance();
         }
 

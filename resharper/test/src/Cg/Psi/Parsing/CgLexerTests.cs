@@ -45,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("Directive_00")]
         [TestCase("Directive_01")]
         [TestCase("Directive_02")]
+        [TestCase("Directive_03")]
         
         [TestCase("Field_00")]
         

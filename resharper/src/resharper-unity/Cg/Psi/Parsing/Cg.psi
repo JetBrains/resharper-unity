@@ -105,9 +105,14 @@ conditionalDirective
     )
     CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
     directiveInternalContent
-    ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
-    | elseDirective
-    | elifDirective
+    (
+      (
+        ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
+        CODE_DIRECTIVE_CONTENT
+      )
+      | elseDirective
+      | elifDirective
+    )
   ;
 
 directiveInternalContent
@@ -122,8 +127,9 @@ elseDirective
   :
     ELSE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
     CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-    directiveInternalContent
+    directiveInternalContent    
     ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
+    CODE_DIRECTIVE_CONTENT
   ;
 
 elifDirective
@@ -131,9 +137,14 @@ elifDirective
     ELIF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
     CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
     directiveInternalContent
-    ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
-    | elseDirective
-    | elifDirective
+    (
+      (
+        ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
+        CODE_DIRECTIVE_CONTENT
+      )
+      | elseDirective
+      | elifDirective
+    )
   ;
 
 interface nonConditionalDirective
@@ -165,7 +176,7 @@ defineDirective
 
 undefDirective
   :
-    INCLUDE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    UNDEF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
     CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
   ;
 

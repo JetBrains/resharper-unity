@@ -30,6 +30,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("FunctionTwoArguments")]
         [TestCase("FunctionVoidReturnType")]
         
+        [TestCase("IfDirective")]
+        [TestCase("IfdefDirective")]
+        [TestCase("IfndefDirective")]
+        [TestCase("NonConditionalDirectives")]
+        
         [TestCase("Semantics")]
         
         [TestCase("StructDeclaration")]
