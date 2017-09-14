@@ -19,5 +19,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
         public static readonly TokenNodeType EOF = new CgGenericTokenNodeType("EOF", LAST_GENERATED_TOKEN_TYPE_INDEX + 6, "EOF");
         
         public static readonly TokenNodeType NUMERIC_LITERAL = new CgNumericLiteralTokenNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 7);
+        
+        public static readonly TokenNodeType DIRECTIVE_CONTENT = new CgFilteredGenericTokenNodeType("DIRECTIVE_CONTENT", LAST_GENERATED_TOKEN_TYPE_INDEX + 9, "directive");
+        
+        public static readonly TokenNodeType CODE_DIRECTIVE_CONTENT = new CgFilteredGenericTokenNodeType("CODE_DIRECTIVE_CONTENT", LAST_GENERATED_TOKEN_TYPE_INDEX + 10, "code");
+        
+        public static readonly TokenNodeType INCLUDE_DIRECTIVE_CONTENT = new CgFilteredGenericTokenNodeType("INCLUDE_DIRECTIVE_CONTENT", LAST_GENERATED_TOKEN_TYPE_INDEX + 11, "include");
     }
 }

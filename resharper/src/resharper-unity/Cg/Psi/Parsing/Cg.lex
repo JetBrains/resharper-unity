@@ -91,26 +91,46 @@ SLASH_AND_NOT_SLASH=("/"[^\/\u0085\u2028\u2029\u000D\u000A])
 NOT_SLASH_NOT_NEW_LINE=([^\/\u0085\u2028\u2029\u000D\u000A])
 DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}|{NOT_SLASH_NOT_NEW_LINE})*)(\/|{SINGLE_LINE_COMMENT})?
 
-%state YYCG
+%state DIRECTIVE
+%state CODE_DIRECTIVE
+%state INCLUDE_DIRECTIVE
 
 %%
 
-<YYCG>   {WHITESPACE}            { return CgTokenNodeTypes.WHITESPACE; }
-<YYCG>   {NEW_LINE}              { return CgTokenNodeTypes.NEW_LINE; }
+<YYINITIAL>           {WHITESPACE}            { return CgTokenNodeTypes.WHITESPACE; }
+<YYINITIAL>           {NEW_LINE}              { return CgTokenNodeTypes.NEW_LINE; }
 
-<YYCG>   "{"                     { return CgTokenNodeTypes.LBRACE; }
-<YYCG>   "}"                     { return CgTokenNodeTypes.RBRACE; }
-<YYCG>   "("                     { return CgTokenNodeTypes.LPAREN; }
-<YYCG>   ")"                     { return CgTokenNodeTypes.RPAREN; }
-<YYCG>   "."                     { return CgTokenNodeTypes.DOT; }
-<YYCG>   ","                     { return CgTokenNodeTypes.COMMA; }
-<YYCG>   ";"                     { return CgTokenNodeTypes.SEMICOLON; }
-<YYCG>   ":"                     { return CgTokenNodeTypes.COLON; }
-<YYCG>   "="                     { return CgTokenNodeTypes.EQUALS; }
+<DIRECTIVE>           {DIRECTIVE_CONTENT}     { yybegin(YYINITIAL);         return CgTokenNodeTypes.DIRECTIVE_CONTENT;          }
+<CODE_DIRECTIVE>      {DIRECTIVE_CONTENT}     { yybegin(YYINITIAL);         return CgTokenNodeTypes.CODE_DIRECTIVE_CONTENT;     }
+<INCLUDE_DIRECTIVE>   {DIRECTIVE_CONTENT}     { yybegin(YYINITIAL);         return CgTokenNodeTypes.INCLUDE_DIRECTIVE_CONTENT;  }
 
-<YYCG>   {SINGLE_LINE_COMMENT}   { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }
+<YYINITIAL>           {IF_DIRECTIVE}          { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.IF_DIRECTIVE;               }
+<YYINITIAL>           {IFDEF_DIRECTIVE}       { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.IFDEF_DIRECTIVE;            }
+<YYINITIAL>           {IFNDEF_DIRECTIVE}      { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.IFNDEF_DIRECTIVE;           }
+<YYINITIAL>           {ELIF_DIRECTIVE}        { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.ELIF_DIRECTIVE;             }
+<YYINITIAL>           {ELSE_DIRECTIVE}        { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.ELSE_DIRECTIVE;             }
+<YYINITIAL>           {ENDIF_DIRECTIVE}       { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.ENDIF_DIRECTIVE;            }
+<YYINITIAL>           {INCLUDE_DIRECTIVE}     { yybegin(INCLUDE_DIRECTIVE); return CgTokenNodeTypes.INCLUDE_DIRECTIVE;           }
+<YYINITIAL>           {DEFINE_DIRECTIVE}      { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.DEFINE_DIRECTIVE;           }
+<YYINITIAL>           {UNDEF_DIRECTIVE}       { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.UNDEF_DIRECTIVE;            }
+<YYINITIAL>           {LINE_DIRECTIVE}        { yybegin(DIRECTIVE);         return CgTokenNodeTypes.LINE_DIRECTIVE;             }
+<YYINITIAL>           {ERROR_DIRECTIVE}       { yybegin(DIRECTIVE);         return CgTokenNodeTypes.ERROR_DIRECTIVE;            }
+<YYINITIAL>           {WARNING_DIRECTIVE}     { yybegin(DIRECTIVE);         return CgTokenNodeTypes.WARNING_DIRECTIVE;          }
+<YYINITIAL>           {PRAGMA_DIRECTIVE}      { yybegin(DIRECTIVE);         return CgTokenNodeTypes.PRAGMA_DIRECTIVE;           }
 
-<YYCG>   {IDENTIFIER}            { return FindKeywordByCurrentToken() ?? CgTokenNodeTypes.IDENTIFIER; }
-<YYCG>   {NUMERIC_LITERAL}        { return CgTokenNodeTypes.NUMERIC_LITERAL; }
+<YYINITIAL>           "{"                     { return CgTokenNodeTypes.LBRACE; }
+<YYINITIAL>           "}"                     { return CgTokenNodeTypes.RBRACE; }
+<YYINITIAL>           "("                     { return CgTokenNodeTypes.LPAREN; }
+<YYINITIAL>           ")"                     { return CgTokenNodeTypes.RPAREN; }
+<YYINITIAL>           "."                     { return CgTokenNodeTypes.DOT; }
+<YYINITIAL>           ","                     { return CgTokenNodeTypes.COMMA; }
+<YYINITIAL>           ";"                     { return CgTokenNodeTypes.SEMICOLON; }
+<YYINITIAL>           ":"                     { return CgTokenNodeTypes.COLON; }
+<YYINITIAL>           "="                     { return CgTokenNodeTypes.EQUALS; }
 
-<YYCG>   .                       { return CgTokenNodeTypes.BAD_CHARACTER; }
+<YYINITIAL>           {SINGLE_LINE_COMMENT}   { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }
+
+<YYINITIAL>           {IDENTIFIER}            { return FindKeywordByCurrentToken() ?? CgTokenNodeTypes.IDENTIFIER; }
+<YYINITIAL>           {NUMERIC_LITERAL}       { return CgTokenNodeTypes.NUMERIC_LITERAL; }
+
+<YYINITIAL>           .                       { return CgTokenNodeTypes.BAD_CHARACTER; }

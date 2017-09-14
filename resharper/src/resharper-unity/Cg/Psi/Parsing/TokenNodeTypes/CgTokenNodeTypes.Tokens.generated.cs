@@ -64,5 +64,345 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
     public const int STRUCT_KEYWORD_NODE_TYPE_INDEX = 1019;
     public static readonly TokenNodeType STRUCT_KEYWORD = new CgKeywordTokenNodeType("STRUCT_KEYWORD", STRUCT_KEYWORD_NODE_TYPE_INDEX, representation: "struct");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1020;  }
+    //Tokens
+    #region IF_DIRECTIVE
+    
+    public static readonly TokenNodeType IF_DIRECTIVE = new IfDirectiveNodeType();
+    public const int IF_DIRECTIVE_NODE_TYPE_INDEX = 1020;
+    
+    private class IfDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public IfDirectiveNodeType() : base("IF_DIRECTIVE", IF_DIRECTIVE_NODE_TYPE_INDEX, "#if") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new IfDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class IfDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return IF_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 3; }
+      public override string GetText() { return "#if"; }
+    }
+    
+    #endregion
+    #region IFDEF_DIRECTIVE
+    
+    public static readonly TokenNodeType IFDEF_DIRECTIVE = new IfdefDirectiveNodeType();
+    public const int IFDEF_DIRECTIVE_NODE_TYPE_INDEX = 1021;
+    
+    private class IfdefDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public IfdefDirectiveNodeType() : base("IFDEF_DIRECTIVE", IFDEF_DIRECTIVE_NODE_TYPE_INDEX, "#ifdef") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new IfdefDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class IfdefDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return IFDEF_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 6; }
+      public override string GetText() { return "#ifdef"; }
+    }
+    
+    #endregion
+    #region IFNDEF_DIRECTIVE
+    
+    public static readonly TokenNodeType IFNDEF_DIRECTIVE = new IfndefDirectiveNodeType();
+    public const int IFNDEF_DIRECTIVE_NODE_TYPE_INDEX = 1022;
+    
+    private class IfndefDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public IfndefDirectiveNodeType() : base("IFNDEF_DIRECTIVE", IFNDEF_DIRECTIVE_NODE_TYPE_INDEX, "#ifndef") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new IfndefDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class IfndefDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return IFNDEF_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 7; }
+      public override string GetText() { return "#ifndef"; }
+    }
+    
+    #endregion
+    #region ELIF_DIRECTIVE
+    
+    public static readonly TokenNodeType ELIF_DIRECTIVE = new ElifDirectiveNodeType();
+    public const int ELIF_DIRECTIVE_NODE_TYPE_INDEX = 1023;
+    
+    private class ElifDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public ElifDirectiveNodeType() : base("ELIF_DIRECTIVE", ELIF_DIRECTIVE_NODE_TYPE_INDEX, "#elif") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new ElifDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class ElifDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return ELIF_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 5; }
+      public override string GetText() { return "#elif"; }
+    }
+    
+    #endregion
+    #region ELSE_DIRECTIVE
+    
+    public static readonly TokenNodeType ELSE_DIRECTIVE = new ElseDirectiveNodeType();
+    public const int ELSE_DIRECTIVE_NODE_TYPE_INDEX = 1024;
+    
+    private class ElseDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public ElseDirectiveNodeType() : base("ELSE_DIRECTIVE", ELSE_DIRECTIVE_NODE_TYPE_INDEX, "#else") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new ElseDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class ElseDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return ELSE_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 5; }
+      public override string GetText() { return "#else"; }
+    }
+    
+    #endregion
+    #region ENDIF_DIRECTIVE
+    
+    public static readonly TokenNodeType ENDIF_DIRECTIVE = new EndifDirectiveNodeType();
+    public const int ENDIF_DIRECTIVE_NODE_TYPE_INDEX = 1025;
+    
+    private class EndifDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public EndifDirectiveNodeType() : base("ENDIF_DIRECTIVE", ENDIF_DIRECTIVE_NODE_TYPE_INDEX, "#endif") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new EndifDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class EndifDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return ENDIF_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 6; }
+      public override string GetText() { return "#endif"; }
+    }
+    
+    #endregion
+    #region INCLUDE_DIRECTIVE
+    
+    public static readonly TokenNodeType INCLUDE_DIRECTIVE = new IncludeDirectiveNodeType();
+    public const int INCLUDE_DIRECTIVE_NODE_TYPE_INDEX = 1026;
+    
+    private class IncludeDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public IncludeDirectiveNodeType() : base("INCLUDE_DIRECTIVE", INCLUDE_DIRECTIVE_NODE_TYPE_INDEX, "#include") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new IncludeDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class IncludeDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return INCLUDE_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 8; }
+      public override string GetText() { return "#include"; }
+    }
+    
+    #endregion
+    #region DEFINE_DIRECTIVE
+    
+    public static readonly TokenNodeType DEFINE_DIRECTIVE = new DefineDirectiveNodeType();
+    public const int DEFINE_DIRECTIVE_NODE_TYPE_INDEX = 1027;
+    
+    private class DefineDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public DefineDirectiveNodeType() : base("DEFINE_DIRECTIVE", DEFINE_DIRECTIVE_NODE_TYPE_INDEX, "#define") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new DefineDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class DefineDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return DEFINE_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 7; }
+      public override string GetText() { return "#define"; }
+    }
+    
+    #endregion
+    #region UNDEF_DIRECTIVE
+    
+    public static readonly TokenNodeType UNDEF_DIRECTIVE = new UndefDirectiveNodeType();
+    public const int UNDEF_DIRECTIVE_NODE_TYPE_INDEX = 1028;
+    
+    private class UndefDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public UndefDirectiveNodeType() : base("UNDEF_DIRECTIVE", UNDEF_DIRECTIVE_NODE_TYPE_INDEX, "#undef") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new UndefDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class UndefDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return UNDEF_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 6; }
+      public override string GetText() { return "#undef"; }
+    }
+    
+    #endregion
+    #region LINE_DIRECTIVE
+    
+    public static readonly TokenNodeType LINE_DIRECTIVE = new LineDirectiveNodeType();
+    public const int LINE_DIRECTIVE_NODE_TYPE_INDEX = 1029;
+    
+    private class LineDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public LineDirectiveNodeType() : base("LINE_DIRECTIVE", LINE_DIRECTIVE_NODE_TYPE_INDEX, "#line") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new LineDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class LineDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return LINE_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 5; }
+      public override string GetText() { return "#line"; }
+    }
+    
+    #endregion
+    #region ERROR_DIRECTIVE
+    
+    public static readonly TokenNodeType ERROR_DIRECTIVE = new ErrorDirectiveNodeType();
+    public const int ERROR_DIRECTIVE_NODE_TYPE_INDEX = 1030;
+    
+    private class ErrorDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public ErrorDirectiveNodeType() : base("ERROR_DIRECTIVE", ERROR_DIRECTIVE_NODE_TYPE_INDEX, "#error") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new ErrorDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class ErrorDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return ERROR_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 6; }
+      public override string GetText() { return "#error"; }
+    }
+    
+    #endregion
+    #region WARNING_DIRECTIVE
+    
+    public static readonly TokenNodeType WARNING_DIRECTIVE = new WarningDirectiveNodeType();
+    public const int WARNING_DIRECTIVE_NODE_TYPE_INDEX = 1031;
+    
+    private class WarningDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public WarningDirectiveNodeType() : base("WARNING_DIRECTIVE", WARNING_DIRECTIVE_NODE_TYPE_INDEX, "#warning") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new WarningDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class WarningDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return WARNING_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 8; }
+      public override string GetText() { return "#warning"; }
+    }
+    
+    #endregion
+    #region PRAGMA_DIRECTIVE
+    
+    public static readonly TokenNodeType PRAGMA_DIRECTIVE = new PragmaDirectiveNodeType();
+    public const int PRAGMA_DIRECTIVE_NODE_TYPE_INDEX = 1032;
+    
+    private class PragmaDirectiveNodeType : CgFixedLengthTokenNodeType
+    {
+      public PragmaDirectiveNodeType() : base("PRAGMA_DIRECTIVE", PRAGMA_DIRECTIVE_NODE_TYPE_INDEX, "#pragma") { }
+    
+      public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      {
+        return new PragmaDirectiveTokenElement();
+      }
+    
+      public override bool IsFiltered { get { return true; } }
+    }
+    
+    private class PragmaDirectiveTokenElement : JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase
+    {
+      public override NodeType NodeType { get { return PRAGMA_DIRECTIVE; } }
+    
+      public override int GetTextLength() { return 7; }
+      public override string GetText() { return "#pragma"; }
+    }
+    
+    #endregion
+
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1033;  }
 }

@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 
         public void Start()
         {
-            Start(0, yy_buffer.Length, YYCG);
+            Start(0, yy_buffer.Length, YYINITIAL);
         }
 
         public void Start(int startOffset, int endOffset, uint state)

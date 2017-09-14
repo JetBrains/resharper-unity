@@ -55,4 +55,20 @@
   <TypeDeclarationKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="STRUCT_KEYWORD" representation="struct" />
   </TypeDeclarationKeywords>
+
+  <Tokens NodeType="CgFixedLengthTokenNodeType" TokenElement="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes.CgTokenNodeBase">
+    <Token name="IF_DIRECTIVE" representation="#if" filtered="true" />
+    <Token name="IFDEF_DIRECTIVE" representation="#ifdef" filtered="true" />
+    <Token name="IFNDEF_DIRECTIVE" representation="#ifndef" filtered="true" />
+    <Token name="ELIF_DIRECTIVE" representation="#elif" filtered="true" />
+    <Token name="ELSE_DIRECTIVE" representation="#else" filtered="true" />
+    <Token name="ENDIF_DIRECTIVE" representation="#endif" filtered="true" />
+    <Token name="INCLUDE_DIRECTIVE" representation="#include" filtered="true" />
+    <Token name="DEFINE_DIRECTIVE" representation="#define" filtered="true" />
+    <Token name="UNDEF_DIRECTIVE" representation="#undef" filtered="true" />
+    <Token name="LINE_DIRECTIVE" representation="#line" filtered="true" />
+    <Token name="ERROR_DIRECTIVE" representation="#error" filtered="true" />
+    <Token name="WARNING_DIRECTIVE" representation="#warning" filtered="true" />
+    <Token name="PRAGMA_DIRECTIVE" representation="#pragma" filtered="true" />
+  </Tokens>
 </CgTokens>
