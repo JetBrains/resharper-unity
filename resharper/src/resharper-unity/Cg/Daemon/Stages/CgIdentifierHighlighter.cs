@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.CSharp.CompleteStatement;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using IArgument = JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.IArgument;
@@ -16,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 if (!(node is IDirective))
                     return;
             }
-            
+
             // TODO: separate to different stages
             // also for proper value reference highligthing we'll need to resolve references to differentiate between field, variable and argument
             
@@ -43,9 +44,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 case IFunctionDeclaration f:
                     context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.METHOD_IDENTIFIER_ATTRIBUTE, f.NameNode.GetDocumentRange()));
                     break;
+                case IConditionalDirective d:
+                    context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.KEYWORD, d.HeaderNode.GetDocumentRange()));
+                    context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE, d.ContentNode.GetDocumentRange()));
+                    break;
+                case IConditionalDirectiveFooter f:
+                    context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.KEYWORD, f.HeaderNode.GetDocumentRange()));
+                    context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE, f.ContentNode.GetDocumentRange()));
+                    break;
                 case IDirective d:
                     context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.KEYWORD, d.HeaderNode.GetDocumentRange()));
-                    context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.COMMENT, d.ContentNode.GetDocumentRange())); // TODO: change to something nice
+                    context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE, d.ContentNode.GetDocumentRange()));
                     break;
                 case IDirectiveInternalContent dc:
                     context.AddHighlighting(new CgIdentifierHighlighting(HighlightingAttributeIds.INJECT_STRING_BACKGROUND, dc.GetDocumentRange()));

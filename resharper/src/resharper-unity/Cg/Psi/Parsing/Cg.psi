@@ -90,7 +90,7 @@ options
     )*
   ;
 
-interface directive
+errorhandling interface directive
   :
     conditionalDirective
     | nonConditionalDirective
@@ -106,10 +106,7 @@ conditionalDirective
     CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
     directiveInternalContent
     (
-      (
-        ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
-        CODE_DIRECTIVE_CONTENT
-      )
+      endifDirective
       | elseDirective
       | elifDirective
     )
@@ -123,13 +120,19 @@ directiveInternalContent
     )*
   ;
 
+interface conditionalDirectiveFooter
+  :
+    elseDirective
+    | endifDirective
+    | elifDirective
+  ;
+
 elseDirective
   :
     ELSE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
     CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-    directiveInternalContent    
-    ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
-    CODE_DIRECTIVE_CONTENT
+    directiveInternalContent
+    endifDirective
   ;
 
 elifDirective
@@ -138,13 +141,16 @@ elifDirective
     CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
     directiveInternalContent
     (
-      (
-        ENDIF_DIRECTIVE<CG_DIRECTIVE_FOOTER, FooterNode>
-        CODE_DIRECTIVE_CONTENT
-      )
+      endifDirective
       | elseDirective
       | elifDirective
     )
+  ;
+
+endifDirective
+  :    
+    ENDIF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
   ;
 
 interface nonConditionalDirective
@@ -204,7 +210,7 @@ pragmaDirective
     META_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
   ;
 
-interface declaration
+errorhandling interface declaration
   :       
       structDeclaration
       | 
