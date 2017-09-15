@@ -352,47 +352,14 @@ argument
 
 functionBody
   :
-    // TODO: remove IDENTIFIER match when all is done
-    (
+    cgBlock*
+  ;
+
+errorhandling cgBlock
+  :
       localVariableDeclaration
-      | assignmentExpression      
-      | IDENTIFIER*
-    )*
-  ;
-
-assignmentExpression
-  :
-    lvalue
-    EQUALS
-    expression
-    SEMICOLON
-  ;
-
-lvalue
-  :
-    variableReference
-    | fieldReference
-  ;
-
-variableReference
-  :
-    identifier<CG_NAME, NameNode>    
-  ;
-
-fieldReference
-  :
-    variableReference
-    (
-      DOT
-      identifier<CG_NAME, FieldNode>      
-    )+
-  ;
-
-expression 
-  :
-    constantValue
-    | variableReference
-    | fieldReference
+      | IDENTIFIER
+      // TODO: remove IDENTIFIER match when all is done
   ;
 
 localVariableDeclaration
@@ -405,3 +372,14 @@ localVariableDeclaration
     )?
     SEMICOLON
   ;
+
+expression
+  :
+    constantValue
+    | variableReference    
+  ;
+
+variableReference
+  :
+    identifier<CG_NAME, NameNode>
+  ;  
