@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
 {
     [DaemonTooltipProvider(typeof(CgIdentifierTooltipProvider))]
     [StaticSeverityHighlighting(Severity.INFO, HighlightingGroupIds.IdentifierHighlightingsGroup, OverlapResolve = OverlapResolveKind.NONE, ShowToolTipInStatusBar = false)]
-    public class CgIdentifierHighlighting : ICustomAttributeIdHighlighting
+    public class CgHighlighting : ICustomAttributeIdHighlighting
     {
         private readonly DocumentRange myRange;
         
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         
         public string AttributeId { get; }
 
-        public CgIdentifierHighlighting(string attributeId, DocumentRange range)
+        public CgHighlighting(string attributeId, DocumentRange range)
         {
             AttributeId = attributeId;
             myRange = range;
