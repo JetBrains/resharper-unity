@@ -13,6 +13,9 @@ void foo()
     b = 0;
     b = a;
 
+    bar bar_a;
+    b = bar_a.zzz;    
+
     bar b;
     bar.zzz = 0;
     bar.zzz = bar.zzz;

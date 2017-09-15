@@ -386,17 +386,41 @@ localVariableDeclaration[identifier typeReference]
 expression
   :
     constantValue
-    | variableReference    
+    | 
+    (
+      !(#variableName:identifier)
+      valueReference[variableName]
+    )
   ;
 
-variableReference
+valueReference[identifier variableName]
+  :    
+    variableReference[variableName]
+    | fieldReference[variableName]
+  ;
+
+variableReference[identifier variableName]
   :
-    identifier<CG_NAME, NameNode>
-  ;  
+    &variableName
+  ;
+
+fieldReference[identifier variableName]
+  :
+    &variableName
+    (
+      DOT
+      fieldName
+    )+
+  ;
+
+fieldName
+  :
+    identifier
+  ;
 
 assignment[identifier variableName]
   :
-    &variableName
+    valueReference[variableName]
     EQUALS
     expression  
   ;
