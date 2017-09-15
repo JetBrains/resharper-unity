@@ -774,11 +774,13 @@ localVariableDeclaration[identifier userDeclaredType]
     )?    
   ;
 
+// TODO: support assignment as f = a = 0 (check whether needed)
 errorhandling interface expression
-  :
+  : 
     constantValue
     | runtimeValue
     | unaryOperation
+    | binaryOperation
     | parensExpression
   ;
 
@@ -846,6 +848,12 @@ returnStatement
     expression?
   ;
 
+unaryOperation
+  :
+    unaryOperator
+    expression
+  ;
+
 unaryOperator
   :
     PLUS
@@ -853,10 +861,35 @@ unaryOperator
     | NEGATE
   ;
 
-unaryOperation
+binaryOperation
   :
-    unaryOperator
     expression
+    binaryOperator
+    expression
+  ;
+
+// TODO: assignments
+binaryOperator
+  :
+    LT
+    | GT
+    | LTEQ
+    | GTEQ
+    | EQEQ
+    | NOTEQ
+
+    | PLUS
+    | MINUS
+    | MULTIPLY
+    | DIVIDE
+    | MODULO
+
+    | TILDE
+    | LTLT
+    | XOR
+    | OR
+    | ANDAND
+    | OROR
   ;
 
 parensExpression

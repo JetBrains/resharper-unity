@@ -15,6 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         
         [TestCase("Assignments")]
         
+        [TestCase("BinaryOperator")]
+        
         [TestCase("Comment")]
         
         [TestCase("Empty")]
