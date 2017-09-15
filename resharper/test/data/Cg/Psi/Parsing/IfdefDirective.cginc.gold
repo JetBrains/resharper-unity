@@ -15,8 +15,9 @@ ICgFile
           CgIdentifier(type:IDENTIFIER, text:foo)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
     CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-    CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
-    CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
+    IEndifDirective
+      CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
+      CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IConditionalDirective
@@ -34,8 +35,9 @@ ICgFile
         CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text: TRUE)
         IDirectiveInternalContent
         CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-        CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
-        CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
+        IEndifDirective
+          CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
+          CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IConditionalDirective
@@ -48,8 +50,9 @@ ICgFile
       CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
       IDirectiveInternalContent
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-      CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
-      CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
+      IEndifDirective
+        CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
+        CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -68,8 +71,9 @@ ICgFile
         CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
         IDirectiveInternalContent
         CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-        CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
-        CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
+        IEndifDirective
+          CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
+          CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IConditionalDirective
@@ -107,6 +111,7 @@ ICgFile
         CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: pragma_content)
     CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
     CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-    CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
-    CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text: endif_content)
+    IEndifDirective
+      CgTokenNodeTypes+EndifDirectiveTokenElement(type:ENDIF_DIRECTIVE, text:#endif)
+      CgGenericTokenNode(type:CODE_DIRECTIVE_CONTENT, text: endif_content)
 

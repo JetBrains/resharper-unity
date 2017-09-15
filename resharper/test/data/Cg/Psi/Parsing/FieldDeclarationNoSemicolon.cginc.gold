@@ -4,5 +4,5 @@ ICgFile
   CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
   IIdentifier
     CgIdentifier(type:IDENTIFIER, text:foo)
-  ErrorElement:Function declaration or global variable expected
+    ErrorElement:Function declaration or global variable expected
 

@@ -20,5 +20,5 @@ ICgFile
     CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
     CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
     CgFixedLengthTokenNode(type:RBRACE, text:})
-  ErrorElement:; expected
+    ErrorElement:; expected
 
