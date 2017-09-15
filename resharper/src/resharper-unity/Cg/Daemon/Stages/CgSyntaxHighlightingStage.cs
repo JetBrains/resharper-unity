@@ -120,6 +120,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 base.VisitFunctionCallNode(functionCallParam, context);
             }
 
+            public override void VisitConstantValueNode(IConstantValue constantValueParam, IHighlightingConsumer context)
+            {
+                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.NUMBER, constantValueParam.GetDocumentRange()));
+                base.VisitConstantValueNode(constantValueParam, context);
+            }
+
 #if DEBUG
             public override void VisitNode(ITreeNode node, IHighlightingConsumer context)
             {
