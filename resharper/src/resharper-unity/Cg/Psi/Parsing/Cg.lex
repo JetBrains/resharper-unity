@@ -49,11 +49,11 @@ ASTERISK="*"
 NOT_ASTERISK=[^{ASTERISK}]
 ASTERISKS={ASTERISK}+
 
-SINGLE_LINE_COMMENT=({SLASH}{SLASH}{INPUT_CHARACTER}*)
-NOT_ASTERISK_OR_SLASH=[^{ASTERISK}{SLASH}]
-COMMENT_CONTENT=({NOT_ASTERISK}|({ASTERISKS}{NOT_ASTERISK_OR_SLASH}))
-UNFINISHED_DELIMITED_COMMENT={SLASH}{ASTERISK}{COMMENT_CONTENT}*
-DELIMITED_COMMENT={UNFINISHED_DELIMITED_COMMENT}{ASTERISKS}{SLASH}
+DELIMITED_COMMENT_SECTION=([^\*]|({ASTERISKS}[^\*\/]))
+UNFINISHED_DELIMITED_COMMENT="/*"{DELIMITED_COMMENT_SECTION}*
+DELIMITED_COMMENT={UNFINISHED_DELIMITED_COMMENT}{ASTERISKS}"/"
+SINGLE_LINE_COMMENT=("//"{INPUT_CHARACTER}*)
+DELIMITED_COMMENT_POSTFIX = ({ASTERISKS}"/")
 
 MINUS="-"
 PLUS="+"
@@ -126,9 +126,49 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 <YYINITIAL>           ","                     { return CgTokenNodeTypes.COMMA; }
 <YYINITIAL>           ";"                     { return CgTokenNodeTypes.SEMICOLON; }
 <YYINITIAL>           ":"                     { return CgTokenNodeTypes.COLON; }
+
+<YYINITIAL>           "<"                     { return CgTokenNodeTypes.LT; }
+<YYINITIAL>           ">"                     { return CgTokenNodeTypes.GT; }
+<YYINITIAL>           "<="                    { return CgTokenNodeTypes.LTEQ; }
+<YYINITIAL>           ">="                    { return CgTokenNodeTypes.GTEQ; }
+<YYINITIAL>           "=="                    { return CgTokenNodeTypes.EQEQ; }
+<YYINITIAL>           "!="                    { return CgTokenNodeTypes.NOTEQ; }
+
 <YYINITIAL>           "="                     { return CgTokenNodeTypes.EQUALS; }
 
-<YYINITIAL>           {SINGLE_LINE_COMMENT}   { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }
+<YYINITIAL>           "+"                     { return CgTokenNodeTypes.PLUS; }
+<YYINITIAL>           "-"                     { return CgTokenNodeTypes.MINUS; }
+<YYINITIAL>           "*"                     { return CgTokenNodeTypes.MULTIPLY; }
+<YYINITIAL>           "/"                     { return CgTokenNodeTypes.DIVIDE; }
+<YYINITIAL>           "%"                     { return CgTokenNodeTypes.MODULO; }
+
+<YYINITIAL>           "*="                    { return CgTokenNodeTypes.MULTEQ; }
+<YYINITIAL>           "/="                    { return CgTokenNodeTypes.DIVEQ; }
+<YYINITIAL>           "%="                    { return CgTokenNodeTypes.PERCEQ; }
+<YYINITIAL>           "+="                    { return CgTokenNodeTypes.PLUSEQ; }
+<YYINITIAL>           "-="                    { return CgTokenNodeTypes.MINUSEQ; }
+
+<YYINITIAL>           "~"                     { return CgTokenNodeTypes.TILDE; }
+<YYINITIAL>           "<<"                    { return CgTokenNodeTypes.LTLT; }
+<YYINITIAL>           ">>"                    { return CgTokenNodeTypes.GTGT; }
+<YYINITIAL>           "^"                     { return CgTokenNodeTypes.XOR; }
+<YYINITIAL>           "|"                     { return CgTokenNodeTypes.OR; }
+<YYINITIAL>           "&&"                    { return CgTokenNodeTypes.ANDAND; }
+<YYINITIAL>           "||"                    { return CgTokenNodeTypes.OROR; }
+<YYINITIAL>           "!"                     { return CgTokenNodeTypes.NEGATE; }
+
+<YYINITIAL>           "<<="                   { return CgTokenNodeTypes.LTLTEQ; }
+<YYINITIAL>           ">>="                   { return CgTokenNodeTypes.GTGTEQ; }
+<YYINITIAL>           "&="                    { return CgTokenNodeTypes.ANDEQ; }
+<YYINITIAL>           "^="                    { return CgTokenNodeTypes.XOREQ; }
+<YYINITIAL>           "|="                    { return CgTokenNodeTypes.OREQ; }
+
+<YYINITIAL>           "++"                    { return CgTokenNodeTypes.PLUSPLUS; }
+<YYINITIAL>           "--"                    { return CgTokenNodeTypes.MINUSMINUS; }
+
+<YYINITIAL>           {SINGLE_LINE_COMMENT}              { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }
+<YYINITIAL>           {DELIMITED_COMMENT}                { return CgTokenNodeTypes.DELIMITED_COMMENT; }
+<YYINITIAL>           {UNFINISHED_DELIMITED_COMMENT}     { return CgTokenNodeTypes.UNFINISHED_DELIMITED_COMMENT; }
 
 <YYINITIAL>           {IDENTIFIER}            { return FindKeywordByCurrentToken() ?? CgTokenNodeTypes.IDENTIFIER; }
 <YYINITIAL>           {NUMERIC_LITERAL}       { return CgTokenNodeTypes.NUMERIC_LITERAL; }

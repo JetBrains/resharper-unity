@@ -30,7 +30,44 @@
     <Token name="DOT" representation="." />
     <Token name="SEMICOLON" representation=";" />
     <Token name="COLON" representation=":" />
+    
+    <Token name="LT" representation="&lt;" />
+    <Token name="GT" representation="&gt;" />
+    <Token name="LTEQ" representation="&lt;=" />
+    <Token name="GTEQ" representation="&gt;=" />
+    <Token name="EQEQ" representation="==" />
+    <Token name="NOTEQ" representation="!=" />
+
     <Token name="EQUALS" representation="=" />
+
+    <Token name="PLUS" representation="+" />
+    <Token name="MINUS" representation="-" />
+    <Token name="MULTIPLY" representation="*" />
+    <Token name="DIVIDE" representation="/" />
+    <Token name="MODULO" representation="%" />
+
+    <Token name="MULTEQ" representation="*=" />
+    <Token name="DIVEQ" representation="/=" />
+    <Token name="PERCEQ" representation="%=" />
+    <Token name="PLUSEQ" representation="+=" />
+    <Token name="MINUSEQ" representation="-=" />
+
+    <Token name="TILDE" representation="~" />
+    <Token name="LTLT" representation="&lt;&lt;" />
+    <Token name="GTGT" representation="&gt;&gt;" />
+    <Token name="XOR" representation="^" />
+    <Token name="OR" representation="|" />
+    <Token name="ANDAND" representation="&amp;&amp;" />
+    <Token name="OROR" representation="||" />
+    <Token name="NEGATE" representation="!" />
+    <Token name="LTLTEQ" representation="&lt;&lt;=" />
+    <Token name="GTGTEQ" representation="&gt;&gt;=" />
+    <Token name="ANDEQ" representation="&amp;=" />
+    <Token name="XOREQ" representation="^=" />
+    <Token name="OREQ" representation="|=" />
+
+    <Token name="PLUSPLUS" representation="++" />
+    <Token name="MINUSMINUS" representation="--" />
   </Tokens>
   
   <FunctionReturnTypeKeywords NodeType="CgKeywordTokenNodeType">

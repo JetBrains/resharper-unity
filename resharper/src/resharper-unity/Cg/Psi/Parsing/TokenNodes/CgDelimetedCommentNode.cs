@@ -5,16 +5,16 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes
 {
-    public class CgSingleLineCommentNode : CgTokenNodeBase, ICommentNode
+    public class CgDelimitedCommentNode : CgTokenNodeBase, ICommentNode
     {
         private readonly string myText;
 
-        public CgSingleLineCommentNode(string text)
+        public CgDelimitedCommentNode(string text)
         {
             myText = text;
         }
 
-        public override NodeType NodeType => CgTokenNodeTypes.SINGLE_LINE_COMMENT;
+        public override NodeType NodeType => CgTokenNodeTypes.DELIMITED_COMMENT;
 
         public override int GetTextLength() => myText.Length;
         public override string GetText() => myText;
@@ -22,11 +22,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes
         
         public TreeTextRange GetCommentRange()
         {
-            // remove two slashes
-            var start = GetTreeStartOffset();
-            return new TreeTextRange(start + 2, start + GetTextLength());
+            // remove slash and asterisk from both ends
+            var treeStartOffset = GetTreeStartOffset();
+            return new TreeTextRange(treeStartOffset + 2, treeStartOffset + GetTextLength() - 2);
         }
-        
-        public string CommentText => myText.Substring(2);
+
+        public string CommentText => myText.Substring(2, GetTextLength() - 2);
     }
 }
