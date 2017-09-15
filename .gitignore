@@ -62,3 +62,4 @@ Desktop.ini
 **/.idea/workspace.xml
 **/.idea/vcs.xml
 **/.idea/contentModel.xml
+resharper/src/resharper-unity/Unity3dRider/Assets/packages/*
