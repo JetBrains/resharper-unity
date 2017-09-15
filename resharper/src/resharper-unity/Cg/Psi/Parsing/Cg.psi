@@ -775,13 +775,61 @@ localVariableDeclaration[identifier userDeclaredType]
   ;
 
 // TODO: support assignment as f = a = 0 (check whether needed)
-errorhandling interface expression
-  : 
+// TODO: precedence
+errorhandling expression
+  :
+    unaryExpression
+    (
+      binaryOperator
+      unaryExpression
+    )*
+  ;
+
+unaryExpression
+  :
+    (
+      unaryOperator
+      unaryExpression
+    )
+    | primaryExpression    
+  ;
+
+unaryOperator
+  :
+    PLUS
+    | MINUS
+    | NEGATE
+  ;
+
+primaryExpression
+  :
     constantValue
     | runtimeValue
-    | unaryOperation
-    | binaryOperation
     | parensExpression
+  ;
+
+// TODO: assignments
+binaryOperator
+  :
+    LT
+    | GT
+    | LTEQ
+    | GTEQ
+    | EQEQ
+    | NOTEQ
+
+    | PLUS
+    | MINUS
+    | MULTIPLY
+    | DIVIDE
+    | MODULO
+
+    | TILDE
+    | LTLT
+    | XOR
+    | OR
+    | ANDAND
+    | OROR
   ;
 
 runtimeValue
@@ -846,50 +894,6 @@ returnStatement
   :
     RETURN_KEYWORD
     expression?
-  ;
-
-unaryOperation
-  :
-    unaryOperator
-    expression
-  ;
-
-unaryOperator
-  :
-    PLUS
-    | MINUS
-    | NEGATE
-  ;
-
-binaryOperation
-  :
-    expression
-    binaryOperator
-    expression
-  ;
-
-// TODO: assignments
-binaryOperator
-  :
-    LT
-    | GT
-    | LTEQ
-    | GTEQ
-    | EQEQ
-    | NOTEQ
-
-    | PLUS
-    | MINUS
-    | MULTIPLY
-    | DIVIDE
-    | MODULO
-
-    | TILDE
-    | LTLT
-    | XOR
-    | OR
-    | ANDAND
-    | OROR
   ;
 
 parensExpression

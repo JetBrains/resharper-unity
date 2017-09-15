@@ -37,8 +37,11 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IConstantValue
-            CgGenericTokenNode(type:NUMERIC_LITERAL, text:1)
+          IExpression
+            IUnaryExpression
+              IPrimaryExpression
+                IConstantValue
+                  CgGenericTokenNode(type:NUMERIC_LITERAL, text:1)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -51,8 +54,11 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IConstantValue
-            CgGenericTokenNode(type:NUMERIC_LITERAL, text:-1)
+          IExpression
+            IUnaryExpression
+              IPrimaryExpression
+                IConstantValue
+                  CgGenericTokenNode(type:NUMERIC_LITERAL, text:-1)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -65,8 +71,11 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IConstantValue
-            CgGenericTokenNode(type:NUMERIC_LITERAL, text:+1)
+          IExpression
+            IUnaryExpression
+              IPrimaryExpression
+                IConstantValue
+                  CgGenericTokenNode(type:NUMERIC_LITERAL, text:+1)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -81,14 +90,17 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IUnaryOperation
-            IUnaryOperator
-              CgFixedLengthTokenNode(type:PLUS, text:+)
-            IRuntimeValue
-              IValueReference
-                IVariableReference
-                  IIdentifier
-                    CgIdentifier(type:IDENTIFIER, text:f)
+          IExpression
+            IUnaryExpression
+              IUnaryOperator
+                CgFixedLengthTokenNode(type:PLUS, text:+)
+              IUnaryExpression
+                IPrimaryExpression
+                  IRuntimeValue
+                    IValueReference
+                      IVariableReference
+                        IIdentifier
+                          CgIdentifier(type:IDENTIFIER, text:f)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -101,61 +113,17 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IUnaryOperation
-            IUnaryOperator
-              CgFixedLengthTokenNode(type:MINUS, text:-)
-            IRuntimeValue
-              IValueReference
-                IVariableReference
-                  IIdentifier
-                    CgIdentifier(type:IDENTIFIER, text:f)
-        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
-      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
-      ICgBlock
-        IAssignment
-          IValueReference
-            IVariableReference
-              IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:f)
-          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          CgFixedLengthTokenNode(type:EQUALS, text:=)
-          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IUnaryOperation
-            IUnaryOperator
-              CgFixedLengthTokenNode(type:PLUS, text:+)
-            IParensExpression
-              CgFixedLengthTokenNode(type:LPAREN, text:()
-              IRuntimeValue
-                IValueReference
-                  IVariableReference
-                    IIdentifier
-                      CgIdentifier(type:IDENTIFIER, text:f)
-              CgFixedLengthTokenNode(type:RPAREN, text:))
-        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
-      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
-      ICgBlock
-        IAssignment
-          IValueReference
-            IVariableReference
-              IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:f)
-          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          CgFixedLengthTokenNode(type:EQUALS, text:=)
-          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IUnaryOperation
-            IUnaryOperator
-              CgFixedLengthTokenNode(type:MINUS, text:-)
-            IParensExpression
-              CgFixedLengthTokenNode(type:LPAREN, text:()
-              IRuntimeValue
-                IValueReference
-                  IVariableReference
-                    IIdentifier
-                      CgIdentifier(type:IDENTIFIER, text:f)
-              CgFixedLengthTokenNode(type:RPAREN, text:))
+          IExpression
+            IUnaryExpression
+              IUnaryOperator
+                CgFixedLengthTokenNode(type:MINUS, text:-)
+              IUnaryExpression
+                IPrimaryExpression
+                  IRuntimeValue
+                    IValueReference
+                      IVariableReference
+                        IIdentifier
+                          CgIdentifier(type:IDENTIFIER, text:f)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -169,15 +137,77 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IUnaryOperation
-            IUnaryOperator
-              CgFixedLengthTokenNode(type:MINUS, text:-)
-            IRuntimeValue
-              IFunctionCall
-                IIdentifier
-                  CgIdentifier(type:IDENTIFIER, text:getFloat)
-                CgFixedLengthTokenNode(type:LPAREN, text:()
-                CgFixedLengthTokenNode(type:RPAREN, text:))
+          IExpression
+            IUnaryExpression
+              IUnaryOperator
+                CgFixedLengthTokenNode(type:PLUS, text:+)
+              IUnaryExpression
+                IPrimaryExpression
+                  IParensExpression
+                    CgFixedLengthTokenNode(type:LPAREN, text:()
+                    IExpression
+                      IUnaryExpression
+                        IPrimaryExpression
+                          IRuntimeValue
+                            IValueReference
+                              IVariableReference
+                                IIdentifier
+                                  CgIdentifier(type:IDENTIFIER, text:f)
+                    CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      ICgBlock
+        IAssignment
+          IValueReference
+            IVariableReference
+              IIdentifier
+                CgIdentifier(type:IDENTIFIER, text:f)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          CgFixedLengthTokenNode(type:EQUALS, text:=)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IExpression
+            IUnaryExpression
+              IUnaryOperator
+                CgFixedLengthTokenNode(type:MINUS, text:-)
+              IUnaryExpression
+                IPrimaryExpression
+                  IParensExpression
+                    CgFixedLengthTokenNode(type:LPAREN, text:()
+                    IExpression
+                      IUnaryExpression
+                        IPrimaryExpression
+                          IRuntimeValue
+                            IValueReference
+                              IVariableReference
+                                IIdentifier
+                                  CgIdentifier(type:IDENTIFIER, text:f)
+                    CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      ICgBlock
+        IAssignment
+          IValueReference
+            IVariableReference
+              IIdentifier
+                CgIdentifier(type:IDENTIFIER, text:f)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          CgFixedLengthTokenNode(type:EQUALS, text:=)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IExpression
+            IUnaryExpression
+              IUnaryOperator
+                CgFixedLengthTokenNode(type:MINUS, text:-)
+              IUnaryExpression
+                IPrimaryExpression
+                  IRuntimeValue
+                    IFunctionCall
+                      IIdentifier
+                        CgIdentifier(type:IDENTIFIER, text:getFloat)
+                      CgFixedLengthTokenNode(type:LPAREN, text:()
+                      CgFixedLengthTokenNode(type:RPAREN, text:))
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -203,8 +233,11 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IConstantValue
-            CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+          IExpression
+            IUnaryExpression
+              IPrimaryExpression
+                IConstantValue
+                  CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -218,11 +251,14 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IUnaryOperation
-            IUnaryOperator
-              CgFixedLengthTokenNode(type:NEGATE, text:!)
-            IConstantValue
-              CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+          IExpression
+            IUnaryExpression
+              IUnaryOperator
+                CgFixedLengthTokenNode(type:NEGATE, text:!)
+              IUnaryExpression
+                IPrimaryExpression
+                  IConstantValue
+                    CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -235,11 +271,14 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IUnaryOperation
-            IUnaryOperator
-              CgFixedLengthTokenNode(type:NEGATE, text:!)
-            IConstantValue
-              CgGenericTokenNode(type:NUMERIC_LITERAL, text:1)
+          IExpression
+            IUnaryExpression
+              IUnaryOperator
+                CgFixedLengthTokenNode(type:NEGATE, text:!)
+              IUnaryExpression
+                IPrimaryExpression
+                  IConstantValue
+                    CgGenericTokenNode(type:NUMERIC_LITERAL, text:1)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -252,14 +291,17 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IUnaryOperation
-            IUnaryOperator
-              CgFixedLengthTokenNode(type:NEGATE, text:!)
-            IRuntimeValue
-              IValueReference
-                IVariableReference
-                  IIdentifier
-                    CgIdentifier(type:IDENTIFIER, text:b)
+          IExpression
+            IUnaryExpression
+              IUnaryOperator
+                CgFixedLengthTokenNode(type:NEGATE, text:!)
+              IUnaryExpression
+                IPrimaryExpression
+                  IRuntimeValue
+                    IValueReference
+                      IVariableReference
+                        IIdentifier
+                          CgIdentifier(type:IDENTIFIER, text:b)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
     CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
     CgFixedLengthTokenNode(type:RBRACE, text:})

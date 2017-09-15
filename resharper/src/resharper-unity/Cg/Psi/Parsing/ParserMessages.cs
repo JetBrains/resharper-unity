@@ -5,6 +5,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
     public static class ParserMessages
     {
+        public static string IDS_UNARY_EXPRESSION => "unary expression";
+        
+        public static string IDS_PRIMARY_EXPRESSION => "value";
+        
         public static string IDS_BINARY_OPERATOR => "binary operator";
         
         public static string IDS_UNARY_OPERATOR => "unary operator";
