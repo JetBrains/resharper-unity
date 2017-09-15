@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Parsing;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
 {
@@ -11,12 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
 
         static CgKeywordsList()
         {
-            var fields = typeof(CgTokenNodeTypes)
+            var values = typeof(CgTokenNodeTypes)
                 .GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Where(f => f.Name.EndsWith("_KEYWORD") && f.FieldType == typeof(CgKeywordTokenNodeType))
-                .OrderBy(f => f.Name, StringComparer.InvariantCultureIgnoreCase);
-
-            var values = fields.Select(f => f.GetValue(null)).Cast<CgKeywordTokenNodeType>().ToArray();
+                .Where(f => f.Name.EndsWith("_KEYWORD"))
+                .Where(f => f.FieldType == typeof(TokenNodeType))
+                .OrderBy(f => f.Name, StringComparer.InvariantCultureIgnoreCase)
+                .Select(f => f.GetValue(null)).Cast<CgKeywordTokenNodeType>()
+                .ToArray();
             
             ALL = new NodeTypeSet(
                 values
