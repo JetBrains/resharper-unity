@@ -8,7 +8,6 @@ ICgFile
     IIdentifier
       CgIdentifier(type:IDENTIFIER, text:foo)
     CgFixedLengthTokenNode(type:LPAREN, text:()
-    IFunctionArgList
     CgFixedLengthTokenNode(type:RPAREN, text:))
     CgFixedLengthTokenNode(type:LBRACE, text:{)
     IFunctionBody

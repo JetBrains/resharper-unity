@@ -5,6 +5,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
     public static class ParserMessages
     {
+        public static string IDS_INPUT_MODIFIER => "input modifier";
+        
         public static string IDS_ASSIGNMENT => "assignment";
         
         public static string IDS_IDENTIFIER => "identifier";

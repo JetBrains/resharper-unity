@@ -43,6 +43,12 @@
       <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
     </Compile>
     <ParserGen Include="Cg\Psi\Parsing\Cg.psi" />
+    <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
+      <Namespace>JetBrains.ReSharper.Cg.Daemon.Errors</Namespace>
+      <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
+      <SubType>Designer</SubType>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
     <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" />
     <None Remove="ShaderLab\Psi\Parsing\ShaderLab_lex.depends" />
     <Compile Update="ShaderLab\Psi\Parsing\ShaderLab_lex.cs">

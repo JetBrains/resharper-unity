@@ -76,6 +76,11 @@ options {
     | WHILE_KEYWORD
     | FOR_KEYWORD
 
+    | IN_KEYWORD
+    | INOUT_KEYWORD
+    | OUT_KEYWORD
+    | UNIFORM_KEYWORD
+
     | BOOL_KEYWORD
     | INT_KEYWORD
     | UINT_KEYWORD    
@@ -646,34 +651,55 @@ fieldDeclaration
    }
 */
 
+// function can have semantics
+// fixed4 frag (v2f i, UNITY_VPOS_TYPE screenPos : VPOS) : SV_Target
 functionDeclaration[typeName type, identifier name]
   :  
     VOID_KEYWORD    
     | &type
     &name<CG_NAME, NameNode>
     LPAREN
-    functionArgList
+    functionArgList?    
     RPAREN
+    (
+      COLON
+      semantic
+    )?
     LBRACE
     functionBody
     RBRACE
   ;
 
 functionArgList
-  :
+  :    
+    argument
     (
+      COMMA
       argument
-      (
-        COMMA
-        argument
-      )*
+    )*    
+  ;
+
+// argument can have semantics
+// UNITY_VPOS_TYPE x : VPOS
+// argument can have input modifier
+// uniform int x
+argument
+  :
+    inputModifier?
+    typeName
+    identifier<CG_NAME, NameNode>
+    (
+      COLON
+      semantic
     )?
   ;
 
-argument
-  :    
-    typeName
-    identifier<CG_NAME, NameNode>
+inputModifier
+  :
+    IN_KEYWORD
+    | INOUT_KEYWORD
+    | OUT_KEYWORD
+    | UNIFORM_KEYWORD
   ;
 
 functionBody
@@ -689,9 +715,11 @@ errorhandling cgBlock
         (
           localVariableDeclaration[id]
           | assignment[id]
+          | functionCall[id]
         )
       )
       | localVariableDeclaration[null]
+      | returnStatement
     )
     SEMICOLON
   ;
@@ -714,8 +742,11 @@ expression
     constantValue
     | 
     (
-      !(#variableName:identifier)
-      valueReference[variableName]
+      !(#id:identifier)
+      (
+        valueReference[id]
+        | functionCall[id]
+      )
     )
   ;
 
@@ -744,9 +775,32 @@ fieldName
     identifier
   ;
 
+functionCall[identifier functionName]
+  :
+    &functionName<CG_NAME, NameNode>
+    LPAREN
+    functionCallArgList?
+    RPAREN
+  ;
+
+functionCallArgList
+  :
+    expression
+    (
+      COMMA
+      expression
+    )*
+  ;
+
 assignment[identifier variableName]
   :
     valueReference[variableName]
     EQUALS
     expression  
+  ;
+
+returnStatement
+  :
+    RETURN_KEYWORD
+    expression?
   ;

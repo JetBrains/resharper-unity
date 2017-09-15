@@ -40,7 +40,6 @@ ICgFile
     IIdentifier
       CgIdentifier(type:IDENTIFIER, text:main)
     CgFixedLengthTokenNode(type:LPAREN, text:()
-    IFunctionArgList
     CgFixedLengthTokenNode(type:RPAREN, text:))
     CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
     CgFixedLengthTokenNode(type:LBRACE, text:{)

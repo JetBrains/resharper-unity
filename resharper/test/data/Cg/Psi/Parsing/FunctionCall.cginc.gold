@@ -1,0 +1,212 @@
+﻿Language: PsiLanguageType:CG
+ICgFile
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IFunctionDeclaration
+    ITypeName
+      IBuiltInType
+        CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+    IIdentifier
+      CgIdentifier(type:IDENTIFIER, text:foo)
+    CgFixedLengthTokenNode(type:LPAREN, text:()
+    CgFixedLengthTokenNode(type:RPAREN, text:))
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+    CgFixedLengthTokenNode(type:LBRACE, text:{)
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+    CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+    IFunctionBody
+      ICgBlock
+        IFunctionCall
+          IIdentifier
+            CgIdentifier(type:IDENTIFIER, text:noArgs)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      ICgBlock
+        ILocalVariableDeclaration
+          IBuiltInType
+            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IIdentifier
+            CgIdentifier(type:IDENTIFIER, text:f)
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      ICgBlock
+        IFunctionCall
+          IIdentifier
+            CgIdentifier(type:IDENTIFIER, text:oneArg)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          IFunctionCallArgList
+            IExpression
+              IConstantValue
+                CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      ICgBlock
+        IFunctionCall
+          IIdentifier
+            CgIdentifier(type:IDENTIFIER, text:oneArg)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          IFunctionCallArgList
+            IExpression
+              IValueReference
+                IVariableReference
+                  IIdentifier
+                    CgIdentifier(type:IDENTIFIER, text:f)
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      ICgBlock
+        IFunctionCall
+          IIdentifier
+            CgIdentifier(type:IDENTIFIER, text:twoArgs)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          IFunctionCallArgList
+            IExpression
+              IConstantValue
+                CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+            CgFixedLengthTokenNode(type:COMMA, text:,)
+            CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+            IExpression
+              IConstantValue
+                CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      ICgBlock
+        IFunctionCall
+          IIdentifier
+            CgIdentifier(type:IDENTIFIER, text:twoArgs)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          IFunctionCallArgList
+            IExpression
+              IValueReference
+                IVariableReference
+                  IIdentifier
+                    CgIdentifier(type:IDENTIFIER, text:f)
+            CgFixedLengthTokenNode(type:COMMA, text:,)
+            CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+            IExpression
+              IConstantValue
+                CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      ICgBlock
+        IFunctionCall
+          IIdentifier
+            CgIdentifier(type:IDENTIFIER, text:twoArgs)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          IFunctionCallArgList
+            IExpression
+              IConstantValue
+                CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+            CgFixedLengthTokenNode(type:COMMA, text:,)
+            CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+            IExpression
+              IValueReference
+                IVariableReference
+                  IIdentifier
+                    CgIdentifier(type:IDENTIFIER, text:f)
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      ICgBlock
+        IFunctionCall
+          IIdentifier
+            CgIdentifier(type:IDENTIFIER, text:twoArgs)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          IFunctionCallArgList
+            IExpression
+              IValueReference
+                IVariableReference
+                  IIdentifier
+                    CgIdentifier(type:IDENTIFIER, text:f)
+            CgFixedLengthTokenNode(type:COMMA, text:,)
+            CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+            IExpression
+              IValueReference
+                IVariableReference
+                  IIdentifier
+                    CgIdentifier(type:IDENTIFIER, text:f)
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+    CgFixedLengthTokenNode(type:RBRACE, text:})
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IFunctionDeclaration
+    ITypeName
+      IBuiltInType
+        CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+    IIdentifier
+      CgIdentifier(type:IDENTIFIER, text:noArgs)
+    CgFixedLengthTokenNode(type:LPAREN, text:()
+    CgFixedLengthTokenNode(type:RPAREN, text:))
+    CgFixedLengthTokenNode(type:LBRACE, text:{)
+    IFunctionBody
+    CgFixedLengthTokenNode(type:RBRACE, text:})
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IFunctionDeclaration
+    ITypeName
+      IBuiltInType
+        CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+    IIdentifier
+      CgIdentifier(type:IDENTIFIER, text:oneArg)
+    CgFixedLengthTokenNode(type:LPAREN, text:()
+    IFunctionArgList
+      IArgument
+        ITypeName
+          IBuiltInType
+            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+        IIdentifier
+          CgIdentifier(type:IDENTIFIER, text:f)
+    CgFixedLengthTokenNode(type:RPAREN, text:))
+    CgFixedLengthTokenNode(type:LBRACE, text:{)
+    IFunctionBody
+    CgFixedLengthTokenNode(type:RBRACE, text:})
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IFunctionDeclaration
+    ITypeName
+      IBuiltInType
+        CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+    IIdentifier
+      CgIdentifier(type:IDENTIFIER, text:twoArgs)
+    CgFixedLengthTokenNode(type:LPAREN, text:()
+    IFunctionArgList
+      IArgument
+        ITypeName
+          IBuiltInType
+            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+        IIdentifier
+          CgIdentifier(type:IDENTIFIER, text:f1)
+      CgFixedLengthTokenNode(type:COMMA, text:,)
+      CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+      IArgument
+        ITypeName
+          IBuiltInType
+            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+        IIdentifier
+          CgIdentifier(type:IDENTIFIER, text:f2)
+    CgFixedLengthTokenNode(type:RPAREN, text:))
+    CgFixedLengthTokenNode(type:LBRACE, text:{)
+    IFunctionBody
+    CgFixedLengthTokenNode(type:RBRACE, text:})
+

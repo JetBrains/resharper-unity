@@ -1,4 +1,5 @@
 ﻿using JetBrains.Application.Settings;
+using JetBrains.ReSharper.Cg.Daemon.Errors;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -11,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
 {
     [DaemonStage(StagesBefore = new[] { typeof(GlobalFileStructureCollectorStage) },
         StagesAfter = new [] { typeof(CollectUsagesStage)} )]
-    public class CgIdentifierHighlightingStage : CgDaemonStageBase
+    public class CgSyntaxHighlightingStage : CgDaemonStageBase
     {
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICgFile file)
@@ -112,6 +113,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.FIELD_IDENTIFIER_ATTRIBUTE, fieldNameParam.GetDocumentRange()));
                 base.VisitFieldNameNode(fieldNameParam, context);
             }
+
+            public override void VisitFunctionCallNode(IFunctionCall functionCallParam, IHighlightingConsumer context)
+            {
+                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.METHOD_IDENTIFIER_ATTRIBUTE, functionCallParam.NameNode.GetDocumentRange()));
+                base.VisitFunctionCallNode(functionCallParam, context);
+            }
+
+#if DEBUG
+            public override void VisitNode(ITreeNode node, IHighlightingConsumer context)
+            {
+                if (node is IErrorElement errorElement)
+                {
+                    var range = errorElement.GetDocumentRange();
+                    if (!range.IsValid())
+                        range = node.Parent.GetDocumentRange();
+                    if (range.TextRange.IsEmpty)
+                    {
+                        if (range.TextRange.EndOffset < range.Document.GetTextLength())
+                            range = range.ExtendRight(1);
+                        else
+                            range = range.ExtendLeft(1);
+                    }
+                    context.AddHighlighting(new CgSyntaxError(errorElement.ErrorDescription, range), range);
+                }
+                
+                base.VisitNode(node, context);
+            }
+            #endif
         }
     }
 }

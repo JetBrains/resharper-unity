@@ -32,169 +32,6 @@
     <Token name="COLON" representation=":" />
     <Token name="EQUALS" representation="=" />
   </Tokens>
-
-  <ScalarTypeKeywords NodeType="CgKeywordTokenNodeType">
-    <Keyword name="BOOL_KEYWORD" representation="bool" />
-    <Keyword name="INT_KEYWORD" representation="int" />
-    <Keyword name="UINT_KEYWORD" representation="uint" />    
-    <Keyword name="HALF_KEYWORD" representation="half" />
-    <Keyword name="FLOAT_KEYWORD" representation="float" />
-    <Keyword name="DOUBLE_KEYWORD" representation="double" />    
-  </ScalarTypeKeywords>
-
-  <VectorTypeKeywords NodeType="CgKeywordTokenNodeType">
-    <Keyword name="BOOL1_KEYWORD" representation="bool1" />
-    <Keyword name="BOOL2_KEYWORD" representation="bool2" />
-    <Keyword name="BOOL3_KEYWORD" representation="bool3" />
-    <Keyword name="BOOL4_KEYWORD" representation="bool4" />
-    
-    <Keyword name="INT1_KEYWORD" representation="int1" />
-    <Keyword name="INT2_KEYWORD" representation="int2" />
-    <Keyword name="INT3_KEYWORD" representation="int3" />
-    <Keyword name="INT4_KEYWORD" representation="int4" />
-    
-    <Keyword name="UINT1_KEYWORD" representation="uint1" />
-    <Keyword name="UINT2_KEYWORD" representation="uint2" />
-    <Keyword name="UINT3_KEYWORD" representation="uint3" />
-    <Keyword name="UINT4_KEYWORD" representation="uint4" />
-    
-    <Keyword name="HALF1_KEYWORD" representation="half1" />
-    <Keyword name="HALF2_KEYWORD" representation="half2" />
-    <Keyword name="HALF3_KEYWORD" representation="half3" />
-    <Keyword name="HALF4_KEYWORD" representation="half4" />
-    
-    <Keyword name="FLOAT1_KEYWORD" representation="float1" />
-    <Keyword name="FLOAT2_KEYWORD" representation="float2" />
-    <Keyword name="FLOAT3_KEYWORD" representation="float3" />
-    <Keyword name="FLOAT4_KEYWORD" representation="float4" />
-    
-    <Keyword name="DOUBLE1_KEYWORD" representation="double1" />
-    <Keyword name="DOUBLE2_KEYWORD" representation="double2" />
-    <Keyword name="DOUBLE3_KEYWORD" representation="double3" />
-    <Keyword name="DOUBLE4_KEYWORD" representation="double4" />
-  </VectorTypeKeywords>
-  
-  <MatrixTypeKeywords NodeType="CgKeywordTokenNodeType">
-    <Keyword name="BOOL1X1_KEYWORD" representation="bool1x1" />
-    <Keyword name="BOOL1X2_KEYWORD" representation="bool1x2" />
-    <Keyword name="BOOL1X3_KEYWORD" representation="bool1x3" />
-    <Keyword name="BOOL1X4_KEYWORD" representation="bool1x4" />
-    
-    <Keyword name="BOOL2X1_KEYWORD" representation="bool2x1" />
-    <Keyword name="BOOL2X2_KEYWORD" representation="bool2x2" />
-    <Keyword name="BOOL2X3_KEYWORD" representation="bool2x3" />
-    <Keyword name="BOOL2X4_KEYWORD" representation="bool2x4" />
-    
-    <Keyword name="BOOL3X1_KEYWORD" representation="bool3x1" />
-    <Keyword name="BOOL3X2_KEYWORD" representation="bool3x2" />
-    <Keyword name="BOOL3X3_KEYWORD" representation="bool3x3" />
-    <Keyword name="BOOL3X4_KEYWORD" representation="bool3x4" />
-    
-    <Keyword name="BOOL4X1_KEYWORD" representation="bool4x1" />
-    <Keyword name="BOOL4X2_KEYWORD" representation="bool4x2" />
-    <Keyword name="BOOL4X3_KEYWORD" representation="bool4x3" />
-    <Keyword name="BOOL4X4_KEYWORD" representation="bool4x4" />
-    <!-- int -->
-    <Keyword name="INT1X1_KEYWORD" representation="int1x1" />
-    <Keyword name="INT1X2_KEYWORD" representation="int1x2" />
-    <Keyword name="INT1X3_KEYWORD" representation="int1x3" />
-    <Keyword name="INT1X4_KEYWORD" representation="int1x4" />
-    
-    <Keyword name="INT2X1_KEYWORD" representation="int2x1" />
-    <Keyword name="INT2X2_KEYWORD" representation="int2x2" />
-    <Keyword name="INT2X3_KEYWORD" representation="int2x3" />
-    <Keyword name="INT2X4_KEYWORD" representation="int2x4" />
-    
-    <Keyword name="INT3X1_KEYWORD" representation="int3x1" />
-    <Keyword name="INT3X2_KEYWORD" representation="int3x2" />
-    <Keyword name="INT3X3_KEYWORD" representation="int3x3" />
-    <Keyword name="INT3X4_KEYWORD" representation="int3x4" />
-    
-    <Keyword name="INT4X1_KEYWORD" representation="int4x1" />
-    <Keyword name="INT4X2_KEYWORD" representation="int4x2" />
-    <Keyword name="INT4X3_KEYWORD" representation="int4x3" />
-    <Keyword name="INT4X4_KEYWORD" representation="int4x4" />
-    <!-- uint -->
-    <Keyword name="UINT1X1_KEYWORD" representation="uint1x1" />
-    <Keyword name="UINT1X2_KEYWORD" representation="uint1x2" />
-    <Keyword name="UINT1X3_KEYWORD" representation="uint1x3" />
-    <Keyword name="UINT1X4_KEYWORD" representation="uint1x4" />
-    
-    <Keyword name="UINT2X1_KEYWORD" representation="uint2x1" />
-    <Keyword name="UINT2X2_KEYWORD" representation="uint2x2" />
-    <Keyword name="UINT2X3_KEYWORD" representation="uint2x3" />
-    <Keyword name="UINT2X4_KEYWORD" representation="uint2x4" />
-    
-    <Keyword name="UINT3X1_KEYWORD" representation="uint3x1" />
-    <Keyword name="UINT3X2_KEYWORD" representation="uint3x2" />
-    <Keyword name="UINT3X3_KEYWORD" representation="uint3x3" />
-    <Keyword name="UINT3X4_KEYWORD" representation="uint3x4" />
-    
-    <Keyword name="UINT4X1_KEYWORD" representation="uint4x1" />
-    <Keyword name="UINT4X2_KEYWORD" representation="uint4x2" />
-    <Keyword name="UINT4X3_KEYWORD" representation="uint4x3" />
-    <Keyword name="UINT4X4_KEYWORD" representation="uint4x4" />
-    <!-- half -->
-    <Keyword name="HALF1X1_KEYWORD" representation="half1x1" />
-    <Keyword name="HALF1X2_KEYWORD" representation="half1x2" />
-    <Keyword name="HALF1X3_KEYWORD" representation="half1x3" />
-    <Keyword name="HALF1X4_KEYWORD" representation="half1x4" />
-    
-    <Keyword name="HALF2X1_KEYWORD" representation="half2x1" />
-    <Keyword name="HALF2X2_KEYWORD" representation="half2x2" />
-    <Keyword name="HALF2X3_KEYWORD" representation="half2x3" />
-    <Keyword name="HALF2X4_KEYWORD" representation="half2x4" />
-    
-    <Keyword name="HALF3X1_KEYWORD" representation="half3x1" />
-    <Keyword name="HALF3X2_KEYWORD" representation="half3x2" />
-    <Keyword name="HALF3X3_KEYWORD" representation="half3x3" />
-    <Keyword name="HALF3X4_KEYWORD" representation="half3x4" />
-    
-    <Keyword name="HALF4X1_KEYWORD" representation="half4x1" />
-    <Keyword name="HALF4X2_KEYWORD" representation="half4x2" />
-    <Keyword name="HALF4X3_KEYWORD" representation="half4x3" />
-    <Keyword name="HALF4X4_KEYWORD" representation="half4x4" />
-    <!-- float -->
-    <Keyword name="FLOAT1X1_KEYWORD" representation="float1x1" />
-    <Keyword name="FLOAT1X2_KEYWORD" representation="float1x2" />
-    <Keyword name="FLOAT1X3_KEYWORD" representation="float1x3" />
-    <Keyword name="FLOAT1X4_KEYWORD" representation="float1x4" />
-    
-    <Keyword name="FLOAT2X1_KEYWORD" representation="float2x1" />
-    <Keyword name="FLOAT2X2_KEYWORD" representation="float2x2" />
-    <Keyword name="FLOAT2X3_KEYWORD" representation="float2x3" />
-    <Keyword name="FLOAT2X4_KEYWORD" representation="float2x4" />
-    
-    <Keyword name="FLOAT3X1_KEYWORD" representation="float3x1" />
-    <Keyword name="FLOAT3X2_KEYWORD" representation="float3x2" />
-    <Keyword name="FLOAT3X3_KEYWORD" representation="float3x3" />
-    <Keyword name="FLOAT3X4_KEYWORD" representation="float3x4" />
-    
-    <Keyword name="FLOAT4X1_KEYWORD" representation="float4x1" />
-    <Keyword name="FLOAT4X2_KEYWORD" representation="float4x2" />
-    <Keyword name="FLOAT4X3_KEYWORD" representation="float4x3" />
-    <Keyword name="FLOAT4X4_KEYWORD" representation="float4x4" />
-    <!-- double -->
-    <Keyword name="DOUBLE1X1_KEYWORD" representation="double1x1" />
-    <Keyword name="DOUBLE1X2_KEYWORD" representation="double1x2" />
-    <Keyword name="DOUBLE1X3_KEYWORD" representation="double1x3" />
-    <Keyword name="DOUBLE1X4_KEYWORD" representation="double1x4" />
-    
-    <Keyword name="DOUBLE2X1_KEYWORD" representation="double2x1" />
-    <Keyword name="DOUBLE2X2_KEYWORD" representation="double2x2" />
-    <Keyword name="DOUBLE2X3_KEYWORD" representation="double2x3" />
-    <Keyword name="DOUBLE2X4_KEYWORD" representation="double2x4" />
-    
-    <Keyword name="DOUBLE3X1_KEYWORD" representation="double3x1" />
-    <Keyword name="DOUBLE3X2_KEYWORD" representation="double3x2" />
-    <Keyword name="DOUBLE3X3_KEYWORD" representation="double3x3" />
-    <Keyword name="DOUBLE3X4_KEYWORD" representation="double3x4" />
-    
-    <Keyword name="DOUBLE4X1_KEYWORD" representation="double4x1" />
-    <Keyword name="DOUBLE4X2_KEYWORD" representation="double4x2" />
-    <Keyword name="DOUBLE4X3_KEYWORD" representation="double4x3" />
-    <Keyword name="DOUBLE4X4_KEYWORD" representation="double4x4" />
-  </MatrixTypeKeywords>
   
   <FunctionReturnTypeKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="VOID_KEYWORD" representation="void" />
@@ -233,4 +70,174 @@
     <Token name="WARNING_DIRECTIVE" representation="#warning" filtered="true" />
     <Token name="PRAGMA_DIRECTIVE" representation="#pragma" filtered="true" />
   </Tokens>
+  
+  <ScalarTypeKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="BOOL_KEYWORD" representation="bool" />
+    <Keyword name="INT_KEYWORD" representation="int" />
+    <Keyword name="UINT_KEYWORD" representation="uint" />
+    <Keyword name="HALF_KEYWORD" representation="half" />
+    <Keyword name="FLOAT_KEYWORD" representation="float" />
+    <Keyword name="DOUBLE_KEYWORD" representation="double" />
+  </ScalarTypeKeywords>
+
+  <VectorTypeKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="BOOL1_KEYWORD" representation="bool1" />
+    <Keyword name="BOOL2_KEYWORD" representation="bool2" />
+    <Keyword name="BOOL3_KEYWORD" representation="bool3" />
+    <Keyword name="BOOL4_KEYWORD" representation="bool4" />
+
+    <Keyword name="INT1_KEYWORD" representation="int1" />
+    <Keyword name="INT2_KEYWORD" representation="int2" />
+    <Keyword name="INT3_KEYWORD" representation="int3" />
+    <Keyword name="INT4_KEYWORD" representation="int4" />
+
+    <Keyword name="UINT1_KEYWORD" representation="uint1" />
+    <Keyword name="UINT2_KEYWORD" representation="uint2" />
+    <Keyword name="UINT3_KEYWORD" representation="uint3" />
+    <Keyword name="UINT4_KEYWORD" representation="uint4" />
+
+    <Keyword name="HALF1_KEYWORD" representation="half1" />
+    <Keyword name="HALF2_KEYWORD" representation="half2" />
+    <Keyword name="HALF3_KEYWORD" representation="half3" />
+    <Keyword name="HALF4_KEYWORD" representation="half4" />
+
+    <Keyword name="FLOAT1_KEYWORD" representation="float1" />
+    <Keyword name="FLOAT2_KEYWORD" representation="float2" />
+    <Keyword name="FLOAT3_KEYWORD" representation="float3" />
+    <Keyword name="FLOAT4_KEYWORD" representation="float4" />
+
+    <Keyword name="DOUBLE1_KEYWORD" representation="double1" />
+    <Keyword name="DOUBLE2_KEYWORD" representation="double2" />
+    <Keyword name="DOUBLE3_KEYWORD" representation="double3" />
+    <Keyword name="DOUBLE4_KEYWORD" representation="double4" />
+  </VectorTypeKeywords>
+
+  <InputModifierKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="IN_KEYWORD" representation="in" />
+    <Keyword name="INOUT_KEYWORD" representation="inout" />
+    <Keyword name="OUT_KEYWORD" representation="out" />
+    <Keyword name="UNIFORM_KEYWORD" representation="uniform" />
+  </InputModifierKeywords>
+  
+  <MatrixTypeKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="BOOL1X1_KEYWORD" representation="bool1x1" />
+    <Keyword name="BOOL1X2_KEYWORD" representation="bool1x2" />
+    <Keyword name="BOOL1X3_KEYWORD" representation="bool1x3" />
+    <Keyword name="BOOL1X4_KEYWORD" representation="bool1x4" />
+
+    <Keyword name="BOOL2X1_KEYWORD" representation="bool2x1" />
+    <Keyword name="BOOL2X2_KEYWORD" representation="bool2x2" />
+    <Keyword name="BOOL2X3_KEYWORD" representation="bool2x3" />
+    <Keyword name="BOOL2X4_KEYWORD" representation="bool2x4" />
+
+    <Keyword name="BOOL3X1_KEYWORD" representation="bool3x1" />
+    <Keyword name="BOOL3X2_KEYWORD" representation="bool3x2" />
+    <Keyword name="BOOL3X3_KEYWORD" representation="bool3x3" />
+    <Keyword name="BOOL3X4_KEYWORD" representation="bool3x4" />
+
+    <Keyword name="BOOL4X1_KEYWORD" representation="bool4x1" />
+    <Keyword name="BOOL4X2_KEYWORD" representation="bool4x2" />
+    <Keyword name="BOOL4X3_KEYWORD" representation="bool4x3" />
+    <Keyword name="BOOL4X4_KEYWORD" representation="bool4x4" />
+    <!-- int -->
+    <Keyword name="INT1X1_KEYWORD" representation="int1x1" />
+    <Keyword name="INT1X2_KEYWORD" representation="int1x2" />
+    <Keyword name="INT1X3_KEYWORD" representation="int1x3" />
+    <Keyword name="INT1X4_KEYWORD" representation="int1x4" />
+
+    <Keyword name="INT2X1_KEYWORD" representation="int2x1" />
+    <Keyword name="INT2X2_KEYWORD" representation="int2x2" />
+    <Keyword name="INT2X3_KEYWORD" representation="int2x3" />
+    <Keyword name="INT2X4_KEYWORD" representation="int2x4" />
+
+    <Keyword name="INT3X1_KEYWORD" representation="int3x1" />
+    <Keyword name="INT3X2_KEYWORD" representation="int3x2" />
+    <Keyword name="INT3X3_KEYWORD" representation="int3x3" />
+    <Keyword name="INT3X4_KEYWORD" representation="int3x4" />
+
+    <Keyword name="INT4X1_KEYWORD" representation="int4x1" />
+    <Keyword name="INT4X2_KEYWORD" representation="int4x2" />
+    <Keyword name="INT4X3_KEYWORD" representation="int4x3" />
+    <Keyword name="INT4X4_KEYWORD" representation="int4x4" />
+    <!-- uint -->
+    <Keyword name="UINT1X1_KEYWORD" representation="uint1x1" />
+    <Keyword name="UINT1X2_KEYWORD" representation="uint1x2" />
+    <Keyword name="UINT1X3_KEYWORD" representation="uint1x3" />
+    <Keyword name="UINT1X4_KEYWORD" representation="uint1x4" />
+
+    <Keyword name="UINT2X1_KEYWORD" representation="uint2x1" />
+    <Keyword name="UINT2X2_KEYWORD" representation="uint2x2" />
+    <Keyword name="UINT2X3_KEYWORD" representation="uint2x3" />
+    <Keyword name="UINT2X4_KEYWORD" representation="uint2x4" />
+
+    <Keyword name="UINT3X1_KEYWORD" representation="uint3x1" />
+    <Keyword name="UINT3X2_KEYWORD" representation="uint3x2" />
+    <Keyword name="UINT3X3_KEYWORD" representation="uint3x3" />
+    <Keyword name="UINT3X4_KEYWORD" representation="uint3x4" />
+
+    <Keyword name="UINT4X1_KEYWORD" representation="uint4x1" />
+    <Keyword name="UINT4X2_KEYWORD" representation="uint4x2" />
+    <Keyword name="UINT4X3_KEYWORD" representation="uint4x3" />
+    <Keyword name="UINT4X4_KEYWORD" representation="uint4x4" />
+    <!-- half -->
+    <Keyword name="HALF1X1_KEYWORD" representation="half1x1" />
+    <Keyword name="HALF1X2_KEYWORD" representation="half1x2" />
+    <Keyword name="HALF1X3_KEYWORD" representation="half1x3" />
+    <Keyword name="HALF1X4_KEYWORD" representation="half1x4" />
+
+    <Keyword name="HALF2X1_KEYWORD" representation="half2x1" />
+    <Keyword name="HALF2X2_KEYWORD" representation="half2x2" />
+    <Keyword name="HALF2X3_KEYWORD" representation="half2x3" />
+    <Keyword name="HALF2X4_KEYWORD" representation="half2x4" />
+
+    <Keyword name="HALF3X1_KEYWORD" representation="half3x1" />
+    <Keyword name="HALF3X2_KEYWORD" representation="half3x2" />
+    <Keyword name="HALF3X3_KEYWORD" representation="half3x3" />
+    <Keyword name="HALF3X4_KEYWORD" representation="half3x4" />
+
+    <Keyword name="HALF4X1_KEYWORD" representation="half4x1" />
+    <Keyword name="HALF4X2_KEYWORD" representation="half4x2" />
+    <Keyword name="HALF4X3_KEYWORD" representation="half4x3" />
+    <Keyword name="HALF4X4_KEYWORD" representation="half4x4" />
+    <!-- float -->
+    <Keyword name="FLOAT1X1_KEYWORD" representation="float1x1" />
+    <Keyword name="FLOAT1X2_KEYWORD" representation="float1x2" />
+    <Keyword name="FLOAT1X3_KEYWORD" representation="float1x3" />
+    <Keyword name="FLOAT1X4_KEYWORD" representation="float1x4" />
+
+    <Keyword name="FLOAT2X1_KEYWORD" representation="float2x1" />
+    <Keyword name="FLOAT2X2_KEYWORD" representation="float2x2" />
+    <Keyword name="FLOAT2X3_KEYWORD" representation="float2x3" />
+    <Keyword name="FLOAT2X4_KEYWORD" representation="float2x4" />
+
+    <Keyword name="FLOAT3X1_KEYWORD" representation="float3x1" />
+    <Keyword name="FLOAT3X2_KEYWORD" representation="float3x2" />
+    <Keyword name="FLOAT3X3_KEYWORD" representation="float3x3" />
+    <Keyword name="FLOAT3X4_KEYWORD" representation="float3x4" />
+
+    <Keyword name="FLOAT4X1_KEYWORD" representation="float4x1" />
+    <Keyword name="FLOAT4X2_KEYWORD" representation="float4x2" />
+    <Keyword name="FLOAT4X3_KEYWORD" representation="float4x3" />
+    <Keyword name="FLOAT4X4_KEYWORD" representation="float4x4" />
+    <!-- double -->
+    <Keyword name="DOUBLE1X1_KEYWORD" representation="double1x1" />
+    <Keyword name="DOUBLE1X2_KEYWORD" representation="double1x2" />
+    <Keyword name="DOUBLE1X3_KEYWORD" representation="double1x3" />
+    <Keyword name="DOUBLE1X4_KEYWORD" representation="double1x4" />
+
+    <Keyword name="DOUBLE2X1_KEYWORD" representation="double2x1" />
+    <Keyword name="DOUBLE2X2_KEYWORD" representation="double2x2" />
+    <Keyword name="DOUBLE2X3_KEYWORD" representation="double2x3" />
+    <Keyword name="DOUBLE2X4_KEYWORD" representation="double2x4" />
+
+    <Keyword name="DOUBLE3X1_KEYWORD" representation="double3x1" />
+    <Keyword name="DOUBLE3X2_KEYWORD" representation="double3x2" />
+    <Keyword name="DOUBLE3X3_KEYWORD" representation="double3x3" />
+    <Keyword name="DOUBLE3X4_KEYWORD" representation="double3x4" />
+
+    <Keyword name="DOUBLE4X1_KEYWORD" representation="double4x1" />
+    <Keyword name="DOUBLE4X2_KEYWORD" representation="double4x2" />
+    <Keyword name="DOUBLE4X3_KEYWORD" representation="double4x3" />
+    <Keyword name="DOUBLE4X4_KEYWORD" representation="double4x4" />
+  </MatrixTypeKeywords>
 </CgTokens>

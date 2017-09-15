@@ -13,6 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         
         [TestCase("AllDeclarations")]
         
+        [TestCase("Assignments")]
+        
         [TestCase("Comment")]
         
         [TestCase("Empty")]
@@ -23,17 +25,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("FieldDeclarationReferencedType")]
         [TestCase("FieldDeclarationWithInitializer")]
         
-        [TestCase("FunctionBody")]
-        
-        [TestCase("FunctionBuiltInReturnType")]
+        [TestCase("FunctionArguments")]
         [TestCase("FunctionOneArgument")]
         [TestCase("FunctionTwoArguments")]
+        
+        [TestCase("FunctionCall")]
+        
+        [TestCase("FunctionBuiltInReturnType")]
         [TestCase("FunctionVoidReturnType")]
         
         [TestCase("IfDirective")]
         [TestCase("IfdefDirective")]
         [TestCase("IfndefDirective")]
         [TestCase("NonConditionalDirectives")]
+        
+        [TestCase("LocalVariableDeclarations")]
         
         [TestCase("Semantics")]
         

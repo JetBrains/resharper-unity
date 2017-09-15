@@ -31,15 +31,6 @@ ICgFile
   IGlobalVariableDeclaration
     ITypeName
       IBuiltInType
-        CgKeywordTokenNode(type:DWORD_KEYWORD, text:dword)
-    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-    IIdentifier
-      CgIdentifier(type:IDENTIFIER, text:dw)
-    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
-  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-  IGlobalVariableDeclaration
-    ITypeName
-      IBuiltInType
         CgKeywordTokenNode(type:HALF_KEYWORD, text:half)
     CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
     IIdentifier
