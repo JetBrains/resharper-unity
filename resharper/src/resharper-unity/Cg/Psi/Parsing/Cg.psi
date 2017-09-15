@@ -356,21 +356,31 @@ functionBody
   ;
 
 errorhandling cgBlock
-  :
-      localVariableDeclaration
-      | IDENTIFIER
-      // TODO: remove IDENTIFIER match when all is done
+  :      
+    (
+      (
+        !(#id:identifier)
+        (
+          localVariableDeclaration[id]
+          | assignment[id]
+        )
+      )
+      | localVariableDeclaration[null]
+    )
+    SEMICOLON
   ;
 
-localVariableDeclaration
+localVariableDeclaration[identifier typeReference]
   :
-    typeName
+    (
+      builtInType
+      | &typeReference
+    )
     identifier<CG_NAME, NameNode>
     (
       EQUALS
       expression
-    )?
-    SEMICOLON
+    )?    
   ;
 
 expression
@@ -383,3 +393,10 @@ variableReference
   :
     identifier<CG_NAME, NameNode>
   ;  
+
+assignment[identifier variableName]
+  :
+    &variableName
+    EQUALS
+    expression  
+  ;
