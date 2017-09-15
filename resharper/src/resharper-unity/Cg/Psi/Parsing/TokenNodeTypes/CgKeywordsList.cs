@@ -1,4 +1,7 @@
-﻿using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
 {
@@ -8,21 +11,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
 
         static CgKeywordsList()
         {
+            var fields = typeof(CgTokenNodeTypes)
+                .GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Where(f => f.Name.EndsWith("_KEYWORD") && f.FieldType == typeof(CgKeywordTokenNodeType))
+                .OrderBy(f => f.Name, StringComparer.InvariantCultureIgnoreCase);
+
+            var values = fields.Select(f => f.GetValue(null)).Cast<CgKeywordTokenNodeType>().ToArray();
+            
             ALL = new NodeTypeSet(
-                CgTokenNodeTypes.STRUCT_KEYWORD,
-                
-                CgTokenNodeTypes.BOOL_KEYWORD,
-                CgTokenNodeTypes.INT_KEYWORD,
-                CgTokenNodeTypes.UINT_KEYWORD,
-                CgTokenNodeTypes.DWORD_KEYWORD,
-                CgTokenNodeTypes.HALF_KEYWORD,
-                CgTokenNodeTypes.FLOAT_KEYWORD,
-                CgTokenNodeTypes.DOUBLE_KEYWORD,
-                
-                CgTokenNodeTypes.VOID_KEYWORD,
-                
-                CgTokenNodeTypes.FALSE_KEYWORD,
-                CgTokenNodeTypes.TRUE_KEYWORD
+                values
             );
         }
     }
