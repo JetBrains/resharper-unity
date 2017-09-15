@@ -60,7 +60,44 @@ options {
     | COMMA
     | SEMICOLON
     | COLON
+    
+    | LT
+    | GT
+    | LTEQ
+    | GTEQ
+    | EQEQ
+    | NOTEQ
+
     | EQUALS
+
+    | PLUS
+    | MINUS
+    | MULTIPLY
+    | DIVIDE
+    | MODULO
+
+    | MULTEQ
+    | DIVEQ
+    | PERCEQ
+    | PLUSEQ
+    | MINUSEQ
+
+    | TILDE
+    | LTLT
+    | XOR
+    | OR
+    | ANDAND
+    | OROR
+    | NEGATE
+
+    | LTLTEQ
+    | GTGTEQ
+    | ANDEQ
+    | XOREQ
+    | OREQ
+
+    | PLUSPLUS
+    | MINUSMINUS
 
     | FALSE_KEYWORD
     | TRUE_KEYWORD
@@ -737,16 +774,20 @@ localVariableDeclaration[identifier userDeclaredType]
     )?    
   ;
 
-expression
+errorhandling interface expression
   :
     constantValue
-    | 
+    | runtimeValue
+    | unaryOperation
+    | parensExpression
+  ;
+
+runtimeValue
+  :
+    !(#id:identifier)
     (
-      !(#id:identifier)
-      (
-        valueReference[id]
-        | functionCall[id]
-      )
+      valueReference[id]
+      | functionCall[id]
     )
   ;
 
@@ -803,4 +844,24 @@ returnStatement
   :
     RETURN_KEYWORD
     expression?
+  ;
+
+unaryOperator
+  :
+    PLUS
+    | MINUS
+    | NEGATE
+  ;
+
+unaryOperation
+  :
+    unaryOperator
+    expression
+  ;
+
+parensExpression
+  :
+    LPAREN
+    expression
+    RPAREN
   ;

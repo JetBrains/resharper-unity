@@ -70,9 +70,8 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IExpression
-            IConstantValue
-              CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+          IConstantValue
+            CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -85,7 +84,7 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IExpression
+          IRuntimeValue
             IValueReference
               IVariableReference
                 IIdentifier
@@ -104,7 +103,7 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IExpression
+          IRuntimeValue
             IValueReference
               IFieldReference
                 IIdentifier
@@ -132,9 +131,8 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IExpression
-            IConstantValue
-              CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+          IConstantValue
+            CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
         CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -151,7 +149,7 @@ ICgFile
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           CgFixedLengthTokenNode(type:EQUALS, text:=)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-          IExpression
+          IRuntimeValue
             IValueReference
               IFieldReference
                 IIdentifier
