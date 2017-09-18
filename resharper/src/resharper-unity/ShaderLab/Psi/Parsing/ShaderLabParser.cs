@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Gen;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -10,7 +11,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
 {
-    internal class ShaderLabParser : ShaderLabParserGenerated, IParser
+    internal class ShaderLabParser : ShaderLabParserGenerated, IShaderLabParser
     {
         [NotNull] private readonly ILexer<int> myOriginalLexer;
         private readonly CommonIdentifierIntern myIntern;
@@ -46,6 +47,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
             });
         }
 
+        IColorLiteral IShaderLabParser.ParseColorLiteral()
+        {
+            return myIntern.DoWithIdentifierIntern(intern =>
+            {
+                var element = ParseColorLiteral();
+                InsertMissingTokens(element, intern);
+                return (IColorLiteral) element;
+            });
+        }
+
         protected override TreeElement CreateToken()
         {
             var tokenType = myLexer.TokenType;
@@ -68,8 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
             // time, and we don't need to call SetOffset here (doing so is ignored)
             var tokenStart = myLexer.TokenStart;
             var element = CreateToken(tokenType);
-            var leaf = element as LeafElementBase;
-            if (leaf != null)
+            if (element is LeafElementBase leaf)
                 SetOffset(leaf, tokenStart);
             return element;
         }
