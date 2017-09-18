@@ -25,8 +25,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.CodeAnnotations
         {
             myPredefinedTypeCache = predefinedTypeCache;
             myUnityApi = unityApi;
-            myAnnotationsPsiModule =
-                externalAnnotationsModuleFactory.Modules.OfType<IExternalAnnotationPsiModule>().Single();
+            myAnnotationsPsiModule = externalAnnotationsModuleFactory
+                .Modules
+                .OfType<IExternalAnnotationPsiModule>()
+#if RIDER                
+                .Single(m => Equals(m.TargetFrameworkId, TargetFrameworkId.Default));
+#else
+                .Single();
+#endif    
         }
 
         public CodeAnnotationNullableValue? GetNullableAttribute(IDeclaredElement element)
