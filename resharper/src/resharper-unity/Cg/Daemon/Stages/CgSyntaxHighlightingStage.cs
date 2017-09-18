@@ -30,58 +30,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public override void VisitGlobalVariableDeclarationNode(IGlobalVariableDeclaration globalVariableDeclarationParam,
                 IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.FIELD_IDENTIFIER_ATTRIBUTE, globalVariableDeclarationParam.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FIELD_IDENTIFIER, globalVariableDeclarationParam.NameNode.GetDocumentRange()));
                 base.VisitGlobalVariableDeclarationNode(globalVariableDeclarationParam, context);
             }
 
             public override void VisitFieldDeclarationNode(IFieldDeclaration fieldDeclarationParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.FIELD_IDENTIFIER_ATTRIBUTE, fieldDeclarationParam.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FIELD_IDENTIFIER, fieldDeclarationParam.NameNode.GetDocumentRange()));
                 base.VisitFieldDeclarationNode(fieldDeclarationParam, context);
             }
             
             public override void VisitStructDeclarationNode(IStructDeclaration structDeclarationParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.TYPE_STRUCT_ATTRIBUTE, structDeclarationParam.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_STRUCT, structDeclarationParam.GetDocumentRange()));
                 base.VisitStructDeclarationNode(structDeclarationParam, context);
             }
 
             public override void VisitFunctionDeclarationNode(IFunctionDeclaration functionDeclarationParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.METHOD_IDENTIFIER_ATTRIBUTE, functionDeclarationParam.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, functionDeclarationParam.NameNode.GetDocumentRange()));
                 base.VisitFunctionDeclarationNode(functionDeclarationParam, context);
             }
 
             public override void VisitTypeReferenceNode(ITypeReference typeReferenceParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.TYPE_CLASS_ATTRIBUTE, typeReferenceParam.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_CLASS, typeReferenceParam.GetDocumentRange()));
                 base.VisitTypeReferenceNode(typeReferenceParam, context);
             }
 
             public override void VisitSemanticNode(ISemantic semanticParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.KEYWORD, semanticParam.GetDocumentRange())); // TODO: add as proper keywords maybe
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, semanticParam.GetDocumentRange())); // TODO: add as proper keywords maybe
                 base.VisitSemanticNode(semanticParam, context);
             }
 
             public override void VisitArgumentNode(IArgument argumentParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.PARAMETER_IDENTIFIER_ATTRIBUTE, argumentParam.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.PARAMETER_IDENTIFIER, argumentParam.NameNode.GetDocumentRange()));
                 base.VisitArgumentNode(argumentParam, context);
             }
 
             public override void VisitConditionalDirectiveNode(IConditionalDirective conditionalDirectiveParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.KEYWORD, conditionalDirectiveParam.HeaderNode.GetDocumentRange()));
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE, conditionalDirectiveParam.ContentNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, conditionalDirectiveParam.HeaderNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.CPP_MACRO_NAME, conditionalDirectiveParam.ContentNode.GetDocumentRange()));
 
                 base.VisitConditionalDirectiveNode(conditionalDirectiveParam, context);
             }
 
             public override void VisitDirectiveNode(IDirective directiveParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.KEYWORD, directiveParam.HeaderNode.GetDocumentRange()));
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE, directiveParam.ContentNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, directiveParam.HeaderNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.CPP_MACRO_NAME, directiveParam.ContentNode.GetDocumentRange()));
 
                 base.VisitDirectiveNode(directiveParam, context);
             }
@@ -89,8 +89,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public override void VisitConditionalDirectiveFooterNode(IConditionalDirectiveFooter conditionalDirectiveFooterParam,
                 IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.KEYWORD, conditionalDirectiveFooterParam.HeaderNode.GetDocumentRange()));
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE, conditionalDirectiveFooterParam.ContentNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, conditionalDirectiveFooterParam.HeaderNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.CPP_MACRO_NAME, conditionalDirectiveFooterParam.ContentNode.GetDocumentRange()));
 
                 base.VisitConditionalDirectiveFooterNode(conditionalDirectiveFooterParam, context);
             }
@@ -98,31 +98,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public override void VisitLocalVariableDeclarationNode(ILocalVariableDeclaration localVariableDeclarationParam,
                 IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.LOCAL_VARIABLE_IDENTIFIER_ATTRIBUTE, localVariableDeclarationParam.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.LOCAL_VARIABLE_IDENTIFIER, localVariableDeclarationParam.NameNode.GetDocumentRange()));
                 base.VisitLocalVariableDeclarationNode(localVariableDeclarationParam, context);
             }
 
             public override void VisitVariableReferenceNode(IVariableReference variableReferenceParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.LOCAL_VARIABLE_IDENTIFIER_ATTRIBUTE, variableReferenceParam.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.LOCAL_VARIABLE_IDENTIFIER, variableReferenceParam.GetDocumentRange()));
                 base.VisitVariableReferenceNode(variableReferenceParam, context);
             }
 
             public override void VisitFieldNameNode(IFieldName fieldNameParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.FIELD_IDENTIFIER_ATTRIBUTE, fieldNameParam.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FIELD_IDENTIFIER, fieldNameParam.GetDocumentRange()));
                 base.VisitFieldNameNode(fieldNameParam, context);
             }
 
             public override void VisitFunctionCallNode(IFunctionCall functionCallParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.METHOD_IDENTIFIER_ATTRIBUTE, functionCallParam.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, functionCallParam.NameNode.GetDocumentRange()));
                 base.VisitFunctionCallNode(functionCallParam, context);
             }
 
             public override void VisitConstantValueNode(IConstantValue constantValueParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.NUMBER, constantValueParam.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.NUMBER, constantValueParam.GetDocumentRange()));
                 base.VisitConstantValueNode(constantValueParam, context);
             }
 
