@@ -17,10 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         public IDaemonProcess DaemonProcess { get; }
         public IFile File => myFile;
 
-        protected CgDaemonStageProcessBase(
-            IDaemonProcess daemonProcess,
-            ICgFile file,
-            IContextBoundSettingsStore settingsStore)
+        protected CgDaemonStageProcessBase(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
         {
             mySettingsStore = settingsStore;
             DaemonProcess = daemonProcess;
