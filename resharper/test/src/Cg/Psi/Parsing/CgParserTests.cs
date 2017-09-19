@@ -19,6 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         
         [TestCase("Comment")]
         
+        [TestCase("DirectiveWithSpace")]
+        
         [TestCase("Empty")]
         
         [TestCase("FieldDeclaration")]

@@ -57,6 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
         private TreeElement CreateMissingToken()
         {
             var tokenType = myLexer.TokenType;
+            
             if (tokenType == CgTokenNodeTypes.WHITESPACE)
                 return new CgWhitespaceTokenNode(myWhitespaceIntern.Intern(myLexer));
 

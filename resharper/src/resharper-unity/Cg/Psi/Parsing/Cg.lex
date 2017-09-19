@@ -69,20 +69,7 @@ IDENTIFIER=({IDENTIFIER_START_CHAR}{IDENTIFIER_PART_CHAR}*)
 NON_EOL_WS=(([\ \t])|({LINE_CONTINUATOR}))
 PRP=("#"({NON_EOL_WS}|{DELIMITED_COMMENT}|{UNFINISHED_DELIMITED_COMMENT})*)
 
-IF_DIRECTIVE=({PRP}"if")
-IFDEF_DIRECTIVE=({PRP}"ifdef")
-IFNDEF_DIRECTIVE=({PRP}"ifndef")
-ELIF_DIRECTIVE=({PRP}"elif")
-ELSE_DIRECTIVE=({PRP}"else")
-ENDIF_DIRECTIVE=({PRP}"endif")
-INCLUDE_DIRECTIVE=({PRP}"include")
-DEFINE_DIRECTIVE=({PRP}"define")
-UNDEF_DIRECTIVE=({PRP}"undef")
-LINE_DIRECTIVE=({PRP}"line")
-ERROR_DIRECTIVE=({PRP}"error")
-WARNING_DIRECTIVE=({PRP}"warning")
-PRAGMA_DIRECTIVE=({PRP}"pragma")
-UNKNOWN_DIRECTIVE=({PRP}{IDENTIFIER})
+DIRECTIVE=({PRP}{IDENTIFIER})
 
 %{ /*no empty directive support*/
 %}
@@ -91,32 +78,15 @@ SLASH_AND_NOT_SLASH=("/"[^\/\u0085\u2028\u2029\u000D\u000A])
 NOT_SLASH_NOT_NEW_LINE=([^\/\u0085\u2028\u2029\u000D\u000A])
 DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}|{NOT_SLASH_NOT_NEW_LINE})*)(\/|{SINGLE_LINE_COMMENT})?
 
-%state META_DIRECTIVE
-%state CODE_DIRECTIVE
-%state INCLUDE_DIRECTIVE
+%state YY_DIRECTIVE
 
 %%
 
 <YYINITIAL>           {WHITESPACE}            { return CgTokenNodeTypes.WHITESPACE; }
 <YYINITIAL>           {NEW_LINE}              { return CgTokenNodeTypes.NEW_LINE; }
 
-<META_DIRECTIVE>      {DIRECTIVE_CONTENT}     { yybegin(YYINITIAL);         return CgTokenNodeTypes.META_DIRECTIVE_CONTENT;          }
-<CODE_DIRECTIVE>      {DIRECTIVE_CONTENT}     { yybegin(YYINITIAL);         return CgTokenNodeTypes.CODE_DIRECTIVE_CONTENT;     }
-<INCLUDE_DIRECTIVE>   {DIRECTIVE_CONTENT}     { yybegin(YYINITIAL);         return CgTokenNodeTypes.INCLUDE_DIRECTIVE_CONTENT;  }
-
-<YYINITIAL>           {IF_DIRECTIVE}          { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.IF_DIRECTIVE;               }
-<YYINITIAL>           {IFDEF_DIRECTIVE}       { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.IFDEF_DIRECTIVE;            }
-<YYINITIAL>           {IFNDEF_DIRECTIVE}      { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.IFNDEF_DIRECTIVE;           }
-<YYINITIAL>           {ELIF_DIRECTIVE}        { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.ELIF_DIRECTIVE;             }
-<YYINITIAL>           {ELSE_DIRECTIVE}        { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.ELSE_DIRECTIVE;             }
-<YYINITIAL>           {ENDIF_DIRECTIVE}       { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.ENDIF_DIRECTIVE;            }
-<YYINITIAL>           {INCLUDE_DIRECTIVE}     { yybegin(INCLUDE_DIRECTIVE); return CgTokenNodeTypes.INCLUDE_DIRECTIVE;          }
-<YYINITIAL>           {DEFINE_DIRECTIVE}      { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.DEFINE_DIRECTIVE;           }
-<YYINITIAL>           {UNDEF_DIRECTIVE}       { yybegin(CODE_DIRECTIVE);    return CgTokenNodeTypes.UNDEF_DIRECTIVE;            }
-<YYINITIAL>           {LINE_DIRECTIVE}        { yybegin(META_DIRECTIVE);    return CgTokenNodeTypes.LINE_DIRECTIVE;             }
-<YYINITIAL>           {ERROR_DIRECTIVE}       { yybegin(META_DIRECTIVE);    return CgTokenNodeTypes.ERROR_DIRECTIVE;            }
-<YYINITIAL>           {WARNING_DIRECTIVE}     { yybegin(META_DIRECTIVE);    return CgTokenNodeTypes.WARNING_DIRECTIVE;          }
-<YYINITIAL>           {PRAGMA_DIRECTIVE}      { yybegin(META_DIRECTIVE);    return CgTokenNodeTypes.PRAGMA_DIRECTIVE;           }
+<YY_DIRECTIVE>        {DIRECTIVE_CONTENT}     { yybegin(YYINITIAL);         return CgTokenNodeTypes.DIRECTIVE_CONTENT;     }
+<YYINITIAL>           {DIRECTIVE}             { yybegin(YY_DIRECTIVE);      return CgTokenNodeTypes.DIRECTIVE;             }
 
 <YYINITIAL>           "{"                     { return CgTokenNodeTypes.LBRACE; }
 <YYINITIAL>           "}"                     { return CgTokenNodeTypes.RBRACE; }

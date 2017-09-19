@@ -24,29 +24,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             {
             }
 
-            public override void VisitConditionalDirectiveNode(IConditionalDirective conditionalDirectiveParam, IHighlightingConsumer context)
-            {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, conditionalDirectiveParam.HeaderNode.GetDocumentRange()));
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.PREPPROCESSOR_LINE_CONTENT, conditionalDirectiveParam.ContentNode.GetDocumentRange()));
-
-                base.VisitConditionalDirectiveNode(conditionalDirectiveParam, context);
-            }
-
             public override void VisitDirectiveNode(IDirective directiveParam, IHighlightingConsumer context)
             {
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, directiveParam.HeaderNode.GetDocumentRange()));
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.PREPPROCESSOR_LINE_CONTENT, directiveParam.ContentNode.GetDocumentRange()));
 
                 base.VisitDirectiveNode(directiveParam, context);
-            }
-
-            public override void VisitConditionalDirectiveFooterNode(IConditionalDirectiveFooter conditionalDirectiveFooterParam,
-                IHighlightingConsumer context)
-            {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, conditionalDirectiveFooterParam.HeaderNode.GetDocumentRange()));
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.PREPPROCESSOR_LINE_CONTENT, conditionalDirectiveFooterParam.ContentNode.GetDocumentRange()));
-
-                base.VisitConditionalDirectiveFooterNode(conditionalDirectiveFooterParam, context);
             }
         }
     }

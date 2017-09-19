@@ -118,6 +118,9 @@ options {
     | OUT_KEYWORD
     | UNIFORM_KEYWORD
 
+    | DIRECTIVE
+    | DIRECTIVE_CONTENT
+
     | BOOL_KEYWORD
     | INT_KEYWORD
     | UINT_KEYWORD    
@@ -298,124 +301,19 @@ options
     )*
   ;
 
-errorhandling interface directive
-  :
-    conditionalDirective
-    | nonConditionalDirective
-  ;
-
-conditionalDirective
+errorhandling directive
   :    
+    DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+    DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+  ;
+
+errorhandling macro
+  :
+    !(#macroKey:identifier)
     (
-      IF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-      | IFDEF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-      | IFNDEF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
+      &macroKey
+      | functionCall[macroKey]
     )
-    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-    directiveInternalContent
-    (
-      endifDirective
-      | elseDirective
-      | elifDirective
-    )
-  ;
-
-directiveInternalContent
-  :
-    (
-      declaration
-      | directive
-    )*
-  ;
-
-interface conditionalDirectiveFooter
-  :
-    elseDirective
-    | endifDirective
-    | elifDirective
-  ;
-
-elseDirective
-  :
-    ELSE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-    directiveInternalContent
-    endifDirective
-  ;
-
-elifDirective
-  :
-    ELIF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-    directiveInternalContent
-    (
-      endifDirective
-      | elseDirective
-      | elifDirective
-    )
-  ;
-
-endifDirective
-  :    
-    ENDIF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-  ;
-
-interface nonConditionalDirective
-// options
-// {
-//   stubBase="CgNonConditionalDirectiveElement";
-// }
-  :
-    includeDirective
-    | defineDirective
-    | undefDirective
-    | lineDirective
-    | errorDirective
-    | warningDirective
-    | pragmaDirective    
-  ;
-
-includeDirective
-  :
-    INCLUDE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    INCLUDE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-  ;
-
-defineDirective
-  :
-    DEFINE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-  ;
-
-undefDirective
-  :
-    UNDEF_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    CODE_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-  ;
-
-lineDirective
-  :
-    LINE_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    META_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-  ;
-
-errorDirective
-  :
-    ERROR_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    META_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-  ;
-
-warningDirective
-  :
-    WARNING_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    META_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
-  ;
-
-pragmaDirective
-  :
-    PRAGMA_DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    META_DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
   ;
 
 errorhandling interface declaration
@@ -740,8 +638,11 @@ inputModifier
   ;
 
 functionBody
-  :
-    cgBlock*
+  :  
+    (
+      cgBlock
+      | directive
+    )*
   ;
 
 errorhandling cgBlock
@@ -751,12 +652,12 @@ errorhandling cgBlock
         !(#id:identifier)
         (
           localVariableDeclaration[id]
-          | assignment[id]
+          | assignment[id]          
           | functionCall[id]
-        )
+        )        
       )
-      | localVariableDeclaration[null]
-      | returnStatement
+      | localVariableDeclaration[null]      
+      | returnStatement      
     )
     SEMICOLON
   ;
@@ -776,6 +677,7 @@ localVariableDeclaration[identifier userDeclaredType]
 
 // TODO: support assignment as f = a = 0 (check whether needed)
 // TODO: precedence
+// TODO: custom parse function
 errorhandling expression
   :
     unaryExpression

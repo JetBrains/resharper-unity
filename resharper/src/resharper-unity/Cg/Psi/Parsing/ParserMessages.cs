@@ -5,6 +5,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
     public static class ParserMessages
     {
+        public static string IDS_META_DIRECTIVE_HEADER => "meta preprocessor directive header";
+        
+        public static string IDS_CODE_DIRECTIVE_HEADER => "code preprocessor directive header";
+        
         public static string IDS_UNARY_EXPRESSION => "unary expression";
         
         public static string IDS_PRIMARY_EXPRESSION => "value";
