@@ -57,6 +57,8 @@ options {
     | RBRACE
     | LPAREN
     | RPAREN
+    | LBRACKET
+    | RBRACKET
     | COMMA
     | SEMICOLON
     | COLON
@@ -296,8 +298,8 @@ options
 }
   :    
     (
-      declaration
-      | directive
+      directive
+      | declaration
     )*
   ;
 
@@ -307,15 +309,6 @@ errorhandling directive
     DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
   ;
 
-errorhandling macro
-  :
-    !(#macroKey:identifier)
-    (
-      &macroKey
-      | functionCall[macroKey]
-    )
-  ;
-
 errorhandling interface declaration
   :       
       structDeclaration
@@ -323,58 +316,55 @@ errorhandling interface declaration
       (
         !(#type:typeName)
         !(#name:identifier)
-        (
-          globalVariableDeclaration[type, name]
+        (          
+          (
+            variableDeclaration[type, name]
+            SEMICOLON
+          )
           | functionDeclaration[type, name]
         )
       )
+  ;
+
+/* 
+  struct foo {
+    float field;
+  };
+*/
+structDeclaration
+  :
+    STRUCT_KEYWORD
+    identifier<CG_NAME, NameNode>
+    LBRACE
+    structFieldList
+    RBRACE
+    SEMICOLON
   ;
 
 identifier
   :
     IDENTIFIER<CG_NAME, NameToken>
   ;
-/*
-  float foo : COLOR = 0;
-*/
-globalVariableDeclaration[typeName type, identifier name]
+
+structFieldList
   :
-    &type
-    &name<CG_NAME, NameNode>
     (
-      COLON
-      semantic
-    )?
-    globalVariableInitializer?
-    SEMICOLON
+      !(#type:typeName)
+      !(#name:identifier)
+      fieldDeclaration[type, name]
+      SEMICOLON
+    )*
   ;
 
-semantic // e.g. TEXCOORD, COLOR
+fieldDeclaration[typeName type, identifier name]
   :
-    identifier // TODO: keyword list, after that different keywords for vertex/pixel shaders 
+    variableDeclaration<CG_CONTENT, ContentNode>[type, name]
   ;
 
-globalVariableInitializer
-  :
-    EQUALS
-    constantValue
-  ;
-
-constantValue
-  :
-    NUMERIC_LITERAL
-    | FALSE_KEYWORD
-    | TRUE_KEYWORD
-  ;
-
-typeName
+interface typeName
   :
     builtInType
-    | 
-    (
-      !(#userDeclaredType:identifier)
-      typeReference[userDeclaredType]
-    )
+    | typeReference
   ;
 
 builtInType
@@ -545,40 +535,168 @@ builtInType
     | DOUBLE4X4_KEYWORD
   ;
 
-typeReference[identifier userDeclaredType]
+interface typeReference
   :
-    &userDeclaredType<CG_NAME, NameNode>    
-  ;
-  
-/* 
-  struct foo {
-    float field;
-  };
-*/
-structDeclaration
-  :
-    STRUCT_KEYWORD
-    identifier<CG_NAME, NameNode>
-    LBRACE
-    structFieldList
-    RBRACE
-    SEMICOLON
+    identifier
   ;
 
-structFieldList
+semantic // e.g. TEXCOORD, COLOR
   :
-    fieldDeclaration*
+    identifier // TODO: keyword list, after that different keywords for vertex/pixel shaders 
   ;
 
-fieldDeclaration
+variableDeclaration[typeName type, identifier name]
   :
-    typeName
-    identifier<CG_NAME, NameNode>
+    &type<CG_TYPE, TypeNode>
+    &name<CG_NAME, NameNode>
     (
       COLON
-      semantic      
+      semantic
     )?
-    SEMICOLON
+    (
+      EQUALS
+      expression
+    )?    
+  ;
+
+// TODO: custom parse function to unwrap all this stuff
+// TODO: proper precedence
+errorhandling expression
+  :
+    assignmentExpression
+  ;
+
+assignmentExpression
+  :
+    binaryExpression
+    (
+      assignmentOperator
+      binaryExpression      
+    )*
+  ;
+
+assignmentOperator
+  :
+    EQUALS
+    | MULTEQ
+    | DIVEQ
+    | PLUSEQ
+    | MINUSEQ
+    | PERCEQ
+
+    | LTLTEQ
+    | GTGTEQ
+    | ANDEQ
+    | XOREQ
+    | OREQ
+  ;
+
+binaryExpression
+  :
+    prefixExpression
+    (
+      binaryOperator
+      prefixExpression
+    )*
+  ;
+
+binaryOperator
+  :
+    LT
+    | GT
+    | LTEQ
+    | GTEQ
+    | EQEQ
+    | NOTEQ
+
+    | PLUS
+    | MINUS
+    | MULTIPLY
+    | DIVIDE
+    | MODULO
+
+    | TILDE
+    | LTLT
+    | XOR
+    | OR
+    | ANDAND
+    | OROR
+
+    | fieldOperator
+  ;
+
+prefixExpression
+  :
+    postfixExpression
+    | 
+    (
+      prefixOperator
+      prefixExpression
+    )*
+  ;
+
+prefixOperator
+  :
+    PLUS
+    | MINUS
+    | PLUSPLUS
+    | MINUSMINUS
+  ;
+
+postfixExpression
+  :
+    primaryExpression<CG_OPERAND, OperandNode>
+    (
+      postfixOperator
+      postfixExpression
+    )*
+  ;
+
+postfixOperator
+  :
+    PLUSPLUS
+    | MINUSMINUS
+    | LBRACKET expression RBRACKET
+    | callOperator
+  ;
+
+callOperator
+  :
+    LPAREN
+    functionArgList
+    RPAREN
+  ;
+
+fieldOperator
+  :
+    DOT
+  ;
+
+interface primaryExpression
+  :
+    constantValue
+    | runtimeValue    
+    | parensExpression
+  ;
+
+interface runtimeValue
+  :
+    builtInType // constructor call, e.g. float4(1,2,3,4)
+    | identifier // may be variable reference or function name
+  ;
+
+parensExpression
+  :
+    LPAREN
+    expression
+    RPAREN
+  ;
+
+constantValue
+  :
+    NUMERIC_LITERAL
+    | FALSE_KEYWORD
+    | TRUE_KEYWORD
   ;
 
 /* void foo(arg1, arg2){
@@ -590,8 +708,7 @@ fieldDeclaration
 // fixed4 frag (v2f i, UNITY_VPOS_TYPE screenPos : VPOS) : SV_Target
 functionDeclaration[typeName type, identifier name]
   :  
-    VOID_KEYWORD    
-    | &type
+    &type<CG_TYPE, TypeNode>
     &name<CG_NAME, NameNode>
     LPAREN
     functionArgList?    
@@ -648,159 +765,26 @@ functionBody
 errorhandling cgBlock
   :      
     (
+      returnStatement            
+      | expression
+      | 
       (
-        !(#id:identifier)
-        (
-          localVariableDeclaration[id]
-          | assignment[id]          
-          | functionCall[id]
-        )        
+        !(#type:typeName)
+        !(#variableName:identifier)        
+        variableDeclaration[type, variableName]
       )
-      | localVariableDeclaration[null]      
-      | returnStatement      
     )
     SEMICOLON
-  ;
-
-localVariableDeclaration[identifier userDeclaredType]
-  :
-    (
-      builtInType
-      | typeReference[userDeclaredType]
-    )    
-    identifier<CG_NAME, NameNode>    
-    (
-      EQUALS
-      expression
-    )?    
-  ;
-
-// TODO: support assignment as f = a = 0 (check whether needed)
-// TODO: precedence
-// TODO: custom parse function
-errorhandling expression
-  :
-    unaryExpression
-    (
-      binaryOperator
-      unaryExpression
-    )*
-  ;
-
-unaryExpression
-  :
-    (
-      unaryOperator
-      unaryExpression
-    )
-    | primaryExpression    
-  ;
-
-unaryOperator
-  :
-    PLUS
-    | MINUS
-    | NEGATE
-  ;
-
-primaryExpression
-  :
-    constantValue
-    | runtimeValue
-    | parensExpression
-  ;
-
-// TODO: assignments
-binaryOperator
-  :
-    LT
-    | GT
-    | LTEQ
-    | GTEQ
-    | EQEQ
-    | NOTEQ
-
-    | PLUS
-    | MINUS
-    | MULTIPLY
-    | DIVIDE
-    | MODULO
-
-    | TILDE
-    | LTLT
-    | XOR
-    | OR
-    | ANDAND
-    | OROR
-  ;
-
-runtimeValue
-  :
-    !(#id:identifier)
-    (
-      valueReference[id]
-      | functionCall[id]
-    )
-  ;
-
-valueReference[identifier variableName]
-  :    
-    variableReference[variableName]
-    | fieldReference[variableName]
-  ;
-
-variableReference[identifier variableName]
-  :
-    &variableName
-  ;
-
-fieldReference[identifier variableName]
-  :
-    &variableName
-    (
-      DOT
-      fieldName
-    )+
-  ;
-
-fieldName
-  :
-    identifier
   ;
 
 functionCall[identifier functionName]
   :
     &functionName<CG_NAME, NameNode>
-    LPAREN
-    functionCallArgList?
-    RPAREN
-  ;
-
-functionCallArgList
-  :
-    expression
-    (
-      COMMA
-      expression
-    )*
-  ;
-
-assignment[identifier variableName]
-  :
-    valueReference[variableName]
-    EQUALS
-    expression  
+    callOperator
   ;
 
 returnStatement
   :
     RETURN_KEYWORD
     expression?
-  ;
-
-parensExpression
-  :
-    LPAREN
-    expression
-    RPAREN
   ;

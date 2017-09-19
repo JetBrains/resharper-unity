@@ -92,6 +92,8 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 <YYINITIAL>           "}"                     { return CgTokenNodeTypes.RBRACE; }
 <YYINITIAL>           "("                     { return CgTokenNodeTypes.LPAREN; }
 <YYINITIAL>           ")"                     { return CgTokenNodeTypes.RPAREN; }
+<YYINITIAL>           "["                     { return CgTokenNodeTypes.LBRACKET; }
+<YYINITIAL>           "]"                     { return CgTokenNodeTypes.RBRACKET; }
 <YYINITIAL>           "."                     { return CgTokenNodeTypes.DOT; }
 <YYINITIAL>           ","                     { return CgTokenNodeTypes.COMMA; }
 <YYINITIAL>           ";"                     { return CgTokenNodeTypes.SEMICOLON; }

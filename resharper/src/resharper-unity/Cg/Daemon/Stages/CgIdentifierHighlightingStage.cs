@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using IArgument = JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.IArgument;
 using IFunctionDeclaration = JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.IFunctionDeclaration;
+using IIdentifier = JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.IIdentifier;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
 {
@@ -26,16 +27,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             {
             }
 
-            public override void VisitGlobalVariableDeclarationNode(IGlobalVariableDeclaration globalVariableDeclarationParam,
-                IHighlightingConsumer context)
+            public override void VisitVariableDeclarationNode(IVariableDeclaration variableDeclarationParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FIELD_IDENTIFIER, globalVariableDeclarationParam.NameNode.GetDocumentRange()));
-                base.VisitGlobalVariableDeclarationNode(globalVariableDeclarationParam, context);
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, variableDeclarationParam.TypeNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.VARIABLE_IDENTIFIER, variableDeclarationParam.NameNode.GetDocumentRange()));
+                base.VisitVariableDeclarationNode(variableDeclarationParam, context);
+            }
+
+            public override void VisitBuiltInTypeNode(IBuiltInType builtInTypeParam, IHighlightingConsumer context)
+            {
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, builtInTypeParam.GetDocumentRange()));
+                base.VisitBuiltInTypeNode(builtInTypeParam, context);
             }
 
             public override void VisitFieldDeclarationNode(IFieldDeclaration fieldDeclarationParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FIELD_IDENTIFIER, fieldDeclarationParam.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, fieldDeclarationParam.ContentNode.TypeNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FIELD_IDENTIFIER, fieldDeclarationParam.ContentNode.NameNode.GetDocumentRange()));
                 base.VisitFieldDeclarationNode(fieldDeclarationParam, context);
             }
             
@@ -47,14 +55,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
 
             public override void VisitFunctionDeclarationNode(IFunctionDeclaration functionDeclarationParam, IHighlightingConsumer context)
             {
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, functionDeclarationParam.TypeNode.GetDocumentRange()));
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, functionDeclarationParam.NameNode.GetDocumentRange()));
                 base.VisitFunctionDeclarationNode(functionDeclarationParam, context);
-            }
-
-            public override void VisitTypeReferenceNode(ITypeReference typeReferenceParam, IHighlightingConsumer context)
-            {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, typeReferenceParam.GetDocumentRange()));
-                base.VisitTypeReferenceNode(typeReferenceParam, context);
             }
 
             public override void VisitSemanticNode(ISemantic semanticParam, IHighlightingConsumer context)
@@ -69,29 +72,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 base.VisitArgumentNode(argumentParam, context);
             }
 
-            public override void VisitLocalVariableDeclarationNode(ILocalVariableDeclaration localVariableDeclarationParam,
-                IHighlightingConsumer context)
-            {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.VARIABLE_IDENTIFIER, localVariableDeclarationParam.NameNode.GetDocumentRange()));
-                base.VisitLocalVariableDeclarationNode(localVariableDeclarationParam, context);
-            }
-
-            public override void VisitVariableReferenceNode(IVariableReference variableReferenceParam, IHighlightingConsumer context)
-            {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.VARIABLE_IDENTIFIER, variableReferenceParam.GetDocumentRange()));
-                base.VisitVariableReferenceNode(variableReferenceParam, context);
-            }
-
-            public override void VisitFieldNameNode(IFieldName fieldNameParam, IHighlightingConsumer context)
-            {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FIELD_IDENTIFIER, fieldNameParam.GetDocumentRange()));
-                base.VisitFieldNameNode(fieldNameParam, context);
-            }
-
             public override void VisitFunctionCallNode(IFunctionCall functionCallParam, IHighlightingConsumer context)
             {
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, functionCallParam.NameNode.GetDocumentRange()));
                 base.VisitFunctionCallNode(functionCallParam, context);
+            }
+
+            public override void VisitCallOperatorNode(ICallOperator callOperatorParam, IHighlightingConsumer context)
+            {
+                var parent = callOperatorParam.Parent as IPostfixExpression;
+                if (parent?.OperandNode is IIdentifier operand)
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, operand.GetDocumentRange()));
+                
+                base.VisitCallOperatorNode(callOperatorParam, context);
             }
         }
     }

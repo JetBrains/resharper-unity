@@ -6,6 +6,7 @@ struct bar
 
 void foo()
 {
+    bar.a = 2;
     float b;    
     bar bar_a;
 
