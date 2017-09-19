@@ -118,6 +118,10 @@ ShaderLab:
 
   <img src="docs/shader_code_folding.png" width="249">
 
+* Colour highlighting and editing.
+
+  <img src="docs/shader_colours.png" width="398">
+
 Cg/HLSL (Rider only):
 
 * Keyword based highlighting. Currently no syntax error highlighting.
@@ -136,6 +140,7 @@ See the ReSharper help for [more details on External Annotations](https://www.je
 * `Assertions.Assert` methods marked as assertion methods to help null-value analysis.
 * `EditorTestsWithLogParser.ExpectLogLineRegex` gets regular expression helper functionality.
 * Various attributes now require the class they are applied to derive from a specific base type. E.g. `[CustomEditor]` requires a base class of `Editor`).
+* Support for Unity 2017.2's modularised UnityEngine assemblies.
 
 **Other:**
 
