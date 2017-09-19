@@ -38,29 +38,47 @@
 &#8226; Code completion, find usages and rename support for SyncVarAttribute hook function.
 &#8226; Inspections for incorrect SyncVarAttribute usage.
 &#8226; Marks empty event functions as dead code, with Quick Fix to remove.
+&#8226; Parse ShaderLab files, with syntax highlighting and syntax error highlighting.
+&#8226; Simple highlighting and code completion in Cg and HLSL code blocks and files.        
+&#8226; Brace matching, todo explorer and commenting support for ShaderLab files.
+&#8226; Colour highlighting and editing in ShaderLab files.
+&#8226; Support for modularised UnityEngine assemblies.
 </description>
 <releaseNotes>
+&#8226; Add colour highlighting and editing to ShaderLab
+
+From 2.1.1 (Rider 2017.2 EAP2):
+&#8226; Improve ShaderLab parsing (#228, #233, RIDER-9214, #222)
+&#8226; Show event function descriptions in generate dialog (RIDER-4904)
+&#8226; Unity3dRider: Add support for mcs.rsp (#230)
+
+From 2.1.0 (Rider 2017.2 EAP1)
+&#8226; Add annotations for modularised UnityEngine assemblies (#207)
+
+From 2.0.4 (Rider 2017.1.2):
+&#8226; Support Rider 2017.1.2
+
+From 2.0.3 (Rider 2017.1.1):
 &#8226; Parse pre-processor directives in ShaderLab (#186)
 &#8226; Correctly handle property attributes in shader file (#187)
 &#8226; Parse CGINCLUDE blocks at any point in shader file (#188)
 &#8226; Parse property reference for BlendOp (RIDER-8386)
-&#8226; Add annotations for modularised UnityEngine assemblies (#207)
+&#8226; Rider: Option to disable hippie completion (RIDER-5996)
 &#8226; Unity3dRider: Fix path to Toolbox on Mac
 &#8226; Unity3dRider: Fix reference to nunit.framework.dll, as the Unity distributed version doesn't run tests correctly with Rider (#194)
-&#8226; Unity3dRider: Option to disable hippie completion (RIDER-5996)
 &#8226; Unity3dRider: Option to select Rider path and make default
 
-From 2.0.2:
+From 2.0.2 (Rider 2017.1 RTM):
 &#8226; Add ability to disable advanced ShaderLab syntax (#183)
 
-From 2.0.1:
+From 2.0.1 (not released for Rider):
 &#8226; Add support for HLSL and GLSL blocks
 &#8226; Unity3dRider: Support for Unity 2017.x
 &#8226; Unity3dRider: Add Assembly Definition file for Unity 2017.2
 &#8226; Unity3dRider: Normalise line endings (RIDER-7992)
 
-From 2.0.0:
-&#8226; Parse ShaderLab files, show syntax error highlighting
+From 2.0.0 (for Rider 2017.1 RC):
+&#8226; Parse ShaderLab files, show syntax error highlighting (#3)
 &#8226; Brace matching for ShaderLab files
 &#8226; TODO comments support for ShaderLab files
 &#8226; Rider: ShaderLab syntax highlighting, code folding and simple word completion
