@@ -316,15 +316,15 @@ errorhandling declaration
       structDeclaration
       | 
       (
-        !(#mods:modifierKeywordList)
+        !(#modifiers:modifierKeywordList)
         !(#type:typeName)
         !(#name:identifier)
         (          
           (
-            variableDeclaration[mods, type, name]
+            variableDeclaration[modifiers, type, name]
             SEMICOLON
           )
-          | functionDeclaration[mods, type, name]
+          | functionDeclaration[modifiers, type, name]
         )
       )
   ;
@@ -731,7 +731,7 @@ constantValue
 // fixed4 frag (v2f i, UNITY_VPOS_TYPE screenPos : VPOS) : SV_Target
 //
 // function can have specifiers (TODO: look up proper name in docs)
-functionDeclaration[modifierKeywords modifiers, typeName type, identifier name]
+functionDeclaration[modifierKeywordList modifiers, typeName type, identifier name]
   :
     &modifiers
     &type<CG_TYPE, TypeNode>
@@ -792,8 +792,7 @@ functionBody
 errorhandling cgBlock
   :      
     (
-      returnStatement            
-      | flowControlStatement
+      returnStatement
       | (
           !(#modifiers:modifierKeywordList)
           !(#type:typeName)
@@ -801,10 +800,11 @@ errorhandling cgBlock
             variableDeclarationStatement[modifiers, type]
             | expressionStatement[type]
           )
-        )
-      | SEMICOLON
+      )
+      SEMICOLON
     )
-    SEMICOLON
+    | flowControlStatement
+    | SEMICOLON
   ;
 
 interface flowControlStatement
