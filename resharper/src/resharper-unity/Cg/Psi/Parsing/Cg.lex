@@ -59,8 +59,15 @@ MINUS="-"
 PLUS="+"
 EXPONENT="e"
 FLOAT_INDICATOR="f"
+HALF_INDICATOR="h"
 DECIMAL_DIGIT=[0-9]
-NUMERIC_LITERAL=({MINUS}|{PLUS})?{DECIMAL_DIGIT}+(\.{DECIMAL_DIGIT}+)?({EXPONENT}({MINUS}|{PLUS}){DECIMAL_DIGIT}+)?{FLOAT_INDICATOR}?
+SIGN = {MINUS}|{PLUS}
+TYPE_INDICATOR={FLOAT_INDICATOR}|{HALF_INDICATOR}
+NUMERIC_LITERAL={DECIMAL_DIGIT}+(\.{DECIMAL_DIGIT}+)?({EXPONENT}{SIGN}{DECIMAL_DIGIT}+)?{TYPE_INDICATOR}?
+
+%{
+	/* {DECIMAL_DIGIT}+(\.{DECIMAL_DIGIT}+)?({EXPONENT}{SIGN}{DECIMAL_DIGIT}+)?{TYPE_INDICATOR}? */
+}
 
 UNDERSCORE="_"
 LETTER_CHAR={UNICODE_LL}|{UNICODE_LM}|{UNICODE_LO}|{UNICODE_LT}|{UNICODE_LU}|{UNICODE_NL}
@@ -100,6 +107,8 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 <YYINITIAL>           ","                     { return CgTokenNodeTypes.COMMA; }
 <YYINITIAL>           ";"                     { return CgTokenNodeTypes.SEMICOLON; }
 <YYINITIAL>           ":"                     { return CgTokenNodeTypes.COLON; }
+
+<YYINITIAL>			  "?"					  { return CgTokenNodeTypes.QUESTION_MARK; }
 
 <YYINITIAL>           "<"                     { return CgTokenNodeTypes.LT; }
 <YYINITIAL>           ">"                     { return CgTokenNodeTypes.GT; }

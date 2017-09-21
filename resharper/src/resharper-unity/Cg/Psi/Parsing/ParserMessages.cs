@@ -5,6 +5,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
     public static class ParserMessages
     {
+        public static string IDS_FLOW_CONTROL_STATEMENT => "flow control statement";
+        
         public static string IDS_FUNCTION_BODY => "function body";
         
         public static string IDS_RETURN_STATEMENT => "return statement";

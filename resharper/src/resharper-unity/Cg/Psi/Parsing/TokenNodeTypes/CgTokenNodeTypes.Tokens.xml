@@ -32,6 +32,8 @@
     <Token name="DOT" representation="." />
     <Token name="SEMICOLON" representation=";" />
     <Token name="COLON" representation=":" />
+
+    <Token name="QUESTION_MARK" representation="?" />
     
     <Token name="LT" representation="&lt;" />
     <Token name="GT" representation="&gt;" />
@@ -96,6 +98,7 @@
   
   <VariableModifierKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="CONST_KEYWORD" representation="const"/>
+    <Keyword name="UNIFORM_KEYWORD" representation="uniform" />
   </VariableModifierKeywords>
   
   <FunctionModifierKeywords NodeType="CgKeywordTokenNodeType">
@@ -147,7 +150,6 @@
     <Keyword name="IN_KEYWORD" representation="in" />
     <Keyword name="INOUT_KEYWORD" representation="inout" />
     <Keyword name="OUT_KEYWORD" representation="out" />
-    <Keyword name="UNIFORM_KEYWORD" representation="uniform" />
   </InputModifierKeywords>
   
   <MatrixTypeKeywords NodeType="CgKeywordTokenNodeType">

@@ -62,6 +62,8 @@ options {
     | COMMA
     | SEMICOLON
     | COLON
+
+    | QUESTION_MARK
     
     | LT
     | GT
@@ -116,6 +118,7 @@ options {
     | FOR_KEYWORD
 
     | INLINE_KEYWORD
+    | CONST_KEYWORD
 
     | IN_KEYWORD
     | INOUT_KEYWORD
@@ -334,6 +337,7 @@ modifierKeywordList
     (
       INLINE_KEYWORD
       | CONST_KEYWORD
+      | UNIFORM_KEYWORD
     )?
   ;
 
@@ -361,6 +365,7 @@ structFieldList
   :
     (
       fieldDeclaration
+      | directive
     )*
   ;
 
@@ -373,6 +378,8 @@ errorhandling fieldDeclaration
     SEMICOLON
   ;
 
+// TODO: buffer types
+// tex2D<float>
 interface typeName
   :
     builtInType
@@ -557,11 +564,32 @@ semantic // e.g. TEXCOORD, COLOR
     identifier // TODO: keyword list, after that different keywords for vertex/pixel shaders 
   ;
 
+// todo: check if it's possible do semantics and arrays work when using comma to separate variable names
 errorhandling variableDeclaration[modifierKeywordList modifiers, typeName type, identifier name]
   :
     &modifiers
     &type<CG_TYPE, TypeNode>
-    &name<CG_NAME, NameNode>
+    &name<CG_NAME, NameNodes>
+    variableDeclarationTail
+    (
+      COMMA
+      identifier<CG_NAME, NameNodes>
+      variableDeclarationTail
+    )*
+  ;
+
+// TODO: array initializer
+/* array of 3 2-dimensional vectors of floats
+  const float2 test[3] =
+    {
+        {  1.0f,  1.0f },
+        { -1.0f, -1.0f },
+        { -1.0f,  1.0f },
+    };
+*/
+variableDeclarationTail
+  :
+    arrayOperator?
     (
       COLON
       semantic
@@ -569,7 +597,7 @@ errorhandling variableDeclaration[modifierKeywordList modifiers, typeName type, 
     (
       EQUALS
       expression
-    )?    
+    )?
   ;
 
 // TODO: custom parse function to unwrap all this stuff
@@ -581,10 +609,10 @@ errorhandling expression
 
 assignmentExpression
   :
-    binaryExpression
+    ternaryExpression
     (
       assignmentOperator
-      binaryExpression      
+      ternaryExpression      
     )*
   ;
 
@@ -602,6 +630,17 @@ assignmentOperator
     | ANDEQ
     | XOREQ
     | OREQ
+  ;
+
+ternaryExpression
+  :
+    binaryExpression
+    (
+      QUESTION_MARK
+      ternaryExpression
+      COLON
+      ternaryExpression
+    )*
   ;
 
 binaryExpression
@@ -636,6 +675,8 @@ binaryOperator
     | OROR
   ;
 
+// TODO: cast operator
+// (float)
 prefixExpression
   :
     postfixExpression
@@ -698,7 +739,7 @@ fieldOperator
 interface primaryExpression
   :
     constantValue
-    | runtimeValue    
+    | runtimeValue
     | parensExpression
   ;
 
@@ -733,6 +774,12 @@ constantValue
 // function can have specifiers (TODO: look up proper name in docs)
 functionDeclaration[modifierKeywordList modifiers, typeName type, identifier name]
   :
+    functionHeader<CG_CONTENT, HeaderNode>[modifiers, type, name]
+    functionBody
+  ;
+
+errorhandling functionHeader[modifierKeywordList modifiers, typeName type, identifier name]
+  :
     &modifiers
     &type<CG_TYPE, TypeNode>
     &name<CG_NAME, NameNode>
@@ -743,7 +790,6 @@ functionDeclaration[modifierKeywordList modifiers, typeName type, identifier nam
       COLON
       semantic
     )?
-    functionBody
   ;
 
 functionArgList
@@ -784,32 +830,30 @@ functionBody
     LBRACE  
     (
       cgBlock
+      | flowControlStatement
       | directive
     )*
     RBRACE
   ;
 
 errorhandling cgBlock
-  :      
+  :  
     (
-      returnStatement
-      | (
-          !(#modifiers:modifierKeywordList)
-          !(#type:typeName)
-          (
-            variableDeclarationStatement[modifiers, type]
-            | expressionStatement[type]
-          )
+      !(#modifiers:modifierKeywordList)
+      !(#type:typeName)
+      (
+        variableDeclarationStatement[modifiers, type]
+        | expressionStatement[type]
       )
-      SEMICOLON
-    )
-    | flowControlStatement
-    | SEMICOLON
+    )?
+    SEMICOLON
   ;
 
 interface flowControlStatement
   :
     ifStatement
+    | forStatement
+    | returnStatement
   ;
 
 ifStatement
@@ -830,8 +874,29 @@ elseStatement
     ELSE_KEYWORD
     (
       functionBody
-      | cgBlock // has ifStatement, which will allow for if-else if
+      | cgBlock
+      | ifStatement
     )
+  ;
+
+forStatement
+  :
+    forStatementHeader
+    (
+      functionBody
+      | cgBlock
+      | flowControlStatement
+    )
+  ;
+
+errorhandling forStatementHeader
+  :
+    FOR_KEYWORD
+    LPAREN
+    cgBlock
+    expression
+    expression
+    RPAREN
   ;
 
 variableDeclarationStatement[modifierKeywordList modifiers, typeName type]
@@ -864,4 +929,5 @@ returnStatement
   :
     RETURN_KEYWORD
     expression?
+    SEMICOLON
   ;
