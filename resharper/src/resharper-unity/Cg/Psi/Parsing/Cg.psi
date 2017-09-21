@@ -323,7 +323,7 @@ errorhandling declaration
             variableDeclaration[type, name]
             SEMICOLON
           )
-          | functionDeclaration[null, type, name]
+          | functionDeclaration[modifier, type, name]
         )
       )
       |
@@ -729,7 +729,7 @@ constantValue
 // function can have specifiers (TODO: look up proper name in docs)
 functionDeclaration[functionModifier modifier, typeName type, identifier name]
   :
-    &modifier
+    &modifier?
     &type<CG_TYPE, TypeNode>
     &name<CG_NAME, NameNode>
     LPAREN
@@ -739,9 +739,7 @@ functionDeclaration[functionModifier modifier, typeName type, identifier name]
       COLON
       semantic
     )?
-    LBRACE
     functionBody
-    RBRACE
   ;
 
 functionModifier
@@ -781,29 +779,59 @@ inputModifier
     | UNIFORM_KEYWORD
   ;
 
+// TODO: allow nested non-flow controlling blocks if they are allowed
 functionBody
-  :  
+  :
+    LBRACE  
     (
       cgBlock
       | directive
     )*
+    RBRACE
   ;
 
 errorhandling cgBlock
   :      
     (
       returnStatement            
-      |
-      (
-        !(#type:typeName)
-        (
-          variableDeclarationStatement[type]
-          | expressionStatement[type]
+      | flowControlStatement
+      | (
+          !(#type:typeName)
+          (
+            variableDeclarationStatement[type]
+            | expressionStatement[type]
+          )
         )
-      )
       | SEMICOLON
     )
     SEMICOLON
+  ;
+
+interface flowControlStatement
+  :
+    ifStatement
+  ;
+
+ifStatement
+  :
+    IF_KEYWORD
+    LPAREN
+    expression
+    RPAREN
+    (
+      functionBody
+      | cgBlock
+    )
+    elseStatement?
+  ;
+
+elseStatement
+  :
+    ELSE_KEYWORD
+    (
+      functionBody
+      | cgBlock // has ifStatement, which will allow for if-else if
+    )
   ;
 
 variableDeclarationStatement[typeName type]
