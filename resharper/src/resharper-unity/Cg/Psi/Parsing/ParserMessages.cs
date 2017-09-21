@@ -5,6 +5,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
     public static class ParserMessages
     {
+        public static string IDS_RETURN_STATEMENT => "return statement";
+        
         public static string IDS_ASSIGNMENT_OPERATOR => "assignment operator";
         
         public static string IDS_POSTFIX_OPERATOR => "postfix operator";

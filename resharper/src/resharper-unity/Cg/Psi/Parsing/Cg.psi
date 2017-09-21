@@ -309,7 +309,7 @@ errorhandling directive
     DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
   ;
 
-errorhandling interface declaration
+errorhandling declaration
   :       
       structDeclaration
       | 
@@ -621,8 +621,6 @@ binaryOperator
     | OR
     | ANDAND
     | OROR
-
-    | fieldOperator
   ;
 
 prefixExpression
@@ -647,8 +645,7 @@ postfixExpression
   :
     primaryExpression<CG_OPERAND, OperandNode>
     (
-      postfixOperator
-      postfixExpression
+      postfixOperator<CG_OPERATOR, OperatorNode>
     )*
   ;
 
@@ -656,20 +653,33 @@ postfixOperator
   :
     PLUSPLUS
     | MINUSMINUS
-    | LBRACKET expression RBRACKET
+    | arrayOperator
     | callOperator
+    | fieldOperator
+  ;
+
+arrayOperator
+  :
+    LBRACKET expression RBRACKET
   ;
 
 callOperator
   :
     LPAREN
-    functionArgList
+    (
+      expression
+      (
+        COMMA
+        expression
+      )*
+    )?
     RPAREN
   ;
 
 fieldOperator
   :
     DOT
+    identifier<CG_OPERAND, FieldNode>
   ;
 
 interface primaryExpression
@@ -766,15 +776,37 @@ errorhandling cgBlock
   :      
     (
       returnStatement            
-      | expression
-      | 
+      |
       (
         !(#type:typeName)
-        !(#variableName:identifier)        
-        variableDeclaration[type, variableName]
+        (
+          variableDeclarationStatement[type]
+          | expressionStatement[type]
+        )
       )
+      | SEMICOLON
     )
     SEMICOLON
+  ;
+
+variableDeclarationStatement[typeName type]
+  :
+    !(#name:identifier)
+    variableDeclaration[type, name]
+  ;
+
+expressionStatement[typeName type]
+  :
+    &type // typeName is an interface for an identifier
+    ( 
+      fieldOperator
+      | arrayOperator
+      | callOperator
+    )*
+    (
+      assignmentOperator
+      binaryExpression
+    )*
   ;
 
 functionCall[identifier functionName]

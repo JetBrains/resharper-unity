@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 using IArgument = JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.IArgument;
 using IFunctionDeclaration = JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.IFunctionDeclaration;
 using IIdentifier = JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.IIdentifier;
@@ -25,6 +26,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public IdentifierHighlightingProcess(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
                 : base(daemonProcess, settingsStore, file)
             {
+            }
+
+            public override void VisitFieldOperatorNode(IFieldOperator fieldOperatorParam, IHighlightingConsumer context)
+            {
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FIELD_IDENTIFIER, fieldOperatorParam.FieldNode.GetDocumentRange()));
+                base.VisitFieldOperatorNode(fieldOperatorParam, context);
+            }
+
+            public override void VisitPostfixExpressionNode(IPostfixExpression postfixExpressionParam, IHighlightingConsumer context)
+            {
+                // TODO: fix
+                if (postfixExpressionParam.OperatorNode.FirstOrDefault() is ICallOperator
+                 && postfixExpressionParam.OperandNode is IIdentifier functionName)
+                {
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, functionName.GetDocumentRange()));
+                }
+                
+                base.VisitPostfixExpressionNode(postfixExpressionParam, context);
             }
 
             public override void VisitVariableDeclarationNode(IVariableDeclaration variableDeclarationParam, IHighlightingConsumer context)
