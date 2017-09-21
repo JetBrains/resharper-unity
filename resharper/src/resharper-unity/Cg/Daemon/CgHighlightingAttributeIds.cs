@@ -22,7 +22,7 @@ using JetBrains.TextControl.DocumentMarkup;
 #endif
         FallbackAttributeId = IdeaHighlightingAttributeIds.INSTANCE_FIELD, DarkForegroundColor = "Violet", EffectType = EffectType.TEXT, ForegroundColor = "Purple", Layer = HighlighterLayer.SYNTAX),
     
-    RegisterHighlighter(CgHighlightingAttributeIds.METHOD_IDENTIFIER, 
+    RegisterHighlighter(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER, 
 #if RIDER
         GroupId = CgHighligherGroup.ID,
 #endif
@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
         public const string DELIMETED_COMMENT = "ReSharper Cg Delimeted Comment";
 
         public const string FIELD_IDENTIFIER = "ReSharper Cg Field Identifier";
-        public const string METHOD_IDENTIFIER = "ReSharper Cg Method Identifier";
+        public const string FUNCTION_IDENTIFIER = "ReSharper Cg Function Identifier";
         public const string TYPE_IDENTIFIER = "ReSharper Cg Type Identifier";
         public const string VARIABLE_IDENTIFIER = "ReSharper Cg Variable Identifier";
 

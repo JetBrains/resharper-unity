@@ -94,6 +94,10 @@
     <Keyword name="FOR_KEYWORD" representation="for" />
   </FlowControlKeywords>
   
+  <VariableModifierKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="CONST_KEYWORD" representation="const"/>
+  </VariableModifierKeywords>
+  
   <FunctionModifierKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="INLINE_KEYWORD" representation="inline" />
   </FunctionModifierKeywords>

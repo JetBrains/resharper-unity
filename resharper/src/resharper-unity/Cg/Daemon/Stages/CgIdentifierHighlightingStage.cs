@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 if (postfixExpressionParam.OperatorNode.FirstOrDefault() is ICallOperator
                  && postfixExpressionParam.OperandNode is IIdentifier functionName)
                 {
-                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, functionName.GetDocumentRange()));
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER, functionName.GetDocumentRange()));
                 }
                 
                 base.VisitPostfixExpressionNode(postfixExpressionParam, context);
@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public override void VisitFunctionDeclarationNode(IFunctionDeclaration functionDeclarationParam, IHighlightingConsumer context)
             {
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, functionDeclarationParam.TypeNode.GetDocumentRange()));
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, functionDeclarationParam.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER, functionDeclarationParam.NameNode.GetDocumentRange()));
                 base.VisitFunctionDeclarationNode(functionDeclarationParam, context);
             }
 
@@ -87,21 +87,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
 
             public override void VisitArgumentNode(IArgument argumentParam, IHighlightingConsumer context)
             {
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, argumentParam.TypeNode.GetDocumentRange()));
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.VARIABLE_IDENTIFIER, argumentParam.NameNode.GetDocumentRange()));
                 base.VisitArgumentNode(argumentParam, context);
             }
 
             public override void VisitFunctionCallNode(IFunctionCall functionCallParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, functionCallParam.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER, functionCallParam.NameNode.GetDocumentRange()));
                 base.VisitFunctionCallNode(functionCallParam, context);
             }
 
             public override void VisitCallOperatorNode(ICallOperator callOperatorParam, IHighlightingConsumer context)
             {
                 var parent = callOperatorParam.Parent as IPostfixExpression;
-                if (parent?.OperandNode is IIdentifier operand)
-                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.METHOD_IDENTIFIER, operand.GetDocumentRange()));
+                if (parent?.OperandNode is IIdentifier operand) // TODO: this is wrong if this is the constructor of user-declared type
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER, operand.GetDocumentRange()));
                 
                 base.VisitCallOperatorNode(callOperatorParam, context);
             }
