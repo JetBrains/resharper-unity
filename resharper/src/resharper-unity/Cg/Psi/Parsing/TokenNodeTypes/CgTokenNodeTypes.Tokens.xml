@@ -94,6 +94,10 @@
     <Keyword name="FOR_KEYWORD" representation="for" />
   </FlowControlKeywords>
   
+  <FunctionModifierKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="INLINE_KEYWORD" representation="inline" />
+  </FunctionModifierKeywords>
+  
   <ScalarTypeKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="BOOL_KEYWORD" representation="bool" />
     <Keyword name="INT_KEYWORD" representation="int" />

@@ -115,6 +115,8 @@ options {
     | WHILE_KEYWORD
     | FOR_KEYWORD
 
+    | INLINE_KEYWORD
+
     | IN_KEYWORD
     | INOUT_KEYWORD
     | OUT_KEYWORD
@@ -321,8 +323,15 @@ errorhandling declaration
             variableDeclaration[type, name]
             SEMICOLON
           )
-          | functionDeclaration[type, name]
+          | functionDeclaration[null, type, name]
         )
+      )
+      |
+      (
+        !(#modifier:functionModifier)
+        !(#type:typeName)
+        !(#name:identifier)
+        functionDeclaration[modifier, type, name]
       )
   ;
 
@@ -349,16 +358,16 @@ identifier
 structFieldList
   :
     (
-      !(#type:typeName)
-      !(#name:identifier)
-      fieldDeclaration[type, name]
-      SEMICOLON
+      fieldDeclaration
     )*
   ;
 
-fieldDeclaration[typeName type, identifier name]
+errorhandling fieldDeclaration
   :
+    !(#type:typeName)
+    !(#name:identifier)
     variableDeclaration<CG_CONTENT, ContentNode>[type, name]
+    SEMICOLON
   ;
 
 interface typeName
@@ -545,7 +554,7 @@ semantic // e.g. TEXCOORD, COLOR
     identifier // TODO: keyword list, after that different keywords for vertex/pixel shaders 
   ;
 
-variableDeclaration[typeName type, identifier name]
+errorhandling variableDeclaration[typeName type, identifier name]
   :
     &type<CG_TYPE, TypeNode>
     &name<CG_NAME, NameNode>
@@ -716,8 +725,11 @@ constantValue
 
 // function can have semantics
 // fixed4 frag (v2f i, UNITY_VPOS_TYPE screenPos : VPOS) : SV_Target
-functionDeclaration[typeName type, identifier name]
-  :  
+//
+// function can have specifiers (TODO: look up proper name in docs)
+functionDeclaration[functionModifier modifier, typeName type, identifier name]
+  :
+    &modifier
     &type<CG_TYPE, TypeNode>
     &name<CG_NAME, NameNode>
     LPAREN
@@ -730,6 +742,11 @@ functionDeclaration[typeName type, identifier name]
     LBRACE
     functionBody
     RBRACE
+  ;
+
+functionModifier
+  :
+    INLINE_KEYWORD
   ;
 
 functionArgList
