@@ -323,15 +323,32 @@ errorhandling declaration
       (
         !(#modifiers:modifierKeywordList)
         !(#type:typeName)
-        !(#name:identifier)
-        (          
-          (
-            variableDeclaration[modifiers, type, name]
-            SEMICOLON
-          )
-          | functionDeclaration[modifiers, type, name]
+        (
+          macroCall[type]
+          | variableOrFunctionDeclaration[modifiers, type]
         )
       )
+  ;
+
+variableOrFunctionDeclaration[modifierKeywordList modifiers, typeName type]
+  :
+    !(#name:identifier)
+    (          
+      (
+       variableDeclaration[modifiers, type, name]
+       SEMICOLON
+      )
+      | functionDeclaration[modifiers, type, name]
+    )
+  ;
+
+// TODO: hack, macro call (e.g. CBUFFER_START(x), or CBUFFER_END)
+// or UNITY_DECLARE_SHADOWMAP(_ShadowMapTexture); <- has the semicolon
+macroCall[typeName type]
+  :
+    &type
+    callOperator?
+    SEMICOLON?
   ;
 
 // TODO: split into var and function keywords?
@@ -375,13 +392,19 @@ structFieldList
     )*
   ;
 
+// TODO: hack for macros (e.g. UNITY_VERTEX_INPUT_INSTANCE_ID)
 errorhandling fieldDeclaration
   :
     !(#modifiers:modifierKeywordList)
     !(#type:typeName)
-    !(#name:identifier)
-    variableDeclaration<CG_CONTENT, ContentNode>[modifiers, type, name]
-    SEMICOLON
+    (
+      (
+        !(#name:identifier)
+        variableDeclaration<CG_CONTENT, ContentNode>[modifiers, type, name]
+        SEMICOLON
+      )
+      | macroCall[type]
+    )
   ;
 
 // TODO: buffer types
@@ -860,15 +883,20 @@ functionBody
 
 errorhandling cgBlock
   :  
+    !(#modifiers:modifierKeywordList)
+    !(#type:typeName)
     (
-      !(#modifiers:modifierKeywordList)
-      !(#type:typeName)
       (
         variableDeclarationStatement[modifiers, type]
-        | expressionStatement[type]
+        SEMICOLON
       )
-    )?
-    SEMICOLON
+      | 
+      (
+        expressionStatement[type]
+        SEMICOLON?  // TODO: hack (PP macro call e.g. UNITY_BRANCH)
+      )
+      | SEMICOLON
+    )
   ;
 
 interface flowControlStatement
