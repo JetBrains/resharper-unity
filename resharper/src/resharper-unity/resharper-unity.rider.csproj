@@ -43,11 +43,8 @@
   </ItemGroup>
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
-    <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderAssetPostprocessor.cs" />
-    <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderPlugin.cs" />
-    <Compile Remove="Unity3dRider\Assets\Plugins\Editor\JetBrains\Unity3DRider.cs" />
-    <None Include="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderAssetPostprocessor.cs" />
-    <None Include="Unity3dRider\Assets\Plugins\Editor\JetBrains\RiderPlugin.cs" />
+    <Compile Remove="Unity3dRider\**\*" />
+    <None Include="Unity3dRider\**\*" />
     <EmbeddedResource Include="Unity3dRider\Assets\Plugins\Editor\JetBrains\Unity3DRider.cs" />
   </ItemGroup>
   <ItemGroup>
