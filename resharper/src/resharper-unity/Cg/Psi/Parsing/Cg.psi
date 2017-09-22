@@ -647,8 +647,8 @@ binaryExpression
   :
     prefixExpression
     (
-      binaryOperator
-      prefixExpression
+      binaryOperator? // TODO: hack for casting, fix with proper parsing
+      binaryExpression
     )*
   ;
 
@@ -745,8 +745,34 @@ interface primaryExpression
 
 interface runtimeValue
   :
-    builtInType // constructor call, e.g. float4(1,2,3,4)
-    | identifier // may be variable reference or function name
+    builtInType // TODO: constructor call, e.g. float4(1,2,3,4)
+    | identifier // TODO: may be variable reference or function name
+    | vectorInitExpression
+    | matrixInitExpression
+  ;
+
+vectorInitExpression
+  :
+    LBRACE
+    (
+      expression
+      (
+        COMMA
+        expression
+      )*
+    )
+    RBRACE
+  ;
+
+matrixInitExpression
+  :
+    LBRACE
+      vectorInitExpression
+      (
+        COMMA
+        vectorInitExpression
+      )*
+    RBRACE
   ;
 
 parensExpression
@@ -889,13 +915,14 @@ forStatement
     )
   ;
 
-errorhandling forStatementHeader
+errorhandling forStatementHeader // TODO: check spec
   :
     FOR_KEYWORD
     LPAREN
     cgBlock
-    expression
-    expression
+    expression?
+    SEMICOLON
+    expression?
     RPAREN
   ;
 
@@ -915,7 +942,7 @@ expressionStatement[typeName type]
     )*
     (
       assignmentOperator
-      binaryExpression
+      ternaryExpression
     )*
   ;
 
