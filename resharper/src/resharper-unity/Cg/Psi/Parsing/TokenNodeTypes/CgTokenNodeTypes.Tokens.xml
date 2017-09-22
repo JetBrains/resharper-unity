@@ -61,6 +61,7 @@
     <Token name="GTGT" representation="&gt;&gt;" />
     <Token name="XOR" representation="^" />
     <Token name="OR" representation="|" />
+    <Token name="AND" representation="&amp;" />
     <Token name="ANDAND" representation="&amp;&amp;" />
     <Token name="OROR" representation="||" />
     <Token name="NEGATE" representation="!" />

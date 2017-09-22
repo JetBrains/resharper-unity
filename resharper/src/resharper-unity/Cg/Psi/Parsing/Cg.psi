@@ -88,8 +88,10 @@ options {
 
     | TILDE
     | LTLT
+    | GTGT
     | XOR
     | OR
+    | AND
     | ANDAND
     | OROR
     | NEGATE
@@ -332,12 +334,16 @@ errorhandling declaration
       )
   ;
 
+// TODO: split into var and function keywords?
 modifierKeywordList
   : 
     (
       INLINE_KEYWORD
       | CONST_KEYWORD
       | UNIFORM_KEYWORD
+      | IN_KEYWORD
+      | OUT_KEYWORD
+      | INOUT_KEYWORD
     )?
   ;
 
@@ -564,13 +570,19 @@ semantic // e.g. TEXCOORD, COLOR
     identifier // TODO: keyword list, after that different keywords for vertex/pixel shaders 
   ;
 
-// todo: check if it's possible do semantics and arrays work when using comma to separate variable names
-errorhandling variableDeclaration[modifierKeywordList modifiers, typeName type, identifier name]
+
+errorhandling singleVariableDeclaration[modifierKeywordList modifiers, typeName type, identifier name]
   :
     &modifiers
     &type<CG_TYPE, TypeNode>
     &name<CG_NAME, NameNodes>
     variableDeclarationTail
+  ;
+
+// TODO: check if it's possible do semantics and arrays work when using comma to separate variable names
+errorhandling variableDeclaration[modifierKeywordList modifiers, typeName type, identifier name]
+  :
+    singleVariableDeclaration<CG_CONTENT, FirstVariableNode>[modifiers, type, name]
     (
       COMMA
       identifier<CG_NAME, NameNodes>
@@ -578,15 +590,6 @@ errorhandling variableDeclaration[modifierKeywordList modifiers, typeName type, 
     )*
   ;
 
-// TODO: array initializer
-/* array of 3 2-dimensional vectors of floats
-  const float2 test[3] =
-    {
-        {  1.0f,  1.0f },
-        { -1.0f, -1.0f },
-        { -1.0f,  1.0f },
-    };
-*/
 variableDeclarationTail
   :
     arrayOperator?
@@ -669,8 +672,10 @@ binaryOperator
 
     | TILDE
     | LTLT
+    | GTGT
     | XOR
     | OR
+    | AND
     | ANDAND
     | OROR
   ;
@@ -831,23 +836,14 @@ functionArgList
 // UNITY_VPOS_TYPE x : VPOS
 // argument can have input modifier
 // uniform int x
+// argument can have initial value
+// bool x = false
 argument
   :
-    inputModifier?
-    typeName<CG_TYPE, TypeNode>
-    identifier<CG_NAME, NameNode>
-    (
-      COLON
-      semantic
-    )?
-  ;
-
-inputModifier
-  :
-    IN_KEYWORD
-    | INOUT_KEYWORD
-    | OUT_KEYWORD
-    | UNIFORM_KEYWORD
+    !(#modifiers:modifierKeywordList)
+    !(#type:typeName)
+    !(#name:identifier)
+    singleVariableDeclaration<CG_CONTENT, VariableNode>[modifiers, type, name]
   ;
 
 // TODO: allow nested non-flow controlling blocks if they are allowed
