@@ -1,6 +1,7 @@
 #if RIDER
 
-using JetBrains.ReSharper.Host.Features.Foldings;
+
+using JetBrains.ReSharper.Daemon.CodeFolding;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 

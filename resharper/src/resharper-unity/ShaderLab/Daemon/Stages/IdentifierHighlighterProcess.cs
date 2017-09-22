@@ -28,12 +28,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         {
             if (myProcessKind == DaemonProcessKind.VISIBLE_DOCUMENT)
             {
-                if (myIdentifierHighlightingEnabled)
-                {
-                    var info = myVisualElementHighlighter.CreateColorHighlightingInfo(node);
-                    if (info != null)
-                        context.AddHighlighting(info);
-                }
+                // TODO: Highlight identifiers
+                // if (myIdentifierHighlightingEnabled)
+
+                var info = myVisualElementHighlighter.CreateColorHighlightingInfo(node);
+                if (info != null)
+                    context.AddHighlighting(info.Highlighting, info.Range);
             }
 
             // TODO: Resolve problem highlighter
