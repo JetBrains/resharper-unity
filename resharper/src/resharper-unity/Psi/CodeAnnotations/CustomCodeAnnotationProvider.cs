@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Psi.Impl.Reflection2.ExternalAnnotations;
 using JetBrains.ReSharper.Psi.Impl.Special;
+using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.CodeAnnotations
@@ -19,20 +20,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.CodeAnnotations
 
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
         private readonly UnityApi myUnityApi;
-        private readonly IExternalAnnotationPsiModule myAnnotationsPsiModule;
+        private readonly IPsiModule myAnnotationsPsiModule;
 
         public CustomCodeAnnotationProvider(ExternalAnnotationsModuleFactory externalAnnotationsModuleFactory, IPredefinedTypeCache predefinedTypeCache, UnityApi unityApi)
         {
             myPredefinedTypeCache = predefinedTypeCache;
             myUnityApi = unityApi;
             myAnnotationsPsiModule = externalAnnotationsModuleFactory
+#if RIDER
+                .GetPsiModule(TargetFrameworkId.Default);
+#else
                 .Modules
                 .OfType<IExternalAnnotationPsiModule>()
-#if RIDER                
-                .Single(m => Equals(m.TargetFrameworkId, TargetFrameworkId.Default));
-#else
                 .Single();
-#endif    
+#endif
         }
 
         public CodeAnnotationNullableValue? GetNullableAttribute(IDeclaredElement element)
