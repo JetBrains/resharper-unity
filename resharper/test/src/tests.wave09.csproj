@@ -12,7 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2017.2.0" />
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="109.0.20170824.1323" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="109.0.20170824.132357" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.wave09.csproj" />
