@@ -6,7 +6,7 @@
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET452;JET_MODE_ASSERT;RIDER</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET452;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RIDER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RELEASE;NET452;RIDER</DefineConstants>
