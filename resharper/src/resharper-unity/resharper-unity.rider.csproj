@@ -98,13 +98,4 @@
       <FileWrites Include="%(ParserGenOutputSrc.FullPath)" />
     </ItemGroup>
   </Target>
-  <ItemGroup>
-    <!-- The JetBrains.Psi.Features.Tasks 108.0.20170615.212549-eap08 package incorrectly
-         includes $(PsiGenToolsDir)/TokenGenerator.exe in the inputs, but that file doesn't
-         exist - $(PsiGenToolsDir)/../TokenGenerator.exe does.
-         This is a workaround that ignores changes to the .exe and the .targets
-         See RSRP-465228 -->
-    <GenerateTokenGeneratorInputs Remove="@(GenerateTokenGeneratorInputs)" />
-    <GenerateTokenGeneratorInputs Include="@(TokenGenerator)" />
-  </ItemGroup>
 </Project>
