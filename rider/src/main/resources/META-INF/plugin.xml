@@ -70,10 +70,10 @@
   <li>Inspection and Quick Fix for using new with ScriptableObject or MonoBehaviour.</li>
   <li>"Create serialized field" from usage Quick Fix.</li>
   <li>Suppress naming consistency checks on event functions.</li>
-  <li>Prevent ReSharper from suggesting <code>Assets</code> or <code>Scripts</code> as part of the namespace of your code.<li>
+  <li>Prevent ReSharper from suggesting <code>Assets</code> or <code>Scripts</code> as part of the namespace of your code.</li>
   <li>Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!</li>
   <li>Highlights <code>UnityEngine.Color</code> and <code>Color32</code>. Edit via colour palette quick fix.</li>
-  <li>Treats Unity debug assertions as assertion methods in ReSharper control flow analysis.<li>
+  <li>Treats Unity debug assertions as assertion methods in ReSharper control flow analysis.</li>
   <li>String formatting assistance for debug log methods.</li>
   <li>Regex assistance for <code>EditorTestsWithLogParser.ExpectLogLineRegex</code>.</li>
   <li>Types and type members marked with UnityEngine.Networking attributes are marked as in use.</li>
@@ -97,16 +97,17 @@
   <change-notes>
 <![CDATA[
 <ul>
-  <li>Parse pre-processor directives in ShaderLab (<a href="https://github.com/JetBrains/resharper-unity/issues/186">#186</a>)</li>
-  <li>Correctly handle property attributes in shader file (<a href="https://github.com/JetBrains/resharper-unity/issues/187">#187</a>)</li>
-  <li>Parse CGINCLUDE blocks at any point in shader file (<a href="https://github.com/JetBrains/resharper-unity/issues/188">#188</a>)</li>
-  <li>Parse property references for BlendOp in ShaderLab files (<a href="https://youtrack.jetbrains.com/issue/RIDER-8386">RIDER-8386</a>)</li>
-  <li>Add annotations for modularised UnityEngine assemblies (<a href="https://github.com/JetBrains/resharper-unity/issues/207">#207</a>)</li>
-  <li>Allow disabling simple word completion for .shader and .cginc files (<a href="https://youtrack.jetbrains.com/issue/RIDER-5996">RIDER-5996</a>)</li>
-  <li>Choose path and set Rider as default editor from the Unity3dRider plugin</li>
-  <li>Customise the target framework version in the Unity3dRider plugin options</li>
-  <li>Fix path to finding Rider installed by Toolbox on Mac<li>
-  <li>Updates the reference to nunit.framework.dll to a version shipped by Unity that works in the Rider test runner (<a href="https://github.com/JetBrains/resharper-unity/issues/194">#194</a>)</li>
+  <li>Add colour highlighting and editing to ShaderLab</li>
+</ul>
+<p>From 2.1.1 (Rider 2017.2 EAP2):</p>
+<ul>
+  <li>Improve ShaderLab parsing (<a href="https://github.com/JetBrains/resharper-unity/issues/228">#228</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/223">#223</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-9214">RIDER-9214</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/222">#222</a>)</li>
+  <li>Show event function descriptions in generat dialog (<a href="https://youtrack.jetbrains.com/issue/RIDER-4904">RIDER-4904</a>)</li>
+  <li>Add support for mcs.rsp (<a href="https://github.com/JetBrains/resharper-unity/issues/230">#230</a>)</li>
+</ul>
+<p>From 2.1.0 (Rider 2017.1 EAP1):</p>
+<ul>
+  <li>Add annotations for modularised UnityEngine assemblies (<a href="https://github.com/JetBrains/resharper-unity/issues/2017">#207</a>)</li>
 </ul>
 ]]>
   </change-notes>

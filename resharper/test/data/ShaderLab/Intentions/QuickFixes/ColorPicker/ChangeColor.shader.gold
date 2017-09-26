@@ -1,0 +1,5 @@
+﻿Shader "Test" {
+  Properties {
+    _MyColour ("This is a colour", Color) = (0.7, 0.6, 0.4{caret}, 0)
+  }
+}
