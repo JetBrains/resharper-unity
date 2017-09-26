@@ -1,21 +1,21 @@
 ﻿|#error|(0) This is an error
 |#warning|(1) This is a warning
 |#line|(2) |23|(3)
-Shader |"Unlit/SingleColor"|(4)
+Shader "Unlit/SingleColor"
 {
-|CGINCLUDE|(5)|
+|CGINCLUDE|(4)|
 #pragma foo
-|(6)ENDCG
+|(5)ENDCG
 
-    |/* Block comment. Should have different highlighting to single line comment */|(7)
+    |/* Block comment. Should have different highlighting to single line comment */|(6)
     Properties
     {
-        |// Color property for material inspector, default to white|(8)
-        _Color (|"Main Color"|(9), Color) = (|1|(10),|1.0|(11),|1|(12),|1|(13))
+        // Color property for material inspector, default to white
+        _Color ("Main Color", Color) = (|1|(7),|1.0|(8),|1|(9),|1|(10))
     }
-    |#error|(14) Another error
-    |#warning|(15) Another warning
-    |#line|(16) |42|(17)
+    |#error|(11) Another error
+    |#warning|(12) Another warning
+    |#line|(13) |42|(14)
     SubShader
     {
         Pass
@@ -41,7 +41,7 @@ Shader |"Unlit/SingleColor"|(4)
             {
                 return _Color; // just return it
             }
-            |(18)ENDCG
+            |(15)ENDCG
         }
     }
 }
@@ -51,18 +51,15 @@ Shader |"Unlit/SingleColor"|(4)
 (1): keyword: 
 (2): keyword: 
 (3): number: 
-(4): string: 
-(5): keyword: 
-(6): ReSharper Injected Language Background: 
-(7): ReSharper Block Comment: 
-(8): comment: 
-(9): string: 
+(4): keyword: 
+(5): ReSharper Injected Language Background: 
+(6): ReSharper Block Comment: 
+(7): number: 
+(8): number: 
+(9): number: 
 (10): number: 
-(11): number: 
-(12): number: 
-(13): number: 
-(14): keyword: 
-(15): keyword: 
-(16): keyword: 
-(17): number: 
-(18): ReSharper Injected Language Background: 
+(11): keyword: 
+(12): keyword: 
+(13): keyword: 
+(14): number: 
+(15): ReSharper Injected Language Background: 
