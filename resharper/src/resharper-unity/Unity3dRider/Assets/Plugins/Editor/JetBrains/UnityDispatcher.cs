@@ -9,7 +9,7 @@ namespace Plugins.Editor.JetBrains
   /// Provides a means to execute a function on a Unity owned thread
   /// </summary>
   [InitializeOnLoad]
-  class Dispatcher
+  class UnityDispatcher
   {
     private struct Task
     {
@@ -42,7 +42,7 @@ namespace Plugins.Editor.JetBrains
     /// <summary>
     /// Initializes all the required callbacks for this class to work properly
     /// </summary>
-    static Dispatcher()
+    static UnityDispatcher()
     {
 #if UNITY_EDITOR
       EditorApplication.update += DispatchTasks;

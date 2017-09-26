@@ -57,7 +57,7 @@ namespace Plugins.Editor.JetBrains
           myLogger.Info("model.Play.Advise: " + session);
           if (!session) return;
           var text = "Edit/Play";
-          Dispatcher.Dispatch(() =>
+          UnityDispatcher.Dispatch(() =>
           {
             EditorApplication.ExecuteMenuItem(text);
           });
