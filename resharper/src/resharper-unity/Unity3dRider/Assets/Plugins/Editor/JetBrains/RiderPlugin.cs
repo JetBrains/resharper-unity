@@ -555,6 +555,12 @@ All those problems will go away after Unity upgrades to mono4.";
       {
         RiderInitializedOnce = false;
       }*/
+      
+      var text = "Edit/Play";
+      if (GUILayout.Button(text + " test"))
+      {
+        EditorApplication.ExecuteMenuItem(text);
+      }
 
       EditorGUILayout.EndVertical();
     }
