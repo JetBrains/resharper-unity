@@ -3,8 +3,8 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.configurations.ConfigurationTypeBase
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 
-class UnityDebugConfigurationType : ConfigurationTypeBase("UNITY_DEBUG_RUN_CONFIGURATION",
-        "Unity Debug", "Attach to Unity process and debug",
+class UnityDebugConfigurationType : ConfigurationTypeBase("UNITY_DEBUG_CONFIGURATION",
+        "Attach Unity", "Attach to Unity process and debug",
         UnityIcons.AttachEditorDebugConfiguration) {
 
     val attachToEditorFactory = UnityAttachToEditorFactory(this)
@@ -16,4 +16,16 @@ class UnityDebugConfigurationType : ConfigurationTypeBase("UNITY_DEBUG_RUN_CONFI
         // addFactory(attachToPlayerFactory)
     }
 }
+
+class UnityDebugAndPlayConfigurationType : ConfigurationTypeBase("UNITY_DEBUG_RUN_CONFIGURATION",
+    "Attach Unity and Play", "Attach to UnityEditor and Play",
+    UnityIcons.AttachEditorDebugConfiguration) {
+
+    val attachToEditorAndPlayFactory = UnityAttachToEditorAndPlayFactory(this)
+
+    init {
+        addFactory(attachToEditorAndPlayFactory)
+    }
+}
+
 

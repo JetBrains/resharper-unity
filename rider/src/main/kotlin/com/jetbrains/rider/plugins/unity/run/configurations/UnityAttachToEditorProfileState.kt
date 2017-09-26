@@ -36,6 +36,4 @@ class UnityAttachToEditorProfileState(val remoteConfiguration: UnityAttachToEdit
             executionEnvironment.project.solution.customData.data["UNITY_AttachEditorAndRun"] = "true";
         }
     }
-
-
 }

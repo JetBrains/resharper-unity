@@ -16,13 +16,11 @@ import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
 import org.apache.commons.logging.LogFactory
 import org.jdom.Element
 
-class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToEditorFactory)
+class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
     : RunConfigurationBase(project, factory, "Attach To Unity Editor"),
         RunConfigurationWithSuppressedDefaultRunAction,
         RemoteConfiguration,
         WithoutOwnBeforeRunSteps {
-
-    var play: Boolean = false   // TODO: Play after attach! (Don't forget to clone)
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
     override var port: Int = -1
@@ -110,12 +108,6 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
 
     override fun checkConfiguration() {
         // Too expensive to check here?
-    }
-
-    override fun readExternal(element: Element) {
-        super.readExternal(element)
-        val shouldPlay = element.getAttributeValue("play")
-        play = shouldPlay != null && java.lang.Boolean.parseBoolean(shouldPlay)
     }
 
     override fun writeExternal(element: Element) {
