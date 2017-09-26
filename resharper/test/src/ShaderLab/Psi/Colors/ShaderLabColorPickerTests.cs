@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Colors
 {
     [Category("ColorHighlighting")]
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabColorPickerTests : QuickFixTestBase<ColorPickerQuickFix>
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Intentions\QuickFixes\ColorPicker";

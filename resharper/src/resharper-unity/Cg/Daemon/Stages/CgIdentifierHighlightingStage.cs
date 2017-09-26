@@ -1,4 +1,5 @@
-﻿using JetBrains.Application.Settings;
+﻿using System;
+using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -66,22 +67,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public override void VisitFieldDeclarationNode(IFieldDeclaration fieldDeclarationParam, IHighlightingConsumer context)
             {
                 var variableDeclaration = fieldDeclarationParam.ContentNode;
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, variableDeclaration.FirstVariableNode.TypeNode.GetDocumentRange()));
-                HighlightNameNodes(variableDeclaration, context, CgHighlightingAttributeIds.FIELD_IDENTIFIER);
+                var typeNameRange = variableDeclaration?.FirstVariableNode?.TypeNode?.GetDocumentRange();
+                if (typeNameRange != null)
+                {
+                    context.AddHighlighting(
+                        new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, typeNameRange.Value));
+                    HighlightNameNodes(variableDeclaration, context, CgHighlightingAttributeIds.FIELD_IDENTIFIER);
+                }
+                
                 base.VisitFieldDeclarationNode(fieldDeclarationParam, context);
             }
             
             public override void VisitStructDeclarationNode(IStructDeclaration structDeclarationParam, IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, structDeclarationParam.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, structDeclarationParam.NameNode.GetDocumentRange()));
                 base.VisitStructDeclarationNode(structDeclarationParam, context);
             }
 
             public override void VisitFunctionDeclarationNode(IFunctionDeclaration functionDeclarationParam, IHighlightingConsumer context)
             {
                 var header = functionDeclarationParam.HeaderNode;
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, header.TypeNode.GetDocumentRange()));
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER, header.NameNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER,
+                    header.TypeNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER,
+                    header.NameNode.GetDocumentRange()));
                 base.VisitFunctionDeclarationNode(functionDeclarationParam, context);
             }
 
@@ -89,12 +98,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             {
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, semanticParam.GetDocumentRange())); // TODO: add as proper keywords maybe
                 base.VisitSemanticNode(semanticParam, context);
-            }
-
-            public override void VisitFunctionCallNode(IFunctionCall functionCallParam, IHighlightingConsumer context)
-            {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER, functionCallParam.NameNode.GetDocumentRange()));
-                base.VisitFunctionCallNode(functionCallParam, context);
             }
 
             public override void VisitCallOperatorNode(ICallOperator callOperatorParam, IHighlightingConsumer context)

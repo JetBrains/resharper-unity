@@ -1,9 +1,11 @@
 ﻿using JetBrains.Application.Settings;
+using JetBrains.DataFlow;
 using JetBrains.ReSharper.Cg.Daemon.Errors;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
@@ -12,17 +14,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                  StagesAfter = new [] { typeof(CollectUsagesStage)} )]
     public class CgSyntaxHighlightingStage : CgDaemonStageBase
     {
-        protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
-            DaemonProcessKind processKind, ICgFile file)
+        private readonly CgSupportSettings myCgSupportSettings;
+
+        public CgSyntaxHighlightingStage(CgSupportSettings cgSupportSettings)
         {
-            return new CgSyntaxHighlightingProcess(process, settings, file);
+            myCgSupportSettings = cgSupportSettings;
+        }
+        
+        protected override IDaemonStageProcess CreateProcess(
+            IDaemonProcess process,
+            IContextBoundSettingsStore settings,
+            DaemonProcessKind processKind,
+            ICgFile file)
+        {
+            return new CgSyntaxHighlightingProcess(process, settings, file, myCgSupportSettings.IsErrorHighlightingEnabled.Value);
         }
 
         private class CgSyntaxHighlightingProcess : CgDaemonStageProcessBase
         {
-            public CgSyntaxHighlightingProcess(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
+            private readonly bool myIsErrorHighlightingEnabled;
+
+            public CgSyntaxHighlightingProcess(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file, bool isErrorHighlightingEnabled)
                 : base(daemonProcess, settingsStore, file)
             {
+                myIsErrorHighlightingEnabled = isErrorHighlightingEnabled;
             }
             
             public override void VisitConstantValueNode(IConstantValue constantValueParam, IHighlightingConsumer context)
@@ -30,10 +45,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.NUMBER, constantValueParam.GetDocumentRange()));
                 base.VisitConstantValueNode(constantValueParam, context);
             }
-#if DEBUG            
+            
             public override void VisitNode(ITreeNode node, IHighlightingConsumer context)
-            {
-                if (node is IErrorElement errorElement)
+            {   
+                if (myIsErrorHighlightingEnabled && node is IErrorElement errorElement)
                 {
                     var range = errorElement.GetDocumentRange();
                     if (!range.IsValid())
@@ -50,7 +65,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
 
                 base.VisitNode(node, context);
             }
-#endif                    
         }
     }
 }

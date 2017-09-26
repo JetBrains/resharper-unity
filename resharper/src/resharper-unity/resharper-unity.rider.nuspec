@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>2.1.1.9999-rider</version>
+    <version>2.1.2.9999-rider</version>
     <authors>JetBrains</authors>
     <owners>JetBrains</owners>
     <summary>ReSharper support for the Unity engine</summary>

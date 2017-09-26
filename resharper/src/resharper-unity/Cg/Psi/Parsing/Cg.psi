@@ -731,13 +731,23 @@ postfixExpression
     )*
   ;
 
-postfixOperator
+interface postfixOperator
   :
-    PLUSPLUS
-    | MINUSMINUS
+    incrementOperator
+    | decrementOperator
     | arrayOperator
     | callOperator
     | fieldOperator
+  ;
+
+incrementOperator
+  :
+    PLUSPLUS
+  ;
+
+decrementOperator
+  :
+    MINUSMINUS
   ;
 
 arrayOperator
@@ -968,12 +978,6 @@ expressionStatement[typeName type]
       assignmentOperator
       ternaryExpression
     )*
-  ;
-
-functionCall[identifier functionName]
-  :
-    &functionName<CG_NAME, NameNode>
-    callOperator
   ;
 
 returnStatement
