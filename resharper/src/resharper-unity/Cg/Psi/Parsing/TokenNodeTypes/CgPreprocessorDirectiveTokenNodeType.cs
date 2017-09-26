@@ -19,5 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
         }
 
         public override string TokenRepresentation => "#direcitve";
+
+        public override bool IsFiltered => true;
     }
 }

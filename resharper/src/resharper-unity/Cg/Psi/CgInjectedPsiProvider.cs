@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Impl.Shared.InjectedPsi;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
@@ -61,7 +62,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi
 
         private ICgFile CreateContent(IPsiModule module, string text)
         {
-            var file = new CgParser(new CgLexerGenerated(new StringBuffer(text)), myIntern).ParseFile();
+            var generatedLexer = new CgLexerGenerated(new StringBuffer(text));
+            var file = new CgParser(generatedLexer.ToCachingLexer(), myIntern).ParseFile();
             if (file == null)
                 throw new ElementFactoryException("Cannot create IFile");
             SandBox.CreateSandBoxFor(file, module);

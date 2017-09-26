@@ -12,15 +12,16 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
-    public class CgMissingTokensInserter : MissingTokenInserterBase
+    internal class CgMissingTokensInserter : MissingTokenInserterBase
     {
         private readonly ILexer myLexer;
+        private readonly CgPreProcessor myPreProcessor;
 
-        private CgMissingTokensInserter(ILexer lexer, ITokenOffsetProvider offsetProvider,
-            SeldomInterruptChecker interruptChecker, ITokenIntern intern)
+        private CgMissingTokensInserter(ILexer lexer, ITokenOffsetProvider offsetProvider, CgPreProcessor preProcessor, SeldomInterruptChecker interruptChecker, ITokenIntern intern)
             : base(offsetProvider, interruptChecker, intern)
         {
             myLexer = lexer;
+            myPreProcessor = preProcessor;
         }
 
         protected override void ProcessLeafElement(TreeElement leafElement)
@@ -56,6 +57,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 
         private TreeElement CreateMissingToken()
         {
+            var directive = myPreProcessor.GetPpDirectiveAtOffset(myLexer.TokenStart);
+            if (directive != null)
+            {
+                return directive;
+            }
+            
             var tokenType = myLexer.TokenType;
             
             if (tokenType == CgTokenNodeTypes.WHITESPACE)
@@ -67,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
             return TreeElementFactory.CreateLeafElement(myLexer);
         }
 
-        public static void Run(TreeElement node, ILexer lexer, ITokenOffsetProvider offsetProvider, SeldomInterruptChecker interruptChecker, ITokenIntern intern)
+        public static void Run(TreeElement node, ILexer lexer, ITokenOffsetProvider offsetProvider, CgPreProcessor preProcessor, SeldomInterruptChecker interruptChecker, ITokenIntern intern)
         {
             Assertion.Assert(node.parent == null, "node.parent == null");
 
@@ -80,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
             var eof = new EofToken(lexer.Buffer.Length);
             root.AppendNewChild(eof);
 
-            var inserter = new CgMissingTokensInserter(lexer, offsetProvider, interruptChecker, intern);
+            var inserter = new CgMissingTokensInserter(lexer, offsetProvider, preProcessor, interruptChecker, intern);
 
             // Reset the lexer, walk the tree and call ProcessLeafElement on each leaf element
             lexer.Start();

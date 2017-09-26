@@ -32,12 +32,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi
 
         public override ILexer CreateFilteringLexer(ILexer lexer)
         {
-            return new CgFilteringLexer(lexer);
+            return new CgFilteringLexer(lexer, null);
         }
 
         public override IParser CreateParser(ILexer lexer, IPsiModule module, IPsiSourceFile sourceFile)
         {
-            return new CgParser(lexer, myIntern);
+            return new CgParser(lexer as ILexer<int> ?? lexer.ToCachingLexer(), myIntern);
         }
 
         public override IEnumerable<ITypeDeclaration> FindTypeDeclarations(IFile file)

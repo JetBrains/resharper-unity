@@ -305,8 +305,7 @@ options
 }
   :    
     (
-      directive
-      | declaration
+      declaration
     )*
   ;
 
@@ -388,7 +387,6 @@ structFieldList
   :
     (
       fieldDeclaration
-      | directive
     )*
   ;
 
@@ -886,7 +884,6 @@ functionBody
     (
       cgBlock
       | flowControlStatement
-      | directive
     )*
     RBRACE
   ;

@@ -3,16 +3,22 @@ using JetBrains.ReSharper.Psi.Parsing;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
-    public class CgFilteringLexer : FilteringLexer, ILexer<int>
+    internal class CgFilteringLexer : FilteringLexer, ILexer<int>
     {
-        public CgFilteringLexer([NotNull] ILexer lexer)
+        private readonly CgPreProcessor myPreProcessor;
+
+        public CgFilteringLexer([NotNull] ILexer lexer, [CanBeNull] CgPreProcessor preProcessor)
             : base(lexer)
         {
+            myPreProcessor = preProcessor;
         }
 
         protected override bool Skip(TokenNodeType tokenType)
         {
-            return tokenType.IsWhitespace || tokenType.IsComment;
+            if (tokenType.IsWhitespace || tokenType.IsComment || tokenType.IsFiltered)
+                return true;
+
+            return myPreProcessor != null && myPreProcessor.IsInPpTokenRange(TokenStart);
         }
 
         int ILexer<int>.CurrentPosition

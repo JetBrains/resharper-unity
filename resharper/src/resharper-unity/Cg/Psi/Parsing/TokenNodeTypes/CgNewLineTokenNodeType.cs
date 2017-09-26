@@ -1,7 +1,8 @@
-﻿using System;
+﻿using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.Text;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
 {
@@ -14,12 +15,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
 
         public override LeafElementBase Create(string token)
         {
-            throw new NotImplementedException();
+            return new CgNewLineTokenNode(token);
         }
 
         public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
         {
-            throw new NotImplementedException();
+            return new CgNewLineTokenNode(buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
         }
 
         public override bool IsWhitespace => true;
