@@ -16,9 +16,9 @@ using UnityEditor;
 namespace Plugins.Editor.JetBrains
 {
   [InitializeOnLoad]
-  public static class RiderController
+  public static class RiderProtocolController
   {
-    static RiderController()
+    static RiderProtocolController()
     {
       Start(Path.Combine(Path.GetTempPath(), "Unity3dRider", "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log"));
     }
