@@ -1,24 +1,27 @@
 ﻿Language: PsiLanguageType:CG
 ICgFile
-  IStructDeclaration
-    CgKeywordTokenNode(type:STRUCT_KEYWORD, text:struct)
-    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-    IIdentifier
-      CgIdentifier(type:IDENTIFIER, text:foo)
-    CgFixedLengthTokenNode(type:LBRACE, text:{)
-    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-    CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
-    IStructFieldList
-      IFieldDeclaration
-        ITypeName
-          IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
-        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-        IIdentifier
-          CgIdentifier(type:IDENTIFIER, text:f)
-        CgFixedLengthTokenNode(type:SEMICOLON, text:;)
-    CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
-    CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-    CgFixedLengthTokenNode(type:RBRACE, text:})
+  IDeclaration
+    IStructDeclaration
+      CgKeywordTokenNode(type:STRUCT_KEYWORD, text:struct)
+      CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+      IIdentifier
+        CgIdentifier(type:IDENTIFIER, text:foo)
+      CgFixedLengthTokenNode(type:LBRACE, text:{)
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      IStructFieldList
+        IFieldDeclaration
+          IVariableDeclaration
+            ISingleVariableDeclaration
+              IBuiltInType
+                CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+              CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+              IIdentifier
+                CgIdentifier(type:IDENTIFIER, text:f)
+              IVariableDeclarationTail
+          CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+      CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+      CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+      CgFixedLengthTokenNode(type:RBRACE, text:})
     ErrorElement:; expected
 

@@ -1,8 +1,12 @@
 ﻿Language: PsiLanguageType:CG
 ICgFile
-  CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
-  CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-  IIdentifier
-    CgIdentifier(type:IDENTIFIER, text:foo)
-    ErrorElement:Function declaration or global variable expected
+  IDeclaration
+    IVariableOrFunctionDeclaration
+      ErrorElement:
+        IBuiltInType
+          CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+        IIdentifier
+          CgIdentifier(type:IDENTIFIER, text:foo)
+    ErrorElement:Unexpected token
 

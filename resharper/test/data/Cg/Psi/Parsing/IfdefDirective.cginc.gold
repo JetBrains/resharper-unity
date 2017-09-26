@@ -3,105 +3,102 @@ ICgFile
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#ifdef)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: TRUE)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: TRUE)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-  IGlobalVariableDeclaration
-    ITypeName
-      IBuiltInType
-        CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
-    CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-    IIdentifier
-      CgIdentifier(type:IDENTIFIER, text:foo)
-    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+  IDeclaration
+    IVariableOrFunctionDeclaration
+      IVariableDeclaration
+        ISingleVariableDeclaration
+          IBuiltInType
+            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IIdentifier
+            CgIdentifier(type:IDENTIFIER, text:foo)
+          IVariableDeclarationTail
+      CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#endif)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#ifdef)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: TRUE)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: TRUE)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#elif)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: TRUE)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: TRUE)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#elif)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: TRUE)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: TRUE)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#endif)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#ifdef)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: TRUE)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: TRUE)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#else)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#endif)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#ifdef)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: TRUE)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: TRUE)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#elif)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: TRUE)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: TRUE)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#else)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#endif)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text:)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#ifndef)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: DIRECTIVE_TEST)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: DIRECTIVE_TEST)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#include)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: include_content)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: include_content)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#define)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: define_content)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: define_content)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#undef)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: undef_content)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: undef_content)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#line)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: line_content)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: line_content)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#error)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: error_content)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: error_content)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#warning)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: warning_content)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: warning_content)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#pragma)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: pragma_content)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: pragma_content)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
   IDirective
     CgPreprocessorTokenNode(type:DIRECTIVE, text:#endif)
-    CgGenericTokenNode(type:DIRECITVE_CONTENT, text: endif_content)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: endif_content)
 
