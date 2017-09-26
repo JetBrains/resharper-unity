@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 using IFunctionDeclaration = JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.IFunctionDeclaration;
 using IIdentifier = JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.IIdentifier;
 
@@ -14,17 +15,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         StagesAfter = new [] { typeof(CollectUsagesStage)} )]
     public class CgIdentifierHighlightingStage : CgDaemonStageBase
     {
-        protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
+        private readonly ILogger myLogger;
+
+        public CgIdentifierHighlightingStage(ILogger logger)
+        {
+            myLogger = logger;
+        }
+        
+        protected override IDaemonStageProcess CreateProcess(
+            IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICgFile file)
         {
-            return new IdentifierHighlightingProcess(process, settings, file);
+            return new IdentifierHighlightingProcess(myLogger, process, settings, file);
         }
 
         private class IdentifierHighlightingProcess : CgDaemonStageProcessBase
         {
-            public IdentifierHighlightingProcess(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
+            private readonly ILogger myLogger;
+            
+            public IdentifierHighlightingProcess(ILogger logger, IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
                 : base(daemonProcess, settingsStore, file)
             {
+                myLogger = logger;
             }
 
             public override void VisitFieldOperatorNode(IFieldOperator fieldOperatorParam, IHighlightingConsumer context)
@@ -89,8 +101,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 var header = functionDeclarationParam.HeaderNode;
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER,
                     header.TypeNode.GetDocumentRange()));
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER,
-                    header.NameNode.GetDocumentRange()));
+
+                try
+                {
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER,
+                        header.NameNode.GetDocumentRange()));
+                }
+                catch (InvalidCastException ex)
+                {
+                    myLogger.LogExceptionSilently(ex);
+                }
+
                 base.VisitFunctionDeclarationNode(functionDeclarationParam, context);
             }
 
