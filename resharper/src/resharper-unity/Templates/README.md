@@ -6,5 +6,5 @@
 
 Description |
 ------------|
-[MonoBehaviour](.\Templates\MonoBehaviour.md) |
+[MonoBehaviour](MonoBehaviour.md) |
 

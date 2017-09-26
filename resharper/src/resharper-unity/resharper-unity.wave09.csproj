@@ -63,7 +63,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.2.0" />
     <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="109.0.20170824.1323" />
-    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.1.1" />
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.2.0" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="WindowsBase" Condition=" '$(OS)' != 'Unix' " />
