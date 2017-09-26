@@ -22,6 +22,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("DirectiveWithSpace")]
         
         [TestCase("Empty")]
+        [TestCase("EmptyDirective")]
+        [TestCase("EmptyDirectiveOnly")]
         
         [TestCase("FieldDeclaration")]
         [TestCase("FieldDeclarationNoSemicolon")]
@@ -43,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("IfdefDirective")]
         [TestCase("IfndefDirective")]
         [TestCase("NonConditionalDirectives")]
+        [TestCase("OneDirective")]
         
         [TestCase("LocalVariableDeclarations")]
         

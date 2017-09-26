@@ -101,6 +101,8 @@ DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}
 <YYINITIAL>           {NEW_LINE}              { return CgTokenNodeTypes.NEW_LINE; }
 
 <YY_DIRECTIVE>        {DIRECTIVE_CONTENT}     { yybegin(YYINITIAL);         return CgTokenNodeTypes.DIRECTIVE_CONTENT;     }
+<YY_DIRECTIVE>        {NEW_LINE}              { yybegin(YYINITIAL);         return CgTokenNodeTypes.NEW_LINE;     }
+
 <YYINITIAL>           {DIRECTIVE}             { yybegin(YY_DIRECTIVE);      return CgTokenNodeTypes.DIRECTIVE;             }
 
 <YYINITIAL>           "{"                     { return CgTokenNodeTypes.LBRACE; }

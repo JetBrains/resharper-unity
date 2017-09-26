@@ -27,6 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
         public static readonly TokenNodeType DIRECTIVE = new CgPreprocessorDirectiveTokenNodeType(DIRECTIVE_NODE_TYPE_INDEX);
 
         public const int DIRECTIVE_CONTENT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 11;
-        public static readonly TokenNodeType DIRECTIVE_CONTENT = new CgGenericTokenNodeType("DIRECITVE_CONTENT", DIRECTIVE_CONTENT_NODE_TYPE_INDEX, "directive content");
+        public static readonly TokenNodeType DIRECTIVE_CONTENT = new CgFilteredGenericTokenNodeType("DIRECTIVE_CONTENT", DIRECTIVE_CONTENT_NODE_TYPE_INDEX, "directive content");
     }
 }

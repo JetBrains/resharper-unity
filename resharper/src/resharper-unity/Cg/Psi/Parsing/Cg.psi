@@ -309,10 +309,16 @@ options
     )*
   ;
 
+errorhandling directiveForceFollows
+:
+  directive
+  (errorElement | WHITESPACE | NEW_LINE)
+;
+
 errorhandling directive
   :    
     DIRECTIVE<CG_DIRECTIVE_HEADER, HeaderNode>
-    DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>
+    DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>?
   ;
 
 errorhandling declaration

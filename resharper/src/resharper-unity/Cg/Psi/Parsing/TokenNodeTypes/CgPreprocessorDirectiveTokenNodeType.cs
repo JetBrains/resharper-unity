@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
             return new CgPreprocessorTokenNode(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
         }
 
-        public override string TokenRepresentation => "#direcitve";
+        public override string TokenRepresentation => "#directive";
 
         public override bool IsFiltered => true;
     }
