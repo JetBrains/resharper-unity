@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
@@ -40,7 +40,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="api.xml" />
-    <EmbeddedResource Include="api.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <LiveTemplate Include="Templates\**\*.md">
+      <OutputFile>Templates\templates.generated.dotSettings</OutputFile>
+      <ReadmeFile>Templates\README.md</ReadmeFile>
+    </LiveTemplate>
+    <EmbeddedResource Include="Templates\templates.generated.dotSettings">
+      <LogicalName>JetBrains.ReSharper.Plugins.Unity.Templates.templates.dotSettings</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <!-- This requires WPF and PresentationFramework to build -->
@@ -55,6 +63,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.2.0" />
     <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="109.0.20170824.1323" />
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.1.1" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="WindowsBase" Condition=" '$(OS)' != 'Unix' " />

@@ -55,6 +55,15 @@
     <EmbeddedResource Include="api.xml" />
   </ItemGroup>
   <ItemGroup>
+    <LiveTemplate Include="Templates\**\*.md">
+      <OutputFile>Templates\templates.generated.dotSettings</OutputFile>
+      <ReadmeFile>Templates\README.md</ReadmeFile>
+    </LiveTemplate>
+    <EmbeddedResource Include="Templates\templates.generated.dotSettings">
+      <LogicalName>JetBrains.ReSharper.Plugins.Unity.Templates.templates.dotSettings</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <!-- This requires WPF and PresentationFramework to build -->
     <ThemedIconsXamlV3 Include="Resources\Logo\unity-logo.xaml" Condition=" '$(OS)' != 'Unix' ">
       <ThemeColumns>Gray;GrayDark;Color</ThemeColumns>
@@ -65,10 +74,8 @@
   </ItemGroup>
   <!-- References -->
   <ItemGroup>
-    <!-- It would be nice to use floating versions here during EAP, but that would require fixed
-         version major, minor and patch numbers, e.g. 2017.1.0-* or it will match incorrectly
-         See https://github.com/NuGet/Home/issues/4859-->
     <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.1.1" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
