@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
+using JetBrains.ReSharper.Feature.Services.LiveTemplates.Templates;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Psi.CSharp.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
 {
@@ -9,6 +11,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
     [ScopeCategoryUIProvider(Priority = -200, ScopeFilter = ScopeFilter.Project)]
     public class UnityProjectScopeCategoryUIProvider : ScopeCategoryUIProvider
     {
+        // These get added to a static dictionary, so they can be referenced by name from templates
+        // We're using Unity_CSharp instead of just CSharp, because that's set up to use the C#
+        // template scope icon instead of the C# file icon - see RIDER-9903
+        // Unity_ShaderLab is using the unity logo while we wait on a .shader file icon - see RIDER-7587
+        public static TemplateImage Unity_CSharp = new TemplateImage("Unity_CSharp", PsiCSharpThemedIcons.Csharp.Id);
+        public static TemplateImage Unity_ShaderLab = new TemplateImage("Unity_ShaderLab", LogoThemedIcons.UnityLogo.Id);
+
         public UnityProjectScopeCategoryUIProvider()
             : base(LogoThemedIcons.UnityLogo.Id)
         {

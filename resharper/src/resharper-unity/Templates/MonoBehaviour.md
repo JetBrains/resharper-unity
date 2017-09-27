@@ -1,6 +1,6 @@
 ---
 guid: 5ff5ac38-7207-4256-91ae-b5436552db13
-image: UnityCSharpFile
+image: Unity_CSharp
 type: File
 reformat: True
 shortenReferences: True
