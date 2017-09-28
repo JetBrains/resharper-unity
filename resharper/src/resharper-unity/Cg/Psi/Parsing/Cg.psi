@@ -887,13 +887,14 @@ argument
     singleVariableDeclaration<CG_CONTENT, VariableNode>[modifiers, type, name]
   ;
 
-// TODO: allow nested non-flow controlling blocks if they are allowed
+// TODO: rename cgBlock to statement and extract block from here (or rename to block?)
 functionBody
   :
     LBRACE  
     (
       cgBlock
       | flowControlStatement
+      | functionBody
     )*
     RBRACE
   ;
