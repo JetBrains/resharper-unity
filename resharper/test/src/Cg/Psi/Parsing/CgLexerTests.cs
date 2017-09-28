@@ -37,6 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
             Console.WriteLine(str2);
         }
 
+        [TestCase("AsmStatement")]
+        
         [TestCase("Basic_00")]
         
         [TestCase("Comment_00")]

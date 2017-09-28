@@ -13,6 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         
         [TestCase("AllDeclarations")]
         
+        [TestCase("AsmStatement")]
+        
         [TestCase("Assignments")]
         
         [TestCase("BinaryOperator")]
@@ -36,6 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("ForStatementWithBrackets")]
         
         [TestCase("FunctionArguments")]
+        [TestCase("FunctionArgumentWithNumbers")]
         [TestCase("FunctionOneArgument")]
         [TestCase("FunctionTwoArguments")]
         

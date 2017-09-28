@@ -98,7 +98,7 @@ NOT_SLASH_NOT_NEW_LINE=([^\/\u0085\u2028\u2029\u000D\u000A])
 DIRECTIVE_CONTENT=(({LINE_CONTINUATOR}|{DELIMITED_COMMENT}|{SLASH_AND_NOT_SLASH}|{NOT_SLASH_NOT_NEW_LINE})*)(\/|{SINGLE_LINE_COMMENT})?
 
 ASM_KEYWORD="asm"
-ASM_CONTENT="([^\}]*)"
+ASM_CONTENT=([^\}]*)
 
 %{
 /* asm block looks like this:
@@ -106,10 +106,10 @@ ASM_CONTENT="([^\}]*)"
 	void foo(){
 		...
 		asm 
-		{			<- YY_ASM_WRAPPER
+		{		  	<- YY_ASM_WRAPPER
 			... 	<- YY_ASM
-		} 			<- YY_ASM_WRAPPER
-		; 			
+		}
+		;       <- YYINITIAL 			
 	}
 	// TODO: allow directive in YY_ASM
  * 
@@ -124,17 +124,17 @@ ASM_CONTENT="([^\}]*)"
 <YYINITIAL, YY_ASM_WRAPPER>
                       {WHITESPACE}            { return CgTokenNodeTypes.WHITESPACE; }
 <YYINITIAL, YY_ASM_WRAPPER>
-		              {NEW_LINE}              { return CgTokenNodeTypes.NEW_LINE; }
+		                  {NEW_LINE}              { return CgTokenNodeTypes.NEW_LINE; }
 
 <YY_DIRECTIVE>        {DIRECTIVE_CONTENT}     { yybegin(YYINITIAL);         return CgTokenNodeTypes.DIRECTIVE_CONTENT;     }
 <YY_DIRECTIVE>        {NEW_LINE}              { yybegin(YYINITIAL);         return CgTokenNodeTypes.NEW_LINE;    		   }
 
 <YYINITIAL>           {DIRECTIVE}             { yybegin(YY_DIRECTIVE);      return CgTokenNodeTypes.DIRECTIVE;             }
 
-<YY_ASM_WRAPPER>	  "{"				   	  { yybegin(YY_ASM);   		    return CgTokenNodeTypes.LBRACE; 	     	   }
-<YY_ASM_WRAPPER> 	  "}"					  { yybegin(YYINITIAL);		    return CgTokenNodeTypes.RBRACE; 			   }
-
-<YY_ASM>			  {ASM_CONTENT}     	  { yybegin(YY_ASM_WRAPPER);    return CgTokenNodeTypes.ASM_CONTENT;	       }
+<YYINITIAL>           {ASM_KEYWORD}           { yybegin(YY_ASM_WRAPPER);    return CgTokenNodeTypes.ASM_KEYWORD; }
+<YY_ASM_WRAPPER>	    "{"				   	          { yybegin(YY_ASM);   		      return CgTokenNodeTypes.LBRACE; 	   }
+<YY_ASM>        	    {ASM_CONTENT}					  {                             return CgTokenNodeTypes.ASM_CONTENT;      }
+<YY_ASM>        	    "}"					            { yybegin(YYINITIAL);	 	      return CgTokenNodeTypes.RBRACE;      }
 
 <YYINITIAL>           "{"                     { return CgTokenNodeTypes.LBRACE; }
 <YYINITIAL>           "}"                     { return CgTokenNodeTypes.RBRACE; }
@@ -147,7 +147,7 @@ ASM_CONTENT="([^\}]*)"
 <YYINITIAL>           ";"                     { return CgTokenNodeTypes.SEMICOLON; }
 <YYINITIAL>           ":"                     { return CgTokenNodeTypes.COLON; }
 
-<YYINITIAL>			  "?"					  { return CgTokenNodeTypes.QUESTION_MARK; }
+<YYINITIAL>		     	  "?"		          			  { return CgTokenNodeTypes.QUESTION_MARK; }
 
 <YYINITIAL>           "<"                     { return CgTokenNodeTypes.LT; }
 <YYINITIAL>           ">"                     { return CgTokenNodeTypes.GT; }
@@ -175,7 +175,7 @@ ASM_CONTENT="([^\}]*)"
 <YYINITIAL>           ">>"                    { return CgTokenNodeTypes.GTGT; }
 <YYINITIAL>           "^"                     { return CgTokenNodeTypes.XOR; }
 <YYINITIAL>           "|"                     { return CgTokenNodeTypes.OR; }
-<YYINITIAL>			  "&"					  { return CgTokenNodeTypes.AND; }
+<YYINITIAL>		    	  "&"	          				  { return CgTokenNodeTypes.AND; }
 <YYINITIAL>           "&&"                    { return CgTokenNodeTypes.ANDAND; }
 <YYINITIAL>           "||"                    { return CgTokenNodeTypes.OROR; }
 <YYINITIAL>           "!"                     { return CgTokenNodeTypes.NEGATE; }
@@ -190,11 +190,11 @@ ASM_CONTENT="([^\}]*)"
 <YYINITIAL>           "--"                    { return CgTokenNodeTypes.MINUSMINUS; }
 
 <YYINITIAL, YY_ASM_WRAPPER>
-           {SINGLE_LINE_COMMENT}              { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }
+                      {SINGLE_LINE_COMMENT}   { return CgTokenNodeTypes.SINGLE_LINE_COMMENT; }
 <YYINITIAL, YY_ASM_WRAPPER>
-           {DELIMITED_COMMENT}                { return CgTokenNodeTypes.DELIMITED_COMMENT; }
+                      {DELIMITED_COMMENT}     { return CgTokenNodeTypes.DELIMITED_COMMENT; }
 <YYINITIAL, YY_ASM_WRAPPER>
-           {UNFINISHED_DELIMITED_COMMENT}     { return CgTokenNodeTypes.UNFINISHED_DELIMITED_COMMENT; }
+                      {UNFINISHED_DELIMITED_COMMENT} { return CgTokenNodeTypes.UNFINISHED_DELIMITED_COMMENT; }
 
 <YYINITIAL>           {IDENTIFIER}            { return FindKeywordByCurrentToken() ?? CgTokenNodeTypes.IDENTIFIER; }
 <YYINITIAL>           {NUMERIC_LITERAL}       { return CgTokenNodeTypes.NUMERIC_LITERAL; }

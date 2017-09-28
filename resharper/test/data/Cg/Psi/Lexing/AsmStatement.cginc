@@ -1,7 +1,12 @@
-void foo(){
-	asm{};
-	
-	asm{
-		asm stuff
-	};
-}
+asm{};
+asm {};
+asm{
+
+};
+asm{
+	content
+};
+asm
+{
+	content2
+};
