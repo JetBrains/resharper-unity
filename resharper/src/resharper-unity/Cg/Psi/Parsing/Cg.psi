@@ -322,16 +322,28 @@ errorhandling directive
     DIRECTIVE_CONTENT<CG_DIRECTIVE_CONTENT, ContentNode>?
   ;
 
+/* TODO: this actually allows for something like
+    static const MACRO_KEY
+*/
 errorhandling declaration
   :       
       structDeclaration
       | 
       (
         !(#modifiers:modifierKeywordList)?
-        !(#type:typeName)
         (
-          macroCall[type]
-          | variableOrFunctionDeclaration[modifiers, type]
+          (
+            !(#id:identifier)
+            (
+              macroCall[id]
+              | variableOrFunctionDeclaration[modifiers, id]
+            )
+          )
+          |
+          (
+            !(#type:builtInType)
+            variableOrFunctionDeclaration[modifiers, type]
+          )
         )
       )
   ;
@@ -350,9 +362,9 @@ variableOrFunctionDeclaration[modifierKeywordList modifiers, typeName type]
 
 // TODO: hack, macro call (e.g. CBUFFER_START(x), or CBUFFER_END)
 // or UNITY_DECLARE_SHADOWMAP(_ShadowMapTexture); <- has the semicolon
-macroCall[typeName type]
+macroCall[identifier id]
   :
-    &type
+    &id
     callOperator?
     SEMICOLON?
   ;
@@ -402,14 +414,27 @@ structFieldList
 errorhandling fieldDeclaration
   :
     !(#modifiers:modifierKeywordList)?
-    !(#type:typeName)
     (
       (
-        !(#name:identifier)
-        variableDeclaration<CG_CONTENT, ContentNode>[modifiers, type, name]
-        SEMICOLON
+        !(#id:identifier)
+        (
+          (
+            !(#name:identifier)
+            variableDeclaration<CG_CONTENT, ContentNode>[modifiers, id, name]
+            SEMICOLON
+          )
+          | macroCall[id]
+        )
+      ) 
+      |
+      (
+        !(#type:builtInType)
+        (
+          !(#name:identifier)
+          variableDeclaration<CG_CONTENT, ContentNode>[modifiers, type, name]
+          SEMICOLON
+        )
       )
-      | macroCall[type]
     )
   ;
 

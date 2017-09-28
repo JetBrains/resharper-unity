@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         
         [TestCase("Struct_00")]
         
-        [TestCase("VariableDeclationModifiers")]
+        [TestCase("VariableDeclarationModifiers")]
         public void TestLexer(string name) => DoOneTest(name);
     }
 }
