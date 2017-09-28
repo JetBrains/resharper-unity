@@ -121,6 +121,7 @@ options {
 
     | INLINE_KEYWORD
     | CONST_KEYWORD
+    | STATIC_KEYWORD
 
     | IN_KEYWORD
     | INOUT_KEYWORD
@@ -362,6 +363,7 @@ modifierKeywordList
     (
       INLINE_KEYWORD
       | CONST_KEYWORD
+      | STATIC_KEYWORD
       | UNIFORM_KEYWORD
       | IN_KEYWORD
       | OUT_KEYWORD

@@ -56,6 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("StructDeclarationReferencedType")]
         
         [TestCase("UnaryOperator")]
+        
+        [TestCase("VariableDeclationModifiers")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

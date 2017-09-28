@@ -98,7 +98,8 @@
   </FlowControlKeywords>
   
   <VariableModifierKeywords NodeType="CgKeywordTokenNodeType">
-    <Keyword name="CONST_KEYWORD" representation="const"/>
+    <Keyword name="CONST_KEYWORD" representation="const" />
+    <Keyword name="STATIC_KEYWORD" representation="static" />
     <Keyword name="UNIFORM_KEYWORD" representation="uniform" />
   </VariableModifierKeywords>
   
