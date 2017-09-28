@@ -22,13 +22,14 @@ ICgFile
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               CgFixedLengthTokenNode(type:LPAREN, text:()
               IExpression
-                IAssignmentExpression
-                  ITernaryExpression
-                    IBinaryExpression
-                      IPrefixExpression
-                        IPostfixExpression
-                          IConstantValue
-                            CgKeywordTokenNode(type:TRUE_KEYWORD, text:true)
+                ICommaExpression
+                  IAssignmentExpression
+                    ITernaryExpression
+                      IBinaryExpression
+                        IPrefixExpression
+                          IPostfixExpression
+                            IConstantValue
+                              CgKeywordTokenNode(type:TRUE_KEYWORD, text:true)
               CgFixedLengthTokenNode(type:RPAREN, text:))
               IFunctionBody
                 CgFixedLengthTokenNode(type:LBRACE, text:{)

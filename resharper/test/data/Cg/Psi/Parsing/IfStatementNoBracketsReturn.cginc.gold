@@ -21,22 +21,23 @@ ICgFile
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               CgFixedLengthTokenNode(type:LPAREN, text:()
               IExpression
-                IAssignmentExpression
-                  ITernaryExpression
-                    IBinaryExpression
-                      IPrefixExpression
-                        IPostfixExpression
-                          IConstantValue
-                            CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
-                      CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-                      IBinaryOperator
-                        CgFixedLengthTokenNode(type:LT, text:<)
-                      CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                ICommaExpression
+                  IAssignmentExpression
+                    ITernaryExpression
                       IBinaryExpression
                         IPrefixExpression
                           IPostfixExpression
                             IConstantValue
-                              CgGenericTokenNode(type:NUMERIC_LITERAL, text:1)
+                              CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+                        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                        IBinaryOperator
+                          CgFixedLengthTokenNode(type:LT, text:<)
+                        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                        IBinaryExpression
+                          IPrefixExpression
+                            IPostfixExpression
+                              IConstantValue
+                                CgGenericTokenNode(type:NUMERIC_LITERAL, text:1)
               CgFixedLengthTokenNode(type:RPAREN, text:))
               CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
               CgWhitespaceTokenNode(type:WHITESPACE, text:        ) spaces: "        "

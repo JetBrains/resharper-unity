@@ -18,17 +18,17 @@ ICgFile
           IVariableDeclarationTail
             CgFixedLengthTokenNode(type:EQUALS, text:=)
             CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-            IExpression
-              IAssignmentExpression
-                ITernaryExpression
-                  IBinaryExpression
-                    IPrefixExpression
-                      IPostfixExpression
-                        IVectorInitExpression
-                          CgFixedLengthTokenNode(type:LBRACE, text:{)
-                          CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-                          CgWhitespaceTokenNode(type:WHITESPACE, text:	) spaces: "	"
-                          IExpression
+            IAssignmentExpression
+              ITernaryExpression
+                IBinaryExpression
+                  IPrefixExpression
+                    IPostfixExpression
+                      IVectorInitExpression
+                        CgFixedLengthTokenNode(type:LBRACE, text:{)
+                        CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+                        CgWhitespaceTokenNode(type:WHITESPACE, text:	) spaces: "	"
+                        IExpression
+                          ICommaExpression
                             IAssignmentExpression
                               ITernaryExpression
                                 IBinaryExpression
@@ -36,38 +36,38 @@ ICgFile
                                     IPostfixExpression
                                       IConstantValue
                                         CgGenericTokenNode(type:NUMERIC_LITERAL, text:0.3)
-                          CgFixedLengthTokenNode(type:COMMA, text:,)
-                          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-                          IExpression
-                            IAssignmentExpression
-                              ITernaryExpression
-                                IBinaryExpression
-                                  IPrefixExpression
-                                    IPostfixExpression
-                                      IConstantValue
-                                        CgGenericTokenNode(type:NUMERIC_LITERAL, text:0.3)
-                          CgFixedLengthTokenNode(type:COMMA, text:,)
-                          CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-                          CgWhitespaceTokenNode(type:WHITESPACE, text:	) spaces: "	"
-                          IExpression
-                            IAssignmentExpression
-                              ITernaryExpression
-                                IBinaryExpression
-                                  IPrefixExpression
-                                    IPostfixExpression
-                                      IConstantValue
-                                        CgGenericTokenNode(type:NUMERIC_LITERAL, text:0.3)
-                          CgFixedLengthTokenNode(type:COMMA, text:,)
-                          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-                          IExpression
-                            IAssignmentExpression
-                              ITernaryExpression
-                                IBinaryExpression
-                                  IPrefixExpression
-                                    IPostfixExpression
-                                      IConstantValue
-                                        CgGenericTokenNode(type:NUMERIC_LITERAL, text:0.3)
-                          CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-                          CgFixedLengthTokenNode(type:RBRACE, text:})
+                            CgFixedLengthTokenNode(type:COMMA, text:,)
+                            CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                            ICommaExpression
+                              IAssignmentExpression
+                                ITernaryExpression
+                                  IBinaryExpression
+                                    IPrefixExpression
+                                      IPostfixExpression
+                                        IConstantValue
+                                          CgGenericTokenNode(type:NUMERIC_LITERAL, text:0.3)
+                              CgFixedLengthTokenNode(type:COMMA, text:,)
+                              CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+                              CgWhitespaceTokenNode(type:WHITESPACE, text:	) spaces: "	"
+                              ICommaExpression
+                                IAssignmentExpression
+                                  ITernaryExpression
+                                    IBinaryExpression
+                                      IPrefixExpression
+                                        IPostfixExpression
+                                          IConstantValue
+                                            CgGenericTokenNode(type:NUMERIC_LITERAL, text:0.3)
+                                CgFixedLengthTokenNode(type:COMMA, text:,)
+                                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                                ICommaExpression
+                                  IAssignmentExpression
+                                    ITernaryExpression
+                                      IBinaryExpression
+                                        IPrefixExpression
+                                          IPostfixExpression
+                                            IConstantValue
+                                              CgGenericTokenNode(type:NUMERIC_LITERAL, text:0.3)
+                        CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+                        CgFixedLengthTokenNode(type:RBRACE, text:})
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
 

@@ -55,12 +55,14 @@ ICgFile
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-              ITernaryExpression
-                IBinaryExpression
-                  IPrefixExpression
-                    IPostfixExpression
-                      IConstantValue
-                        CgGenericTokenNode(type:NUMERIC_LITERAL, text:2)
+              ICommaExpression
+                IAssignmentExpression
+                  ITernaryExpression
+                    IBinaryExpression
+                      IPrefixExpression
+                        IPostfixExpression
+                          IConstantValue
+                            CgGenericTokenNode(type:NUMERIC_LITERAL, text:2)
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -100,12 +102,14 @@ ICgFile
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-              ITernaryExpression
-                IBinaryExpression
-                  IPrefixExpression
-                    IPostfixExpression
-                      IConstantValue
-                        CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+              ICommaExpression
+                IAssignmentExpression
+                  ITernaryExpression
+                    IBinaryExpression
+                      IPrefixExpression
+                        IPostfixExpression
+                          IConstantValue
+                            CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -117,12 +121,14 @@ ICgFile
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-              ITernaryExpression
-                IBinaryExpression
-                  IPrefixExpression
-                    IPostfixExpression
-                      IIdentifier
-                        CgIdentifier(type:IDENTIFIER, text:a)
+              ICommaExpression
+                IAssignmentExpression
+                  ITernaryExpression
+                    IBinaryExpression
+                      IPrefixExpression
+                        IPostfixExpression
+                          IIdentifier
+                            CgIdentifier(type:IDENTIFIER, text:a)
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -136,16 +142,18 @@ ICgFile
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-              ITernaryExpression
-                IBinaryExpression
-                  IPrefixExpression
-                    IPostfixExpression
-                      IIdentifier
-                        CgIdentifier(type:IDENTIFIER, text:bar_a)
-                      IFieldOperator
-                        CgFixedLengthTokenNode(type:DOT, text:.)
-                        IIdentifier
-                          CgIdentifier(type:IDENTIFIER, text:zzz)
+              ICommaExpression
+                IAssignmentExpression
+                  ITernaryExpression
+                    IBinaryExpression
+                      IPrefixExpression
+                        IPostfixExpression
+                          IIdentifier
+                            CgIdentifier(type:IDENTIFIER, text:bar_a)
+                          IFieldOperator
+                            CgFixedLengthTokenNode(type:DOT, text:.)
+                            IIdentifier
+                              CgIdentifier(type:IDENTIFIER, text:zzz)
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -164,12 +172,14 @@ ICgFile
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-              ITernaryExpression
-                IBinaryExpression
-                  IPrefixExpression
-                    IPostfixExpression
-                      IConstantValue
-                        CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+              ICommaExpression
+                IAssignmentExpression
+                  ITernaryExpression
+                    IBinaryExpression
+                      IPrefixExpression
+                        IPostfixExpression
+                          IConstantValue
+                            CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -185,16 +195,18 @@ ICgFile
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-              ITernaryExpression
-                IBinaryExpression
-                  IPrefixExpression
-                    IPostfixExpression
-                      IIdentifier
-                        CgIdentifier(type:IDENTIFIER, text:bar_a)
-                      IFieldOperator
-                        CgFixedLengthTokenNode(type:DOT, text:.)
-                        IIdentifier
-                          CgIdentifier(type:IDENTIFIER, text:zzz)
+              ICommaExpression
+                IAssignmentExpression
+                  ITernaryExpression
+                    IBinaryExpression
+                      IPrefixExpression
+                        IPostfixExpression
+                          IIdentifier
+                            CgIdentifier(type:IDENTIFIER, text:bar_a)
+                          IFieldOperator
+                            CgFixedLengthTokenNode(type:DOT, text:.)
+                            IIdentifier
+                              CgIdentifier(type:IDENTIFIER, text:zzz)
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgFixedLengthTokenNode(type:RBRACE, text:})
