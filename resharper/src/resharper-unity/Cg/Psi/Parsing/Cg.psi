@@ -723,7 +723,9 @@ prefixExpression
 
 prefixOperator
   :
-    PLUS
+    NEGATE
+    | TILDE
+    | PLUS
     | MINUS
     | PLUSPLUS
     | MINUSMINUS
