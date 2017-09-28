@@ -28,5 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
 
         public const int DIRECTIVE_CONTENT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 11;
         public static readonly TokenNodeType DIRECTIVE_CONTENT = new CgFilteredGenericTokenNodeType("DIRECTIVE_CONTENT", DIRECTIVE_CONTENT_NODE_TYPE_INDEX, "directive content");
+        
+        public const int ASM_CONTENT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 12;
+        public static readonly TokenNodeType ASM_CONTENT = new CgGenericTokenNodeType("ASM_CONTENT", ASM_CONTENT_NODE_TYPE_INDEX, "asm content");
     }
 }

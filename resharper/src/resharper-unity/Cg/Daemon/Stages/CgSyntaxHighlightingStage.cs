@@ -45,7 +45,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.NUMBER, constantValueParam.GetDocumentRange()));
                 base.VisitConstantValueNode(constantValueParam, context);
             }
-            
+
+            public override void VisitAsmStatementNode(IAsmStatement asmStatementParam, IHighlightingConsumer context)
+            {
+                // TODO: custom HighlightingAttributeId
+                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.INJECT_STRING_BACKGROUND, asmStatementParam.ContentNode.GetDocumentRange()));
+                base.VisitAsmStatementNode(asmStatementParam, context);
+            }
+
             public override void VisitNode(ITreeNode node, IHighlightingConsumer context)
             {   
                 if (myIsErrorHighlightingEnabled && node is IErrorElement errorElement)

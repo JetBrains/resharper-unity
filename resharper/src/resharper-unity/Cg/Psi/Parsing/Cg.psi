@@ -131,6 +131,9 @@ options {
     | DIRECTIVE
     | DIRECTIVE_CONTENT
 
+    | ASM_KEYWORD
+    | ASM_CONTENT
+
     | BOOL_KEYWORD
     | INT_KEYWORD
     | UINT_KEYWORD    
@@ -926,7 +929,8 @@ functionBody
 errorhandling cgBlock
   :
     flowControlStatement
-    |  
+    | asmStatement
+    |   
     !(#modifiers:modifierKeywordList)?
     (
       (
@@ -944,6 +948,15 @@ errorhandling cgBlock
         )
       ) | SEMICOLON
     )
+  ;
+
+errorhandling asmStatement
+  :
+    ASM_KEYWORD
+    LBRACE
+    ASM_CONTENT<CG_CONTENT, ContentNode>
+    RBRACE
+    SEMICOLON
   ;
 
 interface flowControlStatement

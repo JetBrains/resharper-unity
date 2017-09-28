@@ -106,6 +106,10 @@
   <FunctionModifierKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="INLINE_KEYWORD" representation="inline" />
   </FunctionModifierKeywords>
+
+  <AsmKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="ASM_KEYWORD" representation="asm"/>
+  </AsmKeywords>
   
   <ScalarTypeKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="BOOL_KEYWORD" representation="bool" />
