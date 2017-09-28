@@ -11,6 +11,8 @@ float f4 = 0.0;
 float f4 = -0.00;
 float f4 = +0.00;
 
+float f2 = 1.;
+
 int i1 = 0;
 int i1 = -100;
 int i1 = +100;
