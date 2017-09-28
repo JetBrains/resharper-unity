@@ -656,7 +656,7 @@ variableDeclarationTail
     )?
     (
       EQUALS
-      expression
+      assignmentExpression
     )?
   ;
 
@@ -664,7 +664,16 @@ variableDeclarationTail
 // TODO: proper precedence
 errorhandling expression
   :
+    commaExpression
+  ;
+
+commaExpression
+  :
     assignmentExpression
+    (
+      COMMA
+      commaExpression
+    )*
   ;
 
 assignmentExpression
@@ -672,7 +681,7 @@ assignmentExpression
     ternaryExpression
     (
       assignmentOperator
-      ternaryExpression      
+      assignmentExpression      
     )*
   ;
 
@@ -1027,7 +1036,7 @@ expressionStatement[typeName type]
     )*
     (
       assignmentOperator
-      ternaryExpression
+      commaExpression
     )*
   ;
 

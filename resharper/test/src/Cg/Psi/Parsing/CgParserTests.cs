@@ -19,6 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         
         [TestCase("BinaryOperator")]
         
+        [TestCase("CommaExpression")]
+        
         [TestCase("Comment")]
         
         [TestCase("DirectiveWithSpace")]
