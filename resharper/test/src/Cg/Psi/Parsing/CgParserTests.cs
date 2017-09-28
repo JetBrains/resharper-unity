@@ -35,7 +35,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("FunctionOneArgument")]
         [TestCase("FunctionTwoArguments")]
         
-        [TestCase("FunctionCall_00")]
+	[TestCase("FunctionBodyEmptyStatement")]        
+
+	[TestCase("FunctionCall_00")]
         [TestCase("FunctionCall_01")]
         
         [TestCase("FunctionBuiltInReturnType")]

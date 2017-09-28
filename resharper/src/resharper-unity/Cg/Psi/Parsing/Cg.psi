@@ -901,18 +901,21 @@ functionBody
 errorhandling cgBlock
   :  
     !(#modifiers:modifierKeywordList)?
-    !(#type:typeName)
     (
       (
-        variableDeclarationStatement[modifiers, type]
-        SEMICOLON
-      )
-      | 
-      (
-        expressionStatement[type]
-        SEMICOLON?  // TODO: hack (PP macro call e.g. UNITY_BRANCH)
-      )
-      | SEMICOLON
+        !(#type:typeName)
+        (
+          (
+            variableDeclarationStatement[modifiers, type]
+            SEMICOLON
+          )
+          | 
+          (
+            expressionStatement[type]
+            SEMICOLON?  // TODO: hack (PP macro call e.g. UNITY_BRANCH)
+          )
+        )
+      ) | SEMICOLON
     )
   ;
 
