@@ -31,6 +31,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("FieldDeclarationReferencedType")]
         [TestCase("FieldDeclarationWithInitializer")]
         
+        [TestCase("ForStatementEmptyHeader")]
+        [TestCase("ForStatementNoBrackets")]
+        [TestCase("ForStatementWithBrackets")]
+        
         [TestCase("FunctionArguments")]
         [TestCase("FunctionOneArgument")]
         [TestCase("FunctionTwoArguments")]
@@ -49,6 +53,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("IfndefDirective")]
         [TestCase("NonConditionalDirectives")]
         [TestCase("OneDirective")]
+        
+        [TestCase("IfStatementFullBrackets")]
+        [TestCase("IfStatementMixedBrackets")]
+        [TestCase("IfStatementNoBrackets")]
         
         [TestCase("LocalVariableDeclarations")]
         
