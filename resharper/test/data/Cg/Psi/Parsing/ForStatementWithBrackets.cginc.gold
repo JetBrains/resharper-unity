@@ -16,79 +16,80 @@ ICgFile
           CgFixedLengthTokenNode(type:LBRACE, text:{)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgWhitespaceTokenNode(type:WHITESPACE, text:	) spaces: "	"
-          IForStatement
-            IForStatementHeader
-              CgKeywordTokenNode(type:FOR_KEYWORD, text:for)
-              CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-              CgFixedLengthTokenNode(type:LPAREN, text:()
-              ICgBlock
-                IVariableDeclarationStatement
-                  IVariableDeclaration
-                    ISingleVariableDeclaration
-                      IBuiltInType
-                        CgKeywordTokenNode(type:INT_KEYWORD, text:int)
-                      CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-                      IIdentifier
-                        CgIdentifier(type:IDENTIFIER, text:i)
-                      CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-                      IVariableDeclarationTail
-                        CgFixedLengthTokenNode(type:EQUALS, text:=)
+          ICgBlock
+            IForStatement
+              IForStatementHeader
+                CgKeywordTokenNode(type:FOR_KEYWORD, text:for)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                CgFixedLengthTokenNode(type:LPAREN, text:()
+                ICgBlock
+                  IVariableDeclarationStatement
+                    IVariableDeclaration
+                      ISingleVariableDeclaration
+                        IBuiltInType
+                          CgKeywordTokenNode(type:INT_KEYWORD, text:int)
                         CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-                        IExpression
-                          IAssignmentExpression
-                            ITernaryExpression
-                              IBinaryExpression
-                                IPrefixExpression
-                                  IPostfixExpression
-                                    IConstantValue
-                                      CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
-                CgFixedLengthTokenNode(type:SEMICOLON, text:;)
-              CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-              IExpression
-                IAssignmentExpression
-                  ITernaryExpression
-                    IBinaryExpression
-                      IPrefixExpression
-                        IPostfixExpression
-                          IIdentifier
-                            CgIdentifier(type:IDENTIFIER, text:i)
-                      CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-                      IBinaryOperator
-                        CgFixedLengthTokenNode(type:LT, text:<)
-                      CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                        IIdentifier
+                          CgIdentifier(type:IDENTIFIER, text:i)
+                        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                        IVariableDeclarationTail
+                          CgFixedLengthTokenNode(type:EQUALS, text:=)
+                          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                          IExpression
+                            IAssignmentExpression
+                              ITernaryExpression
+                                IBinaryExpression
+                                  IPrefixExpression
+                                    IPostfixExpression
+                                      IConstantValue
+                                        CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+                  CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IExpression
+                  IAssignmentExpression
+                    ITernaryExpression
                       IBinaryExpression
                         IPrefixExpression
                           IPostfixExpression
-                            IConstantValue
-                              CgGenericTokenNode(type:NUMERIC_LITERAL, text:10)
-              CgFixedLengthTokenNode(type:SEMICOLON, text:;)
-              CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
-              IExpression
-                IAssignmentExpression
-                  ITernaryExpression
-                    IBinaryExpression
-                      IPrefixExpression
-                        IPostfixExpression
-                          IIdentifier
-                            CgIdentifier(type:IDENTIFIER, text:i)
-                          IIncrementOperator
-                            CgFixedLengthTokenNode(type:PLUSPLUS, text:++)
-              CgFixedLengthTokenNode(type:RPAREN, text:))
-            IFunctionBody
-              CgFixedLengthTokenNode(type:LBRACE, text:{)
-              CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-              CgWhitespaceTokenNode(type:WHITESPACE, text:		) spaces: "		"
-              ICgBlock
-                IExpressionStatement
-                  IIdentifier
-                    CgIdentifier(type:IDENTIFIER, text:foo)
-                  ICallOperator
-                    CgFixedLengthTokenNode(type:LPAREN, text:()
-                    CgFixedLengthTokenNode(type:RPAREN, text:))
+                            IIdentifier
+                              CgIdentifier(type:IDENTIFIER, text:i)
+                        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                        IBinaryOperator
+                          CgFixedLengthTokenNode(type:LT, text:<)
+                        CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                        IBinaryExpression
+                          IPrefixExpression
+                            IPostfixExpression
+                              IConstantValue
+                                CgGenericTokenNode(type:NUMERIC_LITERAL, text:10)
                 CgFixedLengthTokenNode(type:SEMICOLON, text:;)
-              CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-              CgWhitespaceTokenNode(type:WHITESPACE, text:	) spaces: "	"
-              CgFixedLengthTokenNode(type:RBRACE, text:})
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IExpression
+                  IAssignmentExpression
+                    ITernaryExpression
+                      IBinaryExpression
+                        IPrefixExpression
+                          IPostfixExpression
+                            IIdentifier
+                              CgIdentifier(type:IDENTIFIER, text:i)
+                            IIncrementOperator
+                              CgFixedLengthTokenNode(type:PLUSPLUS, text:++)
+                CgFixedLengthTokenNode(type:RPAREN, text:))
+              IFunctionBody
+                CgFixedLengthTokenNode(type:LBRACE, text:{)
+                CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+                CgWhitespaceTokenNode(type:WHITESPACE, text:		) spaces: "		"
+                ICgBlock
+                  IExpressionStatement
+                    IIdentifier
+                      CgIdentifier(type:IDENTIFIER, text:foo)
+                    ICallOperator
+                      CgFixedLengthTokenNode(type:LPAREN, text:()
+                      CgFixedLengthTokenNode(type:RPAREN, text:))
+                  CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+                CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+                CgWhitespaceTokenNode(type:WHITESPACE, text:	) spaces: "	"
+                CgFixedLengthTokenNode(type:RBRACE, text:})
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgFixedLengthTokenNode(type:RBRACE, text:})
 

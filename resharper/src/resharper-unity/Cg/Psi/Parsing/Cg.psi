@@ -918,14 +918,15 @@ functionBody
     LBRACE  
     (
       cgBlock
-      | flowControlStatement
       | functionBody
     )*
     RBRACE
   ;
 
 errorhandling cgBlock
-  :  
+  :
+    flowControlStatement
+    |  
     !(#modifiers:modifierKeywordList)?
     (
       (
@@ -981,11 +982,12 @@ forStatement
     (
       functionBody
       | cgBlock
-      | flowControlStatement
     )
   ;
 
-errorhandling forStatementHeader // TODO: check spec
+// TODO: HLSL spec says that for statement can have attributes (e.g. unroll)
+// TODO: this technically allows for flow control statements inside of the initializer
+errorhandling forStatementHeader
   :
     FOR_KEYWORD
     LPAREN

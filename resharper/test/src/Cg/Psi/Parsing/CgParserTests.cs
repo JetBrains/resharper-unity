@@ -57,6 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("IfStatementFullBrackets")]
         [TestCase("IfStatementMixedBrackets")]
         [TestCase("IfStatementNoBrackets")]
+        [TestCase("IfStatementNoBracketsReturn")]
         
         [TestCase("LocalVariableDeclarations")]
         
