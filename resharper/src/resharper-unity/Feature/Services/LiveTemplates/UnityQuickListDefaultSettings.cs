@@ -33,6 +33,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
 
             // TODO: Not sure if this would be better handled in a .dotSettings file
             AddToQuickList(mountPoint, "MonoBehaviour", 1, "5ff5ac38-7207-4256-91ae-b5436552db13");
+            AddToQuickList(mountPoint, "PlayModeTest", 2, "0bcdbc13-d26e-4512-9750-fb930f532e88");
+            AddToQuickList(mountPoint, "EditModeTest", 3, "7b7fa2c7-0ee5-4d4f-bb1f-ddbeacdbfc94");
+            AddToQuickList(mountPoint, "StandardSurfaceShader", 4, "4b8178a2-8110-4068-a788-43b8227564e5");
+            AddToQuickList(mountPoint, "UnlitShader", 5, "fdbd3ad2-8db2-466a-a934-4ce25cb40564");
+            AddToQuickList(mountPoint, "ImageEffectShader", 6, "7b10542b-0a61-4bd8-ba91-e5bad4d39f5b");
         }
 
         private void AddToQuickList(ISettingsStorageMountPoint mountPoint, string name, int position, string guid)
