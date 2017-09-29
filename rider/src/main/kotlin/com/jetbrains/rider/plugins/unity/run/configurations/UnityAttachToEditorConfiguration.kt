@@ -117,9 +117,6 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
         if (pid != null) {
             element.setAttribute("pid", pid.toString())
         }
-        if (play) {
-            element.setAttribute("play", play.toString())
-        }
     }
 }
 

@@ -15,5 +15,4 @@ class UnityAttachToEditorAndPlayFactory(type: ConfigurationType)
     : UnityAttachToEditorFactory(type) {
 
     override fun createTemplateConfiguration(project: Project) = UnityAttachToEditorConfiguration(project, this, true)
-    override fun isConfigurationSingletonByDefault() = true
 }

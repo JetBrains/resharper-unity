@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.impl.CheckableRunConfigurationEditor
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 
@@ -15,6 +16,7 @@ class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<Unity
 
     init {
         viewModel = UnityAttachToEditorViewModel(lifetimeDefinition.lifetime, project)
+        project.solution.customData.data["UNITY_ProcessId"] = viewModel.pid.toString();
         form = UnityAttachToEditorForm(viewModel)
 
         // This doesn't work, because this editor seems to be wrapped, and any listeners
