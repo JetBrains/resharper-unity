@@ -4,6 +4,7 @@ import com.google.gson.JsonParser
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.IProperty
@@ -29,6 +30,7 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
 
         editorInstanceJsonStatus = status
         this.pid.value = pid
+        project.solution.customData.data["UNITY_ProcessId"] = pid.toString();
     }
 
     private fun updateProcessList(processList: Array<out ProcessInfo>) {
