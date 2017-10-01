@@ -4,6 +4,7 @@ using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Host.Features;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 
@@ -15,15 +16,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         public Protocol Protocol { get; private set; }
 
-        public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, Solution solution)
+        public UnityPluginProtocolController(Lifetime lifetime, ILogger logger,  SolutionModel solutionModel)
         {
-            solution.CustomData
+            solutionModel.GetCurrentSolution().CustomData
                 .Data.Advise(lifetime, e =>
                 {
                     if (e.Key == "UNITY_ProcessId" && e.NewValue != e.OldValue && !string.IsNullOrEmpty(e.NewValue))
                     {
-                        var pid = Convert.ToInt32(solution.CustomData.Data["UNITY_ProcessId"]);
-                        logger.Verbose($"UNITY_ProcessId {e.NewValue} came from frontend. Pid: {pid}");
+                        var pid = Convert.ToInt32(e.NewValue);
+                        logger.Verbose($"UNITY_ProcessId {e.NewValue} came from frontend.");
 
                         try
                         {
