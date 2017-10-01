@@ -44,6 +44,7 @@
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
     <Compile Remove="Unity3dRider\**\*" />
+    <Compile Include="Unity3dRider\Assets\Plugins\Editor\JetBrains\UnityModel.Generated.cs" />
     <None Include="Unity3dRider\**\*" />
     <EmbeddedResource Include="Unity3dRider\Assets\Plugins\Editor\JetBrains\Unity3DRider.cs" />
   </ItemGroup>
