@@ -303,7 +303,7 @@ interface typeReference
 
 semantic // e.g. TEXCOORD, COLOR
   :
-    identifier // TODO: keyword list, after that different keywords for vertex/pixel shaders 
+    IDENTIFIER<CG_NAME, NameNode> // checked on SyntaxHL stage as this context-sensitive keyword, e.g. `float color : color` is perfectly fine
   ;
 
 

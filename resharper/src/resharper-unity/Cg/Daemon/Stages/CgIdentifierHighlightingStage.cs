@@ -47,7 +47,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
 
             public override void VisitPostfixExpressionNode(IPostfixExpression postfixExpressionParam, IHighlightingConsumer context)
             {
-                // TODO: fix
                 if (postfixExpressionParam.OperatorNode.FirstOrDefault() is ICallOperator
                  && postfixExpressionParam.OperandNode is IIdentifier functionName)
                 {
@@ -60,7 +59,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public override void VisitSingleVariableDeclarationNode(ISingleVariableDeclaration singleVariableDeclarationParam,
                 IHighlightingConsumer context)
             {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, singleVariableDeclarationParam.TypeNode.GetDocumentRange()));
+                var typeName = singleVariableDeclarationParam.TypeNode;
+                if (typeName is IIdentifier userDeclaredType)
+                {
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, userDeclaredType.GetDocumentRange()));
+                }
+                
                 base.VisitSingleVariableDeclarationNode(singleVariableDeclarationParam, context);
             }
 
@@ -70,20 +74,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 base.VisitVariableDeclarationNode(variableDeclarationParam, context);
             }
 
-            public override void VisitBuiltInTypeNode(IBuiltInType builtInTypeParam, IHighlightingConsumer context)
-            {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, builtInTypeParam.GetDocumentRange()));
-                base.VisitBuiltInTypeNode(builtInTypeParam, context);
-            }
-
             public override void VisitFieldDeclarationNode(IFieldDeclaration fieldDeclarationParam, IHighlightingConsumer context)
             {
                 var variableDeclaration = fieldDeclarationParam.ContentNode;
-                var typeNameRange = variableDeclaration?.FirstVariableNode?.TypeNode?.GetDocumentRange();
-                if (typeNameRange != null)
+                if (variableDeclaration != null)
                 {
-                    context.AddHighlighting(
-                        new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, typeNameRange.Value));
                     HighlightNameNodes(variableDeclaration, context, CgHighlightingAttributeIds.FIELD_IDENTIFIER);
                 }
                 
@@ -99,8 +94,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public override void VisitFunctionDeclarationNode(IFunctionDeclaration functionDeclarationParam, IHighlightingConsumer context)
             {
                 var header = functionDeclarationParam.HeaderNode;
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER,
-                    header.TypeNode.GetDocumentRange()));
+                if (header.TypeNode is IIdentifier userDeclaredType)
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, userDeclaredType.GetDocumentRange()));
 
                 try
                 {
@@ -109,25 +104,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 }
                 catch (InvalidCastException ex)
                 {
+                    // TODO: remove after PP implementation
                     myLogger.LogExceptionSilently(ex);
                 }
 
                 base.VisitFunctionDeclarationNode(functionDeclarationParam, context);
-            }
-
-            public override void VisitSemanticNode(ISemantic semanticParam, IHighlightingConsumer context)
-            {
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, semanticParam.GetDocumentRange())); // TODO: add as proper keywords maybe
-                base.VisitSemanticNode(semanticParam, context);
-            }
-
-            public override void VisitCallOperatorNode(ICallOperator callOperatorParam, IHighlightingConsumer context)
-            {
-                var parent = callOperatorParam.Parent as IPostfixExpression;
-                if (parent?.OperandNode is IIdentifier operand) // TODO: this is wrong if this is the constructor of user-declared type
-                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER, operand.GetDocumentRange()));
-                
-                base.VisitCallOperatorNode(callOperatorParam, context);
             }
 
             private void HighlightNameNodes(IVariableDeclaration variableDeclaration, IHighlightingConsumer context, string highlightingAttributeId)

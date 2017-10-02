@@ -26,8 +26,7 @@ ICgFile
                   CgFixedLengthTokenNode(type:COLON, text::)
                   CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                   ISemantic
-                    IIdentifier
-                      CgIdentifierTokenNode(type:IDENTIFIER, text:POSITION)
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:POSITION)
             CgFixedLengthTokenNode(type:COMMA, text:,)
             CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
             CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -43,8 +42,7 @@ ICgFile
                   CgFixedLengthTokenNode(type:COLON, text::)
                   CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                   ISemantic
-                    IIdentifier
-                      CgIdentifierTokenNode(type:IDENTIFIER, text:TEXCOORD0)
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:TEXCOORD0)
             CgFixedLengthTokenNode(type:COMMA, text:,)
             CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
             CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -63,8 +61,7 @@ ICgFile
                   CgFixedLengthTokenNode(type:COLON, text::)
                   CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                   ISemantic
-                    IIdentifier
-                      CgIdentifierTokenNode(type:IDENTIFIER, text:SV_POSITION)
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:SV_POSITION)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
           CgFixedLengthTokenNode(type:RPAREN, text:))

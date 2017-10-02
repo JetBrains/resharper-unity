@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
     {
         public static readonly NodeTypeSet KEYWORDS;
 
+        // float -> float[1-4] -> float[1-4]x[1-4]
         public static readonly Dictionary<string, TokenNodeType> BuiltInTypes;
 
         static CgKeywordsList()
@@ -28,8 +29,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
             );
             
             BuiltInTypes = new Dictionary<string, TokenNodeType>();
+            
             // double gives error on d3d11: vs_4_0 does not support doubles as a storage type at line 34 (on d3d11)
-            var builtInTypesRepresentation = new[] {"bool", "int", "uint", "half", "float", "double"};
+            var builtInTypesRepresentation = new[]
+            {
+                "bool",
+                "int",
+                "uint",
+                "half",
+                "float",
+                "double"
+            };
+            
             foreach (var builtInType in builtInTypesRepresentation)
             {
                 BuiltInTypes.Add(builtInType, CgTokenNodeTypes.SCALAR_TYPE);
