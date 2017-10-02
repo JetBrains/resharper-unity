@@ -10,6 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
     public partial class CgLexerGenerated
     {
         private static readonly LexerDictionary<TokenNodeType> Keywords = new LexerDictionary<TokenNodeType>();
+        
         private readonly ReusableBufferRange myBufferRange = new ReusableBufferRange();
         
         // ReSharper disable once InconsistentNaming
@@ -26,10 +27,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 
         static CgLexerGenerated()
         {
-            foreach (var nodeType in CgKeywordsList.ALL)
+            foreach (var nodeType in CgKeywordsList.KEYWORDS)
             {
                 var keyword = (TokenNodeType) nodeType;
                 Keywords[keyword.TokenRepresentation] = keyword;
+            }
+
+            foreach (var builtInType in CgKeywordsList.BuiltInTypes)
+            {
+                Keywords[builtInType.Key] = builtInType.Value;
             }
         }
 

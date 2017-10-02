@@ -8,7 +8,7 @@ ICgFile
             CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           CgFixedLengthTokenNode(type:LPAREN, text:()
           CgFixedLengthTokenNode(type:RPAREN, text:))
         IFunctionBody
@@ -18,7 +18,7 @@ ICgFile
           ICgBlock
             IExpressionStatement
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:bar)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:bar)
               ICallOperator
                 CgFixedLengthTokenNode(type:LPAREN, text:()
                 IExpression
@@ -29,7 +29,7 @@ ICgFile
                           IPrefixExpression
                             IPostfixExpression
                               IIdentifier
-                                CgIdentifier(type:IDENTIFIER, text:baz)
+                                CgIdentifierTokenNode(type:IDENTIFIER, text:baz)
                 CgFixedLengthTokenNode(type:RPAREN, text:))
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -37,7 +37,7 @@ ICgFile
           ICgBlock
             IExpressionStatement
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:bar)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:bar)
               ICallOperator
                 CgFixedLengthTokenNode(type:LPAREN, text:()
                 IExpression
@@ -48,11 +48,11 @@ ICgFile
                           IPrefixExpression
                             IPostfixExpression
                               IIdentifier
-                                CgIdentifier(type:IDENTIFIER, text:baz)
+                                CgIdentifierTokenNode(type:IDENTIFIER, text:baz)
                               IFieldOperator
                                 CgFixedLengthTokenNode(type:DOT, text:.)
                                 IIdentifier
-                                  CgIdentifier(type:IDENTIFIER, text:a)
+                                  CgIdentifierTokenNode(type:IDENTIFIER, text:a)
                 CgFixedLengthTokenNode(type:RPAREN, text:))
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -60,7 +60,7 @@ ICgFile
           ICgBlock
             IExpressionStatement
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:bar)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:bar)
               ICallOperator
                 CgFixedLengthTokenNode(type:LPAREN, text:()
                 IExpression
@@ -71,11 +71,11 @@ ICgFile
                           IPrefixExpression
                             IPostfixExpression
                               IIdentifier
-                                CgIdentifier(type:IDENTIFIER, text:baz)
+                                CgIdentifierTokenNode(type:IDENTIFIER, text:baz)
                               IFieldOperator
                                 CgFixedLengthTokenNode(type:DOT, text:.)
                                 IIdentifier
-                                  CgIdentifier(type:IDENTIFIER, text:a)
+                                  CgIdentifierTokenNode(type:IDENTIFIER, text:a)
                           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                           IBinaryOperator
                             CgFixedLengthTokenNode(type:MULTIPLY, text:*)

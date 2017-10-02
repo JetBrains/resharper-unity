@@ -31,5 +31,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
         
         public const int ASM_CONTENT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 12;
         public static readonly TokenNodeType ASM_CONTENT = new CgGenericTokenNodeType("ASM_CONTENT", ASM_CONTENT_NODE_TYPE_INDEX, "asm content");
+
+        public const int SCALAR_TYPE_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 13;
+        public static readonly TokenNodeType SCALAR_TYPE = new CgBuiltInTypeTokenNodeType("SCALAR_TYPE", SCALAR_TYPE_NODE_TYPE_INDEX);
+        
+        public const int VECTOR_TYPE_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 14;
+        public static readonly TokenNodeType VECTOR_TYPE = new CgBuiltInTypeTokenNodeType("VECTOR_TYPE", VECTOR_TYPE_NODE_TYPE_INDEX);
+        
+        public const int MATRIX_TYPE_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 15;
+        public static readonly TokenNodeType MATRIX_TYPE = new CgBuiltInTypeTokenNodeType("MATRIX_TYPE", MATRIX_TYPE_NODE_TYPE_INDEX);
     }
 }

@@ -10,10 +10,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -30,10 +30,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -46,10 +46,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -62,10 +62,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -82,10 +82,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -97,10 +97,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -117,10 +117,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -133,10 +133,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -148,10 +148,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"

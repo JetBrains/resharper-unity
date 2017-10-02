@@ -6,7 +6,7 @@ ICgFile
       CgKeywordTokenNode(type:STRUCT_KEYWORD, text:struct)
       CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
       IIdentifier
-        CgIdentifier(type:IDENTIFIER, text:bar)
+        CgIdentifierTokenNode(type:IDENTIFIER, text:bar)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgFixedLengthTokenNode(type:LBRACE, text:{)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -16,10 +16,10 @@ ICgFile
           IVariableDeclaration
             ISingleVariableDeclaration
               IBuiltInType
-                CgKeywordTokenNode(type:INT_KEYWORD, text:int)
+                CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:int)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:zzz)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:zzz)
               IVariableDeclarationTail
           CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -35,7 +35,7 @@ ICgFile
             CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           CgFixedLengthTokenNode(type:LPAREN, text:()
           CgFixedLengthTokenNode(type:RPAREN, text:))
         CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -46,11 +46,11 @@ ICgFile
           ICgBlock
             IExpressionStatement
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:bar)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:bar)
               IFieldOperator
                 CgFixedLengthTokenNode(type:DOT, text:.)
                 IIdentifier
-                  CgIdentifier(type:IDENTIFIER, text:a)
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:a)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
@@ -71,10 +71,10 @@ ICgFile
               IVariableDeclaration
                 ISingleVariableDeclaration
                   IBuiltInType
-                    CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+                    CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
                   CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                   IIdentifier
-                    CgIdentifier(type:IDENTIFIER, text:b)
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:b)
                   IVariableDeclarationTail
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -85,10 +85,10 @@ ICgFile
               IVariableDeclaration
                 ISingleVariableDeclaration
                   IIdentifier
-                    CgIdentifier(type:IDENTIFIER, text:bar)
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:bar)
                   CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                   IIdentifier
-                    CgIdentifier(type:IDENTIFIER, text:bar_a)
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:bar_a)
                   IVariableDeclarationTail
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -97,7 +97,7 @@ ICgFile
           ICgBlock
             IExpressionStatement
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:b)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:b)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
@@ -116,7 +116,7 @@ ICgFile
           ICgBlock
             IExpressionStatement
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:b)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:b)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
@@ -128,7 +128,7 @@ ICgFile
                       IPrefixExpression
                         IPostfixExpression
                           IIdentifier
-                            CgIdentifier(type:IDENTIFIER, text:a)
+                            CgIdentifierTokenNode(type:IDENTIFIER, text:a)
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -137,7 +137,7 @@ ICgFile
           ICgBlock
             IExpressionStatement
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:b)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:b)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
@@ -149,11 +149,11 @@ ICgFile
                       IPrefixExpression
                         IPostfixExpression
                           IIdentifier
-                            CgIdentifier(type:IDENTIFIER, text:bar_a)
+                            CgIdentifierTokenNode(type:IDENTIFIER, text:bar_a)
                           IFieldOperator
                             CgFixedLengthTokenNode(type:DOT, text:.)
                             IIdentifier
-                              CgIdentifier(type:IDENTIFIER, text:zzz)
+                              CgIdentifierTokenNode(type:IDENTIFIER, text:zzz)
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -163,11 +163,11 @@ ICgFile
           ICgBlock
             IExpressionStatement
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:bar_a)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:bar_a)
               IFieldOperator
                 CgFixedLengthTokenNode(type:DOT, text:.)
                 IIdentifier
-                  CgIdentifier(type:IDENTIFIER, text:zzz)
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:zzz)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
@@ -186,11 +186,11 @@ ICgFile
           ICgBlock
             IExpressionStatement
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:bar_a)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:bar_a)
               IFieldOperator
                 CgFixedLengthTokenNode(type:DOT, text:.)
                 IIdentifier
-                  CgIdentifier(type:IDENTIFIER, text:zzz)
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:zzz)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               IAssignmentOperator
                 CgFixedLengthTokenNode(type:EQUALS, text:=)
@@ -202,11 +202,11 @@ ICgFile
                       IPrefixExpression
                         IPostfixExpression
                           IIdentifier
-                            CgIdentifier(type:IDENTIFIER, text:bar_a)
+                            CgIdentifierTokenNode(type:IDENTIFIER, text:bar_a)
                           IFieldOperator
                             CgFixedLengthTokenNode(type:DOT, text:.)
                             IIdentifier
-                              CgIdentifier(type:IDENTIFIER, text:zzz)
+                              CgIdentifierTokenNode(type:IDENTIFIER, text:zzz)
             CgFixedLengthTokenNode(type:SEMICOLON, text:;)
           CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
           CgFixedLengthTokenNode(type:RBRACE, text:})

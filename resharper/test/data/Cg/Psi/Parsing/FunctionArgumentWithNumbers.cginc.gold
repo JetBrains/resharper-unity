@@ -5,29 +5,29 @@ ICgFile
       IFunctionDeclaration
         IFunctionHeader
           IBuiltInType
-            CgKeywordTokenNode(type:HALF4_KEYWORD, text:half4)
+            CgBuiltInTypeTokenNode(type:VECTOR_TYPE, text:half4)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:Test)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:Test)
           CgFixedLengthTokenNode(type:LPAREN, text:()
           IFunctionArgList
             IArgument
               ISingleVariableDeclaration
                 IIdentifier
-                  CgIdentifier(type:IDENTIFIER, text:Test2)
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:Test2)
                 CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                 IIdentifier
-                  CgIdentifier(type:IDENTIFIER, text:pt)
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:pt)
                 IVariableDeclarationTail
             CgFixedLengthTokenNode(type:COMMA, text:,)
             CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
             IArgument
               ISingleVariableDeclaration
                 IIdentifier
-                  CgIdentifier(type:IDENTIFIER, text:Test4)
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:Test4)
                 CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                 IIdentifier
-                  CgIdentifier(type:IDENTIFIER, text:pf)
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:pf)
                 IVariableDeclarationTail
           CgFixedLengthTokenNode(type:RPAREN, text:))
         IFunctionBody

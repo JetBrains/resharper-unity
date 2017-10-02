@@ -5,10 +5,10 @@ ICgFile
       IVariableDeclaration
         ISingleVariableDeclaration
           IBuiltInType
-            CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:field)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:field)
           IVariableDeclarationTail
       CgFixedLengthTokenNode(type:SEMICOLON, text:;)
   CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -18,7 +18,7 @@ ICgFile
       CgKeywordTokenNode(type:STRUCT_KEYWORD, text:struct)
       CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
       IIdentifier
-        CgIdentifier(type:IDENTIFIER, text:hello)
+        CgIdentifierTokenNode(type:IDENTIFIER, text:hello)
       CgFixedLengthTokenNode(type:LBRACE, text:{)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
       CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
@@ -27,10 +27,10 @@ ICgFile
           IVariableDeclaration
             ISingleVariableDeclaration
               IBuiltInType
-                CgKeywordTokenNode(type:FLOAT_KEYWORD, text:float)
+                CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
               CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
               IIdentifier
-                CgIdentifier(type:IDENTIFIER, text:foo)
+                CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
               IVariableDeclarationTail
           CgFixedLengthTokenNode(type:SEMICOLON, text:;)
       CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
@@ -46,7 +46,7 @@ ICgFile
             CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:main)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:main)
           CgFixedLengthTokenNode(type:LPAREN, text:()
           CgFixedLengthTokenNode(type:RPAREN, text:))
         CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"

@@ -9,7 +9,7 @@ ICgFile
             CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           CgFixedLengthTokenNode(type:LPAREN, text:()
           CgFixedLengthTokenNode(type:RPAREN, text:))
         IFunctionBody
@@ -36,7 +36,7 @@ ICgFile
               ICgBlock
                 IExpressionStatement
                   IIdentifier
-                    CgIdentifier(type:IDENTIFIER, text:ifNoBrackets)
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:ifNoBrackets)
                   ICallOperator
                     CgFixedLengthTokenNode(type:LPAREN, text:()
                     CgFixedLengthTokenNode(type:RPAREN, text:))
@@ -52,7 +52,7 @@ ICgFile
                   ICgBlock
                     IExpressionStatement
                       IIdentifier
-                        CgIdentifier(type:IDENTIFIER, text:elseBrackets)
+                        CgIdentifierTokenNode(type:IDENTIFIER, text:elseBrackets)
                       ICallOperator
                         CgFixedLengthTokenNode(type:LPAREN, text:()
                         CgFixedLengthTokenNode(type:RPAREN, text:))
@@ -85,7 +85,7 @@ ICgFile
                 ICgBlock
                   IExpressionStatement
                     IIdentifier
-                      CgIdentifier(type:IDENTIFIER, text:ifBrackets)
+                      CgIdentifierTokenNode(type:IDENTIFIER, text:ifBrackets)
                     ICallOperator
                       CgFixedLengthTokenNode(type:LPAREN, text:()
                       CgFixedLengthTokenNode(type:RPAREN, text:))
@@ -102,7 +102,7 @@ ICgFile
                 ICgBlock
                   IExpressionStatement
                     IIdentifier
-                      CgIdentifier(type:IDENTIFIER, text:elseNoBrackets)
+                      CgIdentifierTokenNode(type:IDENTIFIER, text:elseNoBrackets)
                     ICallOperator
                       CgFixedLengthTokenNode(type:LPAREN, text:()
                       CgFixedLengthTokenNode(type:RPAREN, text:))

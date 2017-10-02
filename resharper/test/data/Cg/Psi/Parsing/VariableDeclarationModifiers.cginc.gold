@@ -10,10 +10,10 @@ ICgFile
             CgKeywordTokenNode(type:CONST_KEYWORD, text:const)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IBuiltInType
-            CgKeywordTokenNode(type:HALF2X2_KEYWORD, text:half2x2)
+            CgBuiltInTypeTokenNode(type:MATRIX_TYPE, text:half2x2)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IVariableDeclarationTail
             CgFixedLengthTokenNode(type:EQUALS, text:=)

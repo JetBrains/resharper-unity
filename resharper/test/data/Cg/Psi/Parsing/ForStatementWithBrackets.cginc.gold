@@ -9,7 +9,7 @@ ICgFile
             CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
           IIdentifier
-            CgIdentifier(type:IDENTIFIER, text:foo)
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
           CgFixedLengthTokenNode(type:LPAREN, text:()
           CgFixedLengthTokenNode(type:RPAREN, text:))
         IFunctionBody
@@ -27,10 +27,10 @@ ICgFile
                     IVariableDeclaration
                       ISingleVariableDeclaration
                         IBuiltInType
-                          CgKeywordTokenNode(type:INT_KEYWORD, text:int)
+                          CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:int)
                         CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                         IIdentifier
-                          CgIdentifier(type:IDENTIFIER, text:i)
+                          CgIdentifierTokenNode(type:IDENTIFIER, text:i)
                         CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                         IVariableDeclarationTail
                           CgFixedLengthTokenNode(type:EQUALS, text:=)
@@ -52,7 +52,7 @@ ICgFile
                           IPrefixExpression
                             IPostfixExpression
                               IIdentifier
-                                CgIdentifier(type:IDENTIFIER, text:i)
+                                CgIdentifierTokenNode(type:IDENTIFIER, text:i)
                           CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
                           IBinaryOperator
                             CgFixedLengthTokenNode(type:LT, text:<)
@@ -72,7 +72,7 @@ ICgFile
                           IPrefixExpression
                             IPostfixExpression
                               IIdentifier
-                                CgIdentifier(type:IDENTIFIER, text:i)
+                                CgIdentifierTokenNode(type:IDENTIFIER, text:i)
                               IIncrementOperator
                                 CgFixedLengthTokenNode(type:PLUSPLUS, text:++)
                 CgFixedLengthTokenNode(type:RPAREN, text:))
@@ -83,7 +83,7 @@ ICgFile
                 ICgBlock
                   IExpressionStatement
                     IIdentifier
-                      CgIdentifier(type:IDENTIFIER, text:foo)
+                      CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
                     ICallOperator
                       CgFixedLengthTokenNode(type:LPAREN, text:()
                       CgFixedLengthTokenNode(type:RPAREN, text:))
