@@ -20,5 +20,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
         }
 
         public override string CategoryCaption => "Unity";
+
+        public override string Present(ITemplateScopePoint point)
+        {
+            if (point is InUnityShaderLabFile)
+                return "Anywhere in Unity ShaderLab file";
+            return base.Present(point);
+        }
     }
 }
