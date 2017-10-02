@@ -6,15 +6,14 @@ reformat: True
 shortenReferences: True
 customProperties: Extension=shader, FileName=NewImageEffectShader, ValidateFileName=True
 scopes: InUnityCSharpProject
-parameterOrder: HEADER, (NAME)
-HEADER-expression: fileheader()
+parameterOrder: (NAME)
 NAME-expression: getAlphaNumericFileNameWithoutExtension()
 ---
 
 # Image Effect Shader
 
 ```
-$HEADER$Shader "Hidden/$NAME$"
+Shader "Hidden/$NAME$"
 {
 	$END$Properties
 	{

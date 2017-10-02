@@ -6,15 +6,14 @@ reformat: True
 shortenReferences: True
 customProperties: Extension=shader, FileName=NewSurfaceShader, ValidateFileName=True
 scopes: InUnityCSharpProject
-parameterOrder: HEADER, (NAME)
-HEADER-expression: fileheader()
+parameterOrder: (NAME)
 NAME-expression: getAlphaNumericFileNameWithoutExtension()
 ---
 
 # Standard Surface Shader
 
 ```
-$HEADER$Shader "Custom/$NAME$" {
+Shader "Custom/$NAME$" {
 	$END$Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}

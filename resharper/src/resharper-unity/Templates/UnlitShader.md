@@ -6,15 +6,14 @@ reformat: True
 shortenReferences: True
 customProperties: Extension=shader, FileName=NewUnlitShader, ValidateFileName=True
 scopes: InUnityCSharpProject
-parameterOrder: HEADER, (NAME)
-HEADER-expression: fileheader()
+parameterOrder: (NAME)
 NAME-expression: getAlphaNumericFileNameWithoutExtension()
 ---
 
 # Unlit Shader
 
 ```
-$HEADER$Shader "Unlit/$NAME$"
+Shader "Unlit/$NAME$"
 {
 	$END$Properties
 	{
