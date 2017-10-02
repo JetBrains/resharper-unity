@@ -111,22 +111,38 @@ options {
     | STRUCT_KEYWORD
 
     | RETURN_KEYWORD
+    | REGISTER_KEYWORD
+    | PACKOFFSET_KEYWORD
+    | ASM_KEYWORD
 
+    | BREAK_KEYWORD
+    | CONTINUE_KEYWORD
+    | DISCARD_KEYWORD
+    | DO_KEYWORD
+    | FOR_KEYWORD
     | IF_KEYWORD
     | ELSE_KEYWORD
-    
-    | DO_KEYWORD
+    | SWITCH_KEYWORD
     | WHILE_KEYWORD
-    | FOR_KEYWORD
 
     | INLINE_KEYWORD
-    | CONST_KEYWORD
+
+    | EXTERN_KEYWORD
+    | NOINTERPOLATION_KEYWORD
+    | PRECISE_KEYWORD
+    | SHARED_KEYWORD
+    | GROUPSHARED_KEYWORD
     | STATIC_KEYWORD
+    | UNIFORM_KEYWORD
+    | VOLATILE_KEYWORD
+
+    | CONST_KEYWORD
+    | ROW_MAJOR_KEYWORD
+    | COLUMN_MAJOR_KEYWORD
 
     | IN_KEYWORD
     | INOUT_KEYWORD
-    | OUT_KEYWORD
-    | UNIFORM_KEYWORD
+    | OUT_KEYWORD    
 
     | DIRECTIVE
     | DIRECTIVE_CONTENT
@@ -139,6 +155,14 @@ options {
     | SCALAR_TYPE
     | VECTOR_TYPE
     | MATRIX_TYPE
+
+    | TEXTURE_KEYWORD
+    | TEXTURE1D_KEYWORD
+    | TEXTURE1DARRAY_KEYWORD
+    | TEXTURE2D_KEYWORD
+    | TEXTURE2DARRAY_KEYWORD
+    | TEXTURE3D_KEYWORD
+    | TEXTURECUBE_KEYWORD
   ;
 
 errorhandling cgFile
@@ -215,13 +239,28 @@ macroCall[identifier id]
 modifierKeywordList
   : 
     (
-      INLINE_KEYWORD
-      | CONST_KEYWORD
+      // storage class
+      INLINE_KEYWORD 
+
+      // storage class, variable only
+      | EXTERN_KEYWORD
+      | NOINTERPOLATION_KEYWORD
+      | PRECISE_KEYWORD // can be in function decl
+      | SHARED_KEYWORD
+      | GROUPSHARED_KEYWORD
       | STATIC_KEYWORD
       | UNIFORM_KEYWORD
+      | VOLATILE_KEYWORD
+
+      // type modifier, variable only
+      | CONST_KEYWORD
+      | ROW_MAJOR_KEYWORD
+      | COLUMN_MAJOR_KEYWORD
+
+      // used for function arguments
       | IN_KEYWORD
-      | OUT_KEYWORD
       | INOUT_KEYWORD
+      | OUT_KEYWORD    
     )+
   ;
 
@@ -291,9 +330,18 @@ interface typeName
 builtInType
   :
     VOID_KEYWORD
+
     | SCALAR_TYPE
     | VECTOR_TYPE
     | MATRIX_TYPE
+
+    | TEXTURE_KEYWORD
+    | TEXTURE1D_KEYWORD
+    | TEXTURE1DARRAY_KEYWORD
+    | TEXTURE2D_KEYWORD
+    | TEXTURE2DARRAY_KEYWORD
+    | TEXTURE3D_KEYWORD
+    | TEXTURECUBE_KEYWORD
   ;
 
 interface typeReference

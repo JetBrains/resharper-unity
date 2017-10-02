@@ -89,27 +89,54 @@
   </TypeDeclarationKeywords>
   
   <FlowControlKeywords NodeType="CgKeywordTokenNodeType">
-    <Keyword name="RETURN_KEYWORD" representation="return" />
+    <Keyword name="BREAK_KEYWORD" representation="break" />
+    <Keyword name="CONTINUE_KEYWORD" representation="continue" />
+    <Keyword name="DISCARD_KEYWORD" representation="discard" />
+    <Keyword name="DO_KEYWORD" representation="do" />
+    <Keyword name="FOR_KEYWORD" representation="for" />
     <Keyword name="IF_KEYWORD" representation="if" />
     <Keyword name="ELSE_KEYWORD" representation="else" />
-    <Keyword name="DO_KEYWORD" representation="do" />
-    <Keyword name="WHILE_KEYWORD" representation="while" />
-    <Keyword name="FOR_KEYWORD" representation="for" />
+    <Keyword name="SWITCH_KEYWORD" representation="switch" />
+    <Keyword name="WHILE_KEYWORD" representation="while" />    
   </FlowControlKeywords>
   
-  <VariableModifierKeywords NodeType="CgKeywordTokenNodeType">
-    <Keyword name="CONST_KEYWORD" representation="const" />
+  <VariableStorageClassKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="EXTERN_KEYWORD" representation="extern" />
+    <Keyword name="NOINTERPOLATION_KEYWORD" representation="nointerpolation" />
+    <Keyword name="PRECISE_KEYWORD" representation="precise" />
+    <Keyword name="SHARED_KEYWORD" representation="shared" />
+    <Keyword name="GROUPSHARED_KEYWORD" representation="groupshared" />
     <Keyword name="STATIC_KEYWORD" representation="static" />
     <Keyword name="UNIFORM_KEYWORD" representation="uniform" />
-  </VariableModifierKeywords>
+    <Keyword name="VOLATILE_KEYWORD" representation="volatile" />    
+  </VariableStorageClassKeywords>
   
-  <FunctionModifierKeywords NodeType="CgKeywordTokenNodeType">
+  <TypeModifierKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="CONST_KEYWORD" representation="const" />
+    <Keyword name="ROW_MAJOR_KEYWORD" representation="row_major" />
+    <Keyword name="COLUMN_MAJOR_KEYWORD" representation="column_major" />
+  </TypeModifierKeywords>
+  
+  <FunctionStorageClassKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="INLINE_KEYWORD" representation="inline" />
-  </FunctionModifierKeywords>
+  </FunctionStorageClassKeywords>
 
-  <AsmKeywords NodeType="CgKeywordTokenNodeType">
-    <Keyword name="ASM_KEYWORD" representation="asm"/>
-  </AsmKeywords>
+  <MiscKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="RETURN_KEYWORD" representation="return" />
+    <Keyword name="REGISTER_KEYWORD" representation="register" /> <!-- can be used in variable declaration -->
+    <Keyword name="PACKOFFSET_KEYWORD" representation="packoffset" /> <!-- can be used in variable declaration -->
+    <Keyword name="ASM_KEYWORD" representation="asm"/> <!-- inject asm fragment -->
+  </MiscKeywords>
+  
+  <TextureTypeKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="TEXTURE_KEYWORD" representation="texture" />
+    <Keyword name="TEXTURE1D_KEYWORD" representation="Texture1D" />
+    <Keyword name="TEXTURE1DARRAY_KEYWORD" representation="Texture1DArray" />
+    <Keyword name="TEXTURE2D_KEYWORD" representation="Texture2D" />
+    <Keyword name="TEXTURE2DARRAY_KEYWORD" representation="Texture2DArray" />
+    <Keyword name="TEXTURE3D_KEYWORD" representation="Texture3D" />
+    <Keyword name="TEXTURECUBE_KEYWORD" representation="TextureCube" />
+  </TextureTypeKeywords>
 
   <InputModifierKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="IN_KEYWORD" representation="in" />
