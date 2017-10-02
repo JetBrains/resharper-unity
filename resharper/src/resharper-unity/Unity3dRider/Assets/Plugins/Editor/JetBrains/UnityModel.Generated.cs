@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using JetBrains.Application;
 using JetBrains.Annotations;
 
@@ -26,9 +27,12 @@ namespace JetBrains.Platform.Unity.Model
   
   public class UnityModel : RdBindableBase {
     //fields
+    //public fields
     [NotNull] public IRdProperty<bool> HostConnected { get { return _HostConnected; }}
-    [NotNull] private readonly RdProperty<bool> _HostConnected;
     [NotNull] public IRdProperty<bool> Play { get { return _Play; }}
+    
+    //private fields
+    [NotNull] private readonly RdProperty<bool> _HostConnected;
     [NotNull] private readonly RdProperty<bool> _Play;
     
     //primary constructor
@@ -42,8 +46,8 @@ namespace JetBrains.Platform.Unity.Model
       
       _HostConnected = hostConnected;
       _Play = play;
-      hostConnected.OptimizeNested = true;
-      play.OptimizeNested = true;
+      _HostConnected.OptimizeNested = true;
+      _Play.OptimizeNested = true;
     }
     //secondary constructor
     //statics
