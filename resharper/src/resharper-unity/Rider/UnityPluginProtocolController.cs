@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         model.Play.Value = true;
                     }
                     
-                    if (e.Key == "UNITY_ProcessId" && e.NewValue != e.OldValue && !string.IsNullOrEmpty(e.NewValue))
+                    if (e.Key == "UNITY_ProcessId" && !string.IsNullOrEmpty(e.NewValue) && (e.NewValue != e.OldValue || Protocol==null) )
                     {
                         var pid = Convert.ToInt32(e.NewValue);
                         logger.Verbose($"UNITY_ProcessId {e.NewValue} came from frontend.");
@@ -51,7 +51,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                 });
                             logger.Info("Run dispatcher...");
                             dispatcher.Run();
-
                         }
                         catch (Exception ex)
                         {
