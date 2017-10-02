@@ -1,8 +1,10 @@
-﻿using System;
+﻿#if RIDER
+using System;
 using System.Diagnostics;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Impl;
+using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.Rider.Model;
@@ -21,6 +23,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             solutionModel.GetCurrentSolution().CustomData
                 .Data.Advise(lifetime, e =>
                 {
+                    if (e.Key == "UNITY_AttachEditorAndRun" && e.NewValue.ToLower()=="true" && e.NewValue!=e.OldValue)
+                    {
+                        logger.Verbose($"UNITY_AttachEditorAndRun {e.NewValue} came from frontend.");
+                        var model = new UnityModel(lifetime, Protocol);
+                        model.Play.Value = true;
+                    }
+                    
                     if (e.Key == "UNITY_ProcessId" && e.NewValue != e.OldValue && !string.IsNullOrEmpty(e.NewValue))
                     {
                         var pid = Convert.ToInt32(e.NewValue);
@@ -52,3 +61,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
     }
 }
+#endif
