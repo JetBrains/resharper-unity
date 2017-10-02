@@ -44,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("Comment_00")]
         [TestCase("Comment_01")]
         [TestCase("Comment_02")]
+        [TestCase("CommentSingleLineContinued")]
         
         [TestCase("Directive_00")]
         [TestCase("Directive_01")]
