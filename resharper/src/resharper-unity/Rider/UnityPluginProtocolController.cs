@@ -37,8 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                         try
                         {
-                            logger.Info("Unity process with Id = " + Process.GetCurrentProcess().Id);
-                            logger.Info("Start ControllerTask...");
+                            logger.Info("Unity process with Id = " + pid);
 
                             int port = 46000 + pid % 1000;
                             var dispatcher = new RdSimpleDispatcher(lifetime, logger);
