@@ -42,7 +42,7 @@ namespace Plugins.Editor.JetBrains
         var dispatcher = new RdSimpleDispatcher(lifetime, myLogger);
 
         myLogger.Info("Create protocol...");
-        var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicClient), dispatcher,
+        var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
           creatingProtocol =>
           {
             myLogger.Info("Creating SocketWire with port = {0}", port);

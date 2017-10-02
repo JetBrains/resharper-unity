@@ -49,6 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                     logger.Info("Creating SocketWire with port = {0}", port);
                                     return new SocketWire.Client(lifetime, creatingProtocol, port, "UnityClient");
                                 });
+                            logger.Info("Run dispatcher...");
+                            dispatcher.Run();
 
                         }
                         catch (Exception ex)

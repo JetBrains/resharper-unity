@@ -32,6 +32,7 @@ class UnityAttachToEditorProfileState(val remoteConfiguration: UnityAttachToEdit
             logger.info("Pass value to backend, which will push Unity to enter play mode."+text)
             JOptionPane.showMessageDialog(null, text, "InfoBox: " + "", JOptionPane.INFORMATION_MESSAGE);
 
+            executionEnvironment.project.solution.customData.data["UNITY_ProcessId"] = remoteConfiguration.pid!!.toString()
             // pass value to backend, which will push Unity to enter play mode.
             executionEnvironment.project.solution.customData.data["UNITY_AttachEditorAndRun"] = "true";
         }
