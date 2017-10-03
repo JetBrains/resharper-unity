@@ -5,7 +5,7 @@ type: File
 reformat: True
 shortenReferences: True
 customProperties: Extension=cs, FileName=EditModeTest, ValidateFileName=True
-scopes: InUnityCSharpProject
+scopes: InUnityCSharpAssetsFolder
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()

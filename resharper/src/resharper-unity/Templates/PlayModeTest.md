@@ -5,7 +5,7 @@ type: File
 reformat: True
 shortenReferences: True
 customProperties: Extension=cs, FileName=PlayModeTest, ValidateFileName=True
-scopes: InUnityCSharpProject
+scopes: InUnityCSharpAssetsFolder
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()

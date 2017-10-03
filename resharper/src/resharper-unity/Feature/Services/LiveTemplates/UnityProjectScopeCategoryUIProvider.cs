@@ -29,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
         public override IEnumerable<ITemplateScopePoint> BuildAllPoints()
         {
             yield return new InUnityCSharpProject();
+            yield return new InUnityCSharpAssetsFolder();
         }
 
         public override string CategoryCaption => "Unity";

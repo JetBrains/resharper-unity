@@ -5,7 +5,7 @@ type: File
 reformat: True
 shortenReferences: True
 customProperties: Extension=shader, FileName=NewUnlitShader, ValidateFileName=True
-scopes: InUnityCSharpProject
+scopes: InUnityCSharpAssetsFolder
 parameterOrder: (NAME)
 NAME-expression: getAlphaNumericFileNameWithoutExtension()
 ---

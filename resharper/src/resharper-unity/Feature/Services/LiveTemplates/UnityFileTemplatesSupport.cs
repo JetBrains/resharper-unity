@@ -14,7 +14,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
 
         public IEnumerable<ITemplateScopePoint> ScopePoints
         {
-            get { yield return new InUnityCSharpProject(); }
+            get
+            {
+                yield return new InUnityCSharpProject();
+                yield return new InUnityCSharpAssetsFolder();
+            }
         }
     }
 }

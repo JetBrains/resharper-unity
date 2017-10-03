@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
@@ -14,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
         {
             // Used when creating scope point from settings
             Creators.Add(TryToCreate<InUnityCSharpProject>);
+            Creators.Add(TryToCreate<InUnityCSharpAssetsFolder>);
         }
 
         public override IEnumerable<ITemplateScopePoint> ProvideScopePoints(TemplateAcceptanceContext context)
@@ -29,8 +32,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
             // Are there any other types?
             yield return new InUnityCSharpProject();
 
-            // TODO: Maybe add extra scopes? E.g. Plugins, Editor, Assets folders?
-            // See context.GetProjectFolder to get the folder for the context
+            var projectFolder = context.GetProjectFolder();
+            if (projectFolder != null)
+            {
+                var folders = new List<string>();
+                while (projectFolder?.Path?.ShortName != null)
+                {
+                    folders.Add(projectFolder.Path.ShortName);
+                    projectFolder = projectFolder.ParentFolder;
+                }
+
+                if (folders.Any(f => f.Equals("Assets", StringComparison.OrdinalIgnoreCase)))
+                    yield return new InUnityCSharpAssetsFolder();
+            }
         }
     }
 }
