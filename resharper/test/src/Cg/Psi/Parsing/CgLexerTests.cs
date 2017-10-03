@@ -37,11 +37,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
             Console.WriteLine(str2);
         }
 
+        [TestCase("AsmStatement")]
+        
         [TestCase("Basic_00")]
         
         [TestCase("Comment_00")]
         [TestCase("Comment_01")]
         [TestCase("Comment_02")]
+        [TestCase("CommentSingleLineContinued")]
         
         [TestCase("Directive_00")]
         [TestCase("Directive_01")]
@@ -59,6 +62,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("Operator_00")]
         
         [TestCase("Struct_00")]
+        
+        [TestCase("VariableDeclarationModifiers")]
         public void TestLexer(string name) => DoOneTest(name);
     }
 }

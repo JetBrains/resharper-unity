@@ -5,79 +5,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
     public static class ParserMessages
     {
-        public static string IDS_FLOW_CONTROL_STATEMENT => "flow control statement";
+        public const string IDS_STATEMENT = "statement";
         
-        public static string IDS_FUNCTION_BODY => "function body";
+        public const string IDS_FLOW_CONTROL_STATEMENT = "flow control statement";
         
-        public static string IDS_RETURN_STATEMENT => "return statement";
+        public const string IDS_ASSIGNMENT_OPERATOR = "assignment operator";
         
-        public static string IDS_ASSIGNMENT_OPERATOR => "assignment operator";
+        public const string IDS_POSTFIX_OPERATOR = "postfix operator";
         
-        public static string IDS_POSTFIX_OPERATOR => "postfix operator";
+        public const string IDS_PREFIX_OPERATOR = "prefix operator";
         
-        public static string IDS_PREFIX_OPERATOR => "prefix operator";
+        public const string IDS_RUNTIME_VALUE = "runtime value";
         
-        public static string IDS_RUNTIME_VALUE => "runtime value";
+        public const string IDS_PRIMARY_EXPRESSION = "value";
         
-        public static string IDS_META_DIRECTIVE_HEADER => "meta preprocessor directive header";
+        public const string IDS_BINARY_OPERATOR = "binary operator";
         
-        public static string IDS_CODE_DIRECTIVE_HEADER => "code preprocessor directive header";
+        public const string IDS_IDENTIFIER = "identifier";
         
-        public static string IDS_UNARY_EXPRESSION => "unary expression";
+        public const string IDS_CONSTANT_VALUE = "constant value";
         
-        public static string IDS_PRIMARY_EXPRESSION => "value";
-        
-        public static string IDS_BINARY_OPERATOR => "binary operator";
-        
-        public static string IDS_UNARY_OPERATOR => "unary operator";
-        
-        public static string IDS_INPUT_MODIFIER => "input modifier";
-        
-        public static string IDS_ASSIGNMENT => "assignment";
-        
-        public static string IDS_IDENTIFIER => "identifier";
+        public const string IDS_DECLARATION = "field, function or structure declaration";
 
-        public static string IDS_ASSIGNMENT_EXPRESSION => "assignment expression";
+        public const string IDS_BUILT_IN_TYPE = "built-in type";
         
-        public static string IDS_LOCAL_VARIABLE_DECLARATION => "local variable declaration";
-        
-        public static string IDS_CG_BLOCK => "function body block";
-        
-        public static string IDS_CONDITIONAL_DIRECTIVE_FOOTER => "conditional preprocessor directive end";
-        
-        public static string IDS_CONDITIONAL_DIRECTIVE => "conditional preprocessor directive";
-        
-        public static string IDS_ELIF_DIRECTIVE => "elif directive";
-        
-        public static string IDS_NON_CONDITIONAL_DIRECTIVE => "non-conditional directive";
-
-        public static string IDS_CONDITIONAL_DIRECTIVE_HEADER => "conditional preprocessor directive header";
-        
-        public static string IDS_DIRECTIVE => "preprocessor directive";
-        
-        public static string IDS_LVALUE => "lvalue";
-        
-        public static string IDS_EXPRESSION => "expression";
-        
-        public static string IDS_GLOBAL_VARIABLE_DECLARATION => "global variable";
-        
-        public static string IDS_CONSTANT_VALUE => "constant value";
-        
-        public static string IDS_DECLARATION => "field, function or structure declaration";
-        
-        public static string IDS_FIELD_OR_FUNCTION_DECLARATION => "field or function declaration";
-        
-        public static string IDS_FIELD_DECLARATION => "field declaration";
-
-        public static string IDS_BUILT_IN_TYPE => "built-in type";
-        
-        public static string IDS_TYPE_NAME => "type name";
-        
-        public static string IDS_STRUCT_DECLARATION => "struct declaration";
-        
-        public static string IDS_FUNCTION_RETURN_TYPE => "function return type";
-        
-        public static string IDS_FUNCTION_DECLARATION => "function declaration";
+        public const string IDS_TYPE_NAME = "type name";
         
         public static string GetString(string id) => id;
         

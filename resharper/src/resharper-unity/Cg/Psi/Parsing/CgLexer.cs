@@ -9,7 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
     public partial class CgLexerGenerated
     {
-        private static readonly LexerDictionary<TokenNodeType> Keywords = new LexerDictionary<TokenNodeType>();
+        private static readonly LexerDictionary<TokenNodeType> ourKeywords = new LexerDictionary<TokenNodeType>();
+        
         private readonly ReusableBufferRange myBufferRange = new ReusableBufferRange();
         
         // ReSharper disable once InconsistentNaming
@@ -26,10 +27,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 
         static CgLexerGenerated()
         {
-            foreach (var nodeType in CgKeywordsList.ALL)
+            foreach (var nodeType in CgKeywordsList.KEYWORDS)
             {
                 var keyword = (TokenNodeType) nodeType;
-                Keywords[keyword.TokenRepresentation] = keyword;
+                ourKeywords[keyword.TokenRepresentation] = keyword;
+            }
+
+            foreach (var kw in CgKeywordsList.BuiltInTypes)
+            {
+                ourKeywords[kw.Key] = kw.Value;
             }
         }
 
@@ -130,7 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
         
         private TokenNodeType FindKeywordByCurrentToken()
         {
-            return Keywords.GetValueSafe(myBufferRange, yy_buffer, yy_buffer_start, yy_buffer_end);
+            return ourKeywords.GetValueSafe(myBufferRange, yy_buffer, yy_buffer_start, yy_buffer_end);
         }
     }
 }

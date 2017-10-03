@@ -13,13 +13,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         
         [TestCase("AllDeclarations")]
         
+        [TestCase("AsmStatement")]
+        
         [TestCase("Assignments")]
         
         [TestCase("BinaryOperator")]
         
+        [TestCase("CommaExpression")]
+        
         [TestCase("Comment")]
         
         [TestCase("DirectiveWithSpace")]
+        
+        [TestCase("DoStatement")]
         
         [TestCase("Empty")]
         [TestCase("EmptyDirective")]
@@ -31,11 +37,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("FieldDeclarationReferencedType")]
         [TestCase("FieldDeclarationWithInitializer")]
         
+        [TestCase("ForStatementEmptyHeader")]
+        [TestCase("ForStatementNoBrackets")]
+        [TestCase("ForStatementWithBrackets")]
+        
+        [TestCase("FunctionDeclarationAttribute")]
+        
         [TestCase("FunctionArguments")]
+        [TestCase("FunctionArgumentWithNumbers")]
         [TestCase("FunctionOneArgument")]
         [TestCase("FunctionTwoArguments")]
         
-        [TestCase("FunctionCall_00")]
+	    [TestCase("FunctionBodyEmptyStatement")]        
+	    [TestCase("FunctionBodyNestedBlock")]
+
+	    [TestCase("FunctionCall_00")]
         [TestCase("FunctionCall_01")]
         
         [TestCase("FunctionBuiltInReturnType")]
@@ -47,6 +63,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("NonConditionalDirectives")]
         [TestCase("OneDirective")]
         
+        [TestCase("IfStatementFullBrackets")]
+        [TestCase("IfStatementMixedBrackets")]
+        [TestCase("IfStatementNoBrackets")]
+        [TestCase("IfStatementNoBracketsReturn")]
+        
         [TestCase("LocalVariableDeclarations")]
         
         [TestCase("Semantics")]
@@ -55,7 +76,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("StructDeclarationNoSemicolon")]
         [TestCase("StructDeclarationReferencedType")]
         
+        [TestCase("SwitchStatement")]
+        
         [TestCase("UnaryOperator")]
+        
+        [TestCase("VariableDeclarationModifiers")]
+        [TestCase("VariableDeclarationBufferType")]
+        
+        [TestCase("WhileStatement")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }
