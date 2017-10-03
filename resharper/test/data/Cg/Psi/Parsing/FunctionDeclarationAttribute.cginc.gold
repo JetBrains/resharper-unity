@@ -48,6 +48,7 @@ ICgFile
           CgFixedLengthTokenNode(type:LPAREN, text:()
           CgFixedLengthTokenNode(type:RPAREN, text:))
         IFunctionBody
-          CgFixedLengthTokenNode(type:LBRACE, text:{)
-          CgFixedLengthTokenNode(type:RBRACE, text:})
+          IBlockStatement
+            CgFixedLengthTokenNode(type:LBRACE, text:{)
+            CgFixedLengthTokenNode(type:RBRACE, text:})
 

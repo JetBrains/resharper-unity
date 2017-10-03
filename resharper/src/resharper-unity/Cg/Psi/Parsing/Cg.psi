@@ -708,20 +708,25 @@ argument
     singleVariableDeclaration<CG_CONTENT, VariableNode>[modifiers, type, name]
   ;
 
-// TODO: rename cgBlock to statement and extract block from here (or rename to block?)
 functionBody
   :
-    LBRACE  
+    blockStatement
+  ;
+
+errorhandling blockStatement
+  :
+    LBRACE
     (
-      cgBlock
-      | functionBody
+      statement
     )*
     RBRACE
   ;
 
-errorhandling cgBlock
+errorhandling statement
   :
-    flowControlStatement
+    blockStatement
+    | flowControlStatement
+    | returnStatement
     | asmStatement
     |   
     !(#modifiers:modifierKeywordList)?
@@ -752,11 +757,14 @@ errorhandling asmStatement
     SEMICOLON
   ;
 
+/* TODO: flow control statement can have attributes,
+ e.g. fastopt for doStatment:
+  fastopt do {
+  } while (1); */
 interface flowControlStatement
   :
     ifStatement
     | forStatement
-    | returnStatement
   ;
 
 ifStatement
@@ -765,30 +773,20 @@ ifStatement
     LPAREN
     expression
     RPAREN
-    (
-      functionBody
-      | cgBlock
-    )
+    statement
     elseStatement?
   ;
 
 elseStatement
   :
     ELSE_KEYWORD
-    (
-      functionBody
-      | cgBlock
-      | ifStatement
-    )
+    statement
   ;
 
 forStatement
   :
     forStatementHeader
-    (
-      functionBody
-      | cgBlock
-    )
+    statement
   ;
 
 // TODO: HLSL spec says that for statement can have attributes (e.g. unroll)
@@ -797,7 +795,7 @@ errorhandling forStatementHeader
   :
     FOR_KEYWORD
     LPAREN
-    cgBlock
+    statement
     expression?
     SEMICOLON
     expression?

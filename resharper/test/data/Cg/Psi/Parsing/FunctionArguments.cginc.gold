@@ -67,8 +67,9 @@ ICgFile
           CgFixedLengthTokenNode(type:RPAREN, text:))
         CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
         IFunctionBody
-          CgFixedLengthTokenNode(type:LBRACE, text:{)
-          CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
-          CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
-          CgFixedLengthTokenNode(type:RBRACE, text:})
+          IBlockStatement
+            CgFixedLengthTokenNode(type:LBRACE, text:{)
+            CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgFixedLengthTokenNode(type:RBRACE, text:})
 
