@@ -765,6 +765,11 @@ interface flowControlStatement
   :
     ifStatement
     | forStatement
+    | doStatement
+    | whileStatement
+    | continueStatement
+    | breakStatement
+    | discardStatement
   ;
 
 ifStatement
@@ -800,6 +805,40 @@ errorhandling forStatementHeader
     SEMICOLON
     expression?
     RPAREN
+  ;
+
+doStatement
+  :
+    DO_KEYWORD
+    blockStatement
+    WHILE_KEYWORD
+    LPAREN
+    expression // TODO: syntax error if not conditional
+    RPAREN
+    SEMICOLON    
+  ;
+
+whileStatement
+  :
+    WHILE_KEYWORD
+    LPAREN
+    expression
+    RPAREN  
+    blockStatement
+  ;
+continueStatement
+  :
+    CONTINUE_KEYWORD
+  ;
+
+breakStatement
+  :
+    BREAK_KEYWORD
+  ;
+
+discardStatement
+  :
+    DISCARD_KEYWORD
   ;
 
 variableDeclarationStatement[modifierKeywordList modifiers, typeName type]

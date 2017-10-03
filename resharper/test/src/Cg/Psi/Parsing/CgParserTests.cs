@@ -25,6 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         
         [TestCase("DirectiveWithSpace")]
         
+        [TestCase("DoStatement")]
+        
         [TestCase("Empty")]
         [TestCase("EmptyDirective")]
         [TestCase("EmptyDirectiveOnly")]
@@ -78,6 +80,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         
         [TestCase("VariableDeclarationModifiers")]
         [TestCase("VariableDeclarationBufferType")]
+        
+        [TestCase("WhileStatement")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }
