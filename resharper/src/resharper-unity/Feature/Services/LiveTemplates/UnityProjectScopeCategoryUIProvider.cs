@@ -30,6 +30,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
         {
             yield return new InUnityCSharpProject();
             yield return new InUnityCSharpAssetsFolder();
+
+            yield return new InUnityCSharpEditorFolder();
+            yield return new InUnityCSharpRuntimeFolder();
+
+            yield return new InUnityCSharpFirstpassFolder();
+            yield return new InUnityCSharpFirstpassEditorFolder();
+            yield return new InUnityCSharpFirstpassRuntimeFolder();
         }
 
         public override string CategoryCaption => "Unity";

@@ -31,4 +31,54 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope
         public new string QuickListTitle => "Unity projects";
         public new Guid QuickListUID => QuickUID;
     }
+
+    public class InUnityCSharpAssetsFolder : InUnityCSharpProject
+    {
+        private static readonly Guid DefaultUID = new Guid("400D0960-419A-4D68-B6BD-024A7C9E4DDB");
+
+        public override Guid GetDefaultUID() => DefaultUID;
+        public override string PresentableShortName => "Unity Assets folder";
+    }
+
+
+    public class InUnityCSharpEditorFolder : InUnityCSharpAssetsFolder
+    {
+        private static readonly Guid DefaultUID = new Guid("725DF216-7E35-4AAF-8C8E-3FEF06B172AA");
+
+        public override Guid GetDefaultUID() => DefaultUID;
+        public override string PresentableShortName => "Unity Editor folder";
+    }
+
+    public class InUnityCSharpRuntimeFolder : InUnityCSharpAssetsFolder
+    {
+        private static readonly Guid DefaultUID = new Guid("AD3BD55C-0026-4C29-B6AD-6B82170CD657");
+
+        public override Guid GetDefaultUID() => DefaultUID;
+        public override string PresentableShortName => "Unity runtime folder";
+    }
+
+
+    public class InUnityCSharpFirstpassFolder : InUnityCSharpAssetsFolder
+    {
+        private static readonly Guid DefaultUID = new Guid("9B4C634E-812C-4699-BED0-7FC0A34533DB");
+
+        public override Guid GetDefaultUID() => DefaultUID;
+        public override string PresentableShortName => "Unity firstpass folder";
+    }
+
+    public class InUnityCSharpFirstpassEditorFolder : InUnityCSharpFirstpassFolder
+    {
+        private static readonly Guid DefaultUID = new Guid("375D8555-CCD0-4D17-B6F6-2DCC1E01FCAB");
+
+        public override Guid GetDefaultUID() => DefaultUID;
+        public override string PresentableShortName => "Unity firstpass Editor folder";
+    }
+
+    public class InUnityCSharpFirstpassRuntimeFolder : InUnityCSharpFirstpassFolder
+    {
+        private static readonly Guid DefaultUID = new Guid("101DB5F5-CE2E-4CD3-954F-34CE9AB3ECEA");
+
+        public override Guid GetDefaultUID() => DefaultUID;
+        public override string PresentableShortName => "Unity firstpass runtime folder";
+    }
 }
