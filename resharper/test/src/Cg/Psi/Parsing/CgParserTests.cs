@@ -39,6 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("ForStatementNoBrackets")]
         [TestCase("ForStatementWithBrackets")]
         
+        [TestCase("FunctionDeclarationAttribute")]
+        
         [TestCase("FunctionArguments")]
         [TestCase("FunctionArgumentWithNumbers")]
         [TestCase("FunctionOneArgument")]

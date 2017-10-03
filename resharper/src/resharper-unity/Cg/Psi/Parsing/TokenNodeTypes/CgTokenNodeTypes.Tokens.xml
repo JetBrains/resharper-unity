@@ -26,8 +26,8 @@
     <Token name="RBRACE" representation="}" />
     <Token name="LPAREN" representation="(" />
     <Token name="RPAREN" representation=")" />
-    <Token name="LBRACKET" representation="(" />
-    <Token name="RBRACKET" representation=")" />
+    <Token name="LBRACKET" representation="[" />
+    <Token name="RBRACKET" representation="]" />
     <Token name="COMMA" representation="," />
     <Token name="DOT" representation="." />
     <Token name="SEMICOLON" representation=";" />

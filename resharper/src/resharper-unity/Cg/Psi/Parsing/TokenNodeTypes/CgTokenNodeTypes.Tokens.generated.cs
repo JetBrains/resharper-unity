@@ -24,9 +24,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
     public const int RPAREN_NODE_TYPE_INDEX = 1003;
     public static readonly TokenNodeType RPAREN = new CgFixedLengthTokenNodeType("RPAREN", RPAREN_NODE_TYPE_INDEX, representation: ")");
     public const int LBRACKET_NODE_TYPE_INDEX = 1004;
-    public static readonly TokenNodeType LBRACKET = new CgFixedLengthTokenNodeType("LBRACKET", LBRACKET_NODE_TYPE_INDEX, representation: "(");
+    public static readonly TokenNodeType LBRACKET = new CgFixedLengthTokenNodeType("LBRACKET", LBRACKET_NODE_TYPE_INDEX, representation: "[");
     public const int RBRACKET_NODE_TYPE_INDEX = 1005;
-    public static readonly TokenNodeType RBRACKET = new CgFixedLengthTokenNodeType("RBRACKET", RBRACKET_NODE_TYPE_INDEX, representation: ")");
+    public static readonly TokenNodeType RBRACKET = new CgFixedLengthTokenNodeType("RBRACKET", RBRACKET_NODE_TYPE_INDEX, representation: "]");
     public const int COMMA_NODE_TYPE_INDEX = 1006;
     public static readonly TokenNodeType COMMA = new CgFixedLengthTokenNodeType("COMMA", COMMA_NODE_TYPE_INDEX, representation: ",");
     public const int DOT_NODE_TYPE_INDEX = 1007;

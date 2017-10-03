@@ -196,25 +196,26 @@ errorhandling declaration
       structDeclaration
       | 
       (
+        !(#attr:attribute)?
         !(#modifiers:modifierKeywordList)?
         (
           (
             !(#id:identifier)
             (
               macroCall[id]
-              | variableOrFunctionDeclaration[modifiers, id]
+              | variableOrFunctionDeclaration[attr, modifiers, id]
             )
           )
           |
           (
             !(#type:builtInType)
-            variableOrFunctionDeclaration[modifiers, type]
+            variableOrFunctionDeclaration[attr, modifiers, type]
           )
         )
       )
   ;
 
-variableOrFunctionDeclaration[modifierKeywordList modifiers, typeName type]
+variableOrFunctionDeclaration[attribute attr, modifierKeywordList modifiers, typeName type]
   :
     !(#name:identifier)
     (          
@@ -222,7 +223,7 @@ variableOrFunctionDeclaration[modifierKeywordList modifiers, typeName type]
        variableDeclaration[modifiers, type, name]
        SEMICOLON
       )
-      | functionDeclaration[modifiers, type, name]
+      | functionDeclaration[attr, modifiers, type, name]
     )
   ;
 
@@ -608,10 +609,23 @@ constantValue
 // fixed4 frag (v2f i, UNITY_VPOS_TYPE screenPos : VPOS) : SV_Target
 //
 // function can have specifiers (TODO: look up proper name in docs)
-functionDeclaration[modifierKeywordList modifiers, typeName type, identifier name]
+functionDeclaration[attribute attr, modifierKeywordList modifiers, typeName type, identifier name]
   :
+    &attr?
     functionHeader<CG_CONTENT, HeaderNode>[modifiers, type, name]
     functionBody
+  ;
+
+// e.g.: numthreads(1,2)
+// documented in Shader Model 5
+errorhandling attribute
+  :
+    (
+      LBRACKET
+      identifier<CG_NAME, NameNode>
+      callOperator? // TODO: not sure whether this is required
+      RBRACKET
+    )+
   ;
 
 errorhandling functionHeader[modifierKeywordList modifiers, typeName type, identifier name]
