@@ -194,13 +194,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
     public const int TEXTURECUBE_KEYWORD_NODE_TYPE_INDEX = 1079;
     public static readonly TokenNodeType TEXTURECUBE_KEYWORD = new CgKeywordTokenNodeType("TEXTURECUBE_KEYWORD", TEXTURECUBE_KEYWORD_NODE_TYPE_INDEX, representation: "TextureCube");
 
+    //BufferTypeKeywords
+    public const int BUFFER_KEYWORD_NODE_TYPE_INDEX = 1080;
+    public static readonly TokenNodeType BUFFER_KEYWORD = new CgKeywordTokenNodeType("BUFFER_KEYWORD", BUFFER_KEYWORD_NODE_TYPE_INDEX, representation: "Buffer");
+    public const int STRUCTUREDBUFFER_KEYWORD_NODE_TYPE_INDEX = 1081;
+    public static readonly TokenNodeType STRUCTUREDBUFFER_KEYWORD = new CgKeywordTokenNodeType("STRUCTUREDBUFFER_KEYWORD", STRUCTUREDBUFFER_KEYWORD_NODE_TYPE_INDEX, representation: "StructuredBuffer");
+
     //InputModifierKeywords
-    public const int IN_KEYWORD_NODE_TYPE_INDEX = 1080;
+    public const int IN_KEYWORD_NODE_TYPE_INDEX = 1082;
     public static readonly TokenNodeType IN_KEYWORD = new CgKeywordTokenNodeType("IN_KEYWORD", IN_KEYWORD_NODE_TYPE_INDEX, representation: "in");
-    public const int INOUT_KEYWORD_NODE_TYPE_INDEX = 1081;
+    public const int INOUT_KEYWORD_NODE_TYPE_INDEX = 1083;
     public static readonly TokenNodeType INOUT_KEYWORD = new CgKeywordTokenNodeType("INOUT_KEYWORD", INOUT_KEYWORD_NODE_TYPE_INDEX, representation: "inout");
-    public const int OUT_KEYWORD_NODE_TYPE_INDEX = 1082;
+    public const int OUT_KEYWORD_NODE_TYPE_INDEX = 1084;
     public static readonly TokenNodeType OUT_KEYWORD = new CgKeywordTokenNodeType("OUT_KEYWORD", OUT_KEYWORD_NODE_TYPE_INDEX, representation: "out");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1083;  }
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1085;  }
 }

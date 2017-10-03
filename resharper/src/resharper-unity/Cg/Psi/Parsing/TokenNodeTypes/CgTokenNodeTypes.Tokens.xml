@@ -138,6 +138,11 @@
     <Keyword name="TEXTURECUBE_KEYWORD" representation="TextureCube" />
   </TextureTypeKeywords>
 
+  <BufferTypeKeywords NodeType="CgKeywordTokenNodeType">
+    <Keyword name="BUFFER_KEYWORD" representation="Buffer" />
+    <Keyword name="STRUCTUREDBUFFER_KEYWORD" representation="StructuredBuffer" />
+  </BufferTypeKeywords>
+
   <InputModifierKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="IN_KEYWORD" representation="in" />
     <Keyword name="INOUT_KEYWORD" representation="inout" />

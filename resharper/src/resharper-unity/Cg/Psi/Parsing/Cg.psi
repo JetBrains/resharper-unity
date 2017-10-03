@@ -163,6 +163,9 @@ options {
     | TEXTURE2DARRAY_KEYWORD
     | TEXTURE3D_KEYWORD
     | TEXTURECUBE_KEYWORD
+
+    | BUFFER_KEYWORD
+    | STRUCTUREDBUFFER_KEYWORD
   ;
 
 errorhandling cgFile
@@ -343,6 +346,19 @@ builtInType
     | TEXTURE2DARRAY_KEYWORD
     | TEXTURE3D_KEYWORD
     | TEXTURECUBE_KEYWORD
+
+    | bufferType
+  ;
+
+bufferType
+  :
+    (
+      BUFFER_KEYWORD
+      | STRUCTUREDBUFFER_KEYWORD
+    )
+    LT
+    typeName // TODO: by spec this can only be scalar, vector and some of the matrix types: highlight this on syntax HL stage
+    GT
   ;
 
 interface typeReference
