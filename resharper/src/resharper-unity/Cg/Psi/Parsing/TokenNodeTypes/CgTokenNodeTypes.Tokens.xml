@@ -90,8 +90,10 @@
   
   <FlowControlKeywords NodeType="CgKeywordTokenNodeType">
     <Keyword name="BREAK_KEYWORD" representation="break" />
+    <Keyword name="CASE_KEYWORD" representation="case" />
     <Keyword name="CONTINUE_KEYWORD" representation="continue" />
     <Keyword name="DISCARD_KEYWORD" representation="discard" />
+    <Keyword name="DEFAULT_KEYWORD" representation="default" />
     <Keyword name="DO_KEYWORD" representation="do" />
     <Keyword name="FOR_KEYWORD" representation="for" />
     <Keyword name="IF_KEYWORD" representation="if" />

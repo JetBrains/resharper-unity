@@ -116,7 +116,9 @@ options {
     | ASM_KEYWORD
 
     | BREAK_KEYWORD
+    | CASE_KEYWORD
     | CONTINUE_KEYWORD
+    | DEFAULT_KEYWORD
     | DISCARD_KEYWORD
     | DO_KEYWORD
     | FOR_KEYWORD
@@ -767,6 +769,7 @@ interface flowControlStatement
     | forStatement
     | doStatement
     | whileStatement
+    | switchStatement
     | continueStatement
     | breakStatement
     | discardStatement
@@ -826,19 +829,52 @@ whileStatement
     RPAREN  
     blockStatement
   ;
+
+switchStatement
+  :
+    SWITCH_KEYWORD    
+    LPAREN
+    expression // TODO: can only be a variable?
+    RPAREN
+    LBRACE
+    switchBodyCase*
+    switchBodyDefault
+    RBRACE
+  ;
+
+errorhandling switchBodyCase
+  :
+    CASE_KEYWORD
+    expression
+    COLON
+    statement*
+    breakStatement? // TODO: not needed if we have a return statement
+  ;
+
+errorhandling switchBodyDefault
+  :
+    DEFAULT_KEYWORD
+    COLON
+    statement*
+    breakStatement?
+  ;
+
 continueStatement
   :
     CONTINUE_KEYWORD
+    SEMICOLON
   ;
 
 breakStatement
   :
     BREAK_KEYWORD
+    SEMICOLON
   ;
 
 discardStatement
   :
     DISCARD_KEYWORD
+    SEMICOLON
   ;
 
 variableDeclarationStatement[modifierKeywordList modifiers, typeName type]

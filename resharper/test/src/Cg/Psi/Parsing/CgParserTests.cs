@@ -76,6 +76,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
         [TestCase("StructDeclarationNoSemicolon")]
         [TestCase("StructDeclarationReferencedType")]
         
+        [TestCase("SwitchStatement")]
+        
         [TestCase("UnaryOperator")]
         
         [TestCase("VariableDeclarationModifiers")]

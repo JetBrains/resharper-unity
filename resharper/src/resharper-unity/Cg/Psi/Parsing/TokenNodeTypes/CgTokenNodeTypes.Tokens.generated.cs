@@ -121,92 +121,96 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
     //FlowControlKeywords
     public const int BREAK_KEYWORD_NODE_TYPE_INDEX = 1048;
     public static readonly TokenNodeType BREAK_KEYWORD = new CgKeywordTokenNodeType("BREAK_KEYWORD", BREAK_KEYWORD_NODE_TYPE_INDEX, representation: "break");
-    public const int CONTINUE_KEYWORD_NODE_TYPE_INDEX = 1049;
+    public const int CASE_KEYWORD_NODE_TYPE_INDEX = 1049;
+    public static readonly TokenNodeType CASE_KEYWORD = new CgKeywordTokenNodeType("CASE_KEYWORD", CASE_KEYWORD_NODE_TYPE_INDEX, representation: "case");
+    public const int CONTINUE_KEYWORD_NODE_TYPE_INDEX = 1050;
     public static readonly TokenNodeType CONTINUE_KEYWORD = new CgKeywordTokenNodeType("CONTINUE_KEYWORD", CONTINUE_KEYWORD_NODE_TYPE_INDEX, representation: "continue");
-    public const int DISCARD_KEYWORD_NODE_TYPE_INDEX = 1050;
+    public const int DISCARD_KEYWORD_NODE_TYPE_INDEX = 1051;
     public static readonly TokenNodeType DISCARD_KEYWORD = new CgKeywordTokenNodeType("DISCARD_KEYWORD", DISCARD_KEYWORD_NODE_TYPE_INDEX, representation: "discard");
-    public const int DO_KEYWORD_NODE_TYPE_INDEX = 1051;
+    public const int DEFAULT_KEYWORD_NODE_TYPE_INDEX = 1052;
+    public static readonly TokenNodeType DEFAULT_KEYWORD = new CgKeywordTokenNodeType("DEFAULT_KEYWORD", DEFAULT_KEYWORD_NODE_TYPE_INDEX, representation: "default");
+    public const int DO_KEYWORD_NODE_TYPE_INDEX = 1053;
     public static readonly TokenNodeType DO_KEYWORD = new CgKeywordTokenNodeType("DO_KEYWORD", DO_KEYWORD_NODE_TYPE_INDEX, representation: "do");
-    public const int FOR_KEYWORD_NODE_TYPE_INDEX = 1052;
+    public const int FOR_KEYWORD_NODE_TYPE_INDEX = 1054;
     public static readonly TokenNodeType FOR_KEYWORD = new CgKeywordTokenNodeType("FOR_KEYWORD", FOR_KEYWORD_NODE_TYPE_INDEX, representation: "for");
-    public const int IF_KEYWORD_NODE_TYPE_INDEX = 1053;
+    public const int IF_KEYWORD_NODE_TYPE_INDEX = 1055;
     public static readonly TokenNodeType IF_KEYWORD = new CgKeywordTokenNodeType("IF_KEYWORD", IF_KEYWORD_NODE_TYPE_INDEX, representation: "if");
-    public const int ELSE_KEYWORD_NODE_TYPE_INDEX = 1054;
+    public const int ELSE_KEYWORD_NODE_TYPE_INDEX = 1056;
     public static readonly TokenNodeType ELSE_KEYWORD = new CgKeywordTokenNodeType("ELSE_KEYWORD", ELSE_KEYWORD_NODE_TYPE_INDEX, representation: "else");
-    public const int SWITCH_KEYWORD_NODE_TYPE_INDEX = 1055;
+    public const int SWITCH_KEYWORD_NODE_TYPE_INDEX = 1057;
     public static readonly TokenNodeType SWITCH_KEYWORD = new CgKeywordTokenNodeType("SWITCH_KEYWORD", SWITCH_KEYWORD_NODE_TYPE_INDEX, representation: "switch");
-    public const int WHILE_KEYWORD_NODE_TYPE_INDEX = 1056;
+    public const int WHILE_KEYWORD_NODE_TYPE_INDEX = 1058;
     public static readonly TokenNodeType WHILE_KEYWORD = new CgKeywordTokenNodeType("WHILE_KEYWORD", WHILE_KEYWORD_NODE_TYPE_INDEX, representation: "while");
 
     //VariableStorageClassKeywords
-    public const int EXTERN_KEYWORD_NODE_TYPE_INDEX = 1057;
+    public const int EXTERN_KEYWORD_NODE_TYPE_INDEX = 1059;
     public static readonly TokenNodeType EXTERN_KEYWORD = new CgKeywordTokenNodeType("EXTERN_KEYWORD", EXTERN_KEYWORD_NODE_TYPE_INDEX, representation: "extern");
-    public const int NOINTERPOLATION_KEYWORD_NODE_TYPE_INDEX = 1058;
+    public const int NOINTERPOLATION_KEYWORD_NODE_TYPE_INDEX = 1060;
     public static readonly TokenNodeType NOINTERPOLATION_KEYWORD = new CgKeywordTokenNodeType("NOINTERPOLATION_KEYWORD", NOINTERPOLATION_KEYWORD_NODE_TYPE_INDEX, representation: "nointerpolation");
-    public const int PRECISE_KEYWORD_NODE_TYPE_INDEX = 1059;
+    public const int PRECISE_KEYWORD_NODE_TYPE_INDEX = 1061;
     public static readonly TokenNodeType PRECISE_KEYWORD = new CgKeywordTokenNodeType("PRECISE_KEYWORD", PRECISE_KEYWORD_NODE_TYPE_INDEX, representation: "precise");
-    public const int SHARED_KEYWORD_NODE_TYPE_INDEX = 1060;
+    public const int SHARED_KEYWORD_NODE_TYPE_INDEX = 1062;
     public static readonly TokenNodeType SHARED_KEYWORD = new CgKeywordTokenNodeType("SHARED_KEYWORD", SHARED_KEYWORD_NODE_TYPE_INDEX, representation: "shared");
-    public const int GROUPSHARED_KEYWORD_NODE_TYPE_INDEX = 1061;
+    public const int GROUPSHARED_KEYWORD_NODE_TYPE_INDEX = 1063;
     public static readonly TokenNodeType GROUPSHARED_KEYWORD = new CgKeywordTokenNodeType("GROUPSHARED_KEYWORD", GROUPSHARED_KEYWORD_NODE_TYPE_INDEX, representation: "groupshared");
-    public const int STATIC_KEYWORD_NODE_TYPE_INDEX = 1062;
+    public const int STATIC_KEYWORD_NODE_TYPE_INDEX = 1064;
     public static readonly TokenNodeType STATIC_KEYWORD = new CgKeywordTokenNodeType("STATIC_KEYWORD", STATIC_KEYWORD_NODE_TYPE_INDEX, representation: "static");
-    public const int UNIFORM_KEYWORD_NODE_TYPE_INDEX = 1063;
+    public const int UNIFORM_KEYWORD_NODE_TYPE_INDEX = 1065;
     public static readonly TokenNodeType UNIFORM_KEYWORD = new CgKeywordTokenNodeType("UNIFORM_KEYWORD", UNIFORM_KEYWORD_NODE_TYPE_INDEX, representation: "uniform");
-    public const int VOLATILE_KEYWORD_NODE_TYPE_INDEX = 1064;
+    public const int VOLATILE_KEYWORD_NODE_TYPE_INDEX = 1066;
     public static readonly TokenNodeType VOLATILE_KEYWORD = new CgKeywordTokenNodeType("VOLATILE_KEYWORD", VOLATILE_KEYWORD_NODE_TYPE_INDEX, representation: "volatile");
 
     //TypeModifierKeywords
-    public const int CONST_KEYWORD_NODE_TYPE_INDEX = 1065;
+    public const int CONST_KEYWORD_NODE_TYPE_INDEX = 1067;
     public static readonly TokenNodeType CONST_KEYWORD = new CgKeywordTokenNodeType("CONST_KEYWORD", CONST_KEYWORD_NODE_TYPE_INDEX, representation: "const");
-    public const int ROW_MAJOR_KEYWORD_NODE_TYPE_INDEX = 1066;
+    public const int ROW_MAJOR_KEYWORD_NODE_TYPE_INDEX = 1068;
     public static readonly TokenNodeType ROW_MAJOR_KEYWORD = new CgKeywordTokenNodeType("ROW_MAJOR_KEYWORD", ROW_MAJOR_KEYWORD_NODE_TYPE_INDEX, representation: "row_major");
-    public const int COLUMN_MAJOR_KEYWORD_NODE_TYPE_INDEX = 1067;
+    public const int COLUMN_MAJOR_KEYWORD_NODE_TYPE_INDEX = 1069;
     public static readonly TokenNodeType COLUMN_MAJOR_KEYWORD = new CgKeywordTokenNodeType("COLUMN_MAJOR_KEYWORD", COLUMN_MAJOR_KEYWORD_NODE_TYPE_INDEX, representation: "column_major");
 
     //FunctionStorageClassKeywords
-    public const int INLINE_KEYWORD_NODE_TYPE_INDEX = 1068;
+    public const int INLINE_KEYWORD_NODE_TYPE_INDEX = 1070;
     public static readonly TokenNodeType INLINE_KEYWORD = new CgKeywordTokenNodeType("INLINE_KEYWORD", INLINE_KEYWORD_NODE_TYPE_INDEX, representation: "inline");
 
     //MiscKeywords
-    public const int RETURN_KEYWORD_NODE_TYPE_INDEX = 1069;
+    public const int RETURN_KEYWORD_NODE_TYPE_INDEX = 1071;
     public static readonly TokenNodeType RETURN_KEYWORD = new CgKeywordTokenNodeType("RETURN_KEYWORD", RETURN_KEYWORD_NODE_TYPE_INDEX, representation: "return");
-    public const int REGISTER_KEYWORD_NODE_TYPE_INDEX = 1070;
+    public const int REGISTER_KEYWORD_NODE_TYPE_INDEX = 1072;
     public static readonly TokenNodeType REGISTER_KEYWORD = new CgKeywordTokenNodeType("REGISTER_KEYWORD", REGISTER_KEYWORD_NODE_TYPE_INDEX, representation: "register");
-    public const int PACKOFFSET_KEYWORD_NODE_TYPE_INDEX = 1071;
+    public const int PACKOFFSET_KEYWORD_NODE_TYPE_INDEX = 1073;
     public static readonly TokenNodeType PACKOFFSET_KEYWORD = new CgKeywordTokenNodeType("PACKOFFSET_KEYWORD", PACKOFFSET_KEYWORD_NODE_TYPE_INDEX, representation: "packoffset");
-    public const int ASM_KEYWORD_NODE_TYPE_INDEX = 1072;
+    public const int ASM_KEYWORD_NODE_TYPE_INDEX = 1074;
     public static readonly TokenNodeType ASM_KEYWORD = new CgKeywordTokenNodeType("ASM_KEYWORD", ASM_KEYWORD_NODE_TYPE_INDEX, representation: "asm");
 
     //TextureTypeKeywords
-    public const int TEXTURE_KEYWORD_NODE_TYPE_INDEX = 1073;
+    public const int TEXTURE_KEYWORD_NODE_TYPE_INDEX = 1075;
     public static readonly TokenNodeType TEXTURE_KEYWORD = new CgKeywordTokenNodeType("TEXTURE_KEYWORD", TEXTURE_KEYWORD_NODE_TYPE_INDEX, representation: "texture");
-    public const int TEXTURE1D_KEYWORD_NODE_TYPE_INDEX = 1074;
+    public const int TEXTURE1D_KEYWORD_NODE_TYPE_INDEX = 1076;
     public static readonly TokenNodeType TEXTURE1D_KEYWORD = new CgKeywordTokenNodeType("TEXTURE1D_KEYWORD", TEXTURE1D_KEYWORD_NODE_TYPE_INDEX, representation: "Texture1D");
-    public const int TEXTURE1DARRAY_KEYWORD_NODE_TYPE_INDEX = 1075;
+    public const int TEXTURE1DARRAY_KEYWORD_NODE_TYPE_INDEX = 1077;
     public static readonly TokenNodeType TEXTURE1DARRAY_KEYWORD = new CgKeywordTokenNodeType("TEXTURE1DARRAY_KEYWORD", TEXTURE1DARRAY_KEYWORD_NODE_TYPE_INDEX, representation: "Texture1DArray");
-    public const int TEXTURE2D_KEYWORD_NODE_TYPE_INDEX = 1076;
+    public const int TEXTURE2D_KEYWORD_NODE_TYPE_INDEX = 1078;
     public static readonly TokenNodeType TEXTURE2D_KEYWORD = new CgKeywordTokenNodeType("TEXTURE2D_KEYWORD", TEXTURE2D_KEYWORD_NODE_TYPE_INDEX, representation: "Texture2D");
-    public const int TEXTURE2DARRAY_KEYWORD_NODE_TYPE_INDEX = 1077;
+    public const int TEXTURE2DARRAY_KEYWORD_NODE_TYPE_INDEX = 1079;
     public static readonly TokenNodeType TEXTURE2DARRAY_KEYWORD = new CgKeywordTokenNodeType("TEXTURE2DARRAY_KEYWORD", TEXTURE2DARRAY_KEYWORD_NODE_TYPE_INDEX, representation: "Texture2DArray");
-    public const int TEXTURE3D_KEYWORD_NODE_TYPE_INDEX = 1078;
+    public const int TEXTURE3D_KEYWORD_NODE_TYPE_INDEX = 1080;
     public static readonly TokenNodeType TEXTURE3D_KEYWORD = new CgKeywordTokenNodeType("TEXTURE3D_KEYWORD", TEXTURE3D_KEYWORD_NODE_TYPE_INDEX, representation: "Texture3D");
-    public const int TEXTURECUBE_KEYWORD_NODE_TYPE_INDEX = 1079;
+    public const int TEXTURECUBE_KEYWORD_NODE_TYPE_INDEX = 1081;
     public static readonly TokenNodeType TEXTURECUBE_KEYWORD = new CgKeywordTokenNodeType("TEXTURECUBE_KEYWORD", TEXTURECUBE_KEYWORD_NODE_TYPE_INDEX, representation: "TextureCube");
 
     //BufferTypeKeywords
-    public const int BUFFER_KEYWORD_NODE_TYPE_INDEX = 1080;
+    public const int BUFFER_KEYWORD_NODE_TYPE_INDEX = 1082;
     public static readonly TokenNodeType BUFFER_KEYWORD = new CgKeywordTokenNodeType("BUFFER_KEYWORD", BUFFER_KEYWORD_NODE_TYPE_INDEX, representation: "Buffer");
-    public const int STRUCTUREDBUFFER_KEYWORD_NODE_TYPE_INDEX = 1081;
+    public const int STRUCTUREDBUFFER_KEYWORD_NODE_TYPE_INDEX = 1083;
     public static readonly TokenNodeType STRUCTUREDBUFFER_KEYWORD = new CgKeywordTokenNodeType("STRUCTUREDBUFFER_KEYWORD", STRUCTUREDBUFFER_KEYWORD_NODE_TYPE_INDEX, representation: "StructuredBuffer");
 
     //InputModifierKeywords
-    public const int IN_KEYWORD_NODE_TYPE_INDEX = 1082;
+    public const int IN_KEYWORD_NODE_TYPE_INDEX = 1084;
     public static readonly TokenNodeType IN_KEYWORD = new CgKeywordTokenNodeType("IN_KEYWORD", IN_KEYWORD_NODE_TYPE_INDEX, representation: "in");
-    public const int INOUT_KEYWORD_NODE_TYPE_INDEX = 1083;
+    public const int INOUT_KEYWORD_NODE_TYPE_INDEX = 1085;
     public static readonly TokenNodeType INOUT_KEYWORD = new CgKeywordTokenNodeType("INOUT_KEYWORD", INOUT_KEYWORD_NODE_TYPE_INDEX, representation: "inout");
-    public const int OUT_KEYWORD_NODE_TYPE_INDEX = 1084;
+    public const int OUT_KEYWORD_NODE_TYPE_INDEX = 1086;
     public static readonly TokenNodeType OUT_KEYWORD = new CgKeywordTokenNodeType("OUT_KEYWORD", OUT_KEYWORD_NODE_TYPE_INDEX, representation: "out");
 
-    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1085;  }
+    private const int LAST_GENERATED_TOKEN_TYPE_INDEX = 1087;  }
 }
