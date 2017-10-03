@@ -371,7 +371,17 @@ semantic // e.g. TEXCOORD, COLOR
     IDENTIFIER<CG_NAME, NameNode> // checked on SyntaxHL stage as this context-sensitive keyword, e.g. `float color : color` is perfectly fine
   ;
 
-
+/*
+  [modifiers]
+  type
+  (
+    name  
+    [array op]
+    [semantic/register/packoffset]*
+    [annotations]
+    [initializer]
+  ) <- comma declaration possible
+ */
 errorhandling singleVariableDeclaration[modifierKeywordList modifiers, typeName type, identifier name]
   :
     &modifiers?
@@ -380,7 +390,6 @@ errorhandling singleVariableDeclaration[modifierKeywordList modifiers, typeName 
     variableDeclarationTail
   ;
 
-// TODO: check if it's possible do semantics and arrays work when using comma to separate variable names
 errorhandling variableDeclaration[modifierKeywordList modifiers, typeName type, identifier name]
   :
     singleVariableDeclaration<CG_CONTENT, FirstVariableNode>[modifiers, type, name]
@@ -396,12 +405,30 @@ variableDeclarationTail
     arrayOperator?
     (
       COLON
-      semantic
-    )?
+      (
+        semantic
+        | register
+        | packoffset
+      )
+    )*
     (
       EQUALS
       assignmentExpression
     )?
+  ;
+
+// TODO: syntax errors for incorrect params
+register
+  :
+    REGISTER_KEYWORD
+    callOperator
+  ;
+
+// TODO: syntax errors for incorrect params
+packoffset
+  :
+    PACKOFFSET_KEYWORD
+    callOperator  
   ;
 
 // TODO: custom parse function to unwrap all this stuff
