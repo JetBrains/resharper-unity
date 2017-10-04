@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Templates;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Resources;
+using JetBrains.UI.ThemedIcons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
 {
@@ -20,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
         // template scope icon instead of the C# file icon - see RIDER-9903
         // Unity_ShaderLab is using the unity logo while we wait on a .shader file icon - see RIDER-7587
         public static TemplateImage Unity_CSharp = new TemplateImage("UnityCSharp", PsiCSharpThemedIcons.Csharp.Id);
-        public static TemplateImage Unity_ShaderLab = new TemplateImage("UnityShaderLab", LogoThemedIcons.UnityLogo.Id);
+        public static TemplateImage Unity_ShaderLab = new TemplateImage("UnityShaderLab", DivebomThemedIconsThemedIcons.Shader.Id);
 
         public UnityProjectScopeCategoryUIProvider()
             : base(LogoThemedIcons.UnityLogo.Id)
