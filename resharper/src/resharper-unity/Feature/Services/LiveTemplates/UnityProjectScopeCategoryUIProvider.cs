@@ -8,9 +8,13 @@ using JetBrains.ReSharper.Psi.CSharp.Resources;
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
 {
     // Defines a category for the UI, and the scope points that it includes
-    [ScopeCategoryUIProvider(Priority = -200, ScopeFilter = ScopeFilter.Project)]
+    [ScopeCategoryUIProvider(Priority = Priority, ScopeFilter = ScopeFilter.Project)]
     public class UnityProjectScopeCategoryUIProvider : ScopeCategoryUIProvider
     {
+        // Needs to be less than other priorities in R#'s built in ScopeCategoryUIProvider
+        // to push it to the end of the list
+        private const int Priority = -200;
+
         // These get added to a static dictionary, so they can be referenced by name from templates
         // We're using Unity_CSharp instead of just CSharp, because that's set up to use the C#
         // template scope icon instead of the C# file icon - see RIDER-9903

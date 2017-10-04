@@ -5,9 +5,13 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
 {
-    [ScopeCategoryUIProvider(Priority = -200)]
+    [ScopeCategoryUIProvider(Priority = Priority)]
     public class UnityScopeCategoryUIProvider : ScopeCategoryUIProvider
     {
+        // Needs to be less than other priorities in R#'s built in ScopeCategoryUIProvider
+        // to push it to the end of the list
+        private const int Priority = -200;
+
         public UnityScopeCategoryUIProvider()
             : base(LogoThemedIcons.UnityLogo.Id)
         {
