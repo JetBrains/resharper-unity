@@ -82,6 +82,7 @@
   <li>Marks empty event functions as dead code, with Quick Fix to remove.</li>
   <li>Automatically excludes large Library and Temp folders from Rider's text index.</li>
   <li>Creates "Attach to Unity Editor" run configuration to attach the debugger to the Editor.</li>
+  <li>Adds Unity specific file templates.</a>
 </ul>
 </p>
 <p></p>
@@ -97,6 +98,9 @@
   <change-notes>
 <![CDATA[
 <ul>
+  <li>Add Unity specific file templates (<a href="https://github.com/JetBrains/resharper-unity/issues/232">#232</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/237">#237</a>)</li>
+  <li>Improve parsing and syntax highlighting of Cg/HLSL</li>
+  <li>Fix parsing of 2DArray (<a href="https://youtrack.jetbrains.com/issue/RIDER-9786">RIDER-9786</a>)</li>
   <li>Add colour highlighting and editing to ShaderLab</li>
 </ul>
 <p>From 2.1.1 (Rider 2017.2 EAP2):</p>
