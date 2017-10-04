@@ -30,7 +30,11 @@ namespace Plugins.Editor.JetBrains
       ILogger myLogger = Logger.GetLogger("Core");
       var fileLogEventListener = new FileLogEventListener(loggerPath, false); // works in Unity mono 4.6
       //var fileLogEventListener = new FileLogEventListener(loggerPath); //fails in Unity mono 4.6
-      LogManager.Instance.AddOmnipresentLogger(lifetime, fileLogEventListener, LoggingLevel.VERBOSE);
+      LogManager.Instance.AddOmnipresentLogger(lifetime, fileLogEventListener, LoggingLevel.TRACE);
+//      LogManager.Instance.ApplyTransformation(lifetime, config =>
+//      {
+//        config.InjectNode(new LogConfNode(LoggingLevel.TRACE, "protocol"));
+//      });
 
       try
       {
@@ -39,7 +43,7 @@ namespace Plugins.Editor.JetBrains
 
         int port = 46000 + Process.GetCurrentProcess().Id % 1000;
 
-        var dispatcher = new RdSimpleDispatcher(lifetime, myLogger);
+        var dispatcher = new UnityDispatcher(myLogger);//(lifetime, myLogger);
 
         myLogger.Info("Create protocol...");
         var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
@@ -56,7 +60,7 @@ namespace Plugins.Editor.JetBrains
           myLogger.Info("model.Play.Advise: " + session);
           if (!session) return;
           var text = "Edit/Play";
-          UnityDispatcher.Dispatch(() =>
+          dispatcher.Queue(() =>
           {
             EditorApplication.ExecuteMenuItem(text);
           });
@@ -77,8 +81,13 @@ namespace Plugins.Editor.JetBrains
     /// Provides a means to execute a function on a Unity owned thread
     /// </summary>
     [InitializeOnLoad]
-    private class UnityDispatcher
+    private class UnityDispatcher:IScheduler
     {
+      public UnityDispatcher(ILogger logger)
+      {
+        myLogger = logger;
+      }
+      
       private struct Task
       {
         public readonly Delegate Function;
@@ -118,17 +127,6 @@ namespace Plugins.Editor.JetBrains
       }
 
       /// <summary>
-      /// Dispatches the specified action delegate.
-      /// </summary>
-      /// <param name='function'>
-      /// The function delegate being requested
-      /// </param>
-      public static void Dispatch(Action function)
-      {
-        Dispatch(function, null);
-      }
-
-      /// <summary>
       /// Dispatches the specified function delegate with the desired delegates
       /// </summary>
       /// <param name='function'>
@@ -140,7 +138,7 @@ namespace Plugins.Editor.JetBrains
       /// <exception cref='System.NotSupportedException'>
       /// Is thrown when this method is called from the Unity Player
       /// </exception>
-      private static void Dispatch(Delegate function, params object[] arguments)
+      private static void Queue(Delegate function, params object[] arguments)
       {
 #if UNITY_EDITOR
         lock (mTaskQueue)
@@ -198,6 +196,17 @@ namespace Plugins.Editor.JetBrains
 		throw new System.NotSupportedException("DispatchTasks is not supported in the Unity Player!");
 #endif
       }
+
+      public void Queue(Action action)
+      {
+        myLogger.Trace("Queuing task");
+        Queue(action, null);
+      }
+
+      private ILogger myLogger;
+
+      public bool IsActive { get; }
+      public bool OutOfOrderExecution { get; }
     }
   }
 }
