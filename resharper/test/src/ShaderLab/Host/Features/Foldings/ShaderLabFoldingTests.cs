@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Host.Features.Foldings
 {
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabFoldingTests : ShaderLabHighlightingTestBase
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Foldings";

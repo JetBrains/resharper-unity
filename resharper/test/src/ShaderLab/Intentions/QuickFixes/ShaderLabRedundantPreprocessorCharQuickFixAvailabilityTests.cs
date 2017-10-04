@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Intentions.QuickFixes
 {
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabRedundantPreprocessorCharQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
         protected override string RelativeTestDataPath=> @"ShaderLab\Intentions\QuickFixes\ShaderLabRedundantPreprocessorChar\Availability";
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Intentions.QuickFixe
     }
 
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabRedundantPreprocessorCharQuickFixQuickFixTests : CSharpQuickFixTestBase<ShaderLabRedundantPreprocessorCharQuickFix>
     {
         protected override string RelativeTestDataPath=> @"ShaderLab\Intentions\QuickFixes\ShaderLabRedundantPreprocessorChar";

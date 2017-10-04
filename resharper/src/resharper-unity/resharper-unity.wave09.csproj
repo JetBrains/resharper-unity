@@ -5,7 +5,7 @@
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET452;JET_MODE_ASSERT;WAVE09</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET452;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;WAVE09</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RELEASE;NET452;WAVE09</DefineConstants>
@@ -18,6 +18,27 @@
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
     </PsiLanguageNames>
+    <PsiLanguageNames Include="Cg">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="Cg\Psi\Parsing\Cg.lex" />
+    <None Remove="Cg\Psi\Parsing\Cg_lex.depends" />
+    <Compile Update="Cg\Psi\Parsing\Cg_lex.cs">
+      <DependentUpon>Cg.lex</DependentUpon>
+    </Compile>
+    <TokenGenerator Include="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
+      <OutputFile>Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <Compile Update="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
+      <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
+    </Compile>
+    <ParserGen Include="Cg\Psi\Parsing\Cg.psi" />
+    <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
+      <Namespace>JetBrains.ReSharper.Cg.Daemon.Errors</Namespace>
+      <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
+      <SubType>Designer</SubType>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
     <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" />
     <None Remove="ShaderLab\Psi\Parsing\ShaderLab_lex.depends" />
     <Compile Update="ShaderLab\Psi\Parsing\ShaderLab_lex.cs">
@@ -61,13 +82,15 @@
     </ThemedIconsXamlV3>
   </ItemGroup>
   <!-- References -->
+  <!-- References -->
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.2.0" />
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="109.0.20170824.1323" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="109.0.20170824.132357" />
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.3.0" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="WindowsBase" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
 </Project>

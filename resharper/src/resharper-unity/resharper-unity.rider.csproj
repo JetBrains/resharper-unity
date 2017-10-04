@@ -6,7 +6,7 @@
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET452;JET_MODE_ASSERT;RIDER</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET452;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RIDER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RELEASE;NET452;RIDER</DefineConstants>
@@ -28,6 +28,27 @@
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
     </PsiLanguageNames>
+    <PsiLanguageNames Include="Cg">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="Cg\Psi\Parsing\Cg.lex" />
+    <None Remove="Cg\Psi\Parsing\Cg_lex.depends" />
+    <Compile Update="Cg\Psi\Parsing\Cg_lex.cs">
+      <DependentUpon>Cg.lex</DependentUpon>
+    </Compile>
+    <TokenGenerator Include="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
+      <OutputFile>Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <Compile Update="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
+      <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
+    </Compile>
+    <ParserGen Include="Cg\Psi\Parsing\Cg.psi" />
+    <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
+      <Namespace>JetBrains.ReSharper.Cg.Daemon.Errors</Namespace>
+      <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
+      <SubType>Designer</SubType>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
     <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" />
     <None Remove="ShaderLab\Psi\Parsing\ShaderLab_lex.depends" />
     <Compile Update="ShaderLab\Psi\Parsing\ShaderLab_lex.cs">
@@ -105,13 +126,4 @@
       <FileWrites Include="%(ParserGenOutputSrc.FullPath)" />
     </ItemGroup>
   </Target>
-  <ItemGroup>
-    <!-- The JetBrains.Psi.Features.Tasks 108.0.20170615.212549-eap08 package incorrectly
-         includes $(PsiGenToolsDir)/TokenGenerator.exe in the inputs, but that file doesn't
-         exist - $(PsiGenToolsDir)/../TokenGenerator.exe does.
-         This is a workaround that ignores changes to the .exe and the .targets
-         See RSRP-465228 -->
-    <GenerateTokenGeneratorInputs Remove="@(GenerateTokenGeneratorInputs)" />
-    <GenerateTokenGeneratorInputs Include="@(TokenGenerator)" />
-  </ItemGroup>
 </Project>

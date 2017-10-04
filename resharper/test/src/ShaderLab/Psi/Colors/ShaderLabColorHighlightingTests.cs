@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Colors
 {
     [Category("ColorHighlighting")]
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabColorHighlightingTests : ShaderLabHighlightingTestBase
     {
         protected override bool ColorIdentifiers => true;

@@ -1,0 +1,19 @@
+<Errors language="C#" configurableSeverityImplementationLanguage="Cg">
+
+  <Usings>    
+  </Usings>
+
+  <StaticSeverityGroups>
+    <Group name="Cg Errors" key="CgErrors"/>
+  </StaticSeverityGroups>
+
+  <Error name="CgSyntax" staticGroup="CgErrors">
+    <Parameter type="string" name="text"/>
+    <Parameter type="DocumentRange" name="documentRange"/>
+    <Message value="{0}">
+      <Argument>Text</Argument>
+    </Message>
+    <Range>DocumentRange</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR"/>
+  </Error>
+</Errors>

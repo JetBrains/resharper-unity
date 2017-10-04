@@ -14,5 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "Enables completion based on words found in the current file.")]
         public bool EnableShaderLabHippieCompletion;
+
+        [SettingsEntry(false, "Enables syntax error highlighting of CG blocks in ShaderLab files.")]
+        public bool EnableCgErrorHighlighting;
     }
 }

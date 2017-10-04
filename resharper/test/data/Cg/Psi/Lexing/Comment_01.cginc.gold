@@ -1,0 +1,6 @@
+﻿0000: SINGLE_LINE_COMMENT '// empty line next'
+0018: NEW_LINE '\r\n'
+0020: NEW_LINE '\r\n'
+0022: SINGLE_LINE_COMMENT '// whitespace on next line'
+0048: NEW_LINE '\r\n'
+0050: WHITESPACE ' '
