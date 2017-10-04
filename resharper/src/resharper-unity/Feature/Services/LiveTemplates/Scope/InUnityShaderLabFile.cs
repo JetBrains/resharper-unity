@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope
 
         protected override IEnumerable<string> GetExtensions()
         {
-            yield return ShaderLabProjectFileType.SHADER_EXTENSION;
+            yield return ShaderLabProjectFileType.SHADERLAB_EXTENSION;
         }
 
         public override string ToString() => "ShaderLab (Unity)";
