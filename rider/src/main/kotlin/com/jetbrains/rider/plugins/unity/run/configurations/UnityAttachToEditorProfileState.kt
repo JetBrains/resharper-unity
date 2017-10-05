@@ -19,15 +19,13 @@ class UnityAttachToEditorProfileState(val remoteConfiguration: UnityAttachToEdit
 
         if (remoteConfiguration.play) {
             logger.info("Pass value to backend, which will push Unity to enter play mode.")
-//            lifetime.bracket(opening = {}, closing = {
-//                executionEnvironment.project.solution.customData.data["UNITY_AttachEditorAndRun"] = "false"
-//            })
-
-            executionEnvironment.project.solution.customData.data["UNITY_ProcessId"] = remoteConfiguration.pid!!.toString()
-            // pass value to backend, which will push Unity to enter play mode.
-            executionEnvironment.project.solution.customData.data["UNITY_AttachEditorAndRun"] = "true";
-
-
+            lifetime.bracket(opening = {
+                executionEnvironment.project.solution.customData.data["UNITY_ProcessId"] = remoteConfiguration.pid!!.toString()
+                // pass value to backend, which will push Unity to enter play mode.
+                executionEnvironment.project.solution.customData.data["UNITY_AttachEditorAndPlay"] = "true";
+            }, closing = {
+                executionEnvironment.project.solution.customData.data["UNITY_AttachEditorAndPlay"] = "false"
+            })
         }
 
         return result

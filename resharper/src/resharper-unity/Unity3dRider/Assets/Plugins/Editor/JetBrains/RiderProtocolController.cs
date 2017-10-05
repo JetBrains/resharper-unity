@@ -10,6 +10,13 @@ using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Threading;
+using JetBrains.Application;
+using JetBrains.Application.Parts;
+using JetBrains.Application.Threading;
+using UnityEngine;
+using ILogger = JetBrains.Util.ILogger;
+using Logger = JetBrains.Util.Logging.Logger;
 
 namespace Plugins.Editor.JetBrains
 {
@@ -18,8 +25,10 @@ namespace Plugins.Editor.JetBrains
   {
     static RiderProtocolController()
     {
-      Start(Path.Combine(Path.GetTempPath(), "Unity3dRider",
-        "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log"));
+      var myThread = new Thread(() => Start(Path.Combine(Path.GetTempPath(), "Unity3dRider",
+        "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log")));
+      myThread.SetApartmentState(ApartmentState.STA);
+      myThread.Start();
     }
 
     private static void Start(string loggerPath)
@@ -43,8 +52,8 @@ namespace Plugins.Editor.JetBrains
 
         int port = 46000 + Process.GetCurrentProcess().Id % 1000;
 
-        var dispatcher = new UnityDispatcher(myLogger);//(lifetime, myLogger);
-
+        var dispatcher = new SimpleInpaceExecutingScheduler(myLogger);
+        
         myLogger.Info("Create protocol...");
         var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
           creatingProtocol =>
@@ -55,14 +64,14 @@ namespace Plugins.Editor.JetBrains
 
         myLogger.Info("Create UnityModel and advise for new sessions...");
         var model = new UnityModel(lifetime, protocol);
-        model.Play.Advise(lifetime, session =>
+        model.Play.Advise(lifetime, play =>
         {
-          myLogger.Info("model.Play.Advise: " + session);
-          if (!session) return;
+          myLogger.Info("model.Play.Advise: " + play);
           var text = "Edit/Play";
-          dispatcher.Queue(() =>
+          MainThreadDispatcher.Queue(() =>
           {
-            EditorApplication.ExecuteMenuItem(text);
+            if (!Application.isPlaying && play || Application.isPlaying && !play)
+              EditorApplication.ExecuteMenuItem(text);
           });
         });
         model.HostConnected.SetValue(true);
@@ -76,18 +85,9 @@ namespace Plugins.Editor.JetBrains
       }
     }
 
-    /// <summary>
-    /// Editor Thread Dispatcher
-    /// Provides a means to execute a function on a Unity owned thread
-    /// </summary>
     [InitializeOnLoad]
-    private class UnityDispatcher:IScheduler
+    private static class MainThreadDispatcher
     {
-      public UnityDispatcher(ILogger logger)
-      {
-        myLogger = logger;
-      }
-      
       private struct Task
       {
         public readonly Delegate Function;
@@ -119,11 +119,22 @@ namespace Plugins.Editor.JetBrains
       /// <summary>
       /// Initializes all the required callbacks for this class to work properly
       /// </summary>
-      static UnityDispatcher()
+      static MainThreadDispatcher()
       {
 #if UNITY_EDITOR
         EditorApplication.update += DispatchTasks;
 #endif
+      }
+      
+      /// <summary>
+      /// Dispatches the specified action delegate.
+      /// </summary>
+      /// <param name='function'>
+      /// The function delegate being requested
+      /// </param>
+      public static void Queue(Action function)
+      {
+        Queue(function, null);
       }
 
       /// <summary>
@@ -147,27 +158,6 @@ namespace Plugins.Editor.JetBrains
         }
 #else
 		throw new System.NotSupportedException("Dispatch is not supported in the Unity Player!");
-#endif
-      }
-
-      /// <summary>
-      /// Clears the queued tasks
-      /// </summary>
-      /// <exception cref='System.NotSupportedException'>
-      /// Is thrown when this method is called from the Unity Player
-      /// </exception>
-      public static void ClearTasks()
-      {
-#if UNITY_EDITOR
-        if (AreTasksAvailable)
-        {
-          lock (mTaskQueue)
-          {
-            mTaskQueue.Clear();
-          }
-        }
-#else
-		throw new System.NotSupportedException("ClearTasks is not supported in the Unity Player!");
 #endif
       }
 
@@ -196,17 +186,6 @@ namespace Plugins.Editor.JetBrains
 		throw new System.NotSupportedException("DispatchTasks is not supported in the Unity Player!");
 #endif
       }
-
-      public void Queue(Action action)
-      {
-        myLogger.Trace("Queuing task");
-        Queue(action, null);
-      }
-
-      private ILogger myLogger;
-
-      public bool IsActive { get; }
-      public bool OutOfOrderExecution { get; }
     }
   }
 }

@@ -26,28 +26,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             myHostConnectedAndPlay.Change.Advise(lifetime, args =>
             {
-                if (args.New) UnityModel.Play.Value = true;
+                if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
             });
 
             solutionModel.GetCurrentSolution().CustomData
                 .Data.Advise(lifetime, e =>
                 {
-                    if (e.Key == "UNITY_AttachEditorAndRun" && e.NewValue.ToLower() == "true" &&
-                        e.NewValue != e.OldValue)
+                    if (e.Key == "UNITY_AttachEditorAndPlay")
                     {
-                        logger.Verbose($"UNITY_AttachEditorAndRun {e.NewValue} came from frontend.");
-                        myPlay.SetValue(true);
+                        if (e.NewValue != e.OldValue)
+                        {
+                            logger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
+                            myPlay.SetValue(e.NewValue.ToLower() == "true");
 
-                        if (myHostConnected.Value)
-                            myHostConnectedAndPlay.SetValue(true);
+                            if (myHostConnected.Value)
+                                myHostConnectedAndPlay.SetValue(myHostConnected.Value && myPlay.Value);
+                        }
                     }
                 });
 
             solutionModel.GetCurrentSolution().CustomData
                 .Data.Advise(lifetime, e =>
                 {
-                    if (e.Key == "UNITY_ProcessId" && !string.IsNullOrEmpty(e.NewValue) &&
-                        (e.NewValue != e.OldValue))
+                    if (e.Key == "UNITY_ProcessId" && !string.IsNullOrEmpty(e.NewValue) && e.NewValue != e.OldValue)
                     {
                         var pid = Convert.ToInt32(e.NewValue);
                         logger.Verbose($"UNITY_ProcessId {e.NewValue} came from frontend.");
@@ -71,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             {
                                 myHostConnected.SetValue(b);
                                 if (myPlay.Value)
-                                    myHostConnectedAndPlay.SetValue(true);
+                                    myHostConnectedAndPlay.SetValue(myPlay.Value);
                             });
                         }
                         catch (Exception ex)
