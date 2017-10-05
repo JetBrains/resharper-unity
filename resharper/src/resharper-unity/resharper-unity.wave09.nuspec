@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Unity</id>
     <title>Unity Support</title>
-    <version>2.1.9999.9999</version>
+    <version>2.1.2.9999</version>
     <authors>JetBrains</authors>
     <owners>JetBrains</owners>
     <summary>ReSharper support for the Unity engine</summary>
@@ -43,8 +43,11 @@
 &#8226; Brace matching, todo explorer and commenting support for ShaderLab files.
 &#8226; Colour highlighting and editing in ShaderLab files.
 &#8226; Support for modularised UnityEngine assemblies.
+&#8226; Unity specific file templates.
 </description>
 <releaseNotes>
+&#8226; Add Unity specific file templates (#232, #237)
+&#8226; Fix parsing of 2DArray (RIDER-9786)
 &#8226; Add colour highlighting and editing to ShaderLab
 
 From 2.1.1 (not released for ReSharper):
@@ -160,6 +163,7 @@ From previous releases:
   </metadata>
   <files>
     <file src="..\..\build\resharper-unity.wave09\bin\Release\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+    <file src="..\..\build\resharper-unity.wave09\bin\Release\net452\JetBrains.ReSharper.Plugins.Unity.pdb" target="DotFiles" />
     <file src="annotations\UnityEngine*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
     <file src="annotations\UnityEditor*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
   </files>

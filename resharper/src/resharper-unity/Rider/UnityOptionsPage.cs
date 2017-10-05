@@ -1,4 +1,6 @@
 ﻿#if RIDER
+using JetBrains.Application.Environment;
+using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.UI.Options;
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
@@ -17,7 +19,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         public const string PID = "UnityPluginSettings";
         
-        public UnityOptionsPage(Lifetime lifetime, OptionsSettingsSmartContext optionsSettingsSmartContext)
+        public UnityOptionsPage(
+            Lifetime lifetime,
+            OptionsSettingsSmartContext optionsSettingsSmartContext,
+            RunsProducts.ProductConfigurations productConfigurations)
             : base(lifetime, optionsSettingsSmartContext)
         {
             Header("General");
@@ -37,6 +42,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             AddText("The solution must be reopened when changed.");
             AddEmptyLine();
             AddText("Note that CGPROGRAM blocks are not currently checked for syntax errors.");
+
+            if (productConfigurations.IsInternalMode())
+            {
+                CheckBox((UnitySettings s) => s.EnableCgErrorHighlighting, "Parse Cg files for syntax errors. Only works in internal mode.");
+                AddText("Requires solution reopen, same as ShaderLab settings.");
+            }
             
             FinishPage();
         }

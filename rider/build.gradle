@@ -7,7 +7,7 @@ plugins {
 group 'com.jetbrains'
 
 if (!ext.has("myArgs")){
-    ext.myArgs = "Release,2.1.1.9999"
+    ext.myArgs = "Debug,2.1.2.9999"
 }
 
 ext.args = myArgs.split(',')
@@ -44,6 +44,7 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
     // localPath = "C:\\Users\\ivan.pashchenko\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\dev"
+    // localPath = '/Users/ivan/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/172.4144.636/Rider EAP.app/Contents'
 
     def dir = file('dependencies')
     if (dir.exists()) {

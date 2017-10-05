@@ -4,8 +4,9 @@ import com.intellij.openapi.util.IconLoader
 
 class UnityIcons {
     companion object {
+        val ShaderLabFile = IconLoader.getIcon("/Icons/Shader/Shader.png")
+
         // TODO: Proper icons!
-        val ShaderLabFile = IconLoader.getIcon("/resharper/Logo/UnityLogo.png")
-        val AttachEditorDebugConfiguration = IconLoader.getIcon("/resharper/Logo/UnityLogo.png")
+        val AttachEditorDebugConfiguration = IconLoader.getIcon("/Icons/Logo/UnityLogo.png")
     }
 }

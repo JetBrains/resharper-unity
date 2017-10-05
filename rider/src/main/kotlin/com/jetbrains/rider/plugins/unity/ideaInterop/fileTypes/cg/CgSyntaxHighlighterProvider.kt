@@ -17,4 +17,3 @@ class CgSyntaxHighlighterProvider : SyntaxHighlighterProvider, SyntaxHighlighter
         return CgSyntaxHighlighter()
     }
 }
-

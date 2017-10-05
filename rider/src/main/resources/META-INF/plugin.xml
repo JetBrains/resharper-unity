@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2.1.9999.9999</version>
+  <version>2.1.2.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
   <idea-version since-build="172.4144" until-build="172.4144.*" />
@@ -21,6 +21,7 @@
     <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
     <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
+    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
 
     <!-- Cg support -->
     <fileTypeFactory id="Cg" implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgFileTypeFactory" />
@@ -29,10 +30,8 @@
     <backend.markup.adapterFactory language="Cg" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
     <backend.actions.support language="Cg" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgIconProvider" />
-
-    <!-- ShaderLab / Cg shared -->
-    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
     <completion.contributor language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
+
   </extensions>
 
   <project-components>
@@ -40,7 +39,6 @@
     <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
-
   </project-components>
 
   <actions>
@@ -85,6 +83,7 @@
   <li>Marks empty event functions as dead code, with Quick Fix to remove.</li>
   <li>Automatically excludes large Library and Temp folders from Rider's text index.</li>
   <li>Creates "Attach to Unity Editor" run configuration to attach the debugger to the Editor.</li>
+  <li>Adds Unity specific file templates.</a>
 </ul>
 </p>
 <p></p>
@@ -100,6 +99,9 @@
   <change-notes>
 <![CDATA[
 <ul>
+  <li>Add Unity specific file templates (<a href="https://github.com/JetBrains/resharper-unity/issues/232">#232</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/237">#237</a>)</li>
+  <li>Improve parsing and syntax highlighting of Cg/HLSL</li>
+  <li>Fix parsing of 2DArray (<a href="https://youtrack.jetbrains.com/issue/RIDER-9786">RIDER-9786</a>)</li>
   <li>Add colour highlighting and editing to ShaderLab</li>
 </ul>
 <p>From 2.1.1 (Rider 2017.2 EAP2):</p>

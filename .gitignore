@@ -21,18 +21,28 @@
 # contains path information, but we've got it configured to use the default wrapper.
 # See https://youtrack.jetbrains.com/issue/IDEA-55923 for some more information
 .gradle/
-**/.idea/**/libraries
+rider/.idea/**/libraries
 
 # NOTE: We normally include *.iml for JetBrains IDEs, but Gradle based projects auto generate
 # this on import, so we can happily ignore them. Don't do this for the Rider controlled project!
+rider/.idea/**/modules.xml
 rider/.idea/**/modules/*.iml
+rider/.idea/**/compiler.xml
 
-# IntelliJ
-build/
-out/
+# Gradle output
+rider/build/
 
 # ReSharper code
-#
+resharper/build/
+
+# Rider auto-generates .iml files. We don't need to track them, unlike most IntelliJ projects
+resharper/src/.idea/**/*.iml
+
+# ContentModel.xml is also auto-generated
+resharper/src/.idea/**/contentModel.xml
+
+resharper/src/.vs/
+
 # New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
 # Would be nice to download them somewhere outside of the source tree.
 Packages/*
@@ -43,10 +53,8 @@ Packages/*
 [Bb]in
 [Oo]bj
 
-# Rider auto-generates .iml files. We don't need to track them, unlike most IntelliJ projects
-resharper/src/.idea/**/*.iml
-
 resharper/src/resharper-unity/_Generated/
+resharper/src/resharper-unity/templates/**/*.generated.dotSettings
 resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp
@@ -59,7 +67,4 @@ UpgradeLog*.XML
 Thumbs.db
 Desktop.ini
 .DS_Store
-**/.idea/workspace.xml
-**/.idea/vcs.xml
-**/.idea/contentModel.xml
 resharper/src/resharper-unity/Unity3dRider/Assets/packages/*

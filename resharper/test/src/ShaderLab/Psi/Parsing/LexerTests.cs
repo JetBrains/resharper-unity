@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
 {
     [TestUnity]
-    [TestFileExtension(ShaderLabProjectFileType.SHADER_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class LexerTests : LexerTestBase
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Psi\Lexing";

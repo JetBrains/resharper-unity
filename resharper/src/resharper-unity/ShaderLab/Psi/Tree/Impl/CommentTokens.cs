@@ -57,10 +57,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
 
         public override TreeTextRange GetCommentRange()
         {
-            var treeStartOffset = GetTreeStartOffset();
-            var text = GetText();
-            var length = text.Length - (text.EndsWith("*/") ? 4 : 2);
-            return length <= 0 ? TreeTextRange.InvalidRange : new TreeTextRange(treeStartOffset + 2, treeStartOffset + 2 + length);
+                var treeStartOffset = GetTreeStartOffset();
+                var text = GetText();
+                var length = text.Length - (text.EndsWith("*/") ? 4 : 2);
+                return length <= 0 ? TreeTextRange.InvalidRange : new TreeTextRange(treeStartOffset + 2, treeStartOffset + 2 + length);
         }
 
         public override string CommentText

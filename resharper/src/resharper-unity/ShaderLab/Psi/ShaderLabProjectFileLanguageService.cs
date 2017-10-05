@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.UI.Icons;
+using JetBrains.UI.ThemedIcons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
 {
@@ -36,7 +37,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
             }
         }
 
-        // TODO: Needs a file icon
-        public override IconId Icon => null;
+        public override IconId Icon => DivebomThemedIconsThemedIcons.Shader.Id;
     }
 }
