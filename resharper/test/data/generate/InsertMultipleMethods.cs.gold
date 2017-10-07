@@ -39,7 +39,7 @@
  37: OnMouseUpAsButton():System.Void
  38: OnNetworkInstantiate(UnityEngine.NetworkMessageInfo):System.Void
  39: OnParticleCollision(UnityEngine.GameObject):System.Void
- 40: OnParticleTrigger(UnityEngine.GameObject):System.Void
+ 40: OnParticleTrigger():System.Void
  41: OnPlayerConnected(UnityEngine.NetworkPlayer):System.Void
  42: OnPlayerDisconnected(UnityEngine.NetworkPlayer):System.Void
  43: OnPostRender():System.Void

@@ -1,556 +1,606 @@
-﻿# 674 ITEMS #
+﻿# 725 ITEMS #
 
-+ A
-+ ADBannerView
-+ ADInterstitialAd
-+ AOT
-+ AccelerationEvent
-+ AddComponentMenu
-+ AnchoredJoint2D
-+ AndroidActivityIndicatorStyle
-+ AndroidInput
-+ AndroidJNI
-+ AndroidJNIHelper
-+ AndroidJavaClass
-+ AndroidJavaException
-+ AndroidJavaObject
-+ AndroidJavaProxy
-+ AndroidJavaRunnable
-+ Animation
-+ AnimationBlendMode
-+ AnimationClip
-+ AnimationClipPair
-+ AnimationCullingType
-+ AnimationCurve
-+ AnimationEvent
-+ AnimationInfo
-+ AnimationPlayMode
-+ AnimationState
-+ Animator
-+ AnimatorClipInfo
-+ AnimatorControllerParameter
-+ AnimatorControllerParameterType
-+ AnimatorCullingMode
-+ AnimatorOverrideController
-+ AnimatorRecorderMode
-+ AnimatorStateInfo
-+ AnimatorTransitionInfo
-+ AnimatorUpdateMode
-+ AnimatorUtility
-+ AnisotropicFiltering
-+ Application
-+ ApplicationInstallMode
-+ ApplicationSandboxType
-+ AreaEffector2D
-+ AssemblyIsEditorAssembly
-+ AssetBundle
-+ AssetBundleCreateRequest
-+ AssetBundleManifest
-+ AssetBundleRequest
-+ AssetModificationProcessor
-+ AsyncOperation
-+ AudioChorusFilter
-+ AudioClip
-+ AudioClipLoadType
-+ AudioCompressionFormat
-+ AudioConfiguration
-+ AudioDataLoadState
-+ AudioDistortionFilter
-+ AudioEchoFilter
-+ AudioHighPassFilter
-+ AudioListener
-+ AudioLowPassFilter
-+ AudioReverbFilter
-+ AudioReverbPreset
-+ AudioReverbZone
-+ AudioRolloffMode
-+ AudioSettings
-+ AudioSource
-+ AudioSourceCurveType
-+ AudioSpeakerMode
-+ AudioType
-+ AudioVelocityUpdateMode
-+ Avatar
-+ AvatarBuilder
-+ AvatarIKGoal
-+ AvatarIKHint
-+ AvatarTarget
-+ Behaviour
-+ BillboardAsset
-+ BillboardRenderer
-+ BitStream
-+ BlendWeights
-+ BoneWeight
-+ BoundingSphere
-+ Bounds
-+ BoxCollider
-+ BoxCollider2D
-+ BuoyancyEffector2D
-+ CacheIndex
-+ Caching
-+ CalendarIdentifier
-+ CalendarUnit
-+ Camera
-+ CameraClearFlags
-+ CameraType
-+ Canvas
-+ CanvasGroup
-+ CanvasRenderer
-+ CapsuleCollider
-+ CharacterController
-+ CharacterInfo
-+ CharacterJoint
-+ CircleCollider2D
-+ Cloth
-+ ClothSkinningCoefficient
-+ ClothSphereColliderPair
-+ ClusterInput
-+ ClusterInputType
-+ ClusterNetwork
-+ Collider
-+ Collider2D
-+ Collision
-+ Collision2D
-+ CollisionDetectionMode
-+ CollisionDetectionMode2D
-+ CollisionFlags
-+ Color
-+ Color32
-+ ColorSpace
-+ ColorUsageAttribute
-+ ColorUtility
-+ CombineInstance
-+ Compass
-+ Component
-+ ComputeBuffer
-+ ComputeBufferType
-+ ComputeShader
-+ ConfigurableJoint
-+ ConfigurableJointMotion
-+ ConnectionTesterStatus
-+ ConstantForce
-+ ConstantForce2D
-+ ConstructorSafeAttribute
-+ ContactPoint
-+ ContactPoint2D
-+ ContextMenu
-+ ContextMenuItemAttribute
-+ ControllerColliderHit
-+ Coroutine
-+ CrashReport
-+ CreateAssetMenuAttribute
-+ Cubemap
-+ CubemapFace
-+ CullingGroup
-+ CullingGroupEvent
-+ Cursor
-+ CursorLockMode
-+ CursorMode
-+ CustomYieldInstruction
-+ Debug
-+ DelayedAttribute
-+ DepthTextureMode
-+ DetailPrototype
-+ DetailRenderMode
-+ DeviceOrientation
-+ DeviceType
-+ DisallowMultipleComponent
-+ Display
-+ DistanceJoint2D
-+ DrivenRectTransformTracker
-+ DrivenTransformProperties
-+ DynamicGI
-+ EdgeCollider2D
-+ Effector2D
-+ EffectorForceMode2D
-+ EffectorSelection2D
-+ EllipsoidParticleEmitter
-+ Event
-+ EventModifiers
-+ EventProvider
-+ EventType
-+ ExecuteInEditMode
-+ ExitGUIException
-+ FFTWindow
-+ FilterMode
-+ FixedJoint
-+ FixedJoint2D
-+ Flare
-+ FlareLayer
-+ FocusType
-+ FogMode
-+ Font
-+ FontStyle
-+ ForceMode
-+ ForceMode2D
-+ FrictionJoint2D
-+ FullScreenMovieControlMode
-+ FullScreenMovieScalingMode
-+ GL
-+ GUI
-+ GUIContent
-+ GUIElement
-+ GUILayer
-+ GUILayout
-+ GUILayoutOption
-+ GUILayoutUtility
-+ GUISettings
-+ GUISkin
-+ GUIStyle
-+ GUIStyleState
-+ GUITargetAttribute
-+ GUIText
-+ GUITexture
-+ GUIUtility
-+ GameObject
-+ GeometryUtility
-+ Gizmos
-+ Gradient
-+ GradientAlphaKey
-+ GradientColorKey
-+ Graphics
-+ Gyroscope
-+ Handheld
-+ Hash128
-+ HeaderAttribute
-+ HelpURLAttribute
-+ HideFlags
-+ HideInInspector
-+ HingeJoint
-+ HingeJoint2D
-+ HorizontalWrapMode
-+ HostData
-+ HumanBodyBones
-+ HumanBone
-+ HumanDescription
-+ HumanLimit
-+ HumanPose
-+ HumanPoseHandler
-+ HumanTrait
-+ ICanvasRaycastFilter
-+ ILogHandler
-+ ILogger
-+ IMECompositionMode
-+ ISerializationCallbackReceiver
-+ ImageEffectAllowedInSceneView
-+ ImageEffectOpaque
-+ ImageEffectTransformsToLDR
-+ ImagePosition
-+ Input
-+ JetBrains
-+ Joint
-+ Joint2D
-+ JointAngleLimits2D
-+ JointDrive
-+ JointDriveMode
-+ JointLimitState2D
-+ JointLimits
-+ JointMotor
-+ JointMotor2D
-+ JointProjectionMode
-+ JointSpring
-+ JointSuspension2D
-+ JointTranslationLimits2D
-+ JsonUtility
-+ KeyCode
-+ Keyframe
-+ LOD
-+ LODFadeMode
-+ LODGroup
-+ LayerMask
-+ LensFlare
-+ Light
-+ LightProbeGroup
-+ LightProbeProxyVolume
-+ LightProbes
-+ LightRenderMode
-+ LightShadowResolution
-+ LightShadows
-+ LightType
-+ LightmapData
-+ LightmapSettings
-+ LightmapsMode
-+ LightmapsModeLegacy
-+ LineRenderer
-+ LocalNotification
-+ LocationInfo
-+ LocationService
-+ LocationServiceStatus
-+ LogType
-+ Logger
-+ MasterServer
-+ MasterServerEvent
-+ MatchTargetWeightMask
-+ Material
-+ MaterialGlobalIlluminationFlags
-+ MaterialPropertyBlock
-+ Mathf
-+ Matrix4x4
-+ Mesh
-+ MeshCollider
-+ MeshFilter
-+ MeshParticleEmitter
-+ MeshRenderer
-+ MeshTopology
-+ Microphone
-+ Microsoft
-+ MissingComponentException
-+ MissingReferenceException
-+ MonoBehaviour
-+ Motion
-+ MovieTexture
-+ MultilineAttribute
-+ NPOTSupport
-+ NScreenBridge
-+ NavMesh
-+ NavMeshAgent
-+ NavMeshHit
-+ NavMeshObstacle
-+ NavMeshObstacleShape
-+ NavMeshPath
-+ NavMeshPathStatus
-+ NavMeshTriangulation
-+ Network
-+ NetworkConnectionError
-+ NetworkDisconnection
-+ NetworkLogLevel
-+ NetworkMessageInfo
-+ NetworkPeerType
-+ NetworkPlayer
-+ NetworkReachability
-+ NetworkStateSynchronization
-+ NetworkView
-+ NetworkViewID
-+ NotificationServices
-+ Object
-+ ObstacleAvoidanceType
-+ OcclusionArea
-+ OcclusionPortal
-+ OffMeshLink
-+ OffMeshLinkData
-+ OffMeshLinkType
-+ Particle
-+ ParticleAnimator
-+ ParticleCollisionEvent
-+ ParticleEmitter
-+ ParticlePhysicsExtensions
-+ ParticleRenderMode
-+ ParticleRenderer
-+ ParticleSystem
-+ ParticleSystemAnimationType
-+ ParticleSystemCollisionMode
-+ ParticleSystemCollisionQuality
-+ ParticleSystemCollisionType
-+ ParticleSystemCurveMode
-+ ParticleSystemEmissionType
-+ ParticleSystemGradientMode
-+ ParticleSystemInheritVelocityMode
-+ ParticleSystemMeshShapeType
-+ ParticleSystemOverlapAction
-+ ParticleSystemRenderMode
-+ ParticleSystemRenderSpace
-+ ParticleSystemRenderer
-+ ParticleSystemScalingMode
-+ ParticleSystemShapeType
-+ ParticleSystemSimulationSpace
-+ ParticleSystemSortMode
-+ ParticleSystemTriggerEventType
-+ PhysicMaterial
-+ PhysicMaterialCombine
-+ Physics
-+ Physics2D
-+ PhysicsMaterial2D
-+ PhysicsUpdateBehaviour2D
-+ Ping
-+ Plane
-+ PlatformEffector2D
-+ PlayMode
-+ PlayerPrefs
-+ PlayerPrefsException
-+ PointEffector2D
-+ PolygonCollider2D
-+ PrimitiveType
-+ ProceduralCacheSize
-+ ProceduralLoadingBehavior
-+ ProceduralMaterial
-+ ProceduralOutputType
-+ ProceduralProcessorUsage
-+ ProceduralPropertyDescription
-+ ProceduralPropertyType
-+ ProceduralTexture
-+ Profiler
-+ Projector
-+ PropertyAttribute
-+ QualityLevel
-+ QualitySettings
-+ Quaternion
-+ QueryTriggerInteraction
-+ QueueMode
-+ RPC
-+ RPCMode
-+ Random
-+ RangeAttribute
-+ Ray
-+ Ray2D
-+ RaycastHit
-+ RaycastHit2D
-+ Rect
-+ RectOffset
-+ RectTransform
-+ RectTransformUtility
-+ ReflectionProbe
-+ RelativeJoint2D
-+ RemoteNotification
-+ RemoteNotificationType
-+ RenderBuffer
-+ RenderMode
-+ RenderSettings
-+ RenderTargetSetup
-+ RenderTexture
-+ RenderTextureFormat
-+ RenderTextureReadWrite
-+ Renderer
-+ RenderingPath
-+ RequireComponent
-+ Resolution
-+ ResourceRequest
-+ Resources
-+ Rigidbody
-+ Rigidbody2D
-+ RigidbodyConstraints
-+ RigidbodyConstraints2D
-+ RigidbodyInterpolation
-+ RigidbodyInterpolation2D
-+ RigidbodySleepMode2D
-+ RotationDriveMode
-+ RuntimeAnimatorController
-+ RuntimeInitializeLoadType
-+ RuntimeInitializeOnLoadMethodAttribute
-+ RuntimePlatform
-+ SamsungTV
-+ ScaleMode
-+ Screen
-+ ScreenOrientation
-+ ScriptableObject
-+ Security
-+ SelectionBaseAttribute
-+ SendMessageOptions
-+ SerializeField
-+ SerializePrivateVariables
-+ Shader
-+ ShaderVariantCollection
-+ ShadowProjection
-+ ShadowResolution
-+ SharedBetweenAnimatorsAttribute
-+ SimpleJson
-+ SkeletonBone
-+ SkinQuality
-+ SkinnedMeshRenderer
-+ Skybox
-+ SleepTimeout
-+ SliderJoint2D
-+ Social
-+ SoftJointLimit
-+ SoftJointLimitSpring
-+ SortingLayer
-+ Space
-+ SpaceAttribute
-+ SparseTexture
-+ SphereCollider
-+ SplatPrototype
-+ SpringJoint
-+ SpringJoint2D
-+ Sprite
-+ SpriteAlignment
-+ SpriteMeshType
-+ SpritePackingMode
-+ SpritePackingRotation
-+ SpriteRenderer
-+ StackTraceLogType
-+ StackTraceUtility
-+ StateMachineBehaviour
-+ StaticBatchingUtility
-+ StereoTargetEyeMask
-+ SurfaceEffector2D
-+ System
-+ SystemInfo
-+ SystemLanguage
-+ TargetJoint2D
-+ Terrain
-+ TerrainCollider
-+ TerrainData
-+ TerrainRenderFlags
-+ TexGenMode
-+ TextAlignment
-+ TextAnchor
-+ TextAreaAttribute
-+ TextAsset
-+ TextClipping
-+ TextEditor
-+ TextGenerationSettings
-+ TextGenerator
-+ TextMesh
-+ Texture
-+ Texture2D
-+ Texture2DArray
-+ Texture3D
-+ TextureCompressionQuality
-+ TextureFormat
-+ TextureWrapMode
-+ ThreadPriority
-+ ThreadSafeAttribute
-+ Time
-+ TooltipAttribute
-+ Touch
-+ TouchPhase
-+ TouchScreenKeyboard
-+ TouchScreenKeyboardType
-+ TouchType
-+ TrackedReference
-+ TrailRenderer
-+ Transform
-+ TransparencySortMode
-+ Tree
-+ TreeInstance
-+ TreePrototype
-+ Types
-+ UICharInfo
-+ UILineInfo
-+ UIVertex
-+ UVChannelFlags
-+ UnassignedReferenceException
-+ UnityAPICompatibilityVersionAttribute
-+ UnityEditor
-+ UnityEditorInternal
-+ UnityEngine
-+ UnityEngineInternal
-+ UnityEventQueueSystem
-+ UnityException
-+ UserAuthorization
-+ Vector2
-+ Vector3
-+ Vector4
-+ VerticalWrapMode
-+ WWW
-+ WWWForm
-+ WaitForEndOfFrame
-+ WaitForFixedUpdate
-+ WaitForSeconds
-+ WaitForSecondsRealtime
-+ WaitUntil
-+ WaitWhile
-+ WebCamDevice
-+ WebCamFlags
-+ WebCamTexture
-+ WheelCollider
-+ WheelFrictionCurve
-+ WheelHit
-+ WheelJoint2D
-+ WindZone
-+ WindZoneMode
-+ WrapMode
-+ YieldInstruction
+A
+ADBannerView
+ADInterstitialAd
+AOT
+AccelerationEvent
+AddComponentMenu
+AdditionalCanvasShaderChannels
+AnchoredJoint2D
+AndroidActivityIndicatorStyle
+AndroidInput
+AndroidJNI
+AndroidJNIHelper
+AndroidJavaClass
+AndroidJavaException
+AndroidJavaObject
+AndroidJavaProxy
+AndroidJavaRunnable
+Animation
+AnimationBlendMode
+AnimationClip
+AnimationClipPair
+AnimationCullingType
+AnimationCurve
+AnimationEvent
+AnimationInfo
+AnimationPlayMode
+AnimationState
+Animator
+AnimatorClipInfo
+AnimatorControllerParameter
+AnimatorControllerParameterType
+AnimatorCullingMode
+AnimatorOverrideController
+AnimatorRecorderMode
+AnimatorStateInfo
+AnimatorTransitionInfo
+AnimatorUpdateMode
+AnimatorUtility
+AnisotropicFiltering
+Application
+ApplicationInstallMode
+ApplicationSandboxType
+AreaEffector2D
+AssemblyIsEditorAssembly
+AssetBundle
+AssetBundleCreateRequest
+AssetBundleManifest
+AssetBundleRequest
+AssetModificationProcessor
+AsyncOperation
+AudioBehaviour
+AudioChorusFilter
+AudioClip
+AudioClipLoadType
+AudioCompressionFormat
+AudioConfiguration
+AudioDataLoadState
+AudioDistortionFilter
+AudioEchoFilter
+AudioHighPassFilter
+AudioListener
+AudioLowPassFilter
+AudioReverbFilter
+AudioReverbPreset
+AudioReverbZone
+AudioRolloffMode
+AudioSettings
+AudioSource
+AudioSourceCurveType
+AudioSpeakerMode
+AudioType
+AudioVelocityUpdateMode
+Avatar
+AvatarBuilder
+AvatarIKGoal
+AvatarIKHint
+AvatarMask
+AvatarMaskBodyPart
+AvatarTarget
+BatteryStatus
+Behaviour
+BillboardAsset
+BillboardRenderer
+BitStream
+BlendWeights
+BoneWeight
+BoundingSphere
+Bounds
+BoxCollider
+BoxCollider2D
+BuoyancyEffector2D
+Cache
+CacheIndex
+CachedAssetBundle
+Caching
+CalendarIdentifier
+CalendarUnit
+Camera
+CameraClearFlags
+CameraType
+Canvas
+CanvasGroup
+CanvasRenderer
+CapsuleCollider
+CapsuleCollider2D
+CapsuleDirection2D
+CharacterController
+CharacterInfo
+CharacterJoint
+CircleCollider2D
+Cloth
+ClothSkinningCoefficient
+ClothSphereColliderPair
+ClusterInput
+ClusterInputType
+ClusterNetwork
+Collider
+Collider2D
+ColliderDistance2D
+Collision
+Collision2D
+CollisionDetectionMode
+CollisionDetectionMode2D
+CollisionFlags
+Color
+Color32
+ColorSpace
+ColorUsageAttribute
+ColorUtility
+CombineInstance
+Compass
+Component
+CompositeCollider2D
+ComputeBuffer
+ComputeBufferType
+ComputeShader
+ConfigurableJoint
+ConfigurableJointMotion
+ConnectionTesterStatus
+ConstantForce
+ConstantForce2D
+ContactFilter2D
+ContactPoint
+ContactPoint2D
+ContextMenu
+ContextMenuItemAttribute
+ControllerColliderHit
+Coroutine
+CrashReport
+CreateAssetMenuAttribute
+Cubemap
+CubemapArray
+CubemapFace
+CullingGroup
+CullingGroupEvent
+Cursor
+CursorLockMode
+CursorMode
+CustomRenderTexture
+CustomRenderTextureInitializationSource
+CustomRenderTextureUpdateMode
+CustomRenderTextureUpdateZone
+CustomRenderTextureUpdateZoneSpace
+CustomYieldInstruction
+Debug
+DefaultExecutionOrder
+DelayedAttribute
+DepthTextureMode
+DetailPrototype
+DetailRenderMode
+DeviceOrientation
+DeviceType
+DisallowMultipleComponent
+Display
+DistanceJoint2D
+DrivenRectTransformTracker
+DrivenTransformProperties
+DynamicGI
+EdgeCollider2D
+Effector2D
+EffectorForceMode2D
+EffectorSelection2D
+EllipsoidParticleEmitter
+Event
+EventModifiers
+EventProvider
+EventType
+ExecuteInEditMode
+ExitGUIException
+ExposedPropertyResolver
+ExposedReference<>
+FFTWindow
+FilterMode
+FixedJoint
+FixedJoint2D
+Flare
+FlareLayer
+FocusType
+FogMode
+Font
+FontStyle
+ForceMode
+ForceMode2D
+FrictionJoint2D
+FullScreenMovieControlMode
+FullScreenMovieScalingMode
+GL
+GUI
+GUIContent
+GUIElement
+GUILayer
+GUILayout
+GUILayoutOption
+GUILayoutUtility
+GUISettings
+GUISkin
+GUIStyle
+GUIStyleState
+GUITargetAttribute
+GUIText
+GUITexture
+GUIUtility
+GameObject
+GeometryUtility
+Gizmos
+Gradient
+GradientAlphaKey
+GradientColorKey
+GradientMode
+Graphics
+Gyroscope
+Handheld
+Hash128
+HeaderAttribute
+HelpURLAttribute
+HideFlags
+HideInInspector
+HingeJoint
+HingeJoint2D
+HorizontalWrapMode
+HostData
+HumanBodyBones
+HumanBone
+HumanDescription
+HumanLimit
+HumanPose
+HumanPoseHandler
+HumanTrait
+ICanvasRaycastFilter
+IExposedPropertyTable
+ILogHandler
+ILogger
+IMECompositionMode
+ISerializationCallbackReceiver
+ImageConversion
+ImageEffectAllowedInSceneView
+ImageEffectOpaque
+ImageEffectTransformsToLDR
+ImagePosition
+Input
+JetBrains
+Joint
+Joint2D
+JointAngleLimits2D
+JointDrive
+JointDriveMode
+JointLimitState2D
+JointLimits
+JointMotor
+JointMotor2D
+JointProjectionMode
+JointSpring
+JointSuspension2D
+JointTranslationLimits2D
+JsonUtility
+KeyCode
+Keyframe
+LOD
+LODFadeMode
+LODGroup
+LayerMask
+LensFlare
+Light
+LightProbeGroup
+LightProbeProxyVolume
+LightProbes
+LightRenderMode
+LightShadows
+LightType
+LightmapBakeType
+LightmapData
+LightmapSettings
+LightmappingMode
+LightmapsMode
+LightmapsModeLegacy
+LineAlignment
+LineRenderer
+LineTextureMode
+LineUtility
+LocalNotification
+LocationInfo
+LocationService
+LocationServiceStatus
+LogType
+Logger
+MasterServer
+MasterServerEvent
+MatchTargetWeightMask
+Material
+MaterialGlobalIlluminationFlags
+MaterialPropertyBlock
+Mathf
+Matrix4x4
+Mesh
+MeshCollider
+MeshFilter
+MeshParticleEmitter
+MeshRenderer
+MeshTopology
+Microphone
+Microsoft
+MissingComponentException
+MissingReferenceException
+MonoBehaviour
+Motion
+MotionVectorGenerationMode
+MovieTexture
+MultilineAttribute
+NPOTSupport
+NScreenBridge
+NativeClassAttribute
+Network
+NetworkConnectionError
+NetworkDisconnection
+NetworkLogLevel
+NetworkMessageInfo
+NetworkPeerType
+NetworkPlayer
+NetworkReachability
+NetworkStateSynchronization
+NetworkView
+NetworkViewID
+NotificationServices
+Object
+OcclusionArea
+OcclusionPortal
+OperatingSystemFamily
+Particle
+ParticleAnimator
+ParticleCollisionEvent
+ParticleEmitter
+ParticlePhysicsExtensions
+ParticleRenderMode
+ParticleRenderer
+ParticleSystem
+ParticleSystemAnimationMode
+ParticleSystemAnimationType
+ParticleSystemCollisionMode
+ParticleSystemCollisionQuality
+ParticleSystemCollisionType
+ParticleSystemCurveMode
+ParticleSystemCustomData
+ParticleSystemCustomDataMode
+ParticleSystemEmissionType
+ParticleSystemEmitterVelocityMode
+ParticleSystemGradientMode
+ParticleSystemInheritVelocityMode
+ParticleSystemMeshShapeType
+ParticleSystemNoiseQuality
+ParticleSystemOverlapAction
+ParticleSystemRenderMode
+ParticleSystemRenderSpace
+ParticleSystemRenderer
+ParticleSystemScalingMode
+ParticleSystemShapeMultiModeValue
+ParticleSystemShapeType
+ParticleSystemSimulationSpace
+ParticleSystemSortMode
+ParticleSystemStopBehavior
+ParticleSystemSubEmitterProperties
+ParticleSystemSubEmitterType
+ParticleSystemTrailTextureMode
+ParticleSystemTriggerEventType
+ParticleSystemVertexStream
+ParticleSystemVertexStreams
+PhysicMaterial
+PhysicMaterialCombine
+Physics
+Physics2D
+PhysicsMaterial2D
+PhysicsUpdateBehaviour2D
+Ping
+Plane
+PlatformEffector2D
+PlayMode
+PlayerPrefs
+PlayerPrefsException
+PointEffector2D
+PolygonCollider2D
+PreferBinarySerialization
+PrimitiveType
+ProceduralCacheSize
+ProceduralLoadingBehavior
+ProceduralMaterial
+ProceduralOutputType
+ProceduralProcessorUsage
+ProceduralPropertyDescription
+ProceduralPropertyType
+ProceduralTexture
+Projector
+PropertyAttribute
+PropertyName
+QualityLevel
+QualitySettings
+Quaternion
+QueryTriggerInteraction
+QueueMode
+RPC
+RPCMode
+Random
+RangeAttribute
+RangeInt
+Ray
+Ray2D
+RaycastHit
+RaycastHit2D
+Rect
+RectOffset
+RectTransform
+RectTransformUtility
+ReflectionProbe
+RelativeJoint2D
+RemoteNotification
+RemoteNotificationType
+RemoteSettings
+RenderBuffer
+RenderMode
+RenderSettings
+RenderTargetSetup
+RenderTexture
+RenderTextureCreationFlags
+RenderTextureDescriptor
+RenderTextureFormat
+RenderTextureMemoryless
+RenderTextureReadWrite
+Renderer
+RendererExtensions
+RenderingPath
+RequireComponent
+Resolution
+ResourceRequest
+Resources
+Rigidbody
+Rigidbody2D
+RigidbodyConstraints
+RigidbodyConstraints2D
+RigidbodyInterpolation
+RigidbodyInterpolation2D
+RigidbodySleepMode2D
+RigidbodyType2D
+RotationDriveMode
+RuntimeAnimatorController
+RuntimeInitializeLoadType
+RuntimeInitializeOnLoadMethodAttribute
+RuntimePlatform
+SamsungTV
+ScaleMode
+Screen
+ScreenCapture
+ScreenOrientation
+ScriptableObject
+Security
+SelectionBaseAttribute
+SendMessageOptions
+SerializeField
+SerializePrivateVariables
+Shader
+ShaderVariantCollection
+ShadowProjection
+ShadowQuality
+ShadowResolution
+ShadowmaskMode
+SharedBetweenAnimatorsAttribute
+SimpleJson
+SkeletonBone
+SkinQuality
+SkinnedMeshRenderer
+Skybox
+SleepTimeout
+SliderJoint2D
+Social
+SoftJointLimit
+SoftJointLimitSpring
+SortingLayer
+Space
+SpaceAttribute
+SparseTexture
+SphereCollider
+SplatPrototype
+SpringJoint
+SpringJoint2D
+Sprite
+SpriteAlignment
+SpriteDrawMode
+SpriteMask
+SpriteMaskInteraction
+SpriteMeshType
+SpritePackingMode
+SpritePackingRotation
+SpriteRenderer
+SpriteTileMode
+StackTraceLogType
+StackTraceUtility
+StateMachineBehaviour
+StaticBatchingUtility
+StereoTargetEyeMask
+SurfaceEffector2D
+System
+SystemInfo
+SystemLanguage
+TargetJoint2D
+Terrain
+TerrainChangedFlags
+TerrainCollider
+TerrainData
+TerrainExtensions
+TerrainRenderFlags
+TexGenMode
+TextAlignment
+TextAnchor
+TextAreaAttribute
+TextAsset
+TextClipping
+TextEditor
+TextGenerationSettings
+TextGenerator
+TextMesh
+Texture
+Texture2D
+Texture2DArray
+Texture3D
+TextureCompressionQuality
+TextureFormat
+TextureWrapMode
+ThreadPriority
+Time
+TizenActivityIndicatorStyle
+TooltipAttribute
+Touch
+TouchPhase
+TouchScreenKeyboard
+TouchScreenKeyboardType
+TouchType
+TrackedReference
+TrailRenderer
+Transform
+TransparencySortMode
+Tree
+TreeInstance
+TreePrototype
+Types
+UICharInfo
+UILineInfo
+UISystemProfilerApi
+UIVertex
+UnassignedReferenceException
+UnityAPICompatibilityVersionAttribute
+UnityEditor
+UnityEditorInternal
+UnityEngine
+UnityEngineInternal
+UnityEventQueueSystem
+UnityException
+UserAuthorization
+VRTextureUsage
+Vector2
+Vector3
+Vector4
+VerticalWrapMode
+WWW
+WWWAudioExtensions
+WWWForm
+WaitForEndOfFrame
+WaitForFixedUpdate
+WaitForSeconds
+WaitForSecondsRealtime
+WaitUntil
+WaitWhile
+WebCamDevice
+WebCamFlags
+WebCamTexture
+WheelCollider
+WheelFrictionCurve
+WheelHit
+WheelJoint2D
+WindZone
+WindZoneMode
+WrapMode
+YieldInstruction
 + abstract
++ async
 + bool
 + byte
 + char
@@ -565,27 +615,27 @@
 + explicit
 + extern
 + float
-+ iOSActivityIndicatorStyle
-+ iPhone
-+ iPhoneAccelerationEvent
-+ iPhoneGeneration
-+ iPhoneInput
-+ iPhoneKeyboard
-+ iPhoneKeyboardType
-+ iPhoneMovieControlMode
-+ iPhoneMovieScalingMode
-+ iPhoneNetworkReachability
-+ iPhoneOrientation
-+ iPhoneScreenOrientation
-+ iPhoneSettings
-+ iPhoneTouch
-+ iPhoneTouchPhase
-+ iPhoneUtils
+iOSActivityIndicatorStyle
+iPhone
+iPhoneAccelerationEvent
+iPhoneGeneration
+iPhoneInput
+iPhoneKeyboard
+iPhoneKeyboardType
+iPhoneMovieControlMode
+iPhoneMovieScalingMode
+iPhoneNetworkReachability
+iPhoneOrientation
+iPhoneScreenOrientation
+iPhoneSettings
+iPhoneTouch
+iPhoneTouchPhase
+iPhoneUtils
 + implicit
 + int
 + interface
 + internal
-+ jvalue
+jvalue
 + long
 + new
 + object
@@ -595,6 +645,7 @@
 + protected
 + public
 + readonly
++ ref
 + sbyte
 + sealed
 + short
@@ -649,7 +700,7 @@ private OnMouseUp() { ... }
 private OnMouseUpAsButton() { ... }
 private OnNetworkInstantiate(NetworkMessageInfo) { ... }
 private OnParticleCollision(GameObject) { ... }
-private OnParticleTrigger(GameObject) { ... }
+private OnParticleTrigger() { ... }
 private OnPlayerConnected(NetworkPlayer) { ... }
 private OnPlayerDisconnected(NetworkPlayer) { ... }
 private OnPostRender() { ... }
@@ -676,559 +727,609 @@ public override Equals(object) { ... }
 public override GetHashCode() { ... }
 public override ToString() { ... }
 # AUTOMATIC #
-# 674 ITEMS #
+# 725 ITEMS #
 
-+ A
-+ ADBannerView
-+ ADInterstitialAd
-+ AOT
-+ AccelerationEvent
-+ AddComponentMenu
-+ AnchoredJoint2D
-+ AndroidActivityIndicatorStyle
-+ AndroidInput
-+ AndroidJNI
-+ AndroidJNIHelper
-+ AndroidJavaClass
-+ AndroidJavaException
-+ AndroidJavaObject
-+ AndroidJavaProxy
-+ AndroidJavaRunnable
-+ Animation
-+ AnimationBlendMode
-+ AnimationClip
-+ AnimationClipPair
-+ AnimationCullingType
-+ AnimationCurve
-+ AnimationEvent
-+ AnimationInfo
-+ AnimationPlayMode
-+ AnimationState
-+ Animator
-+ AnimatorClipInfo
-+ AnimatorControllerParameter
-+ AnimatorControllerParameterType
-+ AnimatorCullingMode
-+ AnimatorOverrideController
-+ AnimatorRecorderMode
-+ AnimatorStateInfo
-+ AnimatorTransitionInfo
-+ AnimatorUpdateMode
-+ AnimatorUtility
-+ AnisotropicFiltering
-+ Application
-+ ApplicationInstallMode
-+ ApplicationSandboxType
-+ AreaEffector2D
-+ AssemblyIsEditorAssembly
-+ AssetBundle
-+ AssetBundleCreateRequest
-+ AssetBundleManifest
-+ AssetBundleRequest
-+ AssetModificationProcessor
-+ AsyncOperation
-+ AudioChorusFilter
-+ AudioClip
-+ AudioClipLoadType
-+ AudioCompressionFormat
-+ AudioConfiguration
-+ AudioDataLoadState
-+ AudioDistortionFilter
-+ AudioEchoFilter
-+ AudioHighPassFilter
-+ AudioListener
-+ AudioLowPassFilter
-+ AudioReverbFilter
-+ AudioReverbPreset
-+ AudioReverbZone
-+ AudioRolloffMode
-+ AudioSettings
-+ AudioSource
-+ AudioSourceCurveType
-+ AudioSpeakerMode
-+ AudioType
-+ AudioVelocityUpdateMode
-+ Avatar
-+ AvatarBuilder
-+ AvatarIKGoal
-+ AvatarIKHint
-+ AvatarTarget
-+ Behaviour
-+ BillboardAsset
-+ BillboardRenderer
-+ BitStream
-+ BlendWeights
-+ BoneWeight
-+ BoundingSphere
-+ Bounds
-+ BoxCollider
-+ BoxCollider2D
-+ BuoyancyEffector2D
-+ CacheIndex
-+ Caching
-+ CalendarIdentifier
-+ CalendarUnit
-+ Camera
-+ CameraClearFlags
-+ CameraType
-+ Canvas
-+ CanvasGroup
-+ CanvasRenderer
-+ CapsuleCollider
-+ CharacterController
-+ CharacterInfo
-+ CharacterJoint
-+ CircleCollider2D
-+ Cloth
-+ ClothSkinningCoefficient
-+ ClothSphereColliderPair
-+ ClusterInput
-+ ClusterInputType
-+ ClusterNetwork
-+ Collider
-+ Collider2D
-+ Collision
-+ Collision2D
-+ CollisionDetectionMode
-+ CollisionDetectionMode2D
-+ CollisionFlags
-+ Color
-+ Color32
-+ ColorSpace
-+ ColorUsageAttribute
-+ ColorUtility
-+ CombineInstance
-+ Compass
-+ Component
-+ ComputeBuffer
-+ ComputeBufferType
-+ ComputeShader
-+ ConfigurableJoint
-+ ConfigurableJointMotion
-+ ConnectionTesterStatus
-+ ConstantForce
-+ ConstantForce2D
-+ ConstructorSafeAttribute
-+ ContactPoint
-+ ContactPoint2D
-+ ContextMenu
-+ ContextMenuItemAttribute
-+ ControllerColliderHit
-+ Coroutine
-+ CrashReport
-+ CreateAssetMenuAttribute
-+ Cubemap
-+ CubemapFace
-+ CullingGroup
-+ CullingGroupEvent
-+ Cursor
-+ CursorLockMode
-+ CursorMode
-+ CustomYieldInstruction
-+ Debug
-+ DelayedAttribute
-+ DepthTextureMode
-+ DetailPrototype
-+ DetailRenderMode
-+ DeviceOrientation
-+ DeviceType
-+ DisallowMultipleComponent
-+ Display
-+ DistanceJoint2D
-+ DrivenRectTransformTracker
-+ DrivenTransformProperties
-+ DynamicGI
-+ EdgeCollider2D
-+ Effector2D
-+ EffectorForceMode2D
-+ EffectorSelection2D
-+ EllipsoidParticleEmitter
-+ Event
-+ EventModifiers
-+ EventProvider
-+ EventType
-+ ExecuteInEditMode
-+ ExitGUIException
-+ FFTWindow
-+ FilterMode
-+ FixedJoint
-+ FixedJoint2D
-+ Flare
-+ FlareLayer
-+ FocusType
-+ FogMode
-+ Font
-+ FontStyle
-+ ForceMode
-+ ForceMode2D
-+ FrictionJoint2D
-+ FullScreenMovieControlMode
-+ FullScreenMovieScalingMode
-+ GL
-+ GUI
-+ GUIContent
-+ GUIElement
-+ GUILayer
-+ GUILayout
-+ GUILayoutOption
-+ GUILayoutUtility
-+ GUISettings
-+ GUISkin
-+ GUIStyle
-+ GUIStyleState
-+ GUITargetAttribute
-+ GUIText
-+ GUITexture
-+ GUIUtility
-+ GameObject
-+ GeometryUtility
-+ Gizmos
-+ Gradient
-+ GradientAlphaKey
-+ GradientColorKey
-+ Graphics
-+ Gyroscope
-+ Handheld
-+ Hash128
-+ HeaderAttribute
-+ HelpURLAttribute
-+ HideFlags
-+ HideInInspector
-+ HingeJoint
-+ HingeJoint2D
-+ HorizontalWrapMode
-+ HostData
-+ HumanBodyBones
-+ HumanBone
-+ HumanDescription
-+ HumanLimit
-+ HumanPose
-+ HumanPoseHandler
-+ HumanTrait
-+ ICanvasRaycastFilter
-+ ILogHandler
-+ ILogger
-+ IMECompositionMode
-+ ISerializationCallbackReceiver
-+ ImageEffectAllowedInSceneView
-+ ImageEffectOpaque
-+ ImageEffectTransformsToLDR
-+ ImagePosition
-+ Input
-+ JetBrains
-+ Joint
-+ Joint2D
-+ JointAngleLimits2D
-+ JointDrive
-+ JointDriveMode
-+ JointLimitState2D
-+ JointLimits
-+ JointMotor
-+ JointMotor2D
-+ JointProjectionMode
-+ JointSpring
-+ JointSuspension2D
-+ JointTranslationLimits2D
-+ JsonUtility
-+ KeyCode
-+ Keyframe
-+ LOD
-+ LODFadeMode
-+ LODGroup
-+ LayerMask
-+ LensFlare
-+ Light
-+ LightProbeGroup
-+ LightProbeProxyVolume
-+ LightProbes
-+ LightRenderMode
-+ LightShadowResolution
-+ LightShadows
-+ LightType
-+ LightmapData
-+ LightmapSettings
-+ LightmapsMode
-+ LightmapsModeLegacy
-+ LineRenderer
-+ LocalNotification
-+ LocationInfo
-+ LocationService
-+ LocationServiceStatus
-+ LogType
-+ Logger
-+ MasterServer
-+ MasterServerEvent
-+ MatchTargetWeightMask
-+ Material
-+ MaterialGlobalIlluminationFlags
-+ MaterialPropertyBlock
-+ Mathf
-+ Matrix4x4
-+ Mesh
-+ MeshCollider
-+ MeshFilter
-+ MeshParticleEmitter
-+ MeshRenderer
-+ MeshTopology
-+ Microphone
-+ Microsoft
-+ MissingComponentException
-+ MissingReferenceException
-+ MonoBehaviour
-+ Motion
-+ MovieTexture
-+ MultilineAttribute
-+ NPOTSupport
-+ NScreenBridge
-+ NavMesh
-+ NavMeshAgent
-+ NavMeshHit
-+ NavMeshObstacle
-+ NavMeshObstacleShape
-+ NavMeshPath
-+ NavMeshPathStatus
-+ NavMeshTriangulation
-+ Network
-+ NetworkConnectionError
-+ NetworkDisconnection
-+ NetworkLogLevel
-+ NetworkMessageInfo
-+ NetworkPeerType
-+ NetworkPlayer
-+ NetworkReachability
-+ NetworkStateSynchronization
-+ NetworkView
-+ NetworkViewID
-+ NotificationServices
-+ Object
-+ ObstacleAvoidanceType
-+ OcclusionArea
-+ OcclusionPortal
-+ OffMeshLink
-+ OffMeshLinkData
-+ OffMeshLinkType
-+ Particle
-+ ParticleAnimator
-+ ParticleCollisionEvent
-+ ParticleEmitter
-+ ParticlePhysicsExtensions
-+ ParticleRenderMode
-+ ParticleRenderer
-+ ParticleSystem
-+ ParticleSystemAnimationType
-+ ParticleSystemCollisionMode
-+ ParticleSystemCollisionQuality
-+ ParticleSystemCollisionType
-+ ParticleSystemCurveMode
-+ ParticleSystemEmissionType
-+ ParticleSystemGradientMode
-+ ParticleSystemInheritVelocityMode
-+ ParticleSystemMeshShapeType
-+ ParticleSystemOverlapAction
-+ ParticleSystemRenderMode
-+ ParticleSystemRenderSpace
-+ ParticleSystemRenderer
-+ ParticleSystemScalingMode
-+ ParticleSystemShapeType
-+ ParticleSystemSimulationSpace
-+ ParticleSystemSortMode
-+ ParticleSystemTriggerEventType
-+ PhysicMaterial
-+ PhysicMaterialCombine
-+ Physics
-+ Physics2D
-+ PhysicsMaterial2D
-+ PhysicsUpdateBehaviour2D
-+ Ping
-+ Plane
-+ PlatformEffector2D
-+ PlayMode
-+ PlayerPrefs
-+ PlayerPrefsException
-+ PointEffector2D
-+ PolygonCollider2D
-+ PrimitiveType
-+ ProceduralCacheSize
-+ ProceduralLoadingBehavior
-+ ProceduralMaterial
-+ ProceduralOutputType
-+ ProceduralProcessorUsage
-+ ProceduralPropertyDescription
-+ ProceduralPropertyType
-+ ProceduralTexture
-+ Profiler
-+ Projector
-+ PropertyAttribute
-+ QualityLevel
-+ QualitySettings
-+ Quaternion
-+ QueryTriggerInteraction
-+ QueueMode
-+ RPC
-+ RPCMode
-+ Random
-+ RangeAttribute
-+ Ray
-+ Ray2D
-+ RaycastHit
-+ RaycastHit2D
-+ Rect
-+ RectOffset
-+ RectTransform
-+ RectTransformUtility
-+ ReflectionProbe
-+ RelativeJoint2D
-+ RemoteNotification
-+ RemoteNotificationType
-+ RenderBuffer
-+ RenderMode
-+ RenderSettings
-+ RenderTargetSetup
-+ RenderTexture
-+ RenderTextureFormat
-+ RenderTextureReadWrite
-+ Renderer
-+ RenderingPath
-+ RequireComponent
-+ Resolution
-+ ResourceRequest
-+ Resources
-+ Rigidbody
-+ Rigidbody2D
-+ RigidbodyConstraints
-+ RigidbodyConstraints2D
-+ RigidbodyInterpolation
-+ RigidbodyInterpolation2D
-+ RigidbodySleepMode2D
-+ RotationDriveMode
-+ RuntimeAnimatorController
-+ RuntimeInitializeLoadType
-+ RuntimeInitializeOnLoadMethodAttribute
-+ RuntimePlatform
-+ SamsungTV
-+ ScaleMode
-+ Screen
-+ ScreenOrientation
-+ ScriptableObject
-+ Security
-+ SelectionBaseAttribute
-+ SendMessageOptions
-+ SerializeField
-+ SerializePrivateVariables
-+ Shader
-+ ShaderVariantCollection
-+ ShadowProjection
-+ ShadowResolution
-+ SharedBetweenAnimatorsAttribute
-+ SimpleJson
-+ SkeletonBone
-+ SkinQuality
-+ SkinnedMeshRenderer
-+ Skybox
-+ SleepTimeout
-+ SliderJoint2D
-+ Social
-+ SoftJointLimit
-+ SoftJointLimitSpring
-+ SortingLayer
-+ Space
-+ SpaceAttribute
-+ SparseTexture
-+ SphereCollider
-+ SplatPrototype
-+ SpringJoint
-+ SpringJoint2D
-+ Sprite
-+ SpriteAlignment
-+ SpriteMeshType
-+ SpritePackingMode
-+ SpritePackingRotation
-+ SpriteRenderer
-+ StackTraceLogType
-+ StackTraceUtility
-+ StateMachineBehaviour
-+ StaticBatchingUtility
-+ StereoTargetEyeMask
-+ SurfaceEffector2D
-+ System
-+ SystemInfo
-+ SystemLanguage
-+ TargetJoint2D
-+ Terrain
-+ TerrainCollider
-+ TerrainData
-+ TerrainRenderFlags
-+ TexGenMode
-+ TextAlignment
-+ TextAnchor
-+ TextAreaAttribute
-+ TextAsset
-+ TextClipping
-+ TextEditor
-+ TextGenerationSettings
-+ TextGenerator
-+ TextMesh
-+ Texture
-+ Texture2D
-+ Texture2DArray
-+ Texture3D
-+ TextureCompressionQuality
-+ TextureFormat
-+ TextureWrapMode
-+ ThreadPriority
-+ ThreadSafeAttribute
-+ Time
-+ TooltipAttribute
-+ Touch
-+ TouchPhase
-+ TouchScreenKeyboard
-+ TouchScreenKeyboardType
-+ TouchType
-+ TrackedReference
-+ TrailRenderer
-+ Transform
-+ TransparencySortMode
-+ Tree
-+ TreeInstance
-+ TreePrototype
-+ Types
-+ UICharInfo
-+ UILineInfo
-+ UIVertex
-+ UVChannelFlags
-+ UnassignedReferenceException
-+ UnityAPICompatibilityVersionAttribute
-+ UnityEditor
-+ UnityEditorInternal
-+ UnityEngine
-+ UnityEngineInternal
-+ UnityEventQueueSystem
-+ UnityException
-+ UserAuthorization
-+ Vector2
-+ Vector3
-+ Vector4
-+ VerticalWrapMode
-+ WWW
-+ WWWForm
-+ WaitForEndOfFrame
-+ WaitForFixedUpdate
-+ WaitForSeconds
-+ WaitForSecondsRealtime
-+ WaitUntil
-+ WaitWhile
-+ WebCamDevice
-+ WebCamFlags
-+ WebCamTexture
-+ WheelCollider
-+ WheelFrictionCurve
-+ WheelHit
-+ WheelJoint2D
-+ WindZone
-+ WindZoneMode
-+ WrapMode
-+ YieldInstruction
+A
+ADBannerView
+ADInterstitialAd
+AOT
+AccelerationEvent
+AddComponentMenu
+AdditionalCanvasShaderChannels
+AnchoredJoint2D
+AndroidActivityIndicatorStyle
+AndroidInput
+AndroidJNI
+AndroidJNIHelper
+AndroidJavaClass
+AndroidJavaException
+AndroidJavaObject
+AndroidJavaProxy
+AndroidJavaRunnable
+Animation
+AnimationBlendMode
+AnimationClip
+AnimationClipPair
+AnimationCullingType
+AnimationCurve
+AnimationEvent
+AnimationInfo
+AnimationPlayMode
+AnimationState
+Animator
+AnimatorClipInfo
+AnimatorControllerParameter
+AnimatorControllerParameterType
+AnimatorCullingMode
+AnimatorOverrideController
+AnimatorRecorderMode
+AnimatorStateInfo
+AnimatorTransitionInfo
+AnimatorUpdateMode
+AnimatorUtility
+AnisotropicFiltering
+Application
+ApplicationInstallMode
+ApplicationSandboxType
+AreaEffector2D
+AssemblyIsEditorAssembly
+AssetBundle
+AssetBundleCreateRequest
+AssetBundleManifest
+AssetBundleRequest
+AssetModificationProcessor
+AsyncOperation
+AudioBehaviour
+AudioChorusFilter
+AudioClip
+AudioClipLoadType
+AudioCompressionFormat
+AudioConfiguration
+AudioDataLoadState
+AudioDistortionFilter
+AudioEchoFilter
+AudioHighPassFilter
+AudioListener
+AudioLowPassFilter
+AudioReverbFilter
+AudioReverbPreset
+AudioReverbZone
+AudioRolloffMode
+AudioSettings
+AudioSource
+AudioSourceCurveType
+AudioSpeakerMode
+AudioType
+AudioVelocityUpdateMode
+Avatar
+AvatarBuilder
+AvatarIKGoal
+AvatarIKHint
+AvatarMask
+AvatarMaskBodyPart
+AvatarTarget
+BatteryStatus
+Behaviour
+BillboardAsset
+BillboardRenderer
+BitStream
+BlendWeights
+BoneWeight
+BoundingSphere
+Bounds
+BoxCollider
+BoxCollider2D
+BuoyancyEffector2D
+Cache
+CacheIndex
+CachedAssetBundle
+Caching
+CalendarIdentifier
+CalendarUnit
+Camera
+CameraClearFlags
+CameraType
+Canvas
+CanvasGroup
+CanvasRenderer
+CapsuleCollider
+CapsuleCollider2D
+CapsuleDirection2D
+CharacterController
+CharacterInfo
+CharacterJoint
+CircleCollider2D
+Cloth
+ClothSkinningCoefficient
+ClothSphereColliderPair
+ClusterInput
+ClusterInputType
+ClusterNetwork
+Collider
+Collider2D
+ColliderDistance2D
+Collision
+Collision2D
+CollisionDetectionMode
+CollisionDetectionMode2D
+CollisionFlags
+Color
+Color32
+ColorSpace
+ColorUsageAttribute
+ColorUtility
+CombineInstance
+Compass
+Component
+CompositeCollider2D
+ComputeBuffer
+ComputeBufferType
+ComputeShader
+ConfigurableJoint
+ConfigurableJointMotion
+ConnectionTesterStatus
+ConstantForce
+ConstantForce2D
+ContactFilter2D
+ContactPoint
+ContactPoint2D
+ContextMenu
+ContextMenuItemAttribute
+ControllerColliderHit
+Coroutine
+CrashReport
+CreateAssetMenuAttribute
+Cubemap
+CubemapArray
+CubemapFace
+CullingGroup
+CullingGroupEvent
+Cursor
+CursorLockMode
+CursorMode
+CustomRenderTexture
+CustomRenderTextureInitializationSource
+CustomRenderTextureUpdateMode
+CustomRenderTextureUpdateZone
+CustomRenderTextureUpdateZoneSpace
+CustomYieldInstruction
+Debug
+DefaultExecutionOrder
+DelayedAttribute
+DepthTextureMode
+DetailPrototype
+DetailRenderMode
+DeviceOrientation
+DeviceType
+DisallowMultipleComponent
+Display
+DistanceJoint2D
+DrivenRectTransformTracker
+DrivenTransformProperties
+DynamicGI
+EdgeCollider2D
+Effector2D
+EffectorForceMode2D
+EffectorSelection2D
+EllipsoidParticleEmitter
+Event
+EventModifiers
+EventProvider
+EventType
+ExecuteInEditMode
+ExitGUIException
+ExposedPropertyResolver
+ExposedReference<>
+FFTWindow
+FilterMode
+FixedJoint
+FixedJoint2D
+Flare
+FlareLayer
+FocusType
+FogMode
+Font
+FontStyle
+ForceMode
+ForceMode2D
+FrictionJoint2D
+FullScreenMovieControlMode
+FullScreenMovieScalingMode
+GL
+GUI
+GUIContent
+GUIElement
+GUILayer
+GUILayout
+GUILayoutOption
+GUILayoutUtility
+GUISettings
+GUISkin
+GUIStyle
+GUIStyleState
+GUITargetAttribute
+GUIText
+GUITexture
+GUIUtility
+GameObject
+GeometryUtility
+Gizmos
+Gradient
+GradientAlphaKey
+GradientColorKey
+GradientMode
+Graphics
+Gyroscope
+Handheld
+Hash128
+HeaderAttribute
+HelpURLAttribute
+HideFlags
+HideInInspector
+HingeJoint
+HingeJoint2D
+HorizontalWrapMode
+HostData
+HumanBodyBones
+HumanBone
+HumanDescription
+HumanLimit
+HumanPose
+HumanPoseHandler
+HumanTrait
+ICanvasRaycastFilter
+IExposedPropertyTable
+ILogHandler
+ILogger
+IMECompositionMode
+ISerializationCallbackReceiver
+ImageConversion
+ImageEffectAllowedInSceneView
+ImageEffectOpaque
+ImageEffectTransformsToLDR
+ImagePosition
+Input
+JetBrains
+Joint
+Joint2D
+JointAngleLimits2D
+JointDrive
+JointDriveMode
+JointLimitState2D
+JointLimits
+JointMotor
+JointMotor2D
+JointProjectionMode
+JointSpring
+JointSuspension2D
+JointTranslationLimits2D
+JsonUtility
+KeyCode
+Keyframe
+LOD
+LODFadeMode
+LODGroup
+LayerMask
+LensFlare
+Light
+LightProbeGroup
+LightProbeProxyVolume
+LightProbes
+LightRenderMode
+LightShadows
+LightType
+LightmapBakeType
+LightmapData
+LightmapSettings
+LightmappingMode
+LightmapsMode
+LightmapsModeLegacy
+LineAlignment
+LineRenderer
+LineTextureMode
+LineUtility
+LocalNotification
+LocationInfo
+LocationService
+LocationServiceStatus
+LogType
+Logger
+MasterServer
+MasterServerEvent
+MatchTargetWeightMask
+Material
+MaterialGlobalIlluminationFlags
+MaterialPropertyBlock
+Mathf
+Matrix4x4
+Mesh
+MeshCollider
+MeshFilter
+MeshParticleEmitter
+MeshRenderer
+MeshTopology
+Microphone
+Microsoft
+MissingComponentException
+MissingReferenceException
+MonoBehaviour
+Motion
+MotionVectorGenerationMode
+MovieTexture
+MultilineAttribute
+NPOTSupport
+NScreenBridge
+NativeClassAttribute
+Network
+NetworkConnectionError
+NetworkDisconnection
+NetworkLogLevel
+NetworkMessageInfo
+NetworkPeerType
+NetworkPlayer
+NetworkReachability
+NetworkStateSynchronization
+NetworkView
+NetworkViewID
+NotificationServices
+Object
+OcclusionArea
+OcclusionPortal
+OperatingSystemFamily
+Particle
+ParticleAnimator
+ParticleCollisionEvent
+ParticleEmitter
+ParticlePhysicsExtensions
+ParticleRenderMode
+ParticleRenderer
+ParticleSystem
+ParticleSystemAnimationMode
+ParticleSystemAnimationType
+ParticleSystemCollisionMode
+ParticleSystemCollisionQuality
+ParticleSystemCollisionType
+ParticleSystemCurveMode
+ParticleSystemCustomData
+ParticleSystemCustomDataMode
+ParticleSystemEmissionType
+ParticleSystemEmitterVelocityMode
+ParticleSystemGradientMode
+ParticleSystemInheritVelocityMode
+ParticleSystemMeshShapeType
+ParticleSystemNoiseQuality
+ParticleSystemOverlapAction
+ParticleSystemRenderMode
+ParticleSystemRenderSpace
+ParticleSystemRenderer
+ParticleSystemScalingMode
+ParticleSystemShapeMultiModeValue
+ParticleSystemShapeType
+ParticleSystemSimulationSpace
+ParticleSystemSortMode
+ParticleSystemStopBehavior
+ParticleSystemSubEmitterProperties
+ParticleSystemSubEmitterType
+ParticleSystemTrailTextureMode
+ParticleSystemTriggerEventType
+ParticleSystemVertexStream
+ParticleSystemVertexStreams
+PhysicMaterial
+PhysicMaterialCombine
+Physics
+Physics2D
+PhysicsMaterial2D
+PhysicsUpdateBehaviour2D
+Ping
+Plane
+PlatformEffector2D
+PlayMode
+PlayerPrefs
+PlayerPrefsException
+PointEffector2D
+PolygonCollider2D
+PreferBinarySerialization
+PrimitiveType
+ProceduralCacheSize
+ProceduralLoadingBehavior
+ProceduralMaterial
+ProceduralOutputType
+ProceduralProcessorUsage
+ProceduralPropertyDescription
+ProceduralPropertyType
+ProceduralTexture
+Projector
+PropertyAttribute
+PropertyName
+QualityLevel
+QualitySettings
+Quaternion
+QueryTriggerInteraction
+QueueMode
+RPC
+RPCMode
+Random
+RangeAttribute
+RangeInt
+Ray
+Ray2D
+RaycastHit
+RaycastHit2D
+Rect
+RectOffset
+RectTransform
+RectTransformUtility
+ReflectionProbe
+RelativeJoint2D
+RemoteNotification
+RemoteNotificationType
+RemoteSettings
+RenderBuffer
+RenderMode
+RenderSettings
+RenderTargetSetup
+RenderTexture
+RenderTextureCreationFlags
+RenderTextureDescriptor
+RenderTextureFormat
+RenderTextureMemoryless
+RenderTextureReadWrite
+Renderer
+RendererExtensions
+RenderingPath
+RequireComponent
+Resolution
+ResourceRequest
+Resources
+Rigidbody
+Rigidbody2D
+RigidbodyConstraints
+RigidbodyConstraints2D
+RigidbodyInterpolation
+RigidbodyInterpolation2D
+RigidbodySleepMode2D
+RigidbodyType2D
+RotationDriveMode
+RuntimeAnimatorController
+RuntimeInitializeLoadType
+RuntimeInitializeOnLoadMethodAttribute
+RuntimePlatform
+SamsungTV
+ScaleMode
+Screen
+ScreenCapture
+ScreenOrientation
+ScriptableObject
+Security
+SelectionBaseAttribute
+SendMessageOptions
+SerializeField
+SerializePrivateVariables
+Shader
+ShaderVariantCollection
+ShadowProjection
+ShadowQuality
+ShadowResolution
+ShadowmaskMode
+SharedBetweenAnimatorsAttribute
+SimpleJson
+SkeletonBone
+SkinQuality
+SkinnedMeshRenderer
+Skybox
+SleepTimeout
+SliderJoint2D
+Social
+SoftJointLimit
+SoftJointLimitSpring
+SortingLayer
+Space
+SpaceAttribute
+SparseTexture
+SphereCollider
+SplatPrototype
+SpringJoint
+SpringJoint2D
+Sprite
+SpriteAlignment
+SpriteDrawMode
+SpriteMask
+SpriteMaskInteraction
+SpriteMeshType
+SpritePackingMode
+SpritePackingRotation
+SpriteRenderer
+SpriteTileMode
+StackTraceLogType
+StackTraceUtility
+StateMachineBehaviour
+StaticBatchingUtility
+StereoTargetEyeMask
+SurfaceEffector2D
+System
+SystemInfo
+SystemLanguage
+TargetJoint2D
+Terrain
+TerrainChangedFlags
+TerrainCollider
+TerrainData
+TerrainExtensions
+TerrainRenderFlags
+TexGenMode
+TextAlignment
+TextAnchor
+TextAreaAttribute
+TextAsset
+TextClipping
+TextEditor
+TextGenerationSettings
+TextGenerator
+TextMesh
+Texture
+Texture2D
+Texture2DArray
+Texture3D
+TextureCompressionQuality
+TextureFormat
+TextureWrapMode
+ThreadPriority
+Time
+TizenActivityIndicatorStyle
+TooltipAttribute
+Touch
+TouchPhase
+TouchScreenKeyboard
+TouchScreenKeyboardType
+TouchType
+TrackedReference
+TrailRenderer
+Transform
+TransparencySortMode
+Tree
+TreeInstance
+TreePrototype
+Types
+UICharInfo
+UILineInfo
+UISystemProfilerApi
+UIVertex
+UnassignedReferenceException
+UnityAPICompatibilityVersionAttribute
+UnityEditor
+UnityEditorInternal
+UnityEngine
+UnityEngineInternal
+UnityEventQueueSystem
+UnityException
+UserAuthorization
+VRTextureUsage
+Vector2
+Vector3
+Vector4
+VerticalWrapMode
+WWW
+WWWAudioExtensions
+WWWForm
+WaitForEndOfFrame
+WaitForFixedUpdate
+WaitForSeconds
+WaitForSecondsRealtime
+WaitUntil
+WaitWhile
+WebCamDevice
+WebCamFlags
+WebCamTexture
+WheelCollider
+WheelFrictionCurve
+WheelHit
+WheelJoint2D
+WindZone
+WindZoneMode
+WrapMode
+YieldInstruction
 + abstract
++ async
 + bool
 + byte
 + char
@@ -1243,27 +1344,27 @@ public override ToString() { ... }
 + explicit
 + extern
 + float
-+ iOSActivityIndicatorStyle
-+ iPhone
-+ iPhoneAccelerationEvent
-+ iPhoneGeneration
-+ iPhoneInput
-+ iPhoneKeyboard
-+ iPhoneKeyboardType
-+ iPhoneMovieControlMode
-+ iPhoneMovieScalingMode
-+ iPhoneNetworkReachability
-+ iPhoneOrientation
-+ iPhoneScreenOrientation
-+ iPhoneSettings
-+ iPhoneTouch
-+ iPhoneTouchPhase
-+ iPhoneUtils
+iOSActivityIndicatorStyle
+iPhone
+iPhoneAccelerationEvent
+iPhoneGeneration
+iPhoneInput
+iPhoneKeyboard
+iPhoneKeyboardType
+iPhoneMovieControlMode
+iPhoneMovieScalingMode
+iPhoneNetworkReachability
+iPhoneOrientation
+iPhoneScreenOrientation
+iPhoneSettings
+iPhoneTouch
+iPhoneTouchPhase
+iPhoneUtils
 + implicit
 + int
 + interface
 + internal
-+ jvalue
+jvalue
 + long
 + new
 + object
@@ -1273,6 +1374,7 @@ public override ToString() { ... }
 + protected
 + public
 + readonly
++ ref
 + sbyte
 + sealed
 + short
@@ -1327,7 +1429,7 @@ private OnMouseUp() { ... }
 private OnMouseUpAsButton() { ... }
 private OnNetworkInstantiate(NetworkMessageInfo) { ... }
 private OnParticleCollision(GameObject) { ... }
-private OnParticleTrigger(GameObject) { ... }
+private OnParticleTrigger() { ... }
 private OnPlayerConnected(NetworkPlayer) { ... }
 private OnPlayerDisconnected(NetworkPlayer) { ... }
 private OnPostRender() { ... }

@@ -18,11 +18,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     }
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class TestUnityAttribute : TestPackagesAttribute, ITestFlavoursProvider, ITestPlatformProvider, ITestFileExtensionProvider
+    public class TestUnityAttribute : TestPackagesAttribute, ITestFlavoursProvider, ITestPlatformProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute
     {
         private readonly UnityVersion myVersion;
 
-        public TestUnityAttribute() : this(UnityVersion.Unity54)
+        public TestUnityAttribute() : this(UnityVersion.Unity20171)
         {
         }
 
@@ -94,5 +94,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                     throw new ArgumentOutOfRangeException(nameof(unityVersion), unityVersion, null);
             }
         }
+
+        public string PropertyName => "DefineConstants";
+        public string PropertyValue => DefineConstants;
     }
 }
