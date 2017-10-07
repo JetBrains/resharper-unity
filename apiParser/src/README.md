@@ -12,6 +12,7 @@ Based on a random sampling, the docs (and therefore the API) don't change betwee
 
 ## Downloads
 
+* [2017.2.0 - 3 Oct 2017](https://beta.unity3d.com/download/472de62575d5/WindowsDocumentationInstaller/UnityDocumentationSetup-2017.2.0f2.exe)
 * [2017.1.2 - 6 Oct 2017](http://download.unity3d.com/download_unity/cc85bf6a8a04/WindowsDocumentationInstaller/UnityDocumentationSetup-2017.1.2f1.exe)
 * [2017.1.1 - 4 Sep 2017](http://download.unity3d.com/download_unity/5d30cf096e79/WindowsDocumentationInstaller/UnityDocumentationSetup-2017.1.1f1.exe)
 * [2017.1.0 - 10 Jul 2017](http://download.unity3d.com/download_unity/472613c02cf7/WindowsDocumentationInstaller/UnityDocumentationSetup-2017.1.0f3.exe)
