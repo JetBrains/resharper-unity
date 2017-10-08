@@ -46,6 +46,9 @@
 &#8226; Unity specific file templates.
 </description>
 <releaseNotes>
+&#8226; Fix code completion and generation not working with newer versions of Unity (#219)
+&#8226; Support Unity API up to 2017.3.0b3 (#218)
+&#8226; Recognise projects with modularised UnityEngine assembly references (#241)
 &#8226; Add Unity specific file templates (#232, #237)
 &#8226; Fix parsing of 2DArray (RIDER-9786)
 &#8226; Add colour highlighting and editing to ShaderLab
