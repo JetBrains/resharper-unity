@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     {
         private readonly UnityVersion myVersion;
 
-        public TestUnityAttribute() : this(UnityVersion.Unity20171)
+        public TestUnityAttribute() : this(UnityVersion.Unity20172)
         {
         }
 

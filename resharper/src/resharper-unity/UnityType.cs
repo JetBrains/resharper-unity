@@ -23,9 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myEventFunctions = eventFunctions;
         }
 
-        public IEnumerable<UnityEventFunction> GetEventFunctions(Version unityVersion)
+        public IEnumerable<UnityEventFunction> GetEventFunctions(Version normalisedUnityVersion)
         {
-            return myEventFunctions.Where(f => f.SupportsVersion(unityVersion));
+            return myEventFunctions.Where(f => f.SupportsVersion(normalisedUnityVersion));
         }
 
         [CanBeNull]
@@ -35,11 +35,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return type.GetTypeElement();
         }
 
-        public bool HasEventFunction([NotNull] IMethod method, Version unityVersion)
+        public bool HasEventFunction([NotNull] IMethod method, Version normalisedUnityVersion)
         {
             foreach (var function in myEventFunctions)
             {
-                if (function.SupportsVersion(unityVersion) && function.Match(method) != EventFunctionMatch.NoMatch)
+                if (function.SupportsVersion(normalisedUnityVersion) && function.Match(method) != EventFunctionMatch.NoMatch)
                     return true;
             }
             return false;

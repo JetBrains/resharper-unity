@@ -1,4 +1,4 @@
-﻿# 725 ITEMS #
+﻿# 737 ITEMS #
 
 A
 ADBannerView
@@ -88,6 +88,7 @@ BlendWeights
 BoneWeight
 BoundingSphere
 Bounds
+BoundsInt
 BoxCollider
 BoxCollider2D
 BuoyancyEffector2D
@@ -126,6 +127,7 @@ CollisionDetectionMode2D
 CollisionFlags
 Color
 Color32
+ColorGamut
 ColorSpace
 ColorUsageAttribute
 ColorUtility
@@ -158,6 +160,7 @@ CullingGroupEvent
 Cursor
 CursorLockMode
 CursorMode
+CustomGridBrushAttribute
 CustomRenderTexture
 CustomRenderTextureInitializationSource
 CustomRenderTextureUpdateMode
@@ -204,6 +207,7 @@ FontStyle
 ForceMode
 ForceMode2D
 FrictionJoint2D
+FrustumPlanes
 FullScreenMovieControlMode
 FullScreenMovieScalingMode
 GL
@@ -230,6 +234,9 @@ GradientAlphaKey
 GradientColorKey
 GradientMode
 Graphics
+Grid
+GridBrushBase
+GridLayout
 Gyroscope
 Handheld
 Hash128
@@ -378,6 +385,7 @@ ParticleSystemShapeMultiModeValue
 ParticleSystemShapeType
 ParticleSystemSimulationSpace
 ParticleSystemSortMode
+ParticleSystemStopAction
 ParticleSystemStopBehavior
 ParticleSystemSubEmitterProperties
 ParticleSystemSubEmitterType
@@ -399,6 +407,7 @@ PlayerPrefs
 PlayerPrefsException
 PointEffector2D
 PolygonCollider2D
+Pose
 PreferBinarySerialization
 PrimitiveType
 ProceduralCacheSize
@@ -427,6 +436,7 @@ Ray2D
 RaycastHit
 RaycastHit2D
 Rect
+RectInt
 RectOffset
 RectTransform
 RectTransformUtility
@@ -576,7 +586,9 @@ UnityException
 UserAuthorization
 VRTextureUsage
 Vector2
+Vector2Int
 Vector3
+Vector3Int
 Vector4
 VerticalWrapMode
 WWW
@@ -727,7 +739,7 @@ public override Equals(object) { ... }
 public override GetHashCode() { ... }
 public override ToString() { ... }
 # AUTOMATIC #
-# 725 ITEMS #
+# 737 ITEMS #
 
 A
 ADBannerView
@@ -817,6 +829,7 @@ BlendWeights
 BoneWeight
 BoundingSphere
 Bounds
+BoundsInt
 BoxCollider
 BoxCollider2D
 BuoyancyEffector2D
@@ -855,6 +868,7 @@ CollisionDetectionMode2D
 CollisionFlags
 Color
 Color32
+ColorGamut
 ColorSpace
 ColorUsageAttribute
 ColorUtility
@@ -887,6 +901,7 @@ CullingGroupEvent
 Cursor
 CursorLockMode
 CursorMode
+CustomGridBrushAttribute
 CustomRenderTexture
 CustomRenderTextureInitializationSource
 CustomRenderTextureUpdateMode
@@ -933,6 +948,7 @@ FontStyle
 ForceMode
 ForceMode2D
 FrictionJoint2D
+FrustumPlanes
 FullScreenMovieControlMode
 FullScreenMovieScalingMode
 GL
@@ -959,6 +975,9 @@ GradientAlphaKey
 GradientColorKey
 GradientMode
 Graphics
+Grid
+GridBrushBase
+GridLayout
 Gyroscope
 Handheld
 Hash128
@@ -1107,6 +1126,7 @@ ParticleSystemShapeMultiModeValue
 ParticleSystemShapeType
 ParticleSystemSimulationSpace
 ParticleSystemSortMode
+ParticleSystemStopAction
 ParticleSystemStopBehavior
 ParticleSystemSubEmitterProperties
 ParticleSystemSubEmitterType
@@ -1128,6 +1148,7 @@ PlayerPrefs
 PlayerPrefsException
 PointEffector2D
 PolygonCollider2D
+Pose
 PreferBinarySerialization
 PrimitiveType
 ProceduralCacheSize
@@ -1156,6 +1177,7 @@ Ray2D
 RaycastHit
 RaycastHit2D
 Rect
+RectInt
 RectOffset
 RectTransform
 RectTransformUtility
@@ -1305,7 +1327,9 @@ UnityException
 UserAuthorization
 VRTextureUsage
 Vector2
+Vector2Int
 Vector3
+Vector3Int
 Vector4
 VerticalWrapMode
 WWW
