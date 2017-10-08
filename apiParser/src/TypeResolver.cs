@@ -25,7 +25,7 @@ namespace ApiParser
             if (Assemblies.Contains(assembly)) return;
 
             Console.WriteLine($"Loading types from {assembly.FullName}...");
-            var types = assembly.GetTypes();
+            var types = assembly.GetExportedTypes();
             Console.WriteLine($"Adding {types.Length} types from {assembly.FullName}...");
             Entries.Insert(0, types.OrderBy(t => t.Name).ToArray());
             ourAllEntries = null;
@@ -48,6 +48,7 @@ namespace ApiParser
                 // same namespace as the owning message. This works for PlayState and Playable
                 foreach (var candidate in candidates)
                 {
+                    Console.WriteLine($"Namespace hint: {namespaceHint}");
                     if (candidate.Namespace == namespaceHint)
                     {
                         Console.WriteLine("WARNING: Multiple candidates for `{0}`. Choosing `{1}` based on namespace", name, candidate.FullName);
