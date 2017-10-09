@@ -1,6 +1,7 @@
 ﻿#if RIDER
 using System;
 using System.IO;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Impl;
@@ -19,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
         private readonly IScheduler myDispatcher;
+        private readonly IShellLocks myLocks;
         public UnityModel UnityModel { get; set; }
         private readonly IProperty<bool> myHostConnected = new Property<bool>("UnityHostConnected", false);
         private readonly IProperty<bool> myPlay = new Property<bool>("UnityPlay", false);
@@ -27,11 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             ;
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, SolutionModel solutionModel,
-            IScheduler dispatcher)
+            IScheduler dispatcher, IShellLocks locks)
         {
             myLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
+            myLocks = locks;
             myHostConnectedAndPlay.Change.Advise(lifetime, args =>
             {
                 if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
@@ -75,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
-            CreateProtocol(protocolInstancePath);
+            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=>CreateProtocol(protocolInstancePath));
         }
 
         private void CreateProtocol(FileSystemPath protocolInstancePath)
