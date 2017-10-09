@@ -39,11 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull]
         public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type)
         {
-            var projectPsiModule = type.Module as IProjectPsiModule;
-            if (projectPsiModule == null)
-                return EmptyArray<UnityType>.Instance;
-            var unityVersion = myUnityVersion.GetActualVersion(projectPsiModule.Project);
-            return GetBaseUnityTypes(type, unityVersion);
+            if (type.Module is IProjectPsiModule projectPsiModule)
+            {
+                var unityVersion = myUnityVersion.GetActualVersion(projectPsiModule.Project);
+                return GetBaseUnityTypes(type, unityVersion);
+            }
+            return EmptyArray<UnityType>.Instance;
         }
 
         [NotNull]
@@ -51,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             var types = myTypes.Value;
             unityVersion = types.NormaliseSupportedVersion(unityVersion);
-            return types.Types.Where(t => t.SupportsVersion(unityVersion) && type.IsDescendantOf(t.GetTypeElement(type.Module)));
+            return GetBaseUnityTypes(types, type, unityVersion);
         }
 
         public bool IsUnityType([NotNull] ITypeElement type)
@@ -91,10 +92,20 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return false;
         }
 
+        public IEnumerable<UnityEventFunction> GetEventFunctions(ITypeElement type, Version unityVersion)
+        {
+            var types = myTypes.Value;
+            unityVersion = types.NormaliseSupportedVersion(unityVersion);
+            foreach (var unityType in GetBaseUnityTypes(types, type, unityVersion))
+            {
+                foreach (var function in unityType.GetEventFunctions(unityVersion))
+                    yield return function;
+            }
+        }
+
         public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method)
         {
-            EventFunctionMatch match;
-            return GetUnityEventFunction(method, out match);
+            return GetUnityEventFunction(method, out var _);
         }
 
         public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, out EventFunctionMatch match)
@@ -122,6 +133,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public Version GetNormalisedActualVersion(IProject project)
         {
             return myTypes.Value.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));
+        }
+
+        private IEnumerable<UnityType> GetBaseUnityTypes(UnityTypes types, ITypeElement type, Version normalisedVersion)
+        {
+            return types.Types.Where(t => t.SupportsVersion(normalisedVersion) && type.IsDescendantOf(t.GetTypeElement(type.Module)));
         }
     }
 }

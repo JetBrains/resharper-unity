@@ -24,13 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
             if (!context.Project.IsUnityProject())
                 return;
 
-            var typeElement = context.ClassDeclaration.DeclaredElement as IClass;
-            if (typeElement == null)
+            if (!(context.ClassDeclaration.DeclaredElement is IClass typeElement))
                 return;
 
             var unityVersion = myUnityVersion.GetActualVersion(context.Project);
-            var unityTypes = myUnityApi.GetBaseUnityTypes(typeElement, unityVersion).ToArray();
-            var eventFunctions = unityTypes.SelectMany(t => t.GetEventFunctions(unityVersion))
+            var eventFunctions = myUnityApi.GetEventFunctions(typeElement, unityVersion)
                 .Where(f => typeElement.Methods.All(m => f.Match(m) == EventFunctionMatch.NoMatch)).ToArray();
 
             var classDeclaration = context.ClassDeclaration;

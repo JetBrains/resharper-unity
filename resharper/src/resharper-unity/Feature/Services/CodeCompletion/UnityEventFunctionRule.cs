@@ -60,10 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
         {
-            IClassLikeDeclaration declaration;
-            bool hasVisibilityModifier;
-            bool hasReturnType;
-            if (!CheckPosition(context, out declaration, out hasVisibilityModifier, out hasReturnType))
+            if (!CheckPosition(context, out var classDeclaration, out var hasVisibilityModifier, out var hasReturnType))
                 return false;
 
             // Don't add anything in double completion - we've already added it
@@ -75,50 +72,47 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             if (context.BasicContext.Parameters.EvaluationMode == EvaluationMode.Light)
                 return false;
 
-            var typeElement = declaration.DeclaredElement;
+            var typeElement = classDeclaration.DeclaredElement;
             if (typeElement == null)
                 return false;
 
             var unityApi = context.BasicContext.Solution.GetComponent<UnityApi>();
             var unityVersionApi = context.BasicContext.Solution.GetComponent<UnityVersion>();
             var project = context.BasicContext.File.GetProject();
-            var unityVersion = unityVersionApi.GetActualVersion(project);
-            var unityTypes = unityApi.GetBaseUnityTypes(typeElement, unityVersion);
-            foreach (var unityType in unityTypes)
+            var actualVersion = unityVersionApi.GetActualVersion(project);
+            var functions = unityApi.GetEventFunctions(typeElement, actualVersion);
+
+            var items = new List<ILookupItem>();
+            foreach (var function in functions)
             {
-                var items = new List<ILookupItem>();
+                if (typeElement.Methods.Any(m => function.Match(m) != EventFunctionMatch.NoMatch))
+                    continue;
 
-                foreach (var eventFunction in unityType.GetEventFunctions(unityVersion))
+                items.Clear();
+
+                // TODO: Decide what to do with e.g. `void OnAnima{caret}`
+                // If we want to insert a visibility modifier, it has to go *before* the `void`,
+                // which means adding a behaviour here that will remove it
+                if (!hasVisibilityModifier && !hasReturnType)
                 {
-                    if (typeElement.Methods.Any(m => eventFunction.Match(m) != EventFunctionMatch.NoMatch))
-                        continue;
-
-                    items.Clear();
-
-                    // TODO: Decide what to do with e.g. `void OnAnima{caret}`
-                    // If we want to insert a visibility modifier, it has to go *before* the `void`,
-                    // which means adding a behaviour here that will remove it
-                    if (!hasVisibilityModifier && !hasReturnType)
-                    {
-                        var factory = CSharpLookupItemFactory.Instance;
-                        var lookupItem = factory.CreateTextLookupItem(context.BasicContext, context.CompletionRanges,
-                            "private ");
-                        items.Add(lookupItem);
-                    }
-
-                    var item = CreateMethodItem(context, eventFunction, declaration);
-                    if (item == null) continue;
-
-                    items.Add(item);
-
-                    item = CombineLookupItems(context.BasicContext, context.CompletionRanges, items, item);
-
-                    item.Placement.Relevance |= (long) CLRLookupItemRelevance.GenerateItems;
-                    if (eventFunction.Undocumented)
-                        item.Placement.Location = PlacementLocation.Bottom;
-
-                    collector.Add(item);
+                    var factory = CSharpLookupItemFactory.Instance;
+                    var lookupItem = factory.CreateTextLookupItem(context.BasicContext, context.CompletionRanges,
+                        "private ");
+                    items.Add(lookupItem);
                 }
+
+                var item = CreateMethodItem(context, function, classDeclaration);
+                if (item == null) continue;
+
+                items.Add(item);
+
+                item = CombineLookupItems(context.BasicContext, context.CompletionRanges, items, item);
+
+                item.Placement.Relevance |= (long) CLRLookupItemRelevance.GenerateItems;
+                if (function.Undocumented)
+                    item.Placement.Location = PlacementLocation.Bottom;
+
+                collector.Add(item);
             }
 
             return true;

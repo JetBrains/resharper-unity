@@ -28,6 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
         }
     }
 
+    // These two tests have different parameters in different versions, make sure
+    // we using the right version
     [TestUnity(UnityVersion.Unity54)]
     public class Unity54CompletionListTest : VersionSpecificCompletionListTest
     {
@@ -37,7 +39,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
     [TestUnity(UnityVersion.Unity55)]
     public class Unity55CompletionListTest : VersionSpecificCompletionListTest
     {
-        [Test] public void OnParticleTriggerWithNoArgs55() { DoNamedTest();
-        }
+        [Test] public void OnParticleTriggerWithNoArgs55() { DoNamedTest(); }
     }
 }

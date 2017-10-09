@@ -43,13 +43,19 @@ namespace JetBrains.ReSharper.Plugins.Unity
             {
                 foreach (var configuration in project.ProjectProperties.GetActiveConfigurations<IManagedProjectConfiguration>())
                 {
-                    unityVersion = UnityProjectFileCacheProvider.GetVersionFromDefines(configuration.DefineConstants ?? string.Empty,
+                    // Get the constants. The tests can't set this up correctly, so they
+                    // add the Unity version as a property
+                    var defineConstants = configuration.DefineConstants;
+                    if (string.IsNullOrEmpty(defineConstants))
+                        configuration.PropertiesCollection.TryGetValue("DefineConstants", out defineConstants);
+
+                    unityVersion = UnityProjectFileCacheProvider.GetVersionFromDefines(defineConstants ?? string.Empty,
                         unityVersion);
                 }
             }
 
-            // If all else fails, default to 5.4. The majority of the tests will
-            // rely on this being set.
+            // If all else fails, default to 5.4. No reason for that version, other
+            // than it was the first supported version :)
             return unityVersion ?? new Version(5, 4);
         }
     }

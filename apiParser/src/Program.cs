@@ -17,12 +17,14 @@ namespace ApiParser
             // Can't redistribute, sorry. See README.md
             Tuple.Create("Documentation-5.0.4f1", new Version(5, 0)),
             Tuple.Create("Documentation-5.1.5f1", new Version(5, 1)),
-            Tuple.Create("Documentation-5.2.4f1", new Version(5, 2)),
-            Tuple.Create("Documentation-5.3.7f1", new Version(5, 3)),
-            Tuple.Create("Documentation-5.4.3f1", new Version(5, 4)),
-            Tuple.Create("Documentation-5.5.3f1", new Version(5, 5)),
-            Tuple.Create("Documentation-5.6.1f1", new Version(5, 6)),
-            Tuple.Create("Documentation-2017.1.0b5", new Version(2017, 1))
+            Tuple.Create("Documentation-5.2.5f1", new Version(5, 2)),
+            Tuple.Create("Documentation-5.3.8f2", new Version(5, 3)),
+            Tuple.Create("Documentation-5.4.6f3", new Version(5, 4)),
+            Tuple.Create("Documentation-5.5.5f1", new Version(5, 5)),
+            Tuple.Create("Documentation-5.6.3f1", new Version(5, 6)),
+            Tuple.Create("Documentation-2017.1.2f1", new Version(2017, 1)),
+            Tuple.Create("Documentation-2017.2.0f2", new Version(2017, 2)),
+            Tuple.Create("Documentation-2017.3.0b3", new Version(2017, 3))
         };
 
         public static void Main(string[] args)
