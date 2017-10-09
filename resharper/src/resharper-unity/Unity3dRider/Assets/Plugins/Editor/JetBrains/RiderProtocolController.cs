@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
@@ -11,9 +10,6 @@ using JetBrains.Util.Logging;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Threading;
-using JetBrains.Application;
-using JetBrains.Application.Parts;
-using JetBrains.Application.Threading;
 using UnityEngine;
 using ILogger = JetBrains.Util.ILogger;
 using Logger = JetBrains.Util.Logging.Logger;
@@ -25,13 +21,14 @@ namespace Plugins.Editor.JetBrains
   {
     static RiderProtocolController()
     {
-      var myThread = new Thread(() => Start(Path.Combine(Path.GetTempPath(), "Unity3dRider",
-        "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log")));
-      myThread.SetApartmentState(ApartmentState.STA);
+      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+      var logPath = Path.Combine(Path.GetTempPath(), "Unity3dRider",
+        "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
+      var myThread = new Thread(() => Start(projectDirectory, logPath));
       myThread.Start();
     }
 
-    private static void Start(string loggerPath)
+    private static void Start(string projectDirectory, string loggerPath)
     {
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
@@ -47,10 +44,7 @@ namespace Plugins.Editor.JetBrains
 
       try
       {
-        myLogger.Info("Unity process with Id = " + Process.GetCurrentProcess().Id);
         myLogger.Info("Start ControllerTask...");
-
-        int port = 46000 + Process.GetCurrentProcess().Id % 1000;
 
         var dispatcher = new SimpleInpaceExecutingScheduler(myLogger);
         
@@ -58,8 +52,11 @@ namespace Plugins.Editor.JetBrains
         var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
           creatingProtocol =>
           {
-            myLogger.Info("Creating SocketWire with port = {0}", port);
-            return new SocketWire.Server(lifetime, creatingProtocol, port, "UnityServer");
+            var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
+            myLogger.Info("Creating SocketWire with port = {0}", wire.Port);
+            
+            InitializeProtocolJson(wire.Port, projectDirectory, myLogger);
+            return wire;
           });
 
         myLogger.Info("Create UnityModel and advise for new sessions...");
@@ -83,6 +80,22 @@ namespace Plugins.Editor.JetBrains
       {
         myLogger.Error(ex);
       }
+    }
+
+    private static void InitializeProtocolJson(int port, string projectDirectory, ILogger logger)
+    {
+      logger.Verbose("Writing Library/ProtocolInstance.json");
+
+      var library = Path.Combine(projectDirectory, "Library");
+      var protocolInstanceJsonPath = Path.Combine(library, "ProtocolInstance.json");
+
+      File.WriteAllText(protocolInstanceJsonPath, string.Format(@"{{""port_id"":{0}}}", port));
+
+      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      {
+        logger.Verbose("Deleting Library/ProtocolInstance.json");
+        File.Delete(protocolInstanceJsonPath);
+      };
     }
 
     [InitializeOnLoad]
