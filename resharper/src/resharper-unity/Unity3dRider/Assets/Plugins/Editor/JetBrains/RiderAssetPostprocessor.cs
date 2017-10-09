@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -67,6 +66,7 @@ namespace Plugins.Editor.JetBrains
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
+      RemoveDllReference("JetBrains.Annotations", xmlns, projectContentElement); // Red code in the UnityModel.Generated.cs, because UnityEngine.CoreModule also has JetBrains.Annotations.
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
       // Unity_5_6_OR_NEWER switched to nunit 3.5
@@ -82,13 +82,25 @@ namespace Plugins.Editor.JetBrains
 #endif
       doc.Save(projectFile);
     }
-    
+
+    private static void RemoveDllReference(string referenceName, XNamespace xmlns, XElement projectContentElement)
+    {
+      var elements = projectContentElement
+        .Elements(xmlns + "ItemGroup")
+        .Elements(xmlns + "Reference")
+        .Where(a => a.Attribute("Include") !=null && a.Attribute("Include").Value == referenceName).ToArray();
+      foreach (var element in elements)
+      {
+        element.Remove();
+      }
+    }
+
     private static void FixSystemXml(XElement projectContentElement, XNamespace xmlns)
     {
       var el = projectContentElement
         .Elements(xmlns+"ItemGroup")
         .Elements(xmlns+"Reference")
-        .FirstOrDefault(a => a.Attribute("Include").Value=="System.XML");
+        .FirstOrDefault(a => a.Attribute("Include") !=null && a.Attribute("Include").Value=="System.XML");
       if (el != null)
       {
         el.Attribute("Include").Value = "System.Xml";
@@ -100,7 +112,7 @@ namespace Plugins.Editor.JetBrains
       var el = projectContentElement
         .Elements(xmlns+"ItemGroup")
         .Elements(xmlns+"Reference")
-        .FirstOrDefault(a => a.Attribute("Include").Value=="nunit.framework");
+        .FirstOrDefault(a =>  a.Attribute("Include") !=null && a.Attribute("Include").Value=="nunit.framework");
       if (el != null)
       {
         var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
