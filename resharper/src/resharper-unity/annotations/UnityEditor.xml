@@ -66,6 +66,14 @@
       <argument>true</argument> <!-- inherited -->
     </attribute>
   </member>
+  <member name="T:UnityEditor.Callbacks.OnOpenAssetAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+      <argument>64</argument>   <!-- AttributeTargets.Method -->
+      <argument>true</argument> <!-- allowMultiple -->
+      <argument>true</argument> <!-- inherited -->
+    </attribute>
+  </member>
   <member name="T:UnityEditor.Callbacks.PostProcessBuildAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
     <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
