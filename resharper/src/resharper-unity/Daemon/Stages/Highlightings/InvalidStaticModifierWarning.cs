@@ -15,7 +15,6 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
-    // TODO: Check out CSharpConflictDeclarationsContextSearch
     // Note that we don't use ToolTipFormatString here. This specifies a
     // string format like template that is used to reverse engineer the
     // arguments so that SWEA can optimise and store only the arguments,

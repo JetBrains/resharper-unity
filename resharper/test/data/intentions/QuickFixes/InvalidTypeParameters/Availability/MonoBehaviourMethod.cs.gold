@@ -1,0 +1,24 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public void Start|<|T1|(1), |T2|(2)>|(0)()
+    {
+        return |0|(3);
+    }
+}
+
+------------------------------------------------
+0: Incorrect type parameters
+QUICKFIXES:
+Remove type parameters
+1: Type parameter 'T1' is never used
+QUICKFIXES:
+Remove redundant type parameter T1
+2: Type parameter 'T2' is never used
+QUICKFIXES:
+Remove redundant type parameter T2
+3: Return type is 'void'
+QUICKFIXES:
+To void return (remove value)
+Change type of method 'Start' to 'int'

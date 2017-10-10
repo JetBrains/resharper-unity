@@ -15,7 +15,6 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
-    // TODO: Check out CSharpConflictDeclarationsContextSearch
     [ConfigurableSeverityHighlighting(HIGHLIGHTING_ID, CSharpLanguage.Name,
         OverlapResolve = OverlapResolveKind.WARNING,
         ToolTipFormatString = MESSAGE)]

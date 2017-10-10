@@ -65,3 +65,10 @@ public class StaticModifier : AssetPostprocessor
     {
     }
 }
+
+public class TypeParameters : MonoBehaviour
+{
+    public void Start<T1, T2>()
+    {
+    }
+}

@@ -13,6 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             typeof(RedundantInitializeOnLoadAttributeWarning),
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
+            typeof(InvalidTypeParametersWarning),
             typeof(InvalidSignatureWarning)
         })]
     public class InitializeOnLoadSignatureProblemAnalyzer : UnityElementProblemAnalyzer<IAttribute>
@@ -27,8 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 
         protected override void Analyze(IAttribute element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            var attributeTypeElement = element.TypeReference?.Resolve().DeclaredElement as ITypeElement;
-            if (attributeTypeElement == null)
+            if (!(element.TypeReference?.Resolve().DeclaredElement is ITypeElement attributeTypeElement))
                 return;
 
             if (Equals(attributeTypeElement.GetClrName(), KnownTypes.InitializeOnLoadAttribute))
@@ -51,11 +51,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
                 var methodSignature = new MethodSignature(predefinedType.Void, true);
 
-                if (!methodDeclaration.IsStatic)
+                if (!methodSignature.HasMatchingStaticModifier(methodDeclaration))
                     consumer.AddHighlighting(new InvalidStaticModifierWarning(methodDeclaration, methodSignature));
-                if (!methodDeclaration.Type.IsVoid())
+                if (!methodSignature.HasMatchingReturnType(methodDeclaration))
                     consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, methodSignature));
-                if (methodDeclaration.ParameterDeclarationsEnumerable.Any())
+                if (!methodSignature.HasMatchingTypeParameters(methodDeclaration))
+                    consumer.AddHighlighting(new InvalidTypeParametersWarning(methodDeclaration, methodSignature));
+                if (!methodSignature.HasMatchingParameters(methodDeclaration))
                     consumer.AddHighlighting(new InvalidSignatureWarning(methodDeclaration, methodSignature));
             }
         }

@@ -16,6 +16,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
             return highlighting is IUnityHighlighting;
         }
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test] public void TestUnityEventFunctionAnalyzer() { DoNamedTest2(); }
     }
 }

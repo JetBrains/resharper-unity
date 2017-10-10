@@ -13,6 +13,9 @@ public class TestInitializeOnLoadMethod
     public static void WrongReturnType(|int arg1, int arg2|(2)) { }
 
     [InitializeOnLoadMethod]
+    public static void WrongTypeParameters|<T>|(3)() { }
+
+    [InitializeOnLoadMethod]
     public static void JustRight() { }
 
     [InitializeOnLoadMethod]
@@ -22,13 +25,16 @@ public class TestInitializeOnLoadMethod
 public class TestRuntimeInitializeOnLoadMethod
 {
     [RuntimeInitializeOnLoadMethod]
-    public void |NotStatic|(3)() { }
+    public void |NotStatic|(4)() { }
 
     [RuntimeInitializeOnLoadMethod]
-    public static |int|(4) WrongReturnType() { }
+    public static |int|(5) WrongReturnType() { }
 
     [RuntimeInitializeOnLoadMethod]
-    public static void WrongReturnType(|int arg1, int arg2|(5)) { }
+    public static void WrongReturnType(|int arg1, int arg2|(6)) { }
+
+    [RuntimeInitializeOnLoadMethod]
+    public static void WrongTypeParameters|<T, T2, T3>|(7)() { }
 
     [RuntimeInitializeOnLoadMethod]
     public static void JustRight() { }
@@ -41,6 +47,8 @@ public class TestRuntimeInitializeOnLoadMethod
 (0): ReSharper Warning: Missing static modifier
 (1): ReSharper Warning: Incorrect return type. Expected 'void'
 (2): ReSharper Warning: Incorrect method parameters. Expected '()'
-(3): ReSharper Warning: Missing static modifier
-(4): ReSharper Warning: Incorrect return type. Expected 'void'
-(5): ReSharper Warning: Incorrect method parameters. Expected '()'
+(3): ReSharper Warning: Incorrect type parameters
+(4): ReSharper Warning: Missing static modifier
+(5): ReSharper Warning: Incorrect return type. Expected 'void'
+(6): ReSharper Warning: Incorrect method parameters. Expected '()'
+(7): ReSharper Warning: Incorrect type parameters

@@ -13,6 +13,9 @@ public class TestInitializeOnLoadMethod
     public static void WrongReturnType(int arg1, int arg2) { }
 
     [InitializeOnLoadMethod]
+    public static void WrongTypeParameters<T>() { }
+
+    [InitializeOnLoadMethod]
     public static void JustRight() { }
 
     [InitializeOnLoadMethod]
@@ -29,6 +32,9 @@ public class TestRuntimeInitializeOnLoadMethod
 
     [RuntimeInitializeOnLoadMethod]
     public static void WrongReturnType(int arg1, int arg2) { }
+
+    [RuntimeInitializeOnLoadMethod]
+    public static void WrongTypeParameters<T, T2, T3>() { }
 
     [RuntimeInitializeOnLoadMethod]
     public static void JustRight() { }

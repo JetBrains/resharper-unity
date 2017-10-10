@@ -126,6 +126,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 match |= EventFunctionMatch.MatchingReturnType;
             }
 
+            if (method.TypeParameters.Count == 0)
+                match |= EventFunctionMatch.MatchingTypeParameters;
+
             return match;
         }
 

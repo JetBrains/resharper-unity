@@ -66,6 +66,13 @@ public class |StaticModifier|(16) : AssetPostprocessor
     }
 }
 
+public class |TypeParameters|(23) : MonoBehaviour
+{
+    public void |Start|(24)|<T1, T2>|(25)()
+    {
+    }
+}
+
 ---------------------------------------------------------
 (0): Unity Gutter Icon: Unity scripting component
 (1): Unity Gutter Icon: Unity event function
@@ -109,3 +116,9 @@ Callback for setting up animation IK (inverse kinematics).
 (20): Unity Gutter Icon: Unity event function
 (21): ReSharper Warning: Incorrect static modifier
 (22): Unity Gutter Icon: Unity event function
+(23): Unity Gutter Icon: Unity scripting component
+(24): Unity Gutter Icon: Unity event function
+
+Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+This function can be a coroutine.
+(25): ReSharper Warning: Incorrect type parameters
