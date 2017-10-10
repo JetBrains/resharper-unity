@@ -11,6 +11,11 @@
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
       <argument>UnityEditor.Editor</argument>
     </attribute>
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+      <argument>4</argument>    <!-- AttributeTargets.Class -->
+      <argument>true</argument> <!-- allowMultiple -->
+      <argument>true</argument> <!-- inherited -->
+    </attribute>
   </member>
   <member name="T:UnityEditor.CustomPreviewAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
@@ -26,6 +31,11 @@
   </member>
   <member name="T:UnityEditor.DrawGizmo">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+      <argument>64</argument>   <!-- AttributeTargets.Method -->
+      <argument>true</argument> <!-- allowMultiple -->
+      <argument>true</argument> <!-- inherited -->
+    </attribute>
   </member>
   <member name="T:UnityEditor.InitializeOnLoadAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
@@ -38,5 +48,30 @@
   </member>
   <member name="T:UnityEditor.PreferenceItem">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+
+  <member name="T:UnityEditor.Callbacks.DidReloadScripts">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+      <argument>64</argument>   <!-- AttributeTargets.Method -->
+      <argument>true</argument> <!-- allowMultiple -->
+      <argument>true</argument> <!-- inherited -->
+    </attribute>
+  </member>
+  <member name="T:UnityEditor.Callbacks.PostProcessBuildAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+      <argument>64</argument>   <!-- AttributeTargets.Method -->
+      <argument>true</argument> <!-- allowMultiple -->
+      <argument>true</argument> <!-- inherited -->
+    </attribute>
+  </member>
+  <member name="T:UnityEditor.Callbacks.PostProcessSceneAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+      <argument>64</argument>   <!-- AttributeTargets.Method -->
+      <argument>true</argument> <!-- allowMultiple -->
+      <argument>true</argument> <!-- inherited -->
+    </attribute>
   </member>
 </assembly>
