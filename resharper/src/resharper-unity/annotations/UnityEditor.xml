@@ -6,6 +6,14 @@
   <member name="T:UnityEditor.CallbackOrderAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
   </member>
+  <member name="T:UnityEditor.CanEditMultipleObjects">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+      <argument>4</argument>    <!-- AttributeTargets.Class -->
+      <argument>true</argument> <!-- allowMultiple -->
+      <argument>true</argument> <!-- inherited -->
+    </attribute>
+  </member>
   <member name="T:UnityEditor.CustomEditor">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
