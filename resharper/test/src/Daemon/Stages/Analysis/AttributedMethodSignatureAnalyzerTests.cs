@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class InitializeMethodSignatureAnalyzerTests : CSharpHighlightingTestBase
+    public class AttributedMethodSignatureAnalyzerTests : CSharpHighlightingTestBase
     {
         protected override string RelativeTestDataPath => @"daemon\Stages\Analysis";
 
@@ -16,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
             return highlighting is IUnityHighlighting;
         }
 
-        [Test] public void TestInitializeMethodSignature() { DoNamedTest2(); }
+        [Test] public void TestInitializeOnLoadMethodAttributeSignature() { DoNamedTest2(); }
+        [Test] public void TestRuntimeInitializeOnLoadMethodAttributeSignature() { DoNamedTest2(); }
     }
 }
