@@ -21,5 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
         [Test] public void TestOnOpenAssetAttributeSignature() { DoNamedTest2(); }
         [Test] public void TestDidReloadScriptsSignature() { DoNamedTest2(); }
         [Test] public void TestPostProcessSceneAttributeSignature() { DoNamedTest2(); }
+        [Test] public void TestPostProcessBuildAttributeSignature() { DoNamedTest2(); }
     }
 }

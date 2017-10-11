@@ -27,7 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 {KnownTypes.RuntimeInitializeOnLoadMethodAttribute, GetStaticVoidMethodSignature},
                 {KnownTypes.DidReloadScripts, GetStaticVoidMethodSignature},
                 {KnownTypes.OnOpenAssetAttribute, GetOnOpeAssetMethodSignature},
-                {KnownTypes.PostProcessSceneAttribute, GetStaticVoidMethodSignature}
+                {KnownTypes.PostProcessSceneAttribute, GetStaticVoidMethodSignature},
+                {KnownTypes.PostProcessBuildAttribute, GetPostProcessBuildMethodSignature}
             };
 
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
@@ -73,6 +74,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             return new MethodSignature(predefinedType.Bool, true,
                 new[] {predefinedType.Int, predefinedType.Int},
                 new[] {"instanceID", "line"});
+        }
+
+        private static MethodSignature GetPostProcessBuildMethodSignature(PredefinedType predefinedType)
+        {
+            var buildTargetType = TypeFactory.CreateTypeByCLRName("UnityEditor.BuildTarget", predefinedType.Module);
+            return new MethodSignature(predefinedType.Void, true,
+                new[] {buildTargetType, predefinedType.String},
+                new[] {"target", "pathToBuildProject"});
         }
     }
 }
