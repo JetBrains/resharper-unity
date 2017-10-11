@@ -23,7 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         private static readonly Dictionary<IClrTypeName, Func<PredefinedType, MethodSignature>> ourAttributeLookups =
             new Dictionary<IClrTypeName, Func<PredefinedType, MethodSignature>>
             {
-                {KnownTypes.InitializeOnLoadMethodAttribute, GetStaticVoidMethod},                {KnownTypes.RuntimeInitializeOnLoadMethodAttribute, GetStaticVoidMethod},
+                {KnownTypes.InitializeOnLoadMethodAttribute, GetStaticVoidMethodSignature},
+                {KnownTypes.RuntimeInitializeOnLoadMethodAttribute, GetStaticVoidMethodSignature},
+                {KnownTypes.OnOpenAssetAttribute, GetOnOpeAssetMethodSignature}
             };
 
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
@@ -44,7 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 var methodDeclaration = MethodDeclarationNavigator.GetByAttribute(element);
                 if (methodDeclaration == null)
                     return;
-                var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
+
+                var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
                 var methodSignature = func(predefinedType);
 
                 if (!methodSignature.HasMatchingStaticModifier(methodDeclaration))
@@ -58,9 +61,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             }
         }
 
-        private static MethodSignature GetStaticVoidMethod(PredefinedType predefinedType)
+        private static MethodSignature GetStaticVoidMethodSignature(PredefinedType predefinedType)
         {
             return new MethodSignature(predefinedType.Void, true);
+        }
+
+        private static MethodSignature GetOnOpeAssetMethodSignature(PredefinedType predefinedType)
+        {
+            return new MethodSignature(predefinedType.Bool, true,
+                new[] {predefinedType.Int, predefinedType.Int},
+                new[] {"instanceID", "line"});
         }
     }
 }
