@@ -24,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static readonly IClrTypeName DidReloadScripts = new ClrTypeName("UnityEditor.Callbacks.DidReloadScripts");
         public static readonly IClrTypeName OnOpenAssetAttribute = new ClrTypeName("UnityEditor.Callbacks.OnOpenAssetAttribute");
+        public static readonly IClrTypeName PostProcessSceneAttribute = new ClrTypeName("UnityEditor.Callbacks.PostProcessSceneAttribute");
 
         // System
         public static readonly IClrTypeName NonSerializedAttribute = new ClrTypeName("System.NonSerializedAttribute");

@@ -26,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 {KnownTypes.InitializeOnLoadMethodAttribute, GetStaticVoidMethodSignature},
                 {KnownTypes.RuntimeInitializeOnLoadMethodAttribute, GetStaticVoidMethodSignature},
                 {KnownTypes.DidReloadScripts, GetStaticVoidMethodSignature},
-                {KnownTypes.OnOpenAssetAttribute, GetOnOpeAssetMethodSignature}
+                {KnownTypes.OnOpenAssetAttribute, GetOnOpeAssetMethodSignature},
+                {KnownTypes.PostProcessSceneAttribute, GetStaticVoidMethodSignature}
             };
 
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
