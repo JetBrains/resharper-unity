@@ -25,6 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             {
                 {KnownTypes.InitializeOnLoadMethodAttribute, GetStaticVoidMethodSignature},
                 {KnownTypes.RuntimeInitializeOnLoadMethodAttribute, GetStaticVoidMethodSignature},
+                {KnownTypes.DidReloadScripts, GetStaticVoidMethodSignature},
                 {KnownTypes.OnOpenAssetAttribute, GetOnOpeAssetMethodSignature}
             };
 
