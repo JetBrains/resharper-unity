@@ -68,3 +68,5 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 resharper/src/resharper-unity/Unity3dRider/Assets/packages/*
+resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
+resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove
