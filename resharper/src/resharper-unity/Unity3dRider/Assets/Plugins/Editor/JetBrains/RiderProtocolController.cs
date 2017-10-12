@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NET_4_6
+
+using System;
 using System.IO;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
@@ -202,3 +204,4 @@ namespace Plugins.Editor.JetBrains
     }
   }
 }
+#endif
