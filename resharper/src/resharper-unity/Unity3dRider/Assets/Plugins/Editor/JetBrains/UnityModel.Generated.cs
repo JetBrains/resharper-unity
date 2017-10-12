@@ -1,4 +1,5 @@
 #if NET_4_6
+#elif RIDER
 
 using System;
 using System.Linq;
