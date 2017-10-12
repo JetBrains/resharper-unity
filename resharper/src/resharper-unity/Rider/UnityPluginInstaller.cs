@@ -206,14 +206,27 @@ Please switch back to Unity to make plugin file appear in the solution.";
         private bool DoCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
         {
             installedPath = null;
+            var pluginDirectory = installation.PluginDirectory;
+            var protocolDistributionPath =
+                installation.PluginDirectory.Combine("Rider.Plugin.Distribution.DoNotRemove");
 
-            var backups = installation.ExistingFiles.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+            var originPaths = new List<FileSystemPath>();
+            if (protocolDistributionPath.ExistsFile)
+                originPaths.AddRange(JsonConvert.DeserializeObject<string[]>(protocolDistributionPath.ReadAllText2().Text).Select(a=>pluginDirectory.Combine(a)));
+            originPaths.AddRange(installation.ExistingFiles);
 
-            foreach (var originPath in installation.ExistingFiles)
+            var backups = originPaths.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+
+            foreach (var originPath in originPaths)
             {
                 var backupPath = backups[originPath];
-                originPath.MoveFile(backupPath, true);
-                myLogger.Info($"backing up: {originPath.Name} -> {backupPath.Name}");
+                if (originPath.ExistsFile)
+                {
+                    originPath.MoveFile(backupPath, true);
+                    myLogger.Info($"backing up: {originPath.Name} -> {backupPath.Name}");
+                }
+                else
+                    myLogger.Info($"backing up failed: {originPath.Name} doesn't exist.");
             }
 
             try
@@ -237,28 +250,23 @@ Please switch back to Unity to make plugin file appear in the solution.";
                         resourceStream.CopyTo(fileStream);
                     }
                 }
-
+                
+                // copy protocol libs from Rider to plugin folder
+                var assemblies =  GetAssemblies();
+                foreach (var assembly in assemblies)
+                {
+                    assembly.CopyFile(pluginDirectory.Combine(assembly.Name), true);
+                }
+                var files = assemblies.Select(a => a.Name).ToArray();
+                var json = JsonConvert.SerializeObject(files);
+                File.WriteAllText(protocolDistributionPath.FullPath, json);
+                
                 foreach (var backup in backups)
                 {
                     backup.Value.DeleteFile();
                 }
 
                 installedPath = path;
-                
-                // copy protocol libs from Rider to plugin folder
-                var assemblies =  GetAssemblies();
-                var target = installation.PluginDirectory;
-                foreach (var assembly in assemblies)
-                {
-                    assembly.CopyFile(target.Combine(assembly.Name), true);
-                }
-                var targetList = assemblies.Select(a => target.Combine(a.Name)).ToArray();
-                var json = JsonConvert.SerializeObject(new
-                {
-                    files = targetList,
-                    currentVersion = currentVersion 
-                });
-                File.WriteAllText(installation.PluginDirectory.Combine("Rider.Plugin.Distribution.DoNotRemove").FullPath, json);
                 
                 return true;
             }
