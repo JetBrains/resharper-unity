@@ -129,8 +129,11 @@ function SetRiderSDKVersions($sdkPackageVersion)
 }
 
 function GetPackageVersionFromFolder($folder, $name) {
+  Write-Host "Looking for package $name among items:"
   foreach ($file in Get-ChildItem $folder) {
-    $match = [regex]::Match($file.Name, "^" + [Regex]::Escape($name) + "\.((\d+\.)+\d+(\-eap\d+(internal)?)?)\.nupkg$")
+    Write-Host $file
+    $match = [regex]::Match($file.Name, "^" + [Regex]::Escape($name) + "\.((\d+\.)+\d+((\-eap|\-snapshot)\d+(internal)?)?)\.nupkg$",
+        [Text.RegularExpressions.RegexOptions]::IgnoreCase)
     if ($match.Success) {
       return $match.Groups[1].Value
     }
