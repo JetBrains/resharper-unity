@@ -106,6 +106,14 @@ ShaderLab:
 
   <img src="docs/shader_syntax_highlighting.png" width="719">
 
+* Colours highlighting and editing.
+
+  <img src="docs/shader_colours_resharper.png" width="420">
+
+  Also available in Rider:
+
+  <img src="docs/shader_colours_rider.png" width="427">
+
 * Rider includes simple word based completion (so called ["hippie completion"](https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion)). This provides completion based on words found in the current file. This is not available in ReSharper.
 
   <img src="docs/shader_word_completion.png" width="462">
@@ -118,13 +126,9 @@ ShaderLab:
 
   <img src="docs/shader_code_folding.png" width="249">
 
-* Colour highlighting and editing.
-
-  <img src="docs/shader_colours.png" width="398">
-
 Cg/HLSL (Rider only):
 
-* Keyword based highlighting. Currently no syntax error highlighting.
+* Syntax highlighting for `CGPROGRAM`/`CGINCLUDE` blocks and `.cginc` files. Currently no syntax error highlighting.
 * Simple word based completion (so called ["hippie completion"](https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion)).
 
   <img src="docs/cg_word_completion.png" width="196">
@@ -141,6 +145,18 @@ See the ReSharper help for [more details on External Annotations](https://www.je
 * `EditorTestsWithLogParser.ExpectLogLineRegex` gets regular expression helper functionality.
 * Various attributes now require the class they are applied to derive from a specific base type. E.g. `[CustomEditor]` requires a base class of `Editor`).
 * Support for Unity 2017.2's modularised UnityEngine assemblies.
+
+**File Templates:**
+
+* File templates for new C# script, tests and shader files.
+
+  <img src="docs/file_templates_resharper.png" width="244">
+
+  Also available in Rider.
+
+  <img src=docs/file_templates_rider.png" width="296">
+
+* Support for editing and creating File Templates and Live Templates for Unity projects in ReSharper. Note that Rider currently doesn't support editing File and Live Templates. This is planned for Rider 2017.3)
 
 **Other:**
 
