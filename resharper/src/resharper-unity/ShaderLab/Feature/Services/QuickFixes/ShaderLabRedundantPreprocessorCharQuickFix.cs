@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -42,7 +43,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.QuickFixe
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 // TODO: When we have a code formatter for ShaderLab, we can just use CodeFormattingHelper.AddLineBreakAfter
-                var lineEnding = mySwallowedToken.GetContainingFile().DetectLineEnding();
+            
+                var lineEnding = mySwallowedToken.GetContainingFile()
+#if RIDER
+                    .DetectLineEnding(solution.GetPsiServices());
+#else
+                    .DetectLineEnding();
+#endif
+                
                 var presentationAsBuffer = lineEnding.GetPresentationAsBuffer();
                 return textControl =>
                 {
