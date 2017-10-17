@@ -152,9 +152,9 @@ See the ReSharper help for [more details on External Annotations](https://www.je
 
   <img src="docs/file_templates_resharper.png" width="244">
 
-  Also available in Rider.
+  Also available in Rider:
 
-  <img src=docs/file_templates_rider.png" width="296">
+  <img src="docs/file_templates_rider.png" width="296">
 
 * Support for editing and creating File Templates and Live Templates for Unity projects in ReSharper. Note that Rider currently doesn't support editing File and Live Templates. This is planned for Rider 2017.3)
 
