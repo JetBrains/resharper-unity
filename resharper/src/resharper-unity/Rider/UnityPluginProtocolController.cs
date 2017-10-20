@@ -4,7 +4,9 @@ using System.IO;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
@@ -21,10 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
-        public UnityModel UnityModel { get; set; }
-        private readonly IProperty<bool> myHostConnected = new Property<bool>("UnityHostConnected", false);
+        private UnityModel UnityModel { get; set; }
         private readonly IProperty<bool> myPlay = new Property<bool>("UnityPlay", false);
-
         private readonly IProperty<bool> myHostConnectedAndPlay = new Property<bool>("UnityHostConnectedAndPlay", false)
             ;
 
@@ -50,8 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             logger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
                             myPlay.SetValue(e.NewValue.ToLower() == "true");
 
-                            if (myHostConnected.Value)
-                                myHostConnectedAndPlay.SetValue(myHostConnected.Value && myPlay.Value);
+                            if (UnityModel!=null && UnityModel.HostConnected.HasValue() && UnityModel.HostConnected.Value)
+                                myHostConnectedAndPlay.SetValue(UnityModel.HostConnected.Value && myPlay.Value);
                         }
                     }
                 });
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // Add event handlers.
             watcher.Changed += OnChanged;
             watcher.Created += OnChanged;
-            watcher.Deleted += (sender, e) => { myHostConnected.SetValue(false); };
+            watcher.Deleted += (sender, e) =>{ UnityModel?.HostConnected.SetValue(false); };
 
             watcher.EnableRaisingEvents = true; // Begin watching.
             
@@ -99,7 +99,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 UnityModel = new UnityModel(myLifetime, protocol);
                 UnityModel.HostConnected.Advise(myLifetime, b =>
                 {
-                    myHostConnected.SetValue(b);
                     if (myPlay.Value)
                         myHostConnectedAndPlay.SetValue(myPlay.Value);
                 });
@@ -111,9 +110,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
     }
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     class ProtocolInstance
     {
         // ReSharper disable once InconsistentNaming
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public int port_id { get; set; }
     }
 
