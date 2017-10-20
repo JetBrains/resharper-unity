@@ -62,7 +62,17 @@ namespace Plugins.Editor.JetBrains
     private static void UpgradeProjectFile(string projectFile)
     {
       RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", projectFile));
-      var doc = XDocument.Load(projectFile);
+      XDocument doc;
+      try
+      {
+        doc = XDocument.Load(projectFile);
+      }
+      catch (Exception)
+      {
+        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Failed to Load {0}", projectFile));
+        return;
+      }
+      
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
