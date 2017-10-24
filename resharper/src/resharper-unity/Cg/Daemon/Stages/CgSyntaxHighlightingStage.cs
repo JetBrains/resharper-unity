@@ -124,7 +124,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             private readonly JetHashSet<string> mySemantics;
 
             public CgSyntaxHighlightingProcess(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file, bool isErrorHighlightingEnabled, JetHashSet<string> semantics)
+#if RIDER
+                : base(daemonProcess, file)
+            #else
                 : base(daemonProcess, settingsStore, file)
+#endif
             {
                 myIsErrorHighlightingEnabled = isErrorHighlightingEnabled;
                 mySemantics = semantics;

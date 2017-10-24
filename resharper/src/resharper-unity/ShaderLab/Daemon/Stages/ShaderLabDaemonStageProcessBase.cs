@@ -60,7 +60,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         protected void HighlightInFile(Action<IShaderLabFile, IHighlightingConsumer> fileHighlighter,
             Action<DaemonStageResult> commiter)
         {
+#if RIDER
+            var consumer = new FilteringHighlightingConsumer(myFile.GetSourceFile(), myFile);
+#else            
             var consumer = new FilteringHighlightingConsumer(this, mySettingsStore, myFile);
+#endif    
             fileHighlighter(myFile, consumer);
             commiter(new DaemonStageResult(consumer.Highlightings));
         }

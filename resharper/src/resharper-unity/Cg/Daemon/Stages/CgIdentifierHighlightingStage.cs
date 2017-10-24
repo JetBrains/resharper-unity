@@ -34,7 +34,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             private readonly ILogger myLogger;
             
             public IdentifierHighlightingProcess(ILogger logger, IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
+            #if RIDER
+                : base(daemonProcess, file)
+            #else
                 : base(daemonProcess, settingsStore, file)
+            #endif
             {
                 myLogger = logger;
             }
