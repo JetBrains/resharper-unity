@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
+using UnityEngine;
 
 namespace Plugins.Editor.JetBrains
 {
@@ -70,8 +71,7 @@ namespace Plugins.Editor.JetBrains
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
       // Unity_5_6_OR_NEWER switched to nunit 3.5
-      // Fix helps only for Windows, on mac and linux I get https://youtrack.jetbrains.com/issue/RSRP-459932
-#if UNITY_5_6_OR_NEWER && UNITY_STANDALONE_WIN
+#if UNITY_5_6_OR_NEWER 
       ChangeNunitReference(new FileInfo(projectFile).DirectoryName, projectContentElement, xmlns);
 #endif
       
@@ -108,6 +108,10 @@ namespace Plugins.Editor.JetBrains
         {
           string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
           var path = Path.Combine(unityAppBaseFolder, "Data/Managed/nunit.framework.dll");
+          if (OperatingSystemFamily.MacOSX == RiderPlugin.SystemInfoRiderPlugin.operatingSystemFamily)
+            path = Path.Combine(unityAppBaseFolder, "Unity.app/Contents/MonoBleedingEdge/lib/mono/4.5/nunit.framework.dll");
+          if (OperatingSystemFamily.Linux == RiderPlugin.SystemInfoRiderPlugin.operatingSystemFamily)
+            return;
           if (new FileInfo(path).Exists)
             hintPath.Value = path;
         }
