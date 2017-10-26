@@ -106,12 +106,8 @@ namespace Plugins.Editor.JetBrains
         var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
         if (hintPath != null)
         {
-          string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-          var path = Path.Combine(unityAppBaseFolder, "Data/Managed/nunit.framework.dll");
-          if (OperatingSystemFamily.MacOSX == RiderPlugin.SystemInfoRiderPlugin.operatingSystemFamily)
-            path = Path.Combine(unityAppBaseFolder, "Unity.app/Contents/MonoBleedingEdge/lib/mono/4.5/nunit.framework.dll");
-          if (OperatingSystemFamily.Linux == RiderPlugin.SystemInfoRiderPlugin.operatingSystemFamily)
-            return;
+          var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+          var path = Path.Combine(projectDirectory, "Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
           if (new FileInfo(path).Exists)
             hintPath.Value = path;
         }
