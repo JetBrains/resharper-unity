@@ -39,8 +39,11 @@ namespace Plugins.Editor.JetBrains
 
     private static string GetDefaultApp()
     {
+      var allFoundPaths = GetAllRiderPaths();
       var alreadySetPath = GetExternalScriptEditor();
-      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath))
+      UpdateRiderPath(allFoundPaths, alreadySetPath);
+      
+      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
         return alreadySetPath;
 
       return RiderPath;
@@ -141,6 +144,15 @@ namespace Plugins.Editor.JetBrains
       {
       }
       return false;
+    }
+
+    private static void UpdateRiderPath(string[] allFoundPaths, string alreadySetPath)
+    {
+      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
+        return ;
+      if (allFoundPaths.Contains(RiderPath))
+        return;
+      RiderPath = allFoundPaths.FirstOrDefault();
     }
 
     public static string RiderPath
@@ -305,12 +317,12 @@ namespace Plugins.Editor.JetBrains
           return false;
 
         SyncSolution(); // added to handle opening file, which was just recently created.
-        if (!DetectPortAndOpenFile(line, assetFilePath,
-          SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
-        {
+//        if (!DetectPortAndOpenFile(line, assetFilePath,
+//          SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
+//        {
           var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
           return CallRider(args);
-        }
+//        }
         return true;
       }
 
