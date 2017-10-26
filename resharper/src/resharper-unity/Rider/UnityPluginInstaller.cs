@@ -99,6 +99,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (projects.Count == 0)
                 return;
             
+            // install nunit.framework.dll
+            myQueue.Enqueue(() =>
+            {
+                var solutionDir = mySolution.SolutionFilePath.Directory;
+                var nunitFrameworkPath = solutionDir.Combine(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll");
+                if (nunitFrameworkPath.ExistsFile)
+                    myLogger.Info($"Already exists nunit.framework.dll in {nunitFrameworkPath}");
+                else
+                {
+                   //File.WriteAllBytes(Resources.);
+                }
+            });
+            
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
             var installationInfo = myDetector.GetInstallationInfo(projects, previousInstallationDir: FileSystemPath.Empty);
@@ -213,7 +226,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
             try
             {
-                var path = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
+                var path = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);         
 
                 var resourceName = ourResourceNamespace + UnityPluginDetector.MergedPluginFile;
                 using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
