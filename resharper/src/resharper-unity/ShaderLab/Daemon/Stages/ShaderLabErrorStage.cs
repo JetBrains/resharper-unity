@@ -22,8 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, IShaderLabFile file)
         {
-            return new ShaderLabErrorStageProcess(process, processKind, myElementProblemAnalyzerRegistrar, settings,
-                file);
+            return new ShaderLabErrorStageProcess(process, processKind, myElementProblemAnalyzerRegistrar, settings, file);
         }
 
         private class ShaderLabErrorStageProcess : ShaderLabDaemonStageProcessBase
@@ -35,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             {
 #if RIDER
                 var elementProblemAnalyzerData = new ElementProblemAnalyzerData(file, settings);
+                elementProblemAnalyzerData.SetDaemonProcess(process, processKind);
 #else                
                 var elementProblemAnalyzerData = new ElementProblemAnalyzerData(process, processKind, settings);
 #endif    
