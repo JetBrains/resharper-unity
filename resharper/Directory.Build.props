@@ -25,7 +25,7 @@
 
   <!-- Specify Rider SDK version in one place -->
   <PropertyGroup>
-    <RiderSDKVersion>2017.2-SNAPSHOT*</RiderSDKVersion>
+    <RiderSDKVersion>2017.3-SNAPSHOT*</RiderSDKVersion>
   </PropertyGroup>  
 
   <Import Project="..\Packaging.props" />

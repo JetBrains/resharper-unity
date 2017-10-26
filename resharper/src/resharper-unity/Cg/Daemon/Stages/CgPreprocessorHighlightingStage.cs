@@ -20,7 +20,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         private class CgPreprocessorHighligthingProcess : CgDaemonStageProcessBase
         {
             public CgPreprocessorHighligthingProcess(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
+            #if RIDER
+                : base(daemonProcess, file)
+            #else
                 : base(daemonProcess, settingsStore, file)
+            #endif
             {
             }
 

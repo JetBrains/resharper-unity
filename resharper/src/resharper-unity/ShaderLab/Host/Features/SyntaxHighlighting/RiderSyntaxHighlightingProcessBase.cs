@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Host.Features.SyntaxHighlighting
 
         public void Execute(Action<DaemonStageResult> committer)
         {
-            var consumer = new DefaultHighlightingConsumer(this, mySettingsStore);
+            var consumer = new DefaultHighlightingConsumer(File.GetSourceFile());
             File.ProcessDescendants(this, consumer);
             committer(new DaemonStageResult(consumer.Highlightings));
         }
