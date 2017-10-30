@@ -585,7 +585,8 @@ All those problems will go away after Unity upgrades to mono4.";
     }
 
     #region SystemInfoRiderPlugin
-    internal static class SystemInfoRiderPlugin
+
+    private static class SystemInfoRiderPlugin
     {
       public static OperatingSystemFamily operatingSystemFamily
       {
