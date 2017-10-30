@@ -1,3 +1,7 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+import java.util.regex.Pattern
+
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.1.51'
@@ -10,6 +14,78 @@ wrapper {
     gradleVersion '4.2'
 }
 
+if (!ext.has("Source"))
+    ext.Source = null
+
+if (!ext.has("BuildCounter"))
+    ext.BuildCounter = 9999
+
+if (!ext.has("SinceBuild"))
+    ext.SinceBuild = null
+
+if (!ext.has("UntilBuild"))
+    ext.UntilBuild = null
+
+if (!ext.has("BuildConfiguration"))
+    ext.BuildConfiguration = "Release"
+
+if (!ext.has("NoBuild"))
+    ext.NoBuild = false
+
+ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+
+// called only when Source parameter is explicitly passed (e.g. bundled plugin build)
+task setRiderSDKVersion() {
+    // Get package version from folder
+    def directory = new File(Source as String)
+    def packageName = "JetBrains.Rider.SDK"
+    def escapedPackagedName = Pattern.quote(packageName)
+    logger.info "Looking for package $packageName among items:"
+    def sdkPackageVersion = fileTree(directory).collect {
+        FileVisitDetails d ->
+            if (d.isDirectory())
+                return null
+
+            def match = (d.name =~ /^$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(internal)?)?)\.nupkg\u0024/)
+            if (!match.matches())
+                return null
+
+            return match[0]
+    }.first()
+
+    if (sdkPackageVersion == null) {
+        logger.error("Package $packageName was not found in folder $directory")
+        throw new InvalidUserDataException()
+    }
+
+    // Set Rider SDK version
+    logger.info("Setting versions:")
+    logger.info("JetBrains.Rider.SDK -> $sdkPackageVersion")
+    logger.info("JetBrains.Rider.SDK.Tests -> $sdkPackageVersion")
+
+    def buildPropsFile = new File("resharper/Directory.Build.props")
+    def sdkPropertyName = "RiderSDKVersion"     // used for logging and checking whether the property exists, actual setting is hardcoded
+
+    logger.info("- ${buildPropsFile.name}: $sdkPropertyName -> $sdkPackageVersion")
+
+    def parser = new XmlParser()
+    def root = parser.parse(buildPropsFile)
+    // Project -> PropertyGroup (3) -> RiderSDKVersion
+
+    def sdkPropertyGroup = root.Project.first { Node n -> n.name() == "PropertyGroup" && n.hasProperty(sdkPropertyName) }
+    if (sdkPropertyGroup == null)
+    {
+        logger.error("//$sdkPropertyName was not found in $buildPropsFile.name")
+        throw new GradleScriptException()
+    }
+
+}
+
+task buildWithBackend() {
+    if (Source != null)
+        setRiderSDKVersion()
+}
+
 sourceSets {
     test {
         java.srcDir 'testSrc'
@@ -17,8 +93,34 @@ sourceSets {
     }
 }
 
-if (!ext.has("myArgs")){
-    ext.myArgs = "Debug,2.1.2.9999"
+intellij {
+    type = 'RD'
+
+    // Download a version of Rider to compile and run with. Either set `version` to
+    // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
+    // This will download from www.jetbrains.com/intellij-repository/snapshots or
+    // www.jetbrains.com/intellij-repository/releases, respectively.
+    // Note that there's no guarantee that these are kept up to date
+    // version = 'LATEST-TRUNK-SNAPSHOT'
+    // If the build isn't available in intellij-repository, use an installed version via `localPath`
+    // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
+    // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
+    // localPath = "C:\\Users\\ivan.pashchenko\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\173.3389.392"
+    // localPath = '/Users/ivan/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/173.3389.392/Rider EAP.app/Contents'
+
+    def dir = file('dependencies')
+    if (dir.exists()) {
+        localPath = dir.absolutePath
+    } else {
+        version = 'LATEST-TRUNK-SNAPSHOT' // Trunk until we have release
+    }
+
+    // Sources aren't available for Rider
+    downloadSources = false
+}
+
+if (!ext.has("myArgs")) {
+    ext.myArgs = "Release,2.1.2.9999"
 }
 
 ext.args = myArgs.split(',')
@@ -36,37 +138,10 @@ ext.nupkg_path = "$projectDir/../resharper/build/resharper-unity.rider/bin/$ext.
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-compileKotlin{
-    kotlinOptions{
+compileKotlin {
+    kotlinOptions {
         jvmTarget = "1.8"
     }
-}
-
-intellij {
-    type = 'RD'
-
-    // Download a version of Rider to compile and run with. Either set `version` to
-    // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
-    // This will download from www.jetbrains.com/intellij-repository/snapshots or
-    // www.jetbrains.com/intellij-repository/releases, respectively.
-    // Note that there's no guarantee that these are kept up to date
-    // version = 'LATEST-TRUNK-SNAPSHOT'
-    // If the build isn't available in intellij-repository, use an installed version via `localPath`
-    // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
-    // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
-    // localPath = "C:\\Users\\ivan.pashchenko\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\dev"
-    // localPath = '/Users/ivan/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/172.4144.636/Rider EAP.app/Contents'
-
-    def dir = file('dependencies')
-    if (dir.exists()) {
-      localPath = dir.absolutePath
-    }
-    else {
-      version = 'LATEST-TRUNK-SNAPSHOT' // Trunk until we have release
-    }
-
-    // Sources aren't available for Rider
-    downloadSources = false
 }
 
 repositories {
