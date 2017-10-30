@@ -1,5 +1,4 @@
 import org.apache.tools.ant.taskdefs.condition.Os
-
 import java.util.regex.Pattern
 
 plugins {
@@ -34,56 +33,69 @@ if (!ext.has("NoBuild"))
 
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
-// called only when Source parameter is explicitly passed (e.g. bundled plugin build)
+ext.replaceInFile = { File file, String regex, String replacement ->
+    def lines = file.readLines()
+    def replaced = lines.collect{
+        String line -> line.replaceAll(regex, replacement)
+    }
+
+    def fullText = replaced.join("\n")
+    file.withOutputStream {
+        OutputStream os ->
+            os.withWriter{
+                Writer w -> w.write(fullText)
+            }
+            os.flush()
+            os.close()
+    }
+
+    // TODO: notify if no matches found
+}
+
 task setRiderSDKVersion() {
+    if (Source == null) {
+        logger.lifecycle("Explict SDK version is not set, skipping .props modification")
+        return
+    }
     // Get package version from folder
     def directory = new File(Source as String)
     def packageName = "JetBrains.Rider.SDK"
     def escapedPackagedName = Pattern.quote(packageName)
-    logger.info "Looking for package $packageName among items:"
-    def sdkPackageVersion = fileTree(directory).collect {
-        FileVisitDetails d ->
-            if (d.isDirectory())
+    logger.lifecycle("Looking for package $packageName among items:")
+    def sdkPackageVersion = directory.listFiles().collect {
+        File f ->
+            if (f.isDirectory())
                 return null
 
-            def match = (d.name =~ /^$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(internal)?)?)\.nupkg\u0024/)
+            logger.trace(f.name)
+            def match = (f.name =~ /^$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(internal)?)?)\.nupkg\u0024/)
             if (!match.matches())
                 return null
 
-            return match[0]
-    }.first()
+            def matchValue = match[0][1]
+            return matchValue
+    }.find { String s -> s != null }
 
     if (sdkPackageVersion == null) {
-        logger.error("Package $packageName was not found in folder $directory")
-        throw new InvalidUserDataException()
+        throw new InvalidUserDataException("Package $packageName was not found in folder $directory")
     }
 
     // Set Rider SDK version
-    logger.info("Setting versions:")
-    logger.info("JetBrains.Rider.SDK -> $sdkPackageVersion")
-    logger.info("JetBrains.Rider.SDK.Tests -> $sdkPackageVersion")
+    logger.lifecycle("Setting versions:")
+    logger.lifecycle("JetBrains.Rider.SDK -> $sdkPackageVersion")
+    logger.lifecycle("JetBrains.Rider.SDK.Tests -> $sdkPackageVersion")
 
-    def buildPropsFile = new File("resharper/Directory.Build.props")
+    def buildPropsFile = new File("../resharper/Directory.Build.props")
     def sdkPropertyName = "RiderSDKVersion"     // used for logging and checking whether the property exists, actual setting is hardcoded
 
-    logger.info("- ${buildPropsFile.name}: $sdkPropertyName -> $sdkPackageVersion")
+    logger.lifecycle("- ${buildPropsFile.name}: $sdkPropertyName -> $sdkPackageVersion")
 
-    def parser = new XmlParser()
-    def root = parser.parse(buildPropsFile)
-    // Project -> PropertyGroup (3) -> RiderSDKVersion
-
-    def sdkPropertyGroup = root.Project.first { Node n -> n.name() == "PropertyGroup" && n.hasProperty(sdkPropertyName) }
-    if (sdkPropertyGroup == null)
-    {
-        logger.error("//$sdkPropertyName was not found in $buildPropsFile.name")
-        throw new GradleScriptException()
-    }
-
+    String regex = "^(\\s*<RiderSDKVersion>)[^<]*(<\\/RiderSDKVersion>)\\s*\$"
+    replaceInFile(buildPropsFile, regex, "\$1$sdkPackageVersion\$2")
 }
 
-task buildWithBackend() {
-    if (Source != null)
-        setRiderSDKVersion()
+task buildWithBackend {
+    dependsOn setRiderSDKVersion
 }
 
 sourceSets {
@@ -129,8 +141,8 @@ ext.version = ext.args[1]
 
 version ext.version
 
-println("ext.version=$ext.version")
-println("ext.configuration=$ext.configuration")
+logger.lifecycle("ext.version=$ext.version")
+logger.lifecycle("ext.configuration=$ext.configuration")
 
 ext.kotlin_version = '1.1.51'
 ext.nupkg_path = "$projectDir/../resharper/build/resharper-unity.rider/bin/$ext.configuration/JetBrains.Unity.$ext.version-rider.nupkg"
