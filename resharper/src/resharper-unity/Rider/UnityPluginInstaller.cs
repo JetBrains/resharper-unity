@@ -104,12 +104,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 var solutionDir = mySolution.SolutionFilePath.Directory;
                 var nunitFrameworkPath = solutionDir.Combine(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll");
+                if (!nunitFrameworkPath.IsAbsolute)
+                {
+                    myLogger.Info($"Path to nunit.framework.dll {nunitFrameworkPath} is not Absolute.");
+                    return;
+                }
                 if (nunitFrameworkPath.ExistsFile)
                     myLogger.Info($"Already exists nunit.framework.dll in {nunitFrameworkPath}");
                 else
                 {
                     var assembly = Assembly.GetExecutingAssembly();
-                    var resourceName = typeof(KnownTypes).Namespace + ".Unity3dRider.Library.resharper-unity-libs.nunit3.5.0.nunit.framework.dll";
+                    //JetBrains.ReSharper.Plugins.Unity.Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll
+                    var resourceName = typeof(KnownTypes).Namespace + ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll";
 
                     using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
                     using (var fileStream = nunitFrameworkPath.OpenStream(FileMode.OpenOrCreate))
