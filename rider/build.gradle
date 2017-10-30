@@ -44,7 +44,7 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
     // localPath = "C:\\Users\\ivan.pashchenko\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\dev"
-     localPath = 'F:\\Downloads\\JetBrains.Rider-2017.2-172.4144.1478'
+    // localPath = '/Users/ivan/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/172.4144.636/Rider EAP.app/Contents'
 
     def dir = file('dependencies')
     if (dir.exists()) {
