@@ -90,6 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void InstallPluginIfRequired(ICollection<IProject> projects)
         {
+            InstallNunitFramework();
+            
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
             
@@ -98,36 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             if (projects.Count == 0)
                 return;
-            
-            // install nunit.framework.dll
-            myQueue.Enqueue(() =>
-            {
-                var solutionDir = mySolution.SolutionFilePath.Directory;
-                var nunitFrameworkPath = solutionDir.Combine(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll");
-                if (!nunitFrameworkPath.IsAbsolute)
-                {
-                    myLogger.Info($"Path to nunit.framework.dll {nunitFrameworkPath} is not Absolute.");
-                    return;
-                }
-                if (nunitFrameworkPath.ExistsFile)
-                    myLogger.Info($"Already exists nunit.framework.dll in {nunitFrameworkPath}");
-                else
-                {
-                    var assembly = Assembly.GetExecutingAssembly();
-                    //JetBrains.ReSharper.Plugins.Unity.Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll
-                    var resourceName = typeof(KnownTypes).Namespace + ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll";
 
-                    using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
-                    using (var fileStream = nunitFrameworkPath.OpenStream(FileMode.OpenOrCreate))
-                    {
-                        if (resourceStream==null)
-                            myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
-                        else
-                            resourceStream.CopyTo(fileStream);
-                    }
-                }
-            });
-            
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
             var installationInfo = myDetector.GetInstallationInfo(projects, previousInstallationDir: FileSystemPath.Empty);
@@ -144,6 +117,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 Install(installationInfo);
                 myPluginInstallations.Add(mySolution.SolutionFilePath);
+            });
+        }
+
+        private void InstallNunitFramework()
+        {
+            var solutionDir = mySolution.SolutionFilePath.Directory;
+            var nunitFrameworkPath = solutionDir.Combine(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll");
+            if (!nunitFrameworkPath.IsAbsolute)
+            {
+                myLogger.Info($"Path to nunit.framework.dll {nunitFrameworkPath} is not Absolute.");
+                return;
+            }
+            if (nunitFrameworkPath.ExistsFile)
+            {
+                myLogger.Info($"Already exists nunit.framework.dll in {nunitFrameworkPath}");
+                return;
+            }
+            
+            // install nunit.framework.dll
+            myQueue.Enqueue(() =>
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                //JetBrains.ReSharper.Plugins.Unity.Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll
+                var resourceName = typeof(KnownTypes).Namespace +
+                                   ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll";
+
+                using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    nunitFrameworkPath.Directory.CreateDirectory();
+                    using (var fileStream = nunitFrameworkPath.OpenStream(FileMode.Create))
+                    {
+                        if (resourceStream == null)
+                            myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
+                        else
+                            resourceStream.CopyTo(fileStream);
+                    }    
+                }
             });
         }
 
