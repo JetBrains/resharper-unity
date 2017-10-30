@@ -252,7 +252,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
             try
             {
-                var path = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);         
+                var path = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
 
                 var resourceName = ourResourceNamespace + UnityPluginDetector.MergedPluginFile;
                 using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
