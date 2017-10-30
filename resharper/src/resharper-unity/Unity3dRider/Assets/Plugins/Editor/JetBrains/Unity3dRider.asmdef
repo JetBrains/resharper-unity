@@ -1,0 +1,5 @@
+{
+  "name": "Unity3dRider",
+  "references" : [],
+  "includePlatforms":["Editor"]
+}

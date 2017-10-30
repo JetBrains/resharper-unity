@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic; // do not remove - check preprocessor excluded code
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -62,17 +62,28 @@ namespace Plugins.Editor.JetBrains
     private static void UpgradeProjectFile(string projectFile)
     {
       RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", projectFile));
-      var doc = XDocument.Load(projectFile);
+      XDocument doc;
+      try
+      {
+        doc = XDocument.Load(projectFile);
+      }
+      catch (Exception)
+      {
+        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Failed to Load {0}", projectFile));
+        return;
+      }
+      
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
+      RemoveDllReference("JetBrains.Annotations", xmlns, projectContentElement); // Red code in the UnityModel.Generated.cs, because UnityEngine.CoreModule also has JetBrains.Annotations.
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
       // Unity_5_6_OR_NEWER switched to nunit 3.5
       // Fix helps only for Windows, on mac and linux I get https://youtrack.jetbrains.com/issue/RSRP-459932
 #if UNITY_5_6_OR_NEWER && UNITY_STANDALONE_WIN
-      ChangeNunitReference(new FileInfo(projectFile).DirectoryName, projectContentElement, xmlns);
+      ChangeNunitReference(projectContentElement, xmlns);
 #endif
       
 #if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself 
@@ -82,25 +93,37 @@ namespace Plugins.Editor.JetBrains
 #endif
       doc.Save(projectFile);
     }
-    
+
+    private static void RemoveDllReference(string referenceName, XNamespace xmlns, XElement projectContentElement)
+    {
+      var elements = projectContentElement
+        .Elements(xmlns + "ItemGroup")
+        .Elements(xmlns + "Reference")
+        .Where(a => a.Attribute("Include") !=null && a.Attribute("Include").Value == referenceName).ToArray();
+      foreach (var element in elements)
+      {
+        element.Remove();
+      }
+    }
+
     private static void FixSystemXml(XElement projectContentElement, XNamespace xmlns)
     {
       var el = projectContentElement
         .Elements(xmlns+"ItemGroup")
         .Elements(xmlns+"Reference")
-        .FirstOrDefault(a => a.Attribute("Include").Value=="System.XML");
+        .FirstOrDefault(a => a.Attribute("Include") !=null && a.Attribute("Include").Value=="System.XML");
       if (el != null)
       {
         el.Attribute("Include").Value = "System.Xml";
       }
     }
 
-    private static void ChangeNunitReference(string baseDir, XElement projectContentElement, XNamespace xmlns)
+    private static void ChangeNunitReference(XElement projectContentElement, XNamespace xmlns)
     {
       var el = projectContentElement
         .Elements(xmlns+"ItemGroup")
         .Elements(xmlns+"Reference")
-        .FirstOrDefault(a => a.Attribute("Include").Value=="nunit.framework");
+        .FirstOrDefault(a =>  a.Attribute("Include") !=null && a.Attribute("Include").Value=="nunit.framework");
       if (el != null)
       {
         var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();

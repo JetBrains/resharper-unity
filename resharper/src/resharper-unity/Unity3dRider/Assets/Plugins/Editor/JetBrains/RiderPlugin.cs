@@ -555,7 +555,7 @@ All those problems will go away after Unity upgrades to mono4.";
       {
         RiderInitializedOnce = false;
       }*/
-
+      
       EditorGUILayout.EndVertical();
     }
 

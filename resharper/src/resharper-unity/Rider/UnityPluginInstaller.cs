@@ -13,8 +13,12 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
+using JetBrains.Metadata.Utils;
+using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.Util.Reflection;
+using Newtonsoft.Json;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -117,6 +121,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myPluginInstallations.Add(mySolution.SolutionFilePath);
             });
         }
+        
+        Version currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
 
         private void Install(UnityPluginDetector.InstallationInfo installationInfo)
         {
@@ -132,7 +138,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
 
-            var currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
             if (currentVersion <= installationInfo.Version)
             {
                 myLogger.Verbose($"Plugin v{installationInfo.Version} already installed.");
@@ -201,14 +206,27 @@ Please switch back to Unity to make plugin file appear in the solution.";
         private bool DoCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
         {
             installedPath = null;
+            var pluginDirectory = installation.PluginDirectory;
+            var protocolDistributionPath =
+                installation.PluginDirectory.Combine("Rider.Plugin.Distribution.DoNotRemove");
 
-            var backups = installation.ExistingFiles.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+            var originPaths = new List<FileSystemPath>();
+            if (protocolDistributionPath.ExistsFile)
+                originPaths.AddRange(JsonConvert.DeserializeObject<string[]>(protocolDistributionPath.ReadAllText2().Text).Select(a=>pluginDirectory.Combine(a)));
+            originPaths.AddRange(installation.ExistingFiles);
 
-            foreach (var originPath in installation.ExistingFiles)
+            var backups = originPaths.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+
+            foreach (var originPath in originPaths)
             {
                 var backupPath = backups[originPath];
-                originPath.MoveFile(backupPath, true);
-                myLogger.Info($"backing up: {originPath.Name} -> {backupPath.Name}");
+                if (originPath.ExistsFile)
+                {
+                    originPath.MoveFile(backupPath, true);
+                    myLogger.Info($"backing up: {originPath.Name} -> {backupPath.Name}");
+                }
+                else
+                    myLogger.Info($"backing up failed: {originPath.Name} doesn't exist.");
             }
 
             try
@@ -232,14 +250,24 @@ Please switch back to Unity to make plugin file appear in the solution.";
                         resourceStream.CopyTo(fileStream);
                     }
                 }
-
+                
+                // copy protocol libs from Rider to plugin folder
+                var assemblies =  GetAssemblies();
+                foreach (var assembly in assemblies)
+                {
+                    assembly.CopyFile(pluginDirectory.Combine(assembly.Name), true);
+                }
+                var files = assemblies.Select(a => a.Name).ToArray();
+                var json = JsonConvert.SerializeObject(files);
+                File.WriteAllText(protocolDistributionPath.FullPath, json);
+                
                 foreach (var backup in backups)
                 {
                     backup.Value.DeleteFile();
                 }
 
                 installedPath = path;
-
+                
                 return true;
             }
             catch (Exception e)
@@ -249,6 +277,51 @@ Please switch back to Unity to make plugin file appear in the solution.";
                 RestoreFromBackup(backups);
 
                 return false;
+            }
+        }
+        
+        HashSet<FileSystemPath> GetAssemblies()
+        {
+             HashSet<FileSystemPath> visitedAssemblies = new HashSet<FileSystemPath>();
+            var baseDir = FileSystemPath.Parse(AppDomain.CurrentDomain.BaseDirectory);
+            Type type = typeof(JetBrains.Rider.Model.IRiderModelZone);
+            var protocolAssembly = type.Assembly;
+            if (protocolAssembly.GetPath().Directory!=baseDir)
+                throw new Exception(string.Format("protocolAssembly.GetPath().Directory!=FileSystemPath.Parse(baseDir) {0} {1}", protocolAssembly.GetPath().Directory, baseDir));
+            visitedAssemblies.Add(protocolAssembly.GetPath());
+            var assemblyNames = protocolAssembly.GetReferencedAssemblies();
+            
+            var dllInBinDir = baseDir.GetChildFiles("*.dll");
+            var allAssembliesInTheAppDomain = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assemblyName in assemblyNames)
+            {
+                RecursiveGetAssemblies(assemblyName, dllInBinDir.ToArray(), allAssembliesInTheAppDomain, visitedAssemblies);
+            }
+            foreach (var visitedAssembly in visitedAssemblies)
+            {
+                myLogger.Verbose(visitedAssembly.FullPath);    
+            }
+            myLogger.Verbose(visitedAssemblies.Count.ToString());
+            return visitedAssemblies;
+        }
+        
+        private void RecursiveGetAssemblies(AssemblyName name, FileSystemPath[] dllInBinDir, Assembly[] allAssembliesInTheAppDomain, HashSet<FileSystemPath> visitedAssemblies)
+        {
+            var lib = dllInBinDir.Where(a => a.NameWithoutExtension.Contains(name.Name)).ToArray();
+            if (lib.Any())
+            {
+                if (visitedAssemblies.Contains(lib.First())) return;
+                visitedAssemblies.Add(lib.First());
+                
+                Assembly assembly = allAssembliesInTheAppDomain.SingleOrDefault(s => s.GetName().Name == name.Name);
+                if (assembly == null) return;
+                
+                var assemblyNames = assembly.GetReferencedAssemblies();
+
+                foreach (var assemblyName in assemblyNames)
+                {
+                    RecursiveGetAssemblies(assemblyName, dllInBinDir, allAssembliesInTheAppDomain, visitedAssemblies);
+                }
             }
         }
 
