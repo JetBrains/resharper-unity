@@ -132,7 +132,7 @@ intellij {
 }
 
 if (!ext.has("myArgs")) {
-    ext.myArgs = "Release,2.1.2.9999"
+    ext.myArgs = "Release,2.1.3.9999"
 }
 
 ext.args = myArgs.split(',')
