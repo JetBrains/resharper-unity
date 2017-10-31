@@ -95,7 +95,7 @@ namespace Plugins.Editor.JetBrains
     {
       get
       {
-        var defaultValue = "4.5";
+        var defaultValue = "4.6";
         if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
         {
           var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
