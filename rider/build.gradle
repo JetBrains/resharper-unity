@@ -25,5 +25,10 @@ if (!ext.has("UntilBuild"))
 if (!ext.has("BuildConfiguration"))
     ext.BuildConfiguration = "Release"
 
+ext.version = "2.1.3.$BuildCounter"
+version ext.version
+
+logger.lifecycle("version=$ext.version")
+
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'

@@ -23,16 +23,16 @@ class BackendHelper {
     // relies on pretty simplistic structure (e.g. no attributes)
     void PatchXmlNodeValue(File file, String nodeName, String value) {
         logger.lifecycle("- ${file.name}: $nodeName -> $value")
-
-        PatchFile(file, /^(\s*<$nodeName>)[^<]*(<\\/$nodeName>)\s*\\u0024/, "\$1$value\$2")
+        PatchFile(file, /(\s*<$nodeName>)[^<]*(<\\/$nodeName>)\s*/, "\$1$value\$2")
     }
 
     void PatchFile(File file, String regex, String replacement) {
-        logger.lifecycle("- ${file.name}: $regex -> $replacement")
+        def pattern = Pattern.compile(regex)
+        logger.lifecycle("- ${file.name}: $pattern -> $replacement")
 
         def lines = file.readLines()
         def replaced = lines.collect {
-            String line -> line.replaceAll(regex, replacement)
+            String line -> pattern.matcher(line).replaceAll(replacement)
         }
 
         def fullText = replaced.join("\n")
@@ -120,15 +120,15 @@ task restorePackages {
 
 task updatePackagingPropsVersion {
     group = backendGroup
-    description = 'Builds .NET part of the plugin.'
+    description = 'Updates packaging.props file with BuildCounter value.'
 
     doLast {
         def packagingPropsFile = new File(backend.repositoryRoot, "Packaging.props")
         if (!packagingPropsFile.isFile())
             throw new FileNotFoundException(packagingPropsFile.toString())
 
-        backend.PatchFile(packagingPropsFile, /(\w*<Version>)((?:\d+\.)+)\d+(<\/Version>)/, "\$1\$2$BuildCounter\$3")
-        backend.PatchFile(packagingPropsFile, /(\w*<AssemblyVersion>)((?:\d+\.)+)\d+(<\/AssemblyVersion>)/, "\$1\$2$BuildCounter\$3")
+        backend.PatchXmlNodeValue(packagingPropsFile, "Version", version.toString())
+        backend.PatchXmlNodeValue(packagingPropsFile, "AssemblyVersion", version.toString())
     }
 }
 

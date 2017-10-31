@@ -37,11 +37,7 @@ if (!ext.has("myArgs")) {
 
 ext.args = myArgs.split(',')
 ext.configuration = ext.args[0]
-ext.version = ext.args[1]
 
-version ext.version
-
-logger.lifecycle("ext.version=$ext.version")
 logger.lifecycle("ext.configuration=$ext.configuration")
 
 ext.kotlin_version = '1.1.51'
@@ -60,15 +56,25 @@ repositories {
     mavenCentral()
 }
 
-assert file(nupkg_path).exists()
+task assertBackendIsBuilt{
+    doLast {
+        assert file(nupkg_path).exists()
+    }
+}
+
+buildPlugin {
+    dependsOn assertBackendIsBuilt
+}
 
 prepareSandbox {
+    dependsOn assertBackendIsBuilt
     from(nupkg_path, {
         into "$intellij.pluginName"
     })
 }
 
 prepareTestingSandbox {
+    dependsOn assertBackendIsBuilt
     from(nupkg_path, {
         into "$intellij.pluginName"
     })
