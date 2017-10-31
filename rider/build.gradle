@@ -31,6 +31,17 @@ if (!ext.has("BuildConfiguration"))
 if (!ext.has("NoBuild"))
     ext.NoBuild = false
 
+class BackendConfiguration{
+    File rootDir
+    File solution
+
+    BackendConfiguration(String rootDirPath, String solutionRelativePath) {
+        this.rootDir = new File(rootDirPath)
+        this.solution = new File(rootDir, solutionRelativePath)
+    }
+}
+
+ext.backend = new BackendConfiguration("./../resharper/", "src/resharper-unity.sln")
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
 ext.replaceInFile = { File file, String regex, String replacement ->
@@ -52,50 +63,82 @@ ext.replaceInFile = { File file, String regex, String replacement ->
     // TODO: notify if no matches found
 }
 
-task setRiderSDKVersion() {
-    if (Source == null) {
-        logger.lifecycle("Explict SDK version is not set, skipping .props modification")
-        return
-    }
-    // Get package version from folder
-    def directory = new File(Source as String)
-    def packageName = "JetBrains.Rider.SDK"
-    def escapedPackagedName = Pattern.quote(packageName)
-    logger.lifecycle("Looking for package $packageName among items:")
-    def sdkPackageVersion = directory.listFiles().collect {
-        File f ->
-            if (f.isDirectory())
-                return null
-
-            logger.trace(f.name)
-            def match = (f.name =~ /^$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(internal)?)?)\.nupkg\u0024/)
-            if (!match.matches())
-                return null
-
-            def matchValue = match[0][1]
-            return matchValue
-    }.find { String s -> s != null }
-
-    if (sdkPackageVersion == null) {
-        throw new InvalidUserDataException("Package $packageName was not found in folder $directory")
-    }
-
-    // Set Rider SDK version
-    logger.lifecycle("Setting versions:")
-    logger.lifecycle("JetBrains.Rider.SDK -> $sdkPackageVersion")
-    logger.lifecycle("JetBrains.Rider.SDK.Tests -> $sdkPackageVersion")
-
-    def buildPropsFile = new File("../resharper/Directory.Build.props")
-    def sdkPropertyName = "RiderSDKVersion"     // used for logging and checking whether the property exists, actual setting is hardcoded
-
-    logger.lifecycle("- ${buildPropsFile.name}: $sdkPropertyName -> $sdkPackageVersion")
-
-    String regex = "^(\\s*<RiderSDKVersion>)[^<]*(<\\/RiderSDKVersion>)\\s*\$"
-    replaceInFile(buildPropsFile, regex, "\$1$sdkPackageVersion\$2")
+ext.teamcityMessage = { String type, String message ->
+    logger.lifecycle("##teamcity[$type '$message']")
 }
 
-task buildWithBackend {
-    dependsOn setRiderSDKVersion
+def resharperGroup = 'ReSharper'
+
+task updateDirectoryBuildProps {
+    group = resharperGroup
+    description = 'Parses SDK version from Source parameter and updates .props file accordingly. Does nothing if the Source is not set.'
+    doLast {
+        if (Source == null) {
+            logger.lifecycle("Explict SDK version is not set, skipping .props modification")
+            return
+        }
+        // Get package version from folder
+        def directory = new File(Source as String)
+        def packageName = "JetBrains.Rider.SDK"
+        def escapedPackagedName = Pattern.quote(packageName)
+        logger.lifecycle("Looking for package $packageName among items:")
+        def sdkPackageVersion = directory.listFiles().collect {
+            File f ->
+                if (f.isDirectory())
+                    return null
+
+                logger.trace(f.name)
+                def match = (f.name =~ /^$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(internal)?)?)\.nupkg\u0024/)
+                if (!match.matches())
+                    return null
+
+                def matchValue = match[0][1]
+                return matchValue
+        }.find { String s -> s != null }
+
+        if (sdkPackageVersion == null) {
+            throw new InvalidUserDataException("Package $packageName was not found in folder $directory")
+        }
+
+        // Set Rider SDK version
+        logger.lifecycle("Setting versions:")
+        logger.lifecycle("JetBrains.Rider.SDK -> $sdkPackageVersion")
+        logger.lifecycle("JetBrains.Rider.SDK.Tests -> $sdkPackageVersion")
+
+        def buildPropsFile = new File(backend.rootDir, "Directory.Build.props")
+        def sdkPropertyName = "RiderSDKVersion"
+        // used for logging and checking whether the property exists, actual setting is hardcoded
+
+        logger.lifecycle("- ${buildPropsFile.name}: $sdkPropertyName -> $sdkPackageVersion")
+
+        String regex = "^(\\s*<RiderSDKVersion>)[^<]*(<\\/RiderSDKVersion>)\\s*\$"
+        replaceInFile(buildPropsFile, regex, "\$1$sdkPackageVersion\$2")
+    }
+}
+
+task restorePackages{
+    group = resharperGroup
+    description = 'Restores NuGet packages for the solution. Adds Source as package source if provided.'
+    doLast {
+        teamcityMessage("progressMessage", "Restoring packages")
+        def restoreArguments = Source == null ? ["restore", backend.solution] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", Source, backend.solution]
+        exec {
+            commandLine = ["dotnet"]
+            args = restoreArguments
+        }
+    }
+}
+
+task buildBackend {
+    group = resharperGroup
+    description = 'Builds .NET part of the plugin.'
+    dependsOn updateDirectoryBuildProps
+    dependsOn restorePackages
+    if (!backend.solution.isFile())
+        throw new GradleException("Solution file not found on path=$backend.solution")
+    doLast {
+        logger.lifecycle("running buildBackend")
+    }
 }
 
 sourceSets {
