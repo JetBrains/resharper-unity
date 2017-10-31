@@ -1,48 +1,65 @@
+// TODO: NoBuild
+// TODO: RunIde
+
+def backendGroup = 'backend'
+
 import org.apache.tools.ant.taskdefs.condition.Os
 
 import java.util.regex.Pattern
 
-class BackendConfiguration{
-    File rootDir
+class BackendHelper {
+    File repositoryRoot
+    File srcDir
     File solution
+    Logger logger
 
-    BackendConfiguration(String rootDirPath, String solutionRelativePath) {
-        this.rootDir = new File(rootDirPath)
-        this.solution = new File(rootDir, solutionRelativePath)
+    BackendHelper(String repositoryRoot, String srcRelative, String solutionRelativeToSrc, Logger logger) {
+        this.repositoryRoot = new File(repositoryRoot)
+        this.srcDir = new File(repositoryRoot, srcRelative)
+        this.solution = new File(this.srcDir, solutionRelativeToSrc)
+        this.logger = logger
+    }
+
+    // relies on pretty simplistic structure (e.g. no attributes)
+    void PatchXmlNodeValue(File file, String nodeName, String value) {
+        logger.lifecycle("- ${file.name}: $nodeName -> $value")
+
+        PatchFile(file, /^(\s*<$nodeName>)[^<]*(<\\/$nodeName>)\s*\\u0024/, "\$1$value\$2")
+    }
+
+    void PatchFile(File file, String regex, String replacement) {
+        logger.lifecycle("- ${file.name}: $regex -> $replacement")
+
+        def lines = file.readLines()
+        def replaced = lines.collect {
+            String line -> line.replaceAll(regex, replacement)
+        }
+
+        def fullText = replaced.join("\n")
+        file.withOutputStream {
+            OutputStream os ->
+                os.withWriter {
+                    Writer w -> w.write(fullText)
+                }
+                os.flush()
+                os.close()
+        }
+
+        // TODO: notify if no matches found
+    }
+
+    void ReportProgress(String message) {
+        logger.lifecycle("##teamcity[progressMessage '$message']")
     }
 }
 
-ext.backend = new BackendConfiguration("./../resharper/", "src/resharper-unity.sln")
+ext.backend = new BackendHelper("..", "resharper/", "src/resharper-unity.sln", logger)
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
-ext.replaceInFile = { File file, String regex, String replacement ->
-    def lines = file.readLines()
-    def replaced = lines.collect{
-        String line -> line.replaceAll(regex, replacement)
-    }
-
-    def fullText = replaced.join("\n")
-    file.withOutputStream {
-        OutputStream os ->
-            os.withWriter{
-                Writer w -> w.write(fullText)
-            }
-            os.flush()
-            os.close()
-    }
-
-    // TODO: notify if no matches found
-}
-
-ext.teamcityMessage = { String type, String message ->
-    logger.lifecycle("##teamcity[$type '$message']")
-}
-
-def resharperGroup = 'ReSharper'
-
 task updateDirectoryBuildProps {
-    group = resharperGroup
+    group = backendGroup
     description = 'Parses SDK version from Source parameter and updates .props file accordingly. Does nothing if the Source is not set.'
+
     doLast {
         if (Source == null) {
             logger.lifecycle("Explict SDK version is not set, skipping .props modification")
@@ -53,7 +70,7 @@ task updateDirectoryBuildProps {
         def packageName = "JetBrains.Rider.SDK"
         def escapedPackagedName = Pattern.quote(packageName)
         logger.lifecycle("Looking for package $packageName among items:")
-        def sdkPackageVersion = directory.listFiles().collect {
+        String sdkPackageVersion = directory.listFiles().collect {
             File f ->
                 if (f.isDirectory())
                     return null
@@ -72,26 +89,27 @@ task updateDirectoryBuildProps {
         }
 
         // Set Rider SDK version
+        def buildPropsFile = new File(backend.srcDir, "Directory.Build.props")
+        def sdkPropertyName = "RiderSDKVersion"
+
         logger.lifecycle("Setting versions:")
         logger.lifecycle("JetBrains.Rider.SDK -> $sdkPackageVersion")
         logger.lifecycle("JetBrains.Rider.SDK.Tests -> $sdkPackageVersion")
-
-        def buildPropsFile = new File(backend.rootDir, "Directory.Build.props")
-        def sdkPropertyName = "RiderSDKVersion"
-        // used for logging and checking whether the property exists, actual setting is hardcoded
-
         logger.lifecycle("- ${buildPropsFile.name}: $sdkPropertyName -> $sdkPackageVersion")
-
-        String regex = "^(\\s*<RiderSDKVersion>)[^<]*(<\\/RiderSDKVersion>)\\s*\$"
-        replaceInFile(buildPropsFile, regex, "\$1$sdkPackageVersion\$2")
+        backend.PatchXmlNodeValue(buildPropsFile, sdkPropertyName, sdkPackageVersion)
     }
 }
 
-task restorePackages{
-    group = resharperGroup
+task restorePackages {
+    dependsOn updateDirectoryBuildProps
+    group = backendGroup
     description = 'Restores NuGet packages for the solution. Adds Source as package source if provided.'
+
     doLast {
-        teamcityMessage("progressMessage", "Restoring packages")
+        if (!backend.solution.isFile())
+            throw new FileNotFoundException(backend.solution.toString())
+
+        backend.ReportProgress("Restoring packages")
         def restoreArguments = Source == null ? ["restore", backend.solution] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", Source, backend.solution]
         exec {
             commandLine = ["dotnet"]
@@ -100,13 +118,25 @@ task restorePackages{
     }
 }
 
-task buildBackend {
-    group = resharperGroup
+task updatePackagingPropsVersion {
+    group = backendGroup
     description = 'Builds .NET part of the plugin.'
-    dependsOn updateDirectoryBuildProps
-    dependsOn restorePackages
-    if (!backend.solution.isFile())
-        throw new GradleException("Solution file not found on path=$backend.solution")
+
+    doLast {
+        def packagingPropsFile = new File(backend.repositoryRoot, "Packaging.props")
+        if (!packagingPropsFile.isFile())
+            throw new FileNotFoundException(packagingPropsFile.toString())
+
+        backend.PatchFile(packagingPropsFile, /(\w*<Version>)((?:\d+\.)+)\d+(<\/Version>)/, "\$1\$2$BuildCounter\$3")
+        backend.PatchFile(packagingPropsFile, /(\w*<AssemblyVersion>)((?:\d+\.)+)\d+(<\/AssemblyVersion>)/, "\$1\$2$BuildCounter\$3")
+    }
+}
+
+task buildBackend {
+    dependsOn restorePackages, updatePackagingPropsVersion
+    group = backendGroup
+    description = 'Builds .NET part of the plugin.'
+
     doLast {
         logger.lifecycle("running buildBackend")
     }
