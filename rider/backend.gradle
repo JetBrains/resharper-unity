@@ -335,4 +335,7 @@ task buildBackend {
     dependsOn packArtifacts
     group = backendGroup
     description = 'Builds .NET part of the plugin.'
+    doLast {
+        backend.ServiceMessage("buildNumber", "$version")
+    }
 }
