@@ -5,7 +5,7 @@ def backendGroup = 'backend'
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-import javax.swing.filechooser.FileNameExtensionFilter
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class BackendHelper {
@@ -16,7 +16,7 @@ class BackendHelper {
 
     BackendHelper(String repositoryRoot, String backendRelative, String solutionRelativeToBackend, Logger logger) {
         this.repositoryRoot = new File(repositoryRoot)
-        this.backendRoot = new File(repositoryRoot, backendRelative)
+        this.backendRoot = new File(this.repositoryRoot, backendRelative)
         this.solution = new File(this.backendRoot, solutionRelativeToBackend)
         this.logger = logger
     }
@@ -220,16 +220,75 @@ task runMSBuild {
     dependsOn restorePackages, updatePackagingPropsVersion, mergeUnity3DRider, detectMSBuild
     group = backendGroup
     description = 'Detects MSBuild and sets the corresponding property.'
-    doLast {
 
+    doLast {
+        backend.ReportProgress("Building")
+        exec {
+            executable = ext.msbuild.path
+            args = [ backend.solution.path, "/p:Configuration=$BuildConfiguration"]
+        }
     }
 }
 
-task buildBackend {
-    dependsOn runMSBuild
+task prepareNuspec() {
+    group = backendGroup
+    description = 'Creates platform and configuration specific .nuspec file.'
 
+    doLast {
+        ext.generatedNuspecs = []
+        def buildTypes = [ "wave09", "rider" ]
+        
+        buildTypes.each { bt ->
+            def nuspecPath = new File(backend.solution.parent, "resharper-unity/resharper-unity.${bt}.nuspec")
+            def csprojPath = new File(backend.solution.parent, "resharper-unity/resharper-unity.${bt}.csproj")
+            assert nuspecPath.isFile()
+            assert csprojPath.isFile()
+            def platform = isWindows ? "Windows" : "Unix"
+
+            def generatedNuspec = new File(backend.solution.parent, "resharper-unity/resharper-unity.${bt}.${BuildConfiguration}.${platform}.nuspec")
+
+            copy {
+                from nuspecPath.parent
+                into generatedNuspec.parent
+
+                include(nuspecPath.name)
+                rename(nuspecPath.name, generatedNuspec.name)
+
+                /* $2 match is -rider suffix or nothing
+                 * <version>1.0.0-rider</version> -> <version>2.0.0.500</version>
+                 * <version>1.0.0</version> -> <version>2.0.0.500</version> */
+                filter { line -> line.replaceAll(/\<version\>(\d+\.)+\d+(.*)\<\\/version\>/, "<version>$version\$2</version>")}
+
+                /* <file src="..\..\build\resharper-unity.rider\bin\Release\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+                 * to
+                 * <file src="..\..\build\resharper-unity.rider\bin\$Configuration\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" /> */
+                filter { line -> line.replaceAll(/(\<file src="[^ \/]*)Release([^\/]*)/, "\$1$BuildConfiguration\$2")}
+
+                if (!isWindows){
+                    // Nuget on mono doesn't like the '../..', so fix up the path, relative to current dir
+                    filter { line -> line.replaceAll(/\.\.\\\.\./, Matcher.quoteReplacement(backend.backendRoot.path))}
+
+                    // fixup DOS-style slashes
+                    filter { line -> line.replaceAll("\\\\", "/")}
+                }
+            }
+
+            ext.generatedNuspecs.add(generatedNuspec)
+        }
+    }
+}
+
+task packArtifactsToNuGet {
+    dependsOn runMSBuild, prepareNuspec
+    group = backendGroup
+    description = 'Packs resulting dlls into a NuGet package which is an R# extension.'
+}
+
+task buildBackend {
+    dependsOn packArtifactsToNuGet
     group = backendGroup
     description = 'Builds .NET part of the plugin.'
+
     doLast {
         logger.lifecycle("running buildBackend")
     }
