@@ -1,6 +1,3 @@
-// TODO: NoBuild
-// TODO: RunIde
-
 def backendGroup = 'backend'
 
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -116,7 +113,12 @@ task restorePackages {
     group = backendGroup
     description = 'Restores NuGet packages for the solution. Adds Source as package source if provided.'
 
-    doLast {
+    doLast {                
+        if (SkipNuGetRestore){
+            logger.lifecycle("SkipNuGetRestore=true, skipping restore.")
+            return
+        }
+
         assert backend.solution.isFile()
 
         backend.ReportProgress("Restoring packages")
@@ -237,9 +239,17 @@ task runMSBuild {
 
     doLast {
         backend.ReportProgress("Building")
+        def projectOrSolution = backend.solution
+        if (RiderOnly){
+            logger.lifecycle("RiderOnly=true, building only Rider-specific .csproj")
+            projectOrSolution = new File(backend.solution.parent, "resharper-unity/resharper-unity.rider.csproj")
+        }
+
+        assert projectOrSolution.isFile()
+
         exec {
             executable = msbuild.path
-            args = [ backend.solution.path, "/p:Configuration=$BuildConfiguration"]
+            args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration"]
         }
     }
 }
@@ -249,7 +259,11 @@ task prepareNuspec() {
     description = 'Creates platform and configuration specific .nuspec file.'
 
     doLast {
-        def buildTypes = [ "wave09", "rider" ]
+        def buildTypes = [ "rider" ]
+        if (!RiderOnly){
+            logger.lifecycle("RiderOnly=true, preparing only Rider-specific .nuspec")
+            buildTypes.add("wave09")
+        }
 
         buildTypes.each { bt ->
             def artifact = new ArtifactDef(id: bt)
@@ -292,7 +306,7 @@ task prepareNuspec() {
 }
 
 task packArtifacts {
-    dependsOn /*runMSBuild,*/ prepareNuspec
+    dependsOn runMSBuild, prepareNuspec
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 

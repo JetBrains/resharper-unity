@@ -25,6 +25,12 @@ if (!ext.has("UntilBuild"))
 if (!ext.has("BuildConfiguration"))
     ext.BuildConfiguration = "Release"
 
+if (!ext.has("RiderOnly"))
+    ext.RiderOnly = false
+
+if (!ext.has("SkipNuGetRestore"))
+    ext.SkipNuGetRestore = false
+
 ext.version = "2.1.3.$BuildCounter"
 version ext.version
 
