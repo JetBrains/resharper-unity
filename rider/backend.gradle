@@ -20,7 +20,7 @@ class BackendHelper {
     Logger logger
 
     BackendHelper(String repositoryRoot, String backendRelative, String solutionRelativeToBackend, Logger logger) {
-        this.repositoryRoot = new File(repositoryRoot).absoluteFile
+        this.repositoryRoot = new File(repositoryRoot).canonicalFile
         this.backendRoot = new File(this.repositoryRoot, backendRelative)
         this.solution = new File(this.backendRoot, solutionRelativeToBackend)
         this.logger = logger
