@@ -21,6 +21,8 @@ $gradleArgs = @()
   }
 }
 
+Write-Host "gradleArgs=$gradleArgs"
+
 Push-Location -Path rider
 if ($isUnix){
   .\gradlew "buildBackend" $gradleArgs
