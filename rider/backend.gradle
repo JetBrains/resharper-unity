@@ -292,7 +292,7 @@ task prepareNuspec() {
 }
 
 task packArtifacts {
-    dependsOn /*runMSBuild,*/ prepareNuspec
+    dependsOn runMSBuild, prepareNuspec
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
@@ -335,8 +335,4 @@ task buildBackend {
     dependsOn packArtifacts
     group = backendGroup
     description = 'Builds .NET part of the plugin.'
-
-    doLast {
-        logger.lifecycle("running buildBackend")
-    }
 }
