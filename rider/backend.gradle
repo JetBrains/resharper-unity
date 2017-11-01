@@ -292,7 +292,7 @@ task prepareNuspec() {
 }
 
 task packArtifacts {
-    dependsOn runMSBuild, prepareNuspec
+    dependsOn /*runMSBuild,*/ prepareNuspec
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
@@ -326,6 +326,14 @@ task packArtifacts {
             artifact.generatedNuspecPath.delete()
             assert packResult.exitValue == 0
 
+            def resultingNupkgs = outputDir.listFiles(new FilenameFilter() {
+                @Override
+                boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".nupkg")
+                }
+            })
+
+            assert resultingNupkgs.length > 0 : "$outputDir has no .nupkg files"
             backend.ServiceMessage("publishArtifacts", "$outputDir\\*.nupkg")
         }
     }
