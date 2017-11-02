@@ -1,0 +1,365 @@
+def backendGroup = 'backend'
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+class ArtifactDef {
+    String id // wave09/rider
+    File generatedNuspecPath
+}
+
+class BackendHelper {
+    File repositoryRoot
+    File backendRoot
+    File solution
+    Logger logger
+
+    BackendHelper(String repositoryRoot, String backendRelative, String solutionRelativeToBackend, Logger logger) {
+        this.repositoryRoot = new File(repositoryRoot).canonicalFile
+        this.backendRoot = new File(this.repositoryRoot, backendRelative)
+        this.solution = new File(this.backendRoot, solutionRelativeToBackend)
+        this.logger = logger
+    }
+
+    // relies on pretty simplistic structure (e.g. no attributes)
+    void PatchXmlNodeValue(File file, String nodeName, String value) {
+        logger.lifecycle("- ${file.name}: $nodeName -> $value")
+        PatchFile(file, /(\s*<$nodeName>)[^<]*(<\\/$nodeName>)\s*/, "\$1$value\$2")
+    }
+
+    void PatchFile(File file, String regex, String replacement) {
+        def pattern = Pattern.compile(regex)
+        logger.lifecycle("- ${file.name}: $pattern -> $replacement")
+
+        def lines = file.readLines()
+        def replaced = lines.collect {
+            String line -> pattern.matcher(line).replaceAll(replacement)
+        }
+
+        def fullText = replaced.join("\n")
+        file.withOutputStream {
+            OutputStream os ->
+                os.withWriter {
+                    Writer w -> w.write(fullText)
+                }
+                os.flush()
+                os.close()
+        }
+
+        // TODO: notify if no matches found ?
+    }
+
+    void ReportProgress(String message) {
+        ServiceMessage("progressMessage", message)
+    }
+
+    void ServiceMessage(String type, String message){
+        logger.lifecycle("##teamcity[$type '$message']")
+    }
+}
+
+ext.msbuild = new File("")
+ext.artifactDefs = []
+
+ext.backend = new BackendHelper("..", "resharper/", "src/resharper-unity.sln", logger)
+ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+
+task updateDirectoryBuildProps {
+    group = backendGroup
+    description = 'Parses SDK version from Source parameter and updates .props file accordingly. Does nothing if the Source is not set.'
+
+    doLast {
+        if (Source == null) {
+            logger.lifecycle("Explict SDK version is not set, skipping .props modification")
+            return
+        }
+        // Get package version from folder
+        def directory = new File(Source as String)
+        assert directory.isDirectory()
+
+        def packageName = "JetBrains.Rider.SDK"
+        def escapedPackagedName = Pattern.quote(packageName)
+        logger.lifecycle("Looking for package $packageName among items:")
+        String sdkPackageVersion = directory.listFiles().collect {
+            File f ->
+                if (f.isDirectory())
+                    return null
+
+                logger.trace(f.name)
+                def match = (f.name =~ /^(?i)$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(internal)?)?)\.nupkg\u0024/)
+                if (!match.matches())
+                    return null
+
+                def matchValue = match[0][1]
+                return matchValue
+        }.find { String s -> s != null }
+
+        assert sdkPackageVersion != null : "No files found matching the package version regex"
+
+        // Set Rider SDK version
+        def buildPropsFile = new File(backend.backendRoot, "Directory.Build.props")
+        def sdkPropertyName = "RiderSDKVersion"
+
+        logger.lifecycle("Setting versions:")
+        logger.lifecycle("JetBrains.Rider.SDK -> $sdkPackageVersion")
+        logger.lifecycle("JetBrains.Rider.SDK.Tests -> $sdkPackageVersion")
+        logger.lifecycle("- ${buildPropsFile.name}: $sdkPropertyName -> $sdkPackageVersion")
+        backend.PatchXmlNodeValue(buildPropsFile, sdkPropertyName, sdkPackageVersion)
+    }
+}
+
+task restorePackages {
+    dependsOn updateDirectoryBuildProps
+    group = backendGroup
+    description = 'Restores NuGet packages for the solution. Adds Source as package source if provided.'
+
+    doLast {                
+        if (SkipNuGetRestore){
+            logger.lifecycle("SkipNuGetRestore=true, skipping restore.")
+            return
+        }
+
+        assert backend.solution.isFile()
+
+        backend.ReportProgress("Restoring packages")
+        def restoreArguments = Source == null ? ["restore", backend.solution] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", Source, backend.solution]
+        exec {
+            executable = "dotnet"
+            args = restoreArguments
+        }
+    }
+}
+
+task updatePackagingPropsVersion {
+    group = backendGroup
+    description = 'Updates packaging.props file with BuildCounter value.'
+
+    doLast {
+        def packagingPropsFile = new File(backend.repositoryRoot, "Packaging.props")
+        assert packagingPropsFile.isFile()
+
+        backend.PatchXmlNodeValue(packagingPropsFile, "Version", version.toString())
+        backend.PatchXmlNodeValue(packagingPropsFile, "AssemblyVersion", version.toString())
+    }
+}
+
+task mergeUnity3DRider {
+    //TODO: Replace with MSBuild task
+    group = backendGroup
+    description = 'Merges all of the Unity3DRider .cs files into one.'
+
+    doLast {
+        def unity3DRiderDir = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains")
+        assert unity3DRiderDir.isDirectory()
+
+        def content = []
+        def usings = []
+        def outputPath = new File(unity3DRiderDir, "Unity3DRider.cs")
+        def sourceFiles = unity3DRiderDir.listFiles(new FilenameFilter() {
+            @Override
+            boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".cs")
+            }
+        })
+
+        sourceFiles.each { File sourceFile ->
+            logger.lifecycle(sourceFile.name)
+            def lines = sourceFile.readLines()
+            lines.each { String line ->
+                if (line ==~ /using\s*.*;/ && !(line ==~ /using\s*\(/)) // careful with using (x) constructs
+                    usings.add("$line\n")
+                else
+                    content.add("$line\n")
+            }
+        }
+
+        usings = usings.unique().sort()
+
+        // RIDER-7992, do not use \r\n
+        outputPath.withWriter { Writer w ->
+            w.write("//------------------------------------------------------------------------------\n")
+            w.write("// <auto-generated>\n")
+            w.write("//     This code was generated by a tool.\n")
+            w.write("//     Version: $version\n")
+            w.write("//\n")
+            w.write("//     Changes to this file may cause incorrect behavior and will be lost if\n")
+            w.write("//     the code is regenerated.\n")
+            w.write("// </auto-generated>\n")
+            w.write("//------------------------------------------------------------------------------\n")
+
+            usings.each { String u -> w.write(u) }
+            content.each { String c -> w.write(c) }
+        }
+    }
+}
+
+task detectMSBuild {
+    group = backendGroup
+    description = 'Detects MSBuild and sets the corresponding property.'
+
+    doLast {
+        def stdout = new ByteArrayOutputStream()
+        def msbuildPath = ""
+
+        if (isWindows){
+            def vsWhere = new File(backend.repositoryRoot, "tools\\vswhere.exe")
+            assert vsWhere.isFile()
+
+            exec {
+                executable = vsWhere.path
+                args = ["-latest", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-property", "installationPath"]
+                standardOutput = stdout
+            }
+
+            def buildToolsDir = new File(stdout.toString().trim())
+            assert buildToolsDir.isDirectory()
+
+            msbuildPath = new File(buildToolsDir, "MSBuild\\15.0\\Bin\\MSBuild.exe")
+        }
+        else{
+            exec {
+                executable = "which"
+                args = ["msbuild"]
+                standardOutput = stdout
+            }
+
+            msbuildPath = new File(stdout.toString().trim())
+        }
+
+        assert msbuildPath.isFile()
+        project.msbuild = msbuildPath
+        logger.lifecycle("project.msbuild=$msbuildPath")
+    }
+}
+
+task runMSBuild {
+    dependsOn restorePackages, updatePackagingPropsVersion, mergeUnity3DRider, detectMSBuild
+    group = backendGroup
+    description = 'Runs MSBuild and creates binaries.'
+
+    doLast {
+        backend.ReportProgress("Building")
+        def projectOrSolution = backend.solution
+        if (RiderOnly){
+            logger.lifecycle("RiderOnly=true, building only Rider-specific .csproj")
+            projectOrSolution = new File(backend.solution.parent, "resharper-unity/resharper-unity.rider.csproj")
+        }
+
+        assert projectOrSolution.isFile()
+
+        exec {
+            executable = msbuild.path
+            args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration"]
+        }
+    }
+}
+
+task prepareNuspec() {
+    group = backendGroup
+    description = 'Creates platform and configuration specific .nuspec file.'
+
+    doLast {
+        def buildTypes = [ "rider" ]
+        if (!RiderOnly){
+            logger.lifecycle("RiderOnly=true, preparing only Rider-specific .nuspec")
+            buildTypes.add("wave09")
+        }
+
+        buildTypes.each { bt ->
+            def artifact = new ArtifactDef(id: bt)
+
+            def nuspecPath = new File(backend.solution.parent, "resharper-unity/resharper-unity.${bt}.nuspec")
+            assert nuspecPath.isFile()
+
+            def platform = isWindows ? "Windows" : "Unix"
+            artifact.generatedNuspecPath = new File(backend.solution.parent, "resharper-unity/resharper-unity.${bt}.${BuildConfiguration}.${platform}.nuspec")
+
+            copy {
+                from nuspecPath.parent
+                into nuspecPath.parent
+
+                include(nuspecPath.name)
+                rename(nuspecPath.name, artifact.generatedNuspecPath.name)
+
+                /* $2 match is -rider suffix or nothing
+                 * <version>1.0.0-rider</version> -> <version>2.0.0.500</version>
+                 * <version>1.0.0</version> -> <version>2.0.0.500</version> */
+                filter { line -> line.replaceAll(/\<version\>(\d+\.)+\d+(.*)\<\\/version\>/, "<version>$version\$2</version>")}
+
+                /* <file src="..\..\build\resharper-unity.rider\bin\Release\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+                 * to
+                 * <file src="..\..\build\resharper-unity.rider\bin\$Configuration\net452\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" /> */
+                filter { line -> line.replaceAll(/(\<file src="[^ \/]*)Release([^\/]*)/, "\$1$BuildConfiguration\$2")}
+
+                if (!isWindows){
+                    // Nuget on mono doesn't like the '../..', so fix up the path, relative to current dir
+                    filter { line -> line.replaceAll(/\.\.\\\.\./, Matcher.quoteReplacement(backend.backendRoot.path))}
+
+                    // fixup DOS-style slashes
+                    filter { line -> line.replaceAll("\\\\", "/")}
+                }
+            }
+
+            project.artifactDefs.add(artifact)
+        }
+    }
+}
+
+task packArtifacts {
+    dependsOn runMSBuild, prepareNuspec
+    group = backendGroup
+    description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
+
+    doLast {
+        artifactDefs.each { ArtifactDef artifact ->
+            assert artifact.generatedNuspecPath.isFile()
+            logger.lifecycle(artifact.generatedNuspecPath.name)
+
+            backend.ReportProgress("Building and Packaging: $artifact.id")
+            def outputDir = new File(backend.backendRoot, "build/resharper-unity.$artifact.id/bin/$BuildConfiguration")
+            String packExecutable
+            def packArguments = []
+
+            if (isWindows) {
+                def csprojPath = new File(backend.solution.parent, "resharper-unity/resharper-unity.${artifact.id}.csproj")
+
+                packExecutable = "dotnet"
+                packArguments = ["pack", csprojPath.path, "/p:Configuration=$BuildConfiguration", "/p:NuspecFile=$artifact.generatedNuspecPath.path", "--no-build"]
+            }
+            else {
+                packExecutable = "nuget"
+                packArguments = ["pack", artifact.generatedNuspecPath, "-OutputDirectory", outputDir]
+            }
+
+            def packResult = exec {
+                executable = packExecutable
+                args = packArguments
+                ignoreExitValue = true
+            }
+
+            artifact.generatedNuspecPath.delete()
+            assert packResult.exitValue == 0
+
+            def resultingNupkgs = outputDir.listFiles(new FilenameFilter() {
+                @Override
+                boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".nupkg")
+                }
+            })
+
+            assert resultingNupkgs.length > 0 : "$outputDir has no .nupkg files"
+            backend.ServiceMessage("publishArtifacts", "$outputDir\\*.nupkg")
+        }
+    }
+}
+
+task buildBackend {
+    dependsOn packArtifacts
+    group = backendGroup
+    description = 'Builds .NET part of the plugin.'
+    doLast {
+        backend.ServiceMessage("buildNumber", "$version")
+    }
+}

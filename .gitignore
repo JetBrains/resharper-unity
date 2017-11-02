@@ -68,3 +68,4 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 rider/out/*
+rider/.idea/uiDesigner.xml
