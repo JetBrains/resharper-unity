@@ -151,7 +151,7 @@ task mergeUnity3DRider {
     description = 'Merges all of the Unity3DRider .cs files into one.'
 
     doLast {
-        def unity3DRiderDir = new File(backend.backendRoot, "src\\resharper-unity\\Unity3dRider\\Assets\\Plugins\\Editor\\JetBrains")
+        def unity3DRiderDir = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains")
         assert unity3DRiderDir.isDirectory()
 
         def content = []
@@ -221,7 +221,7 @@ task detectMSBuild {
         else{
             exec {
                 executable = "which"
-                args = "msbuild"
+                args = ["msbuild"]
                 standardOutput = stdout
             }
 
