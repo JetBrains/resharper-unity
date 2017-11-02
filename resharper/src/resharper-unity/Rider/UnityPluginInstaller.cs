@@ -143,16 +143,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var resourceName = typeof(KnownTypes).Namespace +
                                    ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll";
 
-                using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
+                try
                 {
-                    nunitFrameworkPath.Directory.CreateDirectory();
-                    using (var fileStream = nunitFrameworkPath.OpenStream(FileMode.Create))
+                    using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
                     {
-                        if (resourceStream == null)
-                            myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
-                        else
-                            resourceStream.CopyTo(fileStream);
-                    }    
+                        nunitFrameworkPath.Directory.CreateDirectory();
+                        using (var fileStream = nunitFrameworkPath.OpenStream(FileMode.Create))
+                        {
+                            if (resourceStream == null)
+                                myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
+                            else
+                                resourceStream.CopyTo(fileStream);
+                        }    
+                    }
+                }
+                catch (Exception e)
+                {
+                    myLogger.LogExceptionSilently(e);
+                    myLogger.Warn("nunit.framework.dll was not restored from resourse.");
                 }
             });
         }
