@@ -77,6 +77,8 @@ task updateDirectoryBuildProps {
         }
         // Get package version from folder
         def directory = new File(Source as String)
+        assert directory.isDirectory()
+
         def packageName = "JetBrains.Rider.SDK"
         def escapedPackagedName = Pattern.quote(packageName)
         logger.lifecycle("Looking for package $packageName among items:")
@@ -86,7 +88,7 @@ task updateDirectoryBuildProps {
                     return null
 
                 logger.trace(f.name)
-                def match = (f.name =~ /^$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(internal)?)?)\.nupkg\u0024/)
+                def match = (f.name =~ /^(?i)$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(internal)?)?)\.nupkg\u0024/)
                 if (!match.matches())
                     return null
 
@@ -94,7 +96,7 @@ task updateDirectoryBuildProps {
                 return matchValue
         }.find { String s -> s != null }
 
-        assert sdkPackageVersion != null
+        assert sdkPackageVersion != null : "No files found matching the package version regex"
 
         // Set Rider SDK version
         def buildPropsFile = new File(backend.backendRoot, "Directory.Build.props")
