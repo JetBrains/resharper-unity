@@ -78,6 +78,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
+    <Compile Remove="VisualStudio\FormatDefinitions\CgFormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
   <!-- References -->
   <!-- References -->
