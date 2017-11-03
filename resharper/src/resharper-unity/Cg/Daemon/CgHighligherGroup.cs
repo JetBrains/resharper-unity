@@ -1,5 +1,4 @@
-﻿#if RIDER
-using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon;
+﻿using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon;
 using JetBrains.TextControl.DocumentMarkup;
 
 [assembly: RegisterHighlighterGroup(
@@ -22,4 +21,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
         }
     }
 }
-#endif

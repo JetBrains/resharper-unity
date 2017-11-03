@@ -14,17 +14,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICgFile file)
         {
-            return new CgPreprocessorHighligthingProcess(process, settings, file);
+            return new CgPreprocessorHighligthingProcess(process, file);
         }
 
         private class CgPreprocessorHighligthingProcess : CgDaemonStageProcessBase
         {
-            public CgPreprocessorHighligthingProcess(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
-            #if RIDER
+            public CgPreprocessorHighligthingProcess(IDaemonProcess daemonProcess, ICgFile file)
                 : base(daemonProcess, file)
-            #else
-                : base(daemonProcess, settingsStore, file)
-            #endif
             {
             }
 
