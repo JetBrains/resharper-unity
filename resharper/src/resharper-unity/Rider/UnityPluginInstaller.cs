@@ -90,15 +90,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void InstallPluginIfRequired(ICollection<IProject> projects)
         {
-            InstallNunitFramework();
+            if (projects.Count == 0)
+                return;
             
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
             
+            InstallNunitFramework();
+            
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.InstallUnity3DRiderPlugin))
-                return;
-
-            if (projects.Count == 0)
                 return;
 
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
