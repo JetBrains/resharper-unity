@@ -93,10 +93,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (projects.Count == 0)
                 return;
             
+            InstallNunitFramework();
+            
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
-            
-            InstallNunitFramework();
             
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.InstallUnity3DRiderPlugin))
                 return;
