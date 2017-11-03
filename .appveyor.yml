@@ -1,0 +1,5 @@
+version: 2.1.3.{build}
+image: Visual Studio 2017
+build_script:
+- cmd: PowerShell -Version 2.0 .\build.ps1
+test: off
