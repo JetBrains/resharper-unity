@@ -6,7 +6,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class ArtifactDef {
-    String id // wave09/rider
+    String id // resharper/rider
     File generatedNuspecPath
 }
 
@@ -264,7 +264,7 @@ task prepareNuspec() {
         def buildTypes = [ "rider" ]
         if (!RiderOnly){
             logger.lifecycle("RiderOnly=true, preparing only Rider-specific .nuspec")
-            buildTypes.add("wave09")
+            buildTypes.add("resharper")
         }
 
         buildTypes.each { bt ->
