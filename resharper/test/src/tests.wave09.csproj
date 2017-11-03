@@ -11,8 +11,8 @@
     <DefineConstants>TRACE;RELEASE;NET461;WAVE09</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2017.2.0" />
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="109.0.20170824.132357" />
+    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(ReSharperSDKVersion)" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(PsiFeaturesVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.wave09.csproj" />

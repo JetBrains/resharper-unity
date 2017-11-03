@@ -82,13 +82,12 @@
   <!-- References -->
   <!-- References -->
   <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.2.0" />
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="109.0.20170824.132357" />
+    <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(ReSharperSDKVersion)" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(PsiFeaturesVersion)" />
     <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.3.0" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
-    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
-    <Reference Include="WindowsBase" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />    
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
