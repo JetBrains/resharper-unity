@@ -6,4 +6,5 @@ script:
   - ./build.sh
 os:
   - linux
-  - osx
+#  - osx
+# commented out due to being incredibly slow to start on Travis
