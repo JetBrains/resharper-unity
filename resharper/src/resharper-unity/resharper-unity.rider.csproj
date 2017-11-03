@@ -13,9 +13,9 @@
   </PropertyGroup>
   <!-- ShaderLab language -->
   <PropertyGroup>
-    <!-- Write to the same location as wave08.
+    <!-- Write to the same location as resharper.
          Not ideal, but required, as the ParserGen targets uses Assembly.LoadFrom
-         on PsiGen.exe, which ends up reusing the wave08 version in memory rather
+         on PsiGen.exe, which ends up reusing the resharper version in memory rather
          than loading the requested one. If we change the task to use Assembly.LoadFile
          instead, we load the correct PsiGen.exe, but then NVelocity uses Assembly.Load
          and gets the wrong PsiGen.exe and gets the wrong templates.
@@ -101,7 +101,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <!-- The original version of this can fail if wave08 is compiled first - the wrong
+  <!-- The original version of this can fail if resharper is compiled first - the wrong
        PsiGen.exe is resolved from Assembly.LoadFrom. I don't think we really need to
        do anything here other than record the newly written files for clean - the new
        .csproj files will automatically update the Compile folder -->
