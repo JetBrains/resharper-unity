@@ -19,12 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher
 
         protected sealed override void Run(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            var processKind =
-#if RIDER
-                data.GetDaemonProcessKind();
-#else
-                data.ProcessKind;
-#endif
+            var processKind = data.GetDaemonProcessKind();
             if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT)
                 return;
 

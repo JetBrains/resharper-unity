@@ -5,10 +5,10 @@
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET452;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;WAVE09</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET452;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RELEASE;NET452;WAVE09</DefineConstants>
+    <DefineConstants>TRACE;RELEASE;NET452;RESHARPER</DefineConstants>
   </PropertyGroup>
   <!-- ShaderLab language -->
   <PropertyGroup>
@@ -78,17 +78,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
+    <Compile Remove="VisualStudio\FormatDefinitions\CgFormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
   <!-- References -->
   <!-- References -->
   <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.2.0" />
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="109.0.20170824.132357" />
+    <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(ReSharperSDKVersion)" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(PsiFeaturesVersion)" />
     <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.3.0" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
-    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
-    <Reference Include="WindowsBase" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />    
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
