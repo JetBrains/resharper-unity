@@ -1,4 +1,6 @@
 [![official JetBrains project](http://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+[![Build status](https://ci.appveyor.com/api/projects/status/v8wgygg7jh7ern8x/branch/master?svg=true)](https://ci.appveyor.com/project/IvanPashchenko/resharper-unity/branch/master)
+[![Build Status](https://travis-ci.org/JetBrains/resharper-unity.svg?branch=master)](https://travis-ci.org/JetBrains/resharper-unity)
 
 # Unity Support for ReSharper and Rider
 
