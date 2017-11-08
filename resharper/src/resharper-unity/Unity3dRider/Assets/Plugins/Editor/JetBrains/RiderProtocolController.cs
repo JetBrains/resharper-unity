@@ -77,12 +77,13 @@ namespace Plugins.Editor.JetBrains
           model.Play.Advise(lifetime, play =>
           {
             logger.Info("model.Play.Advise: " + play);
-            var text = "Edit/Play";
-            MainThreadDispatcher.Queue(() =>
-            {
-              if (!Application.isPlaying && play || Application.isPlaying && !play)
-                EditorApplication.ExecuteMenuItem(text);
-            });
+//            var text = "Edit/Play";
+//            MainThreadDispatcher.Queue(() =>
+//            {
+//              if (!Application.isPlaying && play || Application.isPlaying && !play)
+//                EditorApplication.ExecuteMenuItem(text);
+//            });
+            EditorApplication.isPlaying = play;
           });
           model.HostConnected.SetValue(true);
         }
