@@ -108,7 +108,11 @@ namespace Plugins.Editor.JetBrains
     
     private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
-      // todo: use Protocol to pass log entries to Rider
+      if (RiderPlugin.SendConsoleToRider)
+      {
+        int i = 0;
+        // todo: use Protocol to pass log entries to Rider  
+      }
     }
 
     [InitializeOnLoad]

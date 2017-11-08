@@ -126,6 +126,12 @@ namespace Plugins.Editor.JetBrains
       }
     }
 
+    public static bool SendConsoleToRider
+    {
+      get{return EditorPrefs.GetBool("Rider_SendConsoleToRider", false);}
+      set{EditorPrefs.SetBool("Rider_SendConsoleToRider", value);}
+    }
+
     private static bool TryCatch(string value, Action<string> action)
     {
       try
@@ -554,6 +560,14 @@ All those problems will go away after Unity upgrades to mono4.";
       SelectedLoggingLevel = (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg), SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
+#if NET_4_6
+      SendConsoleToRider =
+        EditorGUILayout.Toggle(
+          new GUIContent("Send output from Unity to Rider.",
+            help), SendConsoleToRider);
+      //EditorGUILayout.HelpBox("", MessageType.None);
+#endif
+      
       EditorGUI.EndChangeCheck();
 
       var url = "https://github.com/JetBrains/resharper-unity";
