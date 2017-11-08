@@ -23,11 +23,16 @@ namespace Plugins.Editor.JetBrains
   {
     static RiderProtocolController()
     {
+      if (!RiderPlugin.Enabled)
+        return;
+      
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
       var logPath = Path.Combine(Path.GetTempPath(), "Unity3dRider",
         "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
       var myThread = new Thread(() => Start(projectDirectory, logPath));
       myThread.Start();
+      
+      Application.logMessageReceived+=ApplicationOnLogMessageReceived;
     }
 
     private static void Start(string projectDirectory, string loggerPath)
@@ -99,6 +104,12 @@ namespace Plugins.Editor.JetBrains
         File.Delete(protocolInstanceJsonPath);
       };
     }
+    
+    
+    private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
+    {
+      // todo: use Protocol to pass log entries to Rider
+    }
 
     [InitializeOnLoad]
     private static class MainThreadDispatcher
@@ -136,6 +147,9 @@ namespace Plugins.Editor.JetBrains
       /// </summary>
       static MainThreadDispatcher()
       {
+        if (!RiderPlugin.Enabled)
+          return;
+        
 #if UNITY_EDITOR
         EditorApplication.update += DispatchTasks;
 #endif
