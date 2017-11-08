@@ -19,10 +19,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.ProjectModel
         }
 
         [Test]
-        public void ProjectFileTypeFromExtension()
+        public void ProjectFileTypeFromExtensionCginc()
         {
             var projectFileExtensions = Shell.Instance.GetComponent<IProjectFileExtensions>();
             Assert.AreSame(CgProjectFileType.Instance, projectFileExtensions.GetFileType(CgProjectFileType.CG_EXTENSION));
+        }
+        
+        [Test]
+        public void ProjectFileTypeFromExtensionCompute()
+        {
+            var projectFileExtensions = Shell.Instance.GetComponent<IProjectFileExtensions>();
+            Assert.AreSame(CgProjectFileType.Instance, projectFileExtensions.GetFileType(CgProjectFileType.COMPUTE_EXTENSION));
         }
     }
 }
