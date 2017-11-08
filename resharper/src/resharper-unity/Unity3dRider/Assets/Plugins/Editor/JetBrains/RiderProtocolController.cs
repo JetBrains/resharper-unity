@@ -105,7 +105,7 @@ namespace Plugins.Editor.JetBrains
       return false;
     }
 
-    private static void InitializeProtocolJson(int port, string projectDirectory, ILogger logger)
+    private static void InitializeProtocolJson(int port, string projectDirectory)
     {
       RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Writing Library/ProtocolInstance.json");
 
