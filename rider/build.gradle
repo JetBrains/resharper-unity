@@ -51,7 +51,7 @@ intellij {
       localPath = dir.absolutePath
     }
     else {
-      version = 'LATEST-TRUNK-SNAPSHOT' // Trunk until we have release
+      version = '172-SNAPSHOT' // Trunk until we have release
     }
 
     // Sources aren't available for Rider
