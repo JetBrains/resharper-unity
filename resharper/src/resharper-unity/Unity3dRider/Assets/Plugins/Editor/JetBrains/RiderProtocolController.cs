@@ -31,7 +31,9 @@ namespace Plugins.Editor.JetBrains
 
       InitProtocol();
       
-      Application.logMessageReceived+=ApplicationOnLogMessageReceived;
+      #if UNITY_5_5_OR_NEWER
+      Application.logMessageReceived+=ApplicationOnLogMessageReceived; // not supported in Unity 4.7
+      #endif
     }
 
     private static void InitProtocol()
