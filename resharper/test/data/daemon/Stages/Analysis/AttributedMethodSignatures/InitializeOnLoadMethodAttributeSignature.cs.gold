@@ -1,0 +1,30 @@
+﻿using UnityEngine;
+using UnityEditor;
+
+public class TestInitializeOnLoadMethod
+{
+    [InitializeOnLoadMethod]
+    public void |NotStatic|(0)() { }
+
+    [InitializeOnLoadMethod]
+    public static |int|(1) WrongReturnType() { }
+
+    [InitializeOnLoadMethod]
+    public static void WrongReturnType(|int arg1, int arg2|(2)) { }
+
+    [InitializeOnLoadMethod]
+    public static void WrongTypeParameters|<T>|(3)() { }
+
+    [InitializeOnLoadMethod]
+    public static void JustRight() { }
+
+    [InitializeOnLoadMethod]
+    private static void JustRight2() { }
+}
+
+
+---------------------------------------------------------
+(0): ReSharper Warning: Missing static modifier
+(1): ReSharper Warning: Incorrect return type. Expected 'void'
+(2): ReSharper Warning: Incorrect method parameters. Expected '()'
+(3): ReSharper Warning: Incorrect type parameters

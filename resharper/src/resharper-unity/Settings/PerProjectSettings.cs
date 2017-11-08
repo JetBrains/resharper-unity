@@ -215,8 +215,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         private bool IsTargetFrameworkAtLeast46(IProject project)
         {
-            // ReSharper disable once PossibleNullReferenceException (never null for real project)
-            return project.PlatformID.Version >= ourVersion46;
+            return project.GetCurrentTargetFrameworkId().Version >= ourVersion46;
         }
 
         private void SetValue<TKeyClass, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,

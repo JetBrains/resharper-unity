@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.util.attach
 
 import com.intellij.execution.process.OSProcessUtil
+import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
 import com.jetbrains.rider.util.idea.getLogger
@@ -11,7 +12,7 @@ import java.util.regex.Pattern
 class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, private val onPlayerRemoved: (UnityPlayer?) -> Unit) {
 
     companion object {
-        private val logger = getLogger<UnityProcessListener>()
+        private val logger = Logger.getInstance(UnityProcessListener::class.java)
     }
 
     private val unityPlayerDescriptorRegex = Pattern.compile("\\[IP\\] (?<ip>.*) \\[Port\\] (?<port>.*) \\[Flags\\] (?<flags>.*) \\[Guid\\] (?<guid>.*) \\[EditorId\\] (?<editorid>.*) \\[Version\\] (?<version>.*) \\[Id\\] (?<id>[^:]+)(:(?<debuggerPort>\\d+))? \\[Debug\\] (?<debug>.*)")

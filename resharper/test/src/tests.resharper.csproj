@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Tests</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NET461;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;NET461;RESHARPER</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(ReSharperSDKVersion)" />
+    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(PsiFeaturesVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.resharper.csproj" />
+  </ItemGroup>
+</Project>

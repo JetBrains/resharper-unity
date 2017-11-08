@@ -1,10 +1,10 @@
 <idea-plugin>
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2.1.2.9999</version>
+  <version>2.1.3.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
-  <idea-version since-build="172.4144" until-build="172.4144.*" />
+  <idea-version since-build="173.3389" until-build="173.3389.*" />
 
   <depends>com.intellij.modules.rider</depends>
 
@@ -99,6 +99,9 @@
   <change-notes>
 <![CDATA[
 <ul>
+  <li>Fix code completion and generation not working with newer versions of Unity (<a href="https://github.com/JetBrains/resharper-unity/issues/219">#219</a>)</li>
+  <li>Support Unity API up to 2017.3.0b3 (<a href="https://github.com/JetBrains/resharper-unity/issues/218">#218</a>)</li>
+  <li>Recognise projects with modularised UnityEngine assembly references (<a href="https://github.com/JetBrains/resharper-unity/issues/241">#241</a>)</li>
   <li>Add Unity specific file templates (<a href="https://github.com/JetBrains/resharper-unity/issues/232">#232</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/237">#237</a>)</li>
   <li>Improve parsing and syntax highlighting of Cg/HLSL</li>
   <li>Fix parsing of 2DArray (<a href="https://youtrack.jetbrains.com/issue/RIDER-9786">RIDER-9786</a>)</li>

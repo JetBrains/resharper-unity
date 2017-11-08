@@ -10,23 +10,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
 {
     public abstract class CgDaemonStageProcessBase : TreeNodeVisitor<IHighlightingConsumer>, IRecursiveElementProcessor<IHighlightingConsumer>, IDaemonStageProcessWithPsiFile
     {
-        private readonly IContextBoundSettingsStore mySettingsStore;
         private readonly ICgFile myFile;
         
         
         public IDaemonProcess DaemonProcess { get; }
         public IFile File => myFile;
 
-        protected CgDaemonStageProcessBase(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
+        protected CgDaemonStageProcessBase(IDaemonProcess daemonProcess, ICgFile file)
         {
-            mySettingsStore = settingsStore;
             DaemonProcess = daemonProcess;
             myFile = file;
         }
 
         protected void HighlightInFile(Action<ICgFile, IHighlightingConsumer> fileHighlighter, Action<DaemonStageResult> commiter)
         {
-            var consumer = new FilteringHighlightingConsumer(this, mySettingsStore, myFile);
+            var consumer = new FilteringHighlightingConsumer(myFile.GetSourceFile(), myFile);
             fileHighlighter(myFile, consumer);
             commiter(new DaemonStageResult(consumer.Highlightings));
         }

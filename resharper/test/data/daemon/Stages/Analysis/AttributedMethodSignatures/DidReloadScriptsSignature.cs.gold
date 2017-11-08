@@ -1,0 +1,36 @@
+﻿using UnityEditor.Callbacks;
+
+public class TestClass
+{
+    [DidReloadScripts]
+    private static void Valid()
+    {
+    }
+
+    [DidReloadScripts]
+    private void |MissingStatic|(0)()
+    {
+    }
+
+    [DidReloadScripts]
+    private static |bool|(1) WrongReturnType()
+    {
+        return true;
+    }
+
+    [DidReloadScripts]
+    private static void WrongParameters(|int a, string b|(2))
+    {
+    }
+
+    [DidReloadScripts]
+    private static void WrongTypeParameters|<T1, T2>|(3)()
+    {
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Missing static modifier
+(1): ReSharper Warning: Incorrect return type. Expected 'void'
+(2): ReSharper Warning: Incorrect method parameters. Expected '()'
+(3): ReSharper Warning: Incorrect type parameters

@@ -18,7 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
         [Test] public void ListElements07() { DoNamedTest(); }
         [Test] public void ListElements08() { DoNamedTest(); }
         [Test] public void ListElements09() { DoNamedTest(); }
-        [Test] public void ListElements10() { DoNamedTest(); }
+        // ListElements10 uses a type that's moved namespace in other versions
+        [Test, TestUnity(UnityVersion.Unity54)] public void ListElements10() { DoNamedTest(); }
         [Test] public void ListElements11() { DoNamedTest(); }
         [Test] public void ListElements12() { DoNamedTest(); }
         [Test] public void ListElements13() { DoNamedTest(); }

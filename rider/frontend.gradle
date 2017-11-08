@@ -1,0 +1,104 @@
+sourceSets {
+    test {
+        java.srcDir 'testSrc'
+        resources.srcDir 'testData'
+    }
+}
+
+intellij {
+    type = 'RD'
+
+    // Download a version of Rider to compile and run with. Either set `version` to
+    // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
+    // This will download from www.jetbrains.com/intellij-repository/snapshots or
+    // www.jetbrains.com/intellij-repository/releases, respectively.
+    // Note that there's no guarantee that these are kept up to date
+    // version = 'LATEST-TRUNK-SNAPSHOT'
+    // If the build isn't available in intellij-repository, use an installed version via `localPath`
+    // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
+    // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
+    // localPath = "C:\\Users\\ivan.pashchenko\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\173.3389.392"
+    // localPath = '/Users/ivan/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/173.3389.392/Rider EAP.app/Contents'
+
+    def dir = file('dependencies')
+    if (dir.exists()) {
+        localPath = dir.absolutePath
+    } else {
+        version = 'LATEST-TRUNK-SNAPSHOT' // Trunk until we have release
+    }
+
+    // Sources aren't available for Rider
+    downloadSources = false
+}
+
+ext.kotlin_version = '1.1.51'
+ext.nupkg_path = "$projectDir/../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/JetBrains.Unity.$version-rider.nupkg"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+task prepareForBuild{
+    group = "intellij"
+    description = "Checks that backend is built and updates plugin.xml with IDEA and plugin versions."
+    doLast {
+        assert file(nupkg_path).exists()
+
+        def pluginXml = new File("src/main/resources/META-INF/plugin.xml")
+        assert pluginXml.isFile()
+
+        def tempXml = new File(pluginXml.path + ".tmp")
+
+        copy {
+            from pluginXml.parent
+            into pluginXml.parent
+            include pluginXml.name
+            rename(pluginXml.name, tempXml.name)
+
+            filter { line -> line.replaceAll(/<version>((\d+\.)+\d+)<\/version>/, "<version>$version</version>")}
+
+            if (SinceBuild != null)
+                filter { line -> line.replaceAll(/since-build=\"[^\"]+\"/, "since-build=\"$SinceBuild\"")}
+            if (UntilBuild != null)
+                filter { line -> line.replaceAll(/until-build=\"[^\"]+\"/, "until-build=\"$UntilBuild\"")}
+        }
+
+        pluginXml.delete()
+        tempXml.renameTo(pluginXml)
+    }
+}
+
+buildPlugin {
+    dependsOn prepareForBuild
+}
+
+prepareSandbox {
+    dependsOn prepareForBuild
+    from(nupkg_path, {
+        into "$intellij.pluginName"
+    })
+}
+
+prepareTestingSandbox {
+    dependsOn prepareForBuild
+    from(nupkg_path, {
+        into "$intellij.pluginName"
+    })
+}
+
+test {
+    useTestNG() {}
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat "full"
+    }
+}

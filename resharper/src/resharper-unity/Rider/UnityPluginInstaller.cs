@@ -94,15 +94,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void InstallPluginIfRequired(ICollection<IProject> projects)
         {
+            if (projects.Count == 0)
+                return;
+            
+            InstallNunitFramework();
+            
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
             
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.InstallUnity3DRiderPlugin))
                 return;
 
-            if (projects.Count == 0)
-                return;
-            
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
             var installationInfo = myDetector.GetInstallationInfo(projects, previousInstallationDir: FileSystemPath.Empty);
@@ -123,6 +125,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
         
         Version currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
+
+        private void InstallNunitFramework()
+        {
+            var solutionDir = mySolution.SolutionFilePath.Directory;
+            var nunitFrameworkPath = solutionDir.Combine(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll");
+            if (!nunitFrameworkPath.IsAbsolute)
+            {
+                myLogger.Info($"Path to nunit.framework.dll {nunitFrameworkPath} is not Absolute.");
+                return;
+            }
+            if (nunitFrameworkPath.ExistsFile)
+            {
+                myLogger.Info($"Already exists nunit.framework.dll in {nunitFrameworkPath}");
+                return;
+            }
+            
+            // install nunit.framework.dll
+            myQueue.Enqueue(() =>
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                //JetBrains.ReSharper.Plugins.Unity.Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll
+                var resourceName = typeof(KnownTypes).Namespace +
+                                   ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll";
+
+                try
+                {
+                    using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
+                    {
+                        nunitFrameworkPath.Directory.CreateDirectory();
+                        using (var fileStream = nunitFrameworkPath.OpenStream(FileMode.Create))
+                        {
+                            if (resourceStream == null)
+                                myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
+                            else
+                                resourceStream.CopyTo(fileStream);
+                        }    
+                    }
+                }
+                catch (Exception e)
+                {
+                    myLogger.LogExceptionSilently(e);
+                    myLogger.Warn("nunit.framework.dll was not restored from resourse.");
+                }
+            });
+        }
 
         private void Install(UnityPluginDetector.InstallationInfo installationInfo)
         {

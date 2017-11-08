@@ -6,6 +6,7 @@ import com.intellij.ide.ui.search.SearchUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.*
 import com.intellij.openapi.components.AbstractProjectComponent
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurableGroup
 import com.intellij.openapi.options.newEditor.SettingsDialogFactory
@@ -23,6 +24,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
     companion object {
         private val settingName = "do_not_show_unity_auto_save_notification"
         private val notificationGroupId = NotificationGroup.toolWindowGroup("UnitySolutionNotification", EventLog.LOG_TOOL_WINDOW_ID, true)
+        private val logger = Logger.getInstance(RiderShowSettingsUtilImpl::class.java)
     }
 
     init {
@@ -100,7 +102,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
             SettingsViewModelHost.getOrCreate(myProject)
             showDialog(groupName, filter)
         } catch (e: Exception) {
-            getLogger<RiderShowSettingsUtilImpl>().error(e)
+            logger.error(e)
         }
     }
 

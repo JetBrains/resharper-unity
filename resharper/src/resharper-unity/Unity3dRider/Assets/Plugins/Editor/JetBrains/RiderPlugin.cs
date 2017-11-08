@@ -39,8 +39,11 @@ namespace Plugins.Editor.JetBrains
 
     private static string GetDefaultApp()
     {
+      var allFoundPaths = GetAllRiderPaths();
       var alreadySetPath = GetExternalScriptEditor();
-      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath))
+      UpdateRiderPath(allFoundPaths, alreadySetPath);
+      
+      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
         return alreadySetPath;
 
       return RiderPath;
@@ -92,7 +95,7 @@ namespace Plugins.Editor.JetBrains
     {
       get
       {
-        var defaultValue = "4.5";
+        var defaultValue = "4.6";
         if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
         {
           var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
@@ -147,6 +150,15 @@ namespace Plugins.Editor.JetBrains
       {
       }
       return false;
+    }
+
+    private static void UpdateRiderPath(string[] allFoundPaths, string alreadySetPath)
+    {
+      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
+        return ;
+      if (allFoundPaths.Contains(RiderPath))
+        return;
+      RiderPath = allFoundPaths.FirstOrDefault();
     }
 
     public static string RiderPath
@@ -311,8 +323,7 @@ namespace Plugins.Editor.JetBrains
           return false;
 
         SyncSolution(); // added to handle opening file, which was just recently created.
-        if (DetectPortAndOpenFile(line, assetFilePath,
-          SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
+        if (DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)) 
           return true;
         if (RiderProtocolController.CallRiderViaProtocol(SlnFile, assetFilePath, line, 0))
           return true;
@@ -598,7 +609,8 @@ All those problems will go away after Unity upgrades to mono4.";
     }
 
     #region SystemInfoRiderPlugin
-    static class SystemInfoRiderPlugin
+
+    private static class SystemInfoRiderPlugin
     {
       public static OperatingSystemFamily operatingSystemFamily
       {

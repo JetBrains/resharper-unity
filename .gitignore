@@ -67,5 +67,7 @@ UpgradeLog*.XML
 Thumbs.db
 Desktop.ini
 .DS_Store
+rider/out/*
+rider/.idea/uiDesigner.xml
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove
