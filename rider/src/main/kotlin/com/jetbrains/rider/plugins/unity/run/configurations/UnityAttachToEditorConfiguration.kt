@@ -26,7 +26,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
     override var port: Int = -1
-    override var address: String = "localhost"
+    override var address: String = "127.0.0.1"
     var pid: Int? = null
 
     override fun clone(): RunConfiguration {
