@@ -9,11 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
     public class CgHighlighting : ICustomAttributeIdHighlighting
     {
         private readonly DocumentRange myRange;
-        
-        public string ToolTip => string.Empty;
 
+        public string ToolTip => string.Empty;
         public string ErrorStripeToolTip => ToolTip;
-        
         public string AttributeId { get; }
 
         public CgHighlighting(string attributeId, DocumentRange range)

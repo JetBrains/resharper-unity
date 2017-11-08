@@ -26,15 +26,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICgFile file)
         {
-            return new IdentifierHighlightingProcess(myLogger, process, settings, file);
+            return new IdentifierHighlightingProcess(myLogger, process, file);
         }
 
         private class IdentifierHighlightingProcess : CgDaemonStageProcessBase
         {
             private readonly ILogger myLogger;
             
-            public IdentifierHighlightingProcess(ILogger logger, IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file)
-                : base(daemonProcess, settingsStore, file)
+            public IdentifierHighlightingProcess(ILogger logger, IDaemonProcess daemonProcess, ICgFile file)
+                : base(daemonProcess, file)
             {
                 myLogger = logger;
             }

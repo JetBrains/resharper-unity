@@ -52,12 +52,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi
             return CreateInjectedFileAndContext(fileContext, originalNode, stringBuffer, languageService, 0, text.Length, 0, text.Length);
         }
 
-        public override void Regenerate(IndependentInjectedNodeContext nodeContext)
+        public override IInjectedNodeContext Regenerate(IndependentInjectedNodeContext nodeContext)
         {
             var text = nodeContext.GeneratedNode.GetText();
             var parsedCg = CreateContent(nodeContext.OriginalContextNode.GetPsiModule(), text);
             var replacedNode = ModificationUtil.ReplaceChild(nodeContext.OriginalContextNode, parsedCg);
-            UpdateInjectedFileAndContext(nodeContext, replacedNode, 0, text.Length);
+            return UpdateInjectedFileAndContext(nodeContext, replacedNode, 0, text.Length);
         }
 
         private ICgFile CreateContent(IPsiModule module, string text)

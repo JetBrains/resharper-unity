@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             DaemonProcessKind processKind,
             ICgFile file)
         {
-            return new CgSyntaxHighlightingProcess(process, settings, file, myCgSupportSettings.IsErrorHighlightingEnabled.Value, mySemantics);
+            return new CgSyntaxHighlightingProcess(process, file, myCgSupportSettings.IsErrorHighlightingEnabled.Value, mySemantics);
         }
 
         private class CgSyntaxHighlightingProcess : CgDaemonStageProcessBase
@@ -123,8 +123,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             private readonly bool myIsErrorHighlightingEnabled;
             private readonly JetHashSet<string> mySemantics;
 
-            public CgSyntaxHighlightingProcess(IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore, ICgFile file, bool isErrorHighlightingEnabled, JetHashSet<string> semantics)
-                : base(daemonProcess, settingsStore, file)
+            public CgSyntaxHighlightingProcess(IDaemonProcess daemonProcess, ICgFile file, bool isErrorHighlightingEnabled, JetHashSet<string> semantics)
+                : base(daemonProcess, file)
             {
                 myIsErrorHighlightingEnabled = isErrorHighlightingEnabled;
                 mySemantics = semantics;

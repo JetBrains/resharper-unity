@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -9,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher
     public abstract class UnityElementProblemAnalyzer<T> : ElementProblemAnalyzer<T>
         where T : ITreeNode
     {
-        protected UnityElementProblemAnalyzer(UnityApi unityApi)
+        protected UnityElementProblemAnalyzer([NotNull] UnityApi unityApi)
         {
             Api = unityApi;
         }
@@ -18,7 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher
 
         protected sealed override void Run(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (data.ProcessKind != DaemonProcessKind.VISIBLE_DOCUMENT)
+            var processKind = data.GetDaemonProcessKind();
+            if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT)
                 return;
 
             if (!element.GetProject().IsUnityProject())

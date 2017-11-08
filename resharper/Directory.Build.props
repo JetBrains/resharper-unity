@@ -25,7 +25,9 @@
 
   <!-- Specify Rider SDK version in one place -->
   <PropertyGroup>
-    <RiderSDKVersion>[2017.2.20170927.101914]</RiderSDKVersion>
+    <RiderSDKVersion>2017.3-SNAPSHOT*</RiderSDKVersion>
+    <ReSharperSDKVersion>2017.3.0-eap04</ReSharperSDKVersion>
+    <PsiFeaturesVersion>111.0.20171102.151610-eap04</PsiFeaturesVersion>
   </PropertyGroup>  
 
   <Import Project="..\Packaging.props" />
