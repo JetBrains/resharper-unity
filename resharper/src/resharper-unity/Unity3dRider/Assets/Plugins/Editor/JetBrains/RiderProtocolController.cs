@@ -1,7 +1,11 @@
-﻿#if NET_4_6
-
-using System;
+﻿using System;
 using System.IO;
+using UnityEditor;
+using System.Collections.Generic;
+using UnityEngine;
+
+#if NET_4_6
+using System.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
@@ -9,89 +13,100 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
-using UnityEditor;
-using System.Collections.Generic;
-using System.Threading;
-using UnityEngine;
 using ILogger = JetBrains.Util.ILogger;
 using Logger = JetBrains.Util.Logging.Logger;
+#endif
 
 namespace Plugins.Editor.JetBrains
 {
   [InitializeOnLoad]
   public static class RiderProtocolController
   {
+    public static bool Initialized { get; private set; }
+    
     static RiderProtocolController()
     {
       if (!RiderPlugin.Enabled)
         return;
-      
-      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-      var logPath = Path.Combine(Path.GetTempPath(), "Unity3dRider",
-        "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
-      var myThread = new Thread(() => Start(projectDirectory, logPath));
-      myThread.Start();
+
+      InitProtocol();
       
       Application.logMessageReceived+=ApplicationOnLogMessageReceived;
     }
 
-    private static void Start(string projectDirectory, string loggerPath)
+    private static void InitProtocol()
     {
+#if NET_4_6
+      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+      var logPath = Path.Combine(Path.GetTempPath(), "Unity3dRider",
+        "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
+
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
 
-      ILogger myLogger = Logger.GetLogger("Core");
-      var fileLogEventListener = new FileLogEventListener(loggerPath, false); // works in Unity mono 4.6
+      ILogger logger = Logger.GetLogger("Core");
+      var fileLogEventListener = new FileLogEventListener(logPath, false); // works in Unity mono 4.6
       //var fileLogEventListener = new FileLogEventListener(loggerPath); //fails in Unity mono 4.6
       LogManager.Instance.AddOmnipresentLogger(lifetime, fileLogEventListener, LoggingLevel.TRACE);
 //      LogManager.Instance.ApplyTransformation(lifetime, config =>
 //      {
 //        config.InjectNode(new LogConfNode(LoggingLevel.TRACE, "protocol"));
 //      });
-
-      try
+      
+      var thread = new Thread(() =>
       {
-        myLogger.Info("Start ControllerTask...");
-
-        var dispatcher = new SimpleInpaceExecutingScheduler(myLogger);
-        
-        myLogger.Info("Create protocol...");
-        var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
-          creatingProtocol =>
-          {
-            var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
-            myLogger.Info("Creating SocketWire with port = {0}", wire.Port);
-            
-            InitializeProtocolJson(wire.Port, projectDirectory, myLogger);
-            return wire;
-          });
-
-        myLogger.Info("Create UnityModel and advise for new sessions...");
-        var model = new UnityModel(lifetime, protocol);
-        model.Play.Advise(lifetime, play =>
+        try
         {
-          myLogger.Info("model.Play.Advise: " + play);
-          var text = "Edit/Play";
-          MainThreadDispatcher.Queue(() =>
-          {
-            if (!Application.isPlaying && play || Application.isPlaying && !play)
-              EditorApplication.ExecuteMenuItem(text);
-          });
-        });
-        model.HostConnected.SetValue(true);
+          logger.Info("Start ControllerTask...");
 
-        //myLogger.Info("Run dispatcher...");
-        //dispatcher.Run(); // Unity already has dispatcher
-      }
-      catch (Exception ex)
-      {
-        myLogger.Error(ex);
-      }
+          var dispatcher = new SimpleInpaceExecutingScheduler(logger);
+        
+          logger.Info("Create protocol...");
+          var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
+            creatingProtocol =>
+            {
+              var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
+              logger.Info("Creating SocketWire with port = {0}", wire.Port);
+            
+              InitializeProtocolJson(wire.Port, projectDirectory, logger);
+              return wire;
+            });
+
+          logger.Info("Create UnityModel and advise for new sessions...");
+          var model = new UnityModel(lifetime, protocol);
+          model.Play.Advise(lifetime, play =>
+          {
+            logger.Info("model.Play.Advise: " + play);
+            var text = "Edit/Play";
+            MainThreadDispatcher.Queue(() =>
+            {
+              if (!Application.isPlaying && play || Application.isPlaying && !play)
+                EditorApplication.ExecuteMenuItem(text);
+            });
+          });
+          model.HostConnected.SetValue(true);
+        }
+        catch (Exception ex)
+        {
+          logger.Error(ex);
+        }  
+      });
+      thread.Start();
+      Initialized = true;
+#endif
+    }
+
+    public static bool CallRiderViaProtocol(string slnFile, string assetFilePath, int line, int col)
+    {
+      if (!Initialized)
+        return false;
+
+      return false;
     }
 
     private static void InitializeProtocolJson(int port, string projectDirectory, ILogger logger)
     {
-      logger.Verbose("Writing Library/ProtocolInstance.json");
+      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Writing Library/ProtocolInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
       var protocolInstanceJsonPath = Path.Combine(library, "ProtocolInstance.json");
@@ -100,12 +115,11 @@ namespace Plugins.Editor.JetBrains
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
-        logger.Verbose("Deleting Library/ProtocolInstance.json");
+        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
       };
     }
-    
-    
+      
     private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
       if (RiderPlugin.SendConsoleToRider)
@@ -222,4 +236,3 @@ namespace Plugins.Editor.JetBrains
     }
   }
 }
-#endif

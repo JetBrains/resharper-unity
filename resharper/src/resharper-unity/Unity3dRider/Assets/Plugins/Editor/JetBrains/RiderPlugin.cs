@@ -311,13 +311,13 @@ namespace Plugins.Editor.JetBrains
           return false;
 
         SyncSolution(); // added to handle opening file, which was just recently created.
-        if (!DetectPortAndOpenFile(line, assetFilePath,
+        if (DetectPortAndOpenFile(line, assetFilePath,
           SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
-        {
-          var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-          return CallRider(args);
-        }
-        return true;
+          return true;
+        if (RiderProtocolController.CallRiderViaProtocol(SlnFile, assetFilePath, line, 0))
+          return true;
+        var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
+        return CallRider(args);
       }
 
       return false;
