@@ -88,7 +88,7 @@ task updateDirectoryBuildProps {
                     return null
 
                 logger.trace(f.name)
-                def match = (f.name =~ /^(?i)$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(internal)?)?)\.nupkg\u0024/)
+                def match = (f.name =~ /^(?i)$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(pre|internal)?)?)\.nupkg\u0024/)
                 if (!match.matches())
                     return null
 
