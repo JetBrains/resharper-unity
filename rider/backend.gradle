@@ -14,12 +14,22 @@ class BackendHelper {
     File repositoryRoot
     File backendRoot
     File solution
+    File riderTestsProject // used to build RiderOnly configurations
     Logger logger
 
-    BackendHelper(String repositoryRoot, String backendRelative, String solutionRelativeToBackend, Logger logger) {
-        this.repositoryRoot = new File(repositoryRoot).canonicalFile
-        this.backendRoot = new File(this.repositoryRoot, backendRelative)
-        this.solution = new File(this.backendRoot, solutionRelativeToBackend)
+    BackendHelper(String repoRoot, Logger logger) {
+        repositoryRoot = new File(repoRoot).canonicalFile
+        assert repositoryRoot.isDirectory()
+
+        backendRoot = new File(repositoryRoot, 'resharper')
+        assert backendRoot.isDirectory()
+
+        solution = new File(backendRoot, 'src/resharper-unity.sln')
+        assert solution.isFile()
+
+        riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
+        assert riderTestsProject.isFile()
+
         this.logger = logger
     }
 
@@ -63,7 +73,7 @@ class BackendHelper {
 ext.msbuild = new File("")
 ext.artifactDefs = []
 
-ext.backend = new BackendHelper("..", "resharper/", "src/resharper-unity.sln", logger)
+ext.backend = new BackendHelper("..", logger)
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
 task updateDirectoryBuildProps {
@@ -121,10 +131,11 @@ task restorePackages {
             return
         }
 
-        assert backend.solution.isFile()
+        def projectOrSolution = RiderOnly ? backend.riderTestsProject : backend.solution
+        assert projectOrSolution.isFile()
 
         backend.ReportProgress("Restoring packages")
-        def restoreArguments = Source == null ? ["restore", backend.solution] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", Source, backend.solution]
+        def restoreArguments = Source == null ? ["restore", projectOrSolution] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", Source, backend.solution]
         exec {
             executable = "dotnet"
             args = restoreArguments
@@ -241,12 +252,8 @@ task runMSBuild {
 
     doLast {
         backend.ReportProgress("Building")
-        def projectOrSolution = backend.solution
-        if (RiderOnly){
-            logger.lifecycle("RiderOnly=true, building only Rider-specific .csproj")
-            projectOrSolution = new File(backend.solution.parent, "resharper-unity/resharper-unity.rider.csproj")
-        }
 
+        def projectOrSolution = RiderOnly ? backend.riderTestsProject : backend.solution
         assert projectOrSolution.isFile()
 
         exec {
@@ -262,8 +269,7 @@ task prepareNuspec() {
 
     doLast {
         def buildTypes = [ "rider" ]
-        if (!RiderOnly){
-            logger.lifecycle("RiderOnly=true, preparing only Rider-specific .nuspec")
+        if (!RiderOnly){            
             buildTypes.add("resharper")
         }
 

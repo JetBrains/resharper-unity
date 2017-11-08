@@ -3,7 +3,8 @@ param (
   [string]$BuildCounter = 9999, # Sets Rider plugin version to version from Packaging.Props with the last zero replaced by $BuildCounter
   [string]$SinceBuild, # Set since-build in Rider plugin descriptor
   [string]$UntilBuild, # Set until-build in Rider plugin descriptor
-  [string]$Configuration = "Release" # Release / Debug
+  [string]$Configuration = "Release", # Release / Debug
+  [switch]$RiderOnly # Build only Rider csprojects
 )
 
 Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -15,7 +16,7 @@ $gradleArgs = @()
 
 ($MyInvocation.MyCommand.Parameters ).Keys | ForEach-Object {
   $val = (Get-Variable -Name $_ -EA SilentlyContinue).Value
-  if($val.length -gt 0) {    
+  if($val.ToString().length -gt 0) {    
 
     $gradleArgs += "-P$($_)=$($val)"
   }
