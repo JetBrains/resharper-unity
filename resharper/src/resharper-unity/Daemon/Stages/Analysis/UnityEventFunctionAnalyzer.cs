@@ -20,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
             typeof(InvalidSignatureWarning),
+            typeof(InvalidTypeParametersWarning)
         })]
     public class UnityEventFunctionAnalyzer : UnityElementProblemAnalyzer<IMemberOwnerDeclaration>
     {
@@ -41,11 +42,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             var map = new OneToListMap<UnityEventFunction, Candidate>(new UnityEventFunctionKeyComparer());
             foreach (var member in typeElement.GetMembers())
             {
-                var method = member as IMethod;
-                if (method != null)
+                if (member is IMethod method)
                 {
-                    EventFunctionMatch match;
-                    var unityEventFunction = Api.GetUnityEventFunction(method, out match);
+                    var unityEventFunction = Api.GetUnityEventFunction(method, out var match);
                     if (unityEventFunction != null)
                         map.Add(unityEventFunction, new Candidate(method, match));
                 }
@@ -134,33 +133,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 
             var methodSignature = function.AsMethodSignature(method.Module);
 
-            if ((match & EventFunctionMatch.MatchingStaticModifier) != EventFunctionMatch.MatchingStaticModifier)
+            foreach (var declaration in method.GetDeclarations())
             {
-                foreach (var declaration in method.GetDeclarations())
+                if (declaration is IMethodDeclaration methodDeclaration)
                 {
-                    var methodDeclaration = declaration as IMethodDeclaration;
-                    if (methodDeclaration != null)
+                    if ((match & EventFunctionMatch.MatchingStaticModifier) != EventFunctionMatch.MatchingStaticModifier)
                         consumer.AddHighlighting(new InvalidStaticModifierWarning(methodDeclaration, methodSignature));
-                }
-            }
-
-            if ((match & EventFunctionMatch.MatchingReturnType) != EventFunctionMatch.MatchingReturnType)
-            {
-                foreach (var declaration in method.GetDeclarations())
-                {
-                    var methodDeclaration = declaration as IMethodDeclaration;
-                    if (methodDeclaration != null)
+                    if ((match & EventFunctionMatch.MatchingReturnType) != EventFunctionMatch.MatchingReturnType)
                         consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, methodSignature));
-                }
-            }
-
-            if ((match & EventFunctionMatch.MatchingSignature) != EventFunctionMatch.MatchingSignature)
-            {
-                foreach (var declaration in method.GetDeclarations())
-                {
-                    var methodDeclaration = declaration as IMethodDeclaration;
-                    if (methodDeclaration != null)
+                    if ((match & EventFunctionMatch.MatchingSignature) != EventFunctionMatch.MatchingSignature)
                         consumer.AddHighlighting(new InvalidSignatureWarning(methodDeclaration, methodSignature));
+                    if ((match & EventFunctionMatch.MatchingTypeParameters) != EventFunctionMatch.MatchingTypeParameters)
+                        consumer.AddHighlighting(new InvalidTypeParametersWarning(methodDeclaration, methodSignature));
                 }
             }
         }

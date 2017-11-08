@@ -13,34 +13,18 @@ public class TestInitializeOnLoadMethod
     public static void WrongReturnType(|int arg1, int arg2|(2)) { }
 
     [InitializeOnLoadMethod]
+    public static void WrongTypeParameters|<T>|(3)() { }
+
+    [InitializeOnLoadMethod]
     public static void JustRight() { }
 
     [InitializeOnLoadMethod]
     private static void JustRight2() { }
 }
 
-public class TestRuntimeInitializeOnLoadMethod
-{
-    [RuntimeInitializeOnLoadMethod]
-    public void |NotStatic|(3)() { }
-
-    [RuntimeInitializeOnLoadMethod]
-    public static |int|(4) WrongReturnType() { }
-
-    [RuntimeInitializeOnLoadMethod]
-    public static void WrongReturnType(|int arg1, int arg2|(5)) { }
-
-    [RuntimeInitializeOnLoadMethod]
-    public static void JustRight() { }
-
-    [RuntimeInitializeOnLoadMethod]
-    private static void JustRight2() { }
-}
 
 ---------------------------------------------------------
 (0): ReSharper Warning: Missing static modifier
 (1): ReSharper Warning: Incorrect return type. Expected 'void'
 (2): ReSharper Warning: Incorrect method parameters. Expected '()'
-(3): ReSharper Warning: Missing static modifier
-(4): ReSharper Warning: Incorrect return type. Expected 'void'
-(5): ReSharper Warning: Incorrect method parameters. Expected '()'
+(3): ReSharper Warning: Incorrect type parameters

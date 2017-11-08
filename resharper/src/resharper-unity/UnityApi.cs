@@ -17,7 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         MatchingStaticModifier = 4,
         MatchingSignature = 8,
         MatchingReturnType = 16,
-        ExactMatch = MatchingName | MatchingStaticModifier | MatchingSignature | MatchingReturnType
+        MatchingTypeParameters = 32,
+        ExactMatch = MatchingName | MatchingStaticModifier | MatchingSignature | MatchingReturnType | MatchingTypeParameters
     }
 
     [SolutionComponent]

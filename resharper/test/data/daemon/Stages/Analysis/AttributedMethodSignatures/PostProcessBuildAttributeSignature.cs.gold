@@ -1,0 +1,37 @@
+﻿using UnityEditor;
+using UnityEditor.Callbacks;
+
+public class TestClass
+{
+    [PostProcessBuild]
+    private static void Valid(BuildTarget target, string pathToBuildProject)
+    {
+    }
+
+    [PostProcessBuild]
+    private void |MissingStatic|(0)(BuildTarget target, string pathToBuildProject)
+    {
+    }
+
+    [PostProcessBuild]
+    private static |bool|(1) WrongReturnType(BuildTarget target, string pathToBuildProject)
+    {
+        return true;
+    }
+
+    [PostProcessBuild]
+    private static void WrongParameters(|int a, string b|(2))
+    {
+    }
+
+    [PostProcessBuild]
+    private static void WrongTypeParameters|<T1, T2>|(3)(BuildTarget target, string pathToBuildProject)
+    {
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Missing static modifier
+(1): ReSharper Warning: Incorrect return type. Expected 'void'
+(2): ReSharper Warning: Incorrect method parameters. Expected '(BuildTarget target, string pathToBuildProject)'
+(3): ReSharper Warning: Incorrect type parameters
