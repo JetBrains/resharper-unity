@@ -92,7 +92,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     }
 
     private fun enterCustomIp() {
-        val hostField = JTextField("localhost")
+        val hostField = JTextField("127.0.0.1")
         val portField = PortField(0)
 
         val panel = panel {
