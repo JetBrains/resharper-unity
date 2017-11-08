@@ -1,9 +1,51 @@
 ﻿# 737 ITEMS #
 
++ abstract
+async
+bool
+byte
+char
+class
+const
+decimal
+delegate
+double
+dynamic
+enum
+event
+explicit
+extern
+float
+implicit
+int
+interface
+internal
+long
+new
+object
+override
+partial
+private
+protected
+public
+readonly
+ref
+sbyte
+sealed
+short
+static
+string
+struct
+uint
+ulong
+unsafe
+ushort
+virtual
+void
+volatile
 A
 ADBannerView
 ADInterstitialAd
-AOT
 AccelerationEvent
 AddComponentMenu
 AdditionalCanvasShaderChannels
@@ -267,7 +309,6 @@ ImageEffectOpaque
 ImageEffectTransformsToLDR
 ImagePosition
 Input
-JetBrains
 Joint
 Joint2D
 JointAngleLimits2D
@@ -327,7 +368,6 @@ MeshParticleEmitter
 MeshRenderer
 MeshTopology
 Microphone
-Microsoft
 MissingComponentException
 MissingReferenceException
 MonoBehaviour
@@ -493,7 +533,6 @@ ShadowQuality
 ShadowResolution
 ShadowmaskMode
 SharedBetweenAnimatorsAttribute
-SimpleJson
 SkeletonBone
 SkinQuality
 SkinnedMeshRenderer
@@ -527,7 +566,6 @@ StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
 SurfaceEffector2D
-System
 SystemInfo
 SystemLanguage
 TargetJoint2D
@@ -577,10 +615,6 @@ UISystemProfilerApi
 UIVertex
 UnassignedReferenceException
 UnityAPICompatibilityVersionAttribute
-UnityEditor
-UnityEditorInternal
-UnityEngine
-UnityEngineInternal
 UnityEventQueueSystem
 UnityException
 UserAuthorization
@@ -611,22 +645,6 @@ WindZone
 WindZoneMode
 WrapMode
 YieldInstruction
-+ abstract
-+ async
-+ bool
-+ byte
-+ char
-+ class
-+ const
-+ decimal
-+ delegate
-+ double
-+ dynamic
-+ enum
-+ event
-+ explicit
-+ extern
-+ float
 iOSActivityIndicatorStyle
 iPhone
 iPhoneAccelerationEvent
@@ -643,35 +661,16 @@ iPhoneSettings
 iPhoneTouch
 iPhoneTouchPhase
 iPhoneUtils
-+ implicit
-+ int
-+ interface
-+ internal
 jvalue
-+ long
-+ new
-+ object
-+ override
-+ partial
-+ private
-+ protected
-+ public
-+ readonly
-+ ref
-+ sbyte
-+ sealed
-+ short
-+ static
-+ string
-+ struct
-+ uint
-+ ulong
-+ unsafe
-+ ushort
-+ virtual
-+ void
-+ volatile
----- FULL EVALUATION ----
+AOT
+JetBrains
+Microsoft
+SimpleJson
+System
+UnityEditor
+UnityEditorInternal
+UnityEngine
+UnityEngineInternal
 private Awake() { ... }
 private FixedUpdate() { ... }
 private LateUpdate() { ... }
@@ -741,10 +740,52 @@ public override ToString() { ... }
 # AUTOMATIC #
 # 737 ITEMS #
 
++ abstract
+async
+bool
+byte
+char
+class
+const
+decimal
+delegate
+double
+dynamic
+enum
+event
+explicit
+extern
+float
+implicit
+int
+interface
+internal
+long
+new
+object
+override
+partial
+private
+protected
+public
+readonly
+ref
+sbyte
+sealed
+short
+static
+string
+struct
+uint
+ulong
+unsafe
+ushort
+virtual
+void
+volatile
 A
 ADBannerView
 ADInterstitialAd
-AOT
 AccelerationEvent
 AddComponentMenu
 AdditionalCanvasShaderChannels
@@ -1008,7 +1049,6 @@ ImageEffectOpaque
 ImageEffectTransformsToLDR
 ImagePosition
 Input
-JetBrains
 Joint
 Joint2D
 JointAngleLimits2D
@@ -1068,7 +1108,6 @@ MeshParticleEmitter
 MeshRenderer
 MeshTopology
 Microphone
-Microsoft
 MissingComponentException
 MissingReferenceException
 MonoBehaviour
@@ -1234,7 +1273,6 @@ ShadowQuality
 ShadowResolution
 ShadowmaskMode
 SharedBetweenAnimatorsAttribute
-SimpleJson
 SkeletonBone
 SkinQuality
 SkinnedMeshRenderer
@@ -1268,7 +1306,6 @@ StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
 SurfaceEffector2D
-System
 SystemInfo
 SystemLanguage
 TargetJoint2D
@@ -1318,10 +1355,6 @@ UISystemProfilerApi
 UIVertex
 UnassignedReferenceException
 UnityAPICompatibilityVersionAttribute
-UnityEditor
-UnityEditorInternal
-UnityEngine
-UnityEngineInternal
 UnityEventQueueSystem
 UnityException
 UserAuthorization
@@ -1352,22 +1385,6 @@ WindZone
 WindZoneMode
 WrapMode
 YieldInstruction
-+ abstract
-+ async
-+ bool
-+ byte
-+ char
-+ class
-+ const
-+ decimal
-+ delegate
-+ double
-+ dynamic
-+ enum
-+ event
-+ explicit
-+ extern
-+ float
 iOSActivityIndicatorStyle
 iPhone
 iPhoneAccelerationEvent
@@ -1384,35 +1401,16 @@ iPhoneSettings
 iPhoneTouch
 iPhoneTouchPhase
 iPhoneUtils
-+ implicit
-+ int
-+ interface
-+ internal
 jvalue
-+ long
-+ new
-+ object
-+ override
-+ partial
-+ private
-+ protected
-+ public
-+ readonly
-+ ref
-+ sbyte
-+ sealed
-+ short
-+ static
-+ string
-+ struct
-+ uint
-+ ulong
-+ unsafe
-+ ushort
-+ virtual
-+ void
-+ volatile
----- FULL EVALUATION ----
+AOT
+JetBrains
+Microsoft
+SimpleJson
+System
+UnityEditor
+UnityEditorInternal
+UnityEngine
+UnityEngineInternal
 private Awake() { ... }
 private FixedUpdate() { ... }
 private LateUpdate() { ... }
