@@ -73,7 +73,7 @@ namespace Plugins.Editor.JetBrains
               var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
               logger.Info("Creating SocketWire with port = {0}", wire.Port);
             
-              InitializeProtocolJson(wire.Port, projectDirectory, logger);
+              InitializeProtocolJson(wire.Port, projectDirectory);
               return wire;
             });
 
