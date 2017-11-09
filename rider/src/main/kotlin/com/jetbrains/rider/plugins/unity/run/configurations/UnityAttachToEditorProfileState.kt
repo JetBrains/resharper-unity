@@ -7,12 +7,12 @@ import com.intellij.execution.runners.ProgramRunner
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
-import com.jetbrains.rider.util.idea.getLogger
 import com.jetbrains.rider.util.lifetime.Lifetime
+import com.intellij.openapi.diagnostic.Logger
 
 class UnityAttachToEditorProfileState(val remoteConfiguration: UnityAttachToEditorConfiguration, executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
-    private val logger = getLogger<UnityAttachToEditorProfileState>()
+    val logger = Logger.getInstance(UnityAttachToEditorProfileState::class.java)
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
         val result = super.execute(executor, runner, workerProcessHandler)
