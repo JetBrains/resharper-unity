@@ -73,7 +73,7 @@ namespace Plugins.Editor.JetBrains
               var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
               logger.Info("Creating SocketWire with port = {0}", wire.Port);
             
-              InitializeProtocolJson(wire.Port, projectDirectory);
+              InitializeProtocolJson(wire.Port, projectDirectory, logger);
               return wire;
             });
 
@@ -110,9 +110,10 @@ namespace Plugins.Editor.JetBrains
       return false;
     }
 
-    private static void InitializeProtocolJson(int port, string projectDirectory)
+#if NET_4_6
+    private static void InitializeProtocolJson(int port, string projectDirectory, ILogger logger)
     {
-      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Writing Library/ProtocolInstance.json");
+      logger.Verbose("Writing Library/ProtocolInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
       var protocolInstanceJsonPath = Path.Combine(library, "ProtocolInstance.json");
@@ -121,10 +122,11 @@ namespace Plugins.Editor.JetBrains
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
-        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Deleting Library/ProtocolInstance.json");
+        logger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
       };
     }
+#endif
       
     private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
