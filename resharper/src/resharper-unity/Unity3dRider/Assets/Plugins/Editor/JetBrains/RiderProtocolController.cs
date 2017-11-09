@@ -2,6 +2,7 @@
 using System.IO;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 #if NET_4_6
@@ -33,6 +34,8 @@ namespace Plugins.Editor.JetBrains
       
       #if UNITY_5_5_OR_NEWER
       Application.logMessageReceived+=ApplicationOnLogMessageReceived; // not supported in Unity 4.7
+      #else
+      Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
       #endif
     }
 
