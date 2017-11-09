@@ -82,13 +82,10 @@ namespace Plugins.Editor.JetBrains
           model.Play.Advise(lifetime, play =>
           {
             logger.Info("model.Play.Advise: " + play);
-//            var text = "Edit/Play";
-//            MainThreadDispatcher.Queue(() =>
-//            {
-//              if (!Application.isPlaying && play || Application.isPlaying && !play)
-//                EditorApplication.ExecuteMenuItem(text);
-//            });
-            EditorApplication.isPlaying = play;
+            MainThreadDispatcher.Queue(() =>
+            {
+              EditorApplication.isPlaying = play;
+            });
           });
           model.HostConnected.SetValue(true);
         }
@@ -107,6 +104,7 @@ namespace Plugins.Editor.JetBrains
       if (!Initialized)
         return false;
 
+      
       return false;
     }
 
@@ -133,7 +131,8 @@ namespace Plugins.Editor.JetBrains
       if (RiderPlugin.SendConsoleToRider)
       {
         int i = 0;
-        // todo: use Protocol to pass log entries to Rider  
+        // todo: use Protocol to pass log entries to Rider
+        
       }
     }
 
