@@ -1,11 +1,11 @@
 ﻿# 3 ITEMS #
 
-+ myOnAnima
-OnAnimatorIK(int) { ... }
++ OnAnimatorIK(int) { ... }
 OnAnimatorMove() { ... }
+myOnAnima
 # AUTOMATIC #
 # 3 ITEMS #
 
-+ myOnAnima
-OnAnimatorIK(int) { ... }
++ OnAnimatorIK(int) { ... }
 OnAnimatorMove() { ... }
+myOnAnima

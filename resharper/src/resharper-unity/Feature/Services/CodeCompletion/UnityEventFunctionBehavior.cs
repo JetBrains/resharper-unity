@@ -36,10 +36,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             var rangeMarker = nameRange.CreateRangeMarkerWithMappingToDocument();
             Accept(textControl, rangeMarker, solution);
         }
-        
+
         private void Accept(ITextControl textControl, IRangeMarker rangeMarker, ISolution solution)
         {
-
             var identifierNode = TextControlToPsi.GetElement<ITreeNode>(solution, textControl);
             var psiServices = solution.GetPsiServices();
             if (identifierNode != null)
@@ -86,9 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             var insertionIndex = methodDeclaration.GetTreeStartOffset().Offset;
 
             string attributeText = null;
-
-            var attributeList = methodDeclaration.FirstChild as IAttributeSectionList;
-            if (attributeList != null)
+            if (methodDeclaration.FirstChild is IAttributeSectionList attributeList)
             {
                 attributeText = attributeList.GetText();
                 var treeNode = attributeList.NextSibling;
