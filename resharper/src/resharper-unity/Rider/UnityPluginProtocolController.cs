@@ -72,7 +72,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             watcher.EnableRaisingEvents = true; // Begin watching.
             
-            CreateProtocol(protocolInstancePath);
+            if (protocolInstancePath.ExistsFile)
+              CreateProtocol(protocolInstancePath);
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
