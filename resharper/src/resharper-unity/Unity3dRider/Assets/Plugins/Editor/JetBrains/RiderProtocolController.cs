@@ -24,6 +24,9 @@ namespace Plugins.Editor.JetBrains
   public static class RiderProtocolController
   {
     public static bool Initialized { get; private set; }
+#if NET_4_6
+    public static UnityModel model;
+#endif
     
     static RiderProtocolController()
     {
@@ -78,7 +81,8 @@ namespace Plugins.Editor.JetBrains
             });
 
           logger.Info("Create UnityModel and advise for new sessions...");
-          var model = new UnityModel(lifetime, protocol);
+          
+          model = new UnityModel(lifetime, protocol);
           model.Play.Advise(lifetime, play =>
           {
             logger.Info("model.Play.Advise: " + play);
@@ -97,15 +101,6 @@ namespace Plugins.Editor.JetBrains
       thread.Start();
       Initialized = true;
 #endif
-    }
-
-    public static bool CallRiderViaProtocol(string slnFile, string assetFilePath, int line, int col)
-    {
-      if (!Initialized)
-        return false;
-
-      
-      return false;
     }
 
 #if NET_4_6

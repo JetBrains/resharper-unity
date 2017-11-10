@@ -323,10 +323,15 @@ namespace Plugins.Editor.JetBrains
           return false;
 
         SyncSolution(); // added to handle opening file, which was just recently created.
-        if (DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)) 
-          return true;
-        if (RiderProtocolController.CallRiderViaProtocol(SlnFile, assetFilePath, line, 0))
-          return true;
+#if NET_4_6
+        if (RiderProtocolController.model!=null && RiderProtocolController.model.HostConnected.Value) // HostConnected also means that in Rider and in Unity the same solution is opened 
+        {
+#endif
+          if (DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)) 
+            return true;
+#if NET_4_6
+        }
+#endif
         var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
         return CallRider(args);
       }

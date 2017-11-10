@@ -1,4 +1,3 @@
-#if NET_4_6 || RIDER
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -375,4 +374,3 @@ namespace JetBrains.Platform.Unity.Model
     }
   }
 }
-#endif
