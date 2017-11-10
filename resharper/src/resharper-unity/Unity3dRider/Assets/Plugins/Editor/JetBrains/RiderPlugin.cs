@@ -7,6 +7,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+#if NET_4_6
+using JetBrains.Platform.RdFramework.Util;
+#endif
 using UnityEditor;
 using UnityEngine;
 using Application = UnityEngine.Application;
@@ -324,7 +327,7 @@ namespace Plugins.Editor.JetBrains
 
         SyncSolution(); // added to handle opening file, which was just recently created.
 #if NET_4_6
-        if (RiderProtocolController.model!=null && RiderProtocolController.model.HostConnected.Value) // HostConnected also means that in Rider and in Unity the same solution is opened 
+        if (RiderProtocolController.model!=null && RiderProtocolController.model.ClientConnected.HasValue() && RiderProtocolController.model.ClientConnected.Value) // HostConnected also means that in Rider and in Unity the same solution is opened 
         {
 #endif
           if (DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)) 

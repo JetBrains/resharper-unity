@@ -91,7 +91,7 @@ namespace Plugins.Editor.JetBrains
               EditorApplication.isPlaying = play;
             });
           });
-          model.HostConnected.SetValue(true);
+          model.ServerConnected.SetValue(true);
         }
         catch (Exception ex)
         {

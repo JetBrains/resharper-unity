@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private UnityModel UnityModel { get; set; }
         private readonly IProperty<bool> myPlay = new Property<bool>("UnityPlay", false);
-        private readonly IProperty<bool> myHostConnectedAndPlay = new Property<bool>("UnityHostConnectedAndPlay", false)
+        private readonly IProperty<bool> myServerConnectedAndPlay = new Property<bool>("UnityServerConnectedAndPlay", false)
             ;
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, SolutionModel solutionModel,
@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLogger = logger;
             myDispatcher = dispatcher;
             myLocks = locks;
-            myHostConnectedAndPlay.Change.Advise(lifetime, args =>
+            myServerConnectedAndPlay.Change.Advise(lifetime, args =>
             {
                 if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
             });
@@ -50,8 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             logger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
                             myPlay.SetValue(e.NewValue.ToLower() == "true");
 
-                            if (UnityModel!=null && UnityModel.HostConnected.HasValue() && UnityModel.HostConnected.Value)
-                                myHostConnectedAndPlay.SetValue(UnityModel.HostConnected.Value && myPlay.Value);
+                            if (UnityModel!=null && UnityModel.ServerConnected.HasValue() && UnityModel.ServerConnected.Value)
+                                myServerConnectedAndPlay.SetValue(UnityModel.ServerConnected.Value && myPlay.Value);
                         }
                     }
                 });
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // Add event handlers.
             watcher.Changed += OnChanged;
             watcher.Created += OnChanged;
-            watcher.Deleted += (sender, e) =>{ UnityModel?.HostConnected.SetValue(false); };
+            watcher.Deleted += (sender, e) =>{ UnityModel?.ServerConnected.SetValue(false); };
 
             watcher.EnableRaisingEvents = true; // Begin watching.
             
@@ -98,11 +98,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         return new SocketWire.Client(myLifetime, creatingProtocol, port, "UnityClient");
                     });
                 UnityModel = new UnityModel(myLifetime, protocol);
-                UnityModel.HostConnected.Advise(myLifetime, b =>
+                UnityModel.ServerConnected.Advise(myLifetime, b =>
                 {
                     if (myPlay.Value)
-                        myHostConnectedAndPlay.SetValue(myPlay.Value);
+                        myServerConnectedAndPlay.SetValue(myPlay.Value);
                 });
+                UnityModel.ClientConnected.SetValue(true);
             }
             catch (Exception ex)
             {
