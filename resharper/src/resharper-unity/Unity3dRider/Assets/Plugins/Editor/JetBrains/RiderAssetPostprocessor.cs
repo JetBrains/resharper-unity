@@ -241,6 +241,11 @@ namespace Plugins.Editor.JetBrains
     }
 #endif
     private const string UNITY_REFERENCE_KEYWORD = "-r:";
+    /// <summary>
+    /// Handles custom references -r: in "mcs.rsp"
+    /// </summary>
+    /// <param name="projectContentElement"></param>
+    /// <param name="xmlns"></param>
     private static void ApplyManualCompilingSettingsReferences(XElement projectContentElement, XNamespace xmlns)
     {
       if (!File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
@@ -277,20 +282,13 @@ namespace Plugins.Editor.JetBrains
 
     private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns)
     {
-      //string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-
-      //var dllPath = Path.Combine(unityAppBaseFolder, Path.Combine("Data/MonoBleedingEdge/lib/mono/4.5/", name));
-      //if (File.Exists(dllPath))
-      {
-        var itemGroup = new XElement(xmlns + "ItemGroup");
-        var reference = new XElement(xmlns + "Reference");
-        reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(name)));
-        //reference.Add(new XElement(xmlns + "HintPath", dllPath));
-        itemGroup.Add(reference);
-        projectContentElement.Add(itemGroup);
-      }
+      var itemGroup = new XElement(xmlns + "ItemGroup");
+      var reference = new XElement(xmlns + "Reference");
+      reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(name)));
+      itemGroup.Add(reference);
+      projectContentElement.Add(itemGroup);
     }
-    
+
     // Helps resolve System.Linq under mono 4 - RIDER-573
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
