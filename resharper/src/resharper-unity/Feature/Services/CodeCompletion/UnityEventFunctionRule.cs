@@ -120,9 +120,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             return true;
         }
 
-        private ILookupItem CombineLookupItems(CodeCompletionContext basicContext, TextLookupRanges completionRanges, List<ILookupItem> items, ILookupItem sampleMatchItem)
+        private ILookupItem CombineLookupItems(CodeCompletionContext basicContext, TextLookupRanges completionRanges, List<ILookupItem> displayItems, ILookupItem sampleMatchItem)
         {
-            var item = new CombinedLookupItem(items.ToArray(), items, sampleMatchItem, autocomplete: true, exactMatch: items.Count > 1);
+            // Use a combined lookup item list to add "private " to the start of the display text.
+            // We could probably get the same effect with a customised ILookupItemPresentation.
+            // Make sure the completion lookup item list is different to the display lookup item
+            // list or we get errors in highlighting matches - see RSRP-466980
+            var matchingItems = new[] {sampleMatchItem};
+            var item = new CombinedLookupItem(matchingItems, displayItems);
             item.InitializeRanges(completionRanges, basicContext);
             return item;
         }
