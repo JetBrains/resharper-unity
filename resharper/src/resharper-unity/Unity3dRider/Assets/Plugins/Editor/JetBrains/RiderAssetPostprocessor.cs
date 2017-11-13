@@ -91,6 +91,7 @@ namespace Plugins.Editor.JetBrains
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
 #endif
+      ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
       doc.Save(projectFile);
     }
 
@@ -137,12 +138,12 @@ namespace Plugins.Editor.JetBrains
       }
     }
 
+    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "mcs.rsp");
 #if !UNITY_2017_1_OR_NEWER  // Unity 2017.1 and later has this features by itself
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "mcs.rsp");
     private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "smcs.rsp");
     private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "gmcs.rsp");
 
@@ -262,6 +263,55 @@ namespace Plugins.Editor.JetBrains
       }
     }
 #endif
+    private const string UNITY_REFERENCE_KEYWORD = "-r:";
+    /// <summary>
+    /// Handles custom references -r: in "mcs.rsp"
+    /// </summary>
+    /// <param name="projectContentElement"></param>
+    /// <param name="xmlns"></param>
+    private static void ApplyManualCompilingSettingsReferences(XElement projectContentElement, XNamespace xmlns)
+    {
+      if (!File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
+        return;
+      
+      var configFilePath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+
+      if (File.Exists(configFilePath))
+      {
+        var configText = File.ReadAllText(configFilePath);
+        if (configText.Contains(UNITY_REFERENCE_KEYWORD))
+        {
+          var referenceList = new List<string>();
+          var compileFlags = configText.Split(' ', '\n');
+          foreach (var flag in compileFlags)
+          {
+            var f = flag.Trim();
+            if (f.Contains(UNITY_REFERENCE_KEYWORD))
+            {
+              var defineEndPos = f.IndexOf(UNITY_REFERENCE_KEYWORD) + UNITY_REFERENCE_KEYWORD.Length;
+              var definesSubString = f.Substring(defineEndPos,f.Length - defineEndPos);
+              definesSubString = definesSubString.Replace(";", ",");
+              referenceList.AddRange(definesSubString.Split(','));
+            }
+          }
+
+          foreach (var referenceName in referenceList)
+          {
+            ApplyCustomReference(referenceName, projectContentElement, xmlns);  
+          }
+        }
+      }
+    }
+
+    private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns)
+    {
+      var itemGroup = new XElement(xmlns + "ItemGroup");
+      var reference = new XElement(xmlns + "Reference");
+      reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(name)));
+      itemGroup.Add(reference);
+      projectContentElement.Add(itemGroup);
+    }
+
     // Helps resolve System.Linq under mono 4 - RIDER-573
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
