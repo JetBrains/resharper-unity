@@ -1,9 +1,9 @@
 ﻿# 2 ITEMS #
 
 + private OnAnimatorIK(int) { ... }
-+ private OnAnimatorMove() { ... }
+private OnAnimatorMove() { ... }
 # AUTOMATIC #
 # 2 ITEMS #
 
 + private OnAnimatorIK(int) { ... }
-+ private OnAnimatorMove() { ... }
+private OnAnimatorMove() { ... }
