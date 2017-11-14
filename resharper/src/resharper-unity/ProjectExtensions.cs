@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
@@ -39,16 +40,17 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         private static bool ReferencesUnity(IProject project)
         {
-            return ReferencesAssembly(project, ourUnityEngineReferenceName)
-                   || ReferencesAssembly(project, ourUnityEditorReferenceName)
-                   || ReferencesAssembly(project, ourUnityEngineCoreModuleReferenceName)
-                   || ReferencesAssembly(project, ourUnityEngineSharedInternalsModuleReferenceName);
+            var targetFrameworkId = project.GetCurrentTargetFrameworkId();
+            return ReferencesAssembly(project, targetFrameworkId, ourUnityEngineReferenceName)
+                   || ReferencesAssembly(project, targetFrameworkId, ourUnityEditorReferenceName)
+                   || ReferencesAssembly(project, targetFrameworkId, ourUnityEngineCoreModuleReferenceName)
+                   || ReferencesAssembly(project, targetFrameworkId, ourUnityEngineSharedInternalsModuleReferenceName);
         }
 
-        private static bool ReferencesAssembly(IProject project, AssemblyNameInfo name)
-        {
+        private static bool ReferencesAssembly(IProject project, TargetFrameworkId targetFrameworkId, AssemblyNameInfo name)
+        {            
             return ReferencedAssembliesService.IsProjectReferencingAssemblyByName(project,
-                project.GetCurrentTargetFrameworkId(), name, out var _);
+                targetFrameworkId, name, out var _);
         }
     }
 }
