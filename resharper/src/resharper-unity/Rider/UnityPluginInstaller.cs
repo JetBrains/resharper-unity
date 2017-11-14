@@ -13,11 +13,8 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
-using JetBrains.Metadata.Utils;
-using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
-using JetBrains.Util.Reflection;
 using Newtonsoft.Json;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -331,6 +328,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
         {
              HashSet<FileSystemPath> visitedAssemblies = new HashSet<FileSystemPath>();
             var baseDir = FileSystemPath.Parse(AppDomain.CurrentDomain.BaseDirectory);
+            visitedAssemblies.Add(typeof(JetBrains.Platform.RdFramework.IProtocol).Assembly.GetPath());
             Type type = typeof(JetBrains.Rider.Model.IRiderModelZone);
             var protocolAssembly = type.Assembly;
             if (protocolAssembly.GetPath().Directory!=baseDir)
