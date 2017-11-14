@@ -1,19 +1,42 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Psi;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
 {
     [ShellComponent]
     public class UsageInspectionsSuppressor : IUsageInspectionsSuppressor
     {
+        private readonly ILogger myLogger;
+
+        public UsageInspectionsSuppressor(ILogger logger)
+        {
+            myLogger = logger;
+        }
+
         public bool SuppressUsageInspectionsOnElement(IDeclaredElement element, out ImplicitUseKindFlags flags)
         {
             flags = ImplicitUseKindFlags.Default;
 
-            if (!element.IsFromUnityProject()) return false;
+            try
+            {
+                if (!element.IsFromUnityProject()) return false;
+            }
+            catch (Exception e)
+            {
+                /*
+                 * TODO: radically rethink Unity / non-Unity project detection.
+                 * Currently we check project's assemblies using extensions for IProject,
+                 * with no way to log errors and/or react to targetFrameworkChanges should they happen on the fly.                  
+                 * This should be replaced with something more stable and fast.
+                 */
+                myLogger.LogExceptionSilently(e);
+                return false;
+            }
 
             var solution = element.GetSolution();
             var unityApi = solution.GetComponent<UnityApi>();
