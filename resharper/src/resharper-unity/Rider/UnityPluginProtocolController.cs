@@ -40,6 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
             });
 
+            if (!solutionModel.Solutions.Any())
+                return;
             solutionModel.GetCurrentSolution().CustomData
                 .Data.Advise(lifetime, e =>
                 {
