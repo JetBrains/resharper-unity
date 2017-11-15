@@ -251,7 +251,7 @@ task runMSBuild {
     description = 'Runs MSBuild and creates binaries.'
 
     doLast {
-        backend.ReportProgress("Building")
+        backend.ReportProgress("Building Configuration=$BuildConfiguration")
 
         def projectOrSolution = RiderOnly ? backend.riderTestsProject : backend.solution
         assert projectOrSolution.isFile()
