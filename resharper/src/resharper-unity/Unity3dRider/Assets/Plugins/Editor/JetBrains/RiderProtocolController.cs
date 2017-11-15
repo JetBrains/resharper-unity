@@ -48,6 +48,8 @@ namespace Plugins.Editor.JetBrains
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
       var logPath = Path.Combine(Path.GetTempPath(), "Unity3dRider",
         "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
+      
+      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Protocol log: "+ logPath);
 
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
