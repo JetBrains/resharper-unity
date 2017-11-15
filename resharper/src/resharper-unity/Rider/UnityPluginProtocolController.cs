@@ -1,6 +1,7 @@
 ﻿#if RIDER
 using System;
 using System.IO;
+using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
@@ -29,8 +30,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             ;
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, SolutionModel solutionModel,
-            IScheduler dispatcher, IShellLocks locks)
+            IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
+            if (!solution.GetAllProjects().Any(a => a.IsUnityProject()))
+                return;
+            
             myLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
