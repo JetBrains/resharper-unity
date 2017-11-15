@@ -108,10 +108,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 var change = q.Dequeue();
                 if (change == null)
                     continue;
-                
-                var reference = change.ProjectModelElement as IProjectToUnresolvedAssemblyReference;
-                if (reference != null &&
-                    ProjectExtensions.UnityReferenceNames.Contains(reference.AssemblyName) &&
+
+                if (change.ProjectModelElement is IProjectToUnresolvedAssemblyReference reference &&
+                    UnityReferenceDetectionExtensions.UnityReferenceNames.Contains(reference.AssemblyName) &&
                     change.IsAdded)
                 {
                     result.Add(reference);
