@@ -66,6 +66,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var solPath = FileSystemPath.Parse(solFilePath);
             var protocolInstancePath = solPath.Directory.Combine("Library/ProtocolInstance.json");
 
+            if (!protocolInstancePath.ExistsFile)
+                File.Create(protocolInstancePath.FullPath);
+            
             FileSystemWatcher watcher = new FileSystemWatcher();
             watcher.Path = protocolInstancePath.Directory.FullPath;
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite;//Watch for changes in LastAccess and LastWrite times
