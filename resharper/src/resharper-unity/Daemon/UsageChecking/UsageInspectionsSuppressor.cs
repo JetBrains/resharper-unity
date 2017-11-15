@@ -41,8 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
             var solution = element.GetSolution();
             var unityApi = solution.GetComponent<UnityApi>();
 
-            var cls = element as IClass;
-            if (cls != null)
+            if (element is IClass cls)
             {
                 if(unityApi.IsUnityType(cls))
                 {
@@ -51,11 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
                 }
             }
 
-            var method = element as IMethod;
-            if (method != null)
+            if (element is IMethod method)
             {
-                EventFunctionMatch match;
-                var function = unityApi.GetUnityEventFunction(method, out match);
+                var function = unityApi.GetUnityEventFunction(method, out var match);
                 if (function != null && match == EventFunctionMatch.ExactMatch)
                 {
                     foreach (var parameter in function.Parameters)
@@ -73,8 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
                 }
             }
 
-            var field = element as IField;
-            if (field != null && unityApi.IsUnityField(field))
+            if (element is IField field && unityApi.IsUnityField(field))
             {
                 // Public fields gets exposed to the Unity Editor and assigned from the UI.
                 // But it still should be checked if the field is ever accessed from the code.

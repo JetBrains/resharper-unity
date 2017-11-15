@@ -84,8 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
         private void Handle(IProject project)
         {
-            Lifetime projectLifetime;
-            if (!myProjectLifetimes.TryGetValue(project, out projectLifetime))
+            if (!myProjectLifetimes.TryGetValue(project, out var projectLifetime))
                 return;
 
             var exceptions = new LocalList<Exception>();
