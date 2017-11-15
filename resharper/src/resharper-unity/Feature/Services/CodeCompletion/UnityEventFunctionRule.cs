@@ -25,52 +25,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
     {
         protected override bool IsAvailable(CSharpCodeCompletionContext context)
         {
-            var projectPsiModule = context.PsiModule as IProjectPsiModule;
-            if (projectPsiModule == null || !projectPsiModule.Project.IsUnityProject())
+            if (!(context.PsiModule is IProjectPsiModule projectPsiModule)
+                || !projectPsiModule.Project.IsUnityProject())
             {
                 return false;
             }
 
             var completionTypes = context.BasicContext.Parameters.CodeCompletionTypes;
 
+            // Only allow single completion
+            if (completionTypes.Length != 1)
+                return false;
+
             // Don't show for import completion
-            if (completionTypes.Length == 1 && completionTypes[0] != CodeCompletionType.BasicCompletion
+            if (completionTypes[0] != CodeCompletionType.BasicCompletion
                 && completionTypes[0] != CodeCompletionType.SmartCompletion)
             {
                 return false;
             }
 
-            // If double completion, only allow double basic completion
-            if (completionTypes.Length == 2 &&
-                (completionTypes[0] != CodeCompletionType.BasicCompletion ||
-                 completionTypes[1] != CodeCompletionType.BasicCompletion))
-            {
-                return false;
-            }
-
-            // Only double completion, no more
-            if (completionTypes.Length < 1 || completionTypes.Length > 2)
-                return false;
-
             return !context.IsQualified;
         }
-
-        public override CompletionMode SupportedCompletionMode => CompletionMode.All;
-        public override EvaluationMode SupportedEvaluationMode => EvaluationMode.LightAndFull;
 
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
         {
             if (!CheckPosition(context, out var classDeclaration, out var hasVisibilityModifier, out var hasReturnType))
                 return false;
 
-            // Don't add anything in double completion - we've already added it
-            // TODO: Confused here. Why do we allow double completion in IsAvailable, but not do anything with it here?
+            // Only add items in the light pass. This gives us higher relevance, putting us
+            // above types that are in the full pass. Note that we're fast enough to just use
+            // Light mode. The worst we do is a little bit of LINQ and checking inheritance.
+            // This shouldn't fire as the base class says we only support light evaluation.
+            if (context.BasicContext.Parameters.EvaluationMode != EvaluationMode.Light)
+                return false;
+
+            // Don't add anything in double completion - we've already added it. This also
+            // shouldn't fire, as the base class says we only support single completion.
             if (context.BasicContext.Parameters.Multiplier > 1)
                 return true;
-
-            // Don't add anything in the light evaluation pass
-            if (context.BasicContext.Parameters.EvaluationMode == EvaluationMode.Light)
-                return false;
 
             var typeElement = classDeclaration.DeclaredElement;
             if (typeElement == null)
@@ -106,11 +98,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 
                 items.Add(item);
 
-                item = CombineLookupItems(context.BasicContext, context.CompletionRanges, items, item);
+                item = CombineLookupItems(context.BasicContext, context.CompletionRanges, items, item)
+                    .WithHighSelectionPriority();
 
-                item.Placement.Relevance |= (long) CLRLookupItemRelevance.GenerateItems;
+                // When items are sorted by relevance, highest value wins. But relevance is a mix of language
+                // specific values plus matching, plus evaluation order. Light has higher relevance than Full.
+                // Secondary sort is OrderString if relevance matches. This is usually display text, but can
+                // be overridden. When items are sorted lexicographically, first sort is Location, then Rank,
+                // then OrderString.
+                // This, coupled with the fact that we're in Light evaluation mode, is enough to put us to the
+                // top of the code completion window
+                item.Placement.Relevance |= (long) (CLRLookupItemRelevance.GenerateItems | CLRLookupItemRelevance.Methods);
                 if (function.Undocumented)
-                    item.Placement.Location = PlacementLocation.Bottom;
+                    item.PlaceBottom();
+                else
+                    item.PlaceTop();
 
                 collector.Add(item);
             }
@@ -118,9 +120,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             return true;
         }
 
-        private ILookupItem CombineLookupItems(CodeCompletionContext basicContext, TextLookupRanges completionRanges, List<ILookupItem> items, ILookupItem sampleMatchItem)
+        private ILookupItem CombineLookupItems(CodeCompletionContext basicContext, TextLookupRanges completionRanges, List<ILookupItem> displayItems, ILookupItem sampleMatchItem)
         {
-            var item = new CombinedLookupItem(items.ToArray(), items, sampleMatchItem, autocomplete: true, exactMatch: items.Count > 1);
+            // Use a combined lookup item list to add "private " to the start of the display text.
+            // We could probably get the same effect with a customised ILookupItemPresentation.
+            // Make sure the completion lookup item list is different to the display lookup item
+            // list or we get errors in highlighting matches - see RSRP-466980
+            var matchingItems = new[] {sampleMatchItem};
+            var item = new CombinedLookupItem(matchingItems, displayItems);
             item.InitializeRanges(completionRanges, basicContext);
             return item;
         }
@@ -138,17 +145,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             var instance = new DeclaredElementInstance(method.DeclaredElement);
 
             var declaredElementInfo = new DeclaredElementInfo(method.DeclaredName, instance, CSharpLanguage.Instance,
-                context.BasicContext.LookupItemsOwner, context);
+                context.BasicContext.LookupItemsOwner, context)
+            {
+                Ranges = context.CompletionRanges
+            };
 
-            return LookupItemFactory.CreateLookupItem(declaredElementInfo).
-                WithPresentation(
-                    _ => new GenerateMemberPresentation(declaredElementInfo, PresenterStyles.DefaultPresenterStyle)).
-                WithBehavior(_ =>
-                {
-                    var behavior = new UnityEventFunctionBehavior(declaredElementInfo, eventFunction);
-                    return behavior;
-                }).
+            var withMatcher = LookupItemFactory.CreateLookupItem(declaredElementInfo).
+                WithPresentation(_ => new GenerateMemberPresentation(declaredElementInfo, PresenterStyles.DefaultPresenterStyle)).
+                WithBehavior(_ => new UnityEventFunctionBehavior(declaredElementInfo, eventFunction)).
                 WithMatcher(_ => new DeclaredElementMatcher(declaredElementInfo, context.BasicContext.IdentifierMatchingStyle));
+            return withMatcher;
         }
 
         private bool CheckPosition(CSharpCodeCompletionContext context, out IClassLikeDeclaration declaration,
@@ -159,8 +165,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             hasReturnType = false;
 
             // Are we trying to complete an identifier?
-            var identifier = context.UnterminatedContext.TreeNode as ICSharpIdentifier;
-            if (identifier == null || identifier.GetContainingNode<IForeachStatement>() != null)
+            if (!(context.UnterminatedContext.TreeNode is ICSharpIdentifier identifier)
+                || identifier.GetContainingNode<IForeachStatement>() != null)
             {
                 return false;
             }
