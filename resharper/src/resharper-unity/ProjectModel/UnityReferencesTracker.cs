@@ -4,6 +4,7 @@ using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.DataFlow.StandardPreconditions;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
@@ -20,6 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             void OnSolutionLoaded(UnityProjectsCollection solution);
         }
 
+        private readonly IProperty<bool> myIsUnityProject = new Property<bool>("IsUnityProject").EnsureReadonly(myToken);
+        public IProperty<bool> IsUnityProject => myIsUnityProject;
+
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
         private readonly IShellLocks myShellLocks;
@@ -28,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly IViewableProjectsCollection myProjects;
         private readonly ICollection<IHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
+        private static readonly ReadonlyToken myToken = new ReadonlyToken("IsUnityProjectToken");
 
         public UnityReferencesTracker(
             Lifetime lifetime,
@@ -94,6 +99,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 try
                 {
                     handler.OnReferenceAdded(project, projectLifetime);
+                    if (project.IsUnityProject())
+                      myIsUnityProject.SetValue(true, myToken);
                 }
                 catch (Exception e)
                 {

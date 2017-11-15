@@ -11,6 +11,7 @@ using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 using Newtonsoft.Json;
@@ -30,58 +31,66 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             ;
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, SolutionModel solutionModel,
-            IScheduler dispatcher, IShellLocks locks, ISolution solution)
+            IScheduler dispatcher, IShellLocks locks, UnityReferencesTracker tracker)
         {
-            if (!solution.GetAllProjects().Any(a => a.IsUnityProject()))
-                return;
-            
             myLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
             myLocks = locks;
-            myServerConnectedAndPlay.Change.Advise(lifetime, args =>
+
+            tracker.IsUnityProject.Change.Advise(lifetime, (a) =>
             {
-                if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
-            });
-
-            if (!solutionModel.Solutions.Any())
-                return;
-            solutionModel.GetCurrentSolution().CustomData
-                .Data.Advise(lifetime, e =>
+                if (a.HasNew && a.New)
                 {
-                    if (e.Key == "UNITY_AttachEditorAndPlay")
+                    myServerConnectedAndPlay.Change.Advise(lifetime, args =>
                     {
-                        if (e.NewValue != e.OldValue)
+                        if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
+                    });
+
+                    if (!solutionModel.Solutions.Any())
+                        return;
+                    solutionModel.GetCurrentSolution().CustomData
+                        .Data.Advise(lifetime, e =>
                         {
-                            logger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
-                            myPlay.SetValue(e.NewValue.ToLower() == "true");
+                            if (e.Key == "UNITY_AttachEditorAndPlay")
+                            {
+                                if (e.NewValue != e.OldValue)
+                                {
+                                    logger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
+                                    myPlay.SetValue(e.NewValue.ToLower() == "true");
 
-                            if (UnityModel!=null && UnityModel.ServerConnected.HasValue() && UnityModel.ServerConnected.Value)
-                                myServerConnectedAndPlay.SetValue(UnityModel.ServerConnected.Value && myPlay.Value);
-                        }
-                    }
-                });
+                                    if (UnityModel != null && UnityModel.ServerConnected.HasValue() &&
+                                        UnityModel.ServerConnected.Value)
+                                        myServerConnectedAndPlay.SetValue(
+                                            UnityModel.ServerConnected.Value && myPlay.Value);
+                                }
+                            }
+                        });
 
-            var solFilePath = solutionModel.GetCurrentSolution().SolutionOpenStrategy.SolutionFilePath;
-            var solPath = FileSystemPath.Parse(solFilePath);
-            var protocolInstancePath = solPath.Directory.Combine("Library/ProtocolInstance.json");
+                    var solFilePath = solutionModel.GetCurrentSolution().SolutionOpenStrategy.SolutionFilePath;
+                    var solPath = FileSystemPath.Parse(solFilePath);
+                    var protocolInstancePath = solPath.Directory.Combine("Library/ProtocolInstance.json");
 
-            if (!protocolInstancePath.ExistsFile)
-                File.Create(protocolInstancePath.FullPath);
-            
-            FileSystemWatcher watcher = new FileSystemWatcher();
-            watcher.Path = protocolInstancePath.Directory.FullPath;
-            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite;//Watch for changes in LastAccess and LastWrite times
-            watcher.Filter = protocolInstancePath.Name;
+                    if (!protocolInstancePath.ExistsFile)
+                        File.Create(protocolInstancePath.FullPath);
 
-            // Add event handlers.
-            watcher.Changed += OnChanged;
-            watcher.Created += OnChanged;
-            watcher.Deleted += (sender, e) =>{ UnityModel?.ServerConnected.SetValue(false); };
+                    FileSystemWatcher watcher = new FileSystemWatcher();
+                    watcher.Path = protocolInstancePath.Directory.FullPath;
+                    watcher.NotifyFilter =
+                        NotifyFilters.LastAccess |
+                        NotifyFilters.LastWrite; //Watch for changes in LastAccess and LastWrite times
+                    watcher.Filter = protocolInstancePath.Name;
 
-            watcher.EnableRaisingEvents = true; // Begin watching.
-            
-            CreateProtocol(protocolInstancePath);
+                    // Add event handlers.
+                    watcher.Changed += OnChanged;
+                    watcher.Created += OnChanged;
+                    watcher.Deleted += (sender, e) => { UnityModel?.ServerConnected.SetValue(false); };
+
+                    watcher.EnableRaisingEvents = true; // Begin watching.
+
+                    CreateProtocol(protocolInstancePath);
+                }
+            });
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
