@@ -81,8 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             watcher.EnableRaisingEvents = true; // Begin watching.
             
-            if (protocolInstancePath.ExistsFile)
-              CreateProtocol(protocolInstancePath);
+            CreateProtocol(protocolInstancePath);
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -93,9 +92,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void CreateProtocol(FileSystemPath protocolInstancePath)
         {
-            var protocolInstance = JsonConvert.DeserializeObject<ProtocolInstance>(protocolInstancePath.ReadAllText2().Text);
-            var port = protocolInstance.port_id;
-            myLogger.Verbose($"UNITY_ProcessId {port}.");
+            int port;
+            try
+            {
+                var protocolInstance = JsonConvert.DeserializeObject<ProtocolInstance>(protocolInstancePath.ReadAllText2().Text);
+                port = protocolInstance.port_id;
+            }
+            catch (Exception e)
+            {
+                myLogger.Warn($"Unable to parse {protocolInstancePath}");
+                myLogger.Warn(e);
+                return;
+            }
+            
+            myLogger.Verbose($"UNITY_Port {port}.");
 
             try
             {
