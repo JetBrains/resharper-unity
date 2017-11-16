@@ -224,6 +224,8 @@ namespace Plugins.Editor.JetBrains
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
 
       InitializeEditorInstanceJson(projectDirectory);
+      
+      RiderAssetPostprocessor.OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire 
 
       Log(LoggingLevel.Info, "Rider plugin initialized. You may change the amount of Rider Debug output via Edit -> Preferences -> Rider -> Logging Level");
       Initialized = true;
