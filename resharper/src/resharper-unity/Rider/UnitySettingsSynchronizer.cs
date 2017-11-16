@@ -1,5 +1,4 @@
-﻿#if RIDER
-using JetBrains.Application.Settings;
+﻿using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -50,4 +49,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
     }
 }
-#endif
