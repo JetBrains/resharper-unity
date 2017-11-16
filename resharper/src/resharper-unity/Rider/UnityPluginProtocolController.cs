@@ -9,6 +9,7 @@ using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
+using JetBrains.ReSharper.Host.Features;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 using Newtonsoft.Json;
@@ -51,11 +52,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
             });
 
-            mySolutionModel.Solutions.Change.Advise(myLifetime, SolutionHandler);
-
             var solFilePath = mySolution.SolutionFilePath;
-            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solFilePath))
+            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solFilePath.Directory))
                 return;
+
+            SubscribeToPlay(mySolutionModel.GetCurrentSolution());
 
             var protocolInstancePath =
                 solFilePath.Directory.Combine(
@@ -81,9 +82,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             CreateProtocol(protocolInstancePath);
         }
 
-        private void SolutionHandler(MapEvent<int, Solution> mapEvent)
+        private void SubscribeToPlay(Solution solution)
         {
-            mapEvent.NewValue.CustomData
+            solution.CustomData
                 .Data.Advise(myLifetime, e =>
                 {
                     if (e.Key == "UNITY_AttachEditorAndPlay")
@@ -93,10 +94,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             myLogger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
                             myPlay.SetValue(e.NewValue.ToLower() == "true");
 
-                            if (UnityModel != null && UnityModel.ServerConnected.HasValue() &&
-                                UnityModel.ServerConnected.Value)
-                                myServerConnectedAndPlay.SetValue(
-                                    UnityModel.ServerConnected.Value && myPlay.Value);
+                            if (UnityModel != null && UnityModel.ServerConnected.HasValue() && UnityModel.ServerConnected.Value)
+                                myServerConnectedAndPlay.SetValue(myPlay.Value);
                         }
                     }
                 });
