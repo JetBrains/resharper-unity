@@ -4,6 +4,7 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
+using JetBrains.Util;
 using JetBrains.Util.Reflection;
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -36,6 +37,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static bool IsProjectCompiledByUnity([CanBeNull] this IProject project)
         {
             return project != null && project.HasSubItems("Assets") && IsUnityProject(project);
+        }
+
+        public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionDir)
+        {
+            var assetsDir = solutionDir.CombineWithShortName("Assets");
+            return assetsDir.ExistsDirectory;
         }
 
         private static bool ReferencesUnity(IProject project)

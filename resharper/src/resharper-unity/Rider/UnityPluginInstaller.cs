@@ -126,6 +126,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void InstallNunitFramework()
         {
             var solutionDir = mySolution.SolutionFilePath.Directory;
+            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solutionDir))
+            {
+                myLogger.Info("No Assets directory in the same directory as solution. Skipping NunitFramework installation.");
+                return;
+            }
+            
             var nunitFrameworkPath = solutionDir.Combine(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll");
             if (!nunitFrameworkPath.IsAbsolute)
             {
