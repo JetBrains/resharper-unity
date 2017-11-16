@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionDir)
         {
             var assetsDir = solutionDir.CombineWithShortName("Assets");
-            return assetsDir.ExistsDirectory;
+            return assetsDir.IsAbsolute && assetsDir.ExistsDirectory;
         }
 
         private static bool ReferencesUnity(IProject project)
