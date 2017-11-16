@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Utils;
@@ -32,7 +33,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         
         public static bool IsFromUnityProject(this ITreeNode treeNode)
         {
-            return treeNode.GetPsiModule().IsUnityModule();
+            var psiModule = treeNode.GetPsiModule();
+            var psiServices = treeNode.GetPsiServices();
+            return psiModule.IsReferencingUnityModule(psiServices);
         }
         
         public static bool IsFromUnityProject(this IDeclaredElement element)
@@ -41,17 +44,22 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 return false;
 
             var psiModule = clrDeclaredElement.Module;
+            var psiServices = clrDeclaredElement.GetPsiServices();
+            return psiModule.IsReferencingUnityModule(psiServices);
+        }
+
+        private static bool IsReferencingUnityModule([NotNull] this IPsiModule psiModule, IPsiServices psiServices)
+        {
             if (!psiModule.IsValid()) // TODO: validity check can be removed after the RIDER-11332 is fixed properly
                 return false;
 
-            return clrDeclaredElement
-                .GetPsiServices()
+            return psiServices
                 .Modules
                 .GetModuleReferences(psiModule)
                 .Any(r => r.Module.IsUnityModule());
         }
-
-        public static bool IsUnityModule([NotNull] this IPsiModule psiModule)
+        
+        private static bool IsUnityModule([NotNull] this IPsiModule psiModule)
         {   
             return ourUnitySimpleAssemblyNames.Contains(psiModule.Name);
         }
