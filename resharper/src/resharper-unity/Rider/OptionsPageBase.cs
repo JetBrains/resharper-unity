@@ -1,5 +1,4 @@
-﻿#if RIDER
-using System;
+﻿using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
@@ -65,4 +64,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         #endregion
     }
 }
-#endif

@@ -1,5 +1,4 @@
-﻿#if RIDER
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -386,4 +385,3 @@ Please switch back to Unity to make plugin file appear in the solution.";
         }
     }
 }
-#endif

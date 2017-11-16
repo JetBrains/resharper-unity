@@ -1,5 +1,4 @@
-﻿#if RIDER
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using JetBrains.Application.Threading;
@@ -149,4 +148,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     }
 
 }
-#endif

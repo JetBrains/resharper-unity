@@ -1,5 +1,4 @@
-﻿#if RIDER
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -283,4 +282,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
     }
 }
-#endif
