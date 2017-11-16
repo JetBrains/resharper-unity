@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
@@ -9,8 +8,7 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ProjectModel.Tasks;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 using Newtonsoft.Json;
@@ -22,74 +20,87 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
+        private readonly SolutionModel mySolutionModel;
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
+        private readonly ISolution mySolution;
         private UnityModel UnityModel { get; set; }
         private readonly IProperty<bool> myPlay = new Property<bool>("UnityPlay", false);
         private readonly IProperty<bool> myServerConnectedAndPlay = new Property<bool>("UnityServerConnectedAndPlay", false)
             ;
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, SolutionModel solutionModel,
-            IScheduler dispatcher, IShellLocks locks, UnityReferencesTracker tracker)
+            IScheduler dispatcher, IShellLocks locks, ISolutionLoadTasksScheduler solutionLoadTasksScheduler,
+            ISolution solution)
         {
             myLifetime = lifetime;
             myLogger = logger;
+            mySolutionModel = solutionModel;
             myDispatcher = dispatcher;
             myLocks = locks;
+            mySolution = solution;
 
-            tracker.IsUnityProject.Change.Advise(lifetime, (a) =>
+            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("Init Unity Plugin Protocol",
+                SolutionLoadTaskKinds.Done, Init));
+        }
+
+        private void Init()
+        {
+            myServerConnectedAndPlay.Change.Advise(myLifetime, args =>
             {
-                if (a.HasNew && a.New)
-                {
-                    myServerConnectedAndPlay.Change.Advise(lifetime, args =>
-                    {
-                        if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
-                    });
-
-                    if (!solutionModel.Solutions.Any())
-                        return;
-                    solutionModel.GetCurrentSolution().CustomData
-                        .Data.Advise(lifetime, e =>
-                        {
-                            if (e.Key == "UNITY_AttachEditorAndPlay")
-                            {
-                                if (e.NewValue != e.OldValue)
-                                {
-                                    logger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
-                                    myPlay.SetValue(e.NewValue.ToLower() == "true");
-
-                                    if (UnityModel != null && UnityModel.ServerConnected.HasValue() &&
-                                        UnityModel.ServerConnected.Value)
-                                        myServerConnectedAndPlay.SetValue(
-                                            UnityModel.ServerConnected.Value && myPlay.Value);
-                                }
-                            }
-                        });
-
-                    var solFilePath = solutionModel.GetCurrentSolution().SolutionOpenStrategy.SolutionFilePath;
-                    var solPath = FileSystemPath.Parse(solFilePath);
-                    var protocolInstancePath = solPath.Directory.Combine("Library/ProtocolInstance.json");
-
-                    if (!protocolInstancePath.ExistsFile)
-                        File.Create(protocolInstancePath.FullPath);
-
-                    FileSystemWatcher watcher = new FileSystemWatcher();
-                    watcher.Path = protocolInstancePath.Directory.FullPath;
-                    watcher.NotifyFilter =
-                        NotifyFilters.LastAccess |
-                        NotifyFilters.LastWrite; //Watch for changes in LastAccess and LastWrite times
-                    watcher.Filter = protocolInstancePath.Name;
-
-                    // Add event handlers.
-                    watcher.Changed += OnChanged;
-                    watcher.Created += OnChanged;
-                    watcher.Deleted += (sender, e) => { UnityModel?.ServerConnected.SetValue(false); };
-
-                    watcher.EnableRaisingEvents = true; // Begin watching.
-
-                    CreateProtocol(protocolInstancePath);
-                }
+                if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
             });
+
+            mySolutionModel.Solutions.Change.Advise(myLifetime, SolutionHandler);
+
+            var solFilePath = mySolution.SolutionFilePath;
+            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solFilePath))
+                return;
+
+            var protocolInstancePath =
+                solFilePath.Directory.Combine(
+                    "Library/ProtocolInstance.json"); // consider non-Unity Solution with Unity-generated projects
+
+            if (!protocolInstancePath.ExistsFile)
+                File.Create(protocolInstancePath.FullPath);
+
+            FileSystemWatcher watcher = new FileSystemWatcher();
+            watcher.Path = protocolInstancePath.Directory.FullPath;
+            watcher.NotifyFilter =
+                NotifyFilters.LastAccess |
+                NotifyFilters.LastWrite; //Watch for changes in LastAccess and LastWrite times
+            watcher.Filter = protocolInstancePath.Name;
+
+            // Add event handlers.
+            watcher.Changed += OnChanged;
+            watcher.Created += OnChanged;
+            watcher.Deleted += (sender, e) => { UnityModel?.ServerConnected.SetValue(false); };
+
+            watcher.EnableRaisingEvents = true; // Begin watching.
+
+            CreateProtocol(protocolInstancePath);
+        }
+
+        private void SolutionHandler(MapEvent<int, Solution> mapEvent)
+        {
+            mapEvent.NewValue.CustomData
+                .Data.Advise(myLifetime, e =>
+                {
+                    if (e.Key == "UNITY_AttachEditorAndPlay")
+                    {
+                        if (e.NewValue != e.OldValue)
+                        {
+                            myLogger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
+                            myPlay.SetValue(e.NewValue.ToLower() == "true");
+
+                            if (UnityModel != null && UnityModel.ServerConnected.HasValue() &&
+                                UnityModel.ServerConnected.Value)
+                                myServerConnectedAndPlay.SetValue(
+                                    UnityModel.ServerConnected.Value && myPlay.Value);
+                        }
+                    }
+                });
+
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
