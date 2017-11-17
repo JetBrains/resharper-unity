@@ -1,5 +1,4 @@
-﻿#if RIDER
-using System;
+﻿using System;
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
@@ -39,4 +38,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         }
     }
 }
-#endif

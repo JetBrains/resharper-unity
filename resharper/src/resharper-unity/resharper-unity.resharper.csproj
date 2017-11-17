@@ -100,4 +100,22 @@
   <ItemGroup>
     <None Remove="Rider\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Settings\Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Settings\Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Settings\Rider\**" />
+  </ItemGroup>
 </Project>

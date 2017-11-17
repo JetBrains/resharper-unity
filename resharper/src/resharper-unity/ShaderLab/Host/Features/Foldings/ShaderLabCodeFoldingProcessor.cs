@@ -1,5 +1,3 @@
-#if RIDER
-
 using JetBrains.ReSharper.Daemon.CodeFolding;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
@@ -59,5 +57,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.Foldings
         }
     }
 }
-
-#endif
