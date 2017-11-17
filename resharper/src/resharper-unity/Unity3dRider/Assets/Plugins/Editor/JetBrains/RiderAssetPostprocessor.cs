@@ -25,9 +25,18 @@ namespace Plugins.Editor.JetBrains
       }
 
       var slnFile = Directory.GetFiles(currentDirectory, "*.sln").First();
+      
       RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", slnFile));
-      string content = File.ReadAllText(slnFile);
-      var lines = content.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+      string slnAllText = File.ReadAllText(slnFile);
+      const string unityProjectGuid = @"Project(""{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1}"")";
+      if (!slnAllText.Contains(unityProjectGuid))
+      {
+        string matchGUID = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)";
+        // Unity may put a random guid, unityProjectGuid will help VSTU recognize Rider-generated projects
+        slnAllText = Regex.Replace(slnAllText, matchGUID, unityProjectGuid);
+      }
+
+      var lines = slnAllText.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
       var sb = new StringBuilder();
       foreach (var line in lines)
       {
