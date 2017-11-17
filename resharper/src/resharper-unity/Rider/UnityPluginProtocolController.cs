@@ -21,7 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
-        private readonly SolutionModel mySolutionModel;
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
@@ -30,19 +29,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IProperty<bool> myServerConnectedAndPlay = new Property<bool>("UnityServerConnectedAndPlay", false)
             ;
 
-        public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, SolutionModel solutionModel,
-            IScheduler dispatcher, IShellLocks locks, ISolutionLoadTasksScheduler solutionLoadTasksScheduler,
-            ISolution solution)
+        public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, 
+            IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
             myLifetime = lifetime;
             myLogger = logger;
-            mySolutionModel = solutionModel;
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
 
-            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("Init Unity Plugin Protocol",
-                SolutionLoadTaskKinds.Done, Init));
+            Init();
         }
 
         private void Init()
@@ -56,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (!ProjectExtensions.IsSolutionGeneratedByUnity(solFilePath.Directory))
                 return;
 
-            SubscribeToPlay(mySolutionModel.GetCurrentSolution());
+            SubscribeToPlay(mySolution.GetProtocolSolution());
 
             var protocolInstancePath =
                 solFilePath.Directory.Combine(
@@ -139,8 +135,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     if (myPlay.Value)
                         myServerConnectedAndPlay.SetValue(myPlay.Value);
+                    
+                    UnityModel.ClientConnected.SetValue(true); // responce to server connected
                 });
-                UnityModel.ClientConnected.SetValue(true);
             }
             catch (Exception ex)
             {
