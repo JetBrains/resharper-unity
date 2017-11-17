@@ -1,6 +1,4 @@
-﻿#if RIDER
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -47,5 +45,3 @@ namespace JetBrains.ReSharper.Host.Features.SyntaxHighlighting
         }
     }
 }
-
-#endif
