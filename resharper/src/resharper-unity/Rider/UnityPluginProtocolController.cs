@@ -32,6 +32,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, 
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
+            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath.Directory))
+                return;
+
             myLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
@@ -47,16 +50,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
             });
-
-            var solFilePath = mySolution.SolutionFilePath;
-            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solFilePath.Directory))
-                return;
-
+            
             SubscribeToPlay(mySolution.GetProtocolSolution());
 
-            var protocolInstancePath =
-                solFilePath.Directory.Combine(
-                    "Library/ProtocolInstance.json"); // consider non-Unity Solution with Unity-generated projects
+            var protocolInstancePath = mySolution.SolutionFilePath.Directory.Combine(
+                    "Library/ProtocolInstance.json"); // todo: consider non-Unity Solution with Unity-generated projects
 
             if (!protocolInstancePath.ExistsFile)
                 File.Create(protocolInstancePath.FullPath);
