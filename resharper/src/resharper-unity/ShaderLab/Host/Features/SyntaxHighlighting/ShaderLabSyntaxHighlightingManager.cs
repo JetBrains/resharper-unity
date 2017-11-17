@@ -1,5 +1,3 @@
-#if RIDER
-
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.SyntaxHighlighting;
@@ -19,5 +17,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.SyntaxHighli
         }
     }
 }
-
-#endif

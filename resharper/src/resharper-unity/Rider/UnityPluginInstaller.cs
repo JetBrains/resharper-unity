@@ -1,5 +1,4 @@
-﻿#if RIDER
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -123,6 +122,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void InstallNunitFramework()
         {
             var solutionDir = mySolution.SolutionFilePath.Directory;
+            if (!UnityReferenceDetectionExtensions.IsSolutionGeneratedByUnity(solutionDir))
+            {
+                myLogger.Info("No Assets directory in the same directory as solution. Skipping NunitFramework installation.");
+                return;
+            }
+            
             var nunitFrameworkPath = solutionDir.Combine(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll");
             if (!nunitFrameworkPath.IsAbsolute)
             {
@@ -309,4 +314,3 @@ Please switch back to Unity to make plugin file appear in the solution.";
         }
     }
 }
-#endif

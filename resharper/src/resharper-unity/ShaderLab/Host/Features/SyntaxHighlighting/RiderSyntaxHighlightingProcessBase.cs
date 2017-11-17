@@ -1,6 +1,4 @@
-﻿#if RIDER
-
-using System;
+﻿using System;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
@@ -111,5 +109,3 @@ namespace JetBrains.ReSharper.Host.Features.SyntaxHighlighting
         }
     }
 }
-
-#endif

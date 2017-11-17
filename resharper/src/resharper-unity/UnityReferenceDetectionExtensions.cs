@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 using JetBrains.Util.Reflection;
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -47,6 +48,34 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var psiServices = clrDeclaredElement.GetPsiServices();
             return psiModule.IsReferencingUnityModule(psiServices);
         }
+        
+        public static bool IsProjectCompiledByUnity([CanBeNull] this IProject project)
+        {
+            return project != null && project.HasSubItems("Assets") && IsUnityProject(project);
+        }
+
+        public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionDir)
+        {
+            var assetsDir = solutionDir.CombineWithShortName("Assets");
+            return assetsDir.IsAbsolute && assetsDir.ExistsDirectory;
+        }
+
+        public static bool IsUnityProject([CanBeNull] this IProject project)
+        {
+            // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
+            return project != null && (project.HasFlavour<UnityProjectFlavor>() || ReferencesUnity(project));
+        }
+
+        private static bool ReferencesUnity(IProject project)
+        {
+            var targetFrameworkId = project.GetCurrentTargetFrameworkId();
+            return UnityReferenceNames.Any(ani => ReferencesAssembly(project, targetFrameworkId, ani));
+        }
+
+        private static bool ReferencesAssembly(IProject project, TargetFrameworkId targetFrameworkId, AssemblyNameInfo name)
+        {            
+            return ReferencedAssembliesService.IsProjectReferencingAssemblyByName(project, targetFrameworkId, name, out var _);
+        }
 
         private static bool IsReferencingUnityModule([NotNull] this IPsiModule psiModule, IPsiServices psiServices)
         {
@@ -62,28 +91,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static bool IsUnityModule([NotNull] this IPsiModule psiModule)
         {   
             return ourUnitySimpleAssemblyNames.Contains(psiModule.Name);
-        }
-
-        public static bool IsUnityProject([CanBeNull] this IProject project)
-        {
-            // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
-            return project != null && (project.HasFlavour<UnityProjectFlavor>() || ReferencesUnity(project));
-        }
-
-        public static bool IsProjectCompiledByUnity([CanBeNull] this IProject project)
-        {
-            return project != null && project.HasSubItems("Assets") && IsUnityProject(project);
-        }
-
-        private static bool ReferencesUnity(IProject project)
-        {
-            var targetFrameworkId = project.GetCurrentTargetFrameworkId();
-            return UnityReferenceNames.Any(ani => ReferencesAssembly(project, targetFrameworkId, ani));
-        }
-
-        private static bool ReferencesAssembly(IProject project, TargetFrameworkId targetFrameworkId, AssemblyNameInfo name)
-        {            
-            return ReferencedAssembliesService.IsProjectReferencingAssemblyByName(project, targetFrameworkId, name, out var _);
         }
     }
 }
