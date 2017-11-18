@@ -31,6 +31,8 @@
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgIconProvider" />
     <completion.contributor language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
 
+    <!-- asmdef support -->
+    <fileTypeFactory implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileTypeFactory"/>
   </extensions>
 
   <project-components>
