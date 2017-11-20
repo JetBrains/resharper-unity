@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
+import com.jetbrains.rider.use2
 import org.apache.commons.logging.LogFactory
 import org.jdom.Element
 
@@ -78,11 +79,11 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
         project.baseDir.findFileByRelativePath("Library/EditorInstance.json")?.let { file ->
             try {
                 // Not a RuntimeConfigurationError, mainly because we can recover
-                file.inputStream.reader().use { reader ->
+                file.inputStream.reader().use2 { reader ->
                     val jsonObject = JsonParser().parse(reader).asJsonObject
                     val processId = jsonObject["process_id"].asInt
 
-                    return checkValidEditorInstance(processId, processList)
+                    return@use2 checkValidEditorInstance(processId, processList)
                 }
             } catch (e: Throwable) {
                 LogFactory.getLog("catch").warn("Error reading EditorInstance.json", e)
