@@ -8,7 +8,6 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
@@ -133,9 +132,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     if (myPlay.Value)
                         myServerConnectedAndPlay.SetValue(myPlay.Value);
-                    
-                    UnityModel.ClientConnected.SetValue(true); // responce to server connected
                 });
+                UnityModel.IsClientConnected.Set(rdVoid => true);
             }
             catch (Exception ex)
             {

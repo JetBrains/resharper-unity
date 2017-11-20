@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 #if NET_4_6
+using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 #endif
 using UnityEditor;
@@ -329,12 +331,27 @@ namespace Plugins.Editor.JetBrains
 
         SyncSolution(); // added to handle opening file, which was just recently created.
 #if NET_4_6
-        if (RiderProtocolController.model!=null && RiderProtocolController.model.ClientConnected.HasValue() && RiderProtocolController.model.ClientConnected.Value) // HostConnected also means that in Rider and in Unity the same solution is opened 
+        if (RiderProtocolController.model!=null)
         {
+          bool connected = false;
+          try
+          {
+            // HostConnected also means that in Rider and in Unity the same solution is opened
+            connected = RiderProtocolController.model.IsClientConnected.Sync(RdVoid.Instance,
+              new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
+          }
+          catch (Exception)
+          {
+            Log(LoggingLevel.Verbose, "Rider Protocol not connected.");
+          }
+          if (connected)
+          {
 #endif
-          if (DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)) 
-            return true;
+            if (DetectPortAndOpenFile(line, assetFilePath,
+              SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
+              return true;
 #if NET_4_6
+          }
         }
 #endif
         var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
