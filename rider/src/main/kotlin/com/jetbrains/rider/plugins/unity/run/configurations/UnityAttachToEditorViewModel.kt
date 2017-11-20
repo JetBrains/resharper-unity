@@ -5,6 +5,7 @@ import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
+import com.jetbrains.rider.use2
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.IProperty
 import com.jetbrains.rider.util.reactive.Property
@@ -45,9 +46,9 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
         }
 
         try {
-            val processId = editorInstanceJsonFile.inputStream.reader().use { reader ->
+            val processId = editorInstanceJsonFile.inputStream.reader().use2 { reader ->
                 val jsonObject = JsonParser().parse(reader).asJsonObject
-                return@use jsonObject["process_id"].asInt
+                return@use2 jsonObject["process_id"].asInt
             }
 
             return if (checkValidEditorInstance(processId, processList))
