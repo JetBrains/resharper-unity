@@ -5,7 +5,7 @@ using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.Json.ProjectModel
 {
     // Ideally, this file mapping should come automatically from the filenames
     // and masks in catalog.json. See RSRP-467093
