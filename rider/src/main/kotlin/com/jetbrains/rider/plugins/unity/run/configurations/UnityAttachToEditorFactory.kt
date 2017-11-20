@@ -9,10 +9,16 @@ open class UnityAttachToEditorFactory(type: ConfigurationType)
 
     override fun createTemplateConfiguration(project: Project) = UnityAttachToEditorConfiguration(project, this)
     override fun isConfigurationSingletonByDefault() = true
+    override fun getName(): String {
+        return "Unity Debug"
+    }
 }
 
 class UnityAttachToEditorAndPlayFactory(type: ConfigurationType)
     : UnityAttachToEditorFactory(type) {
 
     override fun createTemplateConfiguration(project: Project) = UnityAttachToEditorConfiguration(project, this, true)
+    override fun getName(): String {
+        return "Unity Debug and Play"
+    }
 }
