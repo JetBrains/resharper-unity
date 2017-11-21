@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Reflection;
+using JetBrains.Platform.RdFramework.Util;
 using UnityEngine;
 
 #if NET_4_6
@@ -26,6 +27,7 @@ namespace Plugins.Editor.JetBrains
     public static bool Initialized { get; private set; }
 #if NET_4_6
     public static UnityModel model;
+    private static Protocol ourProtocol;
 #endif
     
     static RiderProtocolController()
@@ -62,7 +64,7 @@ namespace Plugins.Editor.JetBrains
 //      {
 //        config.InjectNode(new LogConfNode(LoggingLevel.TRACE, "protocol"));
 //      });
-      
+
       var thread = new Thread(() =>
       {
         try
@@ -72,7 +74,7 @@ namespace Plugins.Editor.JetBrains
           var dispatcher = new SimpleInpaceExecutingScheduler(logger);
         
           logger.Info("Create protocol...");
-          var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
+          ourProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
             creatingProtocol =>
             {
               var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
@@ -84,7 +86,7 @@ namespace Plugins.Editor.JetBrains
 
           logger.Info("Create UnityModel and advise for new sessions...");
           
-          model = new UnityModel(lifetime, protocol);
+          model = new UnityModel(lifetime, ourProtocol);
           model.Play.Advise(lifetime, play =>
           {
             logger.Info("model.Play.Advise: " + play);
@@ -93,12 +95,22 @@ namespace Plugins.Editor.JetBrains
               EditorApplication.isPlaying = play;
             });
           });
+          
+          model.LogModelInitialized.Value = new UnityLogModelInitialized();
+
+          model.Refresh.Set((lifetime1, vo) =>
+          {
+            logger.Info("RiderPlugin.Refresh.");
+            MainThreadDispatcher.Queue(AssetDatabase.Refresh);
+            return null;
+          });
+                    
           model.ServerConnected.SetValue(true);
         }
         catch (Exception ex)
         {
           logger.Error(ex);
-        }  
+        }
       });
       thread.Start();
       Initialized = true;
@@ -127,9 +139,10 @@ namespace Plugins.Editor.JetBrains
     {
       if (RiderPlugin.SendConsoleToRider)
       {
-        int i = 0;
-        // todo: use Protocol to pass log entries to Rider
-        
+        #if NET_4_6
+        // use Protocol to pass log entries to Rider
+        ourProtocol.Scheduler.InvokeOrQueue(() => model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Message, message, stackTrace)));
+        #endif
       }
     }
 

@@ -532,14 +532,6 @@ namespace Plugins.Editor.JetBrains
         System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
       SyncSolution.Invoke(null, null);
     }
-    
-    // Todo: use via Protocol call 
-    // When outside Unity file is added to Assets folder
-    // On *nix when Unity windows activates it makes Assets Refresh by itself, but on Windows it doesn't.
-    public static void Refresh()
-    {
-      AssetDatabase.Refresh();
-    }
 
     /// <summary>
     /// JetBrains Rider Integration Preferences Item
