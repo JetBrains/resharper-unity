@@ -307,7 +307,6 @@ namespace Plugins.Editor.JetBrains
           // make sure the plugin was initialized first.
           // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
           InitRiderPlugin();
-          RiderAssetPostprocessor.OnGeneratedCSProjectFiles();
         }
 
         string appPath = Path.GetDirectoryName(Application.dataPath);
