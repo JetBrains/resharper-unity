@@ -31,24 +31,24 @@ namespace JetBrains.Platform.Unity.Model
     //fields
     //public fields
     [NotNull] public IRdProperty<bool> ServerConnected { get { return _ServerConnected; }}
-    [NotNull] public IRdProperty<bool> ClientConnected { get { return _ClientConnected; }}
     [NotNull] public IRdProperty<bool> Play { get { return _Play; }}
     [NotNull] public IRdProperty<bool> Stop { get { return _Stop; }}
     [NotNull] public IRdProperty<bool> Pause { get { return _Pause; }}
     [NotNull] public IRdProperty<bool> Unpause { get { return _Unpause; }}
     [NotNull] public IRdProperty<string> UnityPluginVersion { get { return _UnityPluginVersion; }}
+    [NotNull] public IRdCall<RdVoid, bool> IsClientConnected { get { return _IsClientConnected; }}
     [NotNull] public RdEndpoint<string, bool> UpdateUnityPlugin { get { return _UpdateUnityPlugin; }}
     [NotNull] public RdEndpoint<RdVoid, bool> Build { get { return _Build; }}
     [NotNull] public RdEndpoint<RdVoid, RdVoid> Refresh { get { return _Refresh; }}
     
     //private fields
     [NotNull] private readonly RdProperty<bool> _ServerConnected;
-    [NotNull] private readonly RdProperty<bool> _ClientConnected;
     [NotNull] private readonly RdProperty<bool> _Play;
     [NotNull] private readonly RdProperty<bool> _Stop;
     [NotNull] private readonly RdProperty<bool> _Pause;
     [NotNull] private readonly RdProperty<bool> _Unpause;
     [NotNull] private readonly RdProperty<string> _UnityPluginVersion;
+    [NotNull] private readonly RdCall<RdVoid, bool> _IsClientConnected;
     [NotNull] private readonly RdEndpoint<string, bool> _UpdateUnityPlugin;
     [NotNull] private readonly RdEndpoint<RdVoid, bool> _Build;
     [NotNull] private readonly RdEndpoint<RdVoid, RdVoid> _Refresh;
@@ -56,40 +56,39 @@ namespace JetBrains.Platform.Unity.Model
     //primary constructor
     public UnityModel(
       [NotNull] RdProperty<bool> serverConnected,
-      [NotNull] RdProperty<bool> clientConnected,
       [NotNull] RdProperty<bool> play,
       [NotNull] RdProperty<bool> stop,
       [NotNull] RdProperty<bool> pause,
       [NotNull] RdProperty<bool> unpause,
       [NotNull] RdProperty<string> unityPluginVersion,
+      [NotNull] RdCall<RdVoid, bool> isClientConnected,
       [NotNull] RdEndpoint<string, bool> updateUnityPlugin,
       [NotNull] RdEndpoint<RdVoid, bool> build,
       [NotNull] RdEndpoint<RdVoid, RdVoid> refresh
     )
     {
       if (serverConnected == null) throw new ArgumentNullException("serverConnected");
-      if (clientConnected == null) throw new ArgumentNullException("clientConnected");
       if (play == null) throw new ArgumentNullException("play");
       if (stop == null) throw new ArgumentNullException("stop");
       if (pause == null) throw new ArgumentNullException("pause");
       if (unpause == null) throw new ArgumentNullException("unpause");
       if (unityPluginVersion == null) throw new ArgumentNullException("unityPluginVersion");
+      if (isClientConnected == null) throw new ArgumentNullException("isClientConnected");
       if (updateUnityPlugin == null) throw new ArgumentNullException("updateUnityPlugin");
       if (build == null) throw new ArgumentNullException("build");
       if (refresh == null) throw new ArgumentNullException("refresh");
       
       _ServerConnected = serverConnected;
-      _ClientConnected = clientConnected;
       _Play = play;
       _Stop = stop;
       _Pause = pause;
       _Unpause = unpause;
       _UnityPluginVersion = unityPluginVersion;
+      _IsClientConnected = isClientConnected;
       _UpdateUnityPlugin = updateUnityPlugin;
       _Build = build;
       _Refresh = refresh;
       _ServerConnected.OptimizeNested = true;
-      _ClientConnected.OptimizeNested = true;
       _Play.OptimizeNested = true;
       _Stop.OptimizeNested = true;
       _Pause.OptimizeNested = true;
@@ -116,8 +115,8 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1003),
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1004),
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1005),
-      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1006),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1007),
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1006),
+      new RdCall<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1007),
       new RdEndpoint<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1008),
       new RdEndpoint<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1009),
       new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1010)
@@ -133,12 +132,12 @@ namespace JetBrains.Platform.Unity.Model
     //init method
     protected override void Init(Lifetime lifetime) {
       _ServerConnected.BindEx(lifetime, this, "serverConnected");
-      _ClientConnected.BindEx(lifetime, this, "clientConnected");
       _Play.BindEx(lifetime, this, "play");
       _Stop.BindEx(lifetime, this, "stop");
       _Pause.BindEx(lifetime, this, "pause");
       _Unpause.BindEx(lifetime, this, "unpause");
       _UnityPluginVersion.BindEx(lifetime, this, "unityPluginVersion");
+      _IsClientConnected.BindEx(lifetime, this, "isClientConnected");
       _UpdateUnityPlugin.BindEx(lifetime, this, "updateUnityPlugin");
       _Build.BindEx(lifetime, this, "build");
       _Refresh.BindEx(lifetime, this, "refresh");
@@ -146,12 +145,12 @@ namespace JetBrains.Platform.Unity.Model
     //identify method
     public override void Identify(IIdentities ids) {
       _ServerConnected.IdentifyEx(ids);
-      _ClientConnected.IdentifyEx(ids);
       _Play.IdentifyEx(ids);
       _Stop.IdentifyEx(ids);
       _Pause.IdentifyEx(ids);
       _Unpause.IdentifyEx(ids);
       _UnityPluginVersion.IdentifyEx(ids);
+      _IsClientConnected.IdentifyEx(ids);
       _UpdateUnityPlugin.IdentifyEx(ids);
       _Build.IdentifyEx(ids);
       _Refresh.IdentifyEx(ids);
@@ -164,12 +163,12 @@ namespace JetBrains.Platform.Unity.Model
       printer.Println("UnityModel (");
       using (printer.IndentCookie()) {
         printer.Print("serverConnected = "); _ServerConnected.PrintEx(printer); printer.Println();
-        printer.Print("clientConnected = "); _ClientConnected.PrintEx(printer); printer.Println();
         printer.Print("play = "); _Play.PrintEx(printer); printer.Println();
         printer.Print("stop = "); _Stop.PrintEx(printer); printer.Println();
         printer.Print("pause = "); _Pause.PrintEx(printer); printer.Println();
         printer.Print("unpause = "); _Unpause.PrintEx(printer); printer.Println();
         printer.Print("unityPluginVersion = "); _UnityPluginVersion.PrintEx(printer); printer.Println();
+        printer.Print("isClientConnected = "); _IsClientConnected.PrintEx(printer); printer.Println();
         printer.Print("updateUnityPlugin = "); _UpdateUnityPlugin.PrintEx(printer); printer.Println();
         printer.Print("build = "); _Build.PrintEx(printer); printer.Println();
         printer.Print("refresh = "); _Refresh.PrintEx(printer); printer.Println();
