@@ -212,6 +212,8 @@ namespace Plugins.Editor.JetBrains
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
 
       InitializeEditorInstanceJson(projectDirectory);
+      
+      RiderAssetPostprocessor.OnGeneratedCSProjectFiles();
 
       Log(LoggingLevel.Info, "Rider plugin initialized. You may change the amount of Rider Debug output via Edit -> Preferences -> Rider -> Logging Level");
       Initialized = true;
@@ -293,7 +295,6 @@ namespace Plugins.Editor.JetBrains
           // make sure the plugin was initialized first.
           // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
           InitRiderPlugin();
-          RiderAssetPostprocessor.OnGeneratedCSProjectFiles();
         }
 
         string appPath = Path.GetDirectoryName(Application.dataPath);
