@@ -46,10 +46,16 @@ namespace Plugins.Editor.JetBrains
     {
       var allFoundPaths = GetAllRiderPaths();
       var alreadySetPath = GetExternalScriptEditor();
-      UpdateRiderPath(allFoundPaths, alreadySetPath);
       
-      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
-        return alreadySetPath;
+      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && !allFoundPaths.Any() ||
+          !string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() &&
+          allFoundPaths.Contains(alreadySetPath))
+      {
+        RiderPath = alreadySetPath;
+      }
+      else if (allFoundPaths.Contains(RiderPath)) {}
+      else
+      RiderPath = allFoundPaths.FirstOrDefault();
 
       return RiderPath;
     }
@@ -155,17 +161,6 @@ namespace Plugins.Editor.JetBrains
       {
       }
       return false;
-    }
-
-    private static void UpdateRiderPath(string[] allFoundPaths, string alreadySetPath)
-    {
-      if (!allFoundPaths.Any())
-        return;
-      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
-        return;
-      if (allFoundPaths.Contains(RiderPath))
-        return;
-      RiderPath = allFoundPaths.FirstOrDefault();
     }
 
     public static string RiderPath
