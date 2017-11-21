@@ -12,6 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Daemon
     [ElementProblemAnalyzer(typeof(IObjectPropertyInitializer))]
     public class AsmDefDuplicateItemsProblemAnalyzer : AsmDefProblemAnalyzer<IObjectPropertyInitializer>
     {
+        public const string AsmDefDuplicateItemDescription = "Array items should be unique";
+
         protected override void Analyze(IObjectPropertyInitializer element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             if (element.DeclaredName == "includePlatforms" || element.DeclaredName == "excludePlatforms" ||
@@ -48,7 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Daemon
                                 ? FixableIssueKind.None
                                 : FixableIssueKind.NonEnumValue;
 
-                            var result = new AssertionResult(false, "Array items should be unique", expression, fixableIssueKind: fixableKind);
+                            var result = new AssertionResult(false, AsmDefDuplicateItemDescription, expression,
+                                fixableIssueKind: fixableKind);
                             var warning = new JsonValidationFailedWarning(result.Node, result.Description, result);
                             consumer.AddHighlighting(warning);
                         }
