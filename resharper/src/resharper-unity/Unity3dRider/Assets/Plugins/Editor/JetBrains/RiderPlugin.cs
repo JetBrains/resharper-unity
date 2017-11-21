@@ -148,8 +148,10 @@ namespace Plugins.Editor.JetBrains
 
     private static void UpdateRiderPath(string[] allFoundPaths, string alreadySetPath)
     {
+      if (!allFoundPaths.Any())
+        return;
       if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
-        return ;
+        return;
       if (allFoundPaths.Contains(RiderPath))
         return;
       RiderPath = allFoundPaths.FirstOrDefault();
