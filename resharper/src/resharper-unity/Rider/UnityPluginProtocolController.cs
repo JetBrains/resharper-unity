@@ -105,13 +105,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (e.Key == "UNITY_Refresh")
                 {
-                    if (e.NewValue != e.OldValue)
+                    if (e.NewValue != e.OldValue && e.NewValue.ToLower() == "true")
                     {
                         myLogger.Verbose($"UNITY_Refresh {e.NewValue} came from frontend.");
 
                         if (UnityModel != null && UnityModel.ServerConnected.HasValue() &&
                             UnityModel.ServerConnected.Value)
                             UnityModel.Refresh.Start(RdVoid.Instance);
+                        solution.CustomData.Data["UNITY_Refresh"] = "false";
                     }
                 }
                 
