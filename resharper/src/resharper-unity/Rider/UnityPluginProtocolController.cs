@@ -68,7 +68,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // Add event handlers.
             watcher.Changed += OnChanged;
             watcher.Created += OnChanged;
-            watcher.Deleted += (sender, e) => { UnityModel?.ServerConnected.SetValue(false); };
+            watcher.Deleted += (sender, e) =>
+            {
+                myDispatcher.InvokeOrQueue(() => UnityModel?.ServerConnected.SetValue(false));
+            };
 
             watcher.EnableRaisingEvents = true; // Begin watching.
 
