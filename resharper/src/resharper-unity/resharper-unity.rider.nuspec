@@ -181,7 +181,7 @@ From previous releases:
     <copyright>Copyright 2017 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[8.0]" />
+      <dependency id="Wave" version="[11.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>
