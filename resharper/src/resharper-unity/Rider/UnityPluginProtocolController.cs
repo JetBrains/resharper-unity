@@ -51,6 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
             
             SubscribeToPlay(mySolution.GetProtocolSolution());
+            SubscribeRefresh(mySolution.GetProtocolSolution());
 
             var protocolInstancePath = mySolution.SolutionFilePath.Directory.Combine(
                     "Library/ProtocolInstance.json"); // todo: consider non-Unity Solution with Unity-generated projects
@@ -96,6 +97,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     }
                 });
 
+        }
+
+        private void SubscribeRefresh(Solution solution)
+        {
+            solution.CustomData.Data.Advise(myLifetime, e =>
+            {
+                if (e.Key == "UNITY_Refresh")
+                {
+                    if (e.NewValue != e.OldValue)
+                    {
+                        myLogger.Verbose($"UNITY_Refresh {e.NewValue} came from frontend.");
+
+                        if (UnityModel != null && UnityModel.ServerConnected.HasValue() &&
+                            UnityModel.ServerConnected.Value)
+                            UnityModel.Refresh.Start(RdVoid.Instance);
+                    }
+                }
+                
+            });
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
