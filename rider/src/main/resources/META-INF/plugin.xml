@@ -45,6 +45,9 @@
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
       <add-to-group group-id="RunMenu" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>
+    <action id="RefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Refresh in Unity">
+      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="AttachToUnityProcess" />
+    </action>
   </actions>
 
   <description><![CDATA[
