@@ -157,92 +157,118 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             return withMatcher;
         }
 
-        private bool CheckPosition(CSharpCodeCompletionContext context, out IClassLikeDeclaration declaration,
+        private bool CheckPosition(CSharpCodeCompletionContext context, out IClassLikeDeclaration classDeclaration,
             out bool hasVisibilityModifier, out bool hasReturnType)
         {
-            declaration = null;
+            classDeclaration = null;
             hasVisibilityModifier = false;
             hasReturnType = false;
 
-            // Are we trying to complete an identifier?
-            if (!(context.UnterminatedContext.TreeNode is ICSharpIdentifier identifier)
-                || identifier.GetContainingNode<IForeachStatement>() != null)
+            // Make sure we're completing an identifier
+            if (!(context.UnterminatedContext.TreeNode is ICSharpIdentifier identifier))
+                return false;
+
+            // Make sure we're in the correct place for showing Unity event functions.
+            if (!ShouldComplete(context.NodeInFile, identifier))
+                return false;
+
+            // We know we're in a place where we can complete, so now configure what we
+            // complete and what we display
+            hasReturnType = HasExistingReturnType(identifier, out var typeUsage);
+            hasVisibilityModifier = HasExisitingVisibilityModifier(typeUsage);
+            classDeclaration = GetClassDeclaration(context.NodeInFile);
+
+            return true;
+        }
+
+        private static bool ShouldComplete(ITreeNode nodeInFile, ICSharpIdentifier identifier)
+        {
+            var methodDeclaration = identifier.GetContainingNode<IMethodDeclaration>();
+            if (methodDeclaration != null)
             {
+                // Don't complete in the parameter list
+                if (nodeInFile.GetContainingNode<IFormalParameterList>() != null)
+                    return false;
+
+                // Check the whole text of the declaration - if it ends (or even starts)
+                // with "__" (which is the completion marker) then we have an incomplete
+                // method declaration and we're good to complete at this position
+                var declarationText = methodDeclaration.GetText();
+                if (declarationText.StartsWith("__") || declarationText.EndsWith("__"))
+                    return true;
+
+                // E.g. `OnAni{caret} [SerializeField]` causes the parser to treat
+                // the next construct's attribute as an array specifier to the type
+                // usage we're typing. (If there's already a type, then the parser
+                // thinks it's a property). So, if we have an array rank, check to
+                // see if the token following the `[` is an identifier. If so, it's
+                // likely it should be an attribute instead, so allow completion.
+                var typeUsage = identifier.GetContainingNode<ITypeUsage>();
+                if (typeUsage != null)
+                {
+                    var arrayRanks = typeUsage.ArrayRanks;
+                    if (arrayRanks.Count > 0)
+                    {
+                        var lbracket = arrayRanks[0].LBracket;
+                        var next = lbracket.GetNextMeaningfulSibling();
+                        if (next == null)
+                        {
+                            next = lbracket.GetNextMeaningfulToken();
+                            if (next != null && next.NodeType == CSharpTokenType.IDENTIFIER)
+                                return true;
+                        }
+                    }
+                }
+
                 return false;
             }
 
-            // If we haven't typed a return type, the identifier will be parsed
-            // as a type usage. Get its parent (visibility modifier is separate)
-            var typeUsage = identifier.GetContainingNode<ITypeUsage>();
+            // E.g. `public void OnAni{caret} [SerializeField]` causes the parser to
+            // treat this as a field declaration, using the brackets as an array specifier
+            var fieldDeclaration = identifier.GetContainingNode<IFieldDeclaration>();
+            if (fieldDeclaration?.LBracket != null)
+            {
+                if (!fieldDeclaration.FixedBufferSizeExpression.IsConstantValue())
+                    return identifier == fieldDeclaration.NameIdentifier;
+            }
+
+            return false;
+        }
+
+        private static bool HasExistingReturnType(ITreeNode identifier, out ITypeUsage typeUsage)
+        {
+            // Only return true if the user has explicitly typed a return type.
+            // If they haven't, then our completion identifier will be parsed
+            // as a type usage. Return the usage any way, we need it elsewhere.
+            typeUsage = identifier.GetContainingNode<ITypeUsage>();
             if (typeUsage == null)
             {
-                var node = identifier.PrevSibling;
-                while (node != null && node.IsWhitespaceToken())
-                    node = node.PrevSibling;
-                if (node != null && !(node is ITypeUsage))
-                    return false;
-                typeUsage = (ITypeUsage) node;
-
+                typeUsage = identifier.GetPreviousMeaningfulSibling() as ITypeUsage;
                 if (typeUsage == null)
-                    return false;
-
-                // TODO: This is working around `void OnAnima{caret}`
-                // This allows us to not add the `private ` modifier, because that would
-                // be added *after* the `void` instead of `before`
-                hasReturnType = true;
+                {
+                    var fieldDeclaration = identifier.GetContainingNode<IFieldDeclaration>();
+                    typeUsage = fieldDeclaration?.GetPreviousMeaningfulSibling() as ITypeUsage;
+                }
+                return typeUsage != null;
             }
+            return false;
+        }
 
-            // Preceding access modifier (public, private, etc)
-            // If there isn't a modifier, there won't be a significant node
-            var treeNode = typeUsage.PrevSibling;
-            while (treeNode != null && treeNode.IsWhitespaceToken())
-                treeNode = treeNode.PrevSibling;
-            if (treeNode != null && !(treeNode is IModifiersList))
-                return false;
-
-            var methodDeclaration = typeUsage.GetContainingNode<IMethodDeclaration>();
-            if (methodDeclaration == null)
-                return false;
-
-            // Check if this is a method declaration, e.g. the user is typing
-            // the return type
-            var methodName = methodDeclaration.GetText();
-            if (!methodName.EndsWith("__") && !methodName.StartsWith("__"))
+        private static bool HasExisitingVisibilityModifier(ITreeNode typeUsage)
+        {
+            if (!(typeUsage.GetPreviousMeaningfulSibling() is IModifiersList modifiersList))
                 return false;
 
             // TODO: What about virtual or override?
-            var modifiersList = treeNode as IModifiersList;
-            hasVisibilityModifier = modifiersList != null &&
-                                    (modifiersList.HasModifier(CSharpTokenType.PUBLIC_KEYWORD) ||
-                                     modifiersList.HasModifier(CSharpTokenType.INTERNAL_KEYWORD) ||
-                                     modifiersList.HasModifier(CSharpTokenType.PROTECTED_KEYWORD) ||
-                                     modifiersList.HasModifier(CSharpTokenType.PRIVATE_KEYWORD));
+            return (modifiersList.HasModifier(CSharpTokenType.PUBLIC_KEYWORD) ||
+                    modifiersList.HasModifier(CSharpTokenType.INTERNAL_KEYWORD) ||
+                    modifiersList.HasModifier(CSharpTokenType.PROTECTED_KEYWORD) ||
+                    modifiersList.HasModifier(CSharpTokenType.PRIVATE_KEYWORD));
+        }
 
-            var nodeInFile = context.NodeInFile;
-            if (nodeInFile == null)
-                return false;
-
-            // Don't include identifiers in the parameter list
-            var formalParameterList = nodeInFile.GetContainingNode<IFormalParameterList>();
-            if (formalParameterList != null)
-                return false;
-
-            var classBody = nodeInFile.GetContainingNode<IClassBody>();
-            if (classBody == null)
-                return false;
-
-            declaration = classBody.Parent as IClassLikeDeclaration;
-            if (declaration == null)
-                return false;
-
-            // Wouldn't this be covered by GetContainingNode<IFormalParameterList> above?
-            treeNode = nodeInFile;
-            while (treeNode is IWhitespaceNode)
-                treeNode = treeNode.PrevSibling;
-            if (treeNode == null || treeNode is IFormalParameterList)
-                return false;
-
-            return true;
+        private static IClassLikeDeclaration GetClassDeclaration(ITreeNode completionNode)
+        {
+            return completionNode.GetContainingNode<IClassLikeDeclaration>();
         }
     }
 }
