@@ -550,7 +550,7 @@ namespace Plugins.Editor.JetBrains
           EditorGUILayout.TextField(
             new GUIContent("NET 4.6",
               help), TargetFrameworkVersion);
-        EditorGUILayout.TextArea(help, EditorStyles.label);  
+        EditorGUILayout.HelpBox(help, MessageType.None);  
         var helpOldMono = @"TargetFramework = 3.5 is recommended.
  - With 4.5 Rider may show ambiguous references in UniRx.";
 
@@ -558,7 +558,7 @@ namespace Plugins.Editor.JetBrains
           EditorGUILayout.TextField(
             new GUIContent("NET 3.5",
               helpOldMono), TargetFrameworkVersionOldMono);
-        EditorGUILayout.TextArea(helpOldMono, EditorStyles.label);
+        EditorGUILayout.HelpBox(helpOldMono, MessageType.None);
       
       GUILayout.EndVertical();
 
