@@ -386,7 +386,7 @@ task packArtifacts {
 }
 
 task buildBackend {
-    dependsOn packArtifacts
+    dependsOn validateUnity3dRider, packArtifacts
     group = backendGroup
     description = 'Builds .NET part of the plugin.'
     doLast {
