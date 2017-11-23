@@ -306,7 +306,11 @@ namespace Plugins.Editor.JetBrains
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
+        if (net46)
+          targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
+        else
+          targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersionOldMono);
+        
       }
     }
 
@@ -346,5 +350,13 @@ namespace Plugins.Editor.JetBrains
 
       return "4";
     }
+    
+    private static bool net46 = 
+#if NET_4_6
+      true;
+#else
+      false;
+#endif
+
   }
 }
