@@ -102,40 +102,51 @@ namespace Plugins.Editor.JetBrains
       return new string[0];
     }
 
-    private static string TargetFrameworkVersionDefault
+    private static string GetTargetFrameworkVersionDefault(string defaultValue)
     {
-      get
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
       {
-        var defaultValue = "4.6";
-        if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
+        var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
+        if (dir.Exists)
         {
-          var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
-          if (dir.Exists)
+          var availableVersions = dir.GetDirectories("v*").Select(a => a.Name.Substring(1))
+            .Where(v => TryCatch(v, s => { })).ToArray();
+          if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
           {
-            var availableVersions = dir.GetDirectories("v*").Select(a => a.Name.Substring(1))
-              .Where(v => TryCatch(v, s => { })).ToArray();
-            if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
-            {
-              defaultValue = availableVersions.OrderBy(a => new Version(a)).Last();
-            }
+            defaultValue = availableVersions.OrderBy(a => new Version(a)).Last();
           }
         }
-        return defaultValue;
       }
+      return defaultValue;
     }
+
 
     public static string TargetFrameworkVersion
     {
       get
       {
-        return EditorPrefs.GetString("Rider_TargetFrameworkVersion",
-          EditorPrefs.GetBool("Rider_TargetFrameworkVersion45", true) ? TargetFrameworkVersionDefault : "3.5");
+        return EditorPrefs.GetString("Rider_TargetFrameworkVersion", GetTargetFrameworkVersionDefault("4.6"));
       }
       set
       {
         TryCatch(value, val =>
         {
           EditorPrefs.SetString("Rider_TargetFrameworkVersion", val);
+        });
+      }
+    }
+    
+    public static string TargetFrameworkVersionOldMono
+    {
+      get
+      {
+        return EditorPrefs.GetString("Rider_TargetFrameworkVersionOldMono", GetTargetFrameworkVersionDefault("3.5"));
+      }
+      set
+      {
+        TryCatch(value, val =>
+        {
+          EditorPrefs.SetString("Rider_TargetFrameworkVersionOldMono", val);
         });
       }
     }
@@ -562,20 +573,27 @@ namespace Plugins.Editor.JetBrains
           SetExternalScriptEditor(string.Empty);
           EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
         }
-
       }
-      var help = @"TargetFramework >= 4.5 is strongly recommended.
- - Without 4.5:
-    - Rider will fail to resolve System.Linq on Mac/Linux
-    - Rider will fail to resolve Firebase Analytics.
- - With 4.5 Rider may show ambiguous references in UniRx.
-All those problems will go away after Unity upgrades to mono4.";
 
-      TargetFrameworkVersion =
-        EditorGUILayout.TextField(
-          new GUIContent("TargetFrameworkVersion",
-            help), TargetFrameworkVersion);
-      EditorGUILayout.HelpBox(help, MessageType.None);
+      GUILayout.BeginVertical();
+      string status = "TargetFrameworkVersion for Runtime";
+      EditorGUILayout.TextArea(status, EditorStyles.boldLabel);
+        var help = @"TargetFramework >= 4.5 is recommended.";
+        TargetFrameworkVersion =
+          EditorGUILayout.TextField(
+            new GUIContent("NET 4.6",
+              help), TargetFrameworkVersion);
+        EditorGUILayout.TextArea(help, EditorStyles.label);  
+        var helpOldMono = @"TargetFramework = 3.5 is recommended.
+ - With 4.5 Rider may show ambiguous references in UniRx.";
+
+        TargetFrameworkVersionOldMono =
+          EditorGUILayout.TextField(
+            new GUIContent("NET 3.5",
+              helpOldMono), TargetFrameworkVersionOldMono);
+        EditorGUILayout.TextArea(helpOldMono, EditorStyles.label);
+      
+      GUILayout.EndVertical();
 
       EditorGUI.EndChangeCheck();
 
