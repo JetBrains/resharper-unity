@@ -8,5 +8,6 @@ os:
   - linux
 notifications:
   email: false
+solution: resharper/test/Unity3dRiderCompileTest/Unity3dRiderCompileTest.sln
 #  - osx
 # commented out due to being incredibly slow to start on Travis
