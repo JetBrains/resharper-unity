@@ -272,17 +272,21 @@ task validateUnity3dRider {
     description = 'Runs nuget restore and MSBuild to validate Unity3dRider is compilable with different Unity versions.'
 
     doLast {
-        backend.ReportProgress("Building $unity3dRiderTestSolution ")
+        if (!isWindows) {
+            backend.ReportProgress("nuget $backend.unity3dRiderTestSolution.path")
+            exec {
+                executable = "nuget"
+                args = [backend.unity3dRiderTestSolution.path]
+            }
 
-        exec {
-            executable = "nuget"
-            args = [ unity3dRiderTestSolution.path]
+            exec {
+                backend.ReportProgress("msbuild.path $backend.unity3dRiderTestSolution.path")
+                executable = msbuild.path
+                args = [ backend.unity3dRiderTestSolution.path]
+            }
         }
-
-        exec {
-            executable = msbuild.path
-            args = [ unity3dRiderTestSolution.path]
-        }
+        else
+            backend.ReportProgress("validateUnity3dRider skipped on windows.")
     }
 }
 
