@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
 using UnityEngine;
+using System.Reflection;
 
 namespace Plugins.Editor.JetBrains
 {
@@ -358,5 +359,62 @@ namespace Plugins.Editor.JetBrains
       false;
 #endif
 
+    private static Type ourPdb2MdbDriver;
+    private static Type Pdb2MdbDriver
+    {
+      get
+      {
+        if (ourPdb2MdbDriver != null)
+          return ourPdb2MdbDriver;
+        Assembly assembly;
+        try
+        {
+          var path = Path.Combine(Directory.GetCurrentDirectory(), @"Library\resharper-unity-libs\pdb2mdb.exe");
+          assembly = Assembly.LoadFrom(path);
+        }
+        catch (Exception)
+        {
+          RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Loading pdb2mdb failed.");
+          assembly = null;
+        }
+
+        if (assembly == null)
+          return null;
+        var type = assembly.GetType("Pdb2Mdb.Driver");
+        if (type == null)
+          return null;
+        return ourPdb2MdbDriver = type;
+      }
+    }
+
+    public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)
+    {
+      if (!RiderPlugin.Enabled)
+        return;
+      var needToBeConverted = importedAssets.Where(a => a.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) && 
+                                                        importedAssets.Any(a1 => a1 == Path.ChangeExtension(a, ".pdb")) && 
+                                                        importedAssets.All(b => b != Path.ChangeExtension(a, ".dll.mdb"))).ToArray();
+      foreach (var asset in needToBeConverted)
+        ConvertSymbolsForAssembly(asset);
+    }
+
+    private static void ConvertSymbolsForAssembly(string asset)
+    {
+      if (Pdb2MdbDriver == null)
+      {
+        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "FailedToConvertDebugSymbolsNoPdb2mdb.");
+        return;
+      }
+      
+      var method = Pdb2MdbDriver.GetMethod("Main", BindingFlags.Static | BindingFlags.NonPublic);
+      if (method == null)
+      {
+        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "WarningFailedToConvertDebugSymbolsPdb2mdbMainIsNull.");
+        return;
+      }
+
+      var strArray = new[] { Path.GetFullPath(asset) };
+      method.Invoke(null, new object[] { strArray });
+    }
   }
 }
