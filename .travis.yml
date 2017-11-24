@@ -4,6 +4,7 @@ mono: latest
 dotnet: 1.0.4
 script: 
   - ./build.sh
+  - xbuild resharper/test/Unity3dRiderCompileTest/Unity3dRiderCompileTest.sln
 os:
   - linux
 notifications:
