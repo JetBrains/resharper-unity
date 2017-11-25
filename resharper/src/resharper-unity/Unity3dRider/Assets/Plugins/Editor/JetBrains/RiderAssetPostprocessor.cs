@@ -391,11 +391,19 @@ namespace Plugins.Editor.JetBrains
     {
       if (!RiderPlugin.Enabled)
         return;
-      var needToBeConverted = importedAssets.Where(a => a.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) && 
-                                                        importedAssets.Any(a1 => a1 == Path.ChangeExtension(a, ".pdb")) && 
-                                                        importedAssets.All(b => b != Path.ChangeExtension(a, ".dll.mdb"))).ToArray();
-      foreach (var asset in needToBeConverted)
-        ConvertSymbolsForAssembly(asset);
+      var toBeConverted = importedAssets.Where(a => 
+          a.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&
+          importedAssets.Any(a1 => a1 == Path.ChangeExtension(a, ".pdb")) &&
+          importedAssets.All(b => b != Path.ChangeExtension(a, ".dll.mdb")))
+        .ToArray();
+      foreach (var asset in toBeConverted)
+      {
+        var pdb = Path.ChangeExtension(asset, ".pdb");
+        if (!IsPortablePdb(pdb))
+          ConvertSymbolsForAssembly(asset);
+        else
+          RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("mdb generation for Portable pdb is not supported. {0}", pdb));
+      }
     }
 
     private static void ConvertSymbolsForAssembly(string asset)
@@ -415,6 +423,26 @@ namespace Plugins.Editor.JetBrains
 
       var strArray = new[] { Path.GetFullPath(asset) };
       method.Invoke(null, new object[] { strArray });
+    }
+    
+    //https://github.com/xamarin/xamarin-android/commit/4e30546f
+    const uint ppdb_signature = 0x424a5342;
+    public static bool IsPortablePdb(string filename)
+    {
+      try
+      {
+        using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+        {
+          using (var br = new BinaryReader(fs))
+          {
+            return br.ReadUInt32() == ppdb_signature;
+          }
+        }
+      }
+      catch
+      {
+        return false;
+      }
     }
   }
 }
