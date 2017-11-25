@@ -11,8 +11,6 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
 {
-    // TODO: Group = "Unity"?
-    // Everything's grouped by language, not framework
     [ContextAction(Group = CSharpContextActions.GroupID,
         Name = "Annotate field with 'SerializeField' attribute",
         Description = "Adds 'UnityEngine.SerializeField' attribute, marking the field as serialized by Unity")]
