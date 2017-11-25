@@ -83,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var accessRights = field.GetAccessRights();
             if (accessRights == AccessRights.PUBLIC)
             {
-                return !field.HasAttributeInstance(KnownTypes.NonSerializedAttribute, false);
+                return !field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false);
             }
             if (accessRights == AccessRights.PRIVATE)
             {
