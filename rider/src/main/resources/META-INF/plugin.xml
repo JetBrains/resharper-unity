@@ -98,6 +98,21 @@
   <change-notes>
 <![CDATA[
 <ul>
+  <li>Add context action to mark field as serialized or non-serizable (<a href="https://github.com/JetBrains/resharper-unity/issues/191">#191</a>)</li>
+  <li>Add inspection and quick fix for redundant SerializeField attribute</li>
+  <li>Add inspections and quick fixes for method signature of methods with Unity attributes (<a href="https://github.com/JetBrains/resharper-unity/issues/248">#248</a>)</li>
+  <li>Add inspections for incorrectly applied attributes (<a href="https://github.com/JetBrains/resharper-unity/issues/247">#247</a>)</li>
+  <li>Fix code completion before a field with an attribute (<a href="https://github.com/JetBrains/resharper-unity/issues/259">#259</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/286">#286</a>)</li>
+  <li>Improve relevance of Unity event functions in code completion (<a href="https://github.com/JetBrains/resharper-unity/issues/260">#260</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/273">#273</a>)</li>
+  <li>Improve reliability of attaching debugger to Unity Editor (<a href="https://github.com/JetBrains/resharper-unity/issues/262">#262</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/268">#268</a>)</li>
+  <li>Rider: Treat .compute files as HLSL (<a href="https://youtrack.jetbrains.com/issue/RIDER-11221">RIDER-11221</a>)</li>
+  <li>Rider: Fix running simple non-Unity Editor based nunit tests (<a href="https://github.com/JetBrains/resharper-unity/issues/256">#256</a>)</li>
+  <li>Unity3dRider: Support references from mcs.rsp (<a href="https://github.com/JetBrains/resharper-unity/issues/270">#270</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/273">#273</a>)</li>
+  <li>Unity3dRider: Plugin regenerates project files on initialisation</li>
+  <li>Unity3dRider: Generated project includes Visual Studio for Tools flavour GUID</li>
+</ul>
+<p>From 2.1.2 (Rider 2017.2):</p>
+<ul>
   <li>Fix code completion and generation not working with newer versions of Unity (<a href="https://github.com/JetBrains/resharper-unity/issues/219">#219</a>)</li>
   <li>Support Unity API up to 2017.3.0b3 (<a href="https://github.com/JetBrains/resharper-unity/issues/218">#218</a>)</li>
   <li>Recognise projects with modularised UnityEngine assembly references (<a href="https://github.com/JetBrains/resharper-unity/issues/241">#241</a>)</li>
