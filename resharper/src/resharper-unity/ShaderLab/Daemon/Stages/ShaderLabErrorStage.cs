@@ -32,7 +32,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             public ShaderLabErrorStageProcess(IDaemonProcess process, DaemonProcessKind processKind, ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, IContextBoundSettingsStore settings, IShaderLabFile file)
                 : base(process, settings, file)
             {
+#if RIDER
+                var elementProblemAnalyzerData = new ElementProblemAnalyzerData(file, settings, ElementProblemAnalyzerRunKind.FullDaemon);
+#else
                 var elementProblemAnalyzerData = new ElementProblemAnalyzerData(file, settings);
+#endif
                 elementProblemAnalyzerData.SetDaemonProcess(process, processKind);
                 myElementAnalyzerDispatcher = elementProblemAnalyzerRegistrar.CreateDispatcher(elementProblemAnalyzerData);
             }
