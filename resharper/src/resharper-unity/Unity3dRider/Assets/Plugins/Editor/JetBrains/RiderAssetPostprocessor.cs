@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
 using UnityEngine;
+using System.Reflection;
 
 namespace Plugins.Editor.JetBrains
 {
@@ -25,9 +26,18 @@ namespace Plugins.Editor.JetBrains
       }
 
       var slnFile = Directory.GetFiles(currentDirectory, "*.sln").First();
+      
       RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", slnFile));
-      string content = File.ReadAllText(slnFile);
-      var lines = content.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+      string slnAllText = File.ReadAllText(slnFile);
+      const string unityProjectGuid = @"Project(""{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1}"")";
+      if (!slnAllText.Contains(unityProjectGuid))
+      {
+        string matchGUID = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)";
+        // Unity may put a random guid, unityProjectGuid will help VSTU recognize Rider-generated projects
+        slnAllText = Regex.Replace(slnAllText, matchGUID, unityProjectGuid);
+      }
+
+      var lines = slnAllText.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
       var sb = new StringBuilder();
       foreach (var line in lines)
       {
@@ -297,7 +307,11 @@ namespace Plugins.Editor.JetBrains
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
+        if (net46)
+          targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
+        else
+          targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersionOldMono);
+        
       }
     }
 
@@ -336,6 +350,99 @@ namespace Plugins.Editor.JetBrains
         return "6";
 
       return "4";
+    }
+    
+    private static bool net46 = 
+#if NET_4_6
+      true;
+#else
+      false;
+#endif
+
+    private static Type ourPdb2MdbDriver;
+    private static Type Pdb2MdbDriver
+    {
+      get
+      {
+        if (ourPdb2MdbDriver != null)
+          return ourPdb2MdbDriver;
+        Assembly assembly;
+        try
+        {
+          var path = Path.Combine(Directory.GetCurrentDirectory(), @"Library\resharper-unity-libs\pdb2mdb.exe");
+          assembly = Assembly.LoadFrom(path);
+        }
+        catch (Exception)
+        {
+          RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Loading pdb2mdb failed.");
+          assembly = null;
+        }
+
+        if (assembly == null)
+          return null;
+        var type = assembly.GetType("Pdb2Mdb.Driver");
+        if (type == null)
+          return null;
+        return ourPdb2MdbDriver = type;
+      }
+    }
+
+    public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)
+    {
+      if (!RiderPlugin.Enabled)
+        return;
+      var toBeConverted = importedAssets.Where(a => 
+          a.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&
+          importedAssets.Any(a1 => a1 == Path.ChangeExtension(a, ".pdb")) &&
+          importedAssets.All(b => b != Path.ChangeExtension(a, ".dll.mdb")))
+        .ToArray();
+      foreach (var asset in toBeConverted)
+      {
+        var pdb = Path.ChangeExtension(asset, ".pdb");
+        if (!IsPortablePdb(pdb))
+          ConvertSymbolsForAssembly(asset);
+        else
+          RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("mdb generation for Portable pdb is not supported. {0}", pdb));
+      }
+    }
+
+    private static void ConvertSymbolsForAssembly(string asset)
+    {
+      if (Pdb2MdbDriver == null)
+      {
+        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "FailedToConvertDebugSymbolsNoPdb2mdb.");
+        return;
+      }
+      
+      var method = Pdb2MdbDriver.GetMethod("Main", BindingFlags.Static | BindingFlags.NonPublic);
+      if (method == null)
+      {
+        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "WarningFailedToConvertDebugSymbolsPdb2mdbMainIsNull.");
+        return;
+      }
+
+      var strArray = new[] { Path.GetFullPath(asset) };
+      method.Invoke(null, new object[] { strArray });
+    }
+    
+    //https://github.com/xamarin/xamarin-android/commit/4e30546f
+    const uint ppdb_signature = 0x424a5342;
+    public static bool IsPortablePdb(string filename)
+    {
+      try
+      {
+        using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+        {
+          using (var br = new BinaryReader(fs))
+          {
+            return br.ReadUInt32() == ppdb_signature;
+          }
+        }
+      }
+      catch
+      {
+        return false;
+      }
     }
   }
 }

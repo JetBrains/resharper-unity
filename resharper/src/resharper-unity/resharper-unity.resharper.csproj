@@ -54,7 +54,6 @@
   </ItemGroup>
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
-    <Folder Include="Rider" />
     <Compile Remove="Unity3dRider\**\*" />
   </ItemGroup>
   <ItemGroup>
@@ -84,12 +83,38 @@
   <!-- References -->
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(ReSharperSDKVersion)" />
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(PsiFeaturesVersion)" />
     <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.3.0" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
-    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />    
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Settings\Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Settings\Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Settings\Rider\**" />
   </ItemGroup>
 </Project>

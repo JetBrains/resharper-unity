@@ -1,6 +1,4 @@
-﻿#if RIDER
-
-using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -24,5 +22,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Host.Features.Syntax
         [Test] public void TestSyntaxHighlighting() { DoNamedTest2(); }
     }
 }
-
-#endif

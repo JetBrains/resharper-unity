@@ -1,5 +1,4 @@
-﻿#if RIDER
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -93,7 +92,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (projects.Count == 0)
                 return;
             
-            InstallNunitFramework();
+            InstallFromResource(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll", ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll");
+            InstallFromResource(@"Library\resharper-unity-libs\pdb2mdb.exe", ".Unity3dRider.Library.resharper_unity_libs.pdb2mdb.exe");
             
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
@@ -120,35 +120,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private void InstallNunitFramework()
+        private void InstallFromResource(string relPath, string namespacePath)
         {
             var solutionDir = mySolution.SolutionFilePath.Directory;
-            var nunitFrameworkPath = solutionDir.Combine(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll");
-            if (!nunitFrameworkPath.IsAbsolute)
+            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solutionDir))
             {
-                myLogger.Info($"Path to nunit.framework.dll {nunitFrameworkPath} is not Absolute.");
-                return;
-            }
-            if (nunitFrameworkPath.ExistsFile)
-            {
-                myLogger.Info($"Already exists nunit.framework.dll in {nunitFrameworkPath}");
+                myLogger.Info($"No Assets directory in the same directory as solution. Skipping {relPath} installation.");
                 return;
             }
             
-            // install nunit.framework.dll
+            var fullPath = solutionDir.Combine(relPath);
+            if (!fullPath.IsAbsolute)
+            {
+                myLogger.Info($"Path {fullPath} is not Absolute.");
+                return;
+            }
+            if (fullPath.ExistsFile)
+            {
+                myLogger.Info($"Already exists {fullPath}");
+                return;
+            }
+            
             myQueue.Enqueue(() =>
             {
                 var assembly = Assembly.GetExecutingAssembly();
                 //JetBrains.ReSharper.Plugins.Unity.Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll
-                var resourceName = typeof(KnownTypes).Namespace +
-                                   ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll";
+                var resourceName = typeof(KnownTypes).Namespace +namespacePath;
 
                 try
                 {
                     using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
                     {
-                        nunitFrameworkPath.Directory.CreateDirectory();
-                        using (var fileStream = nunitFrameworkPath.OpenStream(FileMode.Create))
+                        fullPath.Directory.CreateDirectory();
+                        using (var fileStream = fullPath.OpenStream(FileMode.Create))
                         {
                             if (resourceStream == null)
                                 myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
@@ -160,7 +164,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 catch (Exception e)
                 {
                     myLogger.LogExceptionSilently(e);
-                    myLogger.Warn("nunit.framework.dll was not restored from resourse.");
+                    myLogger.Warn($"{relPath} was not restored from resourse.");
                 }
             });
         }
@@ -309,4 +313,3 @@ Please switch back to Unity to make plugin file appear in the solution.";
         }
     }
 }
-#endif
