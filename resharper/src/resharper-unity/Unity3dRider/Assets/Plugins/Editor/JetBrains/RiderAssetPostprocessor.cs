@@ -370,7 +370,8 @@ namespace Plugins.Editor.JetBrains
         try
         {
           var path = Path.Combine(Directory.GetCurrentDirectory(), @"Library\resharper-unity-libs\pdb2mdb.exe");
-          assembly = Assembly.LoadFrom(path);
+          var bytes = File.ReadAllBytes(path);
+          assembly = Assembly.Load(bytes);
         }
         catch (Exception)
         {
