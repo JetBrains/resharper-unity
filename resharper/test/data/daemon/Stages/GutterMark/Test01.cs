@@ -5,19 +5,22 @@ using UnityEditor;
 
 public class A : MonoBehaviour
 {
-    public object unityField;
-    private object notUnityField;
+    // All serialised by Unity - gutter icons
+    public string ImplicitlyAssignedField;
+    public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
+    [SerializeField] private int myImplicitlyAssignedPrivateField;
 
-    public object unityField1, unityField2;
-
-    [NonSerialized]
-    public object notUnityField2;
-
-    [SerializeField]
-    private object unityField3;
-
-    [SerializeField]
-    private object unityField4, unityField5;
+    // Not serialized by Unity
+    public const string UnusedConst = "hello";
+    private const string UnusedPrivateConst = "hello";
+    [SerializeField] private const string UnusedPrivateConst2 = "hello";
+    private string myUnusedField;
+    public readonly string UnusedReadonlyField;
+    [NonSerialized] public string ExplicitlyUnusedField;
+    [NonSerialized, SerializeField] public string ExplicitlyUnusedField2;
+    [NonSerialized, SerializeField] private string myExplicitlyUnusedField3;
+    public static string UnusedStaticField;
+    [SerializeField] private static string ourUnusedPrivateStaticField;
 
     // Unity function
     private void OnDestroy()

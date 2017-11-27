@@ -439,10 +439,6 @@
     </attribute>
   </member>
   <member name="T:UnityEngine.SerializeField">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags)">
-      <!-- ImplicitUseKindFlags.Assign -->
-      <argument>2</argument>
-    </attribute>
     <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
       <argument>256</argument>    <!-- AttributeTargets.Field -->
       <argument>false</argument>  <!-- allowMultiple -->

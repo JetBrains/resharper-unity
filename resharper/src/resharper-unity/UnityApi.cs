@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool IsUnityField([NotNull] IField field)
         {
-            if (field.IsStatic)
+            if (field.IsStatic || field.IsConstant || field.IsReadonly)
                 return false;
 
             var containingType = field.GetContainingType();

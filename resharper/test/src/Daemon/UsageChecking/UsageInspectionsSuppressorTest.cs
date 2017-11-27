@@ -7,7 +7,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.UsageChecking
     {
         protected override string RelativeTestDataPath => @"daemon\UsageChecking";
 
-        // TODO: Add tests for usages suppressed with annotations?
         [Test] public void MonoBehaviourMethods01() { DoNamedTest(); }
         [Test] public void MonoBehaviourFields01() { DoNamedTest(); }
     }
