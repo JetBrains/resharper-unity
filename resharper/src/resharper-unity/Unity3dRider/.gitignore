@@ -2,7 +2,10 @@
 _ReSharper.Caches*
 *.csproj
 *.meta
+
 Library/*
+!Library/resharper-unity-libs/**/*
+
 ProjectSettings/*
 obj/*
 Temp/*

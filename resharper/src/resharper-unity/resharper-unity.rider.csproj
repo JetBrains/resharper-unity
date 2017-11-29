@@ -68,6 +68,7 @@
     <None Include="Unity3dRider\**\*" />
     <None Include="Unity3dRider\**\*" />
     <EmbeddedResource Include="Unity3dRider\Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll" />
+    <EmbeddedResource Include="Unity3dRider\Library\resharper-unity-libs\pdb2mdb.exe" />
     <EmbeddedResource Include="Unity3dRider\Assets\Plugins\Editor\JetBrains\Unity3DRider.cs" />
   </ItemGroup>
   <ItemGroup>

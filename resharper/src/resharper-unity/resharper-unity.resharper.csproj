@@ -83,7 +83,6 @@
   <!-- References -->
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(ReSharperSDKVersion)" />
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(PsiFeaturesVersion)" />
     <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.3.0" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
