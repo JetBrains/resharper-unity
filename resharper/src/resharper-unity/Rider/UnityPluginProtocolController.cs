@@ -69,25 +69,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             watcher.EnableRaisingEvents = true; // Begin watching.
 
             CreateProtocol(protocolInstancePath);
-
-            UnityModel.LogModelInitialized.ViewNotNull(myLifetime, (lt, modelInitialized) =>
-            {
-                modelInitialized.Log.Advise(lt, entry =>
-                {
-                    switch (entry.Type)
-                    {
-                        case RdLogEventType.Error:
-                            myLogger.Error(entry.Message + Environment.NewLine + entry.StackTrace);
-                            break;
-                        case RdLogEventType.Warning:
-                            myLogger.Warn(entry.Message + Environment.NewLine + entry.StackTrace);
-                            break;
-                        case RdLogEventType.Message:
-                            myLogger.Info(entry.Message + Environment.NewLine + entry.StackTrace);
-                            break;
-                    }
-                });
-            });
         }
 
         private void SubscribeToPlay(Solution solution)
@@ -143,8 +124,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             catch (Exception e)
             {
-                myLogger.Warn($"Unable to parse {protocolInstancePath}");
-                myLogger.Warn(e);
+                myLogger.Warn($"Unable to parse {protocolInstancePath}" + Environment.NewLine + e);
                 return;
             }
             
@@ -165,11 +145,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     myLogger.Info($"UnityModel.ServerConnected {b}");
                 });
                 UnityModel.IsClientConnected.Set(rdVoid => true);
+                
+                SubscribeToLogs();
             }
             catch (Exception ex)
             {
                 myLogger.Error(ex);
             }
+        }
+
+        private void SubscribeToLogs()
+        {
+            UnityModel.LogModelInitialized.Advise(myLifetime, (modelInitialized) =>
+            {
+                modelInitialized.Log.Advise(myLifetime, entry =>
+                {
+                    switch (entry.Type)
+                    {
+                        case RdLogEventType.Error:
+                        case RdLogEventType.Warning:
+                            myLogger.Warn(entry.Message + Environment.NewLine + entry.StackTrace);
+                            break;
+                        case RdLogEventType.Message:
+                            myLogger.Info(entry.Message + Environment.NewLine + entry.StackTrace);
+                            break;
+                    }
+                });
+            });
         }
     }
 
