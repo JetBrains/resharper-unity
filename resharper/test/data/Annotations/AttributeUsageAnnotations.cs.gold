@@ -1,0 +1,189 @@
+﻿using UnityEditor;
+using UnityEditor.Callbacks;
+using UnityEngine;
+
+// Class only
+[AddComponentMenu("Transform/Follow Transform")]
+public class TestAddComponentMenu : MonoBehaviour
+{
+    [|AddComponentMenu|(0)("Not allowed on fields")] public int Field;
+    [|AddComponentMenu|(1)("Not allowed on properties")] public int Property { get; set; }
+    [|AddComponentMenu|(2)("Not allowed on methods")] public void Method() { }
+}
+
+// Class only - must derive from MonoBehaviour
+// Does not inherit
+[ExecuteInEditMode]
+public class TestExecuteInEditMode : MonoBehaviour
+{
+    [|ExecuteInEditMode|(3)] public int Field;
+    [|ExecuteInEditMode|(4)] public int Property { get; set; }
+    [|ExecuteInEditMode|(5)] public void Method() { }
+}
+
+// Field only
+[|HideInInspector|(6)]
+public class TestHideInInspector : MonoBehaviour
+{
+    [HideInInspector] public int Field;
+    [|HideInInspector|(7)] public string Property { get; set; }
+    [|HideInInspector|(8)] public void Whatever() { }
+}
+
+// Effectively undocumented. Appears to have the same usage as ImageEffectOpaque
+// Method only - OnRenderImage, technically
+[ImageEffectAfterScale]
+public class TestImageEffectAfterScale : MonoBehaviour
+{
+    [ImageEffectAfterScale] public int Field;
+    [ImageEffectAfterScale] public int Property { get; set; }
+    [ImageEffectAfterScale] public void Method() { }
+}
+
+// Class only - must be derived from Component
+// Allow inherit
+[ImageEffectAllowedInSceneView]
+public class TestImageEffectAllowedInSceneView : MonoBehaviour
+{
+    [|ImageEffectAllowedInSceneView|(9)] public int Field;
+    [|ImageEffectAllowedInSceneView|(10)] public int Property { get; set; }
+    [|ImageEffectAllowedInSceneView|(11)] public void Method() { }
+}
+
+// Method only - OnRenderImage, technically
+[|ImageEffectOpaque|(12)]
+public class TestImageEffectOpaque : MonoBehaviour
+{
+    [|ImageEffectOpaque|(13)] public int Field;
+    [|ImageEffectOpaque|(14)] public int Property { get; set; }
+    [ImageEffectOpaque] public void Method() { }
+}
+
+// Method only - OnRenderImage, technically
+[|ImageEffectTransformsToLDR|(15)]
+public class TestImageEffectTransformsToLDR : MonoBehaviour
+{
+    [|ImageEffectTransformsToLDR|(16)] public int Field;
+    [|ImageEffectTransformsToLDR|(17)] public int Property { get; set; }
+    [ImageEffectTransformsToLDR] public void Method() { }
+}
+
+// Field only
+[|SerializeField|(18)]
+public class TestSerializeField : MonoBehaviour
+{
+    [SerializeField] public int Field;
+    [|SerializeField|(19)] public int Property { get; set; }
+    [|SerializeField|(20)] public void Method() { }
+}
+
+
+// UnityEditor
+
+
+// Method only (static void)
+[|DidReloadScripts|(21)]
+public class TestDidReloadScripts : MonoBehaviour
+{
+    [|DidReloadScripts|(22)] public int Field;
+    [|DidReloadScripts|(23)] public int Property { get; set; }
+    [DidReloadScripts] public void Method() { }
+}
+
+// Method only
+[|OnOpenAsset|(24)]
+public class TestOnOpenAsset : MonoBehaviour
+{
+    [|OnOpenAsset|(25)] public int Field;
+    [|OnOpenAsset|(26)] public int Property { get; set; }
+    [OnOpenAsset] public void Method() { }
+}
+
+// Method only
+[|PostProcessBuild|(27)]
+public class TestPostProcessBuild : MonoBehaviour
+{
+    [|PostProcessBuild|(28)] public int Field;
+    [|PostProcessBuild|(29)] public int Property { get; set; }
+    [PostProcessBuild] public void Method() { }
+}
+
+// Method only
+[|PostProcessScene|(30)]
+public class TestPostProcessScene : MonoBehaviour
+{
+    [|PostProcessScene|(31)] public int Field;
+    [|PostProcessScene|(32)] public int Property { get; set; }
+    [PostProcessScene] public void Method() { }
+}
+
+// Class only
+[CanEditMultipleObjects]
+public class TestCanEditMultipleObjects : MonoBehaviour
+{
+    [|CanEditMultipleObjects|(33)] public int Field;
+    [|CanEditMultipleObjects|(34)] public int Property { get; set; }
+    [|CanEditMultipleObjects|(35)] public void Method() { }
+}
+
+// Class only
+[CustomEditor(typeof(Animation))]
+public class TestCustomEditor : MonoBehaviour
+{
+    [|CustomEditor|(36)(typeof(Animation))] public int Field;
+    [|CustomEditor|(37)(typeof(Animation))] public int Property { get; set; }
+    [|CustomEditor|(38)(typeof(Animation))] public void Method() { }
+}
+
+// Method only - static
+[|DrawGizmo|(39)(GizmoType.Selected)]
+public class TestCustomEditor : MonoBehaviour
+{
+    [|DrawGizmo|(40)(GizmoType.Selected)] public int Field;
+    [|DrawGizmo|(41)(GizmoType.Selected)] public int Property { get; set; }
+    [DrawGizmo(GizmoType.Selected)] public void Method() { }
+}
+
+---------------------------------------------------------
+(0): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.AddComponentMenu' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(1): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.AddComponentMenu' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(2): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.AddComponentMenu' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(3): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ExecuteInEditMode' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(4): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ExecuteInEditMode' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(5): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ExecuteInEditMode' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(6): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.HideInInspector' is not valid on this declaration type. It is valid on 'Field' declarations only.
+(7): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.HideInInspector' is not valid on this declaration type. It is valid on 'Field' declarations only.
+(8): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.HideInInspector' is not valid on this declaration type. It is valid on 'Field' declarations only.
+(9): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ImageEffectAllowedInSceneView' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(10): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ImageEffectAllowedInSceneView' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(11): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ImageEffectAllowedInSceneView' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(12): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ImageEffectOpaque' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(13): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ImageEffectOpaque' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(14): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ImageEffectOpaque' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(15): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(16): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(17): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(18): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.SerializeField' is not valid on this declaration type. It is valid on 'Field' declarations only.
+(19): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.SerializeField' is not valid on this declaration type. It is valid on 'Field' declarations only.
+(20): ReSharper Underlined Error Highlighting: Attribute 'UnityEngine.SerializeField' is not valid on this declaration type. It is valid on 'Field' declarations only.
+(21): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.DidReloadScripts' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(22): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.DidReloadScripts' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(23): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.DidReloadScripts' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(24): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(25): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(26): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(27): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.PostProcessBuildAttribute' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(28): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.PostProcessBuildAttribute' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(29): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.PostProcessBuildAttribute' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(30): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(31): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(32): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(33): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.CanEditMultipleObjects' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(34): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.CanEditMultipleObjects' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(35): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.CanEditMultipleObjects' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(36): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.CustomEditor' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(37): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.CustomEditor' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(38): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.CustomEditor' is not valid on this declaration type. It is valid on 'Class' declarations only.
+(39): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.DrawGizmo' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(40): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.DrawGizmo' is not valid on this declaration type. It is valid on 'Method' declarations only.
+(41): ReSharper Underlined Error Highlighting: Attribute 'UnityEditor.DrawGizmo' is not valid on this declaration type. It is valid on 'Method' declarations only.
