@@ -69,6 +69,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             watcher.EnableRaisingEvents = true; // Begin watching.
 
             CreateProtocol(protocolInstancePath);
+
+            UnityModel.LogModelInitialized.ViewNotNull(myLifetime, (lt, modelInitialized) =>
+            {
+                modelInitialized.Log.Advise(lt, entry =>
+                {
+                    switch (entry.Type)
+                    {
+                        case RdLogEventType.Error:
+                            myLogger.Error(entry.Message + Environment.NewLine + entry.StackTrace);
+                            break;
+                        case RdLogEventType.Warning:
+                            myLogger.Warn(entry.Message + Environment.NewLine + entry.StackTrace);
+                            break;
+                        case RdLogEventType.Message:
+                            myLogger.Info(entry.Message + Environment.NewLine + entry.StackTrace);
+                            break;
+                    }
+                });
+            });
         }
 
         private void SubscribeToPlay(Solution solution)
