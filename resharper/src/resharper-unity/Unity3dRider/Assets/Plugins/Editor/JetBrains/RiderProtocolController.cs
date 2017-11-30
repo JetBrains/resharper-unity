@@ -97,7 +97,7 @@ namespace Plugins.Editor.JetBrains
             });
           });
           
-          model.LogModelInitialized.Value = new UnityLogModelInitialized();
+          model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
 
           model.Refresh.Set((lifetime1, vo) =>
           {
@@ -146,7 +146,21 @@ namespace Plugins.Editor.JetBrains
         ourProtocol.Scheduler.InvokeOrQueue(() =>
         {
           if (model.LogModelInitialized.HasValue())
-            model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Message, message, stackTrace));
+          {
+            switch (type)
+            {
+              case LogType.Error:
+              case LogType.Exception:
+                model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Error, message, stackTrace));
+                break;
+              case LogType.Warning:
+                model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Warning, message, stackTrace));
+                break;
+              default:
+                model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Message, message, stackTrace));
+                break;
+            }
+          }
         });
         #endif
       }
