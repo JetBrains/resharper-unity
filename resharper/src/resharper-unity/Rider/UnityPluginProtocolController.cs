@@ -24,9 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
         private UnityModel UnityModel { get; set; }
-        private readonly IProperty<bool> myPlay = new Property<bool>("UnityPlay", false);
-        private readonly IProperty<bool> myServerConnectedAndPlay = new Property<bool>("UnityServerConnectedAndPlay", false)
-            ;
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, 
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
@@ -44,12 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         private void Init()
-        {
-            myServerConnectedAndPlay.Change.Advise(myLifetime, args =>
-            {
-                if (args.HasNew && UnityModel != null) UnityModel.Play.Value = args.New;
-            });
-            
+        {            
             SubscribeToPlay(mySolution.GetProtocolSolution());
             SubscribeRefresh(mySolution.GetProtocolSolution());
 
@@ -89,10 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         if (e.NewValue != e.OldValue)
                         {
                             myLogger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
-                            myPlay.SetValue(e.NewValue.ToLower() == "true");
-
-                            if (UnityModel != null && UnityModel.ServerConnected.HasValue() && UnityModel.ServerConnected.Value)
-                                myServerConnectedAndPlay.SetValue(myPlay.Value);
+                            UnityModel?.Play.SetValue(e.NewValue.ToLower() == "true");
                         }
                     }
                 });
@@ -154,8 +143,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 UnityModel = new UnityModel(myLifetime, protocol);
                 UnityModel.ServerConnected.Advise(myLifetime, b =>
                 {
-                    if (myPlay.Value)
-                        myServerConnectedAndPlay.SetValue(myPlay.Value);
+                    myLogger.Info($"UnityModel.ServerConnected {b}");
                 });
                 UnityModel.IsClientConnected.Set(rdVoid => true);
             }
