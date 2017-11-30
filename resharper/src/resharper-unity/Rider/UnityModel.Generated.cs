@@ -35,9 +35,9 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdProperty<bool> Pause { get { return _Pause; }}
     [NotNull] public IRdProperty<bool> Unpause { get { return _Unpause; }}
     [NotNull] public IRdProperty<string> UnityPluginVersion { get { return _UnityPluginVersion; }}
+    [NotNull] public IRdProperty<UnityLogModelInitialized> LogModelInitialized { get { return _LogModelInitialized; }}
     [NotNull] public RdEndpoint<RdVoid, bool> IsClientConnected { get { return _IsClientConnected; }}
     [NotNull] public IRdCall<string, bool> UpdateUnityPlugin { get { return _UpdateUnityPlugin; }}
-    [NotNull] public IRdCall<RdVoid, bool> Build { get { return _Build; }}
     [NotNull] public IRdCall<RdVoid, RdVoid> Refresh { get { return _Refresh; }}
     
     //private fields
@@ -47,9 +47,9 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdProperty<bool> _Pause;
     [NotNull] private readonly RdProperty<bool> _Unpause;
     [NotNull] private readonly RdProperty<string> _UnityPluginVersion;
+    [NotNull] private readonly RdProperty<UnityLogModelInitialized> _LogModelInitialized;
     [NotNull] private readonly RdEndpoint<RdVoid, bool> _IsClientConnected;
     [NotNull] private readonly RdCall<string, bool> _UpdateUnityPlugin;
-    [NotNull] private readonly RdCall<RdVoid, bool> _Build;
     [NotNull] private readonly RdCall<RdVoid, RdVoid> _Refresh;
     
     //primary constructor
@@ -60,9 +60,9 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdProperty<bool> pause,
       [NotNull] RdProperty<bool> unpause,
       [NotNull] RdProperty<string> unityPluginVersion,
+      [NotNull] RdProperty<UnityLogModelInitialized> logModelInitialized,
       [NotNull] RdEndpoint<RdVoid, bool> isClientConnected,
       [NotNull] RdCall<string, bool> updateUnityPlugin,
-      [NotNull] RdCall<RdVoid, bool> build,
       [NotNull] RdCall<RdVoid, RdVoid> refresh
     )
     {
@@ -72,9 +72,9 @@ namespace JetBrains.Platform.Unity.Model
       if (pause == null) throw new ArgumentNullException("pause");
       if (unpause == null) throw new ArgumentNullException("unpause");
       if (unityPluginVersion == null) throw new ArgumentNullException("unityPluginVersion");
+      if (logModelInitialized == null) throw new ArgumentNullException("logModelInitialized");
       if (isClientConnected == null) throw new ArgumentNullException("isClientConnected");
       if (updateUnityPlugin == null) throw new ArgumentNullException("updateUnityPlugin");
-      if (build == null) throw new ArgumentNullException("build");
       if (refresh == null) throw new ArgumentNullException("refresh");
       
       _ServerConnected = serverConnected;
@@ -83,9 +83,9 @@ namespace JetBrains.Platform.Unity.Model
       _Pause = pause;
       _Unpause = unpause;
       _UnityPluginVersion = unityPluginVersion;
+      _LogModelInitialized = logModelInitialized;
       _IsClientConnected = isClientConnected;
       _UpdateUnityPlugin = updateUnityPlugin;
-      _Build = build;
       _Refresh = refresh;
       _ServerConnected.OptimizeNested = true;
       _Play.OptimizeNested = true;
@@ -106,6 +106,7 @@ namespace JetBrains.Platform.Unity.Model
       
       serializers.Register(RdLogEvent.Read, RdLogEvent.Write);
       serializers.RegisterEnum<RdLogEventType>();
+      serializers.Register(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write);
     }
     
     public UnityModel(Lifetime lifetime, IProtocol protocol) : this (
@@ -115,9 +116,9 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1004),
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1005),
       new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1006),
-      new RdEndpoint<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1007),
-      new RdCall<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1008),
-      new RdCall<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1009),
+      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1007),
+      new RdEndpoint<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1008),
+      new RdCall<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1009),
       new RdCall<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1010)
     )
     {
@@ -136,9 +137,9 @@ namespace JetBrains.Platform.Unity.Model
       _Pause.BindEx(lifetime, this, "pause");
       _Unpause.BindEx(lifetime, this, "unpause");
       _UnityPluginVersion.BindEx(lifetime, this, "unityPluginVersion");
+      _LogModelInitialized.BindEx(lifetime, this, "logModelInitialized");
       _IsClientConnected.BindEx(lifetime, this, "isClientConnected");
       _UpdateUnityPlugin.BindEx(lifetime, this, "updateUnityPlugin");
-      _Build.BindEx(lifetime, this, "build");
       _Refresh.BindEx(lifetime, this, "refresh");
     }
     //identify method
@@ -149,9 +150,9 @@ namespace JetBrains.Platform.Unity.Model
       _Pause.IdentifyEx(ids);
       _Unpause.IdentifyEx(ids);
       _UnityPluginVersion.IdentifyEx(ids);
+      _LogModelInitialized.IdentifyEx(ids);
       _IsClientConnected.IdentifyEx(ids);
       _UpdateUnityPlugin.IdentifyEx(ids);
-      _Build.IdentifyEx(ids);
       _Refresh.IdentifyEx(ids);
     }
     //equals trait
@@ -167,9 +168,9 @@ namespace JetBrains.Platform.Unity.Model
         printer.Print("pause = "); _Pause.PrintEx(printer); printer.Println();
         printer.Print("unpause = "); _Unpause.PrintEx(printer); printer.Println();
         printer.Print("unityPluginVersion = "); _UnityPluginVersion.PrintEx(printer); printer.Println();
+        printer.Print("logModelInitialized = "); _LogModelInitialized.PrintEx(printer); printer.Println();
         printer.Print("isClientConnected = "); _IsClientConnected.PrintEx(printer); printer.Println();
         printer.Print("updateUnityPlugin = "); _UpdateUnityPlugin.PrintEx(printer); printer.Println();
-        printer.Print("build = "); _Build.PrintEx(printer); printer.Println();
         printer.Print("refresh = "); _Refresh.PrintEx(printer); printer.Println();
       }
       printer.Print(")");
@@ -276,5 +277,69 @@ namespace JetBrains.Platform.Unity.Model
     Error,
     Warning,
     Message
+  }
+  
+  
+  public class UnityLogModelInitialized : RdBindableBase {
+    //fields
+    //public fields
+    [NotNull] public ISink<RdLogEvent> Log { get { return _Log; }}
+    
+    //private fields
+    [NotNull] private readonly RdSignal<RdLogEvent> _Log;
+    
+    //primary constructor
+    private UnityLogModelInitialized(
+      [NotNull] RdSignal<RdLogEvent> log
+    )
+    {
+      if (log == null) throw new ArgumentNullException("log");
+      
+      _Log = log;
+    }
+    //secondary constructor
+    public UnityLogModelInitialized (
+    ) : this (
+      new RdSignal<RdLogEvent>(RdLogEvent.Read, RdLogEvent.Write)
+    ) {}
+    //statics
+    
+    public static CtxReadDelegate<UnityLogModelInitialized> Read = (ctx, reader) => 
+    {
+      var log = RdSignal<RdLogEvent>.Read(ctx, reader, RdLogEvent.Read, RdLogEvent.Write);
+      return new UnityLogModelInitialized(log);
+    };
+    
+    public static CtxWriteDelegate<UnityLogModelInitialized> Write = (ctx, writer, value) => 
+    {
+      RdSignal<RdLogEvent>.Write(ctx, writer, value._Log);
+    };
+    //custom body
+    //init method
+    protected override void Init(Lifetime lifetime) {
+      _Log.BindEx(lifetime, this, "log");
+    }
+    //identify method
+    public override void Identify(IIdentities ids) {
+      _Log.IdentifyEx(ids);
+    }
+    //equals trait
+    //hash code trait
+    //pretty print
+    public override void Print(PrettyPrinter printer)
+    {
+      printer.Println("UnityLogModelInitialized (");
+      using (printer.IndentCookie()) {
+        printer.Print("log = "); _Log.PrintEx(printer); printer.Println();
+      }
+      printer.Print(")");
+    }
+    //toString
+    public override string ToString()
+    {
+      var printer = new SingleLinePrettyPrinter();
+      Print(printer);
+      return printer.ToString();
+    }
   }
 }

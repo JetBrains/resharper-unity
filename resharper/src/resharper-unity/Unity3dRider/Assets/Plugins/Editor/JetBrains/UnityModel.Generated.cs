@@ -1,4 +1,3 @@
-#if NET_4_6
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -39,7 +38,6 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdProperty<UnityLogModelInitialized> LogModelInitialized { get { return _LogModelInitialized; }}
     [NotNull] public IRdCall<RdVoid, bool> IsClientConnected { get { return _IsClientConnected; }}
     [NotNull] public RdEndpoint<string, bool> UpdateUnityPlugin { get { return _UpdateUnityPlugin; }}
-    [NotNull] public RdEndpoint<RdVoid, bool> Build { get { return _Build; }}
     [NotNull] public RdEndpoint<RdVoid, RdVoid> Refresh { get { return _Refresh; }}
     
     //private fields
@@ -52,7 +50,6 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdProperty<UnityLogModelInitialized> _LogModelInitialized;
     [NotNull] private readonly RdCall<RdVoid, bool> _IsClientConnected;
     [NotNull] private readonly RdEndpoint<string, bool> _UpdateUnityPlugin;
-    [NotNull] private readonly RdEndpoint<RdVoid, bool> _Build;
     [NotNull] private readonly RdEndpoint<RdVoid, RdVoid> _Refresh;
     
     //primary constructor
@@ -66,7 +63,6 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdProperty<UnityLogModelInitialized> logModelInitialized,
       [NotNull] RdCall<RdVoid, bool> isClientConnected,
       [NotNull] RdEndpoint<string, bool> updateUnityPlugin,
-      [NotNull] RdEndpoint<RdVoid, bool> build,
       [NotNull] RdEndpoint<RdVoid, RdVoid> refresh
     )
     {
@@ -79,7 +75,6 @@ namespace JetBrains.Platform.Unity.Model
       if (logModelInitialized == null) throw new ArgumentNullException("logModelInitialized");
       if (isClientConnected == null) throw new ArgumentNullException("isClientConnected");
       if (updateUnityPlugin == null) throw new ArgumentNullException("updateUnityPlugin");
-      if (build == null) throw new ArgumentNullException("build");
       if (refresh == null) throw new ArgumentNullException("refresh");
       
       _ServerConnected = serverConnected;
@@ -91,7 +86,6 @@ namespace JetBrains.Platform.Unity.Model
       _LogModelInitialized = logModelInitialized;
       _IsClientConnected = isClientConnected;
       _UpdateUnityPlugin = updateUnityPlugin;
-      _Build = build;
       _Refresh = refresh;
       _ServerConnected.OptimizeNested = true;
       _Play.OptimizeNested = true;
@@ -125,8 +119,7 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1007),
       new RdCall<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1008),
       new RdEndpoint<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1009),
-      new RdEndpoint<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1010),
-      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1011)
+      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1010)
     )
     {
       UnityModel.Register(protocol.Serializers);
@@ -147,7 +140,6 @@ namespace JetBrains.Platform.Unity.Model
       _LogModelInitialized.BindEx(lifetime, this, "logModelInitialized");
       _IsClientConnected.BindEx(lifetime, this, "isClientConnected");
       _UpdateUnityPlugin.BindEx(lifetime, this, "updateUnityPlugin");
-      _Build.BindEx(lifetime, this, "build");
       _Refresh.BindEx(lifetime, this, "refresh");
     }
     //identify method
@@ -161,7 +153,6 @@ namespace JetBrains.Platform.Unity.Model
       _LogModelInitialized.IdentifyEx(ids);
       _IsClientConnected.IdentifyEx(ids);
       _UpdateUnityPlugin.IdentifyEx(ids);
-      _Build.IdentifyEx(ids);
       _Refresh.IdentifyEx(ids);
     }
     //equals trait
@@ -180,7 +171,6 @@ namespace JetBrains.Platform.Unity.Model
         printer.Print("logModelInitialized = "); _LogModelInitialized.PrintEx(printer); printer.Println();
         printer.Print("isClientConnected = "); _IsClientConnected.PrintEx(printer); printer.Println();
         printer.Print("updateUnityPlugin = "); _UpdateUnityPlugin.PrintEx(printer); printer.Println();
-        printer.Print("build = "); _Build.PrintEx(printer); printer.Println();
         printer.Print("refresh = "); _Refresh.PrintEx(printer); printer.Println();
       }
       printer.Print(")");
@@ -353,4 +343,3 @@ namespace JetBrains.Platform.Unity.Model
     }
   }
 }
-#endif

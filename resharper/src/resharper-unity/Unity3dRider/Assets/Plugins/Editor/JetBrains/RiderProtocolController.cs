@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Reflection;
+using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using UnityEngine;
 
@@ -102,9 +103,10 @@ namespace Plugins.Editor.JetBrains
           {
             logger.Info("RiderPlugin.Refresh.");
             MainThreadDispatcher.Queue(AssetDatabase.Refresh);
-            return null;
+            return new RdTask<RdVoid>();
           });
-                    
+               
+          logger.Info("model.ServerConnected true.");
           model.ServerConnected.SetValue(true);
         }
         catch (Exception ex)
