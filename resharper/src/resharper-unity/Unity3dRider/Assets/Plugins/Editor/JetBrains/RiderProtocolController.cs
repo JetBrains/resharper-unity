@@ -143,7 +143,11 @@ namespace Plugins.Editor.JetBrains
       {
         #if NET_4_6
         // use Protocol to pass log entries to Rider
-        ourProtocol.Scheduler.InvokeOrQueue(() => model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Message, message, stackTrace)));
+        ourProtocol.Scheduler.InvokeOrQueue(() =>
+        {
+          if (model.LogModelInitialized.HasValue())
+            model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Message, message, stackTrace));
+        });
         #endif
       }
     }
