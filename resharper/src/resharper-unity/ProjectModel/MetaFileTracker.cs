@@ -1,7 +1,10 @@
 ﻿using System;
 using JetBrains.Application.changes;
+using JetBrains.Application.Progress;
 using JetBrains.DataFlow;
+using JetBrains.DocumentManagers.Transactions;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
@@ -38,6 +41,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             private readonly MetaFileTracker myMetaFileTracker;
             private readonly ILogger myLogger;
+            private readonly Lazy<IProgressIndicator> myProgressIndicator = Lazy.Of(NullProgressIndicator.Create, true);
+
+            private IProgressIndicator ProgressIndicator => myProgressIndicator.Value;
 
             public Visitor(MetaFileTracker metaFileTracker, ILogger logger)
             {
@@ -207,7 +213,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 {
                     var guid = Guid.NewGuid();
                     var timestamp = (long)(DateTime.UtcNow - ourUnixTime).TotalSeconds;
-                    path.WriteAllText($"fileFormatVersion: 2\r\nguid: {guid:N}\r\ntimeCreated: {timestamp}");
+                    DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2\r\nguid: {guid:N}\r\ntimeCreated: {timestamp}"));
                     myLogger.Info("*** resharper-unity: Meta added {0}", path);
                 }
                 catch (Exception e)
@@ -222,7 +228,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 try
                 {
                     myLogger.Info("*** resharper-unity: Meta renamed{2} {0} -> {1}", oldPath, newPath, extraDetails);
-                    oldPath.MoveFile(newPath, true);
+                    DoUnderTransaction("Unity::RenameMetaFile", () => oldPath.MoveFile(newPath, true));
                 }
                 catch (Exception e)
                 {
@@ -237,21 +243,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 {
                     if (path.ExistsFile)
                     {
+                        DoUnderTransaction("Unity::DeleteMetaFile", () =>
+                        {
 #if DEBUG
-                        myLogger.Info("*** resharper-unity: Meta removed (ish) {0}", path);
-                        path.MoveFile(FileSystemPath.Parse(path + ".deleted"), true);
+                            path.MoveFile(FileSystemPath.Parse(path + ".deleted"), true);
 #else
-                        myLogger.Info("*** resharper-unity: Meta removed {0}", path);
-                        path.DeleteFile();
+                            path.DeleteFile();
 #endif
+                        });
+                        myLogger.Info("*** resharper-unity: Meta removed {0}", path);
                     }
-
                 }
                 catch (Exception e)
                 {
                     myLogger.LogException(LoggingLevel.ERROR, e, ExceptionOrigin.Assertion,
                         $"Failed to delete Unity meta file {path}");
                 }
+            }
+
+            private void DoUnderTransaction(string command, Action action)
+            {
+                // Create a transaction - Rider will hook the file system and cause the VFS to refresh
+                using (WriteLockCookie.Create())
+                using (myMetaFileTracker.mySolution.CreateTransactionCookie(DefaultAction.Commit, command, ProgressIndicator))
+                    action();
             }
         }
     }
