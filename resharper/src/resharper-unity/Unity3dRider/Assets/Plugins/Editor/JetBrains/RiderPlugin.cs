@@ -44,8 +44,8 @@ namespace Plugins.Editor.JetBrains
 
     private static string GetDefaultApp()
     {
-      var allFoundPaths = GetAllRiderPaths();
-      var alreadySetPath = GetExternalScriptEditor();
+      var allFoundPaths = GetAllRiderPaths().Select(a=>new FileInfo(a).FullName).ToArray();
+      var alreadySetPath = new FileInfo(GetExternalScriptEditor()).FullName;
       
       if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && !allFoundPaths.Any() ||
           !string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() &&
@@ -53,7 +53,7 @@ namespace Plugins.Editor.JetBrains
       {
         RiderPath = alreadySetPath;
       }
-      else if (allFoundPaths.Contains(RiderPath)) {}
+      else if (allFoundPaths.Contains(new FileInfo(RiderPath).FullName)) {}
       else
       RiderPath = allFoundPaths.FirstOrDefault();
 
