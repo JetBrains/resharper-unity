@@ -24,7 +24,7 @@ namespace Plugins.Editor.JetBrains
     {
       if (level < SelectedLoggingLevel) return;
 
-      var text = "[Rider] [" + level + "] " + initialText;
+      var text = "[Rider] "+DateTime.Now.ToString("HH:mm:ss:ff")+" [" + level + "] " + initialText;
 
       switch (level)
       {
@@ -345,7 +345,7 @@ namespace Plugins.Editor.JetBrains
           return false;
       }
 
-      int[] ports = Enumerable.Range(63342, 20).ToArray();
+      var ports = Enumerable.Range(63342, 20);
       var res = ports.Any(port =>
       {
         var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
