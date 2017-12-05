@@ -5,14 +5,14 @@
     "description": "A project for creating a class library that targets .NET Framework",
     "defaultName": "ClassLibrary1",
     "classifications": ["Common", "Library"],
-    "identity": "JetBrains.Common.Library.CSharp.Unity",
+    "identity": "JetBrains.Common.Unity.Library.CSharp",
     "shortName": "jbclasslib",
     "tags": {
         "type": "project",
         "language": "C#",
         "platform": ".NET"
     },
-    "sourceName": "UnityCSharpClassLibraryTemplate",
+    "sourceName": "CSharpClassLibraryTemplate",
     "preferNameDirectory": "true",
     "guids": [
         "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"
@@ -25,6 +25,13 @@
             "replaces": "v4.5",
             "isRequired": "true",
             "defaultValue": "<FullTargetFramework>"
+        },
+        "PathToUnityEngine": {
+            "type": "parameter",
+            "description": "Path to UnityEngine.dll",
+            "datatype": "text",
+            "isRequired": "true",
+            "replaces": "C:/Program Files/Unity 2017.3.0b8/Editor/Data/Managed/UnityEngine.dll"
         },
         "CompanyName": {
             "type": "parameter",
@@ -48,12 +55,12 @@
         }
     },
     "primaryOutputs": [
-        { "path": "UnityCSharpClassLibraryTemplate.csproj" },
-        { "path": "Class1.cs" }
+        { "path": "CSharpClassLibraryTemplate.csproj" },
+        { "path": "MonoBehaviour1.cs" }
     ],
     "postActions": [
         {
-            "description": "Opens Class1.cs in the editor",
+            "description": "Opens MonoBehaviour1.cs in the editor",
             "manualInstructions": [],
             "actionId": "84C0DA21-51C8-4541-9940-6CA19AF04EE6",
             "args": {
