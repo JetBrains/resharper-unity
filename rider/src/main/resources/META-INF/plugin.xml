@@ -60,6 +60,8 @@
   <li>Inspections and Quick Fixes for incorrect event function method signature and return types.</li>
   <li>Support for undocumented functions such as <code>OnValidate</code> and <code>OnPreGeneratingCSProjectFiles</code>.</li>
   <li>Warns if a coroutine return value is unused.</li>
+  <li>Context actions to add SerializeField or NonSerialized attributes to fields.</li>
+  <li>Context action to convert auto-property to property with serialized backing field.</li>
   <li>Context action to convert event function method signature to/from coroutine.</li>
   <li>Use Generate Code to create event functions, with parameters.</li>
   <li>Start typing for automatic completion of event function declarations in a class.</li>
@@ -98,6 +100,7 @@
   <change-notes>
 <![CDATA[
 <ul>
+  <li>Add context action to convert auto-property to property with serialized backing field (<a href="https://github.com/JetBrains/resharper-unity/issues/195">#195</a>)</li>
   <li>Add context action to mark field as serialized or non-serizable (<a href="https://github.com/JetBrains/resharper-unity/issues/191">#191</a>)</li>
   <li>Add inspection and quick fix for redundant SerializeField attribute</li>
   <li>Add inspections and quick fixes for method signature of methods with Unity attributes (<a href="https://github.com/JetBrains/resharper-unity/issues/248">#248</a>)</li>

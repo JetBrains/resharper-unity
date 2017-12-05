@@ -18,6 +18,7 @@
 &#8226; Support for undocumented functions such as OnValidate and OnPreGeneratingCSProjectFiles.
 &#8226; Warns if a coroutine return value is unused.
 &#8226; Context actions to add SerializeField or NonSerialized attributes to fields.
+&#8226; Context action to convert auto-property to property with serialized backing field.
 &#8226; Context action to convert event function method signature to/from coroutine.
 &#8226; Use Generate Code to create event functions, with parameters.
 &#8226; Start typing for automatic completion of event function declarations in a class.
@@ -49,6 +50,7 @@
 &#8226; Unity specific file templates.
 </description>
 <releaseNotes>
+&#8226; Add context action to convert auto-property to property with serialized backing field (#195)
 &#8226; Add context action to mark field as serialized or non-serizable (#191)
 &#8226; Add inspection and quick fix for redundant SerializeField attribute
 &#8226; Add inspections and quick fixes for method signature of methods with Unity attributes (#248)

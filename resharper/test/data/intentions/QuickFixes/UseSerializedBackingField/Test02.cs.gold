@@ -1,0 +1,16 @@
+﻿using UnityEngine;
+
+public abstract class Base : MonoBehaviour
+{
+    public abstract int Prop { get; set; }
+}
+
+public class Derived : Base
+{
+  [SerializeField] private readonly int myProp;
+
+  public override int Prop
+  {
+    get { return {selstart}myProp{selend}; }
+  }
+}
