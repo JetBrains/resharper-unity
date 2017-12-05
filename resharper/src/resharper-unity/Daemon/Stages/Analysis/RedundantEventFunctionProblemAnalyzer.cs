@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 {
-    // Empty event functions are still caused, which is a performance overhead
+    // Empty event functions are still called, which is a performance overhead
     // https://blogs.unity3d.com/2015/12/23/1k-update-calls/
     [ElementProblemAnalyzer(typeof(IMethodDeclaration), HighlightingTypes = new[] { typeof(RedundantEventFunctionWarning) })]
     public class RedundantEventFunctionProblemAnalyzer : UnityElementProblemAnalyzer<IMethodDeclaration>

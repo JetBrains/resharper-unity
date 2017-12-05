@@ -8,10 +8,10 @@
   </member>
   <member name="T:UnityEditor.CanEditMultipleObjects">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
-    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets)">
       <argument>4</argument>    <!-- AttributeTargets.Class -->
-      <argument>true</argument> <!-- allowMultiple -->
-      <argument>true</argument> <!-- inherited -->
+      <property name="AllowMultiple">true</property>
+      <property name="Inherited">true</property>
     </attribute>
   </member>
   <member name="T:UnityEditor.CustomEditor">
@@ -19,10 +19,9 @@
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
       <argument>UnityEditor.Editor</argument>
     </attribute>
-    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets)">
       <argument>4</argument>    <!-- AttributeTargets.Class -->
-      <argument>true</argument> <!-- allowMultiple -->
-      <argument>true</argument> <!-- inherited -->
+      <property name="AllowMultiple">false</property>
     </attribute>
   </member>
   <member name="T:UnityEditor.CustomPreviewAttribute">
@@ -39,10 +38,9 @@
   </member>
   <member name="T:UnityEditor.DrawGizmo">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
-    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets)">
       <argument>64</argument>   <!-- AttributeTargets.Method -->
-      <argument>true</argument> <!-- allowMultiple -->
-      <argument>true</argument> <!-- inherited -->
+      <property name="AllowMultiple">false</property>
     </attribute>
   </member>
   <member name="T:UnityEditor.InitializeOnLoadAttribute">
@@ -60,34 +58,30 @@
 
   <member name="T:UnityEditor.Callbacks.DidReloadScripts">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
-    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets)">
       <argument>64</argument>   <!-- AttributeTargets.Method -->
-      <argument>true</argument> <!-- allowMultiple -->
-      <argument>true</argument> <!-- inherited -->
+      <property name="AllowMultiple">false</property>
     </attribute>
   </member>
   <member name="T:UnityEditor.Callbacks.OnOpenAssetAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
-    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets)">
       <argument>64</argument>   <!-- AttributeTargets.Method -->
-      <argument>true</argument> <!-- allowMultiple -->
-      <argument>true</argument> <!-- inherited -->
+      <property name="AllowMultiple">false</property>
     </attribute>
   </member>
   <member name="T:UnityEditor.Callbacks.PostProcessBuildAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
-    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets)">
       <argument>64</argument>   <!-- AttributeTargets.Method -->
-      <argument>true</argument> <!-- allowMultiple -->
-      <argument>true</argument> <!-- inherited -->
+      <property name="AllowMultiple">false</property>
     </attribute>
   </member>
   <member name="T:UnityEditor.Callbacks.PostProcessSceneAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
-    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets,System.Boolean,System.Boolean)">
+    <attribute ctor="M:System.AttributeUsageAttribute.#ctor(System.AttributeTargets)">
       <argument>64</argument>   <!-- AttributeTargets.Method -->
-      <argument>true</argument> <!-- allowMultiple -->
-      <argument>true</argument> <!-- inherited -->
+      <property name="AllowMultiple">false</property>
     </attribute>
   </member>
 </assembly>

@@ -24,7 +24,7 @@ namespace Plugins.Editor.JetBrains
     {
       if (level < SelectedLoggingLevel) return;
 
-      var text = "[Rider] [" + level + "] " + initialText;
+      var text = "[Rider] "+DateTime.Now.ToString("HH:mm:ss:ff")+" [" + level + "] " + initialText;
 
       switch (level)
       {
@@ -39,8 +39,8 @@ namespace Plugins.Editor.JetBrains
 
     private static string GetDefaultApp()
     {
-      var allFoundPaths = GetAllRiderPaths();
-      var alreadySetPath = GetExternalScriptEditor();
+      var allFoundPaths = GetAllRiderPaths().Select(a=>new FileInfo(a).FullName).ToArray();
+      var alreadySetPath = new FileInfo(GetExternalScriptEditor()).FullName;
       
       if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && !allFoundPaths.Any() ||
           !string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() &&
@@ -48,7 +48,7 @@ namespace Plugins.Editor.JetBrains
       {
         RiderPath = alreadySetPath;
       }
-      else if (allFoundPaths.Contains(RiderPath)) {}
+      else if (allFoundPaths.Contains(new FileInfo(RiderPath).FullName)) {}
       else
       RiderPath = allFoundPaths.FirstOrDefault();
 
@@ -345,7 +345,7 @@ namespace Plugins.Editor.JetBrains
           return false;
       }
 
-      int[] ports = Enumerable.Range(63342, 20).ToArray();
+      var ports = Enumerable.Range(63342, 20);
       var res = ports.Any(port =>
       {
         var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
