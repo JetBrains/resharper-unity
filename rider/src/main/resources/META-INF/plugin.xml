@@ -42,7 +42,7 @@
 
   <actions>
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
-      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
+      <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>
   </actions>
 
