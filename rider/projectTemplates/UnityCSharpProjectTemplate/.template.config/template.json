@@ -6,7 +6,7 @@
     "defaultName": "ClassLibrary1",
     "classifications": ["Common", "Library"],
     "identity": "JetBrains.Common.Unity.Library.CSharp",
-    "shortName": "jbclasslib",
+    "shortName": "unityclasslib",
     "tags": {
         "type": "project",
         "language": "C#",

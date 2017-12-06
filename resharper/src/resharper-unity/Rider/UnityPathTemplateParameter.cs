@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using JetBrains.Application;
 using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetExtensions;
 using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetTemplates;
 using JetBrains.Rider.Model;
+using JetBrains.Util;
+using JetBrains.Util.Interop;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -34,6 +38,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     break;
                 default:
                     defaultPath = @"C:\Program Files\Unity\Editor\Data\Managed\UnityEngine.dll";
+                    
+                    var lnks = FileSystemPath.Parse(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs").GetChildDirectories("Unity*").SelectMany(a=>a.GetChildFiles("Unity.lnk")).ToArray();
+                    var dllPath = lnks.Select(a => ShellLinkHelper.ResolveLinkTarget(a).Directory.Combine(@"Data\Managed\UnityEngine.dll")).Where(b=>b.ExistsFile).OrderBy(c=>new FileInfo(c.FullPath).CreationTime).LastOrDefault();
+                    if (dllPath != null)
+                        defaultPath = dllPath.FullPath;
+                    
                     break;
             }
 
