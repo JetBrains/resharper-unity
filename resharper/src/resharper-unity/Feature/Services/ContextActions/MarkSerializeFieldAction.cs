@@ -3,7 +3,6 @@ using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
-using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
@@ -11,9 +10,9 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
 {
-    [ContextAction(Group = CSharpContextActions.GroupID,
+    [ContextAction(Group = UnityContextActions.GroupID,
         Name = "Annotate field with 'SerializeField' attribute",
-        Description = "Adds 'UnityEngine.SerializeField' attribute, marking the field as serialized by Unity")]
+        Description = "Adds 'UnityEngine.SerializeField' attribute to a field in a known Unity type, marking the field as serialized by Unity")]
     public class MarkSerializeFieldAction : ContextActionBase
     {
         private readonly ICSharpContextActionDataProvider myDataProvider;
@@ -21,21 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
         public MarkSerializeFieldAction(ICSharpContextActionDataProvider dataProvider)
         {
             myDataProvider = dataProvider;
-        }
-
-        protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
-        {
-            var fieldDeclaration = myDataProvider.GetSelectedElement<IFieldDeclaration>();
-            if (fieldDeclaration != null)
-            {
-                var typeElement = TypeFactory.CreateTypeByCLRName(KnownTypes.SerializeField, myDataProvider.PsiModule).GetTypeElement();
-                if (typeElement == null)
-                    return null;
-                var attribute = myDataProvider.ElementFactory.CreateAttribute(typeElement);
-                fieldDeclaration.AddAttributeAfter(attribute, null);
-            }
-
-            return null;
         }
 
         public override string Text => "Annotate field with 'SerializeField' attribute";
@@ -77,6 +61,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
             // Is the type a Unity type?
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
             return unityApi.IsUnityType(typeElement);
+        }
+
+        protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+        {
+            var fieldDeclaration = myDataProvider.GetSelectedElement<IFieldDeclaration>();
+            AttributeUtil.AddAttribute(fieldDeclaration, KnownTypes.SerializeField,
+                myDataProvider.PsiModule, myDataProvider.ElementFactory);
+
+            return null;
         }
     }
 }
