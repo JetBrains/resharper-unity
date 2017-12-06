@@ -2,12 +2,8 @@
 using System.IO;
 using UnityEditor;
 using System.Collections.Generic;
-using System.Reflection;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
-using UnityEngine;
-
-#if NET_4_6
 using System.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
@@ -16,9 +12,7 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
-using ILogger = JetBrains.Util.ILogger;
-using Logger = JetBrains.Util.Logging.Logger;
-#endif
+using ILog = JetBrains.Util.Logging.ILog;
 
 namespace Plugins.Editor.JetBrains
 {
@@ -26,10 +20,10 @@ namespace Plugins.Editor.JetBrains
   public static class RiderProtocolController
   {
     public static bool Initialized { get; private set; }
-#if NET_4_6
+
     public static UnityModel model;
     private static Protocol ourProtocol;
-#endif
+
     
     static RiderProtocolController()
     {
@@ -39,7 +33,7 @@ namespace Plugins.Editor.JetBrains
       InitProtocol();
       
       #if UNITY_5_5_OR_NEWER
-      Application.logMessageReceived+=ApplicationOnLogMessageReceived; // not supported in Unity 4.7
+      UnityEngine.Application.logMessageReceived+=ApplicationOnLogMessageReceived; // not supported in Unity 4.7
       #else
       Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
       #endif
@@ -47,9 +41,8 @@ namespace Plugins.Editor.JetBrains
 
     private static void InitProtocol()
     {
-#if NET_4_6
-      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-      var logPath = Path.Combine(Path.GetTempPath(), "Unity3dRider",
+      var projectDirectory = Directory.GetParent(UnityEngine.Application.dataPath).FullName;
+      var logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"),
         "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
       
       RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Protocol log: "+ logPath);
@@ -57,10 +50,10 @@ namespace Plugins.Editor.JetBrains
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
 
-      ILogger logger = Logger.GetLogger("Core");
-      var fileLogEventListener = new FileLogEventListener(logPath, false); // works in Unity mono 4.6
+      var logger = Log.GetLog("Core");
+      //var fileLogEventListener = new FileLogEventListener(logPath, false); // works in Unity mono 4.6
       //var fileLogEventListener = new FileLogEventListener(loggerPath); //fails in Unity mono 4.6
-      LogManager.Instance.AddOmnipresentLogger(lifetime, fileLogEventListener, LoggingLevel.TRACE);
+      //LogManager.Instance.AddOmnipresentLogger(lifetime, fileLogEventListener, LoggingLevel.TRACE);
 //      LogManager.Instance.ApplyTransformation(lifetime, config =>
 //      {
 //        config.InjectNode(new LogConfNode(LoggingLevel.TRACE, "protocol"));
@@ -70,27 +63,27 @@ namespace Plugins.Editor.JetBrains
       {
         try
         {
-          logger.Info("Start ControllerTask...");
+          logger.Log(LoggingLevel.INFO, "Start ControllerTask...");
 
           var dispatcher = new SimpleInpaceExecutingScheduler(logger);
         
-          logger.Info("Create protocol...");
+          logger.Log(LoggingLevel.INFO, "Create protocol...");
           ourProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
             creatingProtocol =>
             {
               var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
-              logger.Info("Creating SocketWire with port = {0}", wire.Port);
+              logger.Log(LoggingLevel.INFO, string.Format("Creating SocketWire with port = {0}", wire.Port));
             
               InitializeProtocolJson(wire.Port, projectDirectory, logger);
               return wire;
             });
 
-          logger.Info("Create UnityModel and advise for new sessions...");
+          logger.Log(LoggingLevel.INFO, "Create UnityModel and advise for new sessions...");
           
           model = new UnityModel(lifetime, ourProtocol);
           model.Play.Advise(lifetime, play =>
           {
-            logger.Info("model.Play.Advise: " + play);
+            logger.Log(LoggingLevel.INFO, "model.Play.Advise: " + play);
             MainThreadDispatcher.Queue(() =>
             {
               EditorApplication.isPlaying = play;
@@ -101,12 +94,12 @@ namespace Plugins.Editor.JetBrains
 
           model.Refresh.Set((lifetime1, vo) =>
           {
-            logger.Info("RiderPlugin.Refresh.");
+            logger.Log(LoggingLevel.INFO, "RiderPlugin.Refresh.");
             MainThreadDispatcher.Queue(AssetDatabase.Refresh);
             return new RdTask<RdVoid>();
           });
                
-          logger.Info("model.ServerConnected true.");
+          logger.Log(LoggingLevel.INFO, "model.ServerConnected true.");
           model.ServerConnected.SetValue(true);
         }
         catch (Exception ex)
@@ -116,11 +109,9 @@ namespace Plugins.Editor.JetBrains
       });
       thread.Start();
       Initialized = true;
-#endif
     }
 
-#if NET_4_6
-    private static void InitializeProtocolJson(int port, string projectDirectory, ILogger logger)
+    private static void InitializeProtocolJson(int port, string projectDirectory, ILog logger)
     {
       logger.Verbose("Writing Library/ProtocolInstance.json");
 
@@ -135,13 +126,13 @@ namespace Plugins.Editor.JetBrains
         File.Delete(protocolInstanceJsonPath);
       };
     }
-#endif
+
       
-    private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
+    private static void ApplicationOnLogMessageReceived(string message, string stackTrace, UnityEngine.LogType type)
     {
       if (RiderPlugin.SendConsoleToRider)
       {
-        #if NET_4_6
+
         // use Protocol to pass log entries to Rider
         ourProtocol.Scheduler.InvokeOrQueue(() =>
         {
@@ -149,11 +140,11 @@ namespace Plugins.Editor.JetBrains
           {
             switch (type)
             {
-              case LogType.Error:
-              case LogType.Exception:
+              case UnityEngine.LogType.Error:
+              case UnityEngine.LogType.Exception:
                 model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Error, message, stackTrace));
                 break;
-              case LogType.Warning:
+              case UnityEngine.LogType.Warning:
                 model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Warning, message, stackTrace));
                 break;
               default:
@@ -162,7 +153,7 @@ namespace Plugins.Editor.JetBrains
             }
           }
         });
-        #endif
+
       }
     }
 
@@ -270,6 +261,40 @@ namespace Plugins.Editor.JetBrains
 		throw new System.NotSupportedException("DispatchTasks is not supported in the Unity Player!");
 #endif
       }
+    }
+  }
+
+  /// <summary>
+  /// Executes the given action just in the current thread in Queue method
+  /// </summary>
+  public class SimpleInpaceExecutingScheduler : IScheduler
+  {
+    private readonly ILog myLogger;
+    public SimpleInpaceExecutingScheduler(ILog logger)
+    {
+      myLogger = logger;
+    }
+
+    public void Queue(Action action)
+    {
+      try
+      {
+        action();
+      }
+      catch (Exception ex)
+      {
+        myLogger.Error(ex);
+      }
+    }
+
+    public bool IsActive
+    {
+      get { return true; }
+    }
+
+    public bool OutOfOrderExecution
+    {
+      get { return false; }
     }
   }
 }

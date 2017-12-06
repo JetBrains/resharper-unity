@@ -7,11 +7,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-#if NET_4_6
+
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
-#endif
+
 using UnityEditor;
 using UnityEngine;
 using Application = UnityEngine.Application;
@@ -337,7 +337,7 @@ namespace Plugins.Editor.JetBrains
           return false;
 
         SyncSolution(); // added to handle opening file, which was just recently created.
-#if NET_4_6
+
         if (RiderProtocolController.model!=null)
         {
           bool connected = false;
@@ -353,14 +353,14 @@ namespace Plugins.Editor.JetBrains
           }
           if (connected)
           {
-#endif
+
             if (DetectPortAndOpenFile(line, assetFilePath,
               SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
               return true;
-#if NET_4_6
+
           }
         }
-#endif
+
         var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
         return CallRider(args);
       }
@@ -604,13 +604,13 @@ namespace Plugins.Editor.JetBrains
       SelectedLoggingLevel = (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg), SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
-#if NET_4_6
+
       SendConsoleToRider =
         EditorGUILayout.Toggle(
           new GUIContent("Send output from Unity to Rider.",
             help), SendConsoleToRider);
       //EditorGUILayout.HelpBox("", MessageType.None);
-#endif
+
       
       EditorGUI.EndChangeCheck();
 

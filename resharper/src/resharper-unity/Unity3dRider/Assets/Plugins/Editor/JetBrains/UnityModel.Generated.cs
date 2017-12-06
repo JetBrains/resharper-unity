@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using JetBrains.Application;
+//using JetBrains.Application;
 using JetBrains.Annotations;
 
 using JetBrains.Platform.RdFramework;
@@ -14,8 +14,9 @@ using JetBrains.Platform.RdFramework.Text;
 
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
-using JetBrains.Util.Special;
+//using JetBrains.Util.Special;
 using Lifetime = JetBrains.DataFlow.Lifetime;
+using JetBrains.Util.Logging;
 
 // ReSharper disable RedundantEmptyObjectCreationArgumentList
 // ReSharper disable InconsistentNaming
