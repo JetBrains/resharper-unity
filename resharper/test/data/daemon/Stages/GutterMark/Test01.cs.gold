@@ -5,22 +5,25 @@ using UnityEditor;
 
 public class |A|(0) : MonoBehaviour
 {
-    public object |unityField|(1);
-    private object notUnityField;
+    // All serialised by Unity - gutter icons
+    public string |ImplicitlyAssignedField|(1);
+    public string |ImplicitlyAssignedMultiField1|(2), |ImplicitlyAssignedMultiField2|(3);
+    [SerializeField] private int |myImplicitlyAssignedPrivateField|(4);
 
-    public object |unityField1|(2), |unityField2|(3);
-
-    [NonSerialized]
-    public object notUnityField2;
-
-    [SerializeField]
-    private object |unityField3|(4);
-
-    [SerializeField]
-    private object |unityField4|(5), |unityField5|(6);
+    // Not serialized by Unity
+    public const string UnusedConst = "hello";
+    private const string UnusedPrivateConst = "hello";
+    [SerializeField] private const string UnusedPrivateConst2 = "hello";
+    private string myUnusedField;
+    public readonly string UnusedReadonlyField;
+    [NonSerialized] public string ExplicitlyUnusedField;
+    [NonSerialized, SerializeField] public string ExplicitlyUnusedField2;
+    [NonSerialized, SerializeField] private string myExplicitlyUnusedField3;
+    public static string UnusedStaticField;
+    [SerializeField] private static string ourUnusedPrivateStaticField;
 
     // Unity function
-    private void |OnDestroy|(7)()
+    private void |OnDestroy|(5)()
     {
     }
 
@@ -30,13 +33,13 @@ public class |A|(0) : MonoBehaviour
     }
 
     // Unity message as coroutine
-    private IEnumerator |Start|(8)()
+    private IEnumerator |Start|(6)()
     {
         return null;
     }
 
     // Optional parameter
-    private void |OnCollisionStay|(9)()
+    private void |OnCollisionStay|(7)()
     {
     }
 }
@@ -44,7 +47,7 @@ public class |A|(0) : MonoBehaviour
 [InitializeOnLoad]
 public class Startup
 {
-    static |Startup|(10)()
+    static |Startup|(8)()
     {
         Debug.Log("Up and running");
     }
@@ -99,17 +102,15 @@ class MyClass
 (2): Unity Gutter Icon: This field is initialised by Unity
 (3): Unity Gutter Icon: This field is initialised by Unity
 (4): Unity Gutter Icon: This field is initialised by Unity
-(5): Unity Gutter Icon: This field is initialised by Unity
-(6): Unity Gutter Icon: This field is initialised by Unity
-(7): Unity Gutter Icon: Unity event function
+(5): Unity Gutter Icon: Unity event function
 
 This function is called when the MonoBehaviour will be destroyed.
-(8): Unity Gutter Icon: Unity event function
+(6): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
 This function can be a coroutine.
-(9): Unity Gutter Icon: Unity event function
+(7): Unity Gutter Icon: Unity event function
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
-(10): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
+(8): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts

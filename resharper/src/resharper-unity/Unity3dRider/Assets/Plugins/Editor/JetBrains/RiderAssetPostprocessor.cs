@@ -26,7 +26,9 @@ namespace Plugins.Editor.JetBrains
         UpgradeProjectFile(file);
       }
 
-      var slnFile = Directory.GetFiles(currentDirectory, "*.sln").First();
+      var slnFile = Directory.GetFiles(currentDirectory, "*.sln").FirstOrDefault();
+      if (string.IsNullOrEmpty(slnFile))
+        return;
       
       RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", slnFile));
       string slnAllText = File.ReadAllText(slnFile);

@@ -17,6 +17,8 @@
 &#8226; Inspections and Quick Fixes for incorrect event function method signature and return types.
 &#8226; Support for undocumented functions such as OnValidate and OnPreGeneratingCSProjectFiles.
 &#8226; Warns if a coroutine return value is unused.
+&#8226; Context actions to add SerializeField or NonSerialized attributes to fields.
+&#8226; Context action to convert auto-property to property with serialized backing field.
 &#8226; Context action to convert event function method signature to/from coroutine.
 &#8226; Use Generate Code to create event functions, with parameters.
 &#8226; Start typing for automatic completion of event function declarations in a class.
@@ -24,8 +26,10 @@
 &#8226; "Read more" in QuickDoc navigates to Unity API documentation.
 &#8226; Correctly update .meta files.
 &#8226; Code completion, find usages and rename support for Invoke, InvokeRepeating, IsInvoking and CancelInvoke. Also Start/StopCoroutine.
+&#8226; Inspections for incorrectly applied attributes.
 &#8226; Inspection and Quick Fix to use CompareTag instead of string comparison.
 &#8226; Inspection and Quick Fix for using new with ScriptableObject or MonoBehaviour.
+&#8226; Inspection and Quick Fix for redundant SerializeField attribute usage.
 &#8226; "Create serialized field" from usage Quick Fix.
 &#8226; Suppress naming consistency checks on event functions.
 &#8226; Prevent ReSharper from suggesting `Assets` or `Scripts` as part of the namespace of your code.
@@ -46,6 +50,21 @@
 &#8226; Unity specific file templates.
 </description>
 <releaseNotes>
+&#8226; Add context action to convert auto-property to property with serialized backing field (#195)
+&#8226; Add context action to mark field as serialized or non-serizable (#191)
+&#8226; Add inspection and quick fix for redundant SerializeField attribute
+&#8226; Add inspections and quick fixes for method signature of methods with Unity attributes (#248)
+&#8226; Add inspections for incorrectly applied attributes (#247)
+&#8226; Fix code completion before a field with an attribute (#259, #286)
+&#8226; Improve relevance of Unity event functions in code completion (#260, #273)
+&#8226; Improve reliability of attaching debugger to Unity Editor (#262, #268)
+&#8226; Rider: Treat .compute files as HLSL (RIDER-11221)
+&#8226; Rider: Fix running simple non-Unity Editor based nunit tests (#256)
+&#8226; Unity3dRider: Support references from mcs.rsp (#270, #273)
+&#8226; Unity3dRider: Plugin regenerates project files on initialisation
+&#8226; Unity3dRider: Generated project includes Visual Studio for Tools flavour GUID
+
+From 2.1.2 (Rider 2017.2):
 &#8226; Fix code completion and generation not working with newer versions of Unity (#219)
 &#8226; Support Unity API up to 2017.3.0b3 (#218)
 &#8226; Recognise projects with modularised UnityEngine assembly references (#241)

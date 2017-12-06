@@ -41,45 +41,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
             var solution = element.GetSolution();
             var unityApi = solution.GetComponent<UnityApi>();
 
-            var cls = element as IClass;
-            if (cls != null)
+            switch (element)
             {
-                if(unityApi.IsUnityType(cls))
-                {
+                case IClass cls when unityApi.IsUnityType(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
-                }
-            }
 
-            var method = element as IMethod;
-            if (method != null)
-            {
-                EventFunctionMatch match;
-                var function = unityApi.GetUnityEventFunction(method, out match);
-                if (function != null && match == EventFunctionMatch.ExactMatch)
-                {
-                    foreach (var parameter in function.Parameters)
+                case IMethod method:
+                    var function = unityApi.GetUnityEventFunction(method, out var match);
+                    if (function != null && match == EventFunctionMatch.ExactMatch)
                     {
-                        if (parameter.IsOptional)
+                        foreach (var parameter in function.Parameters)
                         {
-                            // Allows optional parameters to be marked as unused
-                            // TODO: Might need to process IParameter if optional gets more complex
-                            flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                            return true;
+                            if (parameter.IsOptional)
+                            {
+                                // Allows optional parameters to be marked as unused
+                                // TODO: Might need to process IParameter if optional gets more complex
+                                flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                                return true;
+                            }
                         }
+                        flags = ImplicitUseKindFlags.Access;
+                        return true;
                     }
-                    flags = ImplicitUseKindFlags.Access;
-                    return true;
-                }
-            }
+                    break;
 
-            var field = element as IField;
-            if (field != null && unityApi.IsUnityField(field))
-            {
-                // Public fields gets exposed to the Unity Editor and assigned from the UI.
-                // But it still should be checked if the field is ever accessed from the code.
-                flags = ImplicitUseKindFlags.Assign;
-                return true;
+                case IField field when unityApi.IsUnityField(field):
+                    // Public fields gets exposed to the Unity Editor and assigned from the UI.
+                    // But it still should be checked if the field is ever accessed from the code.
+                    flags = ImplicitUseKindFlags.Assign;
+                    return true;
             }
 
             flags = ImplicitUseKindFlags.Default;   // Value not used if we return false
