@@ -16,9 +16,7 @@ intellij {
     // version = 'LATEST-TRUNK-SNAPSHOT'
     // If the build isn't available in intellij-repository, use an installed version via `localPath`
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
-    // localPath = "C:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\171.4456.459"
-    // localPath = "C:\\Users\\ivan.pashchenko\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\173.3389.392"
-    // localPath = '/Users/ivan/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/173.3389.392/Rider EAP.app/Contents'
+    // localPath = "F:\\RiderSDK"
 
     def dir = file('dependencies')
     if (dir.exists()) {
@@ -86,6 +84,9 @@ prepareSandbox {
     from(nupkg_path, {
         into "$intellij.pluginName"
     })
+    into("$intellij.pluginName/projectTemplates") {
+        from 'projectTemplates'
+    }
 }
 
 prepareTestingSandbox {
