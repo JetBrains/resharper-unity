@@ -45,12 +45,14 @@ namespace Plugins.Editor.JetBrains
       var logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"),
         "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
       
-      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Protocol log: "+ logPath);
+      RiderPlugin.Log(LoggingLevel.VERBOSE, "Protocol log: "+ logPath);
 
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
 
-      var logger = Log.GetLog("Core");
+      var logger = new RiderLogger();
+      Log.DefaultFactory = new SingletonLogFactory(logger);
+      //var logger = Log.GetLog("Core");
       //var fileLogEventListener = new FileLogEventListener(logPath, false); // works in Unity mono 4.6
       //var fileLogEventListener = new FileLogEventListener(loggerPath); //fails in Unity mono 4.6
       //LogManager.Instance.AddOmnipresentLogger(lifetime, fileLogEventListener, LoggingLevel.TRACE);
@@ -296,5 +298,20 @@ namespace Plugins.Editor.JetBrains
     {
       get { return false; }
     }
+  }
+
+  public class RiderLogger : ILog
+  {
+    public bool IsEnabled(LoggingLevel level)
+    {
+      return level >= RiderPlugin.SelectedLoggingLevel;
+    }
+
+    public void Log(LoggingLevel level, string message, Exception exception = null)
+    {
+      RiderPlugin.Log(level, message, exception);
+    }
+
+    public string Category { get; private set; }
   }
 }
