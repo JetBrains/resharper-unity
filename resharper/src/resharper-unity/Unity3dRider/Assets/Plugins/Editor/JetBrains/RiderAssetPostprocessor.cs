@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-// do not remove - check preprocessor excluded code
 using System.Collections.Generic; 
 using System.Linq;
 using System.Text;
@@ -9,12 +8,14 @@ using System.Xml.Linq;
 using UnityEditor;
 using UnityEngine;
 using System.Reflection;
-using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace Plugins.Editor.JetBrains
 {
   public class RiderAssetPostprocessor : AssetPostprocessor
   {
+    private static readonly ILog Logger = Log.GetLog<RiderAssetPostprocessor>();
+    
     public static void OnGeneratedCSProjectFiles()
     {
       if (!RiderPlugin.Enabled)
@@ -31,7 +32,7 @@ namespace Plugins.Editor.JetBrains
       if (string.IsNullOrEmpty(slnFile))
         return;
       
-      RiderPlugin.Log(LoggingLevel.VERBOSE, string.Format("Post-processing {0}", slnFile));
+      Logger.Verbose("Post-processing {0}", slnFile);
       string slnAllText = File.ReadAllText(slnFile);
       const string unityProjectGuid = @"Project(""{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1}"")";
       if (!slnAllText.Contains(unityProjectGuid))
@@ -76,7 +77,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void UpgradeProjectFile(string projectFile)
     {
-      RiderPlugin.Log(LoggingLevel.VERBOSE, string.Format("Post-processing {0}", projectFile));
+      Logger.Verbose("Post-processing {0}", projectFile);
       XDocument doc;
       try
       {
@@ -84,7 +85,7 @@ namespace Plugins.Editor.JetBrains
       }
       catch (Exception)
       {
-        RiderPlugin.Log(LoggingLevel.VERBOSE, string.Format("Failed to Load {0}", projectFile));
+        Logger.Verbose("Failed to Load {0}", projectFile);
         return;
       }
       
@@ -402,7 +403,7 @@ namespace Plugins.Editor.JetBrains
         }
         catch (Exception)
         {
-          RiderPlugin.Log(LoggingLevel.VERBOSE, "Loading pdb2mdb failed.");
+          Logger.Verbose("Loading pdb2mdb failed.");
           assembly = null;
         }
 
@@ -430,7 +431,7 @@ namespace Plugins.Editor.JetBrains
         if (!IsPortablePdb(pdb))
           ConvertSymbolsForAssembly(asset);
         else
-          RiderPlugin.Log(LoggingLevel.VERBOSE, string.Format("mdb generation for Portable pdb is not supported. {0}", pdb));
+          Logger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
       }
     }
 
@@ -438,14 +439,14 @@ namespace Plugins.Editor.JetBrains
     {
       if (Pdb2MdbDriver == null)
       {
-        RiderPlugin.Log(LoggingLevel.VERBOSE, "FailedToConvertDebugSymbolsNoPdb2mdb.");
+        Logger.Warn("FailedToConvertDebugSymbolsNoPdb2mdb.");
         return;
       }
       
       var method = Pdb2MdbDriver.GetMethod("Main", BindingFlags.Static | BindingFlags.NonPublic);
       if (method == null)
       {
-        RiderPlugin.Log(LoggingLevel.VERBOSE, "WarningFailedToConvertDebugSymbolsPdb2mdbMainIsNull.");
+        Logger.Warn("WarningFailedToConvertDebugSymbolsPdb2mdbMainIsNull.");
         return;
       }
 

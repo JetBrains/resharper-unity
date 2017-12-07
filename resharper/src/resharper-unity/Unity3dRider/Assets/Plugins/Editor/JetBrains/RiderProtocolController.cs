@@ -12,6 +12,7 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
+using UnityEngine;
 using ILog = JetBrains.Util.Logging.ILog;
 
 namespace Plugins.Editor.JetBrains
@@ -41,51 +42,40 @@ namespace Plugins.Editor.JetBrains
 
     private static void InitProtocol()
     {
-      var projectDirectory = Directory.GetParent(UnityEngine.Application.dataPath).FullName;
-      var logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"),
-        "Unity3dRider" + DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
+      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
       
-      RiderPlugin.Log(LoggingLevel.VERBOSE, "Protocol log: "+ logPath);
+      var logger = new RiderLogger();
+      Log.DefaultFactory = new SingletonLogFactory(logger);
+      logger.Verbose("InitProtocol");
 
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
-
-      var logger = new RiderLogger();
-      Log.DefaultFactory = new SingletonLogFactory(logger);
-      //var logger = Log.GetLog("Core");
-      //var fileLogEventListener = new FileLogEventListener(logPath, false); // works in Unity mono 4.6
-      //var fileLogEventListener = new FileLogEventListener(loggerPath); //fails in Unity mono 4.6
-      //LogManager.Instance.AddOmnipresentLogger(lifetime, fileLogEventListener, LoggingLevel.TRACE);
-//      LogManager.Instance.ApplyTransformation(lifetime, config =>
-//      {
-//        config.InjectNode(new LogConfNode(LoggingLevel.TRACE, "protocol"));
-//      });
 
       var thread = new Thread(() =>
       {
         try
         {
-          logger.Log(LoggingLevel.INFO, "Start ControllerTask...");
+          logger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
 
           var dispatcher = new SimpleInpaceExecutingScheduler(logger);
         
-          logger.Log(LoggingLevel.INFO, "Create protocol...");
+          logger.Log(LoggingLevel.VERBOSE, "Create protocol...");
           ourProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
             creatingProtocol =>
             {
               var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
-              logger.Log(LoggingLevel.INFO, string.Format("Creating SocketWire with port = {0}", wire.Port));
+              logger.Log(LoggingLevel.VERBOSE, string.Format("Creating SocketWire with port = {0}", wire.Port));
             
               InitializeProtocolJson(wire.Port, projectDirectory, logger);
               return wire;
             });
 
-          logger.Log(LoggingLevel.INFO, "Create UnityModel and advise for new sessions...");
+          logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
           
           model = new UnityModel(lifetime, ourProtocol);
           model.Play.Advise(lifetime, play =>
           {
-            logger.Log(LoggingLevel.INFO, "model.Play.Advise: " + play);
+            logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
             MainThreadDispatcher.Queue(() =>
             {
               EditorApplication.isPlaying = play;
@@ -96,12 +86,12 @@ namespace Plugins.Editor.JetBrains
 
           model.Refresh.Set((lifetime1, vo) =>
           {
-            logger.Log(LoggingLevel.INFO, "RiderPlugin.Refresh.");
+            logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
             MainThreadDispatcher.Queue(AssetDatabase.Refresh);
             return new RdTask<RdVoid>();
           });
                
-          logger.Log(LoggingLevel.INFO, "model.ServerConnected true.");
+          logger.Log(LoggingLevel.VERBOSE, "model.ServerConnected true.");
           model.ServerConnected.SetValue(true);
         }
         catch (Exception ex)
@@ -129,16 +119,16 @@ namespace Plugins.Editor.JetBrains
       };
     }
 
-      
     private static void ApplicationOnLogMessageReceived(string message, string stackTrace, UnityEngine.LogType type)
     {
       if (RiderPlugin.SendConsoleToRider)
       {
-
+        if (ourProtocol == null)
+          return;
         // use Protocol to pass log entries to Rider
         ourProtocol.Scheduler.InvokeOrQueue(() =>
         {
-          if (model.LogModelInitialized.HasValue())
+          if (model != null && model.LogModelInitialized.HasValue())
           {
             switch (type)
             {
@@ -160,7 +150,7 @@ namespace Plugins.Editor.JetBrains
     }
 
     [InitializeOnLoad]
-    private static class MainThreadDispatcher
+    internal static class MainThreadDispatcher
     {
       private struct Task
       {
@@ -304,12 +294,38 @@ namespace Plugins.Editor.JetBrains
   {
     public bool IsEnabled(LoggingLevel level)
     {
-      return level >= RiderPlugin.SelectedLoggingLevel;
+      return level <= RiderPlugin.SelectedLoggingLevel;
     }
 
     public void Log(LoggingLevel level, string message, Exception exception = null)
     {
-      RiderPlugin.Log(level, message, exception);
+      if (!IsEnabled(level))
+        return;
+      
+      var text = "[Rider][" + level + "]"+DateTime.Now.ToString("HH:mm:ss:ff")+ " " + message;
+
+      switch (level)
+      {
+        case LoggingLevel.FATAL:
+        case LoggingLevel.ERROR:
+          Debug.LogError(text);
+          if (exception != null)
+            Debug.LogException(exception);
+          break;
+        case LoggingLevel.WARN:
+          Debug.LogWarning(text);
+          if (exception != null)
+            Debug.LogException(exception);
+          break;
+        case LoggingLevel.INFO:
+        case LoggingLevel.VERBOSE:
+          Debug.Log(text);
+          if (exception != null)
+            Debug.LogException(exception);
+          break;
+        default:
+          break;
+      }
     }
 
     public string Category { get; private set; }

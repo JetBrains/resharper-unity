@@ -12,6 +12,7 @@ using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 using Application = UnityEngine.Application;
@@ -24,33 +25,7 @@ namespace Plugins.Editor.JetBrains
   {
     private static bool Initialized;
     private static string SlnFile;
-
-    public static void Log(LoggingLevel level, string initialText, Exception exception = null)
-    {
-      if (level < SelectedLoggingLevel) return;
-
-      var text = "[Rider] "+DateTime.Now.ToString("HH:mm:ss:ff")+" [" + level + "] " + initialText;
-
-      switch (level)
-      {
-        case LoggingLevel.FATAL:
-        case LoggingLevel.ERROR:
-          Debug.LogError(text);
-          if (exception!=null)
-            Debug.LogException(exception);
-          break;
-        case LoggingLevel.WARN:
-          Debug.LogWarning(text);
-          if (exception!=null)
-            Debug.LogException(exception);
-          break;
-        default:
-          Debug.Log(text);
-          if (exception!=null)
-            Debug.LogException(exception);
-          break;
-      }
-    }
+    private static readonly ILog Logger = Log.GetLog("RiderPlugin");
 
     private static string GetDefaultApp()
     {
@@ -189,11 +164,17 @@ namespace Plugins.Editor.JetBrains
       get { return EditorPrefs.GetString("Rider_RiderPath", GetAllRiderPaths().FirstOrDefault()); }
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
+    
+    public static LoggingLevel SelectedLoggingLevel { get; private set; }
 
-    public static LoggingLevel SelectedLoggingLevel
+    private static LoggingLevel SelectedLoggingLevelMainThread
     {
       get { return (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1); }
-      set { EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value); }
+      set
+      {
+        SelectedLoggingLevel = value;
+        EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
+      }
     }
 
     public static bool RiderInitializedOnce
@@ -231,6 +212,9 @@ namespace Plugins.Editor.JetBrains
 
     private static void InitRiderPlugin()
     {
+      // cache once on main thread
+      SelectedLoggingLevel = SelectedLoggingLevelMainThread;
+      
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
       var projectName = Path.GetFileName(projectDirectory);
@@ -240,7 +224,7 @@ namespace Plugins.Editor.JetBrains
       
       RiderAssetPostprocessor.OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire 
 
-      Log(LoggingLevel.INFO, "Rider plugin initialized. You may change the amount of Rider Debug output via Edit -> Preferences -> Rider -> Logging Level");
+      Logger.Log(LoggingLevel.INFO, "Rider plugin initialized. You may change the amount of Rider Debug output via Edit -> Preferences -> Rider -> Logging Level");
       Initialized = true;
     }
 
@@ -352,7 +336,7 @@ namespace Plugins.Editor.JetBrains
           }
           catch (Exception)
           {
-            Log(LoggingLevel.VERBOSE, "Rider Protocol not connected.");
+            Logger.Verbose("Rider Protocol not connected.");
           }
           if (connected)
           {
@@ -402,7 +386,7 @@ namespace Plugins.Editor.JetBrains
           }
           catch (Exception e)
           {
-            Log(LoggingLevel.VERBOSE, string.Format("Exception in DetectPortAndOpenFile: {0}", e));
+            Logger.Verbose("Exception in DetectPortAndOpenFile: {0}", e);
           }
         }
         return false;
@@ -420,7 +404,7 @@ namespace Plugins.Editor.JetBrains
         url = string.Format(@"http://localhost:{0}/api/file/{1}{2}", port, filePath, line < 0 ? "" : ":" + line);
 
       var uri = new Uri(url);
-      Log(LoggingLevel.VERBOSE, string.Format("HttpRequestOpenFile({0})", uri.AbsoluteUri));
+      Logger.Verbose("HttpRequestOpenFile({0})", uri.AbsoluteUri);
 
       CallHttpApi(uri, client);
       ActivateWindow();
@@ -430,7 +414,7 @@ namespace Plugins.Editor.JetBrains
     private static string CallHttpApi(Uri uri, WebClient client)
     {
       var responseString = client.DownloadString(uri.AbsoluteUri);
-      Log(LoggingLevel.VERBOSE, string.Format("CallHttpApi {0} response: {1}", uri.AbsoluteUri, responseString));
+      Logger.Verbose("CallHttpApi {0} response: {1}", uri.AbsoluteUri, responseString);
       return responseString;
     }
 
@@ -447,13 +431,13 @@ namespace Plugins.Editor.JetBrains
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
-        Log(LoggingLevel.VERBOSE, string.Format("{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments));
+        Logger.Verbose("{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
       }
       else
       {
         proc.StartInfo.FileName = defaultApp;
         proc.StartInfo.Arguments = args;
-        Log(LoggingLevel.VERBOSE, string.Format("{2}{0}{2}" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments, "\""));
+        Logger.Verbose("{2}{0}{2}" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments, "\"");
       }
 
       proc.StartInfo.UseShellExecute = false;
@@ -479,7 +463,7 @@ namespace Plugins.Editor.JetBrains
             var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
             // Get process main window title
             var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
-            Log(LoggingLevel.INFO, string.Format("ActivateWindow: {0} {1}", process.Id, windowHandle));
+            Logger.Verbose("ActivateWindow: {0} {1}", process.Id, windowHandle);
             if (windowHandle != IntPtr.Zero)
             {
               //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
@@ -489,7 +473,7 @@ namespace Plugins.Editor.JetBrains
         }
         catch (Exception e)
         {
-          Log(LoggingLevel.WARN, "Exception on ActivateWindow: " + e);
+          Logger.Warn("Exception on ActivateWindow: " + e);
         }
       }
     }
@@ -604,7 +588,7 @@ namespace Plugins.Editor.JetBrains
 
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
-      SelectedLoggingLevel = (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg), SelectedLoggingLevel);
+      SelectedLoggingLevelMainThread = (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg), SelectedLoggingLevelMainThread);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
 
