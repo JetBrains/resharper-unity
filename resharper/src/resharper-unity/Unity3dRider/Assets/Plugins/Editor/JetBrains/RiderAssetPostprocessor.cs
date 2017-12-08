@@ -18,7 +18,7 @@ namespace Plugins.Editor.JetBrains
     
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!RiderProtocolController.Enabled)
+      if (!RiderPlugin1.Enabled)
         return;
       var currentDirectory = Directory.GetCurrentDirectory();
       var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
@@ -93,7 +93,6 @@ namespace Plugins.Editor.JetBrains
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
-      RemoveDllReference("JetBrains.Annotations", xmlns, projectContentElement); // Red code in the UnityModel.Generated.cs, because UnityEngine.CoreModule also has JetBrains.Annotations.
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
       // Unity_5_6_OR_NEWER switched to nunit 3.5
@@ -418,7 +417,7 @@ namespace Plugins.Editor.JetBrains
 
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)
     {
-      if (!RiderPlugin.Enabled)
+      if (!RiderPlugin1.Enabled)
         return;
       var toBeConverted = importedAssets.Where(a => 
           a.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&

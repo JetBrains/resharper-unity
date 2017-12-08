@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using System.Reflection;
@@ -29,58 +28,14 @@ namespace Plugins.Editor.JetBrains
     public static bool Initialized { get; private set; }
     public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
     
-    public static LoggingLevel SelectedLoggingLevel { get; private set; }
-
-    private static LoggingLevel SelectedLoggingLevelMainThread
-    {
-      get { return (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1); }
-      set
-      {
-        SelectedLoggingLevel = value;
-        EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
-      }
-    }
-    
-    public static bool SendConsoleToRider
-    {
-      get{return EditorPrefs.GetBool("Rider_SendConsoleToRider", false);}
-      set{EditorPrefs.SetBool("Rider_SendConsoleToRider", value);}
-    }
-    
-    internal static bool Enabled
-    {
-      get
-      {
-        var defaultApp = GetExternalScriptEditor();
-        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
-      }
-    }
-    
-    private static string GetExternalScriptEditor()
-    {
-      return EditorPrefs.GetString("kScriptsDefaultApp");
-    }
-
-    private static void SetExternalScriptEditor(string path)
-    {
-      EditorPrefs.SetString("kScriptsDefaultApp", path);
-    }
-    
     public static UnityModel model;
     private static Protocol ourProtocol;
     
-    public static void RunOnShutdown(Action action)
-    {
-      
-    }
-    
     static RiderProtocolController()
     {
-      if (!Enabled)
+      if (!RiderPlugin1.Enabled)
         return;
       Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));
-      
-      
       
       InitProtocol();
             
@@ -180,7 +135,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void ApplicationOnLogMessageReceived(string message, string stackTrace, UnityEngine.LogType type)
     {
-      if (SendConsoleToRider)
+      if (RiderPlugin1.SendConsoleToRider)
       {
         if (ourProtocol == null)
           return;
@@ -213,102 +168,7 @@ namespace Plugins.Editor.JetBrains
         model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(type, message, stackTrace));
     }
   }
-    [InitializeOnLoad]
-    static class MainThreadDispatcher
-    {
-      private struct Task
-      {
-        public readonly Delegate Function;
-        public readonly object[] Arguments;
 
-        public Task(Delegate function, object[] arguments)
-        {
-          Function = function;
-          Arguments = arguments;
-        }
-      }
-
-      /// <summary>
-      /// The queue of tasks that are being requested for the next time DispatchTasks is called
-      /// </summary>
-      private static Queue<Task> mTaskQueue = new Queue<Task>();
-
-      /// <summary>
-      /// Indicates whether there are tasks available for dispatching
-      /// </summary>
-      /// <value>
-      /// <c>true</c> if there are tasks available for dispatching; otherwise, <c>false</c>.
-      /// </value>
-      private static bool AreTasksAvailable
-      {
-        get { return mTaskQueue.Count > 0; }
-      }
-
-      /// <summary>
-      /// Initializes all the required callbacks for this class to work properly
-      /// </summary>
-      static MainThreadDispatcher()
-      {
-        if (!RiderProtocolController.Enabled)
-          return;
-        
-        EditorApplication.update += DispatchTasks;
-      }
-      
-      /// <summary>
-      /// Dispatches the specified action delegate.
-      /// </summary>
-      /// <param name='function'>
-      /// The function delegate being requested
-      /// </param>
-      public static void Queue(Action function)
-      {
-        Queue(function, null);
-      }
-
-      /// <summary>
-      /// Dispatches the specified function delegate with the desired delegates
-      /// </summary>
-      /// <param name='function'>
-      /// The function delegate being requested
-      /// </param>
-      /// <param name='arguments'>
-      /// The arguments to be passed to the function delegate
-      /// </param>
-      /// <exception cref='System.NotSupportedException'>
-      /// Is thrown when this method is called from the Unity Player
-      /// </exception>
-      private static void Queue(Delegate function, params object[] arguments)
-      {
-        lock (mTaskQueue)
-        {
-          mTaskQueue.Enqueue(new Task(function, arguments));
-        }
-      }
-
-      /// <summary>
-      /// Dispatches the tasks that has been requested since the last call to this function
-      /// </summary>
-      /// <exception cref='System.NotSupportedException'>
-      /// Is thrown when this method is called from the Unity Player
-      /// </exception>
-      private static void DispatchTasks()
-      {
-        if (AreTasksAvailable)
-        {
-          lock (mTaskQueue)
-          {
-            foreach (Task task in mTaskQueue)
-            {
-              task.Function.DynamicInvoke(task.Arguments);
-            }
-
-            mTaskQueue.Clear();
-          }
-        }
-      }
-    }
-  
 
   /// <summary>
   /// Executes the given action just in the current thread in Queue method
@@ -342,48 +202,5 @@ namespace Plugins.Editor.JetBrains
     {
       get { return false; }
     }
-  }
-
-  public class RiderLogger : ILog
-  {
-    public bool IsEnabled(LoggingLevel level)
-    {
-      return level <= RiderProtocolController.SelectedLoggingLevel;
-    }
-
-    public void Log(LoggingLevel level, string message, Exception exception = null)
-    {
-      if (!IsEnabled(level))
-        return;
-
-      var text = "[Rider][" + level + "]" + DateTime.Now.ToString("HH:mm:ss:ff") + " " + message;
-
-      // using Unity logs causes frequent Unity hangs
-      File.AppendAllText(RiderProtocolController.logPath,Environment.NewLine + text);
-//      switch (level)
-//      {
-//        case LoggingLevel.FATAL:
-//        case LoggingLevel.ERROR:
-//          Debug.LogError(text);
-//          if (exception != null)
-//            Debug.LogException(exception);
-//          break;
-//        case LoggingLevel.WARN:
-//          Debug.LogWarning(text);
-//          if (exception != null)
-//            Debug.LogException(exception);
-//          break;
-//        case LoggingLevel.INFO:
-//        case LoggingLevel.VERBOSE:
-//          Debug.Log(text);
-//          if (exception != null)
-//            Debug.LogException(exception);
-//          break;
-//        default:
-//          break;
-//      }
-    }
-
-    public string Category { get; private set; }
   }
 }

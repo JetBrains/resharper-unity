@@ -1,25 +1,39 @@
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
+using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 using Application = UnityEngine.Application;
-using Debug = UnityEngine.Debug;
 
 namespace Plugins.Editor.JetBrains
 {
   [InitializeOnLoad]
   public static class RiderPlugin
   {
+    static RiderPlugin()
+    {
+      var riderPath = GetDefaultApp();
+      if (!RiderPathExist(riderPath))
+        return;
+
+      AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
+      if (!RiderInitializedOnce)
+      {
+        RiderPlugin1.SetExternalScriptEditor(riderPath);
+        RiderInitializedOnce = true;
+      }
+      if (RiderPlugin1.Enabled)
+      {
+        InitRiderPlugin();
+      }
+    }
+    
     private static bool Initialized;
     private static string SlnFile;
     private static readonly ILog Logger = Log.GetLog("RiderPlugin");
@@ -27,7 +41,7 @@ namespace Plugins.Editor.JetBrains
     private static string GetDefaultApp()
     {
       var allFoundPaths = GetAllRiderPaths().Select(a=>new FileInfo(a).FullName).ToArray();
-      var alreadySetPath = new FileInfo(GetExternalScriptEditor()).FullName;
+      var alreadySetPath = new FileInfo(RiderPlugin1.GetExternalScriptEditor()).FullName;
       
       if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && !allFoundPaths.Any() ||
           !string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() &&
@@ -59,7 +73,7 @@ namespace Plugins.Editor.JetBrains
           if (newPathLnks.Any())
           {
             var newPaths = newPathLnks
-              .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
+              .Select(newPathLnk => new FileInfo(RiderPlugin1.ShortcutResolver.Resolve(newPathLnk.FullName)))
               .Where(fi => File.Exists(fi.FullName))
               .ToArray()
               .OrderByDescending(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
@@ -133,12 +147,6 @@ namespace Plugins.Editor.JetBrains
       }
     }
 
-    public static bool SendConsoleToRider
-    {
-      get{return EditorPrefs.GetBool("Rider_SendConsoleToRider", false);}
-      set{EditorPrefs.SetBool("Rider_SendConsoleToRider", value);}
-    }
-
     private static bool TryCatch(string value, Action<string> action)
     {
       try
@@ -168,31 +176,8 @@ namespace Plugins.Editor.JetBrains
       set { EditorPrefs.SetBool("RiderInitializedOnce", value); }
     }
 
-    
-
-    static RiderPlugin()
-    {
-      var riderPath = GetDefaultApp();
-      if (!RiderPathExist(riderPath))
-        return;
-
-      AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
-      if (!RiderInitializedOnce)
-      {
-        SetExternalScriptEditor(riderPath);
-        RiderInitializedOnce = true;
-      }
-      if (Enabled)
-      {
-        InitRiderPlugin();
-      }
-    }
-
     private static void InitRiderPlugin()
-    {
-      // cache once on main thread
-      SelectedLoggingLevel = SelectedLoggingLevelMainThread;
-      
+    {      
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
       var projectName = Path.GetFileName(projectDirectory);
@@ -264,61 +249,59 @@ namespace Plugins.Editor.JetBrains
     [UnityEditor.Callbacks.OnOpenAssetAttribute()]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (Enabled)
+      if (!RiderPlugin1.Enabled) 
+        return false;
+      if (!Initialized)
       {
-        if (!Initialized)
-        {
-          // make sure the plugin was initialized first.
-          // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
-          InitRiderPlugin();
-        }
+        // make sure the plugin was initialized first.
+        // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
+        InitRiderPlugin();
+      }
 
-        string appPath = Path.GetDirectoryName(Application.dataPath);
+      string appPath = Path.GetDirectoryName(Application.dataPath);
 
-        // determine asset that has been double clicked in the project view
-        var selected = EditorUtility.InstanceIDToObject(instanceID);
+      // determine asset that has been double clicked in the project view
+      var selected = EditorUtility.InstanceIDToObject(instanceID);
 
-        var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
-        if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
-              selected.GetType().ToString() == "UnityEngine.Shader" ||
-              (selected.GetType().ToString() == "UnityEngine.TextAsset" &&
+      var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
+      if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
+            selected.GetType().ToString() == "UnityEngine.Shader" ||
+            (selected.GetType().ToString() == "UnityEngine.TextAsset" &&
 #if UNITY_5 || UNITY_5_5_OR_NEWER
-               EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
+             EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
 #else
             EditorSettings.externalVersionControl.Contains(Path.GetExtension(assetFilePath).Substring(1))
 #endif
-              )))
-          return false;
+            )))
+        return false;
 
-        SyncSolution(); // added to handle opening file, which was just recently created.
+      SyncSolution(); // added to handle opening file, which was just recently created.
 
-        if (RiderProtocolController.model!=null)
+      if (RiderProtocolController.model!=null)
+      {
+        var connected = false;
+        try
         {
-          var connected = false;
-          try
-          {
-            // HostConnected also means that in Rider and in Unity the same solution is opened
-            connected = RiderProtocolController.model.IsClientConnected.Sync(RdVoid.Instance,
-              new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
-          }
-          catch (Exception)
-          {
-            Logger.Verbose("Rider Protocol not connected.");
-          }
-          if (connected)
-          {
-            var task = RiderProtocolController.model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, 0));
-            ActivateWindow();
-            //task.Result.Advise(); todo: fallback to CallRider, if returns false
-            return true;
-          }
+          // HostConnected also means that in Rider and in Unity the same solution is opened
+          connected = RiderProtocolController.model.IsClientConnected.Sync(RdVoid.Instance,
+            new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
         }
-
-        //var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-        return true; //CallRider(args);
+        catch (Exception)
+        {
+          Logger.Verbose("Rider Protocol not connected.");
+        }
+        if (connected)
+        {
+          var task = RiderProtocolController.model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, 0));
+          ActivateWindow();
+          //task.Result.Advise(); todo: fallback to CallRider, if returns false
+          return true;
+        }
       }
 
-      return false;
+      //var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
+      return true; //CallRider(args);
+
     }
     
     private static bool CallRider(string args)
@@ -363,14 +346,14 @@ namespace Plugins.Editor.JetBrains
           if (process != null)
           {
             // Collect top level windows
-            var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
+            var topLevelWindows = RiderPlugin1.User32Dll.GetTopLevelWindowHandles();
             // Get process main window title
-            var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
+            var windowHandle = topLevelWindows.FirstOrDefault(hwnd => RiderPlugin1.User32Dll.GetWindowProcessId(hwnd) == process.Id);
             Logger.Verbose("ActivateWindow: {0} {1}", process.Id, windowHandle);
             if (windowHandle != IntPtr.Zero)
             {
               //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
-              User32Dll.SetForegroundWindow(windowHandle);
+              RiderPlugin1.User32Dll.SetForegroundWindow(windowHandle);
             }
           }
         }
@@ -420,7 +403,7 @@ namespace Plugins.Editor.JetBrains
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     static bool ValidateMenuOpenProject()
     {
-      return Enabled;
+      return RiderPlugin1.Enabled;
     }
 
     /// <summary>
@@ -453,14 +436,14 @@ namespace Plugins.Editor.JetBrains
         var alts = alternatives.Select(s => s.Replace("/", ":"))
           .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
         RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
-        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), Enabled))
+        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), RiderPlugin1.Enabled))
         {
-          SetExternalScriptEditor(RiderPath);
+          RiderPlugin1.SetExternalScriptEditor(RiderPath);
           EditorGUILayout.HelpBox("Unckecking will restore default external editor.", MessageType.None);
         }
         else
         {
-          SetExternalScriptEditor(string.Empty);
+          RiderPlugin1.SetExternalScriptEditor(string.Empty);
           EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
         }
       }
@@ -491,14 +474,14 @@ namespace Plugins.Editor.JetBrains
 
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
-      SelectedLoggingLevelMainThread = (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg), SelectedLoggingLevelMainThread);
+      RiderPlugin1.SelectedLoggingLevelMainThread = (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg), RiderPlugin1.SelectedLoggingLevelMainThread);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
 
-      SendConsoleToRider =
+      RiderPlugin1.SendConsoleToRider =
         EditorGUILayout.Toggle(
           new GUIContent("Send output from Unity to Rider.",
-            help), SendConsoleToRider);
+            help), RiderPlugin1.SendConsoleToRider);
       
       EditorGUI.EndChangeCheck();
 
@@ -567,266 +550,6 @@ return SystemInfo.operatingSystemFamily;
     }
 #endif
     #endregion
-    
-    static class User32Dll
-    {
-
-      /// <summary>
-      /// Gets the ID of the process that owns the window.
-      /// Note that creating a <see cref="Process"/> wrapper for that is very expensive because it causes an enumeration of all the system processes to happen.
-      /// </summary>
-      public static int GetWindowProcessId(IntPtr hwnd)
-      {
-        uint dwProcessId;
-        GetWindowThreadProcessId(hwnd, out dwProcessId);
-        return unchecked((int) dwProcessId);
-      }
-
-      /// <summary>
-      /// Lists the handles of all the top-level windows currently available in the system.
-      /// </summary>
-      public static List<IntPtr> GetTopLevelWindowHandles()
-      {
-        var retval = new List<IntPtr>();
-        EnumWindowsProc callback = (hwnd, param) =>
-        {
-          retval.Add(hwnd);
-          return 1;
-        };
-        EnumWindows(Marshal.GetFunctionPointerForDelegate(callback), IntPtr.Zero);
-        GC.KeepAlive(callback);
-        return retval;
-      }
-
-      public delegate Int32 EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
-
-      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
-        ExactSpelling = true)]
-      public static extern Int32 EnumWindows(IntPtr lpEnumFunc, IntPtr lParam);
-
-      [DllImport("user32.dll", SetLastError = true)]
-      static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
-      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
-        ExactSpelling = true)]
-      public static extern Int32 SetForegroundWindow(IntPtr hWnd);
-
-      [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
-        ExactSpelling = true)]
-      public static extern UInt32 ShowWindow(IntPtr hWnd, Int32 nCmdShow);
-    }
-    
-    static class ShortcutResolver
-    {
-      #region Signitures imported from http://pinvoke.net
-
-      [DllImport("shfolder.dll", CharSet = CharSet.Auto)]
-      internal static extern int SHGetFolderPath(IntPtr hwndOwner, int nFolder, IntPtr hToken, int dwFlags, StringBuilder lpszPath);
-
-      [Flags()]
-      enum SLGP_FLAGS
-      {
-        /// <summary>Retrieves the standard short (8.3 format) file name</summary>
-        SLGP_SHORTPATH = 0x1,
-
-        /// <summary>Retrieves the Universal Naming Convention (UNC) path name of the file</summary>
-        SLGP_UNCPRIORITY = 0x2,
-
-        /// <summary>Retrieves the raw path name. A raw path is something that might not exist and may include environment variables that need to be expanded</summary>
-        SLGP_RAWPATH = 0x4
-      }
-
-      [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-      struct WIN32_FIND_DATAW
-      {
-        public uint dwFileAttributes;
-        public long ftCreationTime;
-        public long ftLastAccessTime;
-        public long ftLastWriteTime;
-        public uint nFileSizeHigh;
-        public uint nFileSizeLow;
-        public uint dwReserved0;
-        public uint dwReserved1;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)] public string cFileName;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)] public string cAlternateFileName;
-      }
-
-      [Flags()]
-      enum SLR_FLAGS
-      {
-        /// <summary>
-        /// Do not display a dialog box if the link cannot be resolved. When SLR_NO_UI is set,
-        /// the high-order word of fFlags can be set to a time-out value that specifies the
-        /// maximum amount of time to be spent resolving the link. The function returns if the
-        /// link cannot be resolved within the time-out duration. If the high-order word is set
-        /// to zero, the time-out duration will be set to the default value of 3,000 milliseconds
-        /// (3 seconds). To specify a value, set the high word of fFlags to the desired time-out
-        /// duration, in milliseconds.
-        /// </summary>
-        SLR_NO_UI = 0x1,
-
-        /// <summary>Obsolete and no longer used</summary>
-        SLR_ANY_MATCH = 0x2,
-
-        /// <summary>If the link object has changed, update its path and list of identifiers.
-        /// If SLR_UPDATE is set, you do not need to call IPersistFile::IsDirty to determine
-        /// whether or not the link object has changed.</summary>
-        SLR_UPDATE = 0x4,
-
-        /// <summary>Do not update the link information</summary>
-        SLR_NOUPDATE = 0x8,
-
-        /// <summary>Do not execute the search heuristics</summary>
-        SLR_NOSEARCH = 0x10,
-
-        /// <summary>Do not use distributed link tracking</summary>
-        SLR_NOTRACK = 0x20,
-
-        /// <summary>Disable distributed link tracking. By default, distributed link tracking tracks
-        /// removable media across multiple devices based on the volume name. It also uses the
-        /// Universal Naming Convention (UNC) path to track remote file systems whose drive letter
-        /// has changed. Setting SLR_NOLINKINFO disables both types of tracking.</summary>
-        SLR_NOLINKINFO = 0x40,
-
-        /// <summary>Call the Microsoft Windows Installer</summary>
-        SLR_INVOKE_MSI = 0x80
-      }
-
-
-      /// <summary>The IShellLink interface allows Shell links to be created, modified, and resolved</summary>
-      [ComImport(), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("000214F9-0000-0000-C000-000000000046")]
-      interface IShellLinkW
-      {
-        /// <summary>Retrieves the path and file name of a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetPath([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxPath, out WIN32_FIND_DATAW pfd, SLGP_FLAGS fFlags);
-
-        /// <summary>Retrieves the list of item identifiers for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetIDList(out IntPtr ppidl);
-
-        /// <summary>Sets the pointer to an item identifier list (PIDL) for a Shell link object.</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SetIDList(IntPtr pidl);
-
-        /// <summary>Retrieves the description string for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetDescription([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszName, int cchMaxName);
-
-        /// <summary>Sets the description for a Shell link object. The description can be any application-defined string</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SetDescription([MarshalAs(UnmanagedType.LPWStr)] string pszName);
-
-        /// <summary>Retrieves the name of the working directory for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetWorkingDirectory([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszDir, int cchMaxPath);
-
-        /// <summary>Sets the name of the working directory for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SetWorkingDirectory([MarshalAs(UnmanagedType.LPWStr)] string pszDir);
-
-        /// <summary>Retrieves the command-line arguments associated with a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetArguments([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszArgs, int cchMaxPath);
-
-        /// <summary>Sets the command-line arguments for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SetArguments([MarshalAs(UnmanagedType.LPWStr)] string pszArgs);
-
-        /// <summary>Retrieves the hot key for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetHotkey(out short pwHotkey);
-
-        /// <summary>Sets a hot key for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SetHotkey(short wHotkey);
-
-        /// <summary>Retrieves the show command for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetShowCmd(out int piShowCmd);
-
-        /// <summary>Sets the show command for a Shell link object. The show command sets the initial show state of the window.</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SetShowCmd(int iShowCmd);
-
-        /// <summary>Retrieves the location (path and index) of the icon for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetIconLocation([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszIconPath, int cchIconPath, out int piIcon);
-
-        /// <summary>Sets the location (path and index) of the icon for a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SetIconLocation([MarshalAs(UnmanagedType.LPWStr)] string pszIconPath, int iIcon);
-
-        /// <summary>Sets the relative path to the Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SetRelativePath([MarshalAs(UnmanagedType.LPWStr)] string pszPathRel, int dwReserved);
-
-        /// <summary>Attempts to find the target of a Shell link, even if it has been moved or renamed</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void Resolve(IntPtr hwnd, SLR_FLAGS fFlags);
-
-        /// <summary>Sets the path and file name of a Shell link object</summary>
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SetPath([MarshalAs(UnmanagedType.LPWStr)] string pszFile);
-      }
-
-      [ComImport, Guid("0000010c-0000-0000-c000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-      public interface IPersist
-      {
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetClassID(out Guid pClassID);
-      }
-
-
-      [ComImport, Guid("0000010b-0000-0000-C000-000000000046"),
-       InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-      public interface IPersistFile : IPersist
-      {
-        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetClassID(out Guid pClassID);
-
-        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        int IsDirty();
-
-        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void Load([In, MarshalAs(UnmanagedType.LPWStr)] string pszFileName, uint dwMode);
-
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void Save([In, MarshalAs(UnmanagedType.LPWStr)] string pszFileName, [In, MarshalAs(UnmanagedType.Bool)] bool fRemember);
-
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void SaveCompleted([In, MarshalAs(UnmanagedType.LPWStr)] string pszFileName);
-
-        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
-        void GetCurFile([In, MarshalAs(UnmanagedType.LPWStr)] string ppszFileName);
-      }
-
-      const uint STGM_READ = 0;
-      const int MAX_PATH = 260;
-
-      // CLSID_ShellLink from ShlGuid.h 
-      [
-        ComImport(),
-        Guid("00021401-0000-0000-C000-000000000046")
-      ]
-      public class ShellLink
-      {
-      }
-
-      #endregion
-
-      public static string Resolve(string filename)
-      {
-        ShellLink link = new ShellLink();
-        ((IPersistFile) link).Load(filename, STGM_READ);
-        // If I can get hold of the hwnd call resolve first. This handles moved and renamed files.  
-        // ((IShellLinkW)link).Resolve(hwnd, 0) 
-        StringBuilder sb = new StringBuilder(MAX_PATH);
-        WIN32_FIND_DATAW data = new WIN32_FIND_DATAW();
-        ((IShellLinkW) link).GetPath(sb, sb.Capacity, out data, 0);
-        return sb.ToString();
-      }
-    }
   }
 }
 
