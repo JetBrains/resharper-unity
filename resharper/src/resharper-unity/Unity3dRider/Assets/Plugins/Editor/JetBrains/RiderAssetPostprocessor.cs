@@ -18,7 +18,7 @@ namespace Plugins.Editor.JetBrains
     
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!RiderPlugin.Enabled)
+      if (!RiderProtocolController.Enabled)
         return;
       var currentDirectory = Directory.GetCurrentDirectory();
       var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");

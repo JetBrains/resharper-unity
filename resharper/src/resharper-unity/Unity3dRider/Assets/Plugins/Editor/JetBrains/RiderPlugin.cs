@@ -6,12 +6,8 @@ using System.Text;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
-using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
@@ -26,7 +22,6 @@ namespace Plugins.Editor.JetBrains
   {
     private static bool Initialized;
     private static string SlnFile;
-    public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
     private static readonly ILog Logger = Log.GetLog("RiderPlugin");
 
     private static string GetDefaultApp()
@@ -167,32 +162,13 @@ namespace Plugins.Editor.JetBrains
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
     
-    public static LoggingLevel SelectedLoggingLevel { get; private set; }
-
-    private static LoggingLevel SelectedLoggingLevelMainThread
-    {
-      get { return (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1); }
-      set
-      {
-        SelectedLoggingLevel = value;
-        EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
-      }
-    }
-
     public static bool RiderInitializedOnce
     {
       get { return EditorPrefs.GetBool("RiderInitializedOnce", false); }
       set { EditorPrefs.SetBool("RiderInitializedOnce", value); }
     }
 
-    internal static bool Enabled
-    {
-      get
-      {
-        var defaultApp = GetExternalScriptEditor();
-        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
-      }
-    }
+    
 
     static RiderPlugin()
     {
@@ -226,7 +202,6 @@ namespace Plugins.Editor.JetBrains
       
       RiderAssetPostprocessor.OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire 
 
-      UnityEngine.Debug.Log(string.Format("Rider plugin initialized. Further logs could be found in {0}", logPath));
       Initialized = true;
     }
 
@@ -239,16 +214,6 @@ namespace Plugins.Editor.JetBrains
           return;
       }
       EditorPrefs.SetString(recentAppsKey + 9, userAppPath);
-    }
-
-    private static string GetExternalScriptEditor()
-    {
-      return EditorPrefs.GetString("kScriptsDefaultApp");
-    }
-
-    private static void SetExternalScriptEditor(string path)
-    {
-      EditorPrefs.SetString("kScriptsDefaultApp", path);
     }
 
     private static bool RiderPathExist(string path)
@@ -349,8 +314,8 @@ namespace Plugins.Editor.JetBrains
           }
         }
 
-        var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-        return CallRider(args);
+        //var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
+        return true; //CallRider(args);
       }
 
       return false;

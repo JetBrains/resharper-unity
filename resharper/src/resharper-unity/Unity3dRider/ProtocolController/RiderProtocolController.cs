@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
-using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
@@ -13,8 +13,12 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
+using Plugins.Editor.JetBrains;
 using UnityEngine;
+using UnityEngine.Experimental.UIElements;
 using ILog = JetBrains.Util.Logging.ILog;
+using IScheduler = JetBrains.Platform.RdFramework.IScheduler;
+
 // ReSharper disable RedundantArgumentDefaultValue
 
 namespace Plugins.Editor.JetBrains
@@ -23,21 +27,71 @@ namespace Plugins.Editor.JetBrains
   public static class RiderProtocolController
   {
     public static bool Initialized { get; private set; }
+    public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+    
+    public static LoggingLevel SelectedLoggingLevel { get; private set; }
 
+    private static LoggingLevel SelectedLoggingLevelMainThread
+    {
+      get { return (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1); }
+      set
+      {
+        SelectedLoggingLevel = value;
+        EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
+      }
+    }
+    
+    public static bool SendConsoleToRider
+    {
+      get{return EditorPrefs.GetBool("Rider_SendConsoleToRider", false);}
+      set{EditorPrefs.SetBool("Rider_SendConsoleToRider", value);}
+    }
+    
+    internal static bool Enabled
+    {
+      get
+      {
+        var defaultApp = GetExternalScriptEditor();
+        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
+      }
+    }
+    
+    private static string GetExternalScriptEditor()
+    {
+      return EditorPrefs.GetString("kScriptsDefaultApp");
+    }
+
+    private static void SetExternalScriptEditor(string path)
+    {
+      EditorPrefs.SetString("kScriptsDefaultApp", path);
+    }
+    
     public static UnityModel model;
     private static Protocol ourProtocol;
     
+    public static void RunOnShutdown(Action action)
+    {
+      
+    }
+    
     static RiderProtocolController()
     {
-      if (!RiderPlugin.Enabled)
+      if (!Enabled)
         return;
-
+      Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));
+      
+      
+      
       InitProtocol();
             
       EventInfo eventInfo = typeof (Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
       if (eventInfo != null)
       {
         eventInfo.AddEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
+        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
+        {
+          eventInfo.RemoveEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
+        });
       }
       else
       {
@@ -126,7 +180,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void ApplicationOnLogMessageReceived(string message, string stackTrace, UnityEngine.LogType type)
     {
-      if (RiderPlugin.SendConsoleToRider)
+      if (SendConsoleToRider)
       {
         if (ourProtocol == null)
           return;
@@ -158,9 +212,9 @@ namespace Plugins.Editor.JetBrains
       if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
         model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(type, message, stackTrace));
     }
-
+  }
     [InitializeOnLoad]
-    internal static class MainThreadDispatcher
+    static class MainThreadDispatcher
     {
       private struct Task
       {
@@ -195,12 +249,10 @@ namespace Plugins.Editor.JetBrains
       /// </summary>
       static MainThreadDispatcher()
       {
-        if (!RiderPlugin.Enabled)
+        if (!RiderProtocolController.Enabled)
           return;
         
-#if UNITY_EDITOR
         EditorApplication.update += DispatchTasks;
-#endif
       }
       
       /// <summary>
@@ -228,14 +280,10 @@ namespace Plugins.Editor.JetBrains
       /// </exception>
       private static void Queue(Delegate function, params object[] arguments)
       {
-#if UNITY_EDITOR
         lock (mTaskQueue)
         {
           mTaskQueue.Enqueue(new Task(function, arguments));
         }
-#else
-		throw new System.NotSupportedException("Dispatch is not supported in the Unity Player!");
-#endif
       }
 
       /// <summary>
@@ -246,7 +294,6 @@ namespace Plugins.Editor.JetBrains
       /// </exception>
       private static void DispatchTasks()
       {
-#if UNITY_EDITOR
         if (AreTasksAvailable)
         {
           lock (mTaskQueue)
@@ -259,12 +306,9 @@ namespace Plugins.Editor.JetBrains
             mTaskQueue.Clear();
           }
         }
-#else
-		throw new System.NotSupportedException("DispatchTasks is not supported in the Unity Player!");
-#endif
       }
     }
-  }
+  
 
   /// <summary>
   /// Executes the given action just in the current thread in Queue method
@@ -304,7 +348,7 @@ namespace Plugins.Editor.JetBrains
   {
     public bool IsEnabled(LoggingLevel level)
     {
-      return level <= RiderPlugin.SelectedLoggingLevel;
+      return level <= RiderProtocolController.SelectedLoggingLevel;
     }
 
     public void Log(LoggingLevel level, string message, Exception exception = null)
@@ -315,7 +359,7 @@ namespace Plugins.Editor.JetBrains
       var text = "[Rider][" + level + "]" + DateTime.Now.ToString("HH:mm:ss:ff") + " " + message;
 
       // using Unity logs causes frequent Unity hangs
-      File.AppendAllText(RiderPlugin.logPath,text);
+      File.AppendAllText(RiderProtocolController.logPath,Environment.NewLine + text);
 //      switch (level)
 //      {
 //        case LoggingLevel.FATAL:
