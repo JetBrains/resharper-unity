@@ -2,6 +2,8 @@
 using System.IO;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.DocumentModel;
+using JetBrains.IDE;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
@@ -9,8 +11,12 @@ using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
+using JetBrains.TextControl;
+using JetBrains.TextControl.Coords.PositionKinds;
 using JetBrains.Util;
+using JetBrains.Util.dataStructures.TypedIntrinsics;
 using Newtonsoft.Json;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -147,6 +153,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 UnityModel.IsClientConnected.Set(rdVoid => true);
                 
                 SubscribeToLogs();
+                
+                UnityModel.OpenFileLineCol.Set(args =>
+                    {
+                        using (ReadLockCookie.Create())
+                        {
+                            var textControl = mySolution.GetComponent<IEditorManager>().OpenFile(FileSystemPath.Parse(args.Path), OpenFileOptions.DefaultActivate);
+                            if (textControl == null) 
+                                return false;
+                            if (args.Line > 0 || args.Col > 0)
+                            {
+                                textControl.Caret.MoveTo((Int32<DocLine>) args.Line, (Int32<DocColumn>) args.Col, CaretVisualPlacement.Generic);
+                            }    
+                        }
+                        return true;
+                    });
             }
             catch (Exception ex)
             {

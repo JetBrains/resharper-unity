@@ -11,6 +11,7 @@ using System.Net;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
+using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
@@ -25,6 +26,7 @@ namespace Plugins.Editor.JetBrains
   {
     private static bool Initialized;
     private static string SlnFile;
+    public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
     private static readonly ILog Logger = Log.GetLog("RiderPlugin");
 
     private static string GetDefaultApp()
@@ -224,7 +226,7 @@ namespace Plugins.Editor.JetBrains
       
       RiderAssetPostprocessor.OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire 
 
-      Logger.Log(LoggingLevel.INFO, "Rider plugin initialized. You may change the amount of Rider Debug output via Edit -> Preferences -> Rider -> Logging Level");
+      UnityEngine.Debug.Log(string.Format("Rider plugin initialized. Further logs could be found in {0}", logPath));
       Initialized = true;
     }
 
@@ -270,7 +272,7 @@ namespace Plugins.Editor.JetBrains
     {
       // Only manage EditorInstance.json for 4.x and 5.x - it's a native feature for 2017.x
 #if !UNITY_2017_1_OR_NEWER
-      Log(LoggingLevel.Verbose, "Writing Library/EditorInstance.json");
+      Logger.Verbose("Writing Library/EditorInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
       var editorInstanceJsonPath = Path.Combine(library, "EditorInstance.json");
@@ -282,7 +284,7 @@ namespace Plugins.Editor.JetBrains
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
-        Log(LoggingLevel.Verbose, "Deleting Library/EditorInstance.json");
+        Logger.Verbose("Deleting Library/EditorInstance.json");
         File.Delete(editorInstanceJsonPath);
       };
 #endif
@@ -327,7 +329,7 @@ namespace Plugins.Editor.JetBrains
 
         if (RiderProtocolController.model!=null)
         {
-          bool connected = false;
+          var connected = false;
           try
           {
             // HostConnected also means that in Rider and in Unity the same solution is opened
@@ -340,11 +342,10 @@ namespace Plugins.Editor.JetBrains
           }
           if (connected)
           {
-
-            if (DetectPortAndOpenFile(line, assetFilePath,
-              SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows))
-              return true;
-
+            var task = RiderProtocolController.model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, 0));
+            ActivateWindow();
+            //task.Result.Advise(); todo: fallback to CallRider, if returns false
+            return true;
           }
         }
 
@@ -354,70 +355,7 @@ namespace Plugins.Editor.JetBrains
 
       return false;
     }
-
-
-    private static bool DetectPortAndOpenFile(int line, string filePath, bool isWindows)
-    {
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
-      {
-        var process = GetRiderProcess();
-        if (process == null)
-          return false;
-      }
-
-      var ports = Enumerable.Range(63342, 20);
-      var res = ports.Any(port =>
-      {
-        var aboutUrl = string.Format("http://localhost:{0}/api/about/", port);
-        var aboutUri = new Uri(aboutUrl);
-
-        using (var client = new WebClient())
-        {
-          client.Headers.Add("origin", string.Format("http://localhost:{0}", port));
-          client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-
-          try
-          {
-            var responce = CallHttpApi(aboutUri, client);
-            if (responce.ToLower().Contains("rider"))
-            {
-              return HttpOpenFile(line, filePath, isWindows, port, client);
-            }
-          }
-          catch (Exception e)
-          {
-            Logger.Verbose("Exception in DetectPortAndOpenFile: {0}", e);
-          }
-        }
-        return false;
-      });
-      return res;
-    }
-
-    private static bool HttpOpenFile(int line, string filePath, bool isWindows, int port, WebClient client)
-    {
-      var url = string.Format("http://localhost:{0}/api/file?file={1}{2}", port, filePath,
-        line < 0
-          ? "&p=0"
-          : "&line=" + line); // &p is needed to workaround https://youtrack.jetbrains.com/issue/IDEA-172350
-      if (isWindows)
-        url = string.Format(@"http://localhost:{0}/api/file/{1}{2}", port, filePath, line < 0 ? "" : ":" + line);
-
-      var uri = new Uri(url);
-      Logger.Verbose("HttpRequestOpenFile({0})", uri.AbsoluteUri);
-
-      CallHttpApi(uri, client);
-      ActivateWindow();
-      return true;
-    }
-
-    private static string CallHttpApi(Uri uri, WebClient client)
-    {
-      var responseString = client.DownloadString(uri.AbsoluteUri);
-      Logger.Verbose("CallHttpApi {0} response: {1}", uri.AbsoluteUri, responseString);
-      return responseString;
-    }
-
+    
     private static bool CallRider(string args)
     {
       var defaultApp = GetDefaultApp();

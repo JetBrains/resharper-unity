@@ -37,6 +37,7 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdProperty<string> UnityPluginVersion { get { return _UnityPluginVersion; }}
     [NotNull] public IRdProperty<UnityLogModelInitialized> LogModelInitialized { get { return _LogModelInitialized; }}
     [NotNull] public RdEndpoint<RdVoid, bool> IsClientConnected { get { return _IsClientConnected; }}
+    [NotNull] public RdEndpoint<RdOpenFileArgs, bool> OpenFileLineCol { get { return _OpenFileLineCol; }}
     [NotNull] public IRdCall<string, bool> UpdateUnityPlugin { get { return _UpdateUnityPlugin; }}
     [NotNull] public IRdCall<RdVoid, RdVoid> Refresh { get { return _Refresh; }}
     
@@ -49,6 +50,7 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdProperty<string> _UnityPluginVersion;
     [NotNull] private readonly RdProperty<UnityLogModelInitialized> _LogModelInitialized;
     [NotNull] private readonly RdEndpoint<RdVoid, bool> _IsClientConnected;
+    [NotNull] private readonly RdEndpoint<RdOpenFileArgs, bool> _OpenFileLineCol;
     [NotNull] private readonly RdCall<string, bool> _UpdateUnityPlugin;
     [NotNull] private readonly RdCall<RdVoid, RdVoid> _Refresh;
     
@@ -62,6 +64,7 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdProperty<string> unityPluginVersion,
       [NotNull] RdProperty<UnityLogModelInitialized> logModelInitialized,
       [NotNull] RdEndpoint<RdVoid, bool> isClientConnected,
+      [NotNull] RdEndpoint<RdOpenFileArgs, bool> openFileLineCol,
       [NotNull] RdCall<string, bool> updateUnityPlugin,
       [NotNull] RdCall<RdVoid, RdVoid> refresh
     )
@@ -74,6 +77,7 @@ namespace JetBrains.Platform.Unity.Model
       if (unityPluginVersion == null) throw new ArgumentNullException("unityPluginVersion");
       if (logModelInitialized == null) throw new ArgumentNullException("logModelInitialized");
       if (isClientConnected == null) throw new ArgumentNullException("isClientConnected");
+      if (openFileLineCol == null) throw new ArgumentNullException("openFileLineCol");
       if (updateUnityPlugin == null) throw new ArgumentNullException("updateUnityPlugin");
       if (refresh == null) throw new ArgumentNullException("refresh");
       
@@ -85,6 +89,7 @@ namespace JetBrains.Platform.Unity.Model
       _UnityPluginVersion = unityPluginVersion;
       _LogModelInitialized = logModelInitialized;
       _IsClientConnected = isClientConnected;
+      _OpenFileLineCol = openFileLineCol;
       _UpdateUnityPlugin = updateUnityPlugin;
       _Refresh = refresh;
       _ServerConnected.OptimizeNested = true;
@@ -104,6 +109,7 @@ namespace JetBrains.Platform.Unity.Model
       if (!serializers.Toplevels.Add(typeof(UnityModel))) return;
       Protocol.InitializationLogger.Trace("REGISTER serializers for {0}", typeof(UnityModel).Name);
       
+      serializers.Register(RdOpenFileArgs.Read, RdOpenFileArgs.Write);
       serializers.Register(RdLogEvent.Read, RdLogEvent.Write);
       serializers.RegisterEnum<RdLogEventType>();
       serializers.Register(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write);
@@ -118,8 +124,9 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1006),
       new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1007),
       new RdEndpoint<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1008),
-      new RdCall<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1009),
-      new RdCall<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1010)
+      new RdEndpoint<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).Static(1009),
+      new RdCall<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1010),
+      new RdCall<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1011)
     )
     {
       UnityModel.Register(protocol.Serializers);
@@ -139,6 +146,7 @@ namespace JetBrains.Platform.Unity.Model
       _UnityPluginVersion.BindEx(lifetime, this, "unityPluginVersion");
       _LogModelInitialized.BindEx(lifetime, this, "logModelInitialized");
       _IsClientConnected.BindEx(lifetime, this, "isClientConnected");
+      _OpenFileLineCol.BindEx(lifetime, this, "openFileLineCol");
       _UpdateUnityPlugin.BindEx(lifetime, this, "updateUnityPlugin");
       _Refresh.BindEx(lifetime, this, "refresh");
     }
@@ -152,6 +160,7 @@ namespace JetBrains.Platform.Unity.Model
       _UnityPluginVersion.IdentifyEx(ids);
       _LogModelInitialized.IdentifyEx(ids);
       _IsClientConnected.IdentifyEx(ids);
+      _OpenFileLineCol.IdentifyEx(ids);
       _UpdateUnityPlugin.IdentifyEx(ids);
       _Refresh.IdentifyEx(ids);
     }
@@ -170,6 +179,7 @@ namespace JetBrains.Platform.Unity.Model
         printer.Print("unityPluginVersion = "); _UnityPluginVersion.PrintEx(printer); printer.Println();
         printer.Print("logModelInitialized = "); _LogModelInitialized.PrintEx(printer); printer.Println();
         printer.Print("isClientConnected = "); _IsClientConnected.PrintEx(printer); printer.Println();
+        printer.Print("openFileLineCol = "); _OpenFileLineCol.PrintEx(printer); printer.Println();
         printer.Print("updateUnityPlugin = "); _UpdateUnityPlugin.PrintEx(printer); printer.Println();
         printer.Print("refresh = "); _Refresh.PrintEx(printer); printer.Println();
       }
@@ -277,6 +287,93 @@ namespace JetBrains.Platform.Unity.Model
     Error,
     Warning,
     Message
+  }
+  
+  
+  public class RdOpenFileArgs : IPrintable, IEquatable<RdOpenFileArgs> {
+    //fields
+    //public fields
+    [NotNull] public string Path {get; private set;}
+    public int Line {get; private set;}
+    public int Col {get; private set;}
+    
+    //private fields
+    //primary constructor
+    public RdOpenFileArgs(
+      [NotNull] string path,
+      int line,
+      int col
+    )
+    {
+      if (path == null) throw new ArgumentNullException("path");
+      
+      Path = path;
+      Line = line;
+      Col = col;
+    }
+    //secondary constructor
+    //statics
+    
+    public static CtxReadDelegate<RdOpenFileArgs> Read = (ctx, reader) => 
+    {
+      var path = reader.ReadString();
+      var line = reader.ReadInt();
+      var col = reader.ReadInt();
+      return new RdOpenFileArgs(path, line, col);
+    };
+    
+    public static CtxWriteDelegate<RdOpenFileArgs> Write = (ctx, writer, value) => 
+    {
+      writer.Write(value.Path);
+      writer.Write(value.Line);
+      writer.Write(value.Col);
+    };
+    //custom body
+    //init method
+    //identify method
+    //equals trait
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != GetType()) return false;
+      return Equals((RdOpenFileArgs) obj);
+    }
+    public bool Equals(RdOpenFileArgs other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return Path == other.Path && Line == other.Line && Col == other.Col;
+    }
+    //hash code trait
+    public override int GetHashCode()
+    {
+      unchecked {
+        var hash = 0;
+        hash = hash * 31 + Path.GetHashCode();
+        hash = hash * 31 + Line.GetHashCode();
+        hash = hash * 31 + Col.GetHashCode();
+        return hash;
+      }
+    }
+    //pretty print
+    public void Print(PrettyPrinter printer)
+    {
+      printer.Println("RdOpenFileArgs (");
+      using (printer.IndentCookie()) {
+        printer.Print("path = "); Path.PrintEx(printer); printer.Println();
+        printer.Print("line = "); Line.PrintEx(printer); printer.Println();
+        printer.Print("col = "); Col.PrintEx(printer); printer.Println();
+      }
+      printer.Print(")");
+    }
+    //toString
+    public override string ToString()
+    {
+      var printer = new SingleLinePrettyPrinter();
+      Print(printer);
+      return printer.ToString();
+    }
   }
   
   

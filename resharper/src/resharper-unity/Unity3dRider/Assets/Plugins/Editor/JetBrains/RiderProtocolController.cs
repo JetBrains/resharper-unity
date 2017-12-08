@@ -34,7 +34,7 @@ namespace Plugins.Editor.JetBrains
       InitProtocol();
       
       #if UNITY_5_5_OR_NEWER
-      UnityEngine.Application.logMessageReceived+=ApplicationOnLogMessageReceived; // not supported in Unity 4.7
+      Application.logMessageReceivedThreaded+=ApplicationOnLogMessageReceived; // not supported in Unity 4.7
       #else
       Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
       #endif
@@ -132,21 +132,26 @@ namespace Plugins.Editor.JetBrains
           {
             switch (type)
             {
-              case UnityEngine.LogType.Error:
-              case UnityEngine.LogType.Exception:
-                model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Error, message, stackTrace));
+              case LogType.Error:
+              case LogType.Exception:
+                SentLogEvent(message, stackTrace, RdLogEventType.Error);
                 break;
-              case UnityEngine.LogType.Warning:
-                model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Warning, message, stackTrace));
+              case LogType.Warning:
+                SentLogEvent(message, stackTrace, RdLogEventType.Warning);
                 break;
               default:
-                model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(RdLogEventType.Message, message, stackTrace));
+                SentLogEvent(message, stackTrace, RdLogEventType.Message);
                 break;
             }
           }
         });
-
       }
+    }
+
+    private static void SentLogEvent(string message, string stackTrace, RdLogEventType type)
+    {
+      if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
+        model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(type, message, stackTrace));
     }
 
     [InitializeOnLoad]
@@ -301,31 +306,33 @@ namespace Plugins.Editor.JetBrains
     {
       if (!IsEnabled(level))
         return;
-      
-      var text = "[Rider][" + level + "]"+DateTime.Now.ToString("HH:mm:ss:ff")+ " " + message;
 
-      switch (level)
-      {
-        case LoggingLevel.FATAL:
-        case LoggingLevel.ERROR:
-          Debug.LogError(text);
-          if (exception != null)
-            Debug.LogException(exception);
-          break;
-        case LoggingLevel.WARN:
-          Debug.LogWarning(text);
-          if (exception != null)
-            Debug.LogException(exception);
-          break;
-        case LoggingLevel.INFO:
-        case LoggingLevel.VERBOSE:
-          Debug.Log(text);
-          if (exception != null)
-            Debug.LogException(exception);
-          break;
-        default:
-          break;
-      }
+      var text = "[Rider][" + level + "]" + DateTime.Now.ToString("HH:mm:ss:ff") + " " + message;
+
+      // using Unity logs causes frequent Unity hangs
+      File.AppendAllText(RiderPlugin.logPath,text);
+//      switch (level)
+//      {
+//        case LoggingLevel.FATAL:
+//        case LoggingLevel.ERROR:
+//          Debug.LogError(text);
+//          if (exception != null)
+//            Debug.LogException(exception);
+//          break;
+//        case LoggingLevel.WARN:
+//          Debug.LogWarning(text);
+//          if (exception != null)
+//            Debug.LogException(exception);
+//          break;
+//        case LoggingLevel.INFO:
+//        case LoggingLevel.VERBOSE:
+//          Debug.Log(text);
+//          if (exception != null)
+//            Debug.LogException(exception);
+//          break;
+//        default:
+//          break;
+//      }
     }
 
     public string Category { get; private set; }
