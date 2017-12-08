@@ -2,6 +2,7 @@
 using System.IO;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Reflection;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using System.Threading;
@@ -14,6 +15,7 @@ using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEngine;
 using ILog = JetBrains.Util.Logging.ILog;
+// ReSharper disable RedundantArgumentDefaultValue
 
 namespace Plugins.Editor.JetBrains
 {
@@ -24,7 +26,6 @@ namespace Plugins.Editor.JetBrains
 
     public static UnityModel model;
     private static Protocol ourProtocol;
-
     
     static RiderProtocolController()
     {
@@ -32,12 +33,16 @@ namespace Plugins.Editor.JetBrains
         return;
 
       InitProtocol();
-      
-      #if UNITY_5_5_OR_NEWER
-      Application.logMessageReceivedThreaded+=ApplicationOnLogMessageReceived; // not supported in Unity 4.7
-      #else
-      Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
-      #endif
+            
+      EventInfo eventInfo = typeof (Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
+      if (eventInfo != null)
+      {
+        eventInfo.AddEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
+      }
+      else
+      {
+        Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
+      }
     }
 
     private static void InitProtocol()
@@ -48,7 +53,7 @@ namespace Plugins.Editor.JetBrains
       Log.DefaultFactory = new SingletonLogFactory(logger);
       logger.Verbose("InitProtocol");
 
-      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
+      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance, null, null, null); // do not remove default params to compile in Unity 5.3
       var lifetime = lifetimeDefinition.Lifetime;
 
       var thread = new Thread(() =>

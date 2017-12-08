@@ -133,7 +133,7 @@ namespace JetBrains.Platform.Unity.Model
       Register(protocol.Serializers);
       Bind(lifetime, protocol, GetType().Name);
       if (Protocol.InitializationLogger.IsTraceEnabled())
-        Protocol.InitializationLogger.Trace ("CREATED toplevel object {0}", this.PrintToString());
+        Protocol.InitializationLogger.Trace ("CREATED toplevel object {0}", this.PrintToString(null));
     }
     //custom body
     //init method

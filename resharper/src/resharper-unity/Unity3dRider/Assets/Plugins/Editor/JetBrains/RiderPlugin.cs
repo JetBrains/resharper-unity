@@ -26,7 +26,7 @@ namespace Plugins.Editor.JetBrains
   {
     private static bool Initialized;
     private static string SlnFile;
-    public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("YYYY-MM-ddT-HH-mm-ss") + ".log");
+    public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
     private static readonly ILog Logger = Log.GetLog("RiderPlugin");
 
     private static string GetDefaultApp()
