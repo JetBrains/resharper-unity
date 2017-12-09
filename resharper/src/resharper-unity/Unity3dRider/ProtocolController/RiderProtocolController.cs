@@ -41,8 +41,9 @@ namespace Plugins.Editor.JetBrains
       Log.DefaultFactory = new SingletonLogFactory(logger);
       logger.Verbose("InitProtocol");
 
-      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance); // do not remove default params to compile in Unity 5.3
+      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
+      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) => { lifetimeDefinition.Terminate(); });
 
       var thread = new Thread(() =>
       {

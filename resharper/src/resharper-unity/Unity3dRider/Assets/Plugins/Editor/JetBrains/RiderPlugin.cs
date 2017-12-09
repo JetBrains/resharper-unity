@@ -292,15 +292,18 @@ namespace Plugins.Editor.JetBrains
         }
         if (connected)
         {
-          var task = RiderProtocolController.model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, 0));
+          int col = 0;
+          Logger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, col);
+          //var task = 
+          RiderProtocolController.model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
           ActivateWindow();
           //task.Result.Advise(); todo: fallback to CallRider, if returns false
           return true;
         }
       }
 
-      //var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-      return true; //CallRider(args);
+      var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
+      return CallRider(args);
 
     }
     
