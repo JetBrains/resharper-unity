@@ -18,14 +18,11 @@ using UnityEngine.Experimental.UIElements;
 using ILog = JetBrains.Util.Logging.ILog;
 using IScheduler = JetBrains.Platform.RdFramework.IScheduler;
 
-// ReSharper disable RedundantArgumentDefaultValue
-
 namespace Plugins.Editor.JetBrains
 {
   [InitializeOnLoad]
   public static class RiderProtocolController
   {
-    public static bool Initialized { get; private set; }
     public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
     
     public static UnityModel model;
@@ -35,34 +32,16 @@ namespace Plugins.Editor.JetBrains
     {
       if (!RiderPlugin1.Enabled)
         return;
+   
       Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));
-      
-      InitProtocol();
-            
-      EventInfo eventInfo = typeof (Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
-      if (eventInfo != null)
-      {
-        eventInfo.AddEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
-        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
-        {
-          eventInfo.RemoveEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
-        });
-      }
-      else
-      {
-        Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
-      }
-    }
 
-    private static void InitProtocol()
-    {
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
       
       var logger = new RiderLogger();
       Log.DefaultFactory = new SingletonLogFactory(logger);
       logger.Verbose("InitProtocol");
 
-      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance, null, null, null); // do not remove default params to compile in Unity 5.3
+      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance); // do not remove default params to compile in Unity 5.3
       var lifetime = lifetimeDefinition.Lifetime;
 
       var thread = new Thread(() =>
@@ -78,7 +57,7 @@ namespace Plugins.Editor.JetBrains
             creatingProtocol =>
             {
               var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
-              logger.Log(LoggingLevel.VERBOSE, string.Format("Creating SocketWire with port = {0}", wire.Port));
+              logger.Log(LoggingLevel.VERBOSE, $"Creating SocketWire with port = {wire.Port}");
             
               InitializeProtocolJson(wire.Port, projectDirectory, logger);
               return wire;
@@ -114,7 +93,24 @@ namespace Plugins.Editor.JetBrains
         }
       });
       thread.Start();
-      Initialized = true;
+      UnityLogRegisterCallBack();
+    }
+
+    private static void UnityLogRegisterCallBack()
+    {
+      var eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
+      if (eventInfo != null)
+      {
+        eventInfo.AddEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
+        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
+        {
+          eventInfo.RemoveEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
+        });
+      }
+      else
+      {
+        Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
+      }
     }
 
     private static void InitializeProtocolJson(int port, string projectDirectory, ILog logger)
@@ -124,7 +120,7 @@ namespace Plugins.Editor.JetBrains
       var library = Path.Combine(projectDirectory, "Library");
       var protocolInstanceJsonPath = Path.Combine(library, "ProtocolInstance.json");
 
-      File.WriteAllText(protocolInstanceJsonPath, string.Format(@"{{""port_id"":{0}}}", port));
+      File.WriteAllText(protocolInstanceJsonPath, $@"{{""port_id"":{port}}}");
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
@@ -133,7 +129,7 @@ namespace Plugins.Editor.JetBrains
       };
     }
 
-    private static void ApplicationOnLogMessageReceived(string message, string stackTrace, UnityEngine.LogType type)
+    private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
       if (RiderPlugin1.SendConsoleToRider)
       {
@@ -193,14 +189,8 @@ namespace Plugins.Editor.JetBrains
       }
     }
 
-    public bool IsActive
-    {
-      get { return true; }
-    }
+    public bool IsActive => true;
 
-    public bool OutOfOrderExecution
-    {
-      get { return false; }
-    }
+    public bool OutOfOrderExecution => false;
   }
 }
