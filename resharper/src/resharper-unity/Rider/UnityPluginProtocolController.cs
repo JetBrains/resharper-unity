@@ -163,7 +163,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                 return false;
                             if (args.Line > 0 || args.Col > 0)
                             {
-                                textControl.Caret.MoveTo((Int32<DocLine>) args.Line, (Int32<DocColumn>) args.Col, CaretVisualPlacement.Generic);
+                                textControl.Caret.MoveTo((Int32<DocLine>) (args.Line-1), (Int32<DocColumn>) args.Col, CaretVisualPlacement.Generic);
                             }    
                         }
                         return true;
