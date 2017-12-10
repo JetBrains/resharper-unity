@@ -10,5 +10,7 @@ ProjectSettings/*
 obj/*
 Temp/*
 *.sln
+!Full.sln
+!ProtocolController/**/*.csproj
 *.suo
 Assets/Plugins/Editor/JetBrains/Unity3DRider.cs
