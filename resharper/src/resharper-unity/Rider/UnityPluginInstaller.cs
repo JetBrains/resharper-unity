@@ -255,12 +255,8 @@ Please switch back to Unity to make plugin file appear in the solution.";
         {
             installedPath = null;
             var pluginDirectory = installation.PluginDirectory;
-            var protocolDistributionPath =
-                installation.PluginDirectory.Combine("Rider.Plugin.Distribution.DoNotRemove");
 
             var originPaths = new List<FileSystemPath>();
-            if (protocolDistributionPath.ExistsFile)
-                originPaths.AddRange(JsonConvert.DeserializeObject<string[]>(protocolDistributionPath.ReadAllText2().Text).Select(a=>pluginDirectory.Combine(a)));
             originPaths.AddRange(installation.ExistingFiles);
 
             var backups = originPaths.ToDictionary(f => f, f => f.AddSuffix(".backup"));
@@ -299,16 +295,6 @@ Please switch back to Unity to make plugin file appear in the solution.";
                     }
                 }
                 
-                // copy protocol libs from Rider to plugin folder
-                var assemblies =  GetAssemblies();
-                foreach (var assembly in assemblies)
-                {
-                    assembly.CopyFile(pluginDirectory.Combine(assembly.Name), true);
-                }
-                var files = assemblies.Select(a => a.Name).ToArray();
-                var json = JsonConvert.SerializeObject(files);
-                File.WriteAllText(protocolDistributionPath.FullPath, json);
-                
                 foreach (var backup in backups)
                 {
                     backup.Value.DeleteFile();
@@ -328,7 +314,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
             }
         }
         
-        HashSet<FileSystemPath> GetAssemblies()
+        HashSet<FileSystemPath> GetAssemblies1()
         {
              HashSet<FileSystemPath> visitedAssemblies = new HashSet<FileSystemPath>();
             var baseDir = FileSystemPath.Parse(AppDomain.CurrentDomain.BaseDirectory);
