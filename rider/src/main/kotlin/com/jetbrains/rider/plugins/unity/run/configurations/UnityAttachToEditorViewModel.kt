@@ -33,8 +33,6 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
 
         editorInstanceJsonStatus = status
         this.pid.value = pid
-        logger.info("UNITY_ProcessId:"+ pid)
-        project.solution.customData.data["UNITY_ProcessId"] = pid.toString();
     }
 
     private fun updateProcessList(processList: Array<out ProcessInfo>) {
