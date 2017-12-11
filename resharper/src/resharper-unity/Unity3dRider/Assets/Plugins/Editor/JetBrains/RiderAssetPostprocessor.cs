@@ -19,7 +19,7 @@ namespace Plugins.Editor.JetBrains
     
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!RiderPlugin1.Enabled)
+      if (!RiderPlugin.Enabled)
         return;
       var currentDirectory = Directory.GetCurrentDirectory();
       var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
@@ -418,7 +418,7 @@ namespace Plugins.Editor.JetBrains
 
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)
     {
-      if (!RiderPlugin1.Enabled)
+      if (!RiderPlugin.Enabled)
         return;
       var toBeConverted = importedAssets.Where(a => 
           a.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&

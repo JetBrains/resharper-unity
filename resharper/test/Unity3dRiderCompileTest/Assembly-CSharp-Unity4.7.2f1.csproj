@@ -56,10 +56,10 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="UnityEditor">
       <HintPath>packages\JetBrains.Unity.Libs.4.7.2f1.2017.7.21\lib\UnityEditor.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="UnityEngine">
       <HintPath>packages\JetBrains.Unity.Libs.4.7.2f1.2017.7.21\lib\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>

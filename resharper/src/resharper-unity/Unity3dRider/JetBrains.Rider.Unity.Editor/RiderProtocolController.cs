@@ -1,39 +1,25 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
-using UnityEditor;
-using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  [InitializeOnLoad]
-  public static class RiderProtocolController
+  public class RiderProtocolController
   {
-    public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
-    
-    public static UnityModel model;
-    private static Protocol ourProtocol;
-    
-    static RiderProtocolController()
-    {
-      if (!RiderPlugin1.Enabled)
-        return;
-   
-      Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));
+    public UnityModel Model;
+    public Protocol myProtocol;
 
-      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-      
-      var logger = new RiderLogger();
+    public RiderProtocolController(ILog logger, string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc, Action refresh)
+    {
+      var projectDirectory = Directory.GetParent(dataPath).FullName;
       Log.DefaultFactory = new SingletonLogFactory(logger);
       logger.Verbose("InitProtocol");
 
@@ -50,7 +36,7 @@ namespace JetBrains.Rider.Unity.Editor
           var dispatcher = new SimpleInpaceExecutingScheduler(logger);
         
           logger.Log(LoggingLevel.VERBOSE, "Create protocol...");
-          ourProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
+          myProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
             creatingProtocol =>
             {
               var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
@@ -62,27 +48,24 @@ namespace JetBrains.Rider.Unity.Editor
 
           logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
           
-          model = new UnityModel(lifetime, ourProtocol);
-          model.Play.Advise(lifetime, play =>
+          Model = new UnityModel(lifetime, myProtocol);
+          Model.Play.Advise(lifetime, play =>
           {
             logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
-            MainThreadDispatcher.Queue(() =>
-            {
-              EditorApplication.isPlaying = play;
-            });
+            mainThreadScheduler.Queue(() => { playFunc(play); });
           });
           
-          model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
+          Model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
 
-          model.Refresh.Set((lifetime1, vo) =>
+          Model.Refresh.Set((lifetime1, vo) =>
           {
             logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
-            MainThreadDispatcher.Queue(AssetDatabase.Refresh);
+            mainThreadScheduler.Queue(refresh);
             return new RdTask<RdVoid>();
           });
                
           logger.Log(LoggingLevel.VERBOSE, "model.ServerConnected true.");
-          model.ServerConnected.SetValue(true);
+          Model.ServerConnected.SetValue(true);
         }
         catch (Exception ex)
         {
@@ -90,25 +73,8 @@ namespace JetBrains.Rider.Unity.Editor
         }
       });
       thread.Start();
-      UnityLogRegisterCallBack();
     }
 
-    private static void UnityLogRegisterCallBack()
-    {
-      var eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
-      if (eventInfo != null)
-      {
-        eventInfo.AddEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
-        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
-        {
-          eventInfo.RemoveEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
-        });
-      }
-      else
-      {
-        Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
-      }
-    }
 
     private static void InitializeProtocolJson(int port, string projectDirectory, ILog logger)
     {
@@ -124,41 +90,6 @@ namespace JetBrains.Rider.Unity.Editor
         logger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
       };
-    }
-
-    private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
-    {
-      if (RiderPlugin1.SendConsoleToRider)
-      {
-        if (ourProtocol == null)
-          return;
-        // use Protocol to pass log entries to Rider
-        ourProtocol.Scheduler.InvokeOrQueue(() =>
-        {
-          if (model != null && model.LogModelInitialized.HasValue())
-          {
-            switch (type)
-            {
-              case LogType.Error:
-              case LogType.Exception:
-                SentLogEvent(message, stackTrace, RdLogEventType.Error);
-                break;
-              case LogType.Warning:
-                SentLogEvent(message, stackTrace, RdLogEventType.Warning);
-                break;
-              default:
-                SentLogEvent(message, stackTrace, RdLogEventType.Message);
-                break;
-            }
-          }
-        });
-      }
-    }
-
-    private static void SentLogEvent(string message, string stackTrace, RdLogEventType type)
-    {
-      if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
-        model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(type, message, stackTrace));
     }
   }
 

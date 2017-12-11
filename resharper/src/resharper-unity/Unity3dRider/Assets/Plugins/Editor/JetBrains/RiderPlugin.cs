@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.Model;
@@ -11,6 +12,7 @@ using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 using Application = UnityEngine.Application;
+using Debug = UnityEngine.Debug;
 
 namespace Plugins.Editor.JetBrains
 {
@@ -26,23 +28,64 @@ namespace Plugins.Editor.JetBrains
       AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
       if (!RiderInitializedOnce)
       {
-        RiderPlugin1.SetExternalScriptEditor(riderPath);
+        SetExternalScriptEditor(riderPath);
         RiderInitializedOnce = true;
       }
-      if (RiderPlugin1.Enabled)
+      if (Enabled)
       {
         InitRiderPlugin();
       }
     }
     
+    public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+    
     private static bool Initialized;
     private static string SlnFile;
     private static readonly ILog Logger = Log.GetLog("RiderPlugin");
+    private static RiderProtocolController ourRiderProtocolController;
 
+    public static LoggingLevel SelectedLoggingLevel { get; private set; }
+
+    public static LoggingLevel SelectedLoggingLevelMainThread
+    {
+      get { return (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1); }
+      set
+      {
+        SelectedLoggingLevel = value;
+        EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
+      }
+    }
+    
+    public static bool SendConsoleToRider
+    {
+      get{return EditorPrefs.GetBool("Rider_SendConsoleToRider", false);}
+      set{EditorPrefs.SetBool("Rider_SendConsoleToRider", value);}
+    }
+    
+    public static bool Enabled
+    {
+      get
+      {
+        var defaultApp = GetExternalScriptEditor();
+        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
+      }
+    }
+    
+    public static string GetExternalScriptEditor()
+    {
+      return EditorPrefs.GetString("kScriptsDefaultApp");
+    }
+
+    public static void SetExternalScriptEditor(string path)
+    {
+      EditorPrefs.SetString("kScriptsDefaultApp", path);
+    }
+    
+    
     private static string GetDefaultApp()
     {
       var allFoundPaths = GetAllRiderPaths().Select(a=>new FileInfo(a).FullName).ToArray();
-      var alreadySetPath = new FileInfo(RiderPlugin1.GetExternalScriptEditor()).FullName;
+      var alreadySetPath = new FileInfo(GetExternalScriptEditor()).FullName;
       
       if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && !allFoundPaths.Any() ||
           !string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() &&
@@ -178,7 +221,9 @@ namespace Plugins.Editor.JetBrains
     }
 
     private static void InitRiderPlugin()
-    {      
+    {
+      SelectedLoggingLevel = SelectedLoggingLevelMainThread;
+      
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
       var projectName = Path.GetFileName(projectDirectory);
@@ -186,9 +231,18 @@ namespace Plugins.Editor.JetBrains
 
       InitializeEditorInstanceJson(projectDirectory);
       
-      RiderAssetPostprocessor.OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire 
+      RiderAssetPostprocessor.OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
 
+      ourRiderProtocolController = new RiderProtocolController(new RiderLogger(), Application.dataPath, 
+        new MainThreadDispatcher(), 
+        play=>{EditorApplication.isPlaying = play;}, 
+        ()=>
+      {
+        AssetDatabase.Refresh();
+      });
+      UnityLogRegisterCallBack();
       Initialized = true;
+      Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));
     }
 
     private static void AddRiderToRecentlyUsedScriptApp(string userAppPath, string recentAppsKey)
@@ -250,7 +304,7 @@ namespace Plugins.Editor.JetBrains
     [UnityEditor.Callbacks.OnOpenAssetAttribute()]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (!RiderPlugin1.Enabled) 
+      if (!Enabled) 
         return false;
       if (!Initialized)
       {
@@ -278,13 +332,13 @@ namespace Plugins.Editor.JetBrains
 
       SyncSolution(); // added to handle opening file, which was just recently created.
 
-      if (RiderProtocolController.model!=null)
+      if (ourRiderProtocolController.Model!=null)
       {
         var connected = false;
         try
         {
           // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = RiderProtocolController.model.IsClientConnected.Sync(RdVoid.Instance,
+          connected = ourRiderProtocolController.Model.IsClientConnected.Sync(RdVoid.Instance,
             new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
         }
         catch (Exception)
@@ -296,7 +350,7 @@ namespace Plugins.Editor.JetBrains
           int col = 0;
           Logger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, col);
           //var task = 
-          RiderProtocolController.model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
+          ourRiderProtocolController.Model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
           ActivateWindow();
           //task.Result.Advise(); todo: fallback to CallRider, if returns false
           return true;
@@ -387,6 +441,63 @@ namespace Plugins.Editor.JetBrains
       });
       return process;
     }
+    
+    private static void UnityLogRegisterCallBack()
+    {
+      var eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
+      if (eventInfo != null)
+      {
+        eventInfo.AddEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
+        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
+        {
+          eventInfo.RemoveEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
+        });
+      }
+      else
+      {
+#pragma warning disable 612, 618
+        Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
+#pragma warning restore 612, 618
+        
+      }
+    }
+    
+    private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
+    {
+      if (SendConsoleToRider)
+      {
+        if (ourRiderProtocolController == null)
+          return;
+        if (ourRiderProtocolController.myProtocol == null)
+          return;
+        // use Protocol to pass log entries to Rider
+        ourRiderProtocolController.myProtocol.Scheduler.InvokeOrQueue(() =>
+        {
+          if (ourRiderProtocolController.Model != null)
+          {
+            switch (type)
+            {
+              case LogType.Error:
+              case LogType.Exception:
+                SentLogEvent(message, stackTrace, RdLogEventType.Error);
+                break;
+              case LogType.Warning:
+                SentLogEvent(message, stackTrace, RdLogEventType.Warning);
+                break;
+              default:
+                SentLogEvent(message, stackTrace, RdLogEventType.Message);
+                break;
+            }
+          }
+        });
+      }
+    }
+
+    private static void SentLogEvent(string message, string stackTrace, RdLogEventType type)
+    {
+      if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
+        ourRiderProtocolController.Model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(type, message, stackTrace));
+    }
 
     // The default "Open C# Project" menu item will use the external script editor to load the .sln
     // file, but unless Unity knows the external script editor can properly load solutions, it will
@@ -407,7 +518,7 @@ namespace Plugins.Editor.JetBrains
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     static bool ValidateMenuOpenProject()
     {
-      return RiderPlugin1.Enabled;
+      return Enabled;
     }
 
     /// <summary>
@@ -440,14 +551,14 @@ namespace Plugins.Editor.JetBrains
         var alts = alternatives.Select(s => s.Replace("/", ":"))
           .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
         RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
-        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), RiderPlugin1.Enabled))
+        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), Enabled))
         {
-          RiderPlugin1.SetExternalScriptEditor(RiderPath);
+          SetExternalScriptEditor(RiderPath);
           EditorGUILayout.HelpBox("Unckecking will restore default external editor.", MessageType.None);
         }
         else
         {
-          RiderPlugin1.SetExternalScriptEditor(string.Empty);
+          SetExternalScriptEditor(string.Empty);
           EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
         }
       }
@@ -478,14 +589,13 @@ namespace Plugins.Editor.JetBrains
 
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
-      RiderPlugin1.SelectedLoggingLevelMainThread = (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg), RiderPlugin1.SelectedLoggingLevelMainThread);
+      SelectedLoggingLevelMainThread = (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg), SelectedLoggingLevelMainThread);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
-
-      RiderPlugin1.SendConsoleToRider =
+      SendConsoleToRider =
         EditorGUILayout.Toggle(
           new GUIContent("Send output from Unity to Rider.",
-            help), RiderPlugin1.SendConsoleToRider);
+            help), SendConsoleToRider);
       
       EditorGUI.EndChangeCheck();
 

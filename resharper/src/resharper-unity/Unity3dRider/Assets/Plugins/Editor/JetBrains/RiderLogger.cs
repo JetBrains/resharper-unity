@@ -3,13 +3,13 @@ using System.IO;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
-namespace JetBrains.Rider.Unity.Editor
+namespace Plugins.Editor.JetBrains
 {
   public class RiderLogger : ILog
   {
     public bool IsEnabled(LoggingLevel level)
     {
-      return level <= RiderPlugin1.SelectedLoggingLevel;
+      return level <= RiderPlugin.SelectedLoggingLevel;
     }
 
     public void Log(LoggingLevel level, string message, Exception exception = null)
@@ -20,7 +20,7 @@ namespace JetBrains.Rider.Unity.Editor
       var text = "[Rider][" + level + "]" + DateTime.Now.ToString("HH:mm:ss:ff") + " " + message;
 
       // using Unity logs causes frequent Unity hangs
-      File.AppendAllText(RiderProtocolController.logPath,Environment.NewLine + text);
+      File.AppendAllText(RiderPlugin.logPath,Environment.NewLine + text);
 //      switch (level)
 //      {
 //        case LoggingLevel.FATAL:
