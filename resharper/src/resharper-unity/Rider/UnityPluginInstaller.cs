@@ -313,52 +313,6 @@ Please switch back to Unity to make plugin file appear in the solution.";
                 return false;
             }
         }
-        
-        HashSet<FileSystemPath> GetAssemblies1()
-        {
-             HashSet<FileSystemPath> visitedAssemblies = new HashSet<FileSystemPath>();
-            var baseDir = FileSystemPath.Parse(AppDomain.CurrentDomain.BaseDirectory);
-            visitedAssemblies.Add(typeof(JetBrains.Platform.RdFramework.IProtocol).Assembly.GetPath());
-            Type type = typeof(JetBrains.Rider.Model.IRiderModelZone);
-            var protocolAssembly = type.Assembly;
-            if (protocolAssembly.GetPath().Directory!=baseDir)
-                throw new Exception(string.Format("protocolAssembly.GetPath().Directory!=FileSystemPath.Parse(baseDir) {0} {1}", protocolAssembly.GetPath().Directory, baseDir));
-            visitedAssemblies.Add(protocolAssembly.GetPath());
-            var assemblyNames = protocolAssembly.GetReferencedAssemblies();
-            
-            var dllInBinDir = baseDir.GetChildFiles("*.dll");
-            var allAssembliesInTheAppDomain = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var assemblyName in assemblyNames)
-            {
-                RecursiveGetAssemblies(assemblyName, dllInBinDir.ToArray(), allAssembliesInTheAppDomain, visitedAssemblies);
-            }
-            foreach (var visitedAssembly in visitedAssemblies)
-            {
-                myLogger.Verbose(visitedAssembly.FullPath);    
-            }
-            myLogger.Verbose(visitedAssemblies.Count.ToString());
-            return visitedAssemblies;
-        }
-        
-        private void RecursiveGetAssemblies(AssemblyName name, FileSystemPath[] dllInBinDir, Assembly[] allAssembliesInTheAppDomain, HashSet<FileSystemPath> visitedAssemblies)
-        {
-            var lib = dllInBinDir.Where(a => a.NameWithoutExtension.Contains(name.Name)).ToArray();
-            if (lib.Any())
-            {
-                if (visitedAssemblies.Contains(lib.First())) return;
-                visitedAssemblies.Add(lib.First());
-                
-                Assembly assembly = allAssembliesInTheAppDomain.SingleOrDefault(s => s.GetName().Name == name.Name);
-                if (assembly == null) return;
-                
-                var assemblyNames = assembly.GetReferencedAssemblies();
-
-                foreach (var assemblyName in assemblyNames)
-                {
-                    RecursiveGetAssemblies(assemblyName, dllInBinDir, allAssembliesInTheAppDomain, visitedAssemblies);
-                }
-            }
-        }
 
         private void RestoreFromBackup(Dictionary<FileSystemPath, FileSystemPath> backups)
         {
