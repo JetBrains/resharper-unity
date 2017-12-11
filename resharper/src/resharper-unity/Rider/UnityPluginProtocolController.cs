@@ -14,7 +14,6 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl;
-using JetBrains.TextControl.Coords.PositionKinds;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 using Newtonsoft.Json;
@@ -166,6 +165,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                 textControl.Caret.MoveTo((Int32<DocLine>) (args.Line-1), (Int32<DocColumn>) args.Col, CaretVisualPlacement.Generic);
                             }    
                         }
+
+                        var data = mySolution.GetProtocolSolution().CustomData.Data;
+                        if (data.ContainsKey("UNITY_ActivateRider"))
+                            data["UNITY_ActivateRider"] = "true";
+                        else
+                            data.Add("UNITY_ActivateRider", "true");
                         return true;
                     });
             }
