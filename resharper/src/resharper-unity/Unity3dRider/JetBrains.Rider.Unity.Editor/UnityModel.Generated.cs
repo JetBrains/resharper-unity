@@ -1,19 +1,10 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
 using JetBrains.Annotations;
-
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.RdFramework.Text;
-
-using JetBrains.Util;
-using JetBrains.Util.PersistentMap;
 using JetBrains.Util.Logging;
 using Lifetime = JetBrains.DataFlow.Lifetime;
 

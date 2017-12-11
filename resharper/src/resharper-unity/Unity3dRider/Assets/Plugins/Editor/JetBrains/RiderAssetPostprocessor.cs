@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using UnityEditor;
 using UnityEngine;
 using System.Reflection;
+using JetBrains.Rider.Unity.Editor;
 using JetBrains.Util.Logging;
 
 namespace Plugins.Editor.JetBrains

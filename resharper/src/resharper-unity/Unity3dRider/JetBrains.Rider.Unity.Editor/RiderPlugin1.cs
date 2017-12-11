@@ -2,10 +2,10 @@
 using JetBrains.Util;
 using UnityEditor;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   [InitializeOnLoad]
-  public static partial class RiderPlugin1
+  public static class RiderPlugin1
   {
     static RiderPlugin1()
     {

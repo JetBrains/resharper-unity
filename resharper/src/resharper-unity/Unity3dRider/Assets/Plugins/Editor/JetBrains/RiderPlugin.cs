@@ -5,6 +5,7 @@ using System.Linq;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.Model;
+using JetBrains.Rider.Unity.Editor;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
@@ -73,7 +74,7 @@ namespace Plugins.Editor.JetBrains
           if (newPathLnks.Any())
           {
             var newPaths = newPathLnks
-              .Select(newPathLnk => new FileInfo(RiderPlugin1.ShortcutResolver.Resolve(newPathLnk.FullName)))
+              .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
               .Where(fi => File.Exists(fi.FullName))
               .ToArray()
               .OrderByDescending(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
@@ -349,14 +350,14 @@ namespace Plugins.Editor.JetBrains
           if (process != null)
           {
             // Collect top level windows
-            var topLevelWindows = RiderPlugin1.User32Dll.GetTopLevelWindowHandles();
+            var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
             // Get process main window title
-            var windowHandle = topLevelWindows.FirstOrDefault(hwnd => RiderPlugin1.User32Dll.GetWindowProcessId(hwnd) == process.Id);
+            var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
             Logger.Verbose("ActivateWindow: {0} {1}", process.Id, windowHandle);
             if (windowHandle != IntPtr.Zero)
             {
               //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
-              RiderPlugin1.User32Dll.SetForegroundWindow(windowHandle);
+              User32Dll.SetForegroundWindow(windowHandle);
             }
           }
         }

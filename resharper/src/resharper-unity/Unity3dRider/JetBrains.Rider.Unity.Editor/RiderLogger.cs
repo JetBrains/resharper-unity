@@ -3,7 +3,7 @@ using System.IO;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   public class RiderLogger : ILog
   {

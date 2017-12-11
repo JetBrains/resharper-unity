@@ -7,8 +7,8 @@
     <ProjectGuid>{9CEEAB55-8151-4B06-88F4-5597B75CA47F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Plugins.Editor.JetBrains</RootNamespace>
-    <AssemblyName>ProtocolController</AssemblyName>
+    <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
+    <AssemblyName>JetBrains.Rider.Unity.Editor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>6</LangVersion>
@@ -58,7 +58,7 @@
     <Compile Include="ShortcutResolver.cs" />
     <Compile Include="User32Dll.cs" />
     <Compile Include="RiderProtocolController.cs" />
-    <Compile Include="RiderPlugin.cs" />
+    <Compile Include="RiderPlugin1.cs" />
     <Compile Include="UnityModel.Generated.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

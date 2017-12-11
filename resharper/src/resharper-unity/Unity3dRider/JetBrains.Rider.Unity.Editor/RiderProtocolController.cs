@@ -1,24 +1,20 @@
 ﻿using System;
 using System.IO;
-using UnityEditor;
 using System.Reflection;
-using JetBrains.Platform.RdFramework.Tasks;
-using JetBrains.Platform.RdFramework.Util;
 using System.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
+using JetBrains.Platform.RdFramework.Tasks;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
-using Plugins.Editor.JetBrains;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
-using ILog = JetBrains.Util.Logging.ILog;
-using IScheduler = JetBrains.Platform.RdFramework.IScheduler;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   [InitializeOnLoad]
   public static class RiderProtocolController

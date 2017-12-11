@@ -1,7 +1,13 @@
 .idea/*
+JetBrains.Rider.Unity.Editor/.idea/*
 _ReSharper.Caches*
 *.csproj
+*.sln
+*.suo
 *.meta
+
+!JetBrains.Rider.Unity.Editor/**/*.sln
+!JetBrains.Rider.Unity.Editor/**/*.csproj
 
 Library/*
 !Library/resharper-unity-libs/**/*
@@ -9,8 +15,6 @@ Library/*
 ProjectSettings/*
 obj/*
 Temp/*
-*.sln
-!Full.sln
-!ProtocolController/**/*.csproj
-*.suo
+
 Assets/Plugins/Editor/JetBrains/Unity3DRider.cs
+Assets/Plugins/Editor/JetBrains/*.pdb
