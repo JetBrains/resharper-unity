@@ -245,8 +245,24 @@ task detectMSBuild {
     }
 }
 
+task buildProtocol {
+    dependsOn detectMSBuild
+    group = backendGroup
+    description = 'Build buildProtocol. Runs MSBuild and creates binaries.'
+
+    doLast {
+        def projectOrSolution = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/JetBrains.Rider.Unity.Editor/JetBrains.Rider.Unity.Editor.sln")
+        assert projectOrSolution.isFile()
+
+        exec {
+            executable = msbuild.path
+            args = [ projectOrSolution.path]
+        }
+    }
+}
+
 task runMSBuild {
-    dependsOn restorePackages, updatePackagingPropsVersion, mergeUnity3DRider, detectMSBuild
+    dependsOn restorePackages, updatePackagingPropsVersion, mergeUnity3DRider, detectMSBuild, buildProtocol
     group = backendGroup
     description = 'Runs MSBuild and creates binaries.'
 
