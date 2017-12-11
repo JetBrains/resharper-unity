@@ -14,7 +14,6 @@ using JetBrains.Util;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
-using Newtonsoft.Json;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -254,7 +253,6 @@ Please switch back to Unity to make plugin file appear in the solution.";
         private bool DoCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
         {
             installedPath = null;
-            var pluginDirectory = installation.PluginDirectory;
 
             var originPaths = new List<FileSystemPath>();
             originPaths.AddRange(installation.ExistingFiles);
@@ -275,33 +273,28 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
             try
             {
-                var path = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
-
-                var resourceName = ourResourceNamespace + UnityPluginDetector.MergedPluginFile;
-                using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+                Tuple<FileSystemPath, string>[] installs =
                 {
-                    if (resourceStream == null)
-                    {
-                        myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
+                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile), ourResourceNamespace + UnityPluginDetector.MergedPluginFile),
+                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Annotations.dll"), ourResourceNamespace + "JetBrains.Annotations.dll"),
+                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Platform.RdCore35.dll"), ourResourceNamespace + "JetBrains.Platform.RdCore35.dll"),
+                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Platform.RdFramework35.dll"), ourResourceNamespace + "JetBrains.Platform.RdFramework35.dll"),
+                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Rider.Unity.Editor.dll"), ourResourceNamespace + "JetBrains.Rider.Unity.Editor.dll")
+                };               
 
-                        RestoreFromBackup(backups);
-
-                        return false;
-                    }
-
-                    using (var fileStream = path.OpenStream(FileMode.OpenOrCreate))
-                    {
-                        resourceStream.CopyTo(fileStream);
-                    }
-                }
+                foreach (Tuple<FileSystemPath, string> install in installs)
+                {
+                    if (!InstallFromResourceWithBackup(install.Item2, backups, install.Item1)) return false;    
+                } 
+                
+                
                 
                 foreach (var backup in backups)
                 {
                     backup.Value.DeleteFile();
                 }
 
-                installedPath = path;
-                
+                installedPath = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
                 return true;
             }
             catch (Exception e)
@@ -312,6 +305,28 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
                 return false;
             }
+        }
+
+        private bool InstallFromResourceWithBackup(string resourceName, Dictionary<FileSystemPath, FileSystemPath> backups, FileSystemPath path)
+        {
+            using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+            {
+                if (resourceStream == null)
+                {
+                    myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
+
+                    RestoreFromBackup(backups);
+
+                    return false;
+                }
+
+                using (var fileStream = path.OpenStream(FileMode.OpenOrCreate))
+                {
+                    resourceStream.CopyTo(fileStream);
+                }
+            }
+
+            return true;
         }
 
         private void RestoreFromBackup(Dictionary<FileSystemPath, FileSystemPath> backups)
