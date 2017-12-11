@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -664,6 +665,108 @@ return SystemInfo.operatingSystemFamily;
     }
 #endif
     #endregion
+    
+    class RiderLogger : ILog
+    {
+      public bool IsEnabled(LoggingLevel level)
+      {
+        return level <= RiderPlugin.SelectedLoggingLevel;
+      }
+
+      public void Log(LoggingLevel level, string message, Exception exception = null)
+      {
+        if (!IsEnabled(level))
+          return;
+
+        var text = "[Rider][" + level + "]" + DateTime.Now.ToString("HH:mm:ss:ff") + " " + message;
+
+        // using Unity logs causes frequent Unity hangs
+        File.AppendAllText(RiderPlugin.logPath,Environment.NewLine + text);
+//      switch (level)
+//      {
+//        case LoggingLevel.FATAL:
+//        case LoggingLevel.ERROR:
+//          Debug.LogError(text);
+//          if (exception != null)
+//            Debug.LogException(exception);
+//          break;
+//        case LoggingLevel.WARN:
+//          Debug.LogWarning(text);
+//          if (exception != null)
+//            Debug.LogException(exception);
+//          break;
+//        case LoggingLevel.INFO:
+//        case LoggingLevel.VERBOSE:
+//          Debug.Log(text);
+//          if (exception != null)
+//            Debug.LogException(exception);
+//          break;
+//        default:
+//          break;
+//      }
+      }
+
+      public string Category { get; private set; }
+    }
+    
+    class MainThreadDispatcher : IScheduler
+    {
+      public MainThreadDispatcher()
+      {
+        EditorApplication.update += DispatchTasks;
+      }
+    
+      /// <summary>
+      /// The queue of tasks that are being requested for the next time DispatchTasks is called
+      /// </summary>
+      private readonly Queue<Action> myTaskQueue = new Queue<Action>();
+
+      /// <summary>
+      /// Dispatches the specified action delegate.
+      /// </summary>
+      /// <param name="action">Action  being requested</param>
+      public void Queue(Action action)
+      {
+        lock (myTaskQueue)
+        {
+          myTaskQueue.Enqueue(action);
+        }
+      }
+
+      /// <summary>
+      /// Dispatches the tasks that has been requested since the last call to this function
+      /// </summary>
+      private void DispatchTasks()
+      {
+        if (IsActive)
+        {
+          lock (myTaskQueue)
+          {
+            foreach (Action task in myTaskQueue)
+            {
+              task();
+            }
+
+            myTaskQueue.Clear();
+          }
+        }
+      }
+
+      /// <summary>
+      /// Indicates whether there are tasks available for dispatching
+      /// </summary>
+      /// <value>
+      /// <c>true</c> if there are tasks available for dispatching; otherwise, <c>false</c>.
+      /// </value>
+      public bool IsActive
+      {
+        get { return myTaskQueue.Count > 0; }
+      }
+      public bool OutOfOrderExecution
+      {
+        get { return false; }
+      }
+    }
   }
 }
 
