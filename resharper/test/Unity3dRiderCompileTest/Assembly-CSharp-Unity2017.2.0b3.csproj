@@ -39,6 +39,18 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Annotations">
+      <HintPath>..\..\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.RdCore35">
+      <HintPath>..\..\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains\JetBrains.Platform.RdCore35.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.RdFramework35">
+      <HintPath>..\..\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains\JetBrains.Platform.RdFramework35.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Rider.Unity.Editor">
+      <HintPath>..\..\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains\JetBrains.Rider.Unity.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
     <Reference Include="System.Core" />
@@ -52,7 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\src\resharper-unity\Unity3dRider\Assets\**\*.cs"/>
+    <Compile Include="..\..\src\resharper-unity\Unity3dRider\Assets\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
