@@ -40,16 +40,13 @@
   </PropertyGroup>
   <ItemGroup>
       <Reference Include="JetBrains.Annotations">
-          <HintPath>..\..\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains\JetBrains.Annotations.dll</HintPath>
+          <HintPath>..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\lib\JetBrains.Annotations.dll</HintPath>
       </Reference>
       <Reference Include="JetBrains.Platform.RdCore35">
-          <HintPath>..\..\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains\JetBrains.Platform.RdCore35.dll</HintPath>
+          <HintPath>..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\lib\JetBrains.Platform.RdCore35.dll</HintPath>
       </Reference>
       <Reference Include="JetBrains.Platform.RdFramework35">
-          <HintPath>..\..\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains\JetBrains.Platform.RdFramework35.dll</HintPath>
-      </Reference>
-      <Reference Include="JetBrains.Rider.Unity.Editor">
-          <HintPath>..\..\src\resharper-unity\Unity3dRider\Assets\Plugins\Editor\JetBrains\JetBrains.Rider.Unity.Editor.dll</HintPath>
+          <HintPath>..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
       </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
@@ -69,7 +66,14 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\JetBrains.Rider.Unity.Editor.csproj">
+            <Project>{9ceeab55-8151-4b06-88f4-5597b75ca47f}</Project>
+            <Name>JetBrains.Rider.Unity.Editor</Name>
+        </ProjectReference>
+    </ItemGroup>
+
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
