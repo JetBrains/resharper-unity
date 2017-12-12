@@ -1,11 +1,19 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
+
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
+using JetBrains.Platform.RdFramework.Text;
+
+using JetBrains.Util;
 using JetBrains.Util.Logging;
+using JetBrains.Util.PersistentMap;
 using Lifetime = JetBrains.DataFlow.Lifetime;
 
 // ReSharper disable RedundantEmptyObjectCreationArgumentList
@@ -26,6 +34,8 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdProperty<bool> Pause { get { return _Pause; }}
     [NotNull] public IRdProperty<bool> Unpause { get { return _Unpause; }}
     [NotNull] public IRdProperty<string> UnityPluginVersion { get { return _UnityPluginVersion; }}
+    [NotNull] public IRdProperty<string> ApplicationPath { get { return _ApplicationPath; }}
+    [NotNull] public IRdProperty<string> ApplicationVersion { get { return _ApplicationVersion; }}
     [NotNull] public IRdProperty<UnityLogModelInitialized> LogModelInitialized { get { return _LogModelInitialized; }}
     [NotNull] public IRdCall<RdVoid, bool> IsClientConnected { get { return _IsClientConnected; }}
     [NotNull] public IRdCall<RdOpenFileArgs, bool> OpenFileLineCol { get { return _OpenFileLineCol; }}
@@ -39,6 +49,8 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdProperty<bool> _Pause;
     [NotNull] private readonly RdProperty<bool> _Unpause;
     [NotNull] private readonly RdProperty<string> _UnityPluginVersion;
+    [NotNull] private readonly RdProperty<string> _ApplicationPath;
+    [NotNull] private readonly RdProperty<string> _ApplicationVersion;
     [NotNull] private readonly RdProperty<UnityLogModelInitialized> _LogModelInitialized;
     [NotNull] private readonly RdCall<RdVoid, bool> _IsClientConnected;
     [NotNull] private readonly RdCall<RdOpenFileArgs, bool> _OpenFileLineCol;
@@ -53,6 +65,8 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdProperty<bool> pause,
       [NotNull] RdProperty<bool> unpause,
       [NotNull] RdProperty<string> unityPluginVersion,
+      [NotNull] RdProperty<string> applicationPath,
+      [NotNull] RdProperty<string> applicationVersion,
       [NotNull] RdProperty<UnityLogModelInitialized> logModelInitialized,
       [NotNull] RdCall<RdVoid, bool> isClientConnected,
       [NotNull] RdCall<RdOpenFileArgs, bool> openFileLineCol,
@@ -66,6 +80,8 @@ namespace JetBrains.Platform.Unity.Model
       if (pause == null) throw new ArgumentNullException("pause");
       if (unpause == null) throw new ArgumentNullException("unpause");
       if (unityPluginVersion == null) throw new ArgumentNullException("unityPluginVersion");
+      if (applicationPath == null) throw new ArgumentNullException("applicationPath");
+      if (applicationVersion == null) throw new ArgumentNullException("applicationVersion");
       if (logModelInitialized == null) throw new ArgumentNullException("logModelInitialized");
       if (isClientConnected == null) throw new ArgumentNullException("isClientConnected");
       if (openFileLineCol == null) throw new ArgumentNullException("openFileLineCol");
@@ -78,6 +94,8 @@ namespace JetBrains.Platform.Unity.Model
       _Pause = pause;
       _Unpause = unpause;
       _UnityPluginVersion = unityPluginVersion;
+      _ApplicationPath = applicationPath;
+      _ApplicationVersion = applicationVersion;
       _LogModelInitialized = logModelInitialized;
       _IsClientConnected = isClientConnected;
       _OpenFileLineCol = openFileLineCol;
@@ -89,6 +107,8 @@ namespace JetBrains.Platform.Unity.Model
       _Pause.OptimizeNested = true;
       _Unpause.OptimizeNested = true;
       _UnityPluginVersion.OptimizeNested = true;
+      _ApplicationPath.OptimizeNested = true;
+      _ApplicationVersion.OptimizeNested = true;
     }
     //secondary constructor
     //statics
@@ -113,18 +133,20 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1004),
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1005),
       new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1006),
-      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1007),
-      new RdCall<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1008),
-      new RdCall<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).Static(1009),
-      new RdEndpoint<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1010),
-      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1011)
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1007),
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1008),
+      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1009),
+      new RdCall<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1010),
+      new RdCall<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).Static(1011),
+      new RdEndpoint<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1012),
+      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1013)
     )
     {
       UnityModel.Register(protocol.Serializers);
       Register(protocol.Serializers);
       Bind(lifetime, protocol, GetType().Name);
       if (Protocol.InitializationLogger.IsTraceEnabled())
-        Protocol.InitializationLogger.Trace ("CREATED toplevel object {0}", this.PrintToString(null));
+        Protocol.InitializationLogger.Trace ("CREATED toplevel object {0}", this.PrintToString());
     }
     //custom body
     //init method
@@ -135,6 +157,8 @@ namespace JetBrains.Platform.Unity.Model
       _Pause.BindEx(lifetime, this, "pause");
       _Unpause.BindEx(lifetime, this, "unpause");
       _UnityPluginVersion.BindEx(lifetime, this, "unityPluginVersion");
+      _ApplicationPath.BindEx(lifetime, this, "applicationPath");
+      _ApplicationVersion.BindEx(lifetime, this, "applicationVersion");
       _LogModelInitialized.BindEx(lifetime, this, "logModelInitialized");
       _IsClientConnected.BindEx(lifetime, this, "isClientConnected");
       _OpenFileLineCol.BindEx(lifetime, this, "openFileLineCol");
@@ -149,6 +173,8 @@ namespace JetBrains.Platform.Unity.Model
       _Pause.IdentifyEx(ids);
       _Unpause.IdentifyEx(ids);
       _UnityPluginVersion.IdentifyEx(ids);
+      _ApplicationPath.IdentifyEx(ids);
+      _ApplicationVersion.IdentifyEx(ids);
       _LogModelInitialized.IdentifyEx(ids);
       _IsClientConnected.IdentifyEx(ids);
       _OpenFileLineCol.IdentifyEx(ids);
@@ -168,6 +194,8 @@ namespace JetBrains.Platform.Unity.Model
         printer.Print("pause = "); _Pause.PrintEx(printer); printer.Println();
         printer.Print("unpause = "); _Unpause.PrintEx(printer); printer.Println();
         printer.Print("unityPluginVersion = "); _UnityPluginVersion.PrintEx(printer); printer.Println();
+        printer.Print("applicationPath = "); _ApplicationPath.PrintEx(printer); printer.Println();
+        printer.Print("applicationVersion = "); _ApplicationVersion.PrintEx(printer); printer.Println();
         printer.Print("logModelInitialized = "); _LogModelInitialized.PrintEx(printer); printer.Println();
         printer.Print("isClientConnected = "); _IsClientConnected.PrintEx(printer); printer.Println();
         printer.Print("openFileLineCol = "); _OpenFileLineCol.PrintEx(printer); printer.Println();
