@@ -9,6 +9,7 @@ import com.jetbrains.rider.util.idea.LifetimedComponent
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.set
+import org.codehaus.jettison.json.JSONObject
 
 class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by LifetimedComponent(project) {
     val logger = Logger.getInstance(ProjectCustomDataHost::class.java)
@@ -35,9 +36,9 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
         project.solution.customData.data.advise(componentLifetime) { item ->
             if (item.key == "UNITY_LogEntry" && item.newValueOpt!=null) {
                 logger.info(item.key+" "+ item.newValueOpt)
-
-                // pass further
-                logSignal.fire(RdLogEvent(RdLogEventType.Error, item.newValueOpt!!,"test"))
+                
+                val jsonObj = JSONObject(item.newValueOpt)
+                logSignal.fire(RdLogEvent(RdLogEventType.Error, jsonObj.getString("Message"), jsonObj.getString("Stacktrace")))
             }
         }
     }
