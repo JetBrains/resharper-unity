@@ -18,3 +18,4 @@ Temp/*
 
 Assets/Plugins/Editor/JetBrains/Unity3DRider.cs
 Assets/Plugins/Editor/JetBrains/*.pdb
+Assets/Plugins/Editor/JetBrains/*.xml

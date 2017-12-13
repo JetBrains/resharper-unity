@@ -670,7 +670,7 @@ return SystemInfo.operatingSystemFamily;
     {
       public bool IsEnabled(LoggingLevel level)
       {
-        return level <= RiderPlugin.SelectedLoggingLevel;
+        return level <= SelectedLoggingLevel;
       }
 
       public void Log(LoggingLevel level, string message, Exception exception = null)
@@ -681,7 +681,7 @@ return SystemInfo.operatingSystemFamily;
         var text = "[Rider][" + level + "]" + DateTime.Now.ToString("HH:mm:ss:ff") + " " + message;
 
         // using Unity logs causes frequent Unity hangs
-        File.AppendAllText(RiderPlugin.logPath,Environment.NewLine + text);
+        File.AppendAllText(logPath,Environment.NewLine + text);
 //      switch (level)
 //      {
 //        case LoggingLevel.FATAL:

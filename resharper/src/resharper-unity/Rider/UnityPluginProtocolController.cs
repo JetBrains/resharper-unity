@@ -73,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             watcher.EnableRaisingEvents = true; // Begin watching.
 
-            CreateProtocol(protocolInstancePath);
+            CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
         }
 
         private void SubscribeToPlay(Solution solution)
@@ -116,10 +116,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
-            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=>CreateProtocol(protocolInstancePath));
+            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=>CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
-        private void CreateProtocol(FileSystemPath protocolInstancePath)
+        private void CreateProtocol(FileSystemPath protocolInstancePath, Solution solution)
         {
             int port;
             try
@@ -150,29 +150,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     myLogger.Info($"UnityModel.ServerConnected {b}");
                 });
                 UnityModel.IsClientConnected.Set(rdVoid => true);
+                SetOrCreateDataKeyValuePair(solution, "UNITY_SessionInitialized", "true");
                 
-                SubscribeToLogs();
-                
-                UnityModel.OpenFileLineCol.Set(args =>
-                    {
-                        using (ReadLockCookie.Create())
-                        {
-                            var textControl = mySolution.GetComponent<IEditorManager>().OpenFile(FileSystemPath.Parse(args.Path), OpenFileOptions.DefaultActivate);
-                            if (textControl == null) 
-                                return false;
-                            if (args.Line > 0 || args.Col > 0)
-                            {
-                                textControl.Caret.MoveTo((Int32<DocLine>) (args.Line-1), (Int32<DocColumn>) args.Col, CaretVisualPlacement.Generic);
-                            }    
-                        }
-
-                        var data = mySolution.GetProtocolSolution().CustomData.Data;
-                        if (data.ContainsKey("UNITY_ActivateRider"))
-                            data["UNITY_ActivateRider"] = "true";
-                        else
-                            data.Add("UNITY_ActivateRider", "true");
-                        return true;
-                    });
+                SubscribeToLogs(solution);
+                SubscribeToOpenFile(solution);
             }
             catch (Exception ex)
             {
@@ -180,22 +161,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        private void SubscribeToLogs()
+        private void SubscribeToOpenFile(Solution solution)
         {
-            UnityModel.LogModelInitialized.Advise(myLifetime, (modelInitialized) =>
+            UnityModel.OpenFileLineCol.Set(args =>
+            {
+                using (ReadLockCookie.Create())
+                {
+                    var textControl = mySolution.GetComponent<IEditorManager>()
+                        .OpenFile(FileSystemPath.Parse(args.Path), OpenFileOptions.DefaultActivate);
+                    if (textControl == null)
+                        return false;
+                    if (args.Line > 0 || args.Col > 0)
+                    {
+                        textControl.Caret.MoveTo((Int32<DocLine>) (args.Line - 1), (Int32<DocColumn>) args.Col,
+                            CaretVisualPlacement.Generic);
+                    }
+                }
+
+                SetOrCreateDataKeyValuePair(solution, "UNITY_ActivateRider", "true");
+                return true;
+            });
+        }
+
+        private static void SetOrCreateDataKeyValuePair(Solution solution, string key, string value)
+        {
+            var data = solution.CustomData.Data;
+            if (data.ContainsKey(key))
+                data[key] = value;
+            else
+                data.Add(key, value);
+        }
+
+        private void SubscribeToLogs(Solution solution)
+        {
+            UnityModel.LogModelInitialized.Advise(myLifetime, modelInitialized =>
             {
                 modelInitialized.Log.Advise(myLifetime, entry =>
                 {
-                    switch (entry.Type)
-                    {
-                        case RdLogEventType.Error:
-                        case RdLogEventType.Warning:
-                            myLogger.Warn(entry.Message + Environment.NewLine + entry.StackTrace);
-                            break;
-                        case RdLogEventType.Message:
-                            myLogger.Info(entry.Message + Environment.NewLine + entry.StackTrace);
-                            break;
-                    }
+                    myLogger.Verbose(entry.Type +" "+ entry.Message +" "+ Environment.NewLine +" "+ entry.StackTrace);
+                    SetOrCreateDataKeyValuePair(solution, "UNITY_LogEntry", JsonConvert.SerializeObject(entry));
                 });
             });
         }
