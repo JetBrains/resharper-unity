@@ -4,12 +4,6 @@
         <name>JetBrains.Platform.RdFramework35</name>
     </assembly>
     <members>
-        <member name="M:JetBrains.Platform.RdFramework.WireBase.SendPkg(JetBrains.Util.PersistentMap.UnsafeWriter.Cookie)">
-            <summary>
-            Actual send package: len(4 bytes) + id (8 bytes) + payload
-            </summary>
-            <param name="pkg">Package to transmit</param>
-        </member>
         <member name="M:JetBrains.Platform.RdFramework.Impl.SocketWire.Base.ReadArrayFromSocket(System.Byte[],System.Byte[],System.Int32@,System.Int32@)">
             <summary>
             Reads from <see cref="F:JetBrains.Platform.RdFramework.Impl.SocketWire.Base.mySocket"/> into <see cref="!:res"/>. Uses intermediate array <see cref="!:buffer"/> with boundaries of already read.
@@ -23,6 +17,12 @@
             <param name="lo">lower bound of intermediate buffer</param>
             <param name="hi">higher bound of intermediate buffer</param>
             <returns>'True' in case of successufull read. 'False' - socket was shutted down and <see cref="!:hi"/>-<see cref="!:lo"/> is less than <see cref="!:res"/>.length (bufferred content is not enough).</returns>      
+        </member>
+        <member name="M:JetBrains.Platform.RdFramework.WireBase.SendPkg(JetBrains.Util.PersistentMap.UnsafeWriter.Cookie)">
+            <summary>
+            Actual send package: len(4 bytes) + id (8 bytes) + payload
+            </summary>
+            <param name="pkg">Package to transmit</param>
         </member>
         <member name="M:JetBrains.Platform.RdFramework.Text.RdTextBuffer.#ctor(System.String,JetBrains.Platform.RdFramework.OriginKind)">
             <summary>
