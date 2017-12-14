@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.log.ui
+package com.jetbrains.rider.plugins.unity.logView.ui
 
 import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.impl.ConsoleViewImpl

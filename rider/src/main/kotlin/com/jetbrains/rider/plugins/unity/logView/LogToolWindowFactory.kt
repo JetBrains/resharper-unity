@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.log
+package com.jetbrains.rider.plugins.unity.logView
 
 import com.intellij.ide.CommonActionsManager
 import com.intellij.ide.actions.CloseTabToolbarAction
@@ -18,7 +18,7 @@ import com.intellij.ui.content.ContentManager
 import com.intellij.ui.content.ContentManagerAdapter
 import com.intellij.ui.content.ContentManagerEvent
 import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
-import com.jetbrains.rider.plugins.unity.log.ui.LogPanel
+import com.jetbrains.rider.plugins.unity.logView.ui.LogPanel
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.util.idea.ILifetimedComponent
 import com.jetbrains.rider.util.idea.LifetimedComponent

@@ -1,9 +1,9 @@
-package com.jetbrains.rider.plugins.unity.log
+package com.jetbrains.rider.plugins.unity.logView
 
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.content.Content
 import com.jetbrains.rider.plugins.unity.RdLogEventType
-import com.jetbrains.rider.plugins.unity.log.ui.LogPanel
+import com.jetbrains.rider.plugins.unity.logView.ui.LogPanel
 import com.jetbrains.rider.util.idea.getLogger
 
 class LogToolWindowContext(private val toolWindow: ToolWindow,

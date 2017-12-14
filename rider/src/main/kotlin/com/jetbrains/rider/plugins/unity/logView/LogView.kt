@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.log
+package com.jetbrains.rider.plugins.unity.logView
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationGroup
@@ -7,7 +7,6 @@ import com.intellij.notification.Notifications
 import com.intellij.openapi.components.AbstractProjectComponent
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.util.idea.ILifetimedComponent
@@ -54,11 +53,10 @@ class LogView(private val project: Project,
             }
         }
 
-
         projectCustomDataHost.logSignal.advise(componentLifetime) { message ->
             val context = logToolWindowFactory.getOrCreateContext()
 
-                context.addOutputMessage(message.message + "\n"+message.stackTrace+"\n", message.type)
+            context.addOutputMessage(message.message + "\n"+message.stackTrace+"\n", message.type)
         }
     }
 
