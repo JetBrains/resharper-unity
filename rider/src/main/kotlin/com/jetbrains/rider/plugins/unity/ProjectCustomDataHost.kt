@@ -42,8 +42,9 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
             }
         }
     }
-
-    fun CallBackendRefresh(project: Project) {
-        project.solution.customData.data["UNITY_Refresh"] = "true";
+    companion object {
+        fun CallBackendRefresh(project: Project) {
+            project.solution.customData.data["UNITY_Refresh"] = "true";
+        }
     }
 }
