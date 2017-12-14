@@ -7,8 +7,8 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
-import com.intellij.util.PathUtil
 import com.jetbrains.rider.projectView.solution
+import java.nio.file.Paths
 
 class UnityDocumentationProvider : DocumentationProvider {
 
@@ -57,7 +57,7 @@ class UnityDocumentationProvider : DocumentationProvider {
                 // %PROGRAMFILES(X86)% only exists if we're 64 bit, and is always in the form `C:\Program Files (x86)`
                 // %PROGRAMFILESW6432% is always in the form `C:\Program Files`
                 val envvar = System.getenv("ProgramW6432") ?: System.getenv("ProgramFiles")
-                PathUtil.toSystemDependentName(envvar) + "/Unity/Editor/Data/Documentation/en"
+                Paths.get(envvar).resolve("/Unity/Editor/Data/Documentation/en").toString()
             }
             SystemInfo.isMac -> "/Applications/Unity/Documentation/en"
             SystemInfo.isLinux -> {
