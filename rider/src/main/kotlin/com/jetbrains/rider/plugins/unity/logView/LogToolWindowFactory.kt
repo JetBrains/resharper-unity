@@ -18,6 +18,7 @@ import com.intellij.ui.content.ContentManager
 import com.intellij.ui.content.ContentManagerAdapter
 import com.intellij.ui.content.ContentManagerEvent
 import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
+import com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction
 import com.jetbrains.rider.plugins.unity.logView.ui.LogPanel
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.util.idea.ILifetimedComponent
@@ -74,6 +75,7 @@ class LogToolWindowFactory(private val project: Project,
 
     private fun createToolbarPanel(buildResultPanel: LogPanel, contentManager: ContentManager): JPanel {
         val buildActionGroup = DefaultActionGroup().apply {
+            add(RefreshInUnityAction())
             //add(BuildSolutionAction())
             //add(ToggleEventsViewAction(buildResultPanel))
             //add(ViewBuildLogFileAction())
