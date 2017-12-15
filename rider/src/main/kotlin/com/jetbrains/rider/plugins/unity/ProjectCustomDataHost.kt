@@ -45,6 +45,7 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
     }
     companion object {
         fun CallBackendRefresh(project: Project) {
+            project.solution.customData.data.remove("UNITY_Refresh")
             project.solution.customData.data["UNITY_Refresh"] = "true";
         }
     }

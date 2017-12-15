@@ -57,13 +57,12 @@ namespace JetBrains.Rider.Unity.Editor
           
           Model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
 
-          Model.Refresh.Set((lifetime1, vo) =>
+          Model.Refresh.SetVoid(() =>
           {
             logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
             mainThreadScheduler.Queue(refresh);
-            return new RdTask<RdVoid>();
           });
-               
+            
           logger.Log(LoggingLevel.VERBOSE, "model.ServerConnected true.");
           Model.ServerConnected.SetValue(true);
         }

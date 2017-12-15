@@ -234,13 +234,13 @@ namespace Plugins.Editor.JetBrains
       
       RiderAssetPostprocessor.OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
 
-      ourRiderProtocolController = new RiderProtocolController(new RiderLogger(), Application.dataPath, 
+      ourRiderProtocolController = new RiderProtocolController(
+        new RiderLogger(), 
+        Application.dataPath, 
         new MainThreadDispatcher(), 
-        play=>{EditorApplication.isPlaying = play;}, 
-        ()=>
-      {
-        AssetDatabase.Refresh();
-      });
+        play=> {EditorApplication.isPlaying = play;}, 
+        ()=> {AssetDatabase.Refresh();}
+        );
       UnityLogRegisterCallBack();
       Initialized = true;
       Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));

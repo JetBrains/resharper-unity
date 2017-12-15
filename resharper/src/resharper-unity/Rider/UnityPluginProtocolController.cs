@@ -85,31 +85,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         if (e.NewValue != e.OldValue)
                         {
-                            myLogger.Verbose($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
+                            myLogger.Info($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
                             UnityModel?.Play.SetValue(e.NewValue.ToLower() == "true");
                         }
                     }
                 });
-
         }
 
         private void SubscribeRefresh(Solution solution)
         {
             solution.CustomData.Data.Advise(myLifetime, e =>
             {
-                if (e.Key == "UNITY_Refresh")
+                if (e.Key == "UNITY_Refresh" && e.NewValue!=e.OldValue && e.NewValue.ToLower() == "true")
                 {
-                    if (e.NewValue != e.OldValue && e.NewValue.ToLower() == "true")
-                    {
-                        myLogger.Verbose($"UNITY_Refresh {e.NewValue} came from frontend.");
-
-                        if (UnityModel != null && UnityModel.ServerConnected.HasValue() &&
-                            UnityModel.ServerConnected.Value)
-                            UnityModel.Refresh.Start(RdVoid.Instance);
-                        solution.CustomData.Data["UNITY_Refresh"] = "false";
-                    }
+                    myLogger.Info($"UNITY_Refresh {e.NewValue} came from frontend.");
+                    UnityModel?.Refresh.Start(RdVoid.Instance);
                 }
-                
             });
         }
 
