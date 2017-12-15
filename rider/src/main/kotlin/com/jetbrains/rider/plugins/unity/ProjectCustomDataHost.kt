@@ -38,7 +38,8 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
                 logger.info(item.key+" "+ item.newValueOpt)
                 
                 val jsonObj = JSONObject(item.newValueOpt)
-                logSignal.fire(RdLogEvent(RdLogEventType.Error, jsonObj.getString("Message"), jsonObj.getString("StackTrace")))
+                val type = RdLogEventType.values().get(jsonObj.getInt("Type"))
+                logSignal.fire(RdLogEvent(type, jsonObj.getString("Message"), jsonObj.getString("StackTrace")))
             }
         }
     }
