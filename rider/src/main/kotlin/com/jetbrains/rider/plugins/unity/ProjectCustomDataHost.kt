@@ -3,6 +3,8 @@ package com.jetbrains.rider.plugins.unity
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.ILifetimedComponent
 import com.jetbrains.rider.util.idea.LifetimedComponent
@@ -46,7 +48,7 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
     companion object {
         fun CallBackendRefresh(project: Project) {
             project.solution.customData.data.remove("UNITY_Refresh")
-            project.solution.customData.data["UNITY_Refresh"] = "true";
+            project.solution.customData.data["UNITY_Refresh"] = "true"
         }
     }
 }

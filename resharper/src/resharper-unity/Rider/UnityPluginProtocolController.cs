@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
@@ -11,6 +12,7 @@ using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Host.Features.FileSystem;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl;
@@ -48,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void Init()
         {            
             SubscribeToPlay(mySolution.GetProtocolSolution());
-            SubscribeRefresh(mySolution.GetProtocolSolution());
+            SubscribeRefresh(mySolution.GetProtocolSolution(), mySolution.SolutionFilePath.Directory);
 
             var protocolInstancePath = mySolution.SolutionFilePath.Directory.Combine(
                     "Library/ProtocolInstance.json"); // todo: consider non-Unity Solution with Unity-generated projects
@@ -92,14 +94,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 });
         }
 
-        private void SubscribeRefresh(Solution solution)
+        private void SubscribeRefresh(Solution solution, FileSystemPath solFolder)
         {
             solution.CustomData.Data.Advise(myLifetime, e =>
             {
-                if (e.Key == "UNITY_Refresh" && e.NewValue!=e.OldValue && e.NewValue.ToLower() == "true")
+                if (e.Key == "UNITY_Refresh" && e.NewValue!=e.OldValue && e.NewValue!=null && e.NewValue.ToLower() == "true")
                 {
                     myLogger.Info($"UNITY_Refresh {e.NewValue} came from frontend.");
-                    UnityModel?.Refresh.Start(RdVoid.Instance);
+                    var task = UnityModel?.Refresh.Start(RdVoid.Instance);
+                    Lifetimes.Using(lt =>
+                    {
+                        var list = new List<string>();
+                        list.Add(solFolder.FullPath);
+                        task?.Result.Advise(lt, result =>
+                        {
+                            solution.FileSystemModel.RefreshPaths.Start(new RdRefreshRequest(list,true));
+                        });
+                        });
+                    ;
                 }
             });
         }
