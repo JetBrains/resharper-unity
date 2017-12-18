@@ -759,24 +759,23 @@ return SystemInfo.operatingSystemFamily;
 //        File.AppendAllText(logPath, DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + "DispatchTasks"+Environment.NewLine);
         //RiderPlugin.Log(LoggingLevel.INFO, "DispatchTasks");
                            
-          lock (myTaskQueue)
-          {
-            foreach (Action task in myTaskQueue)
-            {
+        if (myTaskQueue.Count==0)
+          return;
+            while (true)
+            {    
               try
               {
+                if (myTaskQueue.Count==0)
+                  return;
+                var task = myTaskQueue.Dequeue();
                 task();
               }
               catch (Exception e)
               {
                 Log.GetLog<MainThreadDispatcher>().Error(e);
               }
-              
             }
-
-            myTaskQueue.Clear();
-          }
-        
+          
       }
 
       /// <summary>

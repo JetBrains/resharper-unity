@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             watcher.EnableRaisingEvents = true; // Begin watching.
 
-            CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
+            //CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
         }
 
         private void SubscribeToPlay(Solution solution)
@@ -124,6 +124,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=>CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
+        private Protocol myProtocol;
+
         private void CreateProtocol(FileSystemPath protocolInstancePath, Solution solution)
         {
             int port;
@@ -138,19 +140,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
             
-            myLogger.Verbose($"UNITY_Port {port}.");
+            myLogger.Info($"UNITY_Port {port}.");
 
             try
             {
+                if (myProtocol!=null) // todo: remove this after reconnect will be working in protocol
+                    return;
+                
                 myLogger.Info("Create protocol...");
                 var lifetime = SessionLifetimes.Next();
-                var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicClient), myDispatcher,
+                myProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicClient), myDispatcher,
                     creatingProtocol =>
                     {
                         myLogger.Info("Creating SocketWire with port = {0}", port);
                         return new SocketWire.Client(lifetime, creatingProtocol, port, "UnityClient");
                     });
-                UnityModel = new UnityModel(lifetime, protocol);
+                UnityModel = new UnityModel(lifetime, myProtocol);
                 UnityModel.ServerConnected.Advise(lifetime, b =>
                 {
                     myLogger.Info($"UnityModel.ServerConnected {b}");
