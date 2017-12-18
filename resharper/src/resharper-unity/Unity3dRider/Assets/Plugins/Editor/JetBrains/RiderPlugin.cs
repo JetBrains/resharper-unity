@@ -234,8 +234,8 @@ namespace Plugins.Editor.JetBrains
       
       RiderAssetPostprocessor.OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
 
+      Log.DefaultFactory = new RiderLoggerFactory();
       ourRiderProtocolController = new RiderProtocolController(
-        new RiderLogger(), 
         Application.dataPath, 
         new MainThreadDispatcher(), 
         play=> {EditorApplication.isPlaying = play;}, 
@@ -665,9 +665,22 @@ return SystemInfo.operatingSystemFamily;
     }
 #endif
     #endregion
+
+    public class RiderLoggerFactory : ILogFactory
+    {
+      public ILog GetLog(string category)
+      {
+        return new RiderLogger(category);
+      }
+    }
     
     class RiderLogger : ILog
     {
+      public RiderLogger(string category)
+      {
+        Category = category;
+      }
+
       public bool IsEnabled(LoggingLevel level)
       {
         return level <= SelectedLoggingLevel;
@@ -678,7 +691,10 @@ return SystemInfo.operatingSystemFamily;
         if (!IsEnabled(level))
           return;
 
-        var text = "[Rider][" + level + "]" + DateTime.Now.ToString("HH:mm:ss:ff") + " " + message;
+        // ReSharper disable once StringLastIndexOfIsCultureSpecific.1
+        var dotidx = Category.LastIndexOf(".");
+        var categoryText = Category.Substring(dotidx >= 0 ? dotidx+1 : 0);
+        var text = categoryText + "[" + level + "]" + DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + " " + message;
 
         // using Unity logs causes frequent Unity hangs
         File.AppendAllText(logPath,Environment.NewLine + text);
@@ -732,24 +748,35 @@ return SystemInfo.operatingSystemFamily;
           myTaskQueue.Enqueue(action);
         }
       }
+      
+      public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + "Dispatcher.log");
 
       /// <summary>
       /// Dispatches the tasks that has been requested since the last call to this function
       /// </summary>
       private void DispatchTasks()
       {
-        if (IsActive)
-        {
+//        File.AppendAllText(logPath, DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + "DispatchTasks"+Environment.NewLine);
+        //RiderPlugin.Log(LoggingLevel.INFO, "DispatchTasks");
+                           
           lock (myTaskQueue)
           {
             foreach (Action task in myTaskQueue)
             {
-              task();
+              try
+              {
+                task();
+              }
+              catch (Exception e)
+              {
+                Log.GetLog<MainThreadDispatcher>().Error(e);
+              }
+              
             }
 
             myTaskQueue.Clear();
           }
-        }
+        
       }
 
       /// <summary>
@@ -760,7 +787,7 @@ return SystemInfo.operatingSystemFamily;
       /// </value>
       public bool IsActive
       {
-        get { return myTaskQueue.Count > 0; }
+        get { return true; }
       }
       public bool OutOfOrderExecution
       {

@@ -17,26 +17,30 @@ namespace JetBrains.Rider.Unity.Editor
     public UnityModel Model;
     public Protocol myProtocol;
 
-    public RiderProtocolController(ILog logger, string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc, Action refresh)
-    {
+    public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc, Action refresh)
+    {      
       var projectDirectory = Directory.GetParent(dataPath).FullName;
-      Log.DefaultFactory = new SingletonLogFactory(logger);
+      var logger = Log.GetLog<RiderProtocolController>();
       logger.Verbose("InitProtocol");
 
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
-      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) => { lifetimeDefinition.Terminate(); });
-
-      var thread = new Thread(() =>
+      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
       {
+        logger.Verbose("lifetimeDefinition.Terminate");
+        lifetimeDefinition.Terminate();
+      });
+
+//      var thread = new Thread(() =>
+//      {
         try
         {
           logger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
 
-          var dispatcher = new SimpleInpaceExecutingScheduler(logger);
+//          var dispatcher = new SimpleInpaceExecutingScheduler(logger);
         
           logger.Log(LoggingLevel.VERBOSE, "Create protocol...");
-          myProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), dispatcher,
+          myProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), mainThreadScheduler,
             creatingProtocol =>
             {
               var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
@@ -47,31 +51,35 @@ namespace JetBrains.Rider.Unity.Editor
             });
 
           logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-          
-          Model = new UnityModel(lifetime, myProtocol);
-          Model.Play.Advise(lifetime, play =>
-          {
-            logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
-            mainThreadScheduler.Queue(() => { playFunc(play); });
-          });
-          
-          Model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
 
-          Model.Refresh.SetVoid(() =>
+          mainThreadScheduler.Queue(() =>
           {
-            logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
-            mainThreadScheduler.Queue(refresh);
+            Model = new UnityModel(lifetime, myProtocol);
+            Model.Play.Advise(lifetime, play =>
+            {
+              logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
+              mainThreadScheduler.Queue(() => { playFunc(play); });
+            });
+
+            Model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
+
+            Model.Refresh.SetVoid(() =>
+            {
+              logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
+              mainThreadScheduler.Queue(refresh);
+            });
+
+            logger.Log(LoggingLevel.VERBOSE, "model.ServerConnected true.");
+            Model.ServerConnected.SetValue(true);
           });
-            
-          logger.Log(LoggingLevel.VERBOSE, "model.ServerConnected true.");
-          Model.ServerConnected.SetValue(true);
+
         }
         catch (Exception ex)
         {
           logger.Error(ex);
         }
-      });
-      thread.Start();
+//      });
+//      thread.Start();
     }
 
 
@@ -90,34 +98,5 @@ namespace JetBrains.Rider.Unity.Editor
         File.Delete(protocolInstanceJsonPath);
       };
     }
-  }
-
-
-  /// <summary>
-  /// Executes the given action just in the current thread in Queue method
-  /// </summary>
-  public class SimpleInpaceExecutingScheduler : IScheduler
-  {
-    private readonly ILog myLogger;
-    public SimpleInpaceExecutingScheduler(ILog logger)
-    {
-      myLogger = logger;
-    }
-
-    public void Queue(Action action)
-    {
-      try
-      {
-        action();
-      }
-      catch (Exception ex)
-      {
-        myLogger.Error(ex);
-      }
-    }
-
-    public bool IsActive => true;
-
-    public bool OutOfOrderExecution => false;
   }
 }
