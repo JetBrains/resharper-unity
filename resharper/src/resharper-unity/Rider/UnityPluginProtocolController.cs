@@ -26,6 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityPluginProtocolController
     {
         private readonly Lifetime myLifetime;
+        private readonly SequentialLifetimes SessionLifetimes;
         private readonly ILogger myLogger;
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
@@ -43,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
+            SessionLifetimes = new SequentialLifetimes(lifetime);
 
             Init();
         }
@@ -141,21 +143,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             try
             {
                 myLogger.Info("Create protocol...");
+                var lifetime = SessionLifetimes.Next();
                 var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicClient), myDispatcher,
                     creatingProtocol =>
                     {
                         myLogger.Info("Creating SocketWire with port = {0}", port);
-                        return new SocketWire.Client(myLifetime, creatingProtocol, port, "UnityClient");
+                        return new SocketWire.Client(lifetime, creatingProtocol, port, "UnityClient");
                     });
-                UnityModel = new UnityModel(myLifetime, protocol);
-                UnityModel.ServerConnected.Advise(myLifetime, b =>
+                UnityModel = new UnityModel(lifetime, protocol);
+                UnityModel.ServerConnected.Advise(lifetime, b =>
                 {
                     myLogger.Info($"UnityModel.ServerConnected {b}");
                 });
                 UnityModel.IsClientConnected.Set(rdVoid => true);
                 SetOrCreateDataKeyValuePair(solution, "UNITY_SessionInitialized", "true");
                 
-                SubscribeToLogs(solution);
+                SubscribeToLogs(lifetime, solution);
                 SubscribeToOpenFile(solution);
             }
             catch (Exception ex)
@@ -195,11 +198,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 data.Add(key, value);
         }
 
-        private void SubscribeToLogs(Solution solution)
+        private void SubscribeToLogs(Lifetime lifetime, Solution solution)
         {
-            UnityModel.LogModelInitialized.Advise(myLifetime, modelInitialized =>
+            UnityModel.LogModelInitialized.Advise(lifetime, modelInitialized =>
             {
-                modelInitialized.Log.Advise(myLifetime, entry =>
+                modelInitialized.Log.Advise(lifetime, entry =>
                 {
                     myLogger.Verbose(entry.Type +" "+ entry.Message +" "+ Environment.NewLine +" "+ entry.StackTrace);
                     SetOrCreateDataKeyValuePair(solution, "UNITY_LogEntry", JsonConvert.SerializeObject(entry));
