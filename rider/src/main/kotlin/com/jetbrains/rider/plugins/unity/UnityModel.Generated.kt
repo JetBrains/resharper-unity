@@ -23,6 +23,7 @@ class UnityModel (
     private val _pause : RdProperty<Boolean>,
     private val _unpause : RdProperty<Boolean>,
     private val _unityPluginVersion : RdProperty<String>,
+    private val _riderProcessId : RdProperty<Long>,
     private val _applicationPath : RdProperty<String>,
     private val _applicationVersion : RdProperty<String>,
     private val _logModelInitialized : RdProperty<UnityLogModelInitialized>,
@@ -55,13 +56,14 @@ class UnityModel (
                 RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1004),
                 RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1005),
                 RdProperty<String>(FrameworkMarshallers.String).static(1006),
-                RdProperty<String>(FrameworkMarshallers.String).static(1007),
+                RdProperty<Long>(FrameworkMarshallers.Long).static(1007),
                 RdProperty<String>(FrameworkMarshallers.String).static(1008),
-                RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1009),
-                RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).static(1010),
-                RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).static(1011),
-                RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).static(1012),
-                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1013))
+                RdProperty<String>(FrameworkMarshallers.String).static(1009),
+                RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1010),
+                RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).static(1011),
+                RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).static(1012),
+                RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).static(1013),
+                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1014))
             __res.bind(lifetime, protocol, UnityModel::class.java.simpleName)
             
             Protocol.initializationLogger.trace { "CREATED toplevel object "+__res.printToString() }
@@ -77,6 +79,7 @@ class UnityModel (
     val pause : IProperty<Boolean> get() = _pause
     val unpause : IProperty<Boolean> get() = _unpause
     val unityPluginVersion : IProperty<String> get() = _unityPluginVersion
+    val riderProcessId : IProperty<Long> get() = _riderProcessId
     val applicationPath : IProperty<String> get() = _applicationPath
     val applicationVersion : IProperty<String> get() = _applicationVersion
     val logModelInitialized : IProperty<UnityLogModelInitialized> get() = _logModelInitialized
@@ -93,6 +96,7 @@ class UnityModel (
         _pause.optimizeNested = true
         _unpause.optimizeNested = true
         _unityPluginVersion.optimizeNested = true
+        _riderProcessId.optimizeNested = true
         _applicationPath.optimizeNested = true
         _applicationVersion.optimizeNested = true
     }
@@ -106,6 +110,7 @@ class UnityModel (
         _pause.bind(lifetime, this, "pause")
         _unpause.bind(lifetime, this, "unpause")
         _unityPluginVersion.bind(lifetime, this, "unityPluginVersion")
+        _riderProcessId.bind(lifetime, this, "riderProcessId")
         _applicationPath.bind(lifetime, this, "applicationPath")
         _applicationVersion.bind(lifetime, this, "applicationVersion")
         _logModelInitialized.bind(lifetime, this, "logModelInitialized")
@@ -122,6 +127,7 @@ class UnityModel (
         _pause.identify(ids)
         _unpause.identify(ids)
         _unityPluginVersion.identify(ids)
+        _riderProcessId.identify(ids)
         _applicationPath.identify(ids)
         _applicationVersion.identify(ids)
         _logModelInitialized.identify(ids)
@@ -142,6 +148,7 @@ class UnityModel (
             print("pause = "); _pause.print(printer); println()
             print("unpause = "); _unpause.print(printer); println()
             print("unityPluginVersion = "); _unityPluginVersion.print(printer); println()
+            print("riderProcessId = "); _riderProcessId.print(printer); println()
             print("applicationPath = "); _applicationPath.print(printer); println()
             print("applicationVersion = "); _applicationVersion.print(printer); println()
             print("logModelInitialized = "); _logModelInitialized.print(printer); println()
