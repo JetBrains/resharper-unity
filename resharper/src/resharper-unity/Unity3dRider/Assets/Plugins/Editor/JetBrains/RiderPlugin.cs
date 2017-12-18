@@ -697,6 +697,8 @@ return SystemInfo.operatingSystemFamily;
         var text = categoryText + "[" + level + "]" + DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + " " + message;
 
         // using Unity logs causes frequent Unity hangs
+        if (!File.Exists(logPath))
+          File.Create(logPath);
         File.AppendAllText(logPath,Environment.NewLine + text);
 //      switch (level)
 //      {
