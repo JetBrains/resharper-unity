@@ -352,7 +352,7 @@ namespace Plugins.Editor.JetBrains
           Logger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, col);
           //var task = 
           ourRiderProtocolController.Model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
-          ActivateWindow();
+          ActivateWindow(ourRiderProtocolController.Model.RiderProcessId.Value);
           //task.Result.Advise(); todo: fallback to CallRider, if returns false
           return true;
         }
@@ -395,13 +395,13 @@ namespace Plugins.Editor.JetBrains
       return true;
     }
 
-    private static void ActivateWindow()
+    private static void ActivateWindow(int? processId=null)
     {
       if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
       {
         try
         {
-          var process = GetRiderProcess();
+          var process = processId == null ? GetRiderProcess() : Process.GetProcessById((int)processId);
           if (process != null)
           {
             // Collect top level windows
@@ -796,4 +796,4 @@ return SystemInfo.operatingSystemFamily;
   }
 }
 
-// Developed using JetBrains Rider =)
+// Developed with JetBrains Rider =)

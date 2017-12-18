@@ -34,7 +34,7 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdProperty<bool> Pause { get { return _Pause; }}
     [NotNull] public IRdProperty<bool> Unpause { get { return _Unpause; }}
     [NotNull] public IRdProperty<string> UnityPluginVersion { get { return _UnityPluginVersion; }}
-    [NotNull] public IRdProperty<long> RiderProcessId { get { return _RiderProcessId; }}
+    [NotNull] public IRdProperty<int> RiderProcessId { get { return _RiderProcessId; }}
     [NotNull] public IRdProperty<string> ApplicationPath { get { return _ApplicationPath; }}
     [NotNull] public IRdProperty<string> ApplicationVersion { get { return _ApplicationVersion; }}
     [NotNull] public IRdProperty<UnityLogModelInitialized> LogModelInitialized { get { return _LogModelInitialized; }}
@@ -50,7 +50,7 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdProperty<bool> _Pause;
     [NotNull] private readonly RdProperty<bool> _Unpause;
     [NotNull] private readonly RdProperty<string> _UnityPluginVersion;
-    [NotNull] private readonly RdProperty<long> _RiderProcessId;
+    [NotNull] private readonly RdProperty<int> _RiderProcessId;
     [NotNull] private readonly RdProperty<string> _ApplicationPath;
     [NotNull] private readonly RdProperty<string> _ApplicationVersion;
     [NotNull] private readonly RdProperty<UnityLogModelInitialized> _LogModelInitialized;
@@ -67,7 +67,7 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdProperty<bool> pause,
       [NotNull] RdProperty<bool> unpause,
       [NotNull] RdProperty<string> unityPluginVersion,
-      [NotNull] RdProperty<long> riderProcessId,
+      [NotNull] RdProperty<int> riderProcessId,
       [NotNull] RdProperty<string> applicationPath,
       [NotNull] RdProperty<string> applicationVersion,
       [NotNull] RdProperty<UnityLogModelInitialized> logModelInitialized,
@@ -139,7 +139,7 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1004),
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1005),
       new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1006),
-      new RdProperty<long>(Serializers.ReadLong, Serializers.WriteLong).Static(1007),
+      new RdProperty<int>(Serializers.ReadInt, Serializers.WriteInt).Static(1007),
       new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1008),
       new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1009),
       new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1010),

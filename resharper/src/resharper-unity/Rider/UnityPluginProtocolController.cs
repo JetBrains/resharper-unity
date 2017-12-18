@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
@@ -161,6 +162,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     myLogger.Info($"UnityModel.ServerConnected {b}");
                 });
                 UnityModel.IsClientConnected.Set(rdVoid => true);
+                UnityModel.RiderProcessId.SetValue(Process.GetCurrentProcess().Id);
                 SetOrCreateDataKeyValuePair(solution, "UNITY_SessionInitialized", "true");
                 
                 SubscribeToLogs(lifetime, solution);

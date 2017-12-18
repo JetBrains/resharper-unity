@@ -23,7 +23,7 @@ class UnityModel (
     private val _pause : RdProperty<Boolean>,
     private val _unpause : RdProperty<Boolean>,
     private val _unityPluginVersion : RdProperty<String>,
-    private val _riderProcessId : RdProperty<Long>,
+    private val _riderProcessId : RdProperty<Int>,
     private val _applicationPath : RdProperty<String>,
     private val _applicationVersion : RdProperty<String>,
     private val _logModelInitialized : RdProperty<UnityLogModelInitialized>,
@@ -56,7 +56,7 @@ class UnityModel (
                 RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1004),
                 RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1005),
                 RdProperty<String>(FrameworkMarshallers.String).static(1006),
-                RdProperty<Long>(FrameworkMarshallers.Long).static(1007),
+                RdProperty<Int>(FrameworkMarshallers.Int).static(1007),
                 RdProperty<String>(FrameworkMarshallers.String).static(1008),
                 RdProperty<String>(FrameworkMarshallers.String).static(1009),
                 RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1010),
@@ -79,7 +79,7 @@ class UnityModel (
     val pause : IProperty<Boolean> get() = _pause
     val unpause : IProperty<Boolean> get() = _unpause
     val unityPluginVersion : IProperty<String> get() = _unityPluginVersion
-    val riderProcessId : IProperty<Long> get() = _riderProcessId
+    val riderProcessId : IProperty<Int> get() = _riderProcessId
     val applicationPath : IProperty<String> get() = _applicationPath
     val applicationVersion : IProperty<String> get() = _applicationVersion
     val logModelInitialized : IProperty<UnityLogModelInitialized> get() = _logModelInitialized
