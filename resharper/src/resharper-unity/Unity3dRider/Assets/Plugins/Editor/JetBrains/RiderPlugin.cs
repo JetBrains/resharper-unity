@@ -38,7 +38,7 @@ namespace Plugins.Editor.JetBrains
       }
     }
     
-    public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+    static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
     
     private static bool Initialized;
     private static string SlnFile;
@@ -697,8 +697,8 @@ return SystemInfo.operatingSystemFamily;
         var text = categoryText + "[" + level + "]" + DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + " " + message;
 
         // using Unity logs causes frequent Unity hangs
-        if (!File.Exists(logPath))
-          File.Create(logPath);
+        if (!new FileInfo(logPath).Directory.Exists)
+          new FileInfo(logPath).Directory.Create();
         File.AppendAllText(logPath,Environment.NewLine + text);
 //      switch (level)
 //      {
@@ -751,8 +751,6 @@ return SystemInfo.operatingSystemFamily;
         }
       }
       
-      public static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + "Dispatcher.log");
-
       /// <summary>
       /// Dispatches the tasks that has been requested since the last call to this function
       /// </summary>
