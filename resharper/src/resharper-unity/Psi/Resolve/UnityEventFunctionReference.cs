@@ -94,7 +94,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             var literalAlterer = StringLiteralAltererUtil.CreateStringLiteralByExpression(myOwner);
             var constantValue = (string)myOwner.ConstantValue.Value;
             Assertion.AssertNotNull(constantValue, "constantValue != null");
-            literalAlterer.Replace(constantValue, element.ShortName);
+            #if RIDER
+                literalAlterer.Replace(constantValue, element.ShortName);
+            #else
+                literalAlterer.Replace(constantValue, element.ShortName, myOwner.GetPsiModule());
+            #endif
             var newOwner = literalAlterer.Expression;
             if (!myOwner.Equals(newOwner))
                 return newOwner.FindReference<UnityEventFunctionReference>() ?? this;
