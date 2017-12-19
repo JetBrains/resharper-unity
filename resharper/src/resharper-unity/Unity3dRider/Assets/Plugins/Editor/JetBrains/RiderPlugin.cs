@@ -279,7 +279,7 @@ namespace Plugins.Editor.JetBrains
   ""process_id"": {0},
   ""version"": ""{1}"",
   ""app_path"": ""{2}"",
-  ""app_contents_path"": ""{3}"",
+  ""app_contents_path"": ""{3}""
 }}", Process.GetCurrentProcess().Id, Application.unityVersion, EditorApplication.applicationPath, EditorApplication.applicationContentsPath));
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
