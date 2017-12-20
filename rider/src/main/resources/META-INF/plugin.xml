@@ -13,6 +13,10 @@
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugAndPlayConfigurationType" />
     <applicationConfigurable groupId="language" instance="com.jetbrains.rider.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
 
+    <!-- This has to be first, as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
+    <lang.documentationProvider language="C#" implementationClass="com.jetbrains.rider.plugins.unity.quickDoc.UnityDocumentationProvider"
+                                order="first" />
+
     <!-- ShaderLab support -->
     <fileTypeFactory id="ShaderLab" implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileTypeFactory" />
     <lang.altEnter language="ShaderLab" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterActionHandler" />
@@ -104,6 +108,7 @@
   <change-notes>
 <![CDATA[
 <ul>
+  <li>Open local or web documentation for Unity symbols (<a href="https://github.com/JetBrains/resharper-unity/issues/98">#98</a>)</li>
   <li>Add context action to convert auto-property to property with serialized backing field (<a href="https://github.com/JetBrains/resharper-unity/issues/195">#195</a>)</li>
   <li>Add context action to mark field as serialized or non-serizable (<a href="https://github.com/JetBrains/resharper-unity/issues/191">#191</a>)</li>
   <li>Add inspection and quick fix for redundant SerializeField attribute</li>

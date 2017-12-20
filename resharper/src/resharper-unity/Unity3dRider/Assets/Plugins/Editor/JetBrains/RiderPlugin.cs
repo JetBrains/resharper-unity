@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
@@ -271,13 +275,11 @@ namespace Plugins.Editor.JetBrains
     }
 
     /// <summary>
-    /// Creates and deletes Library/EditorInstance.json containing version and process ID
+    /// Creates and deletes Library/EditorInstance.json containing info about unity instance
     /// </summary>
     /// <param name="projectDirectory">Path to the project root directory</param>
     private static void InitializeEditorInstanceJson(string projectDirectory)
     {
-      // Only manage EditorInstance.json for 4.x and 5.x - it's a native feature for 2017.x
-#if !UNITY_2017_1_OR_NEWER
       Logger.Verbose("Writing Library/EditorInstance.json");
 
       var library = Path.Combine(projectDirectory, "Library");
@@ -285,15 +287,21 @@ namespace Plugins.Editor.JetBrains
 
       File.WriteAllText(editorInstanceJsonPath, string.Format(@"{{
   ""process_id"": {0},
-  ""version"": ""{1}""
-}}", Process.GetCurrentProcess().Id, Application.unityVersion));
+  ""version"": ""{1}"",
+  ""app_path"": ""{2}"",
+  ""app_contents_path"": ""{3}"",
+  ""attach_allowed"": ""{4}""
+}}", Process.GetCurrentProcess().Id, Application.unityVersion,
+        EditorApplication.applicationPath, 
+        EditorApplication.applicationContentsPath,
+        EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)
+        ));
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
         Logger.Verbose("Deleting Library/EditorInstance.json");
         File.Delete(editorInstanceJsonPath);
       };
-#endif
     }
 
     /// <summary>
