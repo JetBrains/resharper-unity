@@ -309,7 +309,17 @@ namespace Plugins.Editor.JetBrains
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        if (EditorApplication.scriptingRuntimeVersion == ScriptingRuntimeVersion.Latest)
+        int scriptingRuntime = 0; // old mono
+        try
+        {
+          var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
+          scriptingRuntime = (int)property.GetValue(null, null);
+          if (scriptingRuntime>0)
+            RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Latest runtime detected.");
+        }
+        catch(Exception){}
+        
+        if (scriptingRuntime>0)
           targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
         else
           targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersionOldMono);
