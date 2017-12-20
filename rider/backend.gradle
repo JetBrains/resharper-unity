@@ -125,17 +125,35 @@ task restorePackages {
     group = backendGroup
     description = 'Restores NuGet packages for the solution. Adds Source as package source if provided.'
 
-    doLast {                
+    doLast {
         if (SkipNuGetRestore){
             logger.lifecycle("SkipNuGetRestore=true, skipping restore.")
             return
+        }
+
+        // stale release packages hotfix
+        if (isWindows){
+            logger.lifecycle("clearing nuget caches")
+
+            def nugetExe = new File(backend.repositoryRoot, "tools\\nuget.exe")
+            assert nugetExe.isFile()
+
+            def nugetArgs = ["locals", "all", "-clear"]
+            def nugetClearResult = exec {
+                executable = nugetExe.path
+                args = nugetArgs
+                ignoreExitValue = true
+            }
+            if (nugetClearResult != 0){
+                logger.warn("Nuget clear exited with non-zero code")
+            }
         }
 
         def projectOrSolution = RiderOnly ? backend.riderTestsProject : backend.solution
         assert projectOrSolution.isFile()
 
         backend.ReportProgress("Restoring packages")
-        def restoreArguments = Source == null ? ["restore", projectOrSolution] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", "https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json", "--source", Source, projectOrSolution]
+        def restoreArguments = Source == null ? ["restore", projectOrSolution] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", Source, projectOrSolution]
         exec {
             executable = "dotnet"
             args = restoreArguments

@@ -79,7 +79,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
         project.baseDir.findFileByRelativePath("Library/EditorInstance.json")?.let { file ->
             try {
                 // Not a RuntimeConfigurationError, mainly because we can recover
-                file.inputStream.reader().use2 { reader ->
+                return file.inputStream.reader().use2 { reader ->
                     val jsonObject = JsonParser().parse(reader).asJsonObject
                     val processId = jsonObject["process_id"].asInt
 
