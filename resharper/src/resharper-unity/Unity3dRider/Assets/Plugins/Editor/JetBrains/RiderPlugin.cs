@@ -59,7 +59,7 @@ namespace Plugins.Editor.JetBrains
     {
       switch (SystemInfoRiderPlugin.operatingSystemFamily)
       {
-        case OperatingSystemFamily.Windows:
+        case OperatingSystemFamilyRider.Windows:
           string[] folders =
           {
             @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains", Path.Combine(
@@ -82,7 +82,7 @@ namespace Plugins.Editor.JetBrains
           }
           break;
 
-        case OperatingSystemFamily.MacOSX:
+        case OperatingSystemFamilyRider.MacOSX:
           // "/Applications/*Rider*.app"
           //"~/Applications/JetBrains Toolbox/*Rider*.app"
           string[] foldersMac =
@@ -99,7 +99,7 @@ namespace Plugins.Editor.JetBrains
 
     private static string GetTargetFrameworkVersionDefault(string defaultValue)
     {
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
       {
         var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
         if (dir.Exists)
@@ -197,8 +197,19 @@ namespace Plugins.Editor.JetBrains
       }
     }
 
+    internal static Version unityVersion
+    {
+      get
+      {
+        var ver = Application.unityVersion.Split(".".ToCharArray()).Take(2).Aggregate((a, b) => a + "." + b);
+        Log(LoggingLevel.Verbose, "Unity version: "+ver);
+        return new Version(ver);
+      }
+    }
+
     static RiderPlugin()
     {
+      
       var riderPath = GetDefaultApp();
       if (!RiderPathExist(riderPath))
         return;
@@ -260,7 +271,7 @@ namespace Plugins.Editor.JetBrains
       if (!fileInfo.Name.ToLower().Contains("rider"))
         return false;
       var directoryInfo = new DirectoryInfo(path);
-      return fileInfo.Exists || (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.MacOSX &&
+      return fileInfo.Exists || (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX &&
                                  directoryInfo.Exists);
     }
 
@@ -330,7 +341,7 @@ namespace Plugins.Editor.JetBrains
           return false;
 
         SyncSolution(); // added to handle opening file, which was just recently created.
-        if (DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)) 
+        if (DetectPortAndOpenFile(line, assetFilePath, SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)) 
           return true;
         var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
         return CallRider(args);
@@ -342,7 +353,7 @@ namespace Plugins.Editor.JetBrains
 
     private static bool DetectPortAndOpenFile(int line, string filePath, bool isWindows)
     {
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
       {
         var process = GetRiderProcess();
         if (process == null)
@@ -411,7 +422,7 @@ namespace Plugins.Editor.JetBrains
       }
 
       var proc = new Process();
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
@@ -436,7 +447,7 @@ namespace Plugins.Editor.JetBrains
 
     private static void ActivateWindow()
     {
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamily.Windows)
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
       {
         try
         {
@@ -608,39 +619,37 @@ namespace Plugins.Editor.JetBrains
 
     private static class SystemInfoRiderPlugin
     {
-      public static OperatingSystemFamily operatingSystemFamily
+      public static OperatingSystemFamilyRider operatingSystemFamily
       {
         get
         {
-#if UNITY_5_5_OR_NEWER
-return SystemInfo.operatingSystemFamily;
-#else
           if (SystemInfo.operatingSystem.StartsWith("Mac", StringComparison.InvariantCultureIgnoreCase))
           {
-            return OperatingSystemFamily.MacOSX;
+            return OperatingSystemFamilyRider.MacOSX;
           }
+
           if (SystemInfo.operatingSystem.StartsWith("Win", StringComparison.InvariantCultureIgnoreCase))
           {
-            return OperatingSystemFamily.Windows;
+            return OperatingSystemFamilyRider.Windows;
           }
+
           if (SystemInfo.operatingSystem.StartsWith("Lin", StringComparison.InvariantCultureIgnoreCase))
           {
-            return OperatingSystemFamily.Linux;
+            return OperatingSystemFamilyRider.Linux;
           }
-          return OperatingSystemFamily.Other;
-#endif
+
+          return OperatingSystemFamilyRider.Other;
         }
       }
     }
-#if !UNITY_5_5_OR_NEWER
-    enum OperatingSystemFamily
+
+    enum OperatingSystemFamilyRider
     {
       Other,
       MacOSX,
       Windows,
       Linux,
     }
-#endif
     #endregion
     
     static class User32Dll
