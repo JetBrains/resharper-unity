@@ -86,7 +86,7 @@ namespace Plugins.Editor.JetBrains
       if (RiderPlugin.unityVersion >= new Version("5.6"))
         ChangeNunitReference(projectContentElement, xmlns);
       
-//#if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
+//#i f !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
       if (RiderPlugin.unityVersion >= new Version("2017.1"))
       {
         SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
@@ -131,7 +131,7 @@ namespace Plugins.Editor.JetBrains
 
     private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "mcs.rsp");
 // Unity 2017.1 and later has this features by itself
-//#if !UNITY_2017_1_OR_NEWER  
+//#i f !UNITY_2017_1_OR_NEWER  
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
@@ -357,11 +357,12 @@ namespace Plugins.Editor.JetBrains
         return "6";
 
       // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-#if !UNITY_5_6_OR_NEWER
+//#i f !UNITY_5_6_OR_NEWER
+//      if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
+//      #else
+//      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
+//#endif
       if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
-      #else
-      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
-#endif
         return "6";
 
       return "4";
