@@ -35,9 +35,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     break;
                 case PlatformID.Unix:
                     defaultPath = @"/opt/Unity/Editor/Data/Managed/UnityEngine.dll";
+                    if (File.Exists(defaultPath))
+                        break;
+                    
+                    var home = Environment.GetEnvironmentVariable("HOME");
+                    if (string.IsNullOrEmpty(home))
+                        break;
+                        
+                    var unityDir = new DirectoryInfo(home).GetDirectories("Unity*").FirstOrDefault();
+                    if (unityDir==null)
+                        break;
+                    defaultPath = Path.Combine(unityDir.FullName, @"Editor/Data/Managed/UnityEngine.dll");
                     break;
                 default:
                     defaultPath = @"C:\Program Files\Unity\Editor\Data\Managed\UnityEngine.dll";
+                    if (File.Exists(defaultPath))
+                        break;
                     
                     var lnks = FileSystemPath.Parse(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs").GetChildDirectories("Unity*").SelectMany(a=>a.GetChildFiles("Unity.lnk")).ToArray();
                     var dllPath = lnks.Select(a => ShellLinkHelper.ResolveLinkTarget(a).Directory.Combine(@"Data\Managed\UnityEngine.dll")).Where(b=>b.ExistsFile).OrderBy(c=>new FileInfo(c.FullPath).CreationTime).LastOrDefault();
