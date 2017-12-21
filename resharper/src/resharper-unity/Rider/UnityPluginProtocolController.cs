@@ -66,14 +66,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // Add event handlers.
             watcher.Changed += OnChanged;
             watcher.Created += OnChanged;
-            watcher.Deleted += (sender, e) =>
-            {
-                myDispatcher.InvokeOrQueue(() => UnityModel?.ServerConnected.SetValue(false));
-            };
 
             watcher.EnableRaisingEvents = true; // Begin watching.
 
             CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
+        }        
+        
+        private void OnChanged(object sender, FileSystemEventArgs e)
+        {
+            var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
+            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=>CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
         private void SubscribeToPlay(Solution solution)
@@ -112,12 +114,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     ;
                 }
             });
-        }
-
-        private void OnChanged(object sender, FileSystemEventArgs e)
-        {
-            var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
-            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=>CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
         private Protocol myProtocol;
