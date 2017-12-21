@@ -42,10 +42,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     if (string.IsNullOrEmpty(home))
                         break;
                         
-                    var unityDir = new DirectoryInfo(home).GetDirectories("Unity*").FirstOrDefault();
-                    if (unityDir==null)
+                    var path = new DirectoryInfo(home).GetDirectories("Unity*").Select(unityDir=>Path.Combine(unityDir.FullName, @"Editor/Data/Managed/UnityEngine.dll")).FirstOrDefault(File.Exists);
+                    if (path == null)
                         break;
-                    defaultPath = Path.Combine(unityDir.FullName, @"Editor/Data/Managed/UnityEngine.dll");
+                    defaultPath = path;
                     break;
                 default:
                     defaultPath = @"C:\Program Files\Unity\Editor\Data\Managed\UnityEngine.dll";
