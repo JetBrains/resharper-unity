@@ -33,6 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
         private UnityModel UnityModel { get; set; }
+        private Protocol myProtocol;
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, 
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
@@ -115,8 +116,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
             });
         }
-
-        private Protocol myProtocol;
 
         private void CreateProtocol(FileSystemPath protocolInstancePath, Solution solution)
         {
