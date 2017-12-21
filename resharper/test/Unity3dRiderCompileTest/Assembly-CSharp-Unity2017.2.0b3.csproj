@@ -64,6 +64,7 @@
     <Compile Include="..\..\src\resharper-unity\Unity3dRider\Assets\**\*.cs" />
     <Compile Include="..\..\src\resharper-unity\Unity3dRider\Assets\**\*.cs"/>
     <Compile Exclude="..\..\src\resharper-unity\Unity3dRider\Assets\**\Unity3dRider.cs"/>
+    <Compile Include="..\..\src\resharper-unity\Unity3dRider\Assets\**\*.cs" Exclude="**/Unity3DRider.cs"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
