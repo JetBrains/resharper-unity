@@ -135,9 +135,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             try
             {
-                if (myProtocol!=null) // todo: remove this after reconnect will be working in protocol
-                    return;
-                
                 myLogger.Info("Create protocol...");
                 var lifetime = SessionLifetimes.Next();
                 myProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicClient), myDispatcher,

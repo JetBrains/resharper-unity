@@ -31,14 +31,10 @@ namespace JetBrains.Rider.Unity.Editor
         lifetimeDefinition.Terminate();
       });
 
-//      var thread = new Thread(() =>
-//      {
         try
         {
           logger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
 
-//          var dispatcher = new SimpleInpaceExecutingScheduler(logger);
-        
           logger.Log(LoggingLevel.VERBOSE, "Create protocol...");
           myProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), mainThreadScheduler,
             creatingProtocol =>
@@ -46,6 +42,12 @@ namespace JetBrains.Rider.Unity.Editor
               var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
               logger.Log(LoggingLevel.VERBOSE, $"Creating SocketWire with port = {wire.Port}");
             
+              wire.Connected.Advise(lifetime, clientIsConnected =>
+              {
+                if (!clientIsConnected)
+                  lifetimeDefinition.Terminate();
+              });
+              
               InitializeProtocolJson(wire.Port, projectDirectory, logger);
               return wire;
             });
@@ -78,8 +80,6 @@ namespace JetBrains.Rider.Unity.Editor
         {
           logger.Error(ex);
         }
-//      });
-//      thread.Start();
     }
 
 
