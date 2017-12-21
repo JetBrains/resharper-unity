@@ -83,15 +83,17 @@ namespace Plugins.Editor.JetBrains
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
       // Unity_5_6_OR_NEWER switched to nunit 3.5
-#if UNITY_5_6_OR_NEWER 
-      ChangeNunitReference(projectContentElement, xmlns);
-#endif
+      if (RiderPlugin.unityVersion >= new Version("5.6"))
+        ChangeNunitReference(projectContentElement, xmlns);
       
-#if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself 
-      SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
-#endif
+//#if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
+      if (RiderPlugin.unityVersion >= new Version("2017.1"))
+      {
+        SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
+        SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
+        SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);  
+      }    
+//#endif
       ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
       doc.Save(projectFile);
     }
@@ -128,7 +130,8 @@ namespace Plugins.Editor.JetBrains
     }
 
     private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "mcs.rsp");
-#if !UNITY_2017_1_OR_NEWER  // Unity 2017.1 and later has this features by itself
+// Unity 2017.1 and later has this features by itself
+//#if !UNITY_2017_1_OR_NEWER  
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
@@ -251,7 +254,7 @@ namespace Plugins.Editor.JetBrains
         projectContentElement.Add(itemGroup);
       }
     }
-#endif
+// #endif
     private const string UNITY_REFERENCE_KEYWORD = "-r:";
     /// <summary>
     /// Handles custom references -r: in "mcs.rsp"
