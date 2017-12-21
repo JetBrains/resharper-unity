@@ -46,9 +46,9 @@ namespace Plugins.Editor.JetBrains
           !string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() &&
           allFoundPaths.Contains(alreadySetPath))
       {
-        RiderPath = alreadySetPath;
+        RiderPath = alreadySetPath; 
       }
-      else if (allFoundPaths.Contains(new FileInfo(RiderPath).FullName)) {}
+      else if (!string.IsNullOrEmpty(RiderPath) && allFoundPaths.Contains(new FileInfo(RiderPath).FullName)) {}
       else
       RiderPath = allFoundPaths.FirstOrDefault();
 
