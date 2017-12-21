@@ -47,16 +47,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution = solution;
             SessionLifetimes = new SequentialLifetimes(lifetime);
 
-            Init();
-        }
-
-        private void Init()
-        {            
             SubscribeToPlay(mySolution.GetProtocolSolution());
             SubscribeRefresh(mySolution.GetProtocolSolution(), mySolution.SolutionFilePath.Directory);
 
             var protocolInstancePath = mySolution.SolutionFilePath.Directory.Combine(
-                    "Library/ProtocolInstance.json"); // todo: consider non-Unity Solution with Unity-generated projects
+                "Library/ProtocolInstance.json"); // todo: consider non-Unity Solution with Unity-generated projects
 
             if (!protocolInstancePath.ExistsFile)
                 File.Create(protocolInstancePath.FullPath);
@@ -78,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             watcher.EnableRaisingEvents = true; // Begin watching.
 
-            //CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
+            CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
         }
 
         private void SubscribeToPlay(Solution solution)
