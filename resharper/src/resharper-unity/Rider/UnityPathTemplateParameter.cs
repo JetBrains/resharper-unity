@@ -28,12 +28,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
 
             var defaultPath = "";
-            switch (Environment.OSVersion.Platform)
+            switch (PlatformUtil.RuntimePlatform)
             {
-                case PlatformID.MacOSX:
+                case PlatformUtil.Platform.MacOsX:
                     defaultPath = @"/Applications/Unity.app/Contents/Frameworks/Managed/UnityEngine.dll";
                     break;
-                case PlatformID.Unix:
+                case PlatformUtil.Platform.Linux:
                     defaultPath = @"/opt/Unity/Editor/Data/Managed/UnityEngine.dll";
                     if (File.Exists(defaultPath))
                         break;
