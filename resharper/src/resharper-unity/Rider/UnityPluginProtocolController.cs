@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             watcher.EnableRaisingEvents = true; // Begin watching.
 
             // connect on start of Rider
-            // CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
+            CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
         }        
         
         private void OnChanged(object sender, FileSystemEventArgs e)

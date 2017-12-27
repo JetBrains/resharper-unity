@@ -209,8 +209,6 @@ namespace Plugins.Editor.JetBrains
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
 
-    private static SequentialLifetimes sequentialLifetimes;
-
     public static bool RiderInitializedOnce
     {
       get { return EditorPrefs.GetBool("RiderInitializedOnce", false); }
@@ -235,7 +233,6 @@ namespace Plugins.Editor.JetBrains
 
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
-      sequentialLifetimes = new SequentialLifetimes(lifetime);
 
       AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
       {
@@ -243,28 +240,22 @@ namespace Plugins.Editor.JetBrains
         lifetimeDefinition.Terminate();
       });
 
-      RecreateProtocol();
-
-      UnityLogRegisterCallBack();
-      Initialized = true;
-    }
-
-    private static void RecreateProtocol()
-    {
-      logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
       Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));
 
       ourRiderProtocolController = new RiderProtocolController(
         Application.dataPath,
         MainThreadDispatcher1,
         play => { EditorApplication.isPlaying = play; },
-        () => { AssetDatabase.Refresh(); },
-        sequentialLifetimes.Next(),
-        RecreateProtocol
+        AssetDatabase.Refresh,
+        lifetime
       );
-    }
 
-    internal static string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+      UnityLogRegisterCallBack();
+      Initialized = true;
+    }
+    
+    internal static string  logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+
     internal static readonly MainThreadDispatcher MainThreadDispatcher1 = new MainThreadDispatcher();
 
     private static void AddRiderToRecentlyUsedScriptApp(string userAppPath, string recentAppsKey)
@@ -494,10 +485,8 @@ namespace Plugins.Editor.JetBrains
       {
         if (ourRiderProtocolController == null)
           return;
-        if (ourRiderProtocolController.myProtocol == null)
-          return;
         // use Protocol to pass log entries to Rider
-        ourRiderProtocolController.myProtocol.Scheduler.InvokeOrQueue(() =>
+        MainThreadDispatcher1.InvokeOrQueue(() =>
         {
           if (ourRiderProtocolController.Model != null)
           {

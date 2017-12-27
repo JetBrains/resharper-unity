@@ -17,10 +17,9 @@ namespace JetBrains.Rider.Unity.Editor
   public class RiderProtocolController
   {   
     public UnityModel Model;
-    public Protocol myProtocol;
 
     public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc,
-      Action refresh, Lifetime lifetime, Action recreateProtocolAction)
+      Action refresh, Lifetime lifetime)
     {
       mainThreadScheduler.Queue(() =>
       {
@@ -33,28 +32,21 @@ namespace JetBrains.Rider.Unity.Editor
           logger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
 
           logger.Log(LoggingLevel.VERBOSE, "Create protocol...");
-          myProtocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), mainThreadScheduler,
-            creatingProtocol =>
-            {
-              var wire = new SocketWire.Server(lifetime, creatingProtocol, null, "UnityServer");
-              logger.Log(LoggingLevel.VERBOSE, $"Creating SocketWire with port = {wire.Port}");
+          
+          var wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer", true);
+          logger.Log(LoggingLevel.VERBOSE, $"Creating SocketWire with port = {wire.Port}");
             
-              wire.Connected.Advise(lifetime, clientIsConnected =>
-              {
-                logger.Verbose("wire.Connected {0}", clientIsConnected);
-                if (wire.Connected.HasTrueValue() && !clientIsConnected)
-                {
-                  recreateProtocolAction();
-                }
-              });
+          wire.Connected.Advise(lifetime, clientIsConnected =>
+          {
+            logger.Verbose("wire.Connected {0}", clientIsConnected);
+          });
 
-              InitializeProtocolJson(wire.Port, projectDirectory, logger);
-              return wire;
-            });
-
+          var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), mainThreadScheduler, wire);
+                          
+          InitializeProtocolJson(wire.Port, projectDirectory, logger);
           logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
-          Model = new UnityModel(lifetime, myProtocol);
+          Model = new UnityModel(lifetime, protocol);
           Model.Play.Advise(lifetime, play =>
           {
             logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
@@ -76,10 +68,8 @@ namespace JetBrains.Rider.Unity.Editor
         {
           logger.Error("RiderProtocolController.ctor. " + ex);
         }  
-      });
-      
+      }); 
     }
-
 
     private static void InitializeProtocolJson(int port, string projectDirectory, ILog logger)
     {

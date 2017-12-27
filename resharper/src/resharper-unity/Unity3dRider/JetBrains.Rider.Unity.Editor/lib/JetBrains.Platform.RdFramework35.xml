@@ -4,6 +4,22 @@
         <name>JetBrains.Platform.RdFramework35</name>
     </assembly>
     <members>
+        <member name="F:JetBrains.Platform.RdFramework.Impl.SocketWire.Base.TimeoutMs">
+            <summary>
+            Timeout for <see cref="M:System.Net.Sockets.Socket.Connect(System.Net.EndPoint)"/>  and for <see cref="M:System.Net.Sockets.Socket.Receive(System.Byte[],System.Int32,System.Net.Sockets.SocketFlags)"/>  from socket (to guarantee read_thread termination if <see cref="M:System.Net.Sockets.Socket.Close"/> doesn't
+            lead to exception thrown by <see cref="M:System.Net.Sockets.Socket.Receive(System.Byte[],System.Int32,System.Net.Sockets.SocketFlags)"/> 
+            </summary>
+        </member>
+        <member name="F:JetBrains.Platform.RdFramework.Impl.SocketWire.Base.Id">
+            <summary>
+            For logging
+            </summary>
+        </member>
+        <member name="F:JetBrains.Platform.RdFramework.Impl.SocketWire.Base.myLifetime">
+            <summary>
+            Lifetime of this wire. If counterpart disconnects, lifetime is not terminate automatically.
+            </summary>
+        </member>
         <member name="M:JetBrains.Platform.RdFramework.Impl.SocketWire.Base.ReadArrayFromSocket(System.Byte[],System.Byte[],System.Int32@,System.Int32@)">
             <summary>
             Reads from <see cref="F:JetBrains.Platform.RdFramework.Impl.SocketWire.Base.mySocket"/> into <see cref="!:res"/>. Uses intermediate array <see cref="!:buffer"/> with boundaries of already read.
