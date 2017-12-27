@@ -70,13 +70,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             watcher.EnableRaisingEvents = true; // Begin watching.
 
-            CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
+            // connect on start of Rider
+            // CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
         }        
         
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
-            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=>CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
+            // connect on reload of server
+            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=> CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
         private void SubscribeToPlay(Solution solution)

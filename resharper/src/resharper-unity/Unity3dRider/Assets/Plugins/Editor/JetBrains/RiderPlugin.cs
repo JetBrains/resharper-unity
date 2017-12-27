@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -8,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.Model;
@@ -36,14 +36,13 @@ namespace Plugins.Editor.JetBrains
         SetExternalScriptEditor(riderPath);
         RiderInitializedOnce = true;
       }
+
       if (Enabled)
       {
         InitRiderPlugin();
       }
     }
-    
-    static readonly string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
-    
+
     private static bool Initialized;
     private static string SlnFile;
     private static readonly ILog Logger = Log.GetLog("RiderPlugin");
@@ -60,13 +59,13 @@ namespace Plugins.Editor.JetBrains
         EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
       }
     }
-    
+
     public static bool SendConsoleToRider
     {
-      get{return EditorPrefs.GetBool("Rider_SendConsoleToRider", false);}
-      set{EditorPrefs.SetBool("Rider_SendConsoleToRider", value);}
+      get { return EditorPrefs.GetBool("Rider_SendConsoleToRider", false); }
+      set { EditorPrefs.SetBool("Rider_SendConsoleToRider", value); }
     }
-    
+
     public static bool Enabled
     {
       get
@@ -75,7 +74,7 @@ namespace Plugins.Editor.JetBrains
         return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
       }
     }
-    
+
     public static string GetExternalScriptEditor()
     {
       return EditorPrefs.GetString("kScriptsDefaultApp");
@@ -85,22 +84,24 @@ namespace Plugins.Editor.JetBrains
     {
       EditorPrefs.SetString("kScriptsDefaultApp", path);
     }
-    
-    
+
+
     private static string GetDefaultApp()
     {
-      var allFoundPaths = GetAllRiderPaths().Select(a=>new FileInfo(a).FullName).ToArray();
+      var allFoundPaths = GetAllRiderPaths().Select(a => new FileInfo(a).FullName).ToArray();
       var alreadySetPath = new FileInfo(GetExternalScriptEditor()).FullName;
-      
+
       if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && !allFoundPaths.Any() ||
           !string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() &&
           allFoundPaths.Contains(alreadySetPath))
       {
-        RiderPath = alreadySetPath; 
+        RiderPath = alreadySetPath;
       }
-      else if (!string.IsNullOrEmpty(RiderPath) && allFoundPaths.Contains(new FileInfo(RiderPath).FullName)) {}
+      else if (!string.IsNullOrEmpty(RiderPath) && allFoundPaths.Contains(new FileInfo(RiderPath).FullName))
+      {
+      }
       else
-      RiderPath = allFoundPaths.FirstOrDefault();
+        RiderPath = allFoundPaths.FirstOrDefault();
 
       return RiderPath;
     }
@@ -130,6 +131,7 @@ namespace Plugins.Editor.JetBrains
 
             return newPaths;
           }
+
           break;
 
         case OperatingSystemFamily.MacOSX:
@@ -144,6 +146,7 @@ namespace Plugins.Editor.JetBrains
             .Select(a => a.FullName).ToArray();
           return newPathsMac;
       }
+
       return new string[0];
     }
 
@@ -162,38 +165,24 @@ namespace Plugins.Editor.JetBrains
           }
         }
       }
+
       return defaultValue;
     }
 
 
     public static string TargetFrameworkVersion
     {
-      get
-      {
-        return EditorPrefs.GetString("Rider_TargetFrameworkVersion", GetTargetFrameworkVersionDefault("4.6"));
-      }
-      set
-      {
-        TryCatch(value, val =>
-        {
-          EditorPrefs.SetString("Rider_TargetFrameworkVersion", val);
-        });
-      }
+      get { return EditorPrefs.GetString("Rider_TargetFrameworkVersion", GetTargetFrameworkVersionDefault("4.6")); }
+      set { TryCatch(value, val => { EditorPrefs.SetString("Rider_TargetFrameworkVersion", val); }); }
     }
-    
+
     public static string TargetFrameworkVersionOldMono
     {
       get
       {
         return EditorPrefs.GetString("Rider_TargetFrameworkVersionOldMono", GetTargetFrameworkVersionDefault("3.5"));
       }
-      set
-      {
-        TryCatch(value, val =>
-        {
-          EditorPrefs.SetString("Rider_TargetFrameworkVersionOldMono", val);
-        });
-      }
+      set { TryCatch(value, val => { EditorPrefs.SetString("Rider_TargetFrameworkVersionOldMono", val); }); }
     }
 
     private static bool TryCatch(string value, Action<string> action)
@@ -210,6 +199,7 @@ namespace Plugins.Editor.JetBrains
       catch (FormatException)
       {
       }
+
       return false;
     }
 
@@ -218,7 +208,9 @@ namespace Plugins.Editor.JetBrains
       get { return EditorPrefs.GetString("Rider_RiderPath", GetAllRiderPaths().FirstOrDefault()); }
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
-    
+
+    private static SequentialLifetimes sequentialLifetimes;
+
     public static bool RiderInitializedOnce
     {
       get { return EditorPrefs.GetBool("RiderInitializedOnce", false); }
@@ -228,27 +220,52 @@ namespace Plugins.Editor.JetBrains
     private static void InitRiderPlugin()
     {
       SelectedLoggingLevel = SelectedLoggingLevelMainThread;
-      
+
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
 
       InitializeEditorInstanceJson(projectDirectory);
-      
-      RiderAssetPostprocessor.OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
+
+      RiderAssetPostprocessor
+        .OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
 
       Log.DefaultFactory = new RiderLoggerFactory();
-      ourRiderProtocolController = new RiderProtocolController(
-        Application.dataPath, 
-        new MainThreadDispatcher(), 
-        play=> {EditorApplication.isPlaying = play;}, 
-        ()=> {AssetDatabase.Refresh();}
-        );
+
+      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
+      var lifetime = lifetimeDefinition.Lifetime;
+      sequentialLifetimes = new SequentialLifetimes(lifetime);
+
+      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
+      {
+        Logger.Verbose("lifetimeDefinition.Terminate");
+        lifetimeDefinition.Terminate();
+      });
+
+      RecreateProtocol();
+
       UnityLogRegisterCallBack();
       Initialized = true;
-      Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));
     }
+
+    private static void RecreateProtocol()
+    {
+      logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+      Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));
+
+      ourRiderProtocolController = new RiderProtocolController(
+        Application.dataPath,
+        MainThreadDispatcher1,
+        play => { EditorApplication.isPlaying = play; },
+        () => { AssetDatabase.Refresh(); },
+        sequentialLifetimes.Next(),
+        RecreateProtocol
+      );
+    }
+
+    internal static string logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+    internal static readonly MainThreadDispatcher MainThreadDispatcher1 = new MainThreadDispatcher();
 
     private static void AddRiderToRecentlyUsedScriptApp(string userAppPath, string recentAppsKey)
     {
@@ -673,134 +690,6 @@ return SystemInfo.operatingSystemFamily;
     }
 #endif
     #endregion
-
-    public class RiderLoggerFactory : ILogFactory
-    {
-      public ILog GetLog(string category)
-      {
-        return new RiderLogger(category);
-      }
-    }
-    
-    class RiderLogger : ILog
-    {
-      public RiderLogger(string category)
-      {
-        Category = category;
-      }
-
-      public bool IsEnabled(LoggingLevel level)
-      {
-        return level <= SelectedLoggingLevel;
-      }
-
-      public void Log(LoggingLevel level, string message, Exception exception = null)
-      {
-        if (!IsEnabled(level))
-          return;
-
-        // ReSharper disable once StringLastIndexOfIsCultureSpecific.1
-        var dotidx = Category.LastIndexOf(".");
-        var categoryText = Category.Substring(dotidx >= 0 ? dotidx+1 : 0);
-        var text = categoryText + "[" + level + "]" + DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + " " + message;
-
-        // using Unity logs causes frequent Unity hangs
-        if (!new FileInfo(logPath).Directory.Exists)
-          new FileInfo(logPath).Directory.Create();
-        File.AppendAllText(logPath,Environment.NewLine + text);
-//      switch (level)
-//      {
-//        case LoggingLevel.FATAL:
-//        case LoggingLevel.ERROR:
-//          Debug.LogError(text);
-//          if (exception != null)
-//            Debug.LogException(exception);
-//          break;
-//        case LoggingLevel.WARN:
-//          Debug.LogWarning(text);
-//          if (exception != null)
-//            Debug.LogException(exception);
-//          break;
-//        case LoggingLevel.INFO:
-//        case LoggingLevel.VERBOSE:
-//          Debug.Log(text);
-//          if (exception != null)
-//            Debug.LogException(exception);
-//          break;
-//        default:
-//          break;
-//      }
-      }
-
-      public string Category { get; private set; }
-    }
-    
-    class MainThreadDispatcher : IScheduler
-    {
-      public MainThreadDispatcher()
-      {
-        EditorApplication.update += DispatchTasks;
-      }
-    
-      /// <summary>
-      /// The queue of tasks that are being requested for the next time DispatchTasks is called
-      /// </summary>
-      private readonly Queue<Action> myTaskQueue = new Queue<Action>();
-
-      /// <summary>
-      /// Dispatches the specified action delegate.
-      /// </summary>
-      /// <param name="action">Action  being requested</param>
-      public void Queue(Action action)
-      {
-        lock (myTaskQueue)
-        {
-          myTaskQueue.Enqueue(action);
-        }
-      }
-      
-      /// <summary>
-      /// Dispatches the tasks that has been requested since the last call to this function
-      /// </summary>
-      private void DispatchTasks()
-      {
-//        File.AppendAllText(logPath, DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + "DispatchTasks"+Environment.NewLine);
-        //RiderPlugin.Log(LoggingLevel.INFO, "DispatchTasks");
-                           
-        if (myTaskQueue.Count==0)
-          return;
-            while (true)
-            {    
-              try
-              {
-                if (myTaskQueue.Count==0)
-                  return;
-                var task = myTaskQueue.Dequeue();
-                task();
-              }
-              catch (Exception e)
-              {
-                Log.GetLog<MainThreadDispatcher>().Error(e);
-              }
-            }
-          
-      }
-
-      /// <summary>
-      /// Indicates whether there are tasks available for dispatching
-      /// </summary>
-      /// <value>
-      /// <c>true</c> if there are tasks available for dispatching; otherwise, <c>false</c>.
-      /// </value>
-      public bool IsActive
-      {
-        get { return true; }
-      }
-      public bool OutOfOrderExecution
-      {
-        get { return false; }
-      }
-    }
   }
 }
 

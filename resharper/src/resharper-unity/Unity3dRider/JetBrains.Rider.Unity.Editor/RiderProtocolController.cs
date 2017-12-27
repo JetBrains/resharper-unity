@@ -6,30 +6,27 @@ using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
 namespace JetBrains.Rider.Unity.Editor
 {
+  // ReSharper disable once UnusedMember.Global
   public class RiderProtocolController
-  {
+  {   
     public UnityModel Model;
     public Protocol myProtocol;
 
-    public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc, Action refresh)
-    {      
-      var projectDirectory = Directory.GetParent(dataPath).FullName;
-      var logger = Log.GetLog<RiderProtocolController>();
-      logger.Verbose("InitProtocol");
-
-      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
-      var lifetime = lifetimeDefinition.Lifetime;
-      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
+    public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc,
+      Action refresh, Lifetime lifetime, Action recreateProtocolAction)
+    {
+      mainThreadScheduler.Queue(() =>
       {
-        logger.Verbose("lifetimeDefinition.Terminate");
-        lifetimeDefinition.Terminate();
-      });
+        var projectDirectory = Directory.GetParent(dataPath).FullName;
+        var logger = Log.GetLog<RiderProtocolController>();
+        logger.Verbose("InitProtocol");
 
         try
         {
@@ -44,42 +41,43 @@ namespace JetBrains.Rider.Unity.Editor
             
               wire.Connected.Advise(lifetime, clientIsConnected =>
               {
-                if (!clientIsConnected)
-                  lifetimeDefinition.Terminate();
+                logger.Verbose("wire.Connected {0}", clientIsConnected);
+                if (wire.Connected.HasTrueValue() && !clientIsConnected)
+                {
+                  recreateProtocolAction();
+                }
               });
-              
+
               InitializeProtocolJson(wire.Port, projectDirectory, logger);
               return wire;
             });
 
           logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
-          mainThreadScheduler.Queue(() =>
+          Model = new UnityModel(lifetime, myProtocol);
+          Model.Play.Advise(lifetime, play =>
           {
-            Model = new UnityModel(lifetime, myProtocol);
-            Model.Play.Advise(lifetime, play =>
-            {
-              logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
-              mainThreadScheduler.Queue(() => { playFunc(play); });
-            });
-
-            Model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
-
-            Model.Refresh.SetVoid(() =>
-            {
-              logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
-              mainThreadScheduler.Queue(refresh);
-            });
-
-            logger.Log(LoggingLevel.VERBOSE, "model.ServerConnected true.");
-            Model.ServerConnected.SetValue(true);
+            logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
+            mainThreadScheduler.Queue(() => { playFunc(play); });
           });
 
+          Model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
+
+          Model.Refresh.SetVoid(() =>
+          {
+            logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
+            mainThreadScheduler.Queue(refresh);
+          });
+        
+          logger.Log(LoggingLevel.VERBOSE, "model.ServerConnected true.");
+          Model.ServerConnected.SetValue(true);
         }
         catch (Exception ex)
         {
-          logger.Error(ex);
-        }
+          logger.Error("RiderProtocolController.ctor. " + ex);
+        }  
+      });
+      
     }
 
 
