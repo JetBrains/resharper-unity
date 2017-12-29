@@ -275,19 +275,17 @@ Please switch back to Unity to make plugin file appear in the solution.";
             {
                 Tuple<FileSystemPath, string>[] installs =
                 {
-                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile), ourResourceNamespace + UnityPluginDetector.MergedPluginFile),
                     new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Annotations.dll"), ourResourceNamespace + "JetBrains.Annotations.dll"),
                     new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Platform.RdCore35.dll"), ourResourceNamespace + "JetBrains.Platform.RdCore35.dll"),
                     new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Platform.RdFramework35.dll"), ourResourceNamespace + "JetBrains.Platform.RdFramework35.dll"),
-                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Rider.Unity.Editor.dll"), ourResourceNamespace + "JetBrains.Rider.Unity.Editor.dll")
+                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Rider.Unity.Editor.Plugin.dll"), ourResourceNamespace + "JetBrains.Rider.Unity.Editor.Plugin.dll"),
+                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Rider.Unity.Editor.Protocol.dll"), ourResourceNamespace + "JetBrains.Rider.Unity.Editor.Protocol.dll")
                 };               
 
                 foreach (Tuple<FileSystemPath, string> install in installs)
                 {
                     if (!InstallFromResourceWithBackup(install.Item2, backups, install.Item1)) return false;    
-                } 
-                
-                
+                }
                 
                 foreach (var backup in backups)
                 {
