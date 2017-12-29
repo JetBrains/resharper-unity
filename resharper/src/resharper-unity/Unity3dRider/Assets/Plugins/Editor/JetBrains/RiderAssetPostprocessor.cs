@@ -327,7 +327,7 @@ namespace Plugins.Editor.JetBrains
       projectContentElement.Add(itemGroup);
     }
 
-    // Helps resolve System.Linq under mono 4 - RIDER-573
+    // Set appropriate version
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
       var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
@@ -335,11 +335,20 @@ namespace Plugins.Editor.JetBrains
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        if (net46)
+        int scriptingRuntime = 0; // old mono
+        try
+        {
+          var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
+          scriptingRuntime = (int)property.GetValue(null, null);
+          if (scriptingRuntime>0)
+            Logger.Verbose("Latest runtime detected.");
+        }
+        catch(Exception){}
+        
+        if (scriptingRuntime>0)
           targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
         else
           targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersionOldMono);
-        
       }
     }
 
@@ -379,13 +388,6 @@ namespace Plugins.Editor.JetBrains
 
       return "4";
     }
-    
-    private static bool net46 = 
-#if NET_4_6
-      true;
-#else
-      false;
-#endif
 
     private static Type ourPdb2MdbDriver;
     private static Type Pdb2MdbDriver
