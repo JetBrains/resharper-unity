@@ -339,11 +339,11 @@ namespace Plugins.Editor.JetBrains
       if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader" ||
             (selected.GetType().ToString() == "UnityEngine.TextAsset" &&
-#if UNITY_5 || UNITY_5_5_OR_NEWER
-             EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
-#else
+//#i f UNITY_5 || UNITY_5_5_OR_NEWER
+//             EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
+//#e lse
             EditorSettings.externalVersionControl.Contains(Path.GetExtension(assetFilePath).Substring(1))
-#endif
+//#e ndif
             )))
         return false;
 
