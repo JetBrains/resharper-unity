@@ -383,7 +383,7 @@ namespace Plugins.Editor.JetBrains
 
       var apiCompatibilityLevel = 3;
       // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-//#if !UNITY_5_6_OR_NEWER
+//#i f !UNITY_5_6_OR_NEWER
       //if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
 //      #else
 //      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
