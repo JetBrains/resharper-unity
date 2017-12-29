@@ -22,7 +22,7 @@ namespace Plugins.Editor.JetBrains
 
     public bool IsEnabled(LoggingLevel level)
     {
-      return level <= RiderPlugin.SelectedLoggingLevel;
+      return level <= Menu.SelectedLoggingLevel;
     }
 
     public void Log(LoggingLevel level, string message, Exception exception = null)

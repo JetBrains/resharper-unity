@@ -346,9 +346,9 @@ namespace Plugins.Editor.JetBrains
         catch(Exception){}
         
         if (scriptingRuntime>0)
-          targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
+          targetFrameworkVersion.SetValue("v"+Menu.TargetFrameworkVersion);
         else
-          targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersionOldMono);
+          targetFrameworkVersion.SetValue("v"+Menu.TargetFrameworkVersionOldMono);
       }
     }
 
