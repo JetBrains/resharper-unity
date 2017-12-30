@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.Comment;
+﻿using JetBrains.Application.Settings;
+using JetBrains.ReSharper.Feature.Services.Comment;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
@@ -22,6 +23,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Comment
         protected override bool IsWhitespace(TokenNodeType tokenType)
         {
             return tokenType.IsWhitespace;
+        }
+
+        public override bool ShouldInsertAtLineStart(IContextBoundSettingsStore settingsStore)
+        {
+            return false;
+        }
+
+        public override bool ShouldInsertSpaceAtCommentStartAndEnd(IContextBoundSettingsStore settingsStore)
+        {
+            return true;
         }
 
         public override string StartLineCommentMarker => "//";
