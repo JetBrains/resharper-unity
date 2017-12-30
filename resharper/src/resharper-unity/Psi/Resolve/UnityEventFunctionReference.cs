@@ -78,8 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 
         public override TreeTextRange GetTreeTextRange()
         {
-            var csharpLiteral = myOwner as ICSharpLiteralExpression;
-            if (csharpLiteral != null)
+            if (myOwner is ICSharpLiteralExpression csharpLiteral)
             {
                 var range = csharpLiteral.GetStringLiteralContentTreeRange();
                 if (range.Length != 0)
