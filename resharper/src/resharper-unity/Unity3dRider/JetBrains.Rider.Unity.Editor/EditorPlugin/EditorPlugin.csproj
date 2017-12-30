@@ -44,14 +44,12 @@
       <HintPath>..\packages\JetBrains.Unity.Libs.2017.2.0b3.2017.7.21\lib\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-
     <Reference Include="JetBrains.Platform.RdCore35">
       <HintPath>../lib/JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>../lib/JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
-    
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -62,12 +60,12 @@
     <Compile Include="MainThreadDispatcher.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="OperatingSystemFamilyRider.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RiderAssetPostprocessor.cs" />
     <Compile Include="RiderLogger.cs" />
     <Compile Include="RiderLoggerFactory.cs" />
     <Compile Include="RiderPlugin.cs" />
     <Compile Include="UnityApplication.cs" />
+    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

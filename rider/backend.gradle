@@ -216,11 +216,12 @@ task detectMSBuild {
 task buildUnity3dRider {
     dependsOn detectMSBuild
     group = backendGroup
-    description = 'Build buildProtocol. Runs MSBuild and creates binaries.'
-
-    // todo: put $version somewhere in the sources")
+    description = 'Build Unity3dRider. Runs MSBuild and creates binaries.'
 
     doLast {
+        def file = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/JetBrains.Rider.Unity.Editor/AssemblyCustomAttributes.Generated.cs")
+        file.write("[assembly: global::System.Reflection.AssemblyVersionAttribute(\"$version\")]")
+
         def projectOrSolution = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/JetBrains.Rider.Unity.Editor/JetBrains.Rider.Unity.Editor.sln")
         assert projectOrSolution.isFile()
 

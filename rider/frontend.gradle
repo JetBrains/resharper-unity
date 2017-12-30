@@ -16,7 +16,7 @@ intellij {
     // version = 'LATEST-TRUNK-SNAPSHOT'
     // If the build isn't available in intellij-repository, use an installed version via `localPath`
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
-    localPath = "F:\\RiderSDK"
+    // localPath = "F:\\RiderSDK"
 
     def dir = file('dependencies')
     if (dir.exists()) {
