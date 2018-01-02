@@ -40,7 +40,10 @@ namespace Plugins.Editor.JetBrains
     private static string GetDefaultApp()
     {
       var allFoundPaths = GetAllRiderPaths().Select(a=>new FileInfo(a).FullName).ToArray();
-      var alreadySetPath = new FileInfo(GetExternalScriptEditor()).FullName;
+      var externalEditor = GetExternalScriptEditor();
+      if (externalEditor == null)
+        return null;
+      var alreadySetPath = new FileInfo(externalEditor).FullName;
       
       if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && !allFoundPaths.Any() ||
           !string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() &&
