@@ -13,6 +13,7 @@ using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Host.Features.FileSystem;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
@@ -104,17 +105,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (e.Key == "UNITY_Refresh" && e.NewValue!=e.OldValue && e.NewValue!=null && e.NewValue.ToLower() == "true")
                 {
                     myLogger.Info($"UNITY_Refresh {e.NewValue} came from frontend.");
-                    var task = UnityModel?.Refresh.Start(RdVoid.Instance);
-                    Lifetimes.Using(lt =>
+
+                    var lifetimeDef = Lifetimes.Define(myLifetime);
+                    var result = UnityModel?.Refresh.Start(RdVoid.Instance)?.Result;
+                    if (result != null)
                     {
-                        var list = new List<string>();
-                        list.Add(solFolder.FullPath);
-                        task?.Result.Advise(lt, result =>
+                        mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime, 
+                            RiderBackgroundTaskBuilder.Create().WithHeader("Refresh").AsIndeterminate().AsNonCancelable());
+                        
+                        result.Advise(lifetimeDef.Lifetime, _ =>
                         {
-                            solution.FileSystemModel.RefreshPaths.Start(new RdRefreshRequest(list,true));
+                            try
+                            {
+                                var list = new List<string> {solFolder.FullPath};
+                                solution.FileSystemModel.RefreshPaths.Start(new RdRefreshRequest(list, true));
+                            }
+                            finally
+                            {
+                                lifetimeDef.Terminate();
+                            }
                         });
-                        });
-                    ;
+                    }
                 }
             });
         }
