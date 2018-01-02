@@ -83,15 +83,17 @@ namespace Plugins.Editor.JetBrains
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
       // Unity_5_6_OR_NEWER switched to nunit 3.5
-#if UNITY_5_6_OR_NEWER 
-      ChangeNunitReference(projectContentElement, xmlns);
-#endif
+      if (RiderPlugin.unityVersion >= new Version("5.6"))
+        ChangeNunitReference(projectContentElement, xmlns);
       
-#if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself 
-      SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
-#endif
+//#i f !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
+      if (RiderPlugin.unityVersion >= new Version("2017.1"))
+      {
+        SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
+        SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
+        SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);  
+      }    
+//#endif
       ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
       doc.Save(projectFile);
     }
@@ -128,7 +130,8 @@ namespace Plugins.Editor.JetBrains
     }
 
     private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "mcs.rsp");
-#if !UNITY_2017_1_OR_NEWER  // Unity 2017.1 and later has this features by itself
+// Unity 2017.1 and later has this features by itself
+//#i f !UNITY_2017_1_OR_NEWER  
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
@@ -251,7 +254,7 @@ namespace Plugins.Editor.JetBrains
         projectContentElement.Add(itemGroup);
       }
     }
-#endif
+// #endif
     private const string UNITY_REFERENCE_KEYWORD = "-r:";
     /// <summary>
     /// Handles custom references -r: in "mcs.rsp"
@@ -309,7 +312,17 @@ namespace Plugins.Editor.JetBrains
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        if (net46)
+        int scriptingRuntime = 0; // old mono
+        try
+        {
+          var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
+          scriptingRuntime = (int)property.GetValue(null, null);
+          if (scriptingRuntime>0)
+            RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Latest runtime detected.");
+        }
+        catch(Exception){}
+        
+        if (scriptingRuntime>0)
           targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
         else
           targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersionOldMono);
@@ -344,22 +357,16 @@ namespace Plugins.Editor.JetBrains
         return "6";
 
       // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-#if !UNITY_5_6_OR_NEWER
+//#i f !UNITY_5_6_OR_NEWER
+//      if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
+//      #else
+//      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
+//#endif
       if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
-      #else
-      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
-#endif
         return "6";
 
       return "4";
     }
-    
-    private static bool net46 = 
-#if NET_4_6
-      true;
-#else
-      false;
-#endif
 
     private static Type ourPdb2MdbDriver;
     private static Type Pdb2MdbDriver
