@@ -70,6 +70,9 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Protocol\Protocol.csproj">
       <Project>{9ceeab55-8151-4b06-88f4-5597b75ca47f}</Project>
       <Name>Protocol</Name>

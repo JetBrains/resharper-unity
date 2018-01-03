@@ -412,9 +412,26 @@ namespace JetBrains.Rider.Unity.Editor
         Assembly assembly;
         try
         {
-          var path = Path.Combine(Directory.GetCurrentDirectory(), @"Library\resharper-unity-libs\pdb2mdb.exe");
-          var bytes = File.ReadAllBytes(path);
-          assembly = Assembly.Load(bytes);
+          var names = typeof(RiderAssetPostprocessor).Assembly.GetManifestResourceNames();
+          foreach (var name in names)
+          {
+            Logger.Verbose(Environment.NewLine+name);  
+          }
+          
+          const string resourceName = "JetBrains.Rider.Unity.Editor.pdb2mdb.exe";
+          using (var resourceStream = typeof (RiderAssetPostprocessor).Assembly.GetManifestResourceStream(resourceName))
+          {
+            using (var memoryStream = new MemoryStream())
+            {
+              if (resourceStream == null)
+              {
+                Logger.Error("Plugin file not found in manifest resources. " + resourceName);
+                return null;
+              }
+              CopyStream(resourceStream, memoryStream);
+              assembly = Assembly.Load(memoryStream.ToArray());
+            }    
+          }
         }
         catch (Exception)
         {
@@ -429,6 +446,14 @@ namespace JetBrains.Rider.Unity.Editor
           return null;
         return ourPdb2MdbDriver = type;
       }
+    }
+    
+    private static void CopyStream(Stream origin, Stream target)
+    {
+      var buffer = new byte[8192];
+      int count;
+      while ((count = origin.Read(buffer, 0, buffer.Length)) > 0)
+        target.Write(buffer, 0, count);
     }
 
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)

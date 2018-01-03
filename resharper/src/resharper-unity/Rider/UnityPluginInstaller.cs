@@ -93,7 +93,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             
             InstallFromResource(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll", ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll");
-            InstallFromResource(@"Library\resharper-unity-libs\pdb2mdb.exe", ".Unity3dRider.Library.resharper_unity_libs.pdb2mdb.exe");
             
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
