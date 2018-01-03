@@ -4,7 +4,7 @@ using JetBrains.Platform.RdFramework;
 using JetBrains.Util.Logging;
 using UnityEditor;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   public class MainThreadDispatcher : IScheduler
   {

@@ -1,28 +1,19 @@
 using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Reflection;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
-using JetBrains.Platform.Unity.Model;
-using JetBrains.Rider.Unity.Editor;
-using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
-using UnityEngine;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   [InitializeOnLoad]
-  public static partial class RiderPlugin
+  public static class RiderPlugin
   {
     static RiderPlugin()
     {
@@ -150,7 +141,7 @@ namespace Plugins.Editor.JetBrains
         lifetimeDefinition.Terminate();
       });
 
-      Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", logPath));
+      Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", LogPath));
 
       ourRiderProtocolController = new RiderProtocolController(
         Application.dataPath,
@@ -165,7 +156,7 @@ namespace Plugins.Editor.JetBrains
       Initialized = true;
     }
     
-    internal static string  logPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+    internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
 
     internal static readonly MainThreadDispatcher MainThreadDispatcher1 = new MainThreadDispatcher();
 

@@ -62,7 +62,6 @@
     <Compile Include="OperatingSystemFamilyRider.cs" />
     <Compile Include="RiderAssetPostprocessor.cs" />
     <Compile Include="RiderLogger.cs" />
-    <Compile Include="RiderLoggerFactory.cs" />
     <Compile Include="RiderPlugin.cs" />
     <Compile Include="UnityApplication.cs" />
     <Compile Include="../AssemblyCustomAttributes.Generated.cs" />

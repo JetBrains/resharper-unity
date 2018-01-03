@@ -3,7 +3,7 @@ using System.IO;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   public class RiderLoggerFactory : ILogFactory
   {
@@ -34,14 +34,14 @@ namespace Plugins.Editor.JetBrains
       var dotidx = Category.LastIndexOf(".");
       var categoryText = Category.Substring(dotidx >= 0 ? dotidx + 1 : 0);
       var text = categoryText + "[" + level + "]" +
-                 DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + " " + message;
+                 DateTime.Now.ToString(Util.Logging.Log.DefaultDateFormat) + " " + message;
 
       // using Unity logs causes frequent Unity hangs
       RiderPlugin.MainThreadDispatcher1.Queue(() =>
       {
-        if (!new FileInfo(RiderPlugin.logPath).Directory.Exists)
-          new FileInfo(RiderPlugin.logPath).Directory.Create();
-        File.AppendAllText(RiderPlugin.logPath, Environment.NewLine + text);
+        if (!new FileInfo(RiderPlugin.LogPath).Directory.Exists)
+          new FileInfo(RiderPlugin.LogPath).Directory.Create();
+        File.AppendAllText(RiderPlugin.LogPath, Environment.NewLine + text);
       });
 
 //      switch (level)

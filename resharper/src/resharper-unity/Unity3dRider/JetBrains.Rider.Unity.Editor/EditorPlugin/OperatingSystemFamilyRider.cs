@@ -1,11 +1,12 @@
 using System;
 using UnityEngine;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   public enum OperatingSystemFamilyRider
   {
     Other,
+    // ReSharper disable once InconsistentNaming
     MacOSX,
     Windows,
     Linux,
@@ -13,6 +14,7 @@ namespace Plugins.Editor.JetBrains
 
   public static class SystemInfoRiderPlugin
   {
+    // ReSharper disable once InconsistentNaming
     public static OperatingSystemFamilyRider operatingSystemFamily
     {
       get

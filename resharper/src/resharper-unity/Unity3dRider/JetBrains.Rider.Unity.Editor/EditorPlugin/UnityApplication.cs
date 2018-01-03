@@ -3,18 +3,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.Unity.Model;
-using JetBrains.Rider.Unity.Editor;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   public class UnityApplication
   {
-    private RiderProtocolController myProtocolController;
-    private MainThreadDispatcher myMainThreadScheduler;
+    private readonly RiderProtocolController myProtocolController;
+    private readonly MainThreadDispatcher myMainThreadScheduler;
     public UnityApplication(RiderProtocolController controller, MainThreadDispatcher mainThreadScheduler)
     {
       myProtocolController = controller;
@@ -92,10 +90,9 @@ namespace Plugins.Editor.JetBrains
     /// </summary>
     public static void SyncSolution()
     {
-      System.Type T = System.Type.GetType("UnityEditor.SyncVS,UnityEditor");
-      System.Reflection.MethodInfo SyncSolution = T.GetMethod("SyncSolution",
-        System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-      SyncSolution.Invoke(null, null);
+      var T = Type.GetType("UnityEditor.SyncVS,UnityEditor");
+      var syncSolution = T.GetMethod("SyncSolution", BindingFlags.Public | BindingFlags.Static);
+      syncSolution.Invoke(null, null);
     }
 
     internal static Version UnityVersion

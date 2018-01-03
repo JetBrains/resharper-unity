@@ -5,7 +5,7 @@ using JetBrains.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   public static class Menu
   {
@@ -14,7 +14,7 @@ namespace Plugins.Editor.JetBrains
     internal static LoggingLevel SelectedLoggingLevelMainThread
     {
       get { return (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1); }
-      set
+      private set
       {
         SelectedLoggingLevel = value;
         EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
@@ -45,6 +45,7 @@ namespace Plugins.Editor.JetBrains
     {
       try
       {
+        // ReSharper disable once ObjectCreationAsStatement
         new Version(value); // mono 2.6 doesn't support Version.TryParse
         action(value);
         return true;

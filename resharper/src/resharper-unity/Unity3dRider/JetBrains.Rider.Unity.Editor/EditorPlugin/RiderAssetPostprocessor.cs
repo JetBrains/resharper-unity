@@ -1,17 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Collections.Generic; 
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
-using JetBrains.Rider.Unity.Editor;
-using JetBrains.Util.Logging;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   public class RiderAssetPostprocessor : AssetPostprocessor
   {
@@ -114,18 +113,6 @@ namespace Plugins.Editor.JetBrains
       doc.Save(projectFile);
     }
 
-    private static void RemoveDllReference(string referenceName, XNamespace xmlns, XElement projectContentElement)
-    {
-      var elements = projectContentElement
-        .Elements(xmlns + "ItemGroup")
-        .Elements(xmlns + "Reference")
-        .Where(a => a.Attribute("Include") !=null && a.Attribute("Include").Value == referenceName).ToArray();
-      foreach (var element in elements)
-      {
-        element.Remove();
-      }
-    }
-
     private static void FixSystemXml(XElement projectContentElement, XNamespace xmlns)
     {
       var el = projectContentElement
@@ -157,13 +144,13 @@ namespace Plugins.Editor.JetBrains
       }
     }
 
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "mcs.rsp");
+    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(Application.dataPath, "mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "smcs.rsp");
-    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "gmcs.rsp");
+    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(Application.dataPath, "smcs.rsp");
+    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(Application.dataPath, "gmcs.rsp");
 
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
@@ -235,15 +222,12 @@ namespace Plugins.Editor.JetBrains
     {
       var definesString = string.Join(";", customDefines);
 
-      var DefineConstants = projectContentElement
+      var defineConstants = projectContentElement
         .Elements(xmlns+"PropertyGroup")
         .Elements(xmlns+"DefineConstants")
         .FirstOrDefault(definesConsts=> !string.IsNullOrEmpty(definesConsts.Value));
 
-      if (DefineConstants != null)
-      {
-        DefineConstants.SetValue(DefineConstants.Value + ";" + definesString);
-      }
+      defineConstants?.SetValue(defineConstants.Value + ";" + definesString);
     }
 
     private static void ApplyAllowUnsafeBlocks(XElement projectContentElement, XNamespace xmlns)
@@ -411,8 +395,6 @@ namespace Plugins.Editor.JetBrains
       {
         Logger.Verbose("Exception on evaluating PlayerSettings.apiCompatibilityLevel");
       }
-
-
 
       if (apiCompatibilityLevel >= 3)
         return "6";
