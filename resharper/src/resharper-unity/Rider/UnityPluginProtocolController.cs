@@ -33,11 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private UnityModel UnityModel { get; set; }
+        private readonly UnityRefresher myUnityRefresher;
+        public UnityModel UnityModel { get; set; }
         private Protocol myProtocol;
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, 
-            IScheduler dispatcher, IShellLocks locks, ISolution solution)
+            IScheduler dispatcher, IShellLocks locks, ISolution solution, UnityRefresher unityRefresher)
         {
             if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath.Directory))
                 return;
@@ -47,12 +48,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
+            myUnityRefresher = unityRefresher;
             SessionLifetimes = new SequentialLifetimes(lifetime);
 
+            var solFolder = mySolution.SolutionFilePath.Directory;
             SubscribeToPlay(mySolution.GetProtocolSolution());
-            SubscribeRefresh(mySolution.GetProtocolSolution(), mySolution.SolutionFilePath.Directory);
+            SubscribeRefresh(mySolution.GetProtocolSolution(), solFolder);
 
-            var protocolInstancePath = mySolution.SolutionFilePath.Directory.Combine(
+            var protocolInstancePath = solFolder.Combine(
                 "Library/ProtocolInstance.json"); // todo: consider non-Unity Solution with Unity-generated projects
 
             if (!protocolInstancePath.ExistsFile)
@@ -105,27 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (e.Key == "UNITY_Refresh" && e.NewValue!=e.OldValue && e.NewValue!=null && e.NewValue.ToLower() == "true")
                 {
                     myLogger.Info($"UNITY_Refresh {e.NewValue} came from frontend.");
-
-                    var lifetimeDef = Lifetimes.Define(myLifetime);
-                    var result = UnityModel?.Refresh.Start(RdVoid.Instance)?.Result;
-                    if (result != null)
-                    {
-                        mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime, 
-                            RiderBackgroundTaskBuilder.Create().WithHeader("Refresh").AsIndeterminate().AsNonCancelable());
-                        
-                        result.Advise(lifetimeDef.Lifetime, _ =>
-                        {
-                            try
-                            {
-                                var list = new List<string> {solFolder.FullPath};
-                                solution.FileSystemModel.RefreshPaths.Start(new RdRefreshRequest(list, true));
-                            }
-                            finally
-                            {
-                                lifetimeDef.Terminate();
-                            }
-                        });
-                    }
+                    myUnityRefresher.Refresh(UnityModel);
                 }
             });
         }
