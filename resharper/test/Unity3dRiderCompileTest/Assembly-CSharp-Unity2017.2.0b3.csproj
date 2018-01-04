@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>4</LangVersion>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,9 +39,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations">
-      <HintPath>..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\lib\JetBrains.Annotations.dll</HintPath>
-    </Reference>
     <Reference Include="JetBrains.Platform.RdCore35">
       <HintPath>..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
@@ -61,16 +58,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\src\resharper-unity\Unity3dRider\Assets\**\*.cs" Exclude="**/Unity3DRider.cs" />
+    <Compile Include="..\..\src\resharper-unity\Unity3dRider\**\*.cs" Exclude="**\*Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\JetBrains.Rider.Unity.Editor.csproj">
-      <Project>{9ceeab55-8151-4b06-88f4-5597b75ca47f}</Project>
-      <Name>JetBrains.Rider.Unity.Editor</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -6,11 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Unity4.7.2f
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Unity5.5.0f3", "Assembly-CSharp-Unity5.5.0f3.csproj", "{FA721C44-9251-7964-7FD6-34765B898793}"
 EndProject
-
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protocol", "..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\Protocol\Protocol.csproj", "{9CEEAB55-8151-4B06-88F4-5597B75CA47F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin", "..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\EditorPlugin\EditorPlugin.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,14 +24,6 @@ Global
 		{FA721C44-9251-7964-7FD6-34765B898793}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA721C44-9251-7964-7FD6-34765B898793}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA721C44-9251-7964-7FD6-34765B898793}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9CEEAB55-8151-4B06-88F4-5597B75CA47F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9CEEAB55-8151-4B06-88F4-5597B75CA47F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9CEEAB55-8151-4B06-88F4-5597B75CA47F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9CEEAB55-8151-4B06-88F4-5597B75CA47F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
