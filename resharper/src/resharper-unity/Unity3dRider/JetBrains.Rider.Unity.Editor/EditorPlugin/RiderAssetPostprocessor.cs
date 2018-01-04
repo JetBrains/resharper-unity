@@ -333,9 +333,9 @@ namespace JetBrains.Rider.Unity.Editor
         catch(Exception){}
         
         if (scriptingRuntime>0)
-          targetFrameworkVersion.SetValue("v"+Menu.TargetFrameworkVersion);
+          targetFrameworkVersion.SetValue("v"+Settings.TargetFrameworkVersion);
         else
-          targetFrameworkVersion.SetValue("v"+Menu.TargetFrameworkVersionOldMono);
+          targetFrameworkVersion.SetValue("v"+Settings.TargetFrameworkVersionOldMono);
       }
     }
 

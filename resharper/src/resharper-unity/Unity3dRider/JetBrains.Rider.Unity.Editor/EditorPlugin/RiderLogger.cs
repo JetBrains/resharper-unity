@@ -22,7 +22,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public bool IsEnabled(LoggingLevel level)
     {
-      return level <= Menu.SelectedLoggingLevel;
+      return level <= Settings.SelectedLoggingLevel;
     }
 
     public void Log(LoggingLevel level, string message, Exception exception = null)

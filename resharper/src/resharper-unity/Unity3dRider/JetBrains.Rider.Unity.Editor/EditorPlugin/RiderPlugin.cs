@@ -17,15 +17,15 @@ namespace JetBrains.Rider.Unity.Editor
   {
     static RiderPlugin()
     {
-      var riderPath = GetDefaultApp();
-      if (!RiderPathExist(riderPath))
+      var riderPath = RiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(), RiderApplication.GetAllFoundPaths());
+      if (string.IsNullOrEmpty(riderPath))
         return;
 
       UnityApplication.AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
-      if (!Menu.RiderInitializedOnce)
+      if (!Settings.RiderInitializedOnce)
       {
         UnityApplication.SetExternalScriptEditor(riderPath);
-        Menu.RiderInitializedOnce = true;
+        Settings.RiderInitializedOnce = true;
       }
 
       if (Enabled)
@@ -34,7 +34,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static bool Initialized;
+    private static bool ourInitialized;
     internal static string SlnFile;
     private static readonly ILog Logger = Log.GetLog("RiderPlugin");
     private static RiderProtocolController ourRiderProtocolController;
@@ -48,77 +48,9 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-
-    private static string GetDefaultApp()
-    {
-      var allFoundPaths = GetAllRiderPaths().Select(a => new FileInfo(a).FullName).ToArray();
-      var externalEditor = UnityApplication.GetExternalScriptEditor();
-      if (externalEditor == null)
-        return null;
-      var alreadySetPath = new FileInfo(externalEditor).FullName;
-
-      if (!string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && !allFoundPaths.Any() ||
-          !string.IsNullOrEmpty(alreadySetPath) && RiderPathExist(alreadySetPath) && allFoundPaths.Any() &&
-          allFoundPaths.Contains(alreadySetPath))
-      {
-        Menu.RiderPath = alreadySetPath;
-      }
-      else if (!string.IsNullOrEmpty(Menu.RiderPath) && allFoundPaths.Contains(new FileInfo(Menu.RiderPath).FullName))
-      {
-      }
-      else
-        Menu.RiderPath = allFoundPaths.FirstOrDefault();
-
-      return Menu.RiderPath;
-    }
-
-    internal static string[] GetAllRiderPaths()
-    {
-      switch (SystemInfoRiderPlugin.operatingSystemFamily)
-      {
-        case OperatingSystemFamilyRider.Windows:
-          string[] folders =
-          {
-            @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains", Path.Combine(
-              Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-              @"Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox")
-          };
-
-          var newPathLnks = folders.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
-            .SelectMany(c => c.GetFiles("*Rider*.lnk")).ToArray();
-          if (newPathLnks.Any())
-          {
-            var newPaths = newPathLnks
-              .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
-              .Where(fi => File.Exists(fi.FullName))
-              .ToArray()
-              .OrderByDescending(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
-              .Select(a => a.FullName).ToArray();
-
-            return newPaths;
-          }
-
-          break;
-
-        case OperatingSystemFamilyRider.MacOSX:
-          // "/Applications/*Rider*.app"
-          //"~/Applications/JetBrains Toolbox/*Rider*.app"
-          string[] foldersMac =
-          {
-            "/Applications", Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications/JetBrains Toolbox")
-          };
-          var newPathsMac = foldersMac.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
-            .SelectMany(c => c.GetDirectories("*Rider*.app"))
-            .Select(a => a.FullName).ToArray();
-          return newPathsMac;
-      }
-
-      return new string[0];
-    }
-
     private static void InitRiderPlugin()
     {
-      Menu.SelectedLoggingLevel = Menu.SelectedLoggingLevelMainThread;
+      Settings.SelectedLoggingLevel = Settings.SelectedLoggingLevelMainThread;
 
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
@@ -153,25 +85,12 @@ namespace JetBrains.Rider.Unity.Editor
 
       var application = new UnityApplication(ourRiderProtocolController, MainThreadDispatcher1);
       application.UnityLogRegisterCallBack();
-      Initialized = true;
+      ourInitialized = true;
     }
     
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
 
     internal static readonly MainThreadDispatcher MainThreadDispatcher1 = new MainThreadDispatcher();
-
-    private static bool RiderPathExist(string path)
-    {
-      if (string.IsNullOrEmpty(path))
-        return false;
-      // windows or mac
-      var fileInfo = new FileInfo(path);
-      if (!fileInfo.Name.ToLower().Contains("rider"))
-        return false;
-      var directoryInfo = new DirectoryInfo(path);
-      return fileInfo.Exists || (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX &&
-                                 directoryInfo.Exists);
-    }
 
     /// <summary>
     /// Creates and deletes Library/EditorInstance.json containing info about unity instance
@@ -214,7 +133,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!Enabled) 
         return false;
-      if (!Initialized)
+      if (!ourInitialized)
       {
         // make sure the plugin was initialized first.
         // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
@@ -272,8 +191,8 @@ namespace JetBrains.Rider.Unity.Editor
     
     internal static bool CallRider(string args)
     {
-      var defaultApp = GetDefaultApp();
-      if (!RiderPathExist(defaultApp))
+      var defaultApp = RiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(), RiderApplication.GetAllFoundPaths());
+      if (string.IsNullOrEmpty(defaultApp))
       {
         return false;
       }

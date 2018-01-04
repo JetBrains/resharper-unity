@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public static class Menu
+  public static class Settings
   {
     internal static LoggingLevel SelectedLoggingLevel { get; set; }
 
@@ -84,7 +84,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static string RiderPath
     {
-      get { return EditorPrefs.GetString("Rider_RiderPath", RiderPlugin.GetAllRiderPaths().FirstOrDefault()); }
+      get { return EditorPrefs.GetString("Rider_RiderPath", null); }
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
 
@@ -122,7 +122,7 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUILayout.BeginVertical();
       EditorGUI.BeginChangeCheck();
 
-      var alternatives = RiderPlugin.GetAllRiderPaths();
+      var alternatives = RiderApplication.GetAllFoundPaths();
       if (alternatives.Any())
       {
         int index = Array.IndexOf(alternatives, RiderPath);

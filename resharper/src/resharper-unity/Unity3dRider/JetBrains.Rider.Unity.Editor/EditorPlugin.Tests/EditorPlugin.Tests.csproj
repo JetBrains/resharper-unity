@@ -4,79 +4,58 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}</ProjectGuid>
+    <ProjectGuid>{0E4211DB-DA60-416B-A13C-14D45410F768}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
-    <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>EditorPlugin.Tests</RootNamespace>
+    <AssemblyName>EditorPlugin.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Assets\Plugins\Editor\JetBrains</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>full</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Assets\Plugins\Editor\JetBrains</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations">
-      <HintPath>../lib/JetBrains.Annotations.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb">
+      <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\JetBrains.Unity.Libs.2017.2.0b3.2017.7.21\lib\UnityEditor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\packages\JetBrains.Unity.Libs.2017.2.0b3.2017.7.21\lib\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="JetBrains.Platform.RdCore35">
-      <HintPath>../lib/JetBrains.Platform.RdCore35.dll</HintPath>
-    </Reference>
-    <Reference Include="JetBrains.Platform.RdFramework35">
-      <HintPath>../lib/JetBrains.Platform.RdFramework35.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\JetBrains.Unity.Libs.2017.2.0b3.2017.7.21\lib\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\JetBrains.Unity.Libs.2017.2.0b3.2017.7.21\lib\UnityEngine.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainThreadDispatcher.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="OperatingSystemFamilyRider.cs" />
-    <Compile Include="RiderApplication.cs" />
-    <Compile Include="RiderAssetPostprocessor.cs" />
-    <Compile Include="RiderLogger.cs" />
-    <Compile Include="RiderPlugin.cs" />
-    <Compile Include="UnityApplication.cs" />
-    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
+    <Compile Include="RiderPluginTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Protocol\Protocol.csproj">
-      <Project>{9ceeab55-8151-4b06-88f4-5597b75ca47f}</Project>
-      <Name>Protocol</Name>
+    <ProjectReference Include="..\EditorPlugin\EditorPlugin.csproj">
+      <Project>{67cfb019-ce94-4251-8c3a-4dc70e4e4a52}</Project>
+      <Name>EditorPlugin</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
