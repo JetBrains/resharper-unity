@@ -58,7 +58,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\src\resharper-unity\Unity3dRider\**\*.cs" Exclude="**\*Test.cs" />
+    <Compile Include="..\..\src\resharper-unity\Unity3dRider\**\*.cs" Exclude="..\..\**\EditorPlugin.Tests\**" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
