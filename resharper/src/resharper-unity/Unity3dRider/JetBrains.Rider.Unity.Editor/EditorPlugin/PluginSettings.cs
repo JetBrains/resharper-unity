@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public static class Settings
-  {
+  public class PluginSettings : IPluginSettings
+  {  
     internal static LoggingLevel SelectedLoggingLevel { get; set; }
 
     internal static LoggingLevel SelectedLoggingLevelMainThread
@@ -82,7 +82,7 @@ namespace JetBrains.Rider.Unity.Editor
       set { TryCatch(value, val => { EditorPrefs.SetString("Rider_TargetFrameworkVersionOldMono", val); }); }
     }
 
-    public static string RiderPath
+    static string RiderPathInternal
     {
       get { return EditorPrefs.GetString("Rider_RiderPath", null); }
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
@@ -122,16 +122,16 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUILayout.BeginVertical();
       EditorGUI.BeginChangeCheck();
 
-      var alternatives = RiderApplication.GetAllFoundPaths();
+      var alternatives = RiderApplication.GetAllFoundPaths(SystemInfoRiderPlugin.operatingSystemFamily);
       if (alternatives.Any())
       {
-        int index = Array.IndexOf(alternatives, RiderPath);
+        int index = Array.IndexOf(alternatives, RiderPathInternal);
         var alts = alternatives.Select(s => s.Replace("/", ":"))
           .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-        RiderPath = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
+        RiderPathInternal = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
         if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), RiderPlugin.Enabled))
         {
-          UnityApplication.SetExternalScriptEditor(RiderPath);
+          UnityApplication.SetExternalScriptEditor(RiderPathInternal);
           EditorGUILayout.HelpBox("Unckecking will restore default external editor.", MessageType.None);
         }
         else
@@ -205,5 +205,44 @@ namespace JetBrains.Rider.Unity.Editor
       if (bClicked)
         Application.OpenURL(url);
     }
+
+    public OperatingSystemFamilyRider OperatingSystemFamilyRider
+    {
+      get { return SystemInfoRiderPlugin.operatingSystemFamily; }
+    }
+
+    string IPluginSettings.RiderPath
+    {
+      get { return RiderPathInternal; }
+      set { RiderPathInternal = value; }
+    }
+    
+    static class SystemInfoRiderPlugin
+    {
+      // ReSharper disable once InconsistentNaming
+      public static OperatingSystemFamilyRider operatingSystemFamily
+      {
+        get
+        {
+          if (SystemInfo.operatingSystem.StartsWith("Mac", StringComparison.InvariantCultureIgnoreCase))
+          {
+            return OperatingSystemFamilyRider.MacOSX;
+          }
+
+          if (SystemInfo.operatingSystem.StartsWith("Win", StringComparison.InvariantCultureIgnoreCase))
+          {
+            return OperatingSystemFamilyRider.Windows;
+          }
+
+          if (SystemInfo.operatingSystem.StartsWith("Lin", StringComparison.InvariantCultureIgnoreCase))
+          {
+            return OperatingSystemFamilyRider.Linux;
+          }
+
+          return OperatingSystemFamilyRider.Other;
+        }
+      }
+    }
+
   }
 }

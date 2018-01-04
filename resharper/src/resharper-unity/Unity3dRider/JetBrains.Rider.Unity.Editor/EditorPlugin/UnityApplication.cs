@@ -52,7 +52,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
-      if (Settings.SendConsoleToRider)
+      if (PluginSettings.SendConsoleToRider)
       {
         if (myProtocolController == null)
           return;

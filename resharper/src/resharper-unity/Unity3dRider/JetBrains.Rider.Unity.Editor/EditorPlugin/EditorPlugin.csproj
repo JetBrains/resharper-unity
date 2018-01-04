@@ -57,8 +57,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IPluginSettings.cs" />
     <Compile Include="MainThreadDispatcher.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="PluginSettings.cs" />
     <Compile Include="OperatingSystemFamilyRider.cs" />
     <Compile Include="RiderApplication.cs" />
     <Compile Include="RiderAssetPostprocessor.cs" />

@@ -1,19 +1,26 @@
 ﻿using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public static class RiderApplication
+  public class RiderApplication
   {
+    private IPluginSettings myPluginSettings;
+    public RiderApplication(IPluginSettings pluginSettings)
+    {
+      myPluginSettings = pluginSettings;
+    }
+    
     /// <summary>
     /// Returns RiderPath, if it exists
     /// </summary>
     /// <param name="externalEditor"></param>
     /// <param name="allFoundPaths"></param>
     /// <returns>May return null, if nothing found.</returns>
-    public static string GetDefaultRiderApp(string externalEditor, string[] allFoundPaths)
+    public string GetDefaultRiderApp(string externalEditor, string[] allFoundPaths)
     {
       // update previously selected editor, if better one is found
       if (!string.IsNullOrEmpty(externalEditor))
@@ -23,23 +30,23 @@ namespace JetBrains.Rider.Unity.Editor
         {
           if (!allFoundPaths.Any() || allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
           {
-            Settings.RiderPath = alreadySetPath;
+            myPluginSettings.RiderPath = alreadySetPath;
             return alreadySetPath;
           }
         }
       }
       
-      if (!string.IsNullOrEmpty(Settings.RiderPath) && allFoundPaths.Contains(new FileInfo(Settings.RiderPath).FullName))
+      if (!string.IsNullOrEmpty(myPluginSettings.RiderPath) && allFoundPaths.Contains(new FileInfo(myPluginSettings.RiderPath).FullName))
       {
         // Settings.RiderPath is good enough
       }
       else
-        Settings.RiderPath = allFoundPaths.FirstOrDefault();
+        myPluginSettings.RiderPath = allFoundPaths.FirstOrDefault();
 
-      return Settings.RiderPath;
+      return myPluginSettings.RiderPath;
     }
   
-    private static bool RiderPathExist(string path)
+    private bool RiderPathExist(string path)
     {
       if (string.IsNullOrEmpty(path))
         return false;
@@ -48,19 +55,19 @@ namespace JetBrains.Rider.Unity.Editor
       if (!fileInfo.Name.ToLower().Contains("rider"))
         return false;
       var directoryInfo = new DirectoryInfo(path);
-      return fileInfo.Exists || (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX &&
-                                 directoryInfo.Exists);
+      var isMac = myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX;
+      return fileInfo.Exists || (isMac && directoryInfo.Exists);
     }
 
-    internal static string[] GetAllFoundPaths()
+    internal static string[] GetAllFoundPaths(OperatingSystemFamilyRider operatingSystemFamily)
     {
       // fix separators
-      return GetAllRiderPaths().Select(a => new FileInfo(a).FullName).ToArray();
+      return GetAllRiderPaths(operatingSystemFamily).Select(a => new FileInfo(a).FullName).ToArray();
     }
 
-    private static string[] GetAllRiderPaths()
+    private static string[] GetAllRiderPaths( OperatingSystemFamilyRider operatingSystemFamily)
     {
-      switch (SystemInfoRiderPlugin.operatingSystemFamily)
+      switch (operatingSystemFamily)
       {
         case OperatingSystemFamilyRider.Windows:
           string[] folders =

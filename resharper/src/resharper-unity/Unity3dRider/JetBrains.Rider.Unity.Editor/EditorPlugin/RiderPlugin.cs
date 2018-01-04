@@ -15,17 +15,22 @@ namespace JetBrains.Rider.Unity.Editor
   [InitializeOnLoad]
   public static class RiderPlugin
   {
+    private static IPluginSettings ourPluginSettings;
+    private static RiderApplication ourRiderApplication;
+    
     static RiderPlugin()
     {
-      var riderPath = RiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(), RiderApplication.GetAllFoundPaths());
+      ourPluginSettings = new PluginSettings();
+      ourRiderApplication = new RiderApplication(ourPluginSettings);
+      var riderPath = ourRiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(), RiderApplication.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
       if (string.IsNullOrEmpty(riderPath))
         return;
 
       UnityApplication.AddRiderToRecentlyUsedScriptApp(riderPath, "RecentlyUsedScriptApp");
-      if (!Settings.RiderInitializedOnce)
+      if (!PluginSettings.RiderInitializedOnce)
       {
         UnityApplication.SetExternalScriptEditor(riderPath);
-        Settings.RiderInitializedOnce = true;
+        PluginSettings.RiderInitializedOnce = true;
       }
 
       if (Enabled)
@@ -50,7 +55,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void InitRiderPlugin()
     {
-      Settings.SelectedLoggingLevel = Settings.SelectedLoggingLevelMainThread;
+      PluginSettings.SelectedLoggingLevel = PluginSettings.SelectedLoggingLevelMainThread;
 
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
@@ -191,14 +196,14 @@ namespace JetBrains.Rider.Unity.Editor
     
     internal static bool CallRider(string args)
     {
-      var defaultApp = RiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(), RiderApplication.GetAllFoundPaths());
+      var defaultApp = ourRiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(), RiderApplication.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
       if (string.IsNullOrEmpty(defaultApp))
       {
         return false;
       }
 
       var proc = new Process();
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
+      if (ourPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX)
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
@@ -223,7 +228,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void ActivateWindow(int? processId=null)
     {
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+      if (ourPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.Windows)
       {
         try
         {
