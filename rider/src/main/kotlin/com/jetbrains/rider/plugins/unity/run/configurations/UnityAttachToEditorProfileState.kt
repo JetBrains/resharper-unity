@@ -45,24 +45,24 @@ class UnityAttachToEditorProfileState(val remoteConfiguration: UnityAttachToEdit
         val result = super.execute(executor, runner, workerProcessHandler)
 
         if (remoteConfiguration.play) {
-            try {
-                var debuggerManager = executionEnvironment.project.getComponent(XDebuggerManager::class.java)
-                val debugProcess = debuggerManager.currentSession!!.debugProcess as DotNetDebugProcess
-                // wait till debugger fully attached, because entering play mode in Unity will lead to reload appdomain. it may hang, if debugger is doing smth in background
-                val disposable:com.intellij.openapi.Disposable = Disposable {  }
-                var time = LocalDateTime.now();
-                debugProcess.debuggerOutputConsole.addChangeListener(ObservableConsoleView.ChangeListener {
-                    time = LocalDateTime.now();
-                }, disposable)
-
-                pumpMessages(1000) {
-                    LocalDateTime.now().isBefore(time.plusSeconds(1))
-                }
-            }
-            catch (ex:Exception)
-            {
-                logger.error(ex)
-            }
+//            try {
+//                var debuggerManager = executionEnvironment.project.getComponent(XDebuggerManager::class.java)
+//                val debugProcess = debuggerManager.currentSession!!.debugProcess as DotNetDebugProcess
+//                // wait till debugger fully attached, because entering play mode in Unity will lead to reload appdomain. it may hang, if debugger is doing smth in background
+//                val disposable:com.intellij.openapi.Disposable = Disposable {  }
+//                var time = LocalDateTime.now();
+//                debugProcess.debuggerOutputConsole.addChangeListener(ObservableConsoleView.ChangeListener {
+//                    time = LocalDateTime.now();
+//                }, disposable)
+//
+//                pumpMessages(1000) {
+//                    LocalDateTime.now().isBefore(time.plusSeconds(1))
+//                }
+//            }
+//            catch (ex:Exception)
+//            {
+//                logger.error(ex)
+//            }
 
             logger.info("Pass value to backend, which will push Unity to enter play mode.")
             sessionLifetime.bracket(opening = {
