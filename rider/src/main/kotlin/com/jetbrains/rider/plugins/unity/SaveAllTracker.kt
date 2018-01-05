@@ -14,7 +14,9 @@ import com.jetbrains.rider.util.idea.LifetimedComponent
 class SaveAllTracker(val project: Project, val actionManagerEx: ActionManagerEx) : ILifetimedComponent by LifetimedComponent(project) {
 
     init {
-        actionManagerEx.addAnActionListener(FileListenerImpl(project))
+        val listener = FileListenerImpl(project)
+        actionManagerEx.addAnActionListener(listener)
+        componentLifetime.add { actionManagerEx.removeAnActionListener(listener) }
     }
 
     class FileListenerImpl(val project: Project) : AnActionListener {
