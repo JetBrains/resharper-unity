@@ -42,6 +42,7 @@ class UnityModel (
             serializers.register(RdOpenFileArgs)
             serializers.register(RdLogEvent)
             serializers.register(RdLogEventType.marshaller)
+            serializers.register(RdLogEventMode.marshaller)
             serializers.register(UnityLogModelInitialized)
         }
         
@@ -164,6 +165,7 @@ class UnityModel (
 
 data class RdLogEvent (
     val type : RdLogEventType,
+    val mode : RdLogEventMode,
     val message : String,
     val stackTrace : String
 ) : IPrintable {
@@ -175,13 +177,15 @@ data class RdLogEvent (
         @Suppress("UNCHECKED_CAST")
         override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): RdLogEvent {
             val type = buffer.readEnum<RdLogEventType>()
+            val mode = buffer.readEnum<RdLogEventMode>()
             val message = buffer.readString()
             val stackTrace = buffer.readString()
-            return RdLogEvent(type, message, stackTrace)
+            return RdLogEvent(type, mode, message, stackTrace)
         }
         
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: RdLogEvent) {
             buffer.writeEnum(value.type)
+            buffer.writeEnum(value.mode)
             buffer.writeString(value.message)
             buffer.writeString(value.stackTrace)
         }
@@ -200,6 +204,7 @@ data class RdLogEvent (
         other as RdLogEvent
         
         if (type != other.type) return false
+        if (mode != other.mode) return false
         if (message != other.message) return false
         if (stackTrace != other.stackTrace) return false
         
@@ -209,6 +214,7 @@ data class RdLogEvent (
     override fun hashCode(): Int {
         var __r = 0
         __r = __r*31 + type.hashCode()
+        __r = __r*31 + mode.hashCode()
         __r = __r*31 + message.hashCode()
         __r = __r*31 + stackTrace.hashCode()
         return __r
@@ -218,11 +224,20 @@ data class RdLogEvent (
         printer.println("RdLogEvent (")
         printer.indent {
             print("type = "); type.print(printer); println()
+            print("mode = "); mode.print(printer); println()
             print("message = "); message.print(printer); println()
             print("stackTrace = "); stackTrace.print(printer); println()
         }
         printer.print(")")
     }
+}
+
+
+enum class RdLogEventMode {
+    Edit,
+    Play;
+    
+    companion object { val marshaller = FrameworkMarshallers.enum<RdLogEventMode>() }
 }
 
 

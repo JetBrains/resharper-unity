@@ -56,7 +56,7 @@ class LogView(private val project: Project,
         projectCustomDataHost.logSignal.advise(componentLifetime) { message ->
             val context = logToolWindowFactory.getOrCreateContext()
 
-            context.addOutputMessage(message.message + "\n"+message.stackTrace+"\n", message.type)
+            context.addOutputMessage( message.mode.name + "\n"+message.message + "\n"+message.stackTrace+"\n", message.type)
         }
     }
 
