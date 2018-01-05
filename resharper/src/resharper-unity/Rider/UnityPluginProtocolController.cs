@@ -108,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (e.Key == "UNITY_Refresh" && e.NewValue!=e.OldValue && e.NewValue!=null && e.NewValue.ToLower() == "true")
                 {
                     myLogger.Info($"UNITY_Refresh {e.NewValue} came from frontend.");
-                    myUnityRefresher.Refresh(UnityModel);
+                    myUnityRefresher.Refresh();
                 }
             });
         }
