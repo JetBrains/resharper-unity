@@ -40,7 +40,6 @@ namespace JetBrains.Rider.Unity.Editor
       return defaultValue;
     }
 
-
     private static bool TryCatch(string value, Action<string> action)
     {
       try
@@ -106,6 +105,19 @@ namespace JetBrains.Rider.Unity.Editor
 
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     private static bool ValidateMenuOpenProject()
+    {
+      return RiderPlugin.Enabled;
+    }
+    
+    [MenuItem("Assets/Sync C# Project", false, 1001)]
+    private static void MenuSyncProject()
+    {
+      // Force the project files to be sync
+      UnityApplication.SyncSolution();
+    }
+
+    [MenuItem("Assets/Sync C# Project", true, 1001)]
+    private static bool ValidateMenuSyncProject()
     {
       return RiderPlugin.Enabled;
     }
