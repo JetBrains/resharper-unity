@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.Unity.Model;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
@@ -65,13 +66,13 @@ namespace JetBrains.Rider.Unity.Editor
             {
               case LogType.Error:
               case LogType.Exception:
-                SentLogEvent(message, stackTrace, RdLogEventType.Error);
+                SentLogEvent(new RdLogEvent(RdLogEventType.Error, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace));
                 break;
               case LogType.Warning:
-                SentLogEvent(message, stackTrace, RdLogEventType.Warning);
+                SentLogEvent(new RdLogEvent(RdLogEventType.Warning, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace));
                 break;
               default:
-                SentLogEvent(message, stackTrace, RdLogEventType.Message);
+                SentLogEvent(new RdLogEvent(RdLogEventType.Message, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace));
                 break;
             }
           }
@@ -79,10 +80,10 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
     
-    private void SentLogEvent(string message, string stackTrace, RdLogEventType type)
+    private void SentLogEvent(RdLogEvent logEvent)
     {
-      if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
-        myProtocolController.Model.LogModelInitialized.Value.Log.Fire(new RdLogEvent(type, message, stackTrace));
+      //if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
+      myProtocolController.Model.LogModelInitialized.Value.Log.Fire(logEvent);
     }
 
     /// <summary>

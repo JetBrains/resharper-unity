@@ -5,6 +5,7 @@ using System.Linq;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Tasks;
+using JetBrains.Platform.Unity.Model;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using Application = UnityEngine.Application;

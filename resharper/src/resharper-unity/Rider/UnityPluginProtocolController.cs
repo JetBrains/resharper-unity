@@ -194,7 +194,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 modelInitialized.Log.Advise(lifetime, entry =>
                 {
-                    myLogger.Verbose(entry.Type +" "+ entry.Message +" "+ Environment.NewLine +" "+ entry.StackTrace);
+                    myLogger.Verbose(entry.Mode +" " + entry.Type +" "+ entry.Message +" "+ Environment.NewLine +" "+ entry.StackTrace);
                     SetOrCreateDataKeyValuePair(solution, "UNITY_LogEntry", JsonConvert.SerializeObject(entry));
                 });
             });

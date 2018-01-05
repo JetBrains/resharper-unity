@@ -63,7 +63,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool SendConsoleToRider
     {
-      get { return EditorPrefs.GetBool("Rider_SendConsoleToRider", false); }
+      get { return EditorPrefs.GetBool("Rider_SendConsoleToRider", true); }
       set { EditorPrefs.SetBool("Rider_SendConsoleToRider", value); }
     }
 

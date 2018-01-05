@@ -129,6 +129,7 @@ namespace JetBrains.Platform.Unity.Model
       serializers.Register(RdOpenFileArgs.Read, RdOpenFileArgs.Write);
       serializers.Register(RdLogEvent.Read, RdLogEvent.Write);
       serializers.RegisterEnum<RdLogEventType>();
+      serializers.RegisterEnum<RdLogEventMode>();
       serializers.Register(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write);
     }
     
@@ -228,6 +229,7 @@ namespace JetBrains.Platform.Unity.Model
     //fields
     //public fields
     public RdLogEventType Type {get; private set;}
+    public RdLogEventMode Mode {get; private set;}
     [NotNull] public string Message {get; private set;}
     [NotNull] public string StackTrace {get; private set;}
     
@@ -235,6 +237,7 @@ namespace JetBrains.Platform.Unity.Model
     //primary constructor
     public RdLogEvent(
       RdLogEventType type,
+      RdLogEventMode mode,
       [NotNull] string message,
       [NotNull] string stackTrace
     )
@@ -243,6 +246,7 @@ namespace JetBrains.Platform.Unity.Model
       if (stackTrace == null) throw new ArgumentNullException("stackTrace");
       
       Type = type;
+      Mode = mode;
       Message = message;
       StackTrace = stackTrace;
     }
@@ -252,14 +256,16 @@ namespace JetBrains.Platform.Unity.Model
     public static CtxReadDelegate<RdLogEvent> Read = (ctx, reader) => 
     {
       var type = (RdLogEventType)reader.ReadInt();
+      var mode = (RdLogEventMode)reader.ReadInt();
       var message = reader.ReadString();
       var stackTrace = reader.ReadString();
-      return new RdLogEvent(type, message, stackTrace);
+      return new RdLogEvent(type, mode, message, stackTrace);
     };
     
     public static CtxWriteDelegate<RdLogEvent> Write = (ctx, writer, value) => 
     {
       writer.Write((int)value.Type);
+      writer.Write((int)value.Mode);
       writer.Write(value.Message);
       writer.Write(value.StackTrace);
     };
@@ -278,7 +284,7 @@ namespace JetBrains.Platform.Unity.Model
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return Type == other.Type && Message == other.Message && StackTrace == other.StackTrace;
+      return Type == other.Type && Mode == other.Mode && Message == other.Message && StackTrace == other.StackTrace;
     }
     //hash code trait
     public override int GetHashCode()
@@ -286,6 +292,7 @@ namespace JetBrains.Platform.Unity.Model
       unchecked {
         var hash = 0;
         hash = hash * 31 + (int) Type;
+        hash = hash * 31 + (int) Mode;
         hash = hash * 31 + Message.GetHashCode();
         hash = hash * 31 + StackTrace.GetHashCode();
         return hash;
@@ -297,6 +304,7 @@ namespace JetBrains.Platform.Unity.Model
       printer.Println("RdLogEvent (");
       using (printer.IndentCookie()) {
         printer.Print("type = "); Type.PrintEx(printer); printer.Println();
+        printer.Print("mode = "); Mode.PrintEx(printer); printer.Println();
         printer.Print("message = "); Message.PrintEx(printer); printer.Println();
         printer.Print("stackTrace = "); StackTrace.PrintEx(printer); printer.Println();
       }
@@ -309,6 +317,12 @@ namespace JetBrains.Platform.Unity.Model
       Print(printer);
       return printer.ToString();
     }
+  }
+  
+  
+  public enum RdLogEventMode {
+    Edit,
+    Play
   }
   
   
