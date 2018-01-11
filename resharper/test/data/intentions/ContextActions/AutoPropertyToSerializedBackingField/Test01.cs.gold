@@ -6,7 +6,7 @@ public class Foo : MonoBehaviour
 
   public int MyAutoProp1{caret}
   {
-    get { return myMyAutoProp1; }
-    set { myMyAutoProp1 = value; }
+    get => myMyAutoProp1;
+    set => myMyAutoProp1 = value;
   }
 }

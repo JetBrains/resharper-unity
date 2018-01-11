@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Comment
 
         public override bool ShouldInsertAtLineStart(IContextBoundSettingsStore settingsStore)
         {
-            return false;
+            return true;
         }
 
         public override bool ShouldInsertSpaceAtCommentStartAndEnd(IContextBoundSettingsStore settingsStore)
