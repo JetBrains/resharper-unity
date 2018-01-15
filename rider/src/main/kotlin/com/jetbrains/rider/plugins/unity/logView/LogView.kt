@@ -59,20 +59,5 @@ class LogView(private val project: Project,
             context.addOutputMessage( message.mode.name + "\n"+message.message + "\n"+message.stackTrace+"\n", message.type)
         }
     }
-
-
-    private fun openLogFile(path: String) {
-        val file = VfsUtil.findFileByIoFile(File(path), true)
-        if (file == null)
-            Notifications.Bus.notify(Notification(
-                Notifications.SYSTEM_MESSAGES_GROUP_ID, "Error", "There is no such file: $path", NotificationType.ERROR), project)
-        else
-            FileEditorManager.getInstance(project).openFile(file, true, true)
-    }
-
-    private fun showBuildNotification(text: String, type: NotificationType) {
-        Notifications.Bus.notify(
-            Notification(BUILD_NOTIFICATION_GROUP.displayId, "", text, type), project)
-    }
 }
 

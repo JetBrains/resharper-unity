@@ -33,12 +33,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private readonly UnityRefresher myUnityRefresher;
-        public UnityModel UnityModel { get; set; }
+        private UnityModel UnityModel;
         private Protocol myProtocol;
 
+        public ISignal<Void> Refresh = new DataFlow.Signal<Void>("Refresh");
+
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, 
-            IScheduler dispatcher, IShellLocks locks, ISolution solution, UnityRefresher unityRefresher)
+            IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
             if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath.Directory))
                 return;
@@ -48,12 +49,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
-            myUnityRefresher = unityRefresher;
             SessionLifetimes = new SequentialLifetimes(lifetime);
 
             var solFolder = mySolution.SolutionFilePath.Directory;
-            SubscribeToPlay(mySolution.GetProtocolSolution());
-            SubscribeRefresh(mySolution.GetProtocolSolution(), solFolder);
+            Advise(mySolution.GetProtocolSolution());
 
             var protocolInstancePath = solFolder.Combine(
                 "Library/ProtocolInstance.json"); // todo: consider non-Unity Solution with Unity-generated projects
@@ -85,30 +84,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=> CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
-        private void SubscribeToPlay(Solution solution)
-        {
-            solution.CustomData
-                .Data.Advise(myLifetime, e =>
-                {
-                    if (e.Key == "UNITY_AttachEditorAndPlay")
-                    {
-                        if (e.NewValue != e.OldValue)
-                        {
-                            myLogger.Info($"UNITY_AttachEditorAndPlay {e.NewValue} came from frontend.");
-                            UnityModel?.Play.SetValue(e.NewValue.ToLower() == "true");
-                        }
-                    }
-                });
-        }
-
-        private void SubscribeRefresh(Solution solution, FileSystemPath solFolder)
+        private void Advise(Solution solution)
         {
             solution.CustomData.Data.Advise(myLifetime, e =>
             {
-                if (e.Key == "UNITY_Refresh" && e.NewValue!=e.OldValue && e.NewValue!=null && e.NewValue.ToLower() == "true")
+                if (e.NewValue == e.OldValue || e.NewValue == null) return;
+                switch (e.Key)
                 {
-                    myLogger.Info($"UNITY_Refresh {e.NewValue} came from frontend.");
-                    myUnityRefresher.Refresh();
+                    case "UNITY_Refresh":
+                        if (e.NewValue.ToLower() == "true")
+                        {
+                            myLogger.Info($"UNITY_Refresh {e.NewValue} came from frontend.");
+                            if (UnityModel != null) 
+                              Refresh.Fire(UnityModel);    
+                        }
+                        break;
+                    case "UNITY_Play":
+                        myLogger.Info($"UNITY_Play {e.NewValue} came from frontend.");
+                        UnityModel?.Play.SetValue(e.NewValue.ToLower() == "true");
+                        break;  
+                    default:
+                        throw new NotImplementedException($"Unhandled {e.Key}= {e.NewValue} came from frontend.");
                 }
             });
         }

@@ -18,7 +18,7 @@ import com.intellij.ui.content.ContentManager
 import com.intellij.ui.content.ContentManagerAdapter
 import com.intellij.ui.content.ContentManagerEvent
 import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
-import com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction
+import com.jetbrains.rider.plugins.unity.actions.*
 import com.jetbrains.rider.plugins.unity.logView.ui.LogPanel
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.util.idea.ILifetimedComponent
@@ -28,7 +28,6 @@ import javax.swing.JPanel
 
 class LogToolWindowFactory(private val project: Project,
                            private val toolWindowManager: ToolWindowManager,
-                           private val buildHost: ProjectCustomDataHost,
                            private val actionManager: CommonActionsManager,
                            private val projectModelViewHost: ProjectModelViewHost)
     : AbstractProjectComponent(project), ILifetimedComponent by LifetimedComponent(project) {
@@ -76,10 +75,10 @@ class LogToolWindowFactory(private val project: Project,
     private fun createToolbarPanel(buildResultPanel: LogPanel, contentManager: ContentManager): JPanel {
         val buildActionGroup = DefaultActionGroup().apply {
             add(RefreshInUnityAction())
-            //add(BuildSolutionAction())
-            //add(ToggleEventsViewAction(buildResultPanel))
-            //add(ViewBuildLogFileAction())
-            //addSeparator()
+            add(PlayInUnityAction())
+            add(PauseInUnityAction())
+            add(ResumeInUnityAction())
+            add(StopInUnityAction())
             add(actionManager.createPrevOccurenceAction(buildResultPanel))
             add(actionManager.createNextOccurenceAction(buildResultPanel))
             addSeparator()
