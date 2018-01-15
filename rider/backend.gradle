@@ -132,7 +132,7 @@ task restorePackages {
         }
 
         // stale release packages hotfix
-        if (isWindows){
+        if (false){
             logger.lifecycle("clearing nuget caches")
 
             def nugetExe = new File(backend.repositoryRoot, "tools\\nuget.exe")
@@ -186,6 +186,9 @@ task mergeUnity3DRider {
         def content = []
         def usings = []
         def outputPath = new File(unity3DRiderDir, "Unity3DRider.cs")
+        if (outputPath.isFile() && outputPath.exists())
+            assert outputPath.delete()
+
         def sourceFiles = unity3DRiderDir.listFiles(new FilenameFilter() {
             @Override
             boolean accept(File dir, String name) {

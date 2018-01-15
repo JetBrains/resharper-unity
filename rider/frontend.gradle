@@ -22,14 +22,14 @@ intellij {
     if (dir.exists()) {
         localPath = dir.absolutePath
     } else {
-        version = 'LATEST-TRUNK-SNAPSHOT' // Trunk until we have release
+        version = '2018.1-SNAPSHOT'
     }
 
     // Sources aren't available for Rider
     downloadSources = false
 }
 
-ext.kotlin_version = '1.1.51'
+ext.kotlin_version = '1.2'
 ext.nupkg_path = "$projectDir/../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/JetBrains.Unity.$version-rider.nupkg"
 
 sourceCompatibility = 1.8
