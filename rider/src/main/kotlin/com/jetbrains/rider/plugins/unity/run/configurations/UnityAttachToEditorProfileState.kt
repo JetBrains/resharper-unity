@@ -12,67 +12,41 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
-import com.jetbrains.rider.debugger.DotNetDebugProcess
+import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.util.idea.pumpMessages
 import com.jetbrains.rider.util.lifetime.Lifetime
+import com.jetbrains.rider.util.reactive.ISignal
+import com.jetbrains.rider.util.reactive.Signal
+import com.jetbrains.rider.util.reactive.adviseOnce
 import java.time.LocalDateTime
 
 class UnityAttachToEditorProfileState(val remoteConfiguration: UnityAttachToEditorConfiguration, executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
     val logger = Logger.getInstance(UnityAttachToEditorProfileState::class.java)
 
+    val debugAttached = Signal<Boolean>()
+
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, sessionLifetime: Lifetime): ExecutionResult {
-
-//        try {
-//            var debuggerManager = executionEnvironment.project.getComponent(XDebuggerManager::class.java)
-//            val debugProcess = debuggerManager.currentSession!!.debugProcess as DotNetDebugProcess
-//            debugProcess.sessionProxy.showNotification.advise(debugProcess.sessionLifetime) {
-//                var message =it.output
-//                if (message.contains("no connection could be made because the target machine actively refused it"))
-//                    message=message+"\n"+"Check if debug is allowed by \"Editor Attaching\" setting in Unity."
-//                val notification = XDebuggerManagerImpl.NOTIFICATION_GROUP.createNotification(message, if (it.isError) NotificationType.ERROR else NotificationType.WARNING)
-//                notification.setListener(NotificationListener.URL_OPENING_LISTENER)
-//                notification.notify(debugProcess.session.project)
-//            }
-//        }
-//        catch (ex:Exception)
-//        {
-//            logger.error(ex)
-//        }
-
         val result = super.execute(executor, runner, workerProcessHandler)
 
         if (remoteConfiguration.play) {
-//            try {
-//                var debuggerManager = executionEnvironment.project.getComponent(XDebuggerManager::class.java)
-//                val debugProcess = debuggerManager.currentSession!!.debugProcess as DotNetDebugProcess
-//                // wait till debugger fully attached, because entering play mode in Unity will lead to reload appdomain. it may hang, if debugger is doing smth in background
-//                val disposable:com.intellij.openapi.Disposable = Disposable {  }
-//                var time = LocalDateTime.now();
-//                debugProcess.debuggerOutputConsole.addChangeListener(ObservableConsoleView.ChangeListener {
-//                    time = LocalDateTime.now();
-//                }, disposable)
-//
-//                pumpMessages(1000) {
-//                    LocalDateTime.now().isBefore(time.plusSeconds(1))
-//                }
-//            }
-//            catch (ex:Exception)
-//            {
-//                logger.error(ex)
-//            }
-
-            logger.info("Pass value to backend, which will push Unity to enter play mode.")
-            sessionLifetime.bracket(opening = {
-                // pass value to backend, which will push Unity to enter play mode.
-                executionEnvironment.project.solution.customData.data["UNITY_Play"] = "true";
-            }, closing = {
-                executionEnvironment.project.solution.customData.data["UNITY_Play"] = "false"
-            })
+            debugAttached.adviseOnce(sessionLifetime) {
+                logger.info("Pass value to backend, which will push Unity to enter play mode.")
+                sessionLifetime.bracket(opening = {
+                    // pass value to backend, which will push Unity to enter play mode.
+                    executionEnvironment.project.solution.customData.data["UNITY_Play"] = "true";
+                }, closing = {
+                    executionEnvironment.project.solution.customData.data["UNITY_Play"] = "false"
+                })
+            }
         }
 
         return result
+    }
+
+    override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
+        return DebuggerOutputListener(executionEnvironment.project, debugAttached)
     }
 }
