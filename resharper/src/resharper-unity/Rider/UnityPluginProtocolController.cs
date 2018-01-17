@@ -94,17 +94,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     case "UNITY_Refresh":
                         if (e.NewValue.ToLower() == "true")
                         {
-                            myLogger.Info($"UNITY_Refresh {e.NewValue} came from frontend.");
+                            myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                             if (UnityModel != null) 
                               Refresh.Fire(UnityModel);    
                         }
                         break;
                     case "UNITY_Play":
-                        myLogger.Info($"UNITY_Play {e.NewValue} came from frontend.");
+                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         UnityModel?.Play.SetValue(e.NewValue.ToLower() == "true");
-                        break;  
-                    default:
-                        throw new NotImplementedException($"Unhandled {e.Key}= {e.NewValue} came from frontend.");
+                        break;
                 }
             });
         }
