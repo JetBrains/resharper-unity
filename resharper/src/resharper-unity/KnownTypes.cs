@@ -6,6 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public static class KnownTypes
     {
         // UnityEngine
+        public static readonly IClrTypeName Object = new ClrTypeName("UnityEngine.Object");
         public static readonly IClrTypeName Component = new ClrTypeName("UnityEngine.Component");
         public static readonly IClrTypeName GameObject = new ClrTypeName("UnityEngine.GameObject");
         public static readonly IClrTypeName MonoBehaviour = new ClrTypeName("UnityEngine.MonoBehaviour");
