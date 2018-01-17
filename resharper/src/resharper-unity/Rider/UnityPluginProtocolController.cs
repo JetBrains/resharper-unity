@@ -103,6 +103,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         UnityModel?.Play.SetValue(e.NewValue.ToLower() == "true");
                         break;
+                        
+                    case "UNITY_Pause":
+                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
+                        UnityModel?.Pause.SetValue(e.NewValue.ToLower() == "true");
+                        break;
                 }
             });
         }

@@ -4,8 +4,10 @@ using JetBrains.Application.changes;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.ProjectsHost.Impl;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.Rider.Model;
@@ -27,13 +29,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLifetime = lifetime;
             mySolution = solution;
             myPluginProtocolController = pluginProtocolController;
+            
+//            myPluginProtocolController.UnityModel.Play.Advise(lifetime, b => { IsPlayMode = b; });
+//            if (myPluginProtocolController.UnityModel.Play.HasValue())
+//                IsPlayMode = myPluginProtocolController.UnityModel.Play.Value;
+            
             myPluginProtocolController.Refresh.Advise(lifetime, model =>
             {
-                Refresh();
+                  Refresh();
             });
         }
 
         public bool IsRefreshing { get; private set; }
+        
+//        public bool IsPlayMode { get; private set; }
 
         public void Refresh()
         {
@@ -84,6 +93,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
             {
                 if (refresher.IsRefreshing) return;
+//                if (refresher.IsPlayMode) return;
+                
                 groupingEvent.FireIncoming();
             });
 
@@ -92,6 +103,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var t = args.ChangeMap.GetChanges<ProjectModelChange>();
                 if (t == null)
                     return;
+                
+                if (refresher.IsRefreshing) return;
+//                if (refresher.IsPlayMode) return;
+
                 groupingEvent.FireIncoming();
             });
         }

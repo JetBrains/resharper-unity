@@ -16,7 +16,7 @@ namespace JetBrains.Rider.Unity.Editor
   {   
     public UnityModel Model;
 
-    public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc,
+    public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc, Action<bool> pauseFunc,
       Action refresh, Lifetime lifetime)
     {
       mainThreadScheduler.Queue(() =>
@@ -49,6 +49,11 @@ namespace JetBrains.Rider.Unity.Editor
           {
             logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
             mainThreadScheduler.Queue(() => { playFunc(play); });
+          });
+          
+          Model.Pause.Advise(lifetime, pause =>
+          {
+            mainThreadScheduler.Queue(() => { pauseFunc(pause); });
           });
 
           Model.LogModelInitialized.SetValue(new UnityLogModelInitialized());

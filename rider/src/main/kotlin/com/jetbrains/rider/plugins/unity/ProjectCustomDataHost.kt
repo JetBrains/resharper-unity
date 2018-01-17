@@ -47,15 +47,15 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
         }
     }
     companion object {
-        fun CallBackendRefresh(project: Project) { CallBackend(project, "UNITY_Refresh") }
-        fun CallBackendPlay(project: Project) { CallBackend(project, "UNITY_Play") }
-        fun CallBackendPause(project: Project) { CallBackend(project, "UNITY_Pause") }
-        fun CallBackendResume(project: Project) { CallBackend(project, "UNITY_Resume") }
-        fun CallBackendStop(project: Project) { CallBackend(project, "UNITY_Stop") }
+        fun CallBackendRefresh(project: Project) { CallBackend(project, "UNITY_Refresh", "true") }
+        fun CallBackendPlay(project: Project) { CallBackend(project, "UNITY_Play","true") }
+        fun CallBackendPause(project: Project) { CallBackend(project, "UNITY_Pause", "true") }
+        fun CallBackendResume(project: Project) { CallBackend(project, "UNITY_Pause", "false") }
+        fun CallBackendStop(project: Project) { CallBackend(project, "UNITY_Play", "false") }
 
-        private fun CallBackend(project: Project, key : String) {
+        private fun CallBackend(project: Project, key : String, value:String) {
             project.solution.customData.data.remove(key)
-            project.solution.customData.data[key] = "true"
+            project.solution.customData.data[key] = value
         }
     }
 }

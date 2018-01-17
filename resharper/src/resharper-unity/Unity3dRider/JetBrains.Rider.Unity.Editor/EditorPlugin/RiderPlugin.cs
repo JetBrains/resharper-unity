@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util.Logging;
@@ -18,12 +19,13 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static IPluginSettings ourPluginSettings;
     private static RiderApplication ourRiderApplication;
-    
+
     static RiderPlugin()
     {
       ourPluginSettings = new PluginSettings();
       ourRiderApplication = new RiderApplication(ourPluginSettings);
-      var riderPath = ourRiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(), RiderApplication.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
+      var riderPath = ourRiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(),
+        RiderApplication.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
       if (string.IsNullOrEmpty(riderPath))
         return;
 
@@ -84,16 +86,43 @@ namespace JetBrains.Rider.Unity.Editor
       ourRiderProtocolController = new RiderProtocolController(
         Application.dataPath,
         MainThreadDispatcher1,
-        play => { EditorApplication.isPlaying = play; },
-        AssetDatabase.Refresh,
+        play =>
+        {
+          var res = EditorApplication.isPlaying;
+          if (res != play)
+            EditorApplication.isPlaying = play;
+        },
+        pause=>
+        {
+          if (pause!=EditorApplication.isPaused && EditorApplication.isPlaying)
+            EditorApplication.isPaused = pause;
+        },
+        ()=>
+        {
+          if (!EditorApplication.isPlaying) // avoid refresh in play mode // todo: allow refresh by button click, deny by PM changes
+            AssetDatabase.Refresh();
+        },
         lifetime
       );
+      MainThreadDispatcher1.Queue(() =>
+      {
+        var handler = new EditorApplication.CallbackFunction(() =>
+        {
+          var res = EditorApplication.isPlaying;
+          ourRiderProtocolController.Model.Play.SetValue(res);
+        });
+
+        lifetime.AddBracket(() => { EditorApplication.playmodeStateChanged += handler; },
+          () => { EditorApplication.playmodeStateChanged -= handler; });  
+
+        handler();
+      });
 
       var application = new UnityApplication(ourRiderProtocolController, MainThreadDispatcher1);
       application.UnityLogRegisterCallBack();
       ourInitialized = true;
     }
-    
+
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
 
     internal static readonly MainThreadDispatcher MainThreadDispatcher1 = new MainThreadDispatcher();
