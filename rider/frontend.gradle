@@ -22,7 +22,7 @@ intellij {
     if (dir.exists()) {
         localPath = dir.absolutePath
     } else {
-        version = '173.3994.1125' // 2017.3 RTM
+        version = '2017.3-SNAPSHOT'
     }
 
     // Sources aren't available for Rider
