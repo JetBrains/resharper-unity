@@ -33,10 +33,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private UnityModel UnityModel;
+        public UnityModel UnityModel;
         private Protocol myProtocol;
 
-        public ISignal<Void> Refresh = new DataFlow.Signal<Void>("Refresh");
+        public readonly ISignal<UnityModel> Refresh = new DataFlow.Signal<UnityModel>("Refresh");
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, 
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
