@@ -322,7 +322,7 @@ namespace JetBrains.Rider.Unity.Editor
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        int scriptingRuntime = 0; // old mono
+        int scriptingRuntime = 0; // legacy runtime
         try
         {
           var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
