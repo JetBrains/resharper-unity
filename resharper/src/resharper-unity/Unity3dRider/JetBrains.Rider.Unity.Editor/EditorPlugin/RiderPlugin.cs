@@ -5,8 +5,11 @@ using System.Linq;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
+using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
+using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using Application = UnityEngine.Application;
@@ -45,7 +48,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static bool ourInitialized;
     internal static string SlnFile;
     private static readonly ILog Logger = Log.GetLog("RiderPlugin");
-    private static RiderProtocolController ourRiderProtocolController;
+    public static UnityModel Model;
 
     public static bool Enabled
     {
@@ -63,12 +66,12 @@ namespace JetBrains.Rider.Unity.Editor
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
       var projectName = Path.GetFileName(projectDirectory);
-      SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
+      SlnFile = Path.Combine(projectDirectory, $"{projectName}.sln");
 
       InitializeEditorInstanceJson(projectDirectory);
 
-      RiderAssetPostprocessor
-        .OnGeneratedCSProjectFiles(); // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
+      // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
+      RiderAssetPostprocessor.OnGeneratedCSProjectFiles();
 
       Log.DefaultFactory = new RiderLoggerFactory();
 
@@ -81,55 +84,108 @@ namespace JetBrains.Rider.Unity.Editor
         lifetimeDefinition.Terminate();
       });
 
-      Debug.Log(string.Format("Rider plugin initialized. Further logs in: {0}", LogPath));
+      Debug.Log($"Rider plugin initialized. Further logs in: {LogPath}");
 
-      ourRiderProtocolController = new RiderProtocolController(
-        Application.dataPath,
-        MainThreadDispatcher1,
-        play =>
+      try
+      {
+        var riderProtocolController = new RiderProtocolController(Application.dataPath, MainThreadDispatcher.Instance, lifetime);
+
+        var serializers = new Serializers();
+        var identities = new Identities(IdKind.DynamicServer);
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          riderProtocolController.Wire.Connected.View(lifetime, (lt, connected) =>
+          {
+            if (!connected)
+              Model = null;
+
+            var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance,
+              riderProtocolController.Wire);
+            Logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
+
+            Model = CreateModel(protocol, lt);
+          });
+        });
+      }
+      catch (Exception ex)
+      {
+        Logger.Error("Init Rider Plugin " + ex);
+      }
+
+      ourInitialized = true;
+    }
+
+    private static UnityModel CreateModel(Protocol protocol, Lifetime lt)
+    {
+      var isPlayingAction = new Action<IRdProperty<bool>>(play =>
+      {
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          var res = EditorApplication.isPlaying;
+          Logger.Verbose($"isPlayingAction: {res}");
+          play.SetValue(res);
+        });
+      });
+      var model = new UnityModel(lt, protocol);
+      isPlayingAction(model.Play); // get Unity state
+      model.Play.Advise(lt, play =>
+      {
+        Logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
+        MainThreadDispatcher.Instance.Queue(() =>
         {
           var res = EditorApplication.isPlaying;
           if (res != play)
             EditorApplication.isPlaying = play;
-        },
-        pause=>
-        {
-          if (pause!=EditorApplication.isPaused && EditorApplication.isPlaying)
-            EditorApplication.isPaused = pause;
-        },
-        ()=>
-        {
-          if (!EditorApplication.isPlaying) // avoid refresh in play mode // todo: allow refresh by button click, deny by PM changes
-            AssetDatabase.Refresh();
-        },
-        ()=>
-        {
-          EditorApplication.Step();
-        },
-        lifetime
-      );
-      MainThreadDispatcher1.Queue(() =>
-      {
-        var handler = new EditorApplication.CallbackFunction(() =>
-        {
-          var res = EditorApplication.isPlaying;
-          ourRiderProtocolController.Model.Play.SetValue(res);
         });
-
-        lifetime.AddBracket(() => { EditorApplication.playmodeStateChanged += handler; },
-          () => { EditorApplication.playmodeStateChanged -= handler; });  
-
-        handler();
       });
 
-      var application = new UnityApplication(ourRiderProtocolController, MainThreadDispatcher1);
+      model.Pause.Advise(lt, pause =>
+      {
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          if (pause != EditorApplication.isPaused && EditorApplication.isPlaying)
+            EditorApplication.isPaused = pause;
+        });
+      });
+      model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
+
+      model.Refresh.Set((l, x) =>
+      {
+        var task = new RdTask<RdVoid>();
+        Logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          UnityApplication.SyncSolution();
+          task.Set(RdVoid.Instance);
+        });
+        return task;
+      });
+
+      model.Step.Set((l, x) =>
+      {
+        var task = new RdTask<RdVoid>();
+        Logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Step.");
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          EditorApplication.Step();
+          task.Set(RdVoid.Instance);
+        });
+        return task;
+      });
+
+      var isPlayingHandler = new EditorApplication.CallbackFunction(() => isPlayingAction(model.Play));
+      lt.AddBracket(() => { EditorApplication.playmodeStateChanged += isPlayingHandler; },
+        () => { EditorApplication.playmodeStateChanged -= isPlayingHandler; });
+
+      isPlayingHandler();
+
+      var application = new UnityApplication();
       application.UnityLogRegisterCallBack();
-      ourInitialized = true;
+
+      return model;
     }
 
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
-
-    internal static readonly MainThreadDispatcher MainThreadDispatcher1 = new MainThreadDispatcher();
 
     /// <summary>
     /// Creates and deletes Library/EditorInstance.json containing info about unity instance
@@ -198,13 +254,13 @@ namespace JetBrains.Rider.Unity.Editor
 
       UnityApplication.SyncSolution(); // added to handle opening file, which was just recently created.
 
-      if (ourRiderProtocolController.Model!=null)
+      if (Model!=null)
       {
         var connected = false;
         try
         {
           // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = ourRiderProtocolController.Model.IsClientConnected.Sync(RdVoid.Instance,
+          connected = Model.IsClientConnected.Sync(RdVoid.Instance,
             new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
         }
         catch (Exception)
@@ -215,9 +271,8 @@ namespace JetBrains.Rider.Unity.Editor
         {
           int col = 0;
           Logger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, col);
-          //var task = 
-          ourRiderProtocolController.Model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
-          ActivateWindow(ourRiderProtocolController.Model.RiderProcessId.Value);
+          Model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
+          ActivateWindow(Model.RiderProcessId.Value);
           //task.Result.Advise(); todo: fallback to CallRider, if returns false
           return true;
         }

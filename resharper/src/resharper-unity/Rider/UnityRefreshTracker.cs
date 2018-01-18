@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
@@ -12,6 +13,7 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.Rider.Model;
 using JetBrains.Threading;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -29,17 +31,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLifetime = lifetime;
             mySolution = solution;
             myPluginProtocolController = pluginProtocolController;
-            
-            myPluginProtocolController.UnityModel.Play.Advise(lifetime, b => { IsPlayMode = b; });
-            if (myPluginProtocolController.UnityModel.Play.HasValue())
-                IsPlayMode = myPluginProtocolController.UnityModel.Play.Value;
-            
+                        
             myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(); });
         }
 
         public bool IsRefreshing { get; private set; }
-        
-        public bool IsPlayMode { get; private set; }
 
         public void Refresh()
         {
@@ -81,8 +77,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager)
+        private readonly ISolution mySolution;
+
+        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityPluginProtocolController protocolController, 
+            ILogger logger)
         {
+            mySolution = solution;
             var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
                 Rgc.Invariant, refresher.Refresh);
 
@@ -90,22 +90,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
             {
                 if (refresher.IsRefreshing) return;
-                if (refresher.IsPlayMode) return;
+                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
+                if (isPlay==null || (bool)isPlay) return;
                 
                 groupingEvent.FireIncoming();
             });
 
             changeManager.Changed2.Advise(lifetime, args =>
             {
-                var t = args.ChangeMap.GetChanges<ProjectModelChange>();
-                if (t == null)
+                var changes = args.ChangeMap.GetChanges<ProjectModelChange>();
+                if (changes == null)
                     return;
                 
-                if (refresher.IsRefreshing) return;
-                if (refresher.IsPlayMode) return;
+                if (refresher.IsRefreshing) 
+                    return;
+
+                var hasChange = changes.Any(HasAnyFileChangeRec);
+                if (!hasChange)
+                    return;
+                
+                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
+                if (isPlay==null || (bool)isPlay) 
+                    return;
 
                 groupingEvent.FireIncoming();
             });
+        }
+
+        private bool HasAnyFileChangeRec(ProjectModelChange change)
+        {
+            var file = change.ProjectModelElement as IProjectFile;
+
+            if (file != null && (change.IsAdded || change.IsRemoved || change.IsMovedIn || change.IsMovedOut))
+            {
+                // Log something
+                return true;
+            }
+
+            foreach (var childChange in change.GetChildren())
+            {
+                if (HasAnyFileChangeRec(childChange))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

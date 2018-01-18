@@ -17,7 +17,6 @@ import java.net.*
 
 
 class UnityModel (
-    private val _serverConnected : RdProperty<Boolean>,
     private val _play : RdProperty<Boolean>,
     private val _pause : RdProperty<Boolean>,
     private val _step : RdCall<Unit, Unit>,
@@ -52,17 +51,16 @@ class UnityModel (
             val __res = UnityModel (
                 RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1001),
                 RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1002),
-                RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1003),
-                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1004),
-                RdProperty<String>(FrameworkMarshallers.String).static(1005),
-                RdProperty<Int>(FrameworkMarshallers.Int).static(1006),
+                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1003),
+                RdProperty<String>(FrameworkMarshallers.String).static(1004),
+                RdProperty<Int>(FrameworkMarshallers.Int).static(1005),
+                RdProperty<String>(FrameworkMarshallers.String).static(1006),
                 RdProperty<String>(FrameworkMarshallers.String).static(1007),
-                RdProperty<String>(FrameworkMarshallers.String).static(1008),
-                RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1009),
-                RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).static(1010),
-                RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).static(1011),
-                RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).static(1012),
-                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1013))
+                RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1008),
+                RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).static(1009),
+                RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).static(1010),
+                RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).static(1011),
+                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1012))
             __res.bind(lifetime, protocol, UnityModel::class.java.simpleName)
             
             Protocol.initializationLogger.trace { "CREATED toplevel object "+__res.printToString() }
@@ -72,7 +70,6 @@ class UnityModel (
         
     }
     //fields
-    val serverConnected : IProperty<Boolean> get() = _serverConnected
     val play : IProperty<Boolean> get() = _play
     val pause : IProperty<Boolean> get() = _pause
     val step : IRdCall<Unit, Unit> get() = _step
@@ -88,7 +85,6 @@ class UnityModel (
     
     //initializer
     init {
-        _serverConnected.optimizeNested = true
         _play.optimizeNested = true
         _pause.optimizeNested = true
         _unityPluginVersion.optimizeNested = true
@@ -100,7 +96,6 @@ class UnityModel (
     //secondary constructor
     //init method
     override fun init(lifetime: Lifetime) {
-        _serverConnected.bind(lifetime, this, "serverConnected")
         _play.bind(lifetime, this, "play")
         _pause.bind(lifetime, this, "pause")
         _step.bind(lifetime, this, "step")
@@ -116,7 +111,6 @@ class UnityModel (
     }
     //identify method
     override fun identify(ids: IIdentities) {
-        _serverConnected.identify(ids)
         _play.identify(ids)
         _pause.identify(ids)
         _step.identify(ids)
@@ -136,7 +130,6 @@ class UnityModel (
     override fun print(printer: PrettyPrinter) {
         printer.println("UnityModel (")
         printer.indent {
-            print("serverConnected = "); _serverConnected.print(printer); println()
             print("play = "); _play.print(printer); println()
             print("pause = "); _pause.print(printer); println()
             print("step = "); _step.print(printer); println()

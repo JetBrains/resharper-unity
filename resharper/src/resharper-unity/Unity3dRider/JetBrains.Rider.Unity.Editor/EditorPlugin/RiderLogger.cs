@@ -37,7 +37,7 @@ namespace JetBrains.Rider.Unity.Editor
                  DateTime.Now.ToString(Util.Logging.Log.DefaultDateFormat) + " " + message;
 
       // using Unity logs causes frequent Unity hangs
-      RiderPlugin.MainThreadDispatcher1.Queue(() =>
+      MainThreadDispatcher.Instance.Queue(() =>
       {
         if (!new FileInfo(RiderPlugin.LogPath).Directory.Exists)
           new FileInfo(RiderPlugin.LogPath).Directory.Create();

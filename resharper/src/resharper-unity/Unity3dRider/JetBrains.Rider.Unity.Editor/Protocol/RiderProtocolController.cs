@@ -5,6 +5,7 @@ using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -13,73 +14,28 @@ namespace JetBrains.Rider.Unity.Editor
 {
   // ReSharper disable once UnusedMember.Global
   public class RiderProtocolController
-  {   
-    public UnityModel Model;
+  {
+    public SocketWire.Server Wire;
 
-    public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc, Action<bool> pauseFunc,
-      Action refresh, Action step, Lifetime lifetime)
+    public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Lifetime lifetime)
     {
       mainThreadScheduler.Queue(() =>
       {
         var projectDirectory = Directory.GetParent(dataPath).FullName;
         var logger = Log.GetLog<RiderProtocolController>();
-        logger.Verbose("InitProtocol");
 
         try
         {
           logger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
 
-          logger.Log(LoggingLevel.VERBOSE, "Create protocol...");
-
-          var wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer", true);
-          logger.Log(LoggingLevel.VERBOSE, $"Creating SocketWire with port = {wire.Port}");
-
-          wire.Connected.Advise(lifetime,
-            clientIsConnected => { logger.Verbose("wire.Connected {0}", clientIsConnected); });
-
-          var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), mainThreadScheduler,
-            wire);
-
-          InitializeProtocolJson(wire.Port, projectDirectory, logger);
-          logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-
-          Model = new UnityModel(lifetime, protocol);
-          Model.Play.Advise(lifetime, play =>
-          {
-            logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
-            mainThreadScheduler.Queue(() => { playFunc(play); });
-          });
-
-          Model.Pause.Advise(lifetime, pause => { mainThreadScheduler.Queue(() => { pauseFunc(pause); }); });
-
-          Model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
-
-          Model.Refresh.Set((l, x) =>
-          {
-            var task = new RdTask<RdVoid>();
-            logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
-            mainThreadScheduler.Queue(() =>
-            {
-              refresh();
-              task.Set(RdVoid.Instance);
-            });
-            return task;
-          });
+          Wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer", true);
+          logger.Log(LoggingLevel.VERBOSE, $"Created SocketWire with port = {Wire.Port}");
           
-          Model.Step.Set((l, x) =>
+          Wire.Connected.Advise(lifetime, wireConnected =>
           {
-            var task = new RdTask<RdVoid>();
-            logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Step.");
-            mainThreadScheduler.Queue(() =>
-            {
-              step();
-              task.Set(RdVoid.Instance);
-            });
-            return task;
+            logger.Verbose("Wire.Connected {0}", wireConnected);
           });
-
-          logger.Log(LoggingLevel.VERBOSE, "model.ServerConnected true.");
-          Model.ServerConnected.SetValue(true);
+          InitializeProtocolJson(Wire.Port, projectDirectory, logger);
         }
         catch (Exception ex)
         {

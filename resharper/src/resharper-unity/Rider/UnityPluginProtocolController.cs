@@ -147,10 +147,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         return new SocketWire.Client(lifetime, creatingProtocol, port, "UnityClient");
                     });
                 UnityModel = new UnityModel(lifetime, myProtocol);
-                UnityModel.ServerConnected.Advise(lifetime, b =>
-                {
-                    myLogger.Info($"UnityModel.ServerConnected {b}");
-                });
                 UnityModel.IsClientConnected.Set(rdVoid => true);
                 UnityModel.RiderProcessId.SetValue(Process.GetCurrentProcess().Id);
                 SetOrCreateDataKeyValuePair(solution, "UNITY_SessionInitialized", "true");

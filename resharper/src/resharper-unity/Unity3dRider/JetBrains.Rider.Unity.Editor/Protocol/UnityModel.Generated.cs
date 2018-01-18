@@ -28,7 +28,6 @@ namespace JetBrains.Platform.Unity.Model
   public class UnityModel : RdBindableBase {
     //fields
     //public fields
-    [NotNull] public IRdProperty<bool> ServerConnected { get { return _ServerConnected; }}
     [NotNull] public IRdProperty<bool> Play { get { return _Play; }}
     [NotNull] public IRdProperty<bool> Pause { get { return _Pause; }}
     [NotNull] public RdEndpoint<RdVoid, RdVoid> Step { get { return _Step; }}
@@ -43,7 +42,6 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public RdEndpoint<RdVoid, RdVoid> Refresh { get { return _Refresh; }}
     
     //private fields
-    [NotNull] private readonly RdProperty<bool> _ServerConnected;
     [NotNull] private readonly RdProperty<bool> _Play;
     [NotNull] private readonly RdProperty<bool> _Pause;
     [NotNull] private readonly RdEndpoint<RdVoid, RdVoid> _Step;
@@ -59,7 +57,6 @@ namespace JetBrains.Platform.Unity.Model
     
     //primary constructor
     public UnityModel(
-      [NotNull] RdProperty<bool> serverConnected,
       [NotNull] RdProperty<bool> play,
       [NotNull] RdProperty<bool> pause,
       [NotNull] RdEndpoint<RdVoid, RdVoid> step,
@@ -74,7 +71,6 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdEndpoint<RdVoid, RdVoid> refresh
     )
     {
-      if (serverConnected == null) throw new ArgumentNullException("serverConnected");
       if (play == null) throw new ArgumentNullException("play");
       if (pause == null) throw new ArgumentNullException("pause");
       if (step == null) throw new ArgumentNullException("step");
@@ -88,7 +84,6 @@ namespace JetBrains.Platform.Unity.Model
       if (updateUnityPlugin == null) throw new ArgumentNullException("updateUnityPlugin");
       if (refresh == null) throw new ArgumentNullException("refresh");
       
-      _ServerConnected = serverConnected;
       _Play = play;
       _Pause = pause;
       _Step = step;
@@ -101,7 +96,6 @@ namespace JetBrains.Platform.Unity.Model
       _OpenFileLineCol = openFileLineCol;
       _UpdateUnityPlugin = updateUnityPlugin;
       _Refresh = refresh;
-      _ServerConnected.OptimizeNested = true;
       _Play.OptimizeNested = true;
       _Pause.OptimizeNested = true;
       _UnityPluginVersion.OptimizeNested = true;
@@ -129,17 +123,16 @@ namespace JetBrains.Platform.Unity.Model
     public UnityModel(Lifetime lifetime, IProtocol protocol) : this (
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1001),
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1002),
-      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1003),
-      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1004),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1005),
-      new RdProperty<int>(Serializers.ReadInt, Serializers.WriteInt).Static(1006),
+      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1003),
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1004),
+      new RdProperty<int>(Serializers.ReadInt, Serializers.WriteInt).Static(1005),
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1006),
       new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1007),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1008),
-      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1009),
-      new RdCall<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1010),
-      new RdCall<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).Static(1011),
-      new RdEndpoint<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1012),
-      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1013)
+      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1008),
+      new RdCall<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1009),
+      new RdCall<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).Static(1010),
+      new RdEndpoint<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1011),
+      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1012)
     )
     {
       UnityModel.Register(protocol.Serializers);
@@ -151,7 +144,6 @@ namespace JetBrains.Platform.Unity.Model
     //custom body
     //init method
     protected override void Init(Lifetime lifetime) {
-      _ServerConnected.BindEx(lifetime, this, "serverConnected");
       _Play.BindEx(lifetime, this, "play");
       _Pause.BindEx(lifetime, this, "pause");
       _Step.BindEx(lifetime, this, "step");
@@ -167,7 +159,6 @@ namespace JetBrains.Platform.Unity.Model
     }
     //identify method
     public override void Identify(IIdentities ids) {
-      _ServerConnected.IdentifyEx(ids);
       _Play.IdentifyEx(ids);
       _Pause.IdentifyEx(ids);
       _Step.IdentifyEx(ids);
@@ -188,7 +179,6 @@ namespace JetBrains.Platform.Unity.Model
     {
       printer.Println("UnityModel (");
       using (printer.IndentCookie()) {
-        printer.Print("serverConnected = "); _ServerConnected.PrintEx(printer); printer.Println();
         printer.Print("play = "); _Play.PrintEx(printer); printer.Println();
         printer.Print("pause = "); _Pause.PrintEx(printer); printer.Println();
         printer.Print("step = "); _Step.PrintEx(printer); printer.Println();

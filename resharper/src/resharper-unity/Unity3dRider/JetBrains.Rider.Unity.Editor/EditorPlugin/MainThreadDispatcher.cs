@@ -8,7 +8,9 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public class MainThreadDispatcher : IScheduler
   {
-    public MainThreadDispatcher()
+    internal static readonly MainThreadDispatcher Instance = new MainThreadDispatcher();
+
+    private MainThreadDispatcher()
     {
       EditorApplication.update += DispatchTasks;
     }

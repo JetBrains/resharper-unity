@@ -12,14 +12,6 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public class UnityApplication
   {
-    private readonly RiderProtocolController myProtocolController;
-    private readonly MainThreadDispatcher myMainThreadScheduler;
-    public UnityApplication(RiderProtocolController controller, MainThreadDispatcher mainThreadScheduler)
-    {
-      myProtocolController = controller;
-      myMainThreadScheduler = mainThreadScheduler;
-    }
-    
     private static readonly ILog Logger = Log.GetLog("UnityApplication");
     
     public static string GetExternalScriptEditor()
@@ -55,12 +47,10 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (PluginSettings.SendConsoleToRider)
       {
-        if (myProtocolController == null)
-          return;
         // use Protocol to pass log entries to Rider
-        myMainThreadScheduler.InvokeOrQueue(() =>
+        MainThreadDispatcher.Instance.InvokeOrQueue(() =>
         {
-          if (myProtocolController.Model != null)
+          if (RiderPlugin.Model != null)
           {
             switch (type)
             {
@@ -83,7 +73,7 @@ namespace JetBrains.Rider.Unity.Editor
     private void SentLogEvent(RdLogEvent logEvent)
     {
       //if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
-      myProtocolController.Model.LogModelInitialized.Value.Log.Fire(logEvent);
+      RiderPlugin.Model.LogModelInitialized.Value.Log.Fire(logEvent);
     }
 
     /// <summary>
