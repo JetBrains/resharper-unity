@@ -19,9 +19,8 @@ import java.net.*
 class UnityModel (
     private val _serverConnected : RdProperty<Boolean>,
     private val _play : RdProperty<Boolean>,
-    private val _stop : RdProperty<Boolean>,
     private val _pause : RdProperty<Boolean>,
-    private val _unpause : RdProperty<Boolean>,
+    private val _step : RdCall<Unit, Unit>,
     private val _unityPluginVersion : RdProperty<String>,
     private val _riderProcessId : RdProperty<Int>,
     private val _applicationPath : RdProperty<String>,
@@ -54,17 +53,16 @@ class UnityModel (
                 RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1001),
                 RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1002),
                 RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1003),
-                RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1004),
-                RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1005),
-                RdProperty<String>(FrameworkMarshallers.String).static(1006),
-                RdProperty<Int>(FrameworkMarshallers.Int).static(1007),
+                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1004),
+                RdProperty<String>(FrameworkMarshallers.String).static(1005),
+                RdProperty<Int>(FrameworkMarshallers.Int).static(1006),
+                RdProperty<String>(FrameworkMarshallers.String).static(1007),
                 RdProperty<String>(FrameworkMarshallers.String).static(1008),
-                RdProperty<String>(FrameworkMarshallers.String).static(1009),
-                RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1010),
-                RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).static(1011),
-                RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).static(1012),
-                RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).static(1013),
-                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1014))
+                RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1009),
+                RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).static(1010),
+                RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).static(1011),
+                RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).static(1012),
+                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1013))
             __res.bind(lifetime, protocol, UnityModel::class.java.simpleName)
             
             Protocol.initializationLogger.trace { "CREATED toplevel object "+__res.printToString() }
@@ -76,9 +74,8 @@ class UnityModel (
     //fields
     val serverConnected : IProperty<Boolean> get() = _serverConnected
     val play : IProperty<Boolean> get() = _play
-    val stop : IProperty<Boolean> get() = _stop
     val pause : IProperty<Boolean> get() = _pause
-    val unpause : IProperty<Boolean> get() = _unpause
+    val step : IRdCall<Unit, Unit> get() = _step
     val unityPluginVersion : IProperty<String> get() = _unityPluginVersion
     val riderProcessId : IProperty<Int> get() = _riderProcessId
     val applicationPath : IProperty<String> get() = _applicationPath
@@ -93,9 +90,7 @@ class UnityModel (
     init {
         _serverConnected.optimizeNested = true
         _play.optimizeNested = true
-        _stop.optimizeNested = true
         _pause.optimizeNested = true
-        _unpause.optimizeNested = true
         _unityPluginVersion.optimizeNested = true
         _riderProcessId.optimizeNested = true
         _applicationPath.optimizeNested = true
@@ -107,9 +102,8 @@ class UnityModel (
     override fun init(lifetime: Lifetime) {
         _serverConnected.bind(lifetime, this, "serverConnected")
         _play.bind(lifetime, this, "play")
-        _stop.bind(lifetime, this, "stop")
         _pause.bind(lifetime, this, "pause")
-        _unpause.bind(lifetime, this, "unpause")
+        _step.bind(lifetime, this, "step")
         _unityPluginVersion.bind(lifetime, this, "unityPluginVersion")
         _riderProcessId.bind(lifetime, this, "riderProcessId")
         _applicationPath.bind(lifetime, this, "applicationPath")
@@ -124,9 +118,8 @@ class UnityModel (
     override fun identify(ids: IIdentities) {
         _serverConnected.identify(ids)
         _play.identify(ids)
-        _stop.identify(ids)
         _pause.identify(ids)
-        _unpause.identify(ids)
+        _step.identify(ids)
         _unityPluginVersion.identify(ids)
         _riderProcessId.identify(ids)
         _applicationPath.identify(ids)
@@ -145,9 +138,8 @@ class UnityModel (
         printer.indent {
             print("serverConnected = "); _serverConnected.print(printer); println()
             print("play = "); _play.print(printer); println()
-            print("stop = "); _stop.print(printer); println()
             print("pause = "); _pause.print(printer); println()
-            print("unpause = "); _unpause.print(printer); println()
+            print("step = "); _step.print(printer); println()
             print("unityPluginVersion = "); _unityPluginVersion.print(printer); println()
             print("riderProcessId = "); _riderProcessId.print(printer); println()
             print("applicationPath = "); _applicationPath.print(printer); println()

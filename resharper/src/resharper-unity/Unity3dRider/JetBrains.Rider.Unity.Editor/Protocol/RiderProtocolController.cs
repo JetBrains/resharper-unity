@@ -17,7 +17,7 @@ namespace JetBrains.Rider.Unity.Editor
     public UnityModel Model;
 
     public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Action<bool> playFunc, Action<bool> pauseFunc,
-      Action refresh, Lifetime lifetime)
+      Action refresh, Action step, Lifetime lifetime)
     {
       mainThreadScheduler.Queue(() =>
       {
@@ -30,17 +30,16 @@ namespace JetBrains.Rider.Unity.Editor
           logger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
 
           logger.Log(LoggingLevel.VERBOSE, "Create protocol...");
-          
+
           var wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer", true);
           logger.Log(LoggingLevel.VERBOSE, $"Creating SocketWire with port = {wire.Port}");
-            
-          wire.Connected.Advise(lifetime, clientIsConnected =>
-          {
-            logger.Verbose("wire.Connected {0}", clientIsConnected);
-          });
 
-          var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), mainThreadScheduler, wire);
-                          
+          wire.Connected.Advise(lifetime,
+            clientIsConnected => { logger.Verbose("wire.Connected {0}", clientIsConnected); });
+
+          var protocol = new Protocol(new Serializers(), new Identities(IdKind.DynamicServer), mainThreadScheduler,
+            wire);
+
           InitializeProtocolJson(wire.Port, projectDirectory, logger);
           logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
@@ -50,11 +49,8 @@ namespace JetBrains.Rider.Unity.Editor
             logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
             mainThreadScheduler.Queue(() => { playFunc(play); });
           });
-          
-          Model.Pause.Advise(lifetime, pause =>
-          {
-            mainThreadScheduler.Queue(() => { pauseFunc(pause); });
-          });
+
+          Model.Pause.Advise(lifetime, pause => { mainThreadScheduler.Queue(() => { pauseFunc(pause); }); });
 
           Model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
 
@@ -69,14 +65,26 @@ namespace JetBrains.Rider.Unity.Editor
             });
             return task;
           });
-        
+          
+          Model.Step.Set((l, x) =>
+          {
+            var task = new RdTask<RdVoid>();
+            logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Step.");
+            mainThreadScheduler.Queue(() =>
+            {
+              step();
+              task.Set(RdVoid.Instance);
+            });
+            return task;
+          });
+
           logger.Log(LoggingLevel.VERBOSE, "model.ServerConnected true.");
           Model.ServerConnected.SetValue(true);
         }
         catch (Exception ex)
         {
           logger.Error("RiderProtocolController.ctor. " + ex);
-        }  
+        }
       }); 
     }
 

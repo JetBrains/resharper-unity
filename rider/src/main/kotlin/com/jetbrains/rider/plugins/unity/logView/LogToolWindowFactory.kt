@@ -77,6 +77,7 @@ class LogToolWindowFactory(private val project: Project,
             add(RefreshInUnityAction())
             add(PlayInUnityAction())
             add(PauseInUnityAction())
+            add(StepInUnityAction())
             add(ResumeInUnityAction())
             add(StopInUnityAction())
             add(actionManager.createPrevOccurenceAction(buildResultPanel))

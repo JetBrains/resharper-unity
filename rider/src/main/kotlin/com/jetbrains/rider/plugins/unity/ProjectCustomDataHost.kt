@@ -52,6 +52,7 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
         fun CallBackendPause(project: Project) { CallBackend(project, "UNITY_Pause", "true") }
         fun CallBackendResume(project: Project) { CallBackend(project, "UNITY_Pause", "false") }
         fun CallBackendStop(project: Project) { CallBackend(project, "UNITY_Play", "false") }
+        fun CallBackendStep(project: Project) { CallBackend(project, "UNITY_Step", "true") }
 
         private fun CallBackend(project: Project, key : String, value:String) {
             project.solution.customData.data.remove(key)

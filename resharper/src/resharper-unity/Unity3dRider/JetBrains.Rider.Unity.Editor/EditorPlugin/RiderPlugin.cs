@@ -102,6 +102,10 @@ namespace JetBrains.Rider.Unity.Editor
           if (!EditorApplication.isPlaying) // avoid refresh in play mode // todo: allow refresh by button click, deny by PM changes
             AssetDatabase.Refresh();
         },
+        ()=>
+        {
+          EditorApplication.Step();
+        },
         lifetime
       );
       MainThreadDispatcher1.Queue(() =>

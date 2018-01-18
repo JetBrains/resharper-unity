@@ -30,9 +30,8 @@ namespace JetBrains.Platform.Unity.Model
     //public fields
     [NotNull] public IRdProperty<bool> ServerConnected { get { return _ServerConnected; }}
     [NotNull] public IRdProperty<bool> Play { get { return _Play; }}
-    [NotNull] public IRdProperty<bool> Stop { get { return _Stop; }}
     [NotNull] public IRdProperty<bool> Pause { get { return _Pause; }}
-    [NotNull] public IRdProperty<bool> Unpause { get { return _Unpause; }}
+    [NotNull] public IRdCall<RdVoid, RdVoid> Step { get { return _Step; }}
     [NotNull] public IRdProperty<string> UnityPluginVersion { get { return _UnityPluginVersion; }}
     [NotNull] public IRdProperty<int> RiderProcessId { get { return _RiderProcessId; }}
     [NotNull] public IRdProperty<string> ApplicationPath { get { return _ApplicationPath; }}
@@ -46,9 +45,8 @@ namespace JetBrains.Platform.Unity.Model
     //private fields
     [NotNull] private readonly RdProperty<bool> _ServerConnected;
     [NotNull] private readonly RdProperty<bool> _Play;
-    [NotNull] private readonly RdProperty<bool> _Stop;
     [NotNull] private readonly RdProperty<bool> _Pause;
-    [NotNull] private readonly RdProperty<bool> _Unpause;
+    [NotNull] private readonly RdCall<RdVoid, RdVoid> _Step;
     [NotNull] private readonly RdProperty<string> _UnityPluginVersion;
     [NotNull] private readonly RdProperty<int> _RiderProcessId;
     [NotNull] private readonly RdProperty<string> _ApplicationPath;
@@ -63,9 +61,8 @@ namespace JetBrains.Platform.Unity.Model
     public UnityModel(
       [NotNull] RdProperty<bool> serverConnected,
       [NotNull] RdProperty<bool> play,
-      [NotNull] RdProperty<bool> stop,
       [NotNull] RdProperty<bool> pause,
-      [NotNull] RdProperty<bool> unpause,
+      [NotNull] RdCall<RdVoid, RdVoid> step,
       [NotNull] RdProperty<string> unityPluginVersion,
       [NotNull] RdProperty<int> riderProcessId,
       [NotNull] RdProperty<string> applicationPath,
@@ -79,9 +76,8 @@ namespace JetBrains.Platform.Unity.Model
     {
       if (serverConnected == null) throw new ArgumentNullException("serverConnected");
       if (play == null) throw new ArgumentNullException("play");
-      if (stop == null) throw new ArgumentNullException("stop");
       if (pause == null) throw new ArgumentNullException("pause");
-      if (unpause == null) throw new ArgumentNullException("unpause");
+      if (step == null) throw new ArgumentNullException("step");
       if (unityPluginVersion == null) throw new ArgumentNullException("unityPluginVersion");
       if (riderProcessId == null) throw new ArgumentNullException("riderProcessId");
       if (applicationPath == null) throw new ArgumentNullException("applicationPath");
@@ -94,9 +90,8 @@ namespace JetBrains.Platform.Unity.Model
       
       _ServerConnected = serverConnected;
       _Play = play;
-      _Stop = stop;
       _Pause = pause;
-      _Unpause = unpause;
+      _Step = step;
       _UnityPluginVersion = unityPluginVersion;
       _RiderProcessId = riderProcessId;
       _ApplicationPath = applicationPath;
@@ -108,9 +103,7 @@ namespace JetBrains.Platform.Unity.Model
       _Refresh = refresh;
       _ServerConnected.OptimizeNested = true;
       _Play.OptimizeNested = true;
-      _Stop.OptimizeNested = true;
       _Pause.OptimizeNested = true;
-      _Unpause.OptimizeNested = true;
       _UnityPluginVersion.OptimizeNested = true;
       _RiderProcessId.OptimizeNested = true;
       _ApplicationPath.OptimizeNested = true;
@@ -137,17 +130,16 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1001),
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1002),
       new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1003),
-      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1004),
-      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1005),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1006),
-      new RdProperty<int>(Serializers.ReadInt, Serializers.WriteInt).Static(1007),
+      new RdCall<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1004),
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1005),
+      new RdProperty<int>(Serializers.ReadInt, Serializers.WriteInt).Static(1006),
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1007),
       new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1008),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1009),
-      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1010),
-      new RdEndpoint<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1011),
-      new RdEndpoint<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).Static(1012),
-      new RdCall<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1013),
-      new RdCall<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1014)
+      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1009),
+      new RdEndpoint<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1010),
+      new RdEndpoint<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).Static(1011),
+      new RdCall<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1012),
+      new RdCall<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1013)
     )
     {
       UnityModel.Register(protocol.Serializers);
@@ -161,9 +153,8 @@ namespace JetBrains.Platform.Unity.Model
     protected override void Init(Lifetime lifetime) {
       _ServerConnected.BindEx(lifetime, this, "serverConnected");
       _Play.BindEx(lifetime, this, "play");
-      _Stop.BindEx(lifetime, this, "stop");
       _Pause.BindEx(lifetime, this, "pause");
-      _Unpause.BindEx(lifetime, this, "unpause");
+      _Step.BindEx(lifetime, this, "step");
       _UnityPluginVersion.BindEx(lifetime, this, "unityPluginVersion");
       _RiderProcessId.BindEx(lifetime, this, "riderProcessId");
       _ApplicationPath.BindEx(lifetime, this, "applicationPath");
@@ -178,9 +169,8 @@ namespace JetBrains.Platform.Unity.Model
     public override void Identify(IIdentities ids) {
       _ServerConnected.IdentifyEx(ids);
       _Play.IdentifyEx(ids);
-      _Stop.IdentifyEx(ids);
       _Pause.IdentifyEx(ids);
-      _Unpause.IdentifyEx(ids);
+      _Step.IdentifyEx(ids);
       _UnityPluginVersion.IdentifyEx(ids);
       _RiderProcessId.IdentifyEx(ids);
       _ApplicationPath.IdentifyEx(ids);
@@ -200,9 +190,8 @@ namespace JetBrains.Platform.Unity.Model
       using (printer.IndentCookie()) {
         printer.Print("serverConnected = "); _ServerConnected.PrintEx(printer); printer.Println();
         printer.Print("play = "); _Play.PrintEx(printer); printer.Println();
-        printer.Print("stop = "); _Stop.PrintEx(printer); printer.Println();
         printer.Print("pause = "); _Pause.PrintEx(printer); printer.Println();
-        printer.Print("unpause = "); _Unpause.PrintEx(printer); printer.Println();
+        printer.Print("step = "); _Step.PrintEx(printer); printer.Println();
         printer.Print("unityPluginVersion = "); _UnityPluginVersion.PrintEx(printer); printer.Println();
         printer.Print("riderProcessId = "); _RiderProcessId.PrintEx(printer); printer.Println();
         printer.Print("applicationPath = "); _ApplicationPath.PrintEx(printer); printer.Println();

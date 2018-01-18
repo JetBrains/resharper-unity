@@ -9,6 +9,7 @@ using JetBrains.IDE;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
+using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
@@ -97,6 +98,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                             if (UnityModel != null) 
                               Refresh.Fire(UnityModel);    
+                        }
+                        break;
+                    case "UNITY_Step":
+                        if (e.NewValue.ToLower() == "true")
+                        {
+                            myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
+                            UnityModel?.Step.Sync(RdVoid.Instance, RpcTimeouts.Default);
                         }
                         break;
                     case "UNITY_Play":

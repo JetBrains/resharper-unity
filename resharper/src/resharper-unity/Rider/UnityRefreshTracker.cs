@@ -30,19 +30,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution = solution;
             myPluginProtocolController = pluginProtocolController;
             
-//            myPluginProtocolController.UnityModel.Play.Advise(lifetime, b => { IsPlayMode = b; });
-//            if (myPluginProtocolController.UnityModel.Play.HasValue())
-//                IsPlayMode = myPluginProtocolController.UnityModel.Play.Value;
+            myPluginProtocolController.UnityModel.Play.Advise(lifetime, b => { IsPlayMode = b; });
+            if (myPluginProtocolController.UnityModel.Play.HasValue())
+                IsPlayMode = myPluginProtocolController.UnityModel.Play.Value;
             
-            myPluginProtocolController.Refresh.Advise(lifetime, model =>
-            {
-                  Refresh();
-            });
+            myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(); });
         }
 
         public bool IsRefreshing { get; private set; }
         
-//        public bool IsPlayMode { get; private set; }
+        public bool IsPlayMode { get; private set; }
 
         public void Refresh()
         {
@@ -93,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
             {
                 if (refresher.IsRefreshing) return;
-//                if (refresher.IsPlayMode) return;
+                if (refresher.IsPlayMode) return;
                 
                 groupingEvent.FireIncoming();
             });
@@ -105,7 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return;
                 
                 if (refresher.IsRefreshing) return;
-//                if (refresher.IsPlayMode) return;
+                if (refresher.IsPlayMode) return;
 
                 groupingEvent.FireIncoming();
             });

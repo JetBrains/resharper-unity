@@ -33,7 +33,13 @@ class ResumeInUnityAction() : AnAction("Resume", "Resume play in Unity", UnityIc
 class StopInUnityAction() : AnAction("Stop", "Stop play in Unity", UnityIcons.StopInUnity) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project?: return
-
         ProjectCustomDataHost.CallBackendStop(project)
+    }
+}
+
+class StepInUnityAction() : AnAction("Step", "Perform a single frame step.", UnityIcons.StepInUnity) {
+    override fun actionPerformed(e: AnActionEvent) {
+        val project = e.project?: return
+        ProjectCustomDataHost.CallBackendStep(project)
     }
 }
