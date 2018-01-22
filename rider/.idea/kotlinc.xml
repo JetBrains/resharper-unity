@@ -4,4 +4,8 @@
     <option name="sourceMapEmbedSources" />
     <option name="sourceMapPrefix" />
   </component>
+  <component name="KotlinCommonCompilerArguments">
+    <option name="apiVersion" value="1.1" />
+    <option name="languageVersion" value="1.1" />
+  </component>
 </project>

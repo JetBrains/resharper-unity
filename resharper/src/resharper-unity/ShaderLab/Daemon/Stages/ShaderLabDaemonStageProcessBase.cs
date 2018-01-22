@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         public bool IsProcessingFinished(IHighlightingConsumer context)
         {
             if (DaemonProcess.InterruptFlag)
-                throw new ProcessCancelledException();
+                throw new OperationCanceledException();
             return false;
         }
 

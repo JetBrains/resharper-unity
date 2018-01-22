@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Host.Features.SyntaxHighlighting
         public bool IsProcessingFinished(IHighlightingConsumer context)
         {
             if (DaemonProcess.InterruptFlag)
-                throw new ProcessCancelledException();
+                throw new OperationCanceledException();
             return false;
         }
 
