@@ -12,7 +12,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
-import com.jetbrains.rider.run.IDebuggerOutputListener
+//import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.util.idea.pumpMessages
@@ -45,8 +45,8 @@ class UnityAttachToEditorProfileState(val remoteConfiguration: UnityAttachToEdit
 
         return result
     }
-
-    override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
-        return DebuggerOutputListener(executionEnvironment.project, debugAttached)
-    }
+//
+//    override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
+//        return DebuggerOutputListener(executionEnvironment.project, debugAttached)
+//    }
 }
