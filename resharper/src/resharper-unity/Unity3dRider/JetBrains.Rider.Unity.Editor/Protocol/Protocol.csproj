@@ -47,10 +47,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ShortcutResolver.cs" />
-    <Compile Include="User32Dll.cs" />
-    <Compile Include="RiderProtocolController.cs" />
-    <Compile Include="UnityModel.Generated.cs" />
     <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
