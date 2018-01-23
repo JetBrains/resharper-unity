@@ -3,13 +3,12 @@ package com.jetbrains.rider
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.ILifetimedComponent
-import com.jetbrains.rider.util.idea.LifetimedComponent
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.model.RdAssemblyReferenceDescriptor
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
+import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 
-class UnityReferenceDiscoverer(project: Project) : ILifetimedComponent by LifetimedComponent(project) {
+class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
     private val myProjectModelView = project.solution.projectModelView
     private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
 

@@ -29,7 +29,7 @@ intellij {
     downloadSources = false
 }
 
-ext.kotlin_version = '1.2'
+ext.kotlin_version = '1.2.10'
 ext.nupkg_path = "$projectDir/../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/JetBrains.Unity.$version-rider.nupkg"
 
 sourceCompatibility = 1.8
