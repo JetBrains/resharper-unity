@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using JetBrains.Rider.Unity.Editor.NonUnity;
 
 namespace JetBrains.Rider.Unity.Editor
 {

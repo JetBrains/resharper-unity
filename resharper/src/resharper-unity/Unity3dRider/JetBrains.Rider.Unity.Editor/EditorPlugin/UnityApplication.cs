@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;

@@ -1,19 +1,11 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using JetBrains.Annotations;
-
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.RdFramework.Text;
-
-using JetBrains.Util;
 using JetBrains.Util.Logging;
-using JetBrains.Util.PersistentMap;
 using Lifetime = JetBrains.DataFlow.Lifetime;
 
 // ReSharper disable RedundantEmptyObjectCreationArgumentList
@@ -21,7 +13,7 @@ using Lifetime = JetBrains.DataFlow.Lifetime;
 // ReSharper disable RedundantOverflowCheckingContext
 
 
-namespace JetBrains.Platform.Unity.Model
+namespace JetBrains.Rider.Unity.Editor.NonUnity
 {
   
   
@@ -111,7 +103,7 @@ namespace JetBrains.Platform.Unity.Model
     public static void Register(ISerializers serializers)
     {
       if (!serializers.Toplevels.Add(typeof(UnityModel))) return;
-      Protocol.InitializationLogger.Trace("REGISTER serializers for {0}", typeof(UnityModel).Name);
+      Platform.RdFramework.Impl.Protocol.InitializationLogger.Trace("REGISTER serializers for {0}", typeof(UnityModel).Name);
       
       serializers.Register(RdOpenFileArgs.Read, RdOpenFileArgs.Write);
       serializers.Register(RdLogEvent.Read, RdLogEvent.Write);
@@ -138,8 +130,8 @@ namespace JetBrains.Platform.Unity.Model
       UnityModel.Register(protocol.Serializers);
       Register(protocol.Serializers);
       Bind(lifetime, protocol, GetType().Name);
-      if (Protocol.InitializationLogger.IsTraceEnabled())
-        Protocol.InitializationLogger.Trace ("CREATED toplevel object {0}", this.PrintToString());
+      if (Platform.RdFramework.Impl.Protocol.InitializationLogger.IsTraceEnabled())
+        Platform.RdFramework.Impl.Protocol.InitializationLogger.Trace ("CREATED toplevel object {0}", this.PrintToString());
     }
     //custom body
     //init method

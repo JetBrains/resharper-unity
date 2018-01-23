@@ -272,13 +272,10 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
             try
             {
+                var name = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
                 Tuple<FileSystemPath, string>[] installs =
                 {
-                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Annotations.dll"), ourResourceNamespace + "JetBrains.Annotations.dll"),
-                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Platform.RdCore35.dll"), ourResourceNamespace + "JetBrains.Platform.RdCore35.dll"),
-                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Platform.RdFramework35.dll"), ourResourceNamespace + "JetBrains.Platform.RdFramework35.dll"),
-                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Rider.Unity.Editor.Plugin.dll"), ourResourceNamespace + "JetBrains.Rider.Unity.Editor.Plugin.dll"),
-                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine("JetBrains.Rider.Unity.Editor.Protocol.dll"), ourResourceNamespace + "JetBrains.Rider.Unity.Editor.Protocol.dll")
+                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine(name), ourResourceNamespace + name),
                 };               
 
                 foreach (Tuple<FileSystemPath, string> install in installs)

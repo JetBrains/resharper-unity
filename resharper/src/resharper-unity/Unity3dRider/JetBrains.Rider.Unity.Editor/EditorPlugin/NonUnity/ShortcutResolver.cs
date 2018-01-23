@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace JetBrains.Rider.Unity.Editor
+namespace JetBrains.Rider.Unity.Editor.NonUnity
 {
   public static class ShortcutResolver
   {

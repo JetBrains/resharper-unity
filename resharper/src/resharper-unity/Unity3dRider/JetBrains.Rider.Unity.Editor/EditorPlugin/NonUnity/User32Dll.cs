@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace JetBrains.Rider.Unity.Editor
+namespace JetBrains.Rider.Unity.Editor.NonUnity
 {
   public static class User32Dll
   {

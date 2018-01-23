@@ -8,12 +8,12 @@ using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
+using JetBrains.Rider.Unity.Editor.NonUnity;
 
 namespace JetBrains.Rider.Unity.Editor
 {
