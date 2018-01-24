@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using JetBrains.Application.Threading;
@@ -14,8 +13,6 @@ using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Host.Features.BackgroundTasks;
-using JetBrains.ReSharper.Host.Features.FileSystem;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl;
@@ -53,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             SessionLifetimes = new SequentialLifetimes(lifetime);
 
             var solFolder = mySolution.SolutionFilePath.Directory;
-            Advise(mySolution.GetProtocolSolution());
+            AdviseCustomDataFromFrontend(mySolution.GetProtocolSolution());
 
             var protocolInstancePath = solFolder.Combine(
                 "Library/ProtocolInstance.json"); // todo: consider non-Unity Solution with Unity-generated projects
@@ -85,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=> CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
-        private void Advise(Solution solution)
+        private void AdviseCustomDataFromFrontend(Solution solution)
         {
             solution.CustomData.Data.Advise(myLifetime, e =>
             {
@@ -153,6 +150,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 
                 SubscribeToLogs(lifetime, solution);
                 SubscribeToOpenFile(solution);
+                UnityModel?.Play.AdviseNotNull(myLifetime, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Play", b.ToString()));
+                UnityModel?.Pause.AdviseNotNull(myLifetime, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Pause", b.ToString()));
             }
             catch (Exception ex)
             {
@@ -211,5 +210,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public int port_id { get; set; }
     }
-
 }
