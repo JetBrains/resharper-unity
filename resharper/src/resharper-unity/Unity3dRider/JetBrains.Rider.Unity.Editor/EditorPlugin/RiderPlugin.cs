@@ -122,15 +122,15 @@ namespace JetBrains.Rider.Unity.Editor
         MainThreadDispatcher.Instance.Queue(() =>
         {
           var res = EditorApplication.isPlaying;
-          Logger.Verbose($"isPlayingAction: {res}");
           play.SetValue(res);
+          if (!res) // pause state changed doesn't fire on its own
+            Model.Pause.SetValue(false);
         });
       });
       var model = new UnityModel(lt, protocol);
       isPlayingAction(model.Play); // get Unity state
       model.Play.Advise(lt, play =>
       {
-        Logger.Log(LoggingLevel.VERBOSE, "model.Play.Advise: " + play);
         MainThreadDispatcher.Instance.Queue(() =>
         {
           var res = EditorApplication.isPlaying;
@@ -143,8 +143,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          if (pause != EditorApplication.isPaused && EditorApplication.isPlaying)
-            EditorApplication.isPaused = pause;
+          EditorApplication.isPaused = pause;
         });
       });
       model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
@@ -152,7 +151,6 @@ namespace JetBrains.Rider.Unity.Editor
       model.Refresh.Set((l, x) =>
       {
         var task = new RdTask<RdVoid>();
-        Logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Refresh.");
         MainThreadDispatcher.Instance.Queue(() =>
         {
           UnityApplication.SyncSolution();
@@ -164,7 +162,6 @@ namespace JetBrains.Rider.Unity.Editor
       model.Step.Set((l, x) =>
       {
         var task = new RdTask<RdVoid>();
-        Logger.Log(LoggingLevel.VERBOSE, "RiderPlugin.Step.");
         MainThreadDispatcher.Instance.Queue(() =>
         {
           EditorApplication.Step();
