@@ -10,12 +10,13 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
+import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.plugins.unity.RdLogEvent
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import java.awt.BorderLayout
 
-class UnityLogPanelView(project: Project, val model: UnityLogPanelModel) {
+class UnityLogPanelView(project: Project, val model: UnityLogPanelModel, projectCustomDataHost: ProjectCustomDataHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
         .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME, project))
@@ -31,7 +32,7 @@ class UnityLogPanelView(project: Project, val model: UnityLogPanelModel) {
         }
     }
 
-    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar()
+    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(projectCustomDataHost)
 
     private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar(model)
 

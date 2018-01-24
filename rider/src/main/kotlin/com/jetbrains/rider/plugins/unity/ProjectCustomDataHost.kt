@@ -18,6 +18,8 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
 
     val unitySession = Property<Boolean>()
     val logSignal = Signal<RdLogEvent>()
+    val play = Property<Boolean>(false)
+    val pause = Property<Boolean>(false)
 
     init {
         project.solution.customData.data.advise(componentLifetime) { item ->
@@ -36,6 +38,18 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
         }
 
         project.solution.customData.data.advise(componentLifetime) { item ->
+            if (item.key == "UNITY_Play" && item.newValueOpt!=null) {
+                play.set(item.newValueOpt!!.toBoolean())
+            }
+        }
+
+        project.solution.customData.data.advise(componentLifetime) { item ->
+            if (item.key == "UNITY_Pause" && item.newValueOpt!=null) {
+                pause.set(item.newValueOpt!!.toBoolean())
+            }
+        }
+
+        project.solution.customData.data.advise(componentLifetime) { item ->
             if (item.key == "UNITY_LogEntry" && item.newValueOpt!=null) {
                 logger.info(item.key+" "+ item.newValueOpt)
                 
@@ -48,10 +62,8 @@ class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by Lifet
     }
     companion object {
         fun CallBackendRefresh(project: Project) { CallBackend(project, "UNITY_Refresh", "true") }
-        fun CallBackendPlay(project: Project) { CallBackend(project, "UNITY_Play","true") }
-        fun CallBackendPause(project: Project) { CallBackend(project, "UNITY_Pause", "true") }
-        fun CallBackendResume(project: Project) { CallBackend(project, "UNITY_Pause", "false") }
-        fun CallBackendStop(project: Project) { CallBackend(project, "UNITY_Play", "false") }
+        fun CallBackendPlay(project: Project, value:Boolean) { CallBackend(project, "UNITY_Play", value.toString()) }
+        fun CallBackendPause(project: Project, value:Boolean) { CallBackend(project, "UNITY_Pause", value.toString()) }
         fun CallBackendStep(project: Project) { CallBackend(project, "UNITY_Step", "true") }
 
         private fun CallBackend(project: Project, key : String, value:String) {
