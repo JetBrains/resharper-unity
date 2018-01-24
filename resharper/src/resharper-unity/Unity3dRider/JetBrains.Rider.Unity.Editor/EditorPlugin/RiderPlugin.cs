@@ -181,8 +181,17 @@ namespace JetBrains.Rider.Unity.Editor
 
       var application = new UnityApplication();
       application.UnityLogRegisterCallBack();
+      
+      lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},
+        () => { EditorApplication.pauseStateChanged -= IsPauseStateChanged(model); });
+      
 
       return model;
+    }
+
+    private static Action<PauseState> IsPauseStateChanged(UnityModel model)
+    {
+      return state => model.Pause.SetValue(state == PauseState.Paused);
     }
 
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
