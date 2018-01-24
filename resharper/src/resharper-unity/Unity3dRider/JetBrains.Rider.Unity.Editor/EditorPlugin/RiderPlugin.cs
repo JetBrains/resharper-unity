@@ -272,7 +272,10 @@ namespace JetBrains.Rider.Unity.Editor
           int col = 0;
           Logger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, col);
           Model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
-          ActivateWindow(Model.RiderProcessId.Value);
+          if (Model.RiderProcessId.HasValue())
+            ActivateWindow(Model.RiderProcessId.Value);
+          else
+            ActivateWindow();
           //task.Result.Advise(); todo: fallback to CallRider, if returns false
           return true;
         }
