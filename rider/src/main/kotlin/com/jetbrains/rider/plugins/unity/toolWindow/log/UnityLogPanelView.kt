@@ -41,6 +41,7 @@ class UnityLogPanelView(project: Project, val model: UnityLogPanelModel) {
         secondComponent = RiderUI.borderPanel {
             add(console.component, BorderLayout.CENTER)
             console.editor.settings.isCaretRowShown = true
+            console.editor.settings.isUseSoftWraps = true
             console.clear()
             console.allowHeavyFilters()
         }
