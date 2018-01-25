@@ -1,0 +1,140 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Application.changes;
+using JetBrains.Application.Threading;
+using JetBrains.DataFlow;
+using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Util;
+using JetBrains.Platform.Unity.Model;
+using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.ProjectsHost.Impl;
+using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.Rider.Model;
+using JetBrains.Threading;
+using JetBrains.Util;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Rider
+{
+    [SolutionComponent]
+    public class UnityRefresher
+    {
+        private readonly IShellLocks myLocks;
+        private readonly Lifetime myLifetime;
+        private readonly ISolution mySolution;
+        private readonly UnityPluginProtocolController myPluginProtocolController;
+
+        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityPluginProtocolController pluginProtocolController)
+        {
+            myLocks = locks;
+            myLifetime = lifetime;
+            mySolution = solution;
+            myPluginProtocolController = pluginProtocolController;
+                        
+            myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(); });
+        }
+
+        public bool IsRefreshing { get; private set; }
+
+        public void Refresh()
+        {
+            myLocks.AssertMainThread();
+            if (IsRefreshing) return;
+
+            IsRefreshing = true;
+            var result = myPluginProtocolController.UnityModel?.Refresh.Start(RdVoid.Instance)?.Result;
+
+            if (result == null)
+            {
+                IsRefreshing = false;
+                return;
+            }
+            
+            var lifetimeDef = Lifetimes.Define(myLifetime);
+            var solution = mySolution.GetProtocolSolution();
+            var solFolder = mySolution.SolutionFilePath.Directory;
+                
+            mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime, 
+                RiderBackgroundTaskBuilder.Create().WithHeader("Refresh").AsIndeterminate().AsNonCancelable());
+                        
+            result.Advise(lifetimeDef.Lifetime, _ =>
+            {
+                try
+                {
+                    var list = new List<string> {solFolder.FullPath};
+                    solution.FileSystemModel.RefreshPaths.Start(new RdRefreshRequest(list, true));
+                }
+                finally
+                {
+                    IsRefreshing = false;
+                    lifetimeDef.Terminate();
+                }
+            });
+        }
+    }
+
+    [SolutionComponent]
+    public class UnityRefreshTracker
+    {
+        private readonly ISolution mySolution;
+
+        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityPluginProtocolController protocolController, 
+            ILogger logger)
+        {
+            mySolution = solution;
+            var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
+                Rgc.Invariant, refresher.Refresh);
+
+            var protocolSolution = solution.GetProtocolSolution();
+            protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
+            {
+                if (refresher.IsRefreshing) return;
+                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
+                if (isPlay==null || (bool)isPlay) return;
+                
+                groupingEvent.FireIncoming();
+            });
+
+            changeManager.Changed2.Advise(lifetime, args =>
+            {
+                var changes = args.ChangeMap.GetChanges<ProjectModelChange>();
+                if (changes == null)
+                    return;
+                
+                if (refresher.IsRefreshing) 
+                    return;
+
+                var hasChange = changes.Any(HasAnyFileChangeRec);
+                if (!hasChange)
+                    return;
+                
+                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
+                if (isPlay==null || (bool)isPlay) 
+                    return;
+
+                groupingEvent.FireIncoming();
+            });
+        }
+
+        private bool HasAnyFileChangeRec(ProjectModelChange change)
+        {
+            var file = change.ProjectModelElement as IProjectFile;
+
+            if (file != null && (change.IsAdded || change.IsRemoved || change.IsMovedIn || change.IsMovedOut))
+            {
+                // Log something
+                return true;
+            }
+
+            foreach (var childChange in change.GetChildren())
+            {
+                if (HasAnyFileChangeRec(childChange))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+}

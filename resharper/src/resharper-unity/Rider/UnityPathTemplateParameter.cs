@@ -41,14 +41,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     if (File.Exists(defaultPath))
                         break;
                     
-                    var home = Environment.GetEnvironmentVariable("HOME");
-                    if (string.IsNullOrEmpty(home))
-                        break;
-                        
-                    var path = new DirectoryInfo(home).GetDirectories("Unity*").Select(unityDir=>Path.Combine(unityDir.FullName, @"Editor/Data/Managed/UnityEngine.dll")).FirstOrDefault(File.Exists);
-                    if (path == null)
-                        break;
-                    defaultPath = path;
+                    List<string> homes = new List<string>();
+                    homes.Add("/opt");
+                    if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HOME")))
+                        homes.Add(Environment.GetEnvironmentVariable("HOME"));
+                    var paths = homes.SelectMany(home => new DirectoryInfo(home).GetDirectories("Unity*").Select(unityDir=>Path.Combine(unityDir.FullName, @"Editor/Data/Managed/UnityEngine.dll")).Where(File.Exists)).AsArray();
+                    if (paths.Any())
+                    {
+                        defaultPath = paths.First();
+                    }
                     break;
                 default:
                     defaultPath = @"C:\Program Files\Unity\Editor\Data\Managed\UnityEngine.dll";

@@ -2,17 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
-namespace Plugins.Editor.JetBrains
+namespace JetBrains.Rider.Unity.Editor
 {
   public class RiderAssetPostprocessor : AssetPostprocessor
   {
+    private static readonly ILog Logger = Log.GetLog<RiderAssetPostprocessor>();
+    
     public static void OnGeneratedCSProjectFiles()
     {
       if (!RiderPlugin.Enabled)
@@ -29,7 +32,7 @@ namespace Plugins.Editor.JetBrains
       if (string.IsNullOrEmpty(slnFile))
         return;
       
-      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", slnFile));
+      Logger.Verbose("Post-processing {0}", slnFile);
       string slnAllText = File.ReadAllText(slnFile);
       const string unityProjectGuid = @"Project(""{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1}"")";
       if (!slnAllText.Contains(unityProjectGuid))
@@ -74,34 +77,48 @@ namespace Plugins.Editor.JetBrains
 
     private static void UpgradeProjectFile(string projectFile)
     {
-      RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("Post-processing {0}", projectFile));
-      var doc = XDocument.Load(projectFile);
+      Logger.Verbose("Post-processing {0}", projectFile);
+      XDocument doc;
+      try
+      {
+        doc = XDocument.Load(projectFile);
+      }
+      catch (Exception)
+      {
+        Logger.Verbose("Failed to Load {0}", projectFile);
+        return;
+      }
+      
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
-      // Unity_5_6_OR_NEWER switched to nunit 3.5
-#if UNITY_5_6_OR_NEWER 
-      ChangeNunitReference(projectContentElement, xmlns);
-#endif
       
-#if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself 
-      SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
-#endif
+      // Unity_5_6_OR_NEWER switched to nunit 3.5
+      if (UnityApplication.UnityVersion >= new Version(5,6))
+        ChangeNunitReference(projectContentElement, xmlns);
+
+      
+      //#i f !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
+      if (UnityApplication.UnityVersion < new Version(2017, 1))
+      {
+        SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
+        SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
+        SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
+      }
+
       ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
       doc.Save(projectFile);
     }
-    
+
     private static void FixSystemXml(XElement projectContentElement, XNamespace xmlns)
     {
       var el = projectContentElement
         .Elements(xmlns+"ItemGroup")
         .Elements(xmlns+"Reference")
-        .FirstOrDefault(a => a.Attribute("Include").Value=="System.XML");
+        .FirstOrDefault(a => a.Attribute("Include") !=null && a.Attribute("Include").Value=="System.XML");
       if (el != null)
       {
         el.Attribute("Include").Value = "System.Xml";
@@ -113,7 +130,7 @@ namespace Plugins.Editor.JetBrains
       var el = projectContentElement
         .Elements(xmlns+"ItemGroup")
         .Elements(xmlns+"Reference")
-        .FirstOrDefault(a => a.Attribute("Include").Value=="nunit.framework");
+        .FirstOrDefault(a =>  a.Attribute("Include") !=null && a.Attribute("Include").Value=="nunit.framework");
       if (el != null)
       {
         var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
@@ -127,14 +144,13 @@ namespace Plugins.Editor.JetBrains
       }
     }
 
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "mcs.rsp");
-#if !UNITY_2017_1_OR_NEWER  // Unity 2017.1 and later has this features by itself
+    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(Application.dataPath, "mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "smcs.rsp");
-    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "gmcs.rsp");
+    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(Application.dataPath, "smcs.rsp");
+    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(Application.dataPath, "gmcs.rsp");
 
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
@@ -206,15 +222,12 @@ namespace Plugins.Editor.JetBrains
     {
       var definesString = string.Join(";", customDefines);
 
-      var DefineConstants = projectContentElement
+      var defineConstants = projectContentElement
         .Elements(xmlns+"PropertyGroup")
         .Elements(xmlns+"DefineConstants")
         .FirstOrDefault(definesConsts=> !string.IsNullOrEmpty(definesConsts.Value));
 
-      if (DefineConstants != null)
-      {
-        DefineConstants.SetValue(DefineConstants.Value + ";" + definesString);
-      }
+      defineConstants?.SetValue(defineConstants.Value + ";" + definesString);
     }
 
     private static void ApplyAllowUnsafeBlocks(XElement projectContentElement, XNamespace xmlns)
@@ -251,7 +264,7 @@ namespace Plugins.Editor.JetBrains
         projectContentElement.Add(itemGroup);
       }
     }
-#endif
+
     private const string UNITY_REFERENCE_KEYWORD = "-r:";
     /// <summary>
     /// Handles custom references -r: in "mcs.rsp"
@@ -301,7 +314,7 @@ namespace Plugins.Editor.JetBrains
       projectContentElement.Add(itemGroup);
     }
 
-    // Helps resolve System.Linq under mono 4 - RIDER-573
+    // Set appropriate version
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
       var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
@@ -309,11 +322,20 @@ namespace Plugins.Editor.JetBrains
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        if (net46)
-          targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersion);
-        else
-          targetFrameworkVersion.SetValue("v"+RiderPlugin.TargetFrameworkVersionOldMono);
+        int scriptingRuntime = 0; // legacy runtime
+        try
+        {
+          var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
+          scriptingRuntime = (int)property.GetValue(null, null);
+          if (scriptingRuntime>0)
+            Logger.Verbose("Latest runtime detected.");
+        }
+        catch(Exception){}
         
+        if (scriptingRuntime>0)
+          targetFrameworkVersion.SetValue("v"+PluginSettings.TargetFrameworkVersion);
+        else
+          targetFrameworkVersion.SetValue("v"+PluginSettings.TargetFrameworkVersionOldMono);
       }
     }
 
@@ -343,23 +365,42 @@ namespace Plugins.Editor.JetBrains
       if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp60Support")))
         return "6";
 
+      var apiCompatibilityLevel = 3;
       // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-#if !UNITY_5_6_OR_NEWER
-      if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
-      #else
-      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
-#endif
+//#i f !UNITY_5_6_OR_NEWER
+      //if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
+//      #else
+//      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
+//#endif
+
+      try
+      {
+        //PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)
+        var method = typeof(PlayerSettings).GetMethod("GetApiCompatibilityLevel");
+        var parameter = typeof(EditorUserBuildSettings).GetProperty("selectedBuildTargetGroup");
+        var val = parameter.GetValue(null, null);
+        apiCompatibilityLevel = (int) method.Invoke(null, new [] {val});
+      }
+      catch (Exception ex)
+      {
+        Logger.Verbose("Exception on evaluating PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)"+ ex);
+      }
+      
+      try
+      {
+        var property = typeof(PlayerSettings).GetProperty("apiCompatibilityLevel");
+        apiCompatibilityLevel = (int) property.GetValue(null, null);
+      }
+      catch (Exception)
+      {
+        Logger.Verbose("Exception on evaluating PlayerSettings.apiCompatibilityLevel");
+      }
+
+      if (apiCompatibilityLevel >= 3)
         return "6";
 
       return "4";
     }
-    
-    private static bool net46 = 
-#if NET_4_6
-      true;
-#else
-      false;
-#endif
 
     private static Type ourPdb2MdbDriver;
     private static Type Pdb2MdbDriver
@@ -371,13 +412,30 @@ namespace Plugins.Editor.JetBrains
         Assembly assembly;
         try
         {
-          var path = Path.Combine(Directory.GetCurrentDirectory(), @"Library\resharper-unity-libs\pdb2mdb.exe");
-          var bytes = File.ReadAllBytes(path);
-          assembly = Assembly.Load(bytes);
+          var names = typeof(RiderAssetPostprocessor).Assembly.GetManifestResourceNames();
+          foreach (var name in names)
+          {
+            Logger.Verbose(Environment.NewLine+name);  
+          }
+          
+          const string resourceName = "JetBrains.Rider.Unity.Editor.pdb2mdb.exe";
+          using (var resourceStream = typeof (RiderAssetPostprocessor).Assembly.GetManifestResourceStream(resourceName))
+          {
+            using (var memoryStream = new MemoryStream())
+            {
+              if (resourceStream == null)
+              {
+                Logger.Error("Plugin file not found in manifest resources. " + resourceName);
+                return null;
+              }
+              CopyStream(resourceStream, memoryStream);
+              assembly = Assembly.Load(memoryStream.ToArray());
+            }    
+          }
         }
         catch (Exception)
         {
-          RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "Loading pdb2mdb failed.");
+          Logger.Verbose("Loading pdb2mdb failed.");
           assembly = null;
         }
 
@@ -388,6 +446,14 @@ namespace Plugins.Editor.JetBrains
           return null;
         return ourPdb2MdbDriver = type;
       }
+    }
+    
+    private static void CopyStream(Stream origin, Stream target)
+    {
+      var buffer = new byte[8192];
+      int count;
+      while ((count = origin.Read(buffer, 0, buffer.Length)) > 0)
+        target.Write(buffer, 0, count);
     }
 
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)
@@ -405,7 +471,7 @@ namespace Plugins.Editor.JetBrains
         if (!IsPortablePdb(pdb))
           ConvertSymbolsForAssembly(asset);
         else
-          RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, string.Format("mdb generation for Portable pdb is not supported. {0}", pdb));
+          Logger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
       }
     }
 
@@ -413,14 +479,14 @@ namespace Plugins.Editor.JetBrains
     {
       if (Pdb2MdbDriver == null)
       {
-        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "FailedToConvertDebugSymbolsNoPdb2mdb.");
+        Logger.Warn("FailedToConvertDebugSymbolsNoPdb2mdb.");
         return;
       }
       
       var method = Pdb2MdbDriver.GetMethod("Main", BindingFlags.Static | BindingFlags.NonPublic);
       if (method == null)
       {
-        RiderPlugin.Log(RiderPlugin.LoggingLevel.Verbose, "WarningFailedToConvertDebugSymbolsPdb2mdbMainIsNull.");
+        Logger.Warn("WarningFailedToConvertDebugSymbolsPdb2mdbMainIsNull.");
         return;
       }
 

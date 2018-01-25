@@ -93,7 +93,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             
             InstallFromResource(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll", ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll");
-            InstallFromResource(@"Library\resharper-unity-libs\pdb2mdb.exe", ".Unity3dRider.Library.resharper_unity_libs.pdb2mdb.exe");
             
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
@@ -119,6 +118,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myPluginInstallations.Add(mySolution.SolutionFilePath);
             });
         }
+        
+        Version currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
 
         private void InstallFromResource(string relPath, string namespacePath)
         {
@@ -183,7 +184,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
 
-            var currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
             if (currentVersion <= installationInfo.Version)
             {
                 myLogger.Verbose($"Plugin v{installationInfo.Version} already installed.");
@@ -253,44 +253,42 @@ Please switch back to Unity to make plugin file appear in the solution.";
         {
             installedPath = null;
 
-            var backups = installation.ExistingFiles.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+            var originPaths = new List<FileSystemPath>();
+            originPaths.AddRange(installation.ExistingFiles);
 
-            foreach (var originPath in installation.ExistingFiles)
+            var backups = originPaths.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+
+            foreach (var originPath in originPaths)
             {
                 var backupPath = backups[originPath];
-                originPath.MoveFile(backupPath, true);
-                myLogger.Info($"backing up: {originPath.Name} -> {backupPath.Name}");
+                if (originPath.ExistsFile)
+                {
+                    originPath.MoveFile(backupPath, true);
+                    myLogger.Info($"backing up: {originPath.Name} -> {backupPath.Name}");
+                }
+                else
+                    myLogger.Info($"backing up failed: {originPath.Name} doesn't exist.");
             }
 
             try
             {
-                var path = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
-
-                var resourceName = ourResourceNamespace + UnityPluginDetector.MergedPluginFile;
-                using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+                var name = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
+                Tuple<FileSystemPath, string>[] installs =
                 {
-                    if (resourceStream == null)
-                    {
-                        myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
+                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine(name), ourResourceNamespace + name),
+                };               
 
-                        RestoreFromBackup(backups);
-
-                        return false;
-                    }
-
-                    using (var fileStream = path.OpenStream(FileMode.OpenOrCreate))
-                    {
-                        resourceStream.CopyTo(fileStream);
-                    }
+                foreach (Tuple<FileSystemPath, string> install in installs)
+                {
+                    if (!InstallFromResourceWithBackup(install.Item2, backups, install.Item1)) return false;    
                 }
-
+                
                 foreach (var backup in backups)
                 {
                     backup.Value.DeleteFile();
                 }
 
-                installedPath = path;
-
+                installedPath = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
                 return true;
             }
             catch (Exception e)
@@ -301,6 +299,28 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
                 return false;
             }
+        }
+
+        private bool InstallFromResourceWithBackup(string resourceName, Dictionary<FileSystemPath, FileSystemPath> backups, FileSystemPath path)
+        {
+            using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+            {
+                if (resourceStream == null)
+                {
+                    myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
+
+                    RestoreFromBackup(backups);
+
+                    return false;
+                }
+
+                using (var fileStream = path.OpenStream(FileMode.OpenOrCreate))
+                {
+                    resourceStream.CopyTo(fileStream);
+                }
+            }
+
+            return true;
         }
 
         private void RestoreFromBackup(Dictionary<FileSystemPath, FileSystemPath> backups)

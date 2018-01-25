@@ -17,13 +17,11 @@ import com.jetbrains.rider.use2
 import org.apache.commons.logging.LogFactory
 import org.jdom.Element
 
-class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToEditorFactory)
+class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
     : RunConfigurationBase(project, factory, "Attach To Unity Editor"),
         RunConfigurationWithSuppressedDefaultRunAction,
         RemoteConfiguration,
         WithoutOwnBeforeRunSteps {
-
-    var play: Boolean = false   // TODO: Play after attach! (Don't forget to clone)
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
     override var port: Int = -1
@@ -113,21 +111,12 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
         // Too expensive to check here?
     }
 
-    override fun readExternal(element: Element) {
-        super.readExternal(element)
-        val shouldPlay = element.getAttributeValue("play")
-        play = shouldPlay != null && java.lang.Boolean.parseBoolean(shouldPlay)
-    }
-
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
         // Write it, but don't read it. We need to write it so that the modified check
         // works, but we're not interested in reading it as we will recalculate it
         if (pid != null) {
             element.setAttribute("pid", pid.toString())
-        }
-        if (play) {
-            element.setAttribute("play", play.toString())
         }
     }
 }

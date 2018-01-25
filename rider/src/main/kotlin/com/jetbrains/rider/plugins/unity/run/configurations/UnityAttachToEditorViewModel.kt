@@ -3,8 +3,10 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.google.gson.JsonParser
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.run.configurations.remote.unity.UnityProcessUtil
+import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
 import com.jetbrains.rider.use2
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.IProperty
@@ -15,6 +17,7 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
     val editorInstanceJsonStatus: EditorInstanceJsonStatus
     val editorProcesses: ViewableList<EditorProcessInfo> = ViewableList()
     val pid: IProperty<Int?> = Property(null)
+    val logger = Logger.getInstance(UnityAttachToEditorViewModel::class.java)
 
     data class EditorProcessInfo(val name: String, val pid: Int?)
     data class EditorInstanceJsonResult(val status: EditorInstanceJsonStatus, val pid: Int?)

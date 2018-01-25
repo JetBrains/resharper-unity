@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>4</LangVersion>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,20 +39,29 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Platform.RdCore35">
+      <HintPath>..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\lib\JetBrains.Platform.RdCore35.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.RdFramework35">
+      <HintPath>..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
+    </Reference>
+      <Reference Include="JetBrains.Annotations">
+          <HintPath>..\..\src\resharper-unity\Unity3dRider\JetBrains.Rider.Unity.Editor\lib\JetBrains.Annotations.dll</HintPath>
+      </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="UnityEditor">
       <HintPath>packages\JetBrains.Unity.Libs.4.7.2f1.2017.7.21\lib\UnityEditor.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="UnityEngine">
       <HintPath>packages\JetBrains.Unity.Libs.4.7.2f1.2017.7.21\lib\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\src\resharper-unity\Unity3dRider\Assets\**\*.cs" Exclude="**/Unity3DRider.cs"/>
+    <Compile Include="..\..\src\resharper-unity\Unity3dRider\**\*.cs" Exclude="..\..\**\EditorPlugin.Tests\**"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
