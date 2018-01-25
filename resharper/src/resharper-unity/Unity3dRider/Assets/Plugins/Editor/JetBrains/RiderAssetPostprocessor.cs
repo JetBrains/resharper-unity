@@ -89,9 +89,9 @@ namespace Plugins.Editor.JetBrains
       
 #if !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself 
       SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
+#endif
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
-#endif
       ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
       doc.Save(projectFile);
     }
@@ -232,7 +232,7 @@ namespace Plugins.Editor.JetBrains
     {
       return Path.GetFileName(projectFile) == UNITY_EDITOR_PROJECT_NAME;
     }
-  
+#endif
     private static void SetXCodeDllReference(string name, XNamespace xmlns, XElement projectContentElement)
     {
       string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
@@ -251,7 +251,7 @@ namespace Plugins.Editor.JetBrains
         projectContentElement.Add(itemGroup);
       }
     }
-#endif
+    
     private const string UNITY_REFERENCE_KEYWORD = "-r:";
     /// <summary>
     /// Handles custom references -r: in "mcs.rsp"
