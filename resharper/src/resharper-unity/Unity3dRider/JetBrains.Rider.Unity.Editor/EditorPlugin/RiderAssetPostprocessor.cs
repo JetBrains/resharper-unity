@@ -105,9 +105,9 @@ namespace JetBrains.Rider.Unity.Editor
       if (UnityApplication.UnityVersion < new Version(2017, 1))
       {
         SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
-        SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
-        SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
       }
+      SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
+      SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
 
       ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
       doc.Save(projectFile);
