@@ -1,10 +1,10 @@
 [![official JetBrains project](http://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 [![Build status](https://ci.appveyor.com/api/projects/status/v8wgygg7jh7ern8x/branch/master?svg=true)](https://ci.appveyor.com/project/IvanPashchenko/resharper-unity/branch/master)
 [![Build Status](https://travis-ci.org/JetBrains/resharper-unity.svg?branch=master)](https://travis-ci.org/JetBrains/resharper-unity)
+[![Join the chat at https://gitter.im/JetBrains/resharper-unity](https://badges.gitter.im/JetBrains/resharper-unity.svg)](https://gitter.im/JetBrains/resharper-unity?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Unity Support for ReSharper and Rider
 
-[![Join the chat at https://gitter.im/JetBrains/resharper-unity](https://badges.gitter.im/JetBrains/resharper-unity.svg)](https://gitter.im/JetBrains/resharper-unity?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 The "Unity Support" plugin adds specific functionality for the [Unity game engine](http://unity3d.com/) to [ReSharper](https://www.jetbrains.com/resharper/) and [Rider](https://www.jetbrains.com/rider/).
 
