@@ -7,15 +7,16 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class UnityNullCoalescingWarningTests : CSharpHighlightingTestBase
+    public class UnityNullWarningTests : CSharpHighlightingTestBase
     {
         protected override string RelativeTestDataPath => @"daemon\Stages\Analysis";
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
         {
-            return highlighting is UnityNullCoalescingWarning;
+            return highlighting is UnityNullCoalescingWarning || highlighting is UnityNullConditionalWarning;
         }
 
         [Test] public void TestUnityNullCoalescingWarning() { DoNamedTest2(); }
+        [Test] public void TestUnityNullConditionalWarning() { DoNamedTest2(); }
     }
 }
