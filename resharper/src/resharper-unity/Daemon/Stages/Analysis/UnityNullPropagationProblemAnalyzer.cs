@@ -8,10 +8,10 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IConditionalAccessExpression), HighlightingTypes = new[] { typeof(UnityNullConditionalWarning) })]
-    public class UnityNullConditionalProblemAnalyzer : UnityElementProblemAnalyzer<IConditionalAccessExpression>
+    [ElementProblemAnalyzer(typeof(IConditionalAccessExpression), HighlightingTypes = new[] { typeof(UnityNullPropagationWarning) })]
+    public class UnityNullPropagationProblemAnalyzer : UnityElementProblemAnalyzer<IConditionalAccessExpression>
     {
-        public UnityNullConditionalProblemAnalyzer([NotNull] UnityApi unityApi)
+        public UnityNullPropagationProblemAnalyzer([NotNull] UnityApi unityApi)
             : base(unityApi)
         {
         }
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 
             if (expression.ConditionalQualifier is IReferenceExpression qualifier && IsDescendantOfUnityObject(qualifier))
             {
-                consumer.AddHighlighting(new UnityNullConditionalWarning(expression));
+                consumer.AddHighlighting(new UnityNullPropagationWarning(expression));
             }
         }
 

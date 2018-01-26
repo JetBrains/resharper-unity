@@ -13,10 +13,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
         {
-            return highlighting is UnityNullCoalescingWarning || highlighting is UnityNullConditionalWarning;
+            return highlighting is UnityNullCoalescingWarning || highlighting is UnityNullPropagationWarning;
         }
 
         [Test] public void TestUnityNullCoalescingWarning() { DoNamedTest2(); }
-        [Test] public void TestUnityNullConditionalWarning() { DoNamedTest2(); }
+        [Test] public void TestUnityNullPropagationWarning() { DoNamedTest2(); }
     }
 }
