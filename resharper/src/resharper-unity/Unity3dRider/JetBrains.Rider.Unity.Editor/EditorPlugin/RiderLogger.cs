@@ -35,6 +35,8 @@ namespace JetBrains.Rider.Unity.Editor
       var categoryText = Category.Substring(dotidx >= 0 ? dotidx + 1 : 0);
       var text = categoryText + "[" + level + "]" +
                  DateTime.Now.ToString(Util.Logging.Log.DefaultDateFormat) + " " + message;
+      if (exception != null)
+        text = text + Environment.NewLine + exception.Message + Environment.NewLine + exception.StackTrace;
 
       // using Unity logs causes frequent Unity hangs
       MainThreadDispatcher.Instance.Queue(() =>
