@@ -12,6 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [ShellComponent]
     public class UnityMonoPathProvider : IMonoPathProvider
     {
+        private readonly ILogger myLogger;
+
+        public UnityMonoPathProvider(ILogger logger)
+        {
+            myLogger = logger;
+        }
+
         public IEnumerable<FileSystemPath> GetPossibleMonoPaths()
         {
             switch (PlatformUtil.RuntimePlatform)
@@ -77,6 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return monoFolders;
                 }
             }
+            myLogger.Error("Unknown runtime platfrom");
             return EmptyList<FileSystemPath>.Instance;
         }
     }
