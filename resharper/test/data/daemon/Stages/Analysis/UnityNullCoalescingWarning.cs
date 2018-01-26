@@ -6,8 +6,8 @@ public class Test : MonoBehaviour
     {
         var obj = o ?? null;
         obj = c ?? null;
-        obj = c ?? gameObject;
-        obj = c ?? this.gameObject;
+        obj = go ?? gameObject;
+        obj = go ?? this.gameObject;
         obj = t ?? null;
         obj = t ?? transform;
         obj = t ?? this.transform;

@@ -6,8 +6,8 @@ public class Test : MonoBehaviour
     {
         var obj = |o ?? null|(0);
         obj = |c ?? null|(1);
-        obj = |c ?? gameObject|(2);
-        obj = |c ?? this.gameObject|(3);
+        obj = |go ?? gameObject|(2);
+        obj = |go ?? this.gameObject|(3);
         obj = |t ?? null|(4);
         obj = |t ?? transform|(5);
         obj = |t ?? this.transform|(6);
