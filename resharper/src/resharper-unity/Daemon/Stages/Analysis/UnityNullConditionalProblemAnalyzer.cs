@@ -18,7 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 
         protected override void Analyze(IConditionalAccessExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (expression.ConditionalQualifier == null)
+            if (expression.ConditionalQualifier == null || expression.ConditionalAccessSign == null)
+                return;
+            if (!expression.HasConditionalAccessSign)
                 return;
 
             if (expression.ConditionalQualifier is IReferenceExpression qualifier && IsDescendantOfUnityObject(qualifier))
