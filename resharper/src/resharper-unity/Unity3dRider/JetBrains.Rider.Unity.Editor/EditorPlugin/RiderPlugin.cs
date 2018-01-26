@@ -91,7 +91,7 @@ namespace JetBrains.Rider.Unity.Editor
         var riderProtocolController = new RiderProtocolController(Application.dataPath, MainThreadDispatcher.Instance, lifetime);
 
         var serializers = new Serializers();
-        var identities = new Identities(IdKind.DynamicServer);
+        var identities = new Identities(IdKind.Server);
         MainThreadDispatcher.Instance.Queue(() =>
         {
           riderProtocolController.Wire.Connected.View(lifetime, (lt, connected) =>
