@@ -96,14 +96,16 @@ namespace JetBrains.Rider.Unity.Editor
         {
           riderProtocolController.Wire.Connected.View(lifetime, (lt, connected) =>
           {
-            if (!connected)
+            if (connected)
+            {
+              var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance,
+                riderProtocolController.Wire);
+              Logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
+
+              Model = CreateModel(protocol, lt);
+            }
+            else
               Model = null;
-
-            var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance,
-              riderProtocolController.Wire);
-            Logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-
-            Model = CreateModel(protocol, lt);
           });
         });
       }
@@ -124,7 +126,7 @@ namespace JetBrains.Rider.Unity.Editor
           var res = EditorApplication.isPlaying;
           play.SetValue(res);
           if (!res) // pause state changed doesn't fire on its own
-            Model.Pause.SetValue(false);
+            Model?.Pause.SetValue(false);
         });
       });
       var model = new UnityModel(lt, protocol);
@@ -188,7 +190,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static Action<PauseState> IsPauseStateChanged(UnityModel model)
     {
-      return state => model.Pause.SetValue(state == PauseState.Paused);
+      return state => model?.Pause.SetValue(state == PauseState.Paused);
     }
 
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
