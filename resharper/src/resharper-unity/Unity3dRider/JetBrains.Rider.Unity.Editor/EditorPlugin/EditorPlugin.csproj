@@ -41,11 +41,9 @@
     </Reference>
     <Reference Include="JetBrains.Platform.RdCore35">
       <HintPath>../lib/JetBrains.Platform.RdCore35.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>../lib/JetBrains.Platform.RdFramework35.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
@@ -75,7 +73,6 @@
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.15.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.15.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
