@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLogger = logger;
         }
 
-        public IEnumerable<FileSystemPath> GetPossibleMonoPaths()
+        public List<FileSystemPath> GetPossibleMonoPaths()
         {
             switch (PlatformUtil.RuntimePlatform)
             {
@@ -85,7 +85,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
             }
             myLogger.Error("Unknown runtime platfrom");
-            return EmptyList<FileSystemPath>.Instance;
+            return new List<FileSystemPath>();
+        }
+
+        public int GetPriority()
+        {
+            return 50;
         }
     }
 }
