@@ -16,11 +16,11 @@ public class Test : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null conditionals.
-(1): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null conditionals.
-(2): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null conditionals.
-(3): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null conditionals.
-(4): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null conditionals.
-(5): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null conditionals.
-(6): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null conditionals.
-(7): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null conditionals.
+(0): ReSharper Underlined Error Highlighting: Unity Object properties can't be accessed via null propagation.
+(1): ReSharper Underlined Error Highlighting: Unity Object properties can't be accessed via null propagation.
+(2): ReSharper Underlined Error Highlighting: Unity Object properties can't be accessed via null propagation.
+(3): ReSharper Underlined Error Highlighting: Unity Object properties can't be accessed via null propagation.
+(4): ReSharper Underlined Error Highlighting: Unity Object properties can't be accessed via null propagation.
+(5): ReSharper Underlined Error Highlighting: Unity Object properties can't be accessed via null propagation.
+(6): ReSharper Underlined Error Highlighting: Unity Object properties can't be accessed via null propagation.
+(7): ReSharper Underlined Error Highlighting: Unity Object properties can't be accessed via null propagation.
