@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 switch (e.Key)
                 {
                     case "UNITY_Refresh":
-                        if (e.NewValue.ToLower() == "true")
+                        if (e.NewValue.ToLower() == true.ToString().ToLower())
                         {
                             myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                             if (UnityModel != null) 
@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         }
                         break;
                     case "UNITY_Step":
-                        if (e.NewValue.ToLower() == "true")
+                        if (e.NewValue.ToLower() == true.ToString().ToLower())
                         {
                             myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                             UnityModel?.Step.Sync(RdVoid.Instance, RpcTimeouts.Default);
@@ -106,12 +106,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         break;
                     case "UNITY_Play":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        UnityModel?.Play.SetValue(e.NewValue.ToLower() == "true");
+                        UnityModel?.Play.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
                         
                     case "UNITY_Pause":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        UnityModel?.Pause.SetValue(e.NewValue.ToLower() == "true");
+                        UnityModel?.Pause.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
                 }
             });
@@ -147,8 +147,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 
                 SubscribeToLogs(lifetime, solution);
                 SubscribeToOpenFile(solution);
-                UnityModel?.Play.AdviseNotNull(myLifetime, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Play", b.ToString()));
-                UnityModel?.Pause.AdviseNotNull(myLifetime, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Pause", b.ToString()));
+                UnityModel?.Play.AdviseNotNull(myLifetime, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Play", b.ToString().ToLower()));
+                UnityModel?.Pause.AdviseNotNull(myLifetime, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Pause", b.ToString().ToLower()));
             }
             catch (Exception ex)
             {
