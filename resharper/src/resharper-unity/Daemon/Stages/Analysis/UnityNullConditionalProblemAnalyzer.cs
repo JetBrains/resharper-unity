@@ -8,22 +8,22 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(INullCoalescingExpression), HighlightingTypes = new[] { typeof(UnityNullCoalescingWarning) })]
-    public class UnityNullCoalescingProblemAnalyzer : UnityElementProblemAnalyzer<INullCoalescingExpression>
+    [ElementProblemAnalyzer(typeof(IConditionalAccessExpression), HighlightingTypes = new[] { typeof(UnityNullConditionalWarning) })]
+    public class UnityNullConditionalProblemAnalyzer : UnityElementProblemAnalyzer<IConditionalAccessExpression>
     {
-        public UnityNullCoalescingProblemAnalyzer([NotNull] UnityApi unityApi)
+        public UnityNullConditionalProblemAnalyzer([NotNull] UnityApi unityApi)
             : base(unityApi)
         {
         }
 
-        protected override void Analyze(INullCoalescingExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Analyze(IConditionalAccessExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (expression.LeftOperand == null || expression.RightOperand == null)
+            if (expression.ConditionalQualifier == null)
                 return;
 
-            if (expression.LeftOperand is IReferenceExpression leftOperand && IsDescendantOfUnityObject(leftOperand))
+            if (expression.ConditionalQualifier is IReferenceExpression qualifier && IsDescendantOfUnityObject(qualifier))
             {
-                consumer.AddHighlighting(new UnityNullCoalescingWarning(expression));
+                consumer.AddHighlighting(new UnityNullConditionalWarning(expression));
             }
         }
 

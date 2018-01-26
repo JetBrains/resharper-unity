@@ -4,9 +4,9 @@ using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-[assembly: RegisterConfigurableSeverity(UnityNullCoalescingWarning.HIGHLIGHTING_ID,
-    null, UnityHighlightingGroupIds.Unity, UnityNullCoalescingWarning.MESSAGE,
-    "Unity Object types can't be compared using null coalescing. Use ternary operator instead.",
+[assembly: RegisterConfigurableSeverity(UnityNullConditionalWarning.HIGHLIGHTING_ID,
+    null, UnityHighlightingGroupIds.Unity, UnityNullConditionalWarning.MESSAGE,
+    "Unity Object types can't be compared using null conditionals. Use ternary operator instead.",
     Severity.ERROR)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
@@ -14,12 +14,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
     [ConfigurableSeverityHighlighting(HIGHLIGHTING_ID, CSharpLanguage.Name,
         OverlapResolve = OverlapResolveKind.ERROR,
         ToolTipFormatString = MESSAGE)]
-    public class UnityNullCoalescingWarning : IHighlighting, IUnityHighlighting
+    public class UnityNullConditionalWarning : IHighlighting, IUnityHighlighting
     {
-        public const string HIGHLIGHTING_ID = "Unity.NoNullCoalescing";
-        public const string MESSAGE = "Unity Object types can't be compared using null coalescing.";
+        public const string HIGHLIGHTING_ID = "Unity.NoNullConditonal";
+        public const string MESSAGE = "Unity Object types can't be compared using null conditionals.";
 
-        public UnityNullCoalescingWarning(INullCoalescingExpression expression)
+        public UnityNullConditionalWarning(IConditionalAccessExpression expression)
         {
             Expression = expression;
         }
@@ -36,6 +36,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 
         public string ToolTip => MESSAGE;
         public string ErrorStripeToolTip => ToolTip;
-        public INullCoalescingExpression Expression { get; }
+        public IConditionalAccessExpression Expression { get; }
     }
 }
