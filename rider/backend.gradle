@@ -174,9 +174,6 @@ task updatePackagingPropsVersion {
     }
 }
 
-        if (outputPath.isFile() && outputPath.exists())
-            assert outputPath.delete()
-
 task detectMSBuild {
     group = backendGroup
     description = 'Detects MSBuild and sets the corresponding property.'
@@ -222,6 +219,13 @@ task buildUnity3dRider {
     description = 'Build Unity3dRider. Runs MSBuild and creates binaries.'
 
     doLast {
+        def outputPath = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Repacked.dll")
+        if (outputPath.isFile() && outputPath.exists())
+        {
+            logger.lifecycle("deleting $outputhPath")
+            assert outputPath.delete()
+        }
+
         def file = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/JetBrains.Rider.Unity.Editor/AssemblyCustomAttributes.Generated.cs")
         file.write("[assembly: global::System.Reflection.AssemblyVersionAttribute(\"$version\")]")
 
