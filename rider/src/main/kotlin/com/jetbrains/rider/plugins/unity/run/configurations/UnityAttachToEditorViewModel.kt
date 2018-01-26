@@ -5,8 +5,7 @@ import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
+import com.jetbrains.rider.run.configurations.remote.unity.UnityProcessUtil
 import com.jetbrains.rider.use2
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.IProperty

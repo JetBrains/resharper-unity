@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.ide.impl.ContentManagerWatcher
-import com.intellij.openapi.components.AbstractProjectComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
@@ -12,13 +11,12 @@ import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
-import com.jetbrains.rider.util.idea.ILifetimedComponent
-import com.jetbrains.rider.util.idea.LifetimedComponent
+import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 
-class UnityToolWindowFactory(private val project: Project,
+class UnityToolWindowFactory(project: Project,
                              private val toolWindowManager: ToolWindowManager,
                              private val projectCustomDataHost: ProjectCustomDataHost)
-    : AbstractProjectComponent(project), ILifetimedComponent by LifetimedComponent(project) {
+    : LifetimedProjectComponent(project) {
 
     companion object {
         val TOOLWINDOW_ID = "Unity"

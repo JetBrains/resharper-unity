@@ -3,17 +3,14 @@ package com.jetbrains.rider.plugins.unity
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.ILifetimedComponent
-import com.jetbrains.rider.util.idea.LifetimedComponent
+import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.set
 import org.codehaus.jettison.json.JSONObject
 
-class ProjectCustomDataHost(val project: Project) : ILifetimedComponent by LifetimedComponent(project) {
+class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(project) {
     val logger = Logger.getInstance(ProjectCustomDataHost::class.java)
 
     val unitySession = Property<Boolean>()

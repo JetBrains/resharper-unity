@@ -8,10 +8,9 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.actionSystem.ex.AnActionListener
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.util.idea.ILifetimedComponent
-import com.jetbrains.rider.util.idea.LifetimedComponent
+import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 
-class SaveAllTracker(val project: Project, val actionManagerEx: ActionManagerEx) : ILifetimedComponent by LifetimedComponent(project) {
+class SaveAllTracker(project: Project, val actionManagerEx: ActionManagerEx) : LifetimedProjectComponent(project) {
 
     init {
         val listener = FileListenerImpl(project)
