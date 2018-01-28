@@ -249,7 +249,7 @@ namespace JetBrains.Rider.Unity.Editor
       // determine asset that has been double clicked in the project view
       var selected = EditorUtility.InstanceIDToObject(instanceID);
 
-      var assetFilePath = Path.Combine(appPath, AssetDatabase.GetAssetPath(selected));
+      var assetFilePath = Path.GetFullPath(Path.Combine(appPath, AssetDatabase.GetAssetPath(selected)));
       if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader" ||
             (selected.GetType().ToString() == "UnityEngine.TextAsset" &&
