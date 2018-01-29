@@ -17,14 +17,14 @@ import java.net.*
 
 
 class UnityModel (
-    private val _play : RdProperty<Boolean>,
-    private val _pause : RdProperty<Boolean>,
+    private val _play : RdOptionalProperty<Boolean>,
+    private val _pause : RdOptionalProperty<Boolean>,
     private val _step : RdCall<Unit, Unit>,
-    private val _unityPluginVersion : RdProperty<String>,
-    private val _riderProcessId : RdProperty<Int>,
-    private val _applicationPath : RdProperty<String>,
-    private val _applicationVersion : RdProperty<String>,
-    private val _logModelInitialized : RdProperty<UnityLogModelInitialized>,
+    private val _unityPluginVersion : RdOptionalProperty<String>,
+    private val _riderProcessId : RdOptionalProperty<Int>,
+    private val _applicationPath : RdOptionalProperty<String>,
+    private val _applicationVersion : RdOptionalProperty<String>,
+    private val _logModelInitialized : RdOptionalProperty<UnityLogModelInitialized>,
     private val _isClientConnected : RdEndpoint<Unit, Boolean>,
     private val _openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean>,
     private val _updateUnityPlugin : RdCall<String, Boolean>,
@@ -49,14 +49,14 @@ class UnityModel (
             register(protocol.serializers)
             
             val __res = UnityModel (
-                RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1001),
-                RdProperty<Boolean>(FrameworkMarshallers.Bool).static(1002),
+                RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool).static(1001),
+                RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool).static(1002),
                 RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1003),
-                RdProperty<String>(FrameworkMarshallers.String).static(1004),
-                RdProperty<Int>(FrameworkMarshallers.Int).static(1005),
-                RdProperty<String>(FrameworkMarshallers.String).static(1006),
-                RdProperty<String>(FrameworkMarshallers.String).static(1007),
-                RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1008),
+                RdOptionalProperty<String>(FrameworkMarshallers.String).static(1004),
+                RdOptionalProperty<Int>(FrameworkMarshallers.Int).static(1005),
+                RdOptionalProperty<String>(FrameworkMarshallers.String).static(1006),
+                RdOptionalProperty<String>(FrameworkMarshallers.String).static(1007),
+                RdOptionalProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1008),
                 RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).static(1009),
                 RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).static(1010),
                 RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).static(1011),
@@ -70,14 +70,14 @@ class UnityModel (
         
     }
     //fields
-    val play : IProperty<Boolean> get() = _play
-    val pause : IProperty<Boolean> get() = _pause
+    val play : IOptProperty<Boolean> get() = _play
+    val pause : IOptProperty<Boolean> get() = _pause
     val step : IRdCall<Unit, Unit> get() = _step
-    val unityPluginVersion : IProperty<String> get() = _unityPluginVersion
-    val riderProcessId : IProperty<Int> get() = _riderProcessId
-    val applicationPath : IProperty<String> get() = _applicationPath
-    val applicationVersion : IProperty<String> get() = _applicationVersion
-    val logModelInitialized : IProperty<UnityLogModelInitialized> get() = _logModelInitialized
+    val unityPluginVersion : IOptProperty<String> get() = _unityPluginVersion
+    val riderProcessId : IOptProperty<Int> get() = _riderProcessId
+    val applicationPath : IOptProperty<String> get() = _applicationPath
+    val applicationVersion : IOptProperty<String> get() = _applicationVersion
+    val logModelInitialized : IOptProperty<UnityLogModelInitialized> get() = _logModelInitialized
     val isClientConnected : RdEndpoint<Unit, Boolean> get() = _isClientConnected
     val openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean> get() = _openFileLineCol
     val updateUnityPlugin : IRdCall<String, Boolean> get() = _updateUnityPlugin
@@ -319,7 +319,7 @@ class UnityLogModelInitialized (
         
     }
     //fields
-    val log : ISink<RdLogEvent> get() = _log
+    val log : ISource<RdLogEvent> get() = _log
     
     //initializer
     //secondary constructor
