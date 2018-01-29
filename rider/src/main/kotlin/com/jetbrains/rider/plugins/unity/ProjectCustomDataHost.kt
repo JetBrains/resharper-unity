@@ -13,7 +13,7 @@ import org.codehaus.jettison.json.JSONObject
 class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(project) {
     val logger = Logger.getInstance(ProjectCustomDataHost::class.java)
 
-    val unitySession = Property<Boolean>()
+    val unitySession = Property<Boolean>(false)
     val logSignal = Signal<RdLogEvent>()
     val play = Property<Boolean>(false)
     val pause = Property<Boolean>(false)
