@@ -31,6 +31,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLifetime = lifetime;
             mySolution = solution;
             myPluginProtocolController = pluginProtocolController;
+            
+            if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
+                return;
                         
             myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(); });
         }
@@ -77,12 +80,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        private readonly ISolution mySolution;
-
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityPluginProtocolController protocolController, 
             ILogger logger)
         {
-            mySolution = solution;
+            if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
+                return;
+            
             var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
                 Rgc.Invariant, refresher.Refresh);
 

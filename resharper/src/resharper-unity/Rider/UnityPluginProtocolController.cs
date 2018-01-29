@@ -48,6 +48,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLocks = locks;
             mySolution = solution;
             SessionLifetimes = new SequentialLifetimes(lifetime);
+            
+            if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
+                return;
 
             var solFolder = mySolution.SolutionFilePath.Directory;
             AdviseCustomDataFromFrontend(mySolution.GetProtocolSolution());
