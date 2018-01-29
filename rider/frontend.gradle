@@ -81,11 +81,8 @@ buildPlugin {
 
 prepareSandbox {
     dependsOn prepareForBuild
-    from(resharper_dll_path, {
-        into "$intellij.pluginName/dotnet"
-    })
-    from(unity_dll_path, {
-        into "$intellij.pluginName/unity"
+    from(nupkg_path, {
+        into "$intellij.pluginName"
     })
     into("$intellij.pluginName/projectTemplates") {
         from 'projectTemplates'
