@@ -7,12 +7,12 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 [assembly: RegisterConfigurableSeverity(UnityNullCoalescingWarning.HIGHLIGHTING_ID,
     null, UnityHighlightingGroupIds.Unity, UnityNullCoalescingWarning.MESSAGE,
     "Unity Object types can't be compared using null coalescing. Use ternary operator instead.",
-    Severity.ERROR)]
+    Severity.WARNING)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
     [ConfigurableSeverityHighlighting(HIGHLIGHTING_ID, CSharpLanguage.Name,
-        OverlapResolve = OverlapResolveKind.ERROR,
+        OverlapResolve = OverlapResolveKind.WARNING,
         ToolTipFormatString = MESSAGE)]
     public class UnityNullCoalescingWarning : IHighlighting, IUnityHighlighting
     {

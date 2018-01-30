@@ -7,12 +7,12 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 [assembly: RegisterConfigurableSeverity(UnityNullPropagationWarning.HIGHLIGHTING_ID,
     null, UnityHighlightingGroupIds.Unity, UnityNullPropagationWarning.MESSAGE,
     "Unity Object properties can't be accessed via null propagation, use conditional access instead.",
-    Severity.ERROR)]
+    Severity.WARNING)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
     [ConfigurableSeverityHighlighting(HIGHLIGHTING_ID, CSharpLanguage.Name,
-        OverlapResolve = OverlapResolveKind.ERROR,
+        OverlapResolve = OverlapResolveKind.WARNING,
         ToolTipFormatString = MESSAGE)]
     public class UnityNullPropagationWarning : IHighlighting, IUnityHighlighting
     {

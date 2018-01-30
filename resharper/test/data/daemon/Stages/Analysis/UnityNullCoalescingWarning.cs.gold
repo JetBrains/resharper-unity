@@ -20,15 +20,15 @@ public class Test : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(1): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(2): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(3): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(4): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(5): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(6): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(7): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(8): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(9): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(10): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
-(11): ReSharper Underlined Error Highlighting: Unity Object types can't be compared using null coalescing.
+(0): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(1): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(2): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(3): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(4): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(5): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(6): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(7): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(8): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(9): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(10): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(11): ReSharper Warning: Unity Object types can't be compared using null coalescing.
