@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using JetBrains.Annotations;
+using JetBrains.Application;
+using JetBrains.Application.BuildScript.Application;
+using JetBrains.Application.Environment;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
@@ -12,8 +16,10 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
+using JetBrains.Build.Serialization;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.Util.Special;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -27,6 +33,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityPluginDetector myDetector;
         private readonly ILogger myLogger;
         private readonly RdNotificationsModel myNotifications;
+        private readonly ApplicationPackages myApplicationPackages;
+        private readonly ApplicationPackagesLocallyInstalled myApplicationPackagesLocallyInstalled;
+        private readonly IEnumerable<ApplicationPackageArtifact> myPackages;
+        private readonly IDeployedPackagesExpandLocationResolver myResolver;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         private static readonly string ourResourceNamespace =
@@ -41,7 +51,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             IShellLocks shellLocks,
             UnityPluginDetector detector,
             RdNotificationsModel notifications,
-            ISettingsStore settingsStore)
+            ISettingsStore settingsStore,
+            ApplicationPackages applicationPackages,
+            ApplicationPackagesLocallyInstalled applicationPackagesLocallyInstalled,
+            IEnumerable<ApplicationPackageArtifact> packages, IDeployedPackagesExpandLocationResolver resolver)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
@@ -51,7 +64,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myShellLocks = shellLocks;
             myDetector = detector;
             myNotifications = notifications;
-            
+            myApplicationPackages = applicationPackages;
+            myApplicationPackagesLocallyInstalled = applicationPackagesLocallyInstalled;
+            myPackages = packages;
+            myResolver = resolver;
+
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
         }
@@ -272,6 +289,13 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
             try
             {
+
+                var package = myApplicationPackages.FindPackageWithAssembly(Assembly.GetExecutingAssembly(), OnError.LogException);
+                var subplatformName = package.SubplatformName;
+                //myApplicationPackagesLocallyInstalled.
+                FileSystemPath dir = myResolver.GetDeployedPackageDirectory(package);
+
+                //var path = ApplicationPackagesLocallyInstalled(package);
                 var name = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
                 Tuple<FileSystemPath, string>[] installs =
                 {
