@@ -26,6 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ModuleReferenceResolveSync myModuleReferenceResolveSync;
         private readonly ChangeManager myChangeManager;
         private readonly IViewableProjectsCollection myProjects;
+        private readonly ILogger myLogger;
         private readonly ICollection<IHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
 
@@ -40,7 +41,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             ModuleReferenceResolveSync moduleReferenceResolveSync,
             ChangeManager changeManager,
-            IViewableProjectsCollection projects)
+            IViewableProjectsCollection projects,
+            ILogger logger
+            )
         {
             myProjectLifetimes = new Dictionary<IProject, Lifetime>();
 
@@ -51,6 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             myModuleReferenceResolveSync = moduleReferenceResolveSync;
             myChangeManager = changeManager;
             myProjects = projects;
+            myLogger = logger;
 
             scheduler.EnqueueTask(new SolutionLoadTask("Checking for Unity projects", SolutionLoadTaskKinds.Done, Register));
         }
@@ -118,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             // project settings if/when the project becomes a unity project
             var projects = new JetHashSet<IProject>();
 
-            var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames);
+            var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames, myLogger);
 
             foreach (var change in changes)
             {
