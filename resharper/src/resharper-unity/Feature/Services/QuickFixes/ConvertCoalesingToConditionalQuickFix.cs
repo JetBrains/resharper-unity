@@ -33,8 +33,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
             {
                 var leftOperand = myExpression.LeftOperand;
                 var rightOperand = myExpression.RightOperand;
-                if (leftOperand == null || rightOperand == null)
-                    return null;
                 var factory = CSharpElementFactory.GetInstance(myExpression);
                 var newExpression = factory.CreateExpression("$0?$0:$1", leftOperand, rightOperand);
                 ModificationUtil.ReplaceChild(myExpression, newExpression);
