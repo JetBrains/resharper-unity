@@ -71,6 +71,7 @@ namespace JetBrains.Rider.Unity.Editor
       switch (operatingSystemFamily)
       {
         case OperatingSystemFamilyRider.Windows:
+        {
           string[] folders =
           {
             @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\JetBrains", Path.Combine(
@@ -82,29 +83,42 @@ namespace JetBrains.Rider.Unity.Editor
             .SelectMany(c => c.GetFiles("*Rider*.lnk")).ToArray();
           if (newPathLnks.Any())
           {
-            var newPaths = newPathLnks
+            var results = newPathLnks
               .Select(newPathLnk => new FileInfo(ShortcutResolver.Resolve(newPathLnk.FullName)))
               .Where(fi => File.Exists(fi.FullName))
               .ToArray()
               .OrderByDescending(fi => FileVersionInfo.GetVersionInfo(fi.FullName).ProductVersion)
               .Select(a => a.FullName).ToArray();
 
-            return newPaths;
+            return results;
           }
-
+        }
           break;
 
         case OperatingSystemFamilyRider.MacOSX:
+        {
           // "/Applications/*Rider*.app"
           //"~/Applications/JetBrains Toolbox/*Rider*.app"
-          string[] foldersMac =
+          string[] folders =
           {
             "/Applications", Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications/JetBrains Toolbox")
           };
-          var newPathsMac = foldersMac.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
+          var results = folders.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
             .SelectMany(c => c.GetDirectories("*Rider*.app"))
             .Select(a => a.FullName).ToArray();
-          return newPathsMac;
+          return results;
+        }
+          
+        case OperatingSystemFamilyRider.Linux:
+        {
+          var home = Environment.GetEnvironmentVariable("HOME");
+          if (string.IsNullOrEmpty(home))
+            return new string[0];
+          //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
+          var riderPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
+          var results = Directory.GetDirectories(riderPath).SelectMany(Directory.GetDirectories).Select(b=>Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
+          return results;
+        }
       }
 
       return new string[0];
