@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public Transform Method(Transform t)
+    {
+        return |t ?? transform|(0);
+    }
+}
+
+------------------------------------------------
+0: Unity Object types can't be compared using null coalescing.
+QUICKFIXES:
+Convert to conditional expression.
