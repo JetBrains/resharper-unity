@@ -290,23 +290,28 @@ Please switch back to Unity to make plugin file appear in the solution.";
             try
             {
 
-                var package = myApplicationPackages.FindPackageWithAssembly(Assembly.GetExecutingAssembly(), OnError.LogException);
-                var subplatformName = package.SubplatformName;
-                //myApplicationPackagesLocallyInstalled.
-                FileSystemPath dir = myResolver.GetDeployedPackageDirectory(package);
+                //var assembly = Assembly.GetExecutingAssembly();
+                //var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
+                //var subplatformName = package.SubplatformName;
+                //FileSystemPath dir = myResolver.GetDeployedPackageDirectory(package);
 
-                //var path = ApplicationPackagesLocallyInstalled(package);
-                var name = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
-                Tuple<FileSystemPath, string>[] installs =
-                {
-                    new Tuple<FileSystemPath, string>(installation.PluginDirectory.Combine(name), ourResourceNamespace + name),
-                };               
+                var installDirectory = myApplicationPackagesLocallyInstalled
+                    .Single(a => a.Id == "JetBrains.plugin_com_intellij_resharper_unity").LocalInstallDirectory;
+                var editorPluginPath =
+                    installDirectory.Parent.Combine(@"EditorPlugin\JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll");
 
-                foreach (Tuple<FileSystemPath, string> install in installs)
+                var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
+                try
                 {
-                    if (!InstallFromResourceWithBackup(install.Item2, backups, install.Item1)) return false;    
+                    editorPluginPath.CopyFile(targetPath, true);
                 }
-                
+                catch (Exception e)
+                {
+                    myLogger.LogException(LoggingLevel.ERROR, e, ExceptionOrigin.Assertion,
+                        $"Failed to copy {editorPluginPath} => {targetPath}");
+                    RestoreFromBackup(backups);
+                }
+
                 foreach (var backup in backups)
                 {
                     backup.Value.DeleteFile();
@@ -323,28 +328,6 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
                 return false;
             }
-        }
-
-        private bool InstallFromResourceWithBackup(string resourceName, Dictionary<FileSystemPath, FileSystemPath> backups, FileSystemPath path)
-        {
-            using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
-            {
-                if (resourceStream == null)
-                {
-                    myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
-
-                    RestoreFromBackup(backups);
-
-                    return false;
-                }
-
-                using (var fileStream = path.OpenStream(FileMode.OpenOrCreate))
-                {
-                    resourceStream.CopyTo(fileStream);
-                }
-            }
-
-            return true;
         }
 
         private void RestoreFromBackup(Dictionary<FileSystemPath, FileSystemPath> backups)

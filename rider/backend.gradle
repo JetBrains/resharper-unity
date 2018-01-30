@@ -279,7 +279,7 @@ task prepareNuspec() {
     description = 'Creates platform and configuration specific .nuspec file.'
 
     doLast {
-        def buildTypes = [ "rider" ]
+        def buildTypes = [ ]
         if (!RiderOnly){            
             buildTypes.add("resharper")
         }
