@@ -13,6 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Colors
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Intentions\QuickFixes\ColorPicker";
 
-        [Test] public void TestChangeColor() { DoNamedTest2(); }
+        [SetCulture("en-US")] [Test] public void TestChangeColorCultureEn() { DoOneTest("ChangeColor"); }
+        [SetCulture("de-DE")] [Test] public void TestChangeColorCultureDe() { DoOneTest("ChangeColor"); }
     }
 }

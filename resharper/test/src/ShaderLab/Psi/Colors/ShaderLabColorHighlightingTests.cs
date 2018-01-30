@@ -21,8 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Colors
             return highlighting is ColorHighlighting;
         }
 
-        [Test] public void TestPropertyColor() { DoNamedTest2(); }
-        [Test] public void TestColorValues() { DoNamedTest2(); }
-        [Test] public void TestEdgeCasesAndErrors() { DoNamedTest2(); }
+        [SetCulture("en-US")] [Test] public void TestPropertyColorCultureEn() { DoOneTest("PropertyColor"); }
+        [SetCulture("de-DE")] [Test] public void TestPropertyColorCultureDe() { DoOneTest("PropertyColor"); }
+
+        [SetCulture("en-US")] [Test] public void TestColorValuesCultureEn() { DoOneTest("ColorValues"); }
+        [SetCulture("de-DE")] [Test] public void TestColorValuesCultureDe() { DoOneTest("ColorValues"); }
+
+        [SetCulture("en-US")] [Test] public void TestEdgeCasesAndErrorsCultureEn() { DoOneTest("EdgeCasesAndErrors"); }
+        [SetCulture("de-DE")] [Test] public void TestEdgeCasesAndErrorsCultureDe() { DoOneTest("EdgeCasesAndErrors"); }
     }
 }
