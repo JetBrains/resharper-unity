@@ -13,11 +13,10 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
   {
     public SocketWire.Server Wire;
 
-    public RiderProtocolController(string dataPath, IScheduler mainThreadScheduler, Lifetime lifetime)
+    public RiderProtocolController(IScheduler mainThreadScheduler, Lifetime lifetime)
     {
       mainThreadScheduler.Queue(() =>
       {
-        var projectDirectory = Directory.GetParent(dataPath).FullName;
         var logger = Log.GetLog<RiderProtocolController>();
 
         try
@@ -31,7 +30,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
           {
             logger.Verbose("Wire.Connected {0}", wireConnected);
           });
-          InitializeProtocolJson(Wire.Port, projectDirectory, logger);
+          InitializeProtocolJson(Wire.Port, logger);
         }
         catch (Exception ex)
         {
@@ -40,12 +39,11 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
       }); 
     }
 
-    private static void InitializeProtocolJson(int port, string projectDirectory, ILog logger)
+    private static void InitializeProtocolJson(int port, ILog logger)
     {
       logger.Verbose("Writing Library/ProtocolInstance.json");
 
-      var library = Path.Combine(projectDirectory, "Library");
-      var protocolInstanceJsonPath = Path.Combine(library, "ProtocolInstance.json");
+      var protocolInstanceJsonPath = Path.GetFullPath(@"Library\ProtocolInstance.json");
 
       File.WriteAllText(protocolInstanceJsonPath, $@"{{""port_id"":{port}}}");
 

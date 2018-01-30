@@ -67,9 +67,9 @@ namespace JetBrains.Rider.Unity.Editor
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
       var projectName = Path.GetFileName(projectDirectory);
-      SlnFile = Path.Combine(projectDirectory, $"{projectName}.sln");
+      SlnFile = Path.GetFullPath($"{projectName}.sln");
 
-      InitializeEditorInstanceJson(projectDirectory);
+      InitializeEditorInstanceJson();
 
       // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
       RiderAssetPostprocessor.OnGeneratedCSProjectFiles();
@@ -89,7 +89,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       try
       {
-        var riderProtocolController = new RiderProtocolController(Application.dataPath, MainThreadDispatcher.Instance, lifetime);
+        var riderProtocolController = new RiderProtocolController(MainThreadDispatcher.Instance, lifetime);
 
         var serializers = new Serializers();
         var identities = new Identities(IdKind.Server);
@@ -199,13 +199,11 @@ namespace JetBrains.Rider.Unity.Editor
     /// <summary>
     /// Creates and deletes Library/EditorInstance.json containing info about unity instance
     /// </summary>
-    /// <param name="projectDirectory">Path to the project root directory</param>
-    private static void InitializeEditorInstanceJson(string projectDirectory)
+    private static void InitializeEditorInstanceJson()
     {
       Logger.Verbose("Writing Library/EditorInstance.json");
 
-      var library = Path.Combine(projectDirectory, "Library");
-      var editorInstanceJsonPath = Path.Combine(library, "EditorInstance.json");
+      var editorInstanceJsonPath = Path.GetFullPath(@"Library\EditorInstance.json");
 
       File.WriteAllText(editorInstanceJsonPath, string.Format(@"{{
   ""process_id"": {0},
@@ -244,12 +242,10 @@ namespace JetBrains.Rider.Unity.Editor
         InitRiderPlugin();
       }
 
-      string appPath = Path.GetDirectoryName(Application.dataPath);
-
       // determine asset that has been double clicked in the project view
       var selected = EditorUtility.InstanceIDToObject(instanceID);
 
-      var assetFilePath = Path.GetFullPath(Path.Combine(appPath, AssetDatabase.GetAssetPath(selected)));
+      var assetFilePath = Path.GetFullPath(AssetDatabase.GetAssetPath(selected));
       if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader" ||
             (selected.GetType().ToString() == "UnityEngine.TextAsset" &&

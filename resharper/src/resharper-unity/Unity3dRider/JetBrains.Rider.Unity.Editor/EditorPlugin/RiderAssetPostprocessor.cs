@@ -28,8 +28,8 @@ namespace JetBrains.Rider.Unity.Editor
         UpgradeProjectFile(file);
       }
 
-      var slnFile = Directory.GetFiles(currentDirectory, "*.sln").FirstOrDefault();
-      if (string.IsNullOrEmpty(slnFile))
+      var slnFile = RiderPlugin.SlnFile;
+      if (!File.Exists(slnFile))
         return;
       
       Logger.Verbose("Post-processing {0}", slnFile);
@@ -136,21 +136,20 @@ namespace JetBrains.Rider.Unity.Editor
         var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
         if (hintPath != null)
         {
-          var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-          var path = Path.Combine(projectDirectory, "Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
+          var path = Path.GetFullPath("Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
           if (new FileInfo(path).Exists)
             hintPath.Value = path;
         }
       }
     }
 
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(Application.dataPath, "mcs.rsp");
+    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(Application.dataPath, "smcs.rsp");
-    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(Application.dataPath, "gmcs.rsp");
+    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("smcs.rsp");
+    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("gmcs.rsp");
 
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
@@ -360,9 +359,9 @@ namespace JetBrains.Rider.Unity.Editor
     private static string GetLanguageLevel()
     {
       // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
-      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp70Support")))
+      if (Directory.Exists(Path.GetFullPath("CSharp70Support")))
         return "7";
-      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp60Support")))
+      if (Directory.Exists(Path.GetFullPath("CSharp60Support")))
         return "6";
 
       var apiCompatibilityLevel = 3;
