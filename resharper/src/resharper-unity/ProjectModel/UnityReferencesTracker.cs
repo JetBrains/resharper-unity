@@ -122,8 +122,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             // project settings if/when the project becomes a unity project
             var projects = new JetHashSet<IProject>();
 
+            #if RIDER
             var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames, myLogger);
-
+            #else
+            var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames);
+            #endif
+            
             foreach (var change in changes)
             {
                 if (change.IsAdded)
