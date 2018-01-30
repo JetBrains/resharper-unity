@@ -22,11 +22,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 return;
             if (!expression.HasConditionalAccessSign)
                 return;
+            if (!(expression.ConditionalQualifier is IReferenceExpression qualifier) || !IsDescendantOfUnityObject(qualifier))
+                return;
 
-            if (expression.ConditionalQualifier is IReferenceExpression qualifier && IsDescendantOfUnityObject(qualifier))
-            {
-                consumer.AddHighlighting(new UnityNullPropagationWarning(expression));
-            }
+            consumer.AddHighlighting(new UnityNullPropagationWarning(expression));
         }
 
         private static bool IsDescendantOfUnityObject([CanBeNull]IReferenceExpression expression)

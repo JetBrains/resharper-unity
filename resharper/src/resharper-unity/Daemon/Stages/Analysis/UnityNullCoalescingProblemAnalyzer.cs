@@ -20,11 +20,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         {
             if (expression.LeftOperand == null || expression.RightOperand == null)
                 return;
+            if (!(expression.LeftOperand is IReferenceExpression leftOperand) || !IsDescendantOfUnityObject(leftOperand))
+                return;
 
-            if (expression.LeftOperand is IReferenceExpression leftOperand && IsDescendantOfUnityObject(leftOperand))
-            {
-                consumer.AddHighlighting(new UnityNullCoalescingWarning(expression));
-            }
+            consumer.AddHighlighting(new UnityNullCoalescingWarning(expression));
         }
 
         private static bool IsDescendantOfUnityObject([CanBeNull]IReferenceExpression expression)
