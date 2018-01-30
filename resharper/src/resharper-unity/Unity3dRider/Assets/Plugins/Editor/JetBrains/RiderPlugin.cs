@@ -225,9 +225,9 @@ namespace Plugins.Editor.JetBrains
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
       var projectName = Path.GetFileName(projectDirectory);
-      SlnFile = Path.Combine(projectDirectory, string.Format("{0}.sln", projectName));
+      SlnFile = Path.GetFullPath(string.Format("{0}.sln", projectName));
 
-      InitializeEditorInstanceJson(projectDirectory);
+      InitializeEditorInstanceJson();
       
       RiderAssetPostprocessor.OnGeneratedCSProjectFiles();
 
@@ -272,13 +272,11 @@ namespace Plugins.Editor.JetBrains
     /// <summary>
     /// Creates and deletes Library/EditorInstance.json containing info about unity instance
     /// </summary>
-    /// <param name="projectDirectory">Path to the project root directory</param>
-    private static void InitializeEditorInstanceJson(string projectDirectory)
+    private static void InitializeEditorInstanceJson()
     {
       Log(LoggingLevel.Verbose, "Writing Library/EditorInstance.json");
 
-      var library = Path.Combine(projectDirectory, "Library");
-      var editorInstanceJsonPath = Path.Combine(library, "EditorInstance.json");
+      var editorInstanceJsonPath = Path.GetFullPath(@"Library\EditorInstance.json");
 
       File.WriteAllText(editorInstanceJsonPath, string.Format(@"{{
   ""process_id"": {0},
@@ -317,12 +315,10 @@ namespace Plugins.Editor.JetBrains
           InitRiderPlugin();
         }
 
-        string appPath = Path.GetDirectoryName(Application.dataPath);
-
         // determine asset that has been double clicked in the project view
         var selected = EditorUtility.InstanceIDToObject(instanceID);
 
-        var assetFilePath = Path.GetFullPath(Path.Combine(appPath, AssetDatabase.GetAssetPath(selected)));
+        var assetFilePath = Path.GetFullPath(AssetDatabase.GetAssetPath(selected));
         if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
               selected.GetType().ToString() == "UnityEngine.Shader" ||
               (selected.GetType().ToString() == "UnityEngine.TextAsset" &&

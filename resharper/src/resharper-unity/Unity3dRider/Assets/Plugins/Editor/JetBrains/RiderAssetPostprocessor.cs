@@ -119,22 +119,21 @@ namespace Plugins.Editor.JetBrains
         var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
         if (hintPath != null)
         {
-          var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-          var path = Path.Combine(projectDirectory, "Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
+          var path = Path.GetFullPath("Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
           if (new FileInfo(path).Exists)
             hintPath.Value = path;
         }
       }
     }
 
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "mcs.rsp");
+    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("mcs.rsp");
 #if !UNITY_2017_1_OR_NEWER  // Unity 2017.1 and later has this features by itself
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "smcs.rsp");
-    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.Combine(UnityEngine.Application.dataPath, "gmcs.rsp");
+    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("smcs.rsp");
+    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("gmcs.rsp");
 
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
@@ -347,9 +346,9 @@ namespace Plugins.Editor.JetBrains
     private static string GetLanguageLevel()
     {
       // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
-      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp70Support")))
+      if (Directory.Exists(Path.GetFullPath("CSharp70Support")))
         return "7";
-      if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CSharp60Support")))
+      if (Directory.Exists(Path.GetFullPath("CSharp60Support")))
         return "6";
 
       // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
@@ -373,7 +372,7 @@ namespace Plugins.Editor.JetBrains
         Assembly assembly;
         try
         {
-          var path = Path.Combine(Directory.GetCurrentDirectory(), @"Library\resharper-unity-libs\pdb2mdb.exe");
+          var path = Path.GetFullPath(@"Library\resharper-unity-libs\pdb2mdb.exe");
           var bytes = File.ReadAllBytes(path);
           assembly = Assembly.Load(bytes);
         }
