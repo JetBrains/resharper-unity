@@ -143,13 +143,13 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("mcs.rsp");
+    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath(@"Assets\mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("smcs.rsp");
-    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("gmcs.rsp");
+    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath(@"Assets\smcs.rsp");
+    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath(@"Assets\gmcs.rsp");
 
     private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
