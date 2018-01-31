@@ -82,7 +82,7 @@ def dllFiles = [
 ]
 
 def annotationsFrom = '../resharper/src/resharper-unity/annotations'
-def annotationsTo = 'DotFiles/Extensions/JetBrains.Unity/annotations'
+def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 
 prepareSandbox {
     dependsOn prepareForBuild
