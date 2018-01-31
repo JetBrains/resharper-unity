@@ -30,7 +30,7 @@ intellij {
 }
 
 ext.kotlin_version = '1.2.10'
-def unityeditorplugin_path = "$projectDir/../resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
+ext.unityeditorplugin_path = "$projectDir/../resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -51,7 +51,6 @@ task prepareForBuild{
     doLast {
         def pluginXml = new File("src/main/resources/META-INF/plugin.xml")
         assert pluginXml.isFile()
-
         def tempXml = new File(pluginXml.path + ".tmp")
 
         copy {
@@ -80,7 +79,6 @@ buildPlugin {
 def dllFiles = [
     '../resharper/build/resharper-unity.rider/bin/Release/net452/JetBrains.ReSharper.Plugins.Unity.dll',
     '../resharper/build/resharper-unity.rider/bin/Release/net452/JetBrains.ReSharper.Plugins.Unity.pdb',
-
 ]
 
 def annotationsFrom = '../resharper/src/resharper-unity/annotations'
@@ -89,6 +87,7 @@ def annotationsTo = 'DotFiles/Extensions/JetBrains.Unity/annotations'
 prepareSandbox {
     dependsOn prepareForBuild
 
+doLast{
     assert file(unityeditorplugin_path).exists()
     from(unityeditorplugin_path, {
         into "$intellij.pluginName/EditorPlugin"
@@ -97,15 +96,14 @@ prepareSandbox {
     dllFiles.forEach({ f ->
         def file = file("$f")
         if (!file.exists()) throw new RuntimeException("File $file does not exist")
-
         logger.warn("prepareSandbox: " +
             file.toString() + " -> " +
             "$destinationDir/$intellij.pluginName/dotnet")
         from(file, { into "$intellij.pluginName/dotnet" })
     })
+}
 
     from(annotationsFrom, { into "$intellij.pluginName/dotnet/$annotationsTo" })
-
     into("$intellij.pluginName/projectTemplates") {
         from 'projectTemplates'
     }
