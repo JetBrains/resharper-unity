@@ -18,7 +18,7 @@ namespace Plugins.Editor.JetBrains
   public static class RiderPlugin
   {
     private static bool Initialized;
-    private static string SlnFile;
+    internal static string SlnFile;
 
     public static void Log(LoggingLevel level, string initialText)
     {
