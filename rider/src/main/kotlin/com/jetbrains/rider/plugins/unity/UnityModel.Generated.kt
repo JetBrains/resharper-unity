@@ -49,18 +49,18 @@ class UnityModel (
             register(protocol.serializers)
             
             val __res = UnityModel (
-                RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool).static(1001),
-                RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool).static(1002),
-                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1003),
-                RdOptionalProperty<String>(FrameworkMarshallers.String).static(1004),
-                RdOptionalProperty<Int>(FrameworkMarshallers.Int).static(1005),
-                RdOptionalProperty<String>(FrameworkMarshallers.String).static(1006),
-                RdOptionalProperty<String>(FrameworkMarshallers.String).static(1007),
-                RdOptionalProperty<UnityLogModelInitialized>(UnityLogModelInitialized).static(1008),
-                RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).static(1009),
-                RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).static(1010),
-                RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).static(1011),
-                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).static(1012))
+                RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool).withIdFromName("UnityModel.play"),
+                RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool).withIdFromName("UnityModel.pause"),
+                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).withIdFromName("UnityModel.step"),
+                RdOptionalProperty<String>(FrameworkMarshallers.String).withIdFromName("UnityModel.unityPluginVersion"),
+                RdOptionalProperty<Int>(FrameworkMarshallers.Int).withIdFromName("UnityModel.riderProcessId"),
+                RdOptionalProperty<String>(FrameworkMarshallers.String).withIdFromName("UnityModel.applicationPath"),
+                RdOptionalProperty<String>(FrameworkMarshallers.String).withIdFromName("UnityModel.applicationVersion"),
+                RdOptionalProperty<UnityLogModelInitialized>(UnityLogModelInitialized).withIdFromName("UnityModel.logModelInitialized"),
+                RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).withIdFromName("UnityModel.isClientConnected"),
+                RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).withIdFromName("UnityModel.openFileLineCol"),
+                RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).withIdFromName("UnityModel.updateUnityPlugin"),
+                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).withIdFromName("UnityModel.refresh"))
             __res.bind(lifetime, protocol, UnityModel::class.java.simpleName)
             
             Protocol.initializationLogger.trace { "CREATED toplevel object "+__res.printToString() }
@@ -110,19 +110,19 @@ class UnityModel (
         _refresh.bind(lifetime, this, "refresh")
     }
     //identify method
-    override fun identify(ids: IIdentities) {
-        _play.identify(ids)
-        _pause.identify(ids)
-        _step.identify(ids)
-        _unityPluginVersion.identify(ids)
-        _riderProcessId.identify(ids)
-        _applicationPath.identify(ids)
-        _applicationVersion.identify(ids)
-        _logModelInitialized.identify(ids)
-        _isClientConnected.identify(ids)
-        _openFileLineCol.identify(ids)
-        _updateUnityPlugin.identify(ids)
-        _refresh.identify(ids)
+    override fun identify(identities: IIdentities, id: RdId) {
+        _play.identify(identities, id.mix(".play"))
+        _pause.identify(identities, id.mix(".pause"))
+        _step.identify(identities, id.mix(".step"))
+        _unityPluginVersion.identify(identities, id.mix(".unityPluginVersion"))
+        _riderProcessId.identify(identities, id.mix(".riderProcessId"))
+        _applicationPath.identify(identities, id.mix(".applicationPath"))
+        _applicationVersion.identify(identities, id.mix(".applicationVersion"))
+        _logModelInitialized.identify(identities, id.mix(".logModelInitialized"))
+        _isClientConnected.identify(identities, id.mix(".isClientConnected"))
+        _openFileLineCol.identify(identities, id.mix(".openFileLineCol"))
+        _updateUnityPlugin.identify(identities, id.mix(".updateUnityPlugin"))
+        _refresh.identify(identities, id.mix(".refresh"))
     }
     //equals trait
     //hash code trait
@@ -333,8 +333,8 @@ class UnityLogModelInitialized (
         _log.bind(lifetime, this, "log")
     }
     //identify method
-    override fun identify(ids: IIdentities) {
-        _log.identify(ids)
+    override fun identify(identities: IIdentities, id: RdId) {
+        _log.identify(identities, id.mix(".log"))
     }
     //equals trait
     //hash code trait

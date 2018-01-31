@@ -121,18 +121,18 @@ namespace JetBrains.Platform.Unity.Model
     }
     
     public UnityModel(Lifetime lifetime, IProtocol protocol) : this (
-      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1001),
-      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).Static(1002),
-      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1003),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1004),
-      new RdProperty<int>(Serializers.ReadInt, Serializers.WriteInt).Static(1005),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1006),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).Static(1007),
-      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).Static(1008),
-      new RdCall<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).Static(1009),
-      new RdCall<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).Static(1010),
-      new RdEndpoint<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).Static(1011),
-      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).Static(1012)
+      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.play"),
+      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.pause"),
+      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).WithIdFromName("UnityModel.step"),
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).WithIdFromName("UnityModel.unityPluginVersion"),
+      new RdProperty<int>(Serializers.ReadInt, Serializers.WriteInt).WithIdFromName("UnityModel.riderProcessId"),
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).WithIdFromName("UnityModel.applicationPath"),
+      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).WithIdFromName("UnityModel.applicationVersion"),
+      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).WithIdFromName("UnityModel.logModelInitialized"),
+      new RdCall<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.isClientConnected"),
+      new RdCall<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.openFileLineCol"),
+      new RdEndpoint<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.updateUnityPlugin"),
+      new RdEndpoint<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).WithIdFromName("UnityModel.refresh")
     )
     {
       UnityModel.Register(protocol.Serializers);
@@ -158,19 +158,19 @@ namespace JetBrains.Platform.Unity.Model
       _Refresh.BindEx(lifetime, this, "refresh");
     }
     //identify method
-    public override void Identify(IIdentities ids) {
-      _Play.IdentifyEx(ids);
-      _Pause.IdentifyEx(ids);
-      _Step.IdentifyEx(ids);
-      _UnityPluginVersion.IdentifyEx(ids);
-      _RiderProcessId.IdentifyEx(ids);
-      _ApplicationPath.IdentifyEx(ids);
-      _ApplicationVersion.IdentifyEx(ids);
-      _LogModelInitialized.IdentifyEx(ids);
-      _IsClientConnected.IdentifyEx(ids);
-      _OpenFileLineCol.IdentifyEx(ids);
-      _UpdateUnityPlugin.IdentifyEx(ids);
-      _Refresh.IdentifyEx(ids);
+    public override void Identify(IIdentities ids, RdId id) {
+      _Play.IdentifyEx(ids, id.Mix(".play"));
+      _Pause.IdentifyEx(ids, id.Mix(".pause"));
+      _Step.IdentifyEx(ids, id.Mix(".step"));
+      _UnityPluginVersion.IdentifyEx(ids, id.Mix(".unityPluginVersion"));
+      _RiderProcessId.IdentifyEx(ids, id.Mix(".riderProcessId"));
+      _ApplicationPath.IdentifyEx(ids, id.Mix(".applicationPath"));
+      _ApplicationVersion.IdentifyEx(ids, id.Mix(".applicationVersion"));
+      _LogModelInitialized.IdentifyEx(ids, id.Mix(".logModelInitialized"));
+      _IsClientConnected.IdentifyEx(ids, id.Mix(".isClientConnected"));
+      _OpenFileLineCol.IdentifyEx(ids, id.Mix(".openFileLineCol"));
+      _UpdateUnityPlugin.IdentifyEx(ids, id.Mix(".updateUnityPlugin"));
+      _Refresh.IdentifyEx(ids, id.Mix(".refresh"));
     }
     //equals trait
     //hash code trait
@@ -439,8 +439,8 @@ namespace JetBrains.Platform.Unity.Model
       _Log.BindEx(lifetime, this, "log");
     }
     //identify method
-    public override void Identify(IIdentities ids) {
-      _Log.IdentifyEx(ids);
+    public override void Identify(IIdentities ids, RdId id) {
+      _Log.IdentifyEx(ids, id.Mix(".log"));
     }
     //equals trait
     //hash code trait
