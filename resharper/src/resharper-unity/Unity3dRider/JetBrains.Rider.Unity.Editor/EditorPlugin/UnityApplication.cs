@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util.Logging;
@@ -28,12 +31,15 @@ namespace JetBrains.Rider.Unity.Editor
     public void UnityLogRegisterCallBack()
     {
       var eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
+      LifetimeDefinition domainLifetime = Lifetimes.Define();
+      
       if (eventInfo != null)
       {
         eventInfo.AddEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
         AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
         {
           eventInfo.RemoveEventHandler(null, new Application.LogCallback(ApplicationOnLogMessageReceived));
+          domainLifetime.Terminate();
         });
       }
       else
@@ -42,7 +48,16 @@ namespace JetBrains.Rider.Unity.Editor
         Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
 #pragma warning restore 612, 618
       }
+      
+      RiderPlugin.Model.AdviseNotNull(domainLifetime.Lifetime, model =>
+      {
+        myDelayedLogEvents.ForEach(evt => SentLogEvent(model, evt));
+        myDelayedLogEvents.Clear();
+      });
     }
+    
+    List<RdLogEvent> myDelayedLogEvents = new List<RdLogEvent>();
+    
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
@@ -51,30 +66,38 @@ namespace JetBrains.Rider.Unity.Editor
         // use Protocol to pass log entries to Rider
         MainThreadDispatcher.Instance.InvokeOrQueue(() =>
         {
-          if (RiderPlugin.Model != null)
+          RdLogEvent evt;
+          switch (type)
           {
-            switch (type)
-            {
-              case LogType.Error:
-              case LogType.Exception:
-                SentLogEvent(new RdLogEvent(RdLogEventType.Error, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace));
-                break;
-              case LogType.Warning:
-                SentLogEvent(new RdLogEvent(RdLogEventType.Warning, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace));
-                break;
-              default:
-                SentLogEvent(new RdLogEvent(RdLogEventType.Message, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace));
-                break;
-            }
+            case LogType.Error:
+            case LogType.Exception:
+              evt = new RdLogEvent(RdLogEventType.Error, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace);
+              break;
+            case LogType.Warning:
+              evt = new RdLogEvent(RdLogEventType.Warning, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace);
+              break;
+            default:
+              evt = new RdLogEvent(RdLogEventType.Message, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace);
+              break;
+          }
+          
+          var model = RiderPlugin.Model.Maybe.ValueOrDefault;
+          if (model == null)
+          {
+            myDelayedLogEvents.Add(evt);
+          }
+          else
+          {
+            SentLogEvent(model, evt);
           }
         });
       }
     }
     
-    private void SentLogEvent(RdLogEvent logEvent)
+    private void SentLogEvent(UnityModel model, RdLogEvent logEvent)
     {
       //if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
-      RiderPlugin.Model.LogModelInitialized.Value.Log.Fire(logEvent);
+      model.LogModelInitialized.Value.Log.Fire(logEvent);
     }
 
     /// <summary>

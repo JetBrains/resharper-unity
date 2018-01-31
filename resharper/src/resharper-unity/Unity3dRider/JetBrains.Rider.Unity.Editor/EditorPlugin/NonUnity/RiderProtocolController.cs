@@ -15,28 +15,22 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
 
     public RiderProtocolController(IScheduler mainThreadScheduler, Lifetime lifetime)
     {
-      mainThreadScheduler.Queue(() =>
+      var logger = Log.GetLog<RiderProtocolController>();
+
+      try
       {
-        var logger = Log.GetLog<RiderProtocolController>();
+        logger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
 
-        try
-        {
-          logger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
+        Wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer", true);
+        logger.Log(LoggingLevel.VERBOSE, $"Created SocketWire with port = {Wire.Port}");
 
-          Wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer", true);
-          logger.Log(LoggingLevel.VERBOSE, $"Created SocketWire with port = {Wire.Port}");
-          
-          Wire.Connected.Advise(lifetime, wireConnected =>
-          {
-            logger.Verbose("Wire.Connected {0}", wireConnected);
-          });
-          InitializeProtocolJson(Wire.Port, logger);
-        }
-        catch (Exception ex)
-        {
-          logger.Error("RiderProtocolController.ctor. " + ex);
-        }
-      }); 
+        Wire.Connected.Advise(lifetime, wireConnected => { logger.Verbose("Wire.Connected {0}", wireConnected); });
+        InitializeProtocolJson(Wire.Port, logger);
+      }
+      catch (Exception ex)
+      {
+        logger.Error("RiderProtocolController.ctor. " + ex);
+      }
     }
 
     private static void InitializeProtocolJson(int port, ILog logger)

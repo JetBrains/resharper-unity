@@ -26,6 +26,11 @@ namespace JetBrains.Rider.Unity.Editor
 
     static RiderPlugin()
     {
+      var application = new UnityApplication();
+      application.UnityLogRegisterCallBack();
+      
+      Debug.Log("RiderPlugin.ctor");
+      
       ourPluginSettings = new PluginSettings();
       ourRiderApplication = new RiderApplication(ourPluginSettings);
       var riderPath = ourRiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(),
@@ -49,7 +54,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static bool ourInitialized;
     internal static string SlnFile;
     private static readonly ILog Logger = Log.GetLog("RiderPlugin");
-    public static UnityModel Model;
+    public readonly static RProperty<UnityModel> Model = new RProperty<UnityModel>();
 
     public static bool Enabled
     {
@@ -93,21 +98,20 @@ namespace JetBrains.Rider.Unity.Editor
 
         var serializers = new Serializers();
         var identities = new Identities(IdKind.Server);
-        MainThreadDispatcher.Instance.Queue(() =>
+        
+        MainThreadDispatcher.AssertThread();
+        
+        riderProtocolController.Wire.Connected.View(lifetime, (lt, connected) =>
         {
-          riderProtocolController.Wire.Connected.View(lifetime, (lt, connected) =>
+          if (connected)
           {
-            if (connected)
-            {
-              var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance,
-                riderProtocolController.Wire);
-              Logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
+            var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
+            Logger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
-              Model = CreateModel(protocol, lt);
-            }
-            else
-              Model = null;
-          });
+            Model.Value = CreateModel(protocol, lt);
+          }
+          else
+            Model.Value = null;
         });
       }
       catch (Exception ex)
@@ -127,7 +131,7 @@ namespace JetBrains.Rider.Unity.Editor
           var res = EditorApplication.isPlaying;
           play.SetValue(res);
           if (!res) // pause state changed doesn't fire on its own
-            Model?.Pause.SetValue(false);
+            Model?.Maybe.ValueOrDefault?.Pause.SetValue(false);
         });
       });
       var model = new UnityModel(lt, protocol);
@@ -178,9 +182,6 @@ namespace JetBrains.Rider.Unity.Editor
         () => { EditorApplication.playmodeStateChanged -= isPlayingHandler; });
 
       isPlayingHandler();
-
-      var application = new UnityApplication();
-      application.UnityLogRegisterCallBack();
       
       lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},
         () => { EditorApplication.pauseStateChanged -= IsPauseStateChanged(model); });
@@ -259,13 +260,14 @@ namespace JetBrains.Rider.Unity.Editor
 
       UnityApplication.SyncSolution(); // added to handle opening file, which was just recently created.
 
-      if (Model!=null)
+      var model = Model.Maybe.ValueOrDefault;
+      if (model!=null)
       {
         var connected = false;
         try
         {
           // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = Model.IsClientConnected.Sync(RdVoid.Instance,
+          connected = model.IsClientConnected.Sync(RdVoid.Instance,
             new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
         }
         catch (Exception)
@@ -276,9 +278,9 @@ namespace JetBrains.Rider.Unity.Editor
         {
           int col = 0;
           Logger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, col);
-          Model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
-          if (Model.RiderProcessId.HasValue())
-            ActivateWindow(Model.RiderProcessId.Value);
+          model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
+          if (model.RiderProcessId.HasValue())
+            ActivateWindow(model.RiderProcessId.Value);
           else
             ActivateWindow();
           //task.Result.Advise(); todo: fallback to CallRider, if returns false

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using JetBrains.Platform.RdFramework;
+using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
 
@@ -9,6 +11,8 @@ namespace JetBrains.Rider.Unity.Editor
   public class MainThreadDispatcher : IScheduler
   {
     internal static readonly MainThreadDispatcher Instance = new MainThreadDispatcher();
+
+    private static Thread uiThread = null;
 
     private MainThreadDispatcher()
     {
@@ -40,6 +44,8 @@ namespace JetBrains.Rider.Unity.Editor
 //        File.AppendAllText(logPath, DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + "DispatchTasks"+Environment.NewLine);
       //RiderPlugin.Log(LoggingLevel.INFO, "DispatchTasks");
 
+      uiThread = Thread.CurrentThread;
+      
       if (myTaskQueue.Count == 0)
         return;
       while (true)
@@ -59,6 +65,11 @@ namespace JetBrains.Rider.Unity.Editor
 
     }
 
+    public static void AssertThread()
+    {
+      Assertion.Require(uiThread == null || uiThread == Thread.CurrentThread, "Not not UI thread");
+    }
+    
     /// <summary>
     /// Indicates whether there are tasks available for dispatching
     /// </summary>
@@ -67,7 +78,7 @@ namespace JetBrains.Rider.Unity.Editor
     /// </value>
     public bool IsActive
     {
-      get { return true; }
+      get { return uiThread == null || uiThread == Thread.CurrentThread; }
     }
 
     public bool OutOfOrderExecution
