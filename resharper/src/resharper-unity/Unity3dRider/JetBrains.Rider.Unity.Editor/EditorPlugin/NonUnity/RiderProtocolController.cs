@@ -43,7 +43,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     {
       logger.Verbose("Writing Library/ProtocolInstance.json");
 
-      var protocolInstanceJsonPath = Path.GetFullPath(@"Library\ProtocolInstance.json");
+      var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
 
       File.WriteAllText(protocolInstanceJsonPath, $@"{{""port_id"":{port}}}");
 

@@ -203,7 +203,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       Logger.Verbose("Writing Library/EditorInstance.json");
 
-      var editorInstanceJsonPath = Path.GetFullPath(@"Library\EditorInstance.json");
+      var editorInstanceJsonPath = Path.GetFullPath("Library/EditorInstance.json");
 
       File.WriteAllText(editorInstanceJsonPath, string.Format(@"{{
   ""process_id"": {0},
