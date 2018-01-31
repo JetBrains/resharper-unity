@@ -1,0 +1,42 @@
+
+def repoRoot = new File("..").canonicalFile
+
+task generateModel {
+    group = 'other'
+    description = 'Parses SDK version from Source parameter and updates .props file accordingly. Does nothing if the Source is not set.'
+
+    doLast {
+        def rdgenJar = new File(repoRoot, "rider/lib/rdgen.jar")
+        assert rdgenJar.isFile()
+
+        // TODO: spaces
+        def modelDir = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/model")
+        def csOutput = new File(repoRoot, "resharper/src/resharper-unity/RdUnityProtocol")
+        def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol")
+        def packageName = "com.jetbrains.rider.plugins.unity.model"
+
+        javaexec {
+            main = "-jar"
+            classpath = files('build/')
+            args = [
+                    "-Dmodel.out.src.cs.dir=$csOutput",
+                    "-Dmodel.out.src.kt.dir=$ktOutput",
+                    "$rdgenJar",
+                    "-v", // verbose
+                    "--source=$modelDir",
+                    "--packages=$packageName"
+            ]
+        }
+
+        // TODO: remove after this is fixed
+        def csIdeRoot = new File(csOutput, "IdeRoot.Generated.cs")
+        def ktIdeRoot = new File(ktOutput, "IdeRoot.Generated.kt")
+        def ideRoots = [csIdeRoot, ktIdeRoot]
+        for (ideRoot in ideRoots){
+            if (ideRoot.exists())
+                ideRoot.delete()
+            else
+                logger.warn("$ideRoot was not generated. Workaround in 'generateModel' task can be removed.")
+        }
+    }
+}

@@ -16,7 +16,7 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
+import com.jetbrains.rider.plugins.unity.RdUnityHost
 import com.jetbrains.rider.plugins.unity.RdLogEvent
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
@@ -70,7 +70,7 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
 
     val mainSplitterOrientation = RiderUnitySettings.BooleanViewProperty("mainSplitterOrientation")
 
-    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(projectCustomDataHost)
+    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(rdUnityHost)
 
     val mainSplitterToggleAction = object : DumbAwareAction("Toggle Output Position", "Toggle Output pane position (right/bottom)", AllIcons.Actions.SplitHorizontally) {
         override fun actionPerformed(e: AnActionEvent) {

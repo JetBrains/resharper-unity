@@ -4,8 +4,15 @@ plugins {
     id 'org.jetbrains.intellij' version '0.2.18'
 }
 
+repositories{
+    flatDir{
+        dirs 'lib'
+    }
+}
+
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile name: 'rdgen'
 }
 
 group 'com.jetbrains'
@@ -42,3 +49,4 @@ logger.lifecycle("version=$ext.version")
 
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
+apply from: 'protocol.gradle'

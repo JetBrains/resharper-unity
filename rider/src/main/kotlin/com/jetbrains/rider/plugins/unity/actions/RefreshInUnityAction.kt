@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
+import com.jetbrains.rider.plugins.unity.RdUnityHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.util.idea.application
 
@@ -11,7 +11,7 @@ class RefreshInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : An
         val project = e.project?: return
 
         application.saveAll()
-        ProjectCustomDataHost.CallBackendRefresh(project, true)
+        RdUnityHost.CallBackendRefresh(project)
     }
 
     override fun update(e: AnActionEvent?) {

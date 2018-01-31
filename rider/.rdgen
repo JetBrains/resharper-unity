@@ -1,0 +1,10 @@
+file: /Users/ivan/work/resharper-unity/resharper/src/resharper-unity/RdUnityProtocol/.DS_Store=2018-01-30_18:45:51.000
+file: /Users/ivan/work/resharper-unity/resharper/src/resharper-unity/RdUnityProtocol/IdeRoot.Generated.cs=2018-01-30_20:05:55.000
+file: /Users/ivan/work/resharper-unity/resharper/src/resharper-unity/RdUnityProtocol/RdUnityModel.Generated.cs=2018-01-30_20:05:55.000
+file: /Users/ivan/work/resharper-unity/rider/lib/rdgen.jar=2018-01-30_18:26:49.000
+file: /Users/ivan/work/resharper-unity/rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol/IdeRoot.Generated.kt=2018-01-30_20:05:55.000
+file: /Users/ivan/work/resharper-unity/rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol/RdUnityModel.Generated.kt=2018-01-30_20:05:55.000
+file: /Users/ivan/work/resharper-unity/rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/model/RdUnityModel.kt=2018-01-30_19:53:18.000
+outputFolders=/Users/ivan/work/resharper-unity/resharper/src/resharper-unity/RdUnityProtocol,/Users/ivan/work/resharper-unity/rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol
+packages=com.jetbrains.rider.plugins.unity.model
+version=1.01

@@ -2,13 +2,13 @@ package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.notification.NotificationGroup
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
+import com.jetbrains.rider.plugins.unity.RdUnityHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.getLogger
 import com.jetbrains.rider.util.reactive.whenTrue
 
 class UnityToolWindowManager(project: Project,
-                             private val projectCustomDataHost: ProjectCustomDataHost,
+                             private val rdUnityHost: RdUnityHost,
                              private val unityToolWindowFactory: UnityToolWindowFactory)
     : LifetimedProjectComponent(project) {
     companion object {
@@ -17,7 +17,8 @@ class UnityToolWindowManager(project: Project,
     }
 
     init {
-        projectCustomDataHost.isConnected.whenTrue(componentLifetime) {
+    // projectCustomDataHost.isConnected.whenTrue(componentLifetime) {
+            rdUnityHost.unitySession.viewNotNull(componentLifetime) { sessionLifetime, _ ->
             myLogger.info("new session")
             val context = unityToolWindowFactory.getOrCreateContext()
             //context.clear()
@@ -29,7 +30,7 @@ class UnityToolWindowManager(project: Project,
             }
         }
 
-        projectCustomDataHost.logSignal.advise(componentLifetime) { message ->
+        rdUnityHost.logSignal.advise(componentLifetime) { message ->
             val context = unityToolWindowFactory.getOrCreateContext()
 
             context.addEvent(message)

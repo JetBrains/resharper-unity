@@ -30,19 +30,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
         public static Action ProcessDataContext(
             [NotNull] Lifetime lifetime,
             [NotNull, ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView,
-            SolutionModel solutionModel,
+            RdUnityModel host,
             UnityApi unityApi)
         {
-            var solution = solutionModel.TryGetCurrentSolution();
-            if (solution == null)
-                return null;
-
             var unityName = GetUnityName(psiDocumentRangeView, unityApi);
 
             // This is called only if the process finished while the context is still valid
             return () =>
             {
-                solution.CustomData.Data["UNITY_ExternalDocContext"] = unityName;
+                host.Data["UNITY_ExternalDocContext"] = unityName;
             };
         }
 

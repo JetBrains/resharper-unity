@@ -74,11 +74,14 @@ Desktop.ini
 .DS_Store
 rider/out/*
 rider/.idea/uiDesigner.xml
+rider/lib/.rdgen
+
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove
 resharper/src/resharper-unity/Unity3dRider/Packages/manifest.json
 resharper/test/Unity3dRiderCompileTest/.idea/*
 resharper/test/Unity3dRiderCompileTest/packages/*
+
 unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
 unity/CSharp70Support/*
 unity/Assets/CSharp vNext Support/*

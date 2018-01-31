@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/resharper-unity-rider-unity_main.iml" filepath="$PROJECT_DIR$/.idea/modules/resharper-unity-rider-unity_main.iml" group="rider-unity" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/resharper-unity-rider-unity_test.iml" filepath="$PROJECT_DIR$/.idea/modules/resharper-unity-rider-unity_test.iml" group="rider-unity" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/rider-unity.iml" filepath="$PROJECT_DIR$/.idea/modules/rider-unity.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/rider-unity_main.iml" filepath="$PROJECT_DIR$/.idea/modules/rider-unity_main.iml" group="rider-unity" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/rider-unity_test.iml" filepath="$PROJECT_DIR$/.idea/modules/rider-unity_test.iml" group="rider-unity" />
