@@ -89,19 +89,25 @@ prepareSandbox {
 
 doLast{
     assert file(unityeditorplugin_path).exists()
+
+    dllFiles.forEach({ f ->
+        def file = file("$f")
+        if (!file.exists()) throw new RuntimeException("File $file does not exist")
+    })
+}
+
     from(unityeditorplugin_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
 
     dllFiles.forEach({ f ->
         def file = file("$f")
-        if (!file.exists()) throw new RuntimeException("File $file does not exist")
         logger.warn("prepareSandbox: " +
             file.toString() + " -> " +
             "$destinationDir/$intellij.pluginName/dotnet")
         from(file, { into "$intellij.pluginName/dotnet" })
     })
-}
+
 
     from(annotationsFrom, { into "$intellij.pluginName/dotnet/$annotationsTo" })
     into("$intellij.pluginName/projectTemplates") {
