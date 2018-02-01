@@ -12,6 +12,8 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public class UnityEventLogSender
   {
+    private readonly RProperty<UnityModel> myModel;
+
     public void UnityLogRegisterCallBack()
     {
       var eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
@@ -33,7 +35,7 @@ namespace JetBrains.Rider.Unity.Editor
 #pragma warning restore 612, 618
       }
       
-      RiderPlugin.Model.AdviseNotNull(domainLifetime.Lifetime, model =>
+      myModel.AdviseNotNull(domainLifetime.Lifetime, model =>
       {
         myDelayedLogEvents.ForEach(evt => SendLogEvent(model, evt));
         myDelayedLogEvents.Clear();
@@ -41,6 +43,11 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     private readonly List<RdLogEvent> myDelayedLogEvents = new List<RdLogEvent>();
+
+    public UnityEventLogSender(RProperty<UnityModel> model)
+    {
+      myModel = model;
+    }
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
@@ -64,7 +71,7 @@ namespace JetBrains.Rider.Unity.Editor
               break;
           }
           
-          var model = RiderPlugin.Model.Maybe.ValueOrDefault;
+          var model = myModel.Maybe.ValueOrDefault;
           if (model == null)
           {
             myDelayedLogEvents.Add(evt);

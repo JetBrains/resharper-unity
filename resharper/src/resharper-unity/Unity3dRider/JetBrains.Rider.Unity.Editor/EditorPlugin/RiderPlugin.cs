@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
@@ -26,16 +25,19 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
 
+    // This an entry point
     static RiderPlugin()
     {
-      var logSender = new UnityEventLogSender();;
+      ourModel = new RProperty<UnityModel>();
+      
+      var logSender = new UnityEventLogSender(ourModel);
       logSender.UnityLogRegisterCallBack();
       
       ourPluginSettings = new PluginSettings();
       ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
       var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
         RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
-      if (String.IsNullOrEmpty(riderPath))
+      if (string.IsNullOrEmpty(riderPath))
         return;
 
       AddRiderToRecentlyUsedScriptApp(riderPath);
@@ -47,25 +49,49 @@ namespace JetBrains.Rider.Unity.Editor
 
       if (Enabled)
       {
-        InitRiderPlugin();
+        Init();
       }
     }
 
+    public static bool IsProtocolConnected()
+    {
+        var connected = false;
+        try
+        {
+          // HostConnected also means that in Rider and in Unity the same solution is opened
+          connected = ourModel.Maybe.ValueOrDefault.IsClientConnected.Sync(RdVoid.Instance,
+            new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
+        }
+        catch (Exception)
+        {
+          ourLogger.Verbose("Rider Protocol not connected.");
+        }
+
+        return connected;
+    }
+
+    public static bool CallRider(string args)
+    {
+      return ourAssetHandler.CallRider(args);
+    }
+    
     private static bool ourInitialized;
-    internal static string SlnFile;
+    private static readonly RProperty<UnityModel> ourModel;
+    
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
-    public static readonly RProperty<UnityModel> Model = new RProperty<UnityModel>();
+    
+    internal static string SlnFile;
 
     public static bool Enabled
     {
       get
       {
         var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
-        return !String.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
+        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
       }
     }
 
-    private static void InitRiderPlugin()
+    private static void Init()
     {
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
@@ -106,10 +132,10 @@ namespace JetBrains.Rider.Unity.Editor
             var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
             ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
-            Model.Value = CreateModel(protocol, lt);
+            ourModel.Value = CreateModel(protocol, lt);
           }
           else
-            Model.Value = null;
+            ourModel.Value = null;
         });
       }
       catch (Exception ex)
@@ -117,6 +143,8 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Error("Init Rider Plugin " + ex);
       }
 
+      ourAssetHandler = new OnOpenAssetHandler(ourModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
+      
       ourInitialized = true;
     }
 
@@ -127,10 +155,10 @@ namespace JetBrains.Rider.Unity.Editor
         MainThreadDispatcher.Instance.Queue(() =>
         {
           var isPlaying = EditorApplication.isPlaying;
-          Model?.Maybe.ValueOrDefault?.Play.SetValue(isPlaying);
+          ourModel?.Maybe.ValueOrDefault?.Play.SetValue(isPlaying);
 
           var isPaused = EditorApplication.isPaused;
-          Model?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
+          ourModel?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
         });
       });
       var model = new UnityModel(lt, protocol);
@@ -199,6 +227,7 @@ namespace JetBrains.Rider.Unity.Editor
     //    }
 
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+    private static OnOpenAssetHandler ourAssetHandler;
 
     /// <summary>
     /// Creates and deletes Library/EditorInstance.json containing info about unity instance
@@ -224,154 +253,6 @@ namespace JetBrains.Rider.Unity.Editor
       };
     }
 
-    /// <summary>
-    /// Asset Open Callback (from Unity)
-    /// </summary>
-    /// <remarks>
-    /// Called when Unity is about to open an asset.
-    /// </remarks>
-    [OnOpenAsset()]
-    private static bool OnOpenedAsset(int instanceID, int line)
-    {
-      if (!Enabled) 
-        return false;
-      if (!ourInitialized)
-      {
-        // make sure the plugin was initialized first.
-        // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
-        InitRiderPlugin();
-      }
-
-      // determine asset that has been double clicked in the project view
-      var selected = EditorUtility.InstanceIDToObject(instanceID);
-
-      var assetFilePath = Path.GetFullPath(AssetDatabase.GetAssetPath(selected));
-      if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
-            selected.GetType().ToString() == "UnityEngine.Shader" ||
-            (selected.GetType().ToString() == "UnityEngine.TextAsset" &&
-//#i f UNITY_5 || UNITY_5_5_OR_NEWER
-//             EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
-//#e lse
-            EditorSettings.externalVersionControl.Contains(Path.GetExtension(assetFilePath).Substring(1))
-//#e ndif
-            )))
-        return false;
-
-      UnityUtils.SyncSolution(); // added to handle opening file, which was just recently created.
-
-      var model = Model.Maybe.ValueOrDefault;
-      if (model!=null)
-      {
-        var connected = false;
-        try
-        {
-          // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = model.IsClientConnected.Sync(RdVoid.Instance,
-            new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
-        }
-        catch (Exception)
-        {
-          ourLogger.Verbose("Rider Protocol not connected.");
-        }
-        if (connected)
-        {
-          var col = 0;
-          ourLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, col);
-          model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, col));
-          if (model.RiderProcessId.HasValue())
-            ActivateWindow(model.RiderProcessId.Value);
-          else
-            ActivateWindow();
-          //task.Result.Advise(); todo: fallback to CallRider, if returns false
-          return true;
-        }
-      }
-
-      var args = String.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", SlnFile, line, assetFilePath);
-      return CallRider(args);
-
-    }
-    
-    internal static bool CallRider(string args)
-    {
-      var defaultApp = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor, RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
-      if (String.IsNullOrEmpty(defaultApp))
-      {
-        return false;
-      }
-
-      var proc = new Process();
-      if (ourPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX)
-      {
-        proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = String.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
-        ourLogger.Verbose("{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
-      }
-      else
-      {
-        proc.StartInfo.FileName = defaultApp;
-        proc.StartInfo.Arguments = args;
-        ourLogger.Verbose("{2}{0}{2}" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments, "\"");
-      }
-
-      proc.StartInfo.UseShellExecute = false;
-      proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-      proc.StartInfo.CreateNoWindow = true;
-      proc.StartInfo.RedirectStandardOutput = true;
-      proc.Start();
-
-      ActivateWindow();
-      return true;
-    }
-
-    private static void ActivateWindow(int? processId=null)
-    {
-      if (ourPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.Windows)
-      {
-        try
-        {
-          var process = processId == null ? GetRiderProcess() : Process.GetProcessById((int)processId);
-          if (process != null)
-          {
-            // Collect top level windows
-            var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
-            // Get process main window title
-            var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
-            ourLogger.Verbose("ActivateWindow: {0} {1}", process.Id, windowHandle);
-            if (windowHandle != IntPtr.Zero)
-            {
-              //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
-              User32Dll.SetForegroundWindow(windowHandle);
-            }
-          }
-        }
-        catch (Exception e)
-        {
-          ourLogger.Warn("Exception on ActivateWindow: " + e);
-        }
-      }
-    }
-
-    private static Process GetRiderProcess()
-    {
-      var process = Process.GetProcesses().FirstOrDefault(p =>
-      {
-        string processName;
-        try
-        {
-          processName =
-            p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
-        }
-        catch (Exception)
-        {
-          return false;
-        }
-
-        return !p.HasExited && processName.ToLower().Contains("rider");
-      });
-      return process;
-    }
-
     // The default "Open C# Project" menu item will use the external script editor to load the .sln
     // file, but unless Unity knows the external script editor can properly load solutions, it will
     // also launch MonoDevelop (or the OS registered app for .sln files). This menu item side steps
@@ -391,6 +272,24 @@ namespace JetBrains.Rider.Unity.Editor
       }
       
       EditorPrefs.SetString($"{recentAppsKey}{9}", userAppPath);
+    }
+
+    /// <summary>
+    /// Called when Unity is about to open an asset.
+    /// </summary>
+    [OnOpenAsset]
+    private static bool OnOpenedAsset(int instanceID, int line)
+    {
+      if (!Enabled) 
+        return false;
+      if (!ourInitialized)
+      {
+        // make sure the plugin was initialized first.
+        // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
+        Init();
+      }
+      
+      return ourAssetHandler.OnOpenedAsset(instanceID, line);
     }
   }
 }

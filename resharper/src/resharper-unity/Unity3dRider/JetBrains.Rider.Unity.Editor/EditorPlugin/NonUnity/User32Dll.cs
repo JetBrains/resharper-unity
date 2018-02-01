@@ -34,21 +34,21 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
       return retval;
     }
 
-    public delegate Int32 EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
+    public delegate int EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
       ExactSpelling = true)]
-    public static extern Int32 EnumWindows(IntPtr lpEnumFunc, IntPtr lParam);
+    public static extern int EnumWindows(IntPtr lpEnumFunc, IntPtr lParam);
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
       ExactSpelling = true)]
-    public static extern Int32 SetForegroundWindow(IntPtr hWnd);
+    public static extern int SetForegroundWindow(IntPtr hWnd);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
       ExactSpelling = true)]
-    public static extern UInt32 ShowWindow(IntPtr hWnd, Int32 nCmdShow);
+    public static extern uint ShowWindow(IntPtr hWnd, int nCmdShow);
   }
 }

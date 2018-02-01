@@ -103,7 +103,7 @@ namespace JetBrains.Rider.Unity.Editor
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     private static bool ValidateMenuOpenProject()
     {
-      return RiderPlugin.Enabled;
+      return RiderPlugin.Enabled && !RiderPlugin.IsProtocolConnected();
     }
     
     /// <summary>
