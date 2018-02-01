@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.DocumentModel;
@@ -26,13 +27,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityPluginProtocolController
     {
         private readonly Lifetime myLifetime;
-        private readonly SequentialLifetimes SessionLifetimes;
+        private readonly SequentialLifetimes mySessionLifetimes;
         private readonly ILogger myLogger;
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        public UnityModel UnityModel;
-        private Protocol myProtocol;
+        [CanBeNull] public UnityModel UnityModel;
 
         public readonly ISignal<UnityModel> Refresh = new DataFlow.Signal<UnityModel>("Refresh");
 
@@ -47,21 +47,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
-            SessionLifetimes = new SequentialLifetimes(lifetime);
+            mySessionLifetimes = new SequentialLifetimes(lifetime);
             
             if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
             var solFolder = mySolution.SolutionFilePath.Directory;
-            AdviseCustomDataFromFrontend(mySolution.GetProtocolSolution());
+            AdviseCustomDataFromFrontend(lifetime, mySolution.GetProtocolSolution());
 
-            var protocolInstancePath = solFolder.Combine(
-                "Library/ProtocolInstance.json"); // todo: consider non-Unity Solution with Unity-generated projects
+            // todo: consider non-Unity Solution with Unity-generated projects
+            var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
 
             if (!protocolInstancePath.ExistsFile)
                 File.Create(protocolInstancePath.FullPath);
 
-            FileSystemWatcher watcher = new FileSystemWatcher();
+            var watcher = new FileSystemWatcher();
             watcher.Path = protocolInstancePath.Directory.FullPath;
             watcher.NotifyFilter =
                 NotifyFilters.LastAccess |
@@ -85,36 +85,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol", ()=> CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
-        private void AdviseCustomDataFromFrontend(Solution solution)
+        private void AdviseCustomDataFromFrontend(Lifetime lifetime, Solution solution)
         {
-            solution.CustomData.Data.Advise(myLifetime, e =>
+            solution.CustomData.Data.Advise(lifetime, e =>
             {
-                if (e.NewValue == e.OldValue || e.NewValue == null) return;
+                var model = UnityModel;
+                if (e.NewValue == e.OldValue || e.NewValue == null) 
+                    return;
                 switch (e.Key)
                 {
                     case "UNITY_Refresh":
                         if (e.NewValue.ToLower() == true.ToString().ToLower())
                         {
                             myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                            if (UnityModel != null) 
-                              Refresh.Fire(UnityModel);    
+                            if (model!=null)
+                                Refresh.Fire(model);
                         }
+
                         break;
                     case "UNITY_Step":
                         if (e.NewValue.ToLower() == true.ToString().ToLower())
                         {
                             myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                            UnityModel?.Step.Sync(RdVoid.Instance, RpcTimeouts.Default);
+                            model?.Step.Sync(RdVoid.Instance, RpcTimeouts.Default);
                         }
+
                         break;
                     case "UNITY_Play":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        UnityModel?.Play.SetValue(Convert.ToBoolean(e.NewValue));
+                        model?.Play.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
-                        
+
                     case "UNITY_Pause":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        UnityModel?.Pause.SetValue(Convert.ToBoolean(e.NewValue));
+                        model?.Pause.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
                 }
             });
@@ -138,21 +142,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             try
             {
+                var lifetime = mySessionLifetimes.Next();
                 myLogger.Info("Create protocol...");
-                var lifetime = SessionLifetimes.Next();
+                
                 myLogger.Info("Creating SocketWire with port = {0}", port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, port, "UnityClient");
-                wire.Connected.Advise(myLifetime, b => {myLogger.Info(string.Format("WireConnected = {0}", b));});
-                myProtocol = new Protocol(new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
-                UnityModel = new UnityModel(lifetime, myProtocol);
-                UnityModel.IsClientConnected.Set(rdVoid => true);
-                UnityModel.RiderProcessId.SetValue(Process.GetCurrentProcess().Id);
-                SetOrCreateDataKeyValuePair(solution, "UNITY_SessionInitialized", "true");
+                wire.Connected.WhenTrue(lifetime, lf =>
+                {
+                    myLogger.Info("WireConnected.");
                 
-                SubscribeToLogs(lifetime, solution);
-                SubscribeToOpenFile(solution);
-                UnityModel?.Play.AdviseNotNull(myLifetime, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Play", b.ToString().ToLower()));
-                UnityModel?.Pause.AdviseNotNull(myLifetime, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Pause", b.ToString().ToLower()));
+                    var protocol = new Protocol(new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
+                    var model = new UnityModel(lf, protocol);
+                    model.IsClientConnected.Set(rdVoid => true);
+                    model.RiderProcessId.SetValue(Process.GetCurrentProcess().Id);
+                    SetOrCreateDataKeyValuePair(solution, "UNITY_SessionInitialized", "true");
+                    
+                    SubscribeToLogs(lf, model, solution);
+                    SubscribeToOpenFile(model, solution);
+                    model.Play.AdviseNotNull(lf, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Play", b.ToString().ToLower()));
+                    model.Pause.AdviseNotNull(lf, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Pause", b.ToString().ToLower()));
+
+                    UnityModel = model;
+                    lf.AddAction(() =>
+                    {
+                        myLogger.Info("Wire disconnected.");
+                        UnityModel = null;
+                    });
+                });
             }
             catch (Exception ex)
             {
@@ -160,9 +176,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        private void SubscribeToOpenFile(Solution solution)
+        private void SubscribeToOpenFile([NotNull] UnityModel model, Solution solution)
         {
-            UnityModel.OpenFileLineCol.Set(args =>
+            model.OpenFileLineCol.Set(args =>
             {
                 using (ReadLockCookie.Create())
                 {
@@ -172,8 +188,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         return false;
                     if (args.Line > 0 || args.Col > 0)
                     {
-                        textControl.Caret.MoveTo((Int32<DocLine>) (args.Line - 1), (Int32<DocColumn>) args.Col,
-                            CaretVisualPlacement.Generic);
+                        textControl.Caret.MoveTo((Int32<DocLine>) (args.Line - 1), (Int32<DocColumn>) args.Col, CaretVisualPlacement.Generic);
                     }
                 }
 
@@ -191,9 +206,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 data.Add(key, value);
         }
 
-        private void SubscribeToLogs(Lifetime lifetime, Solution solution)
+        private void SubscribeToLogs(Lifetime lifetime, UnityModel model, Solution solution)
         {
-            UnityModel.LogModelInitialized.Advise(lifetime, modelInitialized =>
+            model.LogModelInitialized.Advise(lifetime, modelInitialized =>
             {
                 modelInitialized.Log.Advise(lifetime, entry =>
                 {
