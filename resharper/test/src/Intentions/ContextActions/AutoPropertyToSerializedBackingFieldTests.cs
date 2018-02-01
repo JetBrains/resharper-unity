@@ -1,5 +1,7 @@
 ﻿using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions;
+using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.ContextActions
@@ -20,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.ContextActions
     {
         protected override string ExtraPath => "AutoPropertyToSerializedBackingField";
 
+        [CSharpLanguageLevel(CSharpLanguageLevel.CSharp50)]
         [Test] public void Test01() { DoNamedTest(); }
     }
 }
