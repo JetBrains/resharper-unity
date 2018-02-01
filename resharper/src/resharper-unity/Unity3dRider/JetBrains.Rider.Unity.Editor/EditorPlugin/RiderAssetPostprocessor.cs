@@ -8,13 +8,12 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using JetBrains.Util.Logging;
 using UnityEditor;
-using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
   public class RiderAssetPostprocessor : AssetPostprocessor
   {
-    private static readonly ILog Logger = Log.GetLog<RiderAssetPostprocessor>();
+    private static readonly ILog ourLogger = Log.GetLog<RiderAssetPostprocessor>();
     
     public static void OnGeneratedCSProjectFiles()
     {
@@ -32,14 +31,14 @@ namespace JetBrains.Rider.Unity.Editor
       if (!File.Exists(slnFile))
         return;
       
-      Logger.Verbose("Post-processing {0}", slnFile);
-      string slnAllText = File.ReadAllText(slnFile);
+      ourLogger.Verbose("Post-processing {0}", slnFile);
+      var slnAllText = File.ReadAllText(slnFile);
       const string unityProjectGuid = @"Project(""{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1}"")";
       if (!slnAllText.Contains(unityProjectGuid))
       {
-        string matchGUID = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)";
+        var matchGuid = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)";
         // Unity may put a random guid, unityProjectGuid will help VSTU recognize Rider-generated projects
-        slnAllText = Regex.Replace(slnAllText, matchGUID, unityProjectGuid);
+        slnAllText = Regex.Replace(slnAllText, matchGuid, unityProjectGuid);
       }
 
       var lines = slnAllText.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
@@ -48,7 +47,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         if (line.StartsWith("Project("))
         {
-          MatchCollection mc = Regex.Matches(line, "\"([^\"]*)\"");
+          var mc = Regex.Matches(line, "\"([^\"]*)\"");
           //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "mc[1]: "+mc[1].Value);
           //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "mc[2]: "+mc[2].Value);
           var to = GetFileNameWithoutExtension(mc[2].Value.Substring(1, mc[2].Value.Length-1)); // remove quotes
@@ -77,7 +76,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void UpgradeProjectFile(string projectFile)
     {
-      Logger.Verbose("Post-processing {0}", projectFile);
+      ourLogger.Verbose("Post-processing {0}", projectFile);
       XDocument doc;
       try
       {
@@ -85,7 +84,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
       catch (Exception)
       {
-        Logger.Verbose("Failed to Load {0}", projectFile);
+        ourLogger.Verbose("Failed to Load {0}", projectFile);
         return;
       }
       
@@ -97,12 +96,12 @@ namespace JetBrains.Rider.Unity.Editor
       SetLangVersion(projectContentElement, xmlns);
       
       // Unity_5_6_OR_NEWER switched to nunit 3.5
-      if (UnityApplication.UnityVersion >= new Version(5,6))
+      if (UnityUtils.UnityVersion >= new Version(5,6))
         ChangeNunitReference(projectContentElement, xmlns);
 
       
       //#i f !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
-      if (UnityApplication.UnityVersion < new Version(2017, 1))
+      if (UnityUtils.UnityVersion < new Version(2017, 1))
       {
         SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
       }
@@ -247,7 +246,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void SetXCodeDllReference(string name, XNamespace xmlns, XElement projectContentElement)
     {
-      string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+      var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
 
       var xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("Data/PlaybackEngines/iOSSupport", name));
       if (!File.Exists(xcodeDllPath))
@@ -321,13 +320,13 @@ namespace JetBrains.Rider.Unity.Editor
         .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
       if (targetFrameworkVersion != null)
       {
-        int scriptingRuntime = 0; // legacy runtime
+        var scriptingRuntime = 0; // legacy runtime
         try
         {
           var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
           scriptingRuntime = (int)property.GetValue(null, null);
           if (scriptingRuntime>0)
-            Logger.Verbose("Latest runtime detected.");
+            ourLogger.Verbose("Latest runtime detected.");
         }
         catch(Exception){}
         
@@ -383,7 +382,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
       catch (Exception ex)
       {
-        Logger.Verbose("Exception on evaluating PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)"+ ex);
+        ourLogger.Verbose("Exception on evaluating PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)"+ ex);
       }
       
       try
@@ -393,7 +392,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
       catch (Exception)
       {
-        Logger.Verbose("Exception on evaluating PlayerSettings.apiCompatibilityLevel");
+        ourLogger.Verbose("Exception on evaluating PlayerSettings.apiCompatibilityLevel");
       }
 
       if (apiCompatibilityLevel >= 3)
@@ -415,7 +414,7 @@ namespace JetBrains.Rider.Unity.Editor
           var names = typeof(RiderAssetPostprocessor).Assembly.GetManifestResourceNames();
           foreach (var name in names)
           {
-            Logger.Verbose(Environment.NewLine+name);  
+            ourLogger.Verbose(Environment.NewLine+name);  
           }
           
           const string resourceName = "JetBrains.Rider.Unity.Editor.pdb2mdb.exe";
@@ -425,7 +424,7 @@ namespace JetBrains.Rider.Unity.Editor
             {
               if (resourceStream == null)
               {
-                Logger.Error("Plugin file not found in manifest resources. " + resourceName);
+                ourLogger.Error("Plugin file not found in manifest resources. " + resourceName);
                 return null;
               }
               CopyStream(resourceStream, memoryStream);
@@ -435,7 +434,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
         catch (Exception)
         {
-          Logger.Verbose("Loading pdb2mdb failed.");
+          ourLogger.Verbose("Loading pdb2mdb failed.");
           assembly = null;
         }
 
@@ -471,7 +470,7 @@ namespace JetBrains.Rider.Unity.Editor
         if (!IsPortablePdb(pdb))
           ConvertSymbolsForAssembly(asset);
         else
-          Logger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
+          ourLogger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
       }
     }
 
@@ -479,14 +478,14 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (Pdb2MdbDriver == null)
       {
-        Logger.Warn("FailedToConvertDebugSymbolsNoPdb2mdb.");
+        ourLogger.Warn("FailedToConvertDebugSymbolsNoPdb2mdb.");
         return;
       }
       
       var method = Pdb2MdbDriver.GetMethod("Main", BindingFlags.Static | BindingFlags.NonPublic);
       if (method == null)
       {
-        Logger.Warn("WarningFailedToConvertDebugSymbolsPdb2mdbMainIsNull.");
+        ourLogger.Warn("WarningFailedToConvertDebugSymbolsPdb2mdbMainIsNull.");
         return;
       }
 
@@ -495,7 +494,7 @@ namespace JetBrains.Rider.Unity.Editor
     }
     
     //https://github.com/xamarin/xamarin-android/commit/4e30546f
-    const uint ppdb_signature = 0x424a5342;
+    private const uint PpdbSignature = 0x424a5342;
     public static bool IsPortablePdb(string filename)
     {
       try
@@ -504,7 +503,7 @@ namespace JetBrains.Rider.Unity.Editor
         {
           using (var br = new BinaryReader(fs))
           {
-            return br.ReadUInt32() == ppdb_signature;
+            return br.ReadUInt32() == PpdbSignature;
           }
         }
       }

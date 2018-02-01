@@ -7,10 +7,10 @@ using JetBrains.Rider.Unity.Editor.NonUnity;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public class RiderApplication
+  public class RiderPathLocator
   {
-    private IPluginSettings myPluginSettings;
-    public RiderApplication(IPluginSettings pluginSettings)
+    private readonly IPluginSettings myPluginSettings;
+    public RiderPathLocator(IPluginSettings pluginSettings)
     {
       myPluginSettings = pluginSettings;
     }

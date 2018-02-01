@@ -41,7 +41,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     public static extern Int32 EnumWindows(IntPtr lpEnumFunc, IntPtr lParam);
 
     [DllImport("user32.dll", SetLastError = true)]
-    static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
       ExactSpelling = true)]

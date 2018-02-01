@@ -45,31 +45,8 @@ namespace JetBrains.Rider.Unity.Editor
           new FileInfo(RiderPlugin.LogPath).Directory.Create();
         File.AppendAllText(RiderPlugin.LogPath, Environment.NewLine + text);
       });
-
-//      switch (level)
-//      {
-//        case LoggingLevel.FATAL:
-//        case LoggingLevel.ERROR:
-//          Debug.LogError(text);
-//          if (exception != null)
-//            Debug.LogException(exception);
-//          break;
-//        case LoggingLevel.WARN:
-//          Debug.LogWarning(text);
-//          if (exception != null)
-//            Debug.LogException(exception);
-//          break;
-//        case LoggingLevel.INFO:
-//        case LoggingLevel.VERBOSE:
-//          Debug.Log(text);
-//          if (exception != null)
-//            Debug.LogException(exception);
-//          break;
-//        default:
-//          break;
-//      }
     }
 
-    public string Category { get; private set; }
+    public string Category { get; }
   }
 }

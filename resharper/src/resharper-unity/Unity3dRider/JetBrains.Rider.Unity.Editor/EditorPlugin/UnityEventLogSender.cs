@@ -1,37 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
-using JetBrains.Rider.Unity.Editor.NonUnity;
-using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public class UnityApplication
+  public class UnityEventLogSender
   {
-    private static readonly ILog Logger = Log.GetLog("UnityApplication");
-    
-    public static string GetExternalScriptEditor()
-    {
-      return EditorPrefs.GetString("kScriptsDefaultApp");
-    }
-
-    public static void SetExternalScriptEditor(string path)
-    {
-      EditorPrefs.SetString("kScriptsDefaultApp", path);
-    }
-
     public void UnityLogRegisterCallBack()
     {
       var eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
-      LifetimeDefinition domainLifetime = Lifetimes.Define();
+      var domainLifetime = Lifetimes.Define();
       
       if (eventInfo != null)
       {
@@ -51,13 +35,12 @@ namespace JetBrains.Rider.Unity.Editor
       
       RiderPlugin.Model.AdviseNotNull(domainLifetime.Lifetime, model =>
       {
-        myDelayedLogEvents.ForEach(evt => SentLogEvent(model, evt));
+        myDelayedLogEvents.ForEach(evt => SendLogEvent(model, evt));
         myDelayedLogEvents.Clear();
       });
     }
-    
-    List<RdLogEvent> myDelayedLogEvents = new List<RdLogEvent>();
-    
+
+    private readonly List<RdLogEvent> myDelayedLogEvents = new List<RdLogEvent>();
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
@@ -88,47 +71,16 @@ namespace JetBrains.Rider.Unity.Editor
           }
           else
           {
-            SentLogEvent(model, evt);
+            SendLogEvent(model, evt);
           }
         });
       }
     }
     
-    private void SentLogEvent(UnityModel model, RdLogEvent logEvent)
+    private void SendLogEvent(UnityModel model, RdLogEvent logEvent)
     {
       //if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
       model.LogModelInitialized.Value.Log.Fire(logEvent);
-    }
-
-    /// <summary>
-    /// Force Unity To Write Project File
-    /// </summary>
-    public static void SyncSolution()
-    {
-      var T = Type.GetType("UnityEditor.SyncVS,UnityEditor");
-      var syncSolution = T.GetMethod("SyncSolution", BindingFlags.Public | BindingFlags.Static);
-      syncSolution.Invoke(null, null);
-    }
-
-    internal static Version UnityVersion
-    {
-      get
-      {
-        var ver = Application.unityVersion.Split(".".ToCharArray()).Take(2).Aggregate((a, b) => a + "." + b);
-        Logger.Verbose("Unity version: " + ver);
-        return new Version(ver);
-      }
-    }
-    
-    public static void AddRiderToRecentlyUsedScriptApp(string userAppPath, string recentAppsKey)
-    {
-      for (int index = 0; index < 10; ++index)
-      {
-        string path = EditorPrefs.GetString(recentAppsKey + (object) index);
-        if (File.Exists(path) && Path.GetFileName(path).ToLower().Contains("rider"))
-          return;
-      }
-      EditorPrefs.SetString(recentAppsKey + 9, userAppPath);
     }
   }
 }

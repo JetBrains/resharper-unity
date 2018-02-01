@@ -12,7 +12,7 @@ namespace JetBrains.Rider.Unity.Editor
   {
     internal static readonly MainThreadDispatcher Instance = new MainThreadDispatcher();
 
-    private static Thread uiThread = null;
+    private static Thread ourUIThread = null;
 
     private MainThreadDispatcher()
     {
@@ -44,7 +44,7 @@ namespace JetBrains.Rider.Unity.Editor
 //        File.AppendAllText(logPath, DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + "DispatchTasks"+Environment.NewLine);
       //RiderPlugin.Log(LoggingLevel.INFO, "DispatchTasks");
 
-      uiThread = Thread.CurrentThread;
+      ourUIThread = Thread.CurrentThread;
       
       if (myTaskQueue.Count == 0)
         return;
@@ -67,7 +67,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static void AssertThread()
     {
-      Assertion.Require(uiThread == null || uiThread == Thread.CurrentThread, "Not not UI thread");
+      Assertion.Require(ourUIThread == null || ourUIThread == Thread.CurrentThread, "Not not UI thread");
     }
     
     /// <summary>
@@ -76,14 +76,8 @@ namespace JetBrains.Rider.Unity.Editor
     /// <value>
     /// <c>true</c> if there are tasks available for dispatching; otherwise, <c>false</c>.
     /// </value>
-    public bool IsActive
-    {
-      get { return uiThread == null || uiThread == Thread.CurrentThread; }
-    }
+    public bool IsActive => ourUIThread == null || ourUIThread == Thread.CurrentThread;
 
-    public bool OutOfOrderExecution
-    {
-      get { return false; }
-    }
+    public bool OutOfOrderExecution => false;
   }
 }

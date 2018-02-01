@@ -2,7 +2,9 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+// ReSharper disable InconsistentNaming
 
+// DO NOT TOUCH
 namespace JetBrains.Rider.Unity.Editor.NonUnity
 {
   public static class ShortcutResolver
@@ -14,7 +16,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
       StringBuilder lpszPath);
 
     [Flags()]
-    enum SLGP_FLAGS
+    private enum SLGP_FLAGS
     {
       /// <summary>Retrieves the standard short (8.3 format) file name</summary>
       SLGP_SHORTPATH = 0x1,
@@ -27,26 +29,26 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    struct WIN32_FIND_DATAW
+    private struct WIN32_FIND_DATAW
     {
-      public uint dwFileAttributes;
-      public long ftCreationTime;
-      public long ftLastAccessTime;
-      public long ftLastWriteTime;
-      public uint nFileSizeHigh;
-      public uint nFileSizeLow;
-      public uint dwReserved0;
-      public uint dwReserved1;
+      public readonly uint dwFileAttributes;
+      public readonly long ftCreationTime;
+      public readonly long ftLastAccessTime;
+      public readonly long ftLastWriteTime;
+      public readonly uint nFileSizeHigh;
+      public readonly uint nFileSizeLow;
+      public readonly uint dwReserved0;
+      public readonly uint dwReserved1;
 
       [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-      public string cFileName;
+      public readonly string cFileName;
 
       [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
-      public string cAlternateFileName;
+      public readonly string cAlternateFileName;
     }
 
     [Flags()]
-    enum SLR_FLAGS
+    private enum SLR_FLAGS
     {
       /// <summary>
       /// Do not display a dialog box if the link cannot be resolved. When SLR_NO_UI is set,
@@ -89,7 +91,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
 
     /// <summary>The IShellLink interface allows Shell links to be created, modified, and resolved</summary>
     [ComImport(), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("000214F9-0000-0000-C000-000000000046")]
-    interface IShellLinkW
+    private interface IShellLinkW
     {
       /// <summary>Retrieves the path and file name of a Shell link object</summary>
       [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType =
@@ -226,8 +228,8 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
       void GetCurFile([In, MarshalAs(UnmanagedType.LPWStr)] string ppszFileName);
     }
 
-    const uint STGM_READ = 0;
-    const int MAX_PATH = 260;
+    private const uint STGM_READ = 0;
+    private const int MAX_PATH = 260;
 
     // CLSID_ShellLink from ShlGuid.h 
     [
@@ -242,12 +244,12 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
 
     public static string Resolve(string filename)
     {
-      ShellLink link = new ShellLink();
+      var link = new ShellLink();
       ((IPersistFile) link).Load(filename, STGM_READ);
       // If I can get hold of the hwnd call resolve first. This handles moved and renamed files.  
       // ((IShellLinkW)link).Resolve(hwnd, 0) 
-      StringBuilder sb = new StringBuilder(MAX_PATH);
-      WIN32_FIND_DATAW data = new WIN32_FIND_DATAW();
+      var sb = new StringBuilder(MAX_PATH);
+      var data = new WIN32_FIND_DATAW();
       ((IShellLinkW) link).GetPath(sb, sb.Capacity, out data, 0);
       return sb.ToString();
     }
