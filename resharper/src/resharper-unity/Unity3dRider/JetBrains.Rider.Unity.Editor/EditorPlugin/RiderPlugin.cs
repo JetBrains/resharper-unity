@@ -29,8 +29,6 @@ namespace JetBrains.Rider.Unity.Editor
       var application = new UnityApplication();
       application.UnityLogRegisterCallBack();
       
-      Debug.Log("RiderPlugin.ctor");
-      
       ourPluginSettings = new PluginSettings();
       ourRiderApplication = new RiderApplication(ourPluginSettings);
       var riderPath = ourRiderApplication.GetDefaultRiderApp(UnityApplication.GetExternalScriptEditor(),
