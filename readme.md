@@ -148,7 +148,11 @@ See the ReSharper help for [more details on External Annotations](https://www.je
 * Various attributes now require the class they are applied to derive from a specific base type. E.g. `[CustomEditor]` requires a base class of `Editor`).
 * Support for Unity 2017.2's modularised UnityEngine assemblies.
 
-**File Templates:**
+**Project and File Templates:**
+
+* Project template Unity Class Library *
+
+  Essentially it is a Class Library with reference to UnityEngine.dll 
 
 * File templates for new C# script, tests and shader files.
 
