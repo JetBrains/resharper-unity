@@ -34,16 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var possiblePath = myUnityMonoPathProvider.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).FirstOrDefault(b => b.ExistsFile);
             if (possiblePath != null)
                 defaultPath = possiblePath.FullPath;
-                    List<string> homes = new List<string>();
-                    homes.Add("/opt");
-                    if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HOME")))
-                        homes.Add(Environment.GetEnvironmentVariable("HOME"));
-                    var paths = homes.SelectMany(home => new DirectoryInfo(home).GetDirectories("Unity*").Select(unityDir=>Path.Combine(unityDir.FullName, @"Editor/Data/Managed/UnityEngine.dll")).Where(File.Exists)).AsArray();
-                    if (paths.Any())
-                    {
-                        defaultPath = paths.First();
-                    }
-
             return new RdProjectTemplateTextParameter(Name, defaultPath, Tooltip, RdTextParameterStyle.FileChooser, content);
         }
     }
