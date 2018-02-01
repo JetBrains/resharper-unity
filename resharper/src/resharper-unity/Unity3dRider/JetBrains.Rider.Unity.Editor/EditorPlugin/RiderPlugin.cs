@@ -9,6 +9,7 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
+using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
@@ -74,7 +75,7 @@ namespace JetBrains.Rider.Unity.Editor
       InitializeEditorInstanceJson();
 
       // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
-      RiderAssetPostprocessor.OnGeneratedCSProjectFiles();
+      CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
 
       Log.DefaultFactory = new RiderLoggerFactory();
 
