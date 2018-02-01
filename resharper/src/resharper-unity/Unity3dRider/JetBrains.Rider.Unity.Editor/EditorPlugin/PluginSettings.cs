@@ -7,6 +7,12 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
+  public interface IPluginSettings
+  {
+    OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
+    string RiderPath { get; set; }
+  } 
+  
   public class PluginSettings : IPluginSettings
   {
     internal static LoggingLevel SelectedLoggingLevel
@@ -17,21 +23,21 @@ namespace JetBrains.Rider.Unity.Editor
     
     private static string GetTargetFrameworkVersionDefault(string defaultValue)
     {
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+      if (SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
+        return defaultValue;
+      
+      var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
+      if (!dir.Exists)
+        return defaultValue;
+      
+      var availableVersions = dir
+        .GetDirectories("v*")
+        .Select(a => a.Name.Substring(1))
+        .Where(v => InvokeIfValidVersion(v, s => { }))
+        .ToArray();
+      if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
       {
-        var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
-        if (dir.Exists)
-        {
-          var availableVersions = dir
-            .GetDirectories("v*")
-            .Select(a => a.Name.Substring(1))
-            .Where(v => InvokeIfValidVersion(v, s => { }))
-            .ToArray();
-          if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
-          {
-            defaultValue = availableVersions.OrderBy(a => new Version(a)).Last();
-          }
-        }
+        defaultValue = availableVersions.OrderBy(a => new Version(a)).Last();
       }
 
       return defaultValue;
@@ -71,23 +77,20 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static string TargetFrameworkVersionOldMono
     {
-      get
-      {
-        return EditorPrefs.GetString("Rider_TargetFrameworkVersionOldMono", GetTargetFrameworkVersionDefault("3.5"));
-      }
+      get { return EditorPrefs.GetString("Rider_TargetFrameworkVersionOldMono", GetTargetFrameworkVersionDefault("3.5")); }
       private set { InvokeIfValidVersion(value, val => { EditorPrefs.SetString("Rider_TargetFrameworkVersionOldMono", val); }); }
+    } 
+    
+    public static bool RiderInitializedOnce
+    {
+      get { return EditorPrefs.GetBool("RiderInitializedOnce", false); }
+      set { EditorPrefs.SetBool("RiderInitializedOnce", value); }
     }
 
     private static string RiderPathInternal
     {
       get { return EditorPrefs.GetString("Rider_RiderPath", null); }
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
-    }
-
-    public static bool RiderInitializedOnce
-    {
-      get { return EditorPrefs.GetBool("RiderInitializedOnce", false); }
-      set { EditorPrefs.SetBool("RiderInitializedOnce", value); }
     }
 
     [MenuItem("Assets/Open C# Project in Rider", false, 1000)]
