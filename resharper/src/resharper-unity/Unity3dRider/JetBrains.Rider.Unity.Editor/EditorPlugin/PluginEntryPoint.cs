@@ -20,13 +20,13 @@ using UnityEditor.Callbacks;
 namespace JetBrains.Rider.Unity.Editor
 {
   [InitializeOnLoad]
-  public static class RiderPlugin
+  public static class PluginEntryPoint
   {
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
 
     // This an entry point
-    static RiderPlugin()
+    static PluginEntryPoint()
     {
       ourModel = new RProperty<UnityModel>();
       

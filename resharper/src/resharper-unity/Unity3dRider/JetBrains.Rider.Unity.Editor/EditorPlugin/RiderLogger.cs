@@ -41,9 +41,9 @@ namespace JetBrains.Rider.Unity.Editor
       // using Unity logs causes frequent Unity hangs
       MainThreadDispatcher.Instance.Queue(() =>
       {
-        if (!new FileInfo(RiderPlugin.LogPath).Directory.Exists)
-          new FileInfo(RiderPlugin.LogPath).Directory.Create();
-        File.AppendAllText(RiderPlugin.LogPath, Environment.NewLine + text);
+        if (!new FileInfo(PluginEntryPoint.LogPath).Directory.Exists)
+          new FileInfo(PluginEntryPoint.LogPath).Directory.Create();
+        File.AppendAllText(PluginEntryPoint.LogPath, Environment.NewLine + text);
       });
     }
 

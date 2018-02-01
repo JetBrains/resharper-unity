@@ -97,13 +97,13 @@ namespace JetBrains.Rider.Unity.Editor
       UnityUtils.SyncSolution();
 
       // Load Project
-      RiderPlugin.CallRider(string.Format("{0}{1}{0}", "\"", RiderPlugin.SlnFile));
+      PluginEntryPoint.CallRider(string.Format("{0}{1}{0}", "\"", PluginEntryPoint.SlnFile));
     }
 
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     private static bool ValidateMenuOpenProject()
     {
-      return RiderPlugin.Enabled && !RiderPlugin.IsProtocolConnected();
+      return PluginEntryPoint.Enabled && !PluginEntryPoint.IsProtocolConnected();
     }
     
     /// <summary>
@@ -119,7 +119,7 @@ namespace JetBrains.Rider.Unity.Editor
     [MenuItem("Assets/Sync C# Project", true, 1001)]
     private static bool ValidateMenuSyncProject()
     {
-      return RiderPlugin.Enabled;
+      return PluginEntryPoint.Enabled;
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ namespace JetBrains.Rider.Unity.Editor
         var alts = alternatives.Select(s => s.Replace("/", ":"))
           .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
         RiderPathInternal = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
-        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), RiderPlugin.Enabled))
+        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))
         {
           EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
           EditorGUILayout.HelpBox("Unckecking will restore default external editor.", MessageType.None);

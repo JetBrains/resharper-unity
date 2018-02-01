@@ -13,7 +13,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)
     {
-      if (!RiderPlugin.Enabled)
+      if (!PluginEntryPoint.Enabled)
         return;
       
       var toBeConverted = importedAssets.Where(a => 

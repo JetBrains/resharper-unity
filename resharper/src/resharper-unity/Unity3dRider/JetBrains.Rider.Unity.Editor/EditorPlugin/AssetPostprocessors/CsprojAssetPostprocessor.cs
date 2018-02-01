@@ -14,7 +14,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!RiderPlugin.Enabled)
+      if (!PluginEntryPoint.Enabled)
         return;
       var currentDirectory = Directory.GetCurrentDirectory();
       var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");

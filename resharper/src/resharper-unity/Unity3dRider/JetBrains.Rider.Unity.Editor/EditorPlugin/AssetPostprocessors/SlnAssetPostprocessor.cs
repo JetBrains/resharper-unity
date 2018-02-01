@@ -13,10 +13,10 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!RiderPlugin.Enabled)
+      if (!PluginEntryPoint.Enabled)
         return;
      
-      var slnFile = RiderPlugin.SlnFile;
+      var slnFile = PluginEntryPoint.SlnFile;
       if (!File.Exists(slnFile))
         return;
       

@@ -50,7 +50,7 @@ namespace JetBrains.Rider.Unity.Editor
       var model = myModel.Maybe.ValueOrDefault;
       if (model != null)
       {
-        if (RiderPlugin.IsProtocolConnected())
+        if (PluginEntryPoint.IsProtocolConnected())
         {
           const int column = 0;
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
