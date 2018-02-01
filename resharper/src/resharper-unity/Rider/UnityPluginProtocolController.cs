@@ -142,6 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var lifetime = SessionLifetimes.Next();
                 myLogger.Info("Creating SocketWire with port = {0}", port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, port, "UnityClient");
+                wire.Connected.Advise(myLifetime, b => {myLogger.Info(string.Format("WireConnected = {0}", b));});
                 myProtocol = new Protocol(new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
                 UnityModel = new UnityModel(lifetime, myProtocol);
                 UnityModel.IsClientConnected.Set(rdVoid => true);

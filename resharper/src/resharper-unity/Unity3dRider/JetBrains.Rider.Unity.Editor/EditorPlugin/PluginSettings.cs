@@ -156,7 +156,7 @@ namespace JetBrains.Rider.Unity.Editor
       GUILayout.BeginVertical();
       string status = "TargetFrameworkVersion for Runtime";
       EditorGUILayout.TextArea(status, EditorStyles.boldLabel);
-      var help = @"TargetFramework >= 4.5 is recommended.";
+      var help = @"TargetFramework >= 4.6 is recommended.";
       TargetFrameworkVersion =
         EditorGUILayout.TextField(
           new GUIContent("NET 4.6",
