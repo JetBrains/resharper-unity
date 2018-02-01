@@ -244,7 +244,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       return Path.GetFileName(projectFile) == UNITY_EDITOR_PROJECT_NAME;
     }
-  
+
     private static void SetXCodeDllReference(string name, XNamespace xmlns, XElement projectContentElement)
     {
       string unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
@@ -331,6 +331,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
         catch(Exception){}
         
+        if (scriptingRuntime>0)
         if (scriptingRuntime>0)
           targetFrameworkVersion.SetValue("v"+PluginSettings.TargetFrameworkVersion);
         else

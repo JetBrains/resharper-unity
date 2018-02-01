@@ -37,7 +37,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
         public UnityReferencesTracker(
             Lifetime lifetime,
-            ILogger logger,
 
             IEnumerable<IHandler> handlers,
             ISolution solution,
@@ -47,7 +46,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             ModuleReferenceResolveSync moduleReferenceResolveSync,
             ChangeManager changeManager,
-            IViewableProjectsCollection projects)
+            IViewableProjectsCollection projects,
+            ILogger logger
+            )
         {
             myProjectLifetimes = new Dictionary<IProject, Lifetime>();
 

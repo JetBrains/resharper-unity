@@ -1,8 +1,10 @@
 [![official JetBrains project](http://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 [![Build status](https://ci.appveyor.com/api/projects/status/v8wgygg7jh7ern8x/branch/master?svg=true)](https://ci.appveyor.com/project/IvanPashchenko/resharper-unity/branch/master)
 [![Build Status](https://travis-ci.org/JetBrains/resharper-unity.svg?branch=master)](https://travis-ci.org/JetBrains/resharper-unity)
+[![Join the chat at https://gitter.im/JetBrains/resharper-unity](https://badges.gitter.im/JetBrains/resharper-unity.svg)](https://gitter.im/JetBrains/resharper-unity?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Unity Support for ReSharper and Rider
+
 
 The "Unity Support" plugin adds specific functionality for the [Unity game engine](http://unity3d.com/) to [ReSharper](https://www.jetbrains.com/resharper/) and [Rider](https://www.jetbrains.com/rider/).
 
@@ -194,14 +196,14 @@ This plugin does the following:
 
 * Automatically set Rider as the default external script editor.
 * Ensure the C# solution and project files are up to date, and make minor changes required by Rider:
-    * Set the `TargetFrameworkVersion` to 4.5. This is required to fix missing references to various assemblies when running on Mac and Linux (because Rider uses a different Mono version of msbuild than Unity), and is not required when Unity is targeting .NET 4.6. [See this YouTrack issue for more details](https://youtrack.jetbrains.com/issue/RIDER-573). This can be disabled in _Preferences_. Note that this affects how Rider resolves references, and does not change how Unity builds a project.
+    * Attempts to set appropriate `TargetFrameworkVersion`. This is customizable in _Preferences_. Note that this affects how Rider resolves references, and does not change how Unity builds a project.
     * Set the `LangVersion` correctly, so that Rider does not suggest C# 6 features when Unity is targeting C# 4, or C# 7 features when Unity is targeting C# 6.
     * Add references to `UnityEditor.iOS.Extensions.Xcode.dll` and `UnityEditor.iOS.Extensions.Common.dll`, which are referenced when Unity builds, but not included in the generated project files. [See this GitHub issue for more details](https://github.com/JetBrains/Unity3dRider/issues/15).
     * Add options defined in `mcs.rsp` or `smcs.rsp` and `gmcs.rsp` files, such as conditional compilation defines, the `unsafe` keyword and [references(https://github.com/JetBrains/resharper-unity/issues/270)]. Adding them to the project file makes the information available to Rider's analysis.
 * Use interprocess communication to speed up opening C# scripts, `.shader` files and text assets in Rider, if it's already running. It will launch Rider and load the solution if it isn't.
 * Add a _Rider_ Preference pane:
     * Enable logging to the console for troubleshooting. Please use this before logging an issue.
-    * Disable Rider from setting the `TargetFrameworkVersion` to 4.5. Use this if you require 3.5, and do not encounter the missing references described in this issue. Note that this only affects how Rider resolves references, and does not change how Unity builds a project.
+    * Customize `TargetFrameworkVersion` for generated project files. Note that this only affects how Rider resolves references, and does not change how Unity builds a project.
 * Provide extra functionality for older versions of the Unity Editor (prior to Unity 2017.1):
     * Create a file called `Library/EditorInstance.json` that contains process information for debugging the Unity Editor. This file is created natively by Unity since 2017.1.
     * Add an _Assets &rarr; Open C# Project in Rider_ menu item. Earlier versions of Unity do not recognise Rider as an editor that can correctly open solutions, and so will launch both Rider and MonoDevelop when the _Assets &rarr; Open C# Project_ menu item is selected.
