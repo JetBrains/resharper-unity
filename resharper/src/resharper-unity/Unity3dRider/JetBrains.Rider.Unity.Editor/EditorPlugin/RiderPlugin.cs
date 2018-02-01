@@ -122,18 +122,19 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static UnityModel CreateModel(Protocol protocol, Lifetime lt)
     {
-      var isPlayingAction = new Action<IRdProperty<bool>>(play =>
+      var isPlayingAction = new Action(() =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          var res = EditorApplication.isPlaying;
-          play.SetValue(res);
-          if (!res) // pause state changed doesn't fire on its own
-            Model?.Maybe.ValueOrDefault?.Pause.SetValue(false);
+          var isPlaying = EditorApplication.isPlaying;
+          Model?.Maybe.ValueOrDefault?.Play.SetValue(isPlaying);
+
+          var isPaused = EditorApplication.isPaused;
+          Model?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
         });
       });
       var model = new UnityModel(lt, protocol);
-      isPlayingAction(model.Play); // get Unity state
+      isPlayingAction(); // get Unity state
       model.Play.Advise(lt, play =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
@@ -175,23 +176,25 @@ namespace JetBrains.Rider.Unity.Editor
         return task;
       });
 
-      var isPlayingHandler = new EditorApplication.CallbackFunction(() => isPlayingAction(model.Play));
+      var isPlayingHandler = new EditorApplication.CallbackFunction(() => isPlayingAction());
       lt.AddBracket(() => { EditorApplication.playmodeStateChanged += isPlayingHandler; },
         () => { EditorApplication.playmodeStateChanged -= isPlayingHandler; });
 
       isPlayingHandler();
       
-      lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},
-        () => { EditorApplication.pauseStateChanged -= IsPauseStateChanged(model); });
+      // new api - not present in Unity 5.5
+      //lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},
+      //  () => { EditorApplication.pauseStateChanged -= IsPauseStateChanged(model); });
       
 
       return model;
     }
 
-    private static Action<PauseState> IsPauseStateChanged(UnityModel model)
-    {
-      return state => model?.Pause.SetValue(state == PauseState.Paused);
-    }
+    // new api - not present in Unity 5.5
+    // private static Action<PauseState> IsPauseStateChanged(UnityModel model)
+    //    {
+    //      return state => model?.Pause.SetValue(state == PauseState.Paused);
+    //    }
 
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
 

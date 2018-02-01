@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\test\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="UnityEditor">
-      <HintPath>..\packages\JetBrains.Unity.Libs.2017.2.0b3.2017.7.21\lib\UnityEditor.dll</HintPath>
+      <HintPath>..\packages\JetBrains.Unity.Libs.5.5.0f3.2017.7.21\lib\UnityEditor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\packages\JetBrains.Unity.Libs.2017.2.0b3.2017.7.21\lib\UnityEngine.dll</HintPath>
