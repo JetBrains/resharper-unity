@@ -48,7 +48,7 @@ object UnityLogPanelToolbarBuilder {
 
     fun createLeftToolbar(projectCustomDataHost: ProjectCustomDataHost): JPanel {
         val actionGroup = DefaultActionGroup().apply {
-            add(RefreshInUnityAction())
+            add(RefreshInUnityAction(projectCustomDataHost))
             add(PlayInUnityAction(projectCustomDataHost))
             add(PauseInUnityAction(projectCustomDataHost))
             add(StepInUnityAction(projectCustomDataHost))

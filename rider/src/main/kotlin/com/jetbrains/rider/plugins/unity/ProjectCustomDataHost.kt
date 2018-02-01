@@ -13,7 +13,7 @@ import org.codehaus.jettison.json.JSONObject
 class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(project) {
     val logger = Logger.getInstance(ProjectCustomDataHost::class.java)
 
-    val unitySession = Property<Boolean>(false)
+    val isConnected = Property<Boolean>(false)
     val logSignal = Signal<RdLogEvent>()
     val play = Property<Boolean>(false)
     val pause = Property<Boolean>(false)
@@ -28,13 +28,6 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
         }
 
         project.solution.customData.data.advise(componentLifetime) { item ->
-            if (item.key == "UNITY_SessionInitialized" && item.newValueOpt == "true") {
-                logger.info(item.key + " " + item.newValueOpt)
-                unitySession.set(true)
-            }
-        }
-
-        project.solution.customData.data.advise(componentLifetime) { item ->
             if (item.key == "UNITY_Play" && item.newValueOpt!=null) {
                 play.set(item.newValueOpt!!.toBoolean())
             }
@@ -43,6 +36,12 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
         project.solution.customData.data.advise(componentLifetime) { item ->
             if (item.key == "UNITY_Pause" && item.newValueOpt!=null) {
                 pause.set(item.newValueOpt!!.toBoolean())
+            }
+        }
+
+        project.solution.customData.data.advise(componentLifetime) { item ->
+            if (item.key == "UNITY_SessionInitialized" && item.newValueOpt!=null) {
+                isConnected.set(item.newValueOpt!!.toBoolean())
             }
         }
 

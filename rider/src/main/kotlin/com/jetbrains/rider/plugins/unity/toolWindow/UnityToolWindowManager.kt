@@ -17,7 +17,7 @@ class UnityToolWindowManager(project: Project,
     }
 
     init {
-        projectCustomDataHost.unitySession.viewNotNull(componentLifetime) { sessionLifetime, _ ->
+        projectCustomDataHost.isConnected.viewNotNull(componentLifetime) { sessionLifetime, _ ->
             myLogger.info("new session")
             sessionLifetime.add {
                 myLogger.info("terminate")

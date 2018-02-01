@@ -161,11 +161,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     SubscribeToOpenFile(model, solution);
                     model.Play.AdviseNotNull(lf, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Pause", b.ToString().ToLower()));
-
+                    
                     UnityModel = model;
                     lf.AddAction(() =>
                     {
                         myLogger.Info("Wire disconnected.");
+                        SetOrCreateDataKeyValuePair(solution, "UNITY_SessionInitialized", "false");
                         UnityModel = null;
                     });
                 });

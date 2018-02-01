@@ -16,6 +16,10 @@ class PlayInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : Toggl
         val project = e?.project?: return
         ProjectCustomDataHost.CallBackendPlay(project, value)
     }
+    override fun update(e: AnActionEvent) {
+        e.presentation.isEnabled = projectCustomDataHost.isConnected.value
+        super.update(e)
+    }
 }
 
 class PauseInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : ToggleAction("Pause/Resume", "Pause/Resume play in Unity", UnityIcons.PauseInUnity) {
@@ -28,7 +32,7 @@ class PauseInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : Togg
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = projectCustomDataHost.play.value
+        e.presentation.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.isConnected.value
         super.update(e)
     }
 }
@@ -40,7 +44,7 @@ class StepInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : AnAct
     }
 
     override fun update(e: AnActionEvent?) {
-        e?.presentation?.isEnabled = projectCustomDataHost.play.value
+        e?.presentation?.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.isConnected.value
         super.update(e)
     }
 }
