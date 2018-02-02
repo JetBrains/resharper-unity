@@ -4,6 +4,10 @@ Project("{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1}") = "EditorPlugin", "EditorPlugi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.Tests", "EditorPlugin.Tests\EditorPlugin.Tests.csproj", "{0E4211DB-DA60-416B-A13C-14D45410F768}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.4.7.2f1", "EditorPlugin\EditorPlugin.4.7.2f1.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.5.5.0f3", "EditorPlugin\EditorPlugin.5.5.0f3.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
