@@ -214,7 +214,7 @@ task detectMSBuild {
 }
 
 task buildUnity3dRider {
-    dependsOn detectMSBuild
+    dependsOn detectMSBuild, restorePackages
     group = backendGroup
     description = 'Build Unity3dRider. Runs MSBuild and creates binaries.'
 
@@ -232,21 +232,11 @@ task buildUnity3dRider {
         def projectOrSolution = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/JetBrains.Rider.Unity.Editor/JetBrains.Rider.Unity.Editor.sln")
         assert projectOrSolution.isFile()
 
-        if (isWindows){
-            logger.lifecycle("restoring nuget for Unity3dRider")
-
-            def nugetExe = new File(backend.repositoryRoot, "tools\\nuget.exe")
-            assert nugetExe.isFile()
-
-            def nugetArgs = ["restore", projectOrSolution]
-            def result = exec {
-                executable = nugetExe.path
-                args = nugetArgs
-                ignoreExitValue = true
-            }
-            if (result != 0){
-                logger.warn("Nuget clear exited with non-zero code")
-            }
+        backend.ReportProgress("Restoring packages for Unity3dRider")
+        def restoreArguments = ["restore", projectOrSolution]
+        exec {
+            executable = "dotnet"
+            args = restoreArguments
         }
 
         exec {
