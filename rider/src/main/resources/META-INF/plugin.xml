@@ -36,6 +36,10 @@
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgIconProvider" />
     <completion.contributor language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
 
+    <!-- Unity Explorer -->
+    <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
+    <projectModelViewProvider implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerViewProvider"/>
+
   </extensions>
 
   <project-components>
