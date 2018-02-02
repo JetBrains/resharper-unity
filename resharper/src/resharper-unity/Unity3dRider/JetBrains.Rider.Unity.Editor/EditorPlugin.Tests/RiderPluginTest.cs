@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using JetBrains.Rider.Unity.Editor;
 using NUnit.Framework;
 
