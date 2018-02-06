@@ -43,11 +43,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.QuickFixe
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 // TODO: When we have a code formatter for ShaderLab, we can just use CodeFormattingHelper.AddLineBreakAfter
-            
                 var lineEnding = mySwallowedToken
                     .GetContainingFile()
                     .DetectLineEnding(solution.GetPsiServices());
-                
+
                 var presentationAsBuffer = lineEnding.GetPresentationAsBuffer();
                 return textControl =>
                 {

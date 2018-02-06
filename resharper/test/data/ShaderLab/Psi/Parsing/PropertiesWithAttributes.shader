@@ -4,6 +4,11 @@
 
     [KeywordEnum(None, Add, Multiply)] _Overlay("Overlay mode", Float) = 0
 
+    // Make sure we can handle rogue whitespace. Note leading whitespace is invalid
+    [   KeywordEnum  (None, Add, Multiply)] _Overlay2("Overlay mode 2", Float) = 0
+    [KeywordEnum  (None, Add, Multiply)] _Overlay2("Overlay mode 2", Float) = 0
+    [KeywordEnum  (None, Add, Multiply)  ] _Overlay2("Overlay mode 2", Float) = 0
+
     [Toggle] _Invert("Invert color?", Float) = 0
 
     // Blend mode values

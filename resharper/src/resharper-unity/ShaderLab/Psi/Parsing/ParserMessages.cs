@@ -25,6 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
         public const string IDS_FOG_CONTENTS = "Fog command";
         public const string IDS_GRAB_PASS_CONTENTS = "GrabPass command";
         public const string IDS_INCLUDE_BLOCK = "include block";
+        public const string IDS_INVALID_VARIABLE_REFERENCE_PARAMETERS = "invalid parameters";
         public const string IDS_LEGACY_LIGHTING_COMMAND = "lighting command";
         public const string IDS_LEGACY_OPERATOR = "Legacy operator";
         public const string IDS_LEGACY_RENDER_STATE_COMMAND = "render state command";
