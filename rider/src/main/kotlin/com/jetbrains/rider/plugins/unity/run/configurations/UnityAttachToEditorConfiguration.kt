@@ -55,7 +55,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
         // We might have a pid from a previous run, but the editor might have died
         pid = checkValidEditorInstance(pid, processList)
                 ?: findUnityEditorInstance(processList)
-                ?: throw throw RuntimeConfigurationError("Cannot find Unity Editor instance")
+                ?: throw RuntimeConfigurationError("Cannot find Unity Editor instance")
 
         port = convertPortToDebuggerPort(pid!!)
     }

@@ -11,7 +11,6 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 
 class SaveAllTracker(project: Project, val actionManagerEx: ActionManagerEx) : LifetimedProjectComponent(project) {
-
     init {
         val listener = FileListenerImpl(project)
         actionManagerEx.addAnActionListener(listener)
@@ -23,10 +22,10 @@ class SaveAllTracker(project: Project, val actionManagerEx: ActionManagerEx) : L
 
         }
 
-        override fun afterActionPerformed(action: AnAction, dataContext: DataContext, event: AnActionEvent) {
+        override fun afterActionPerformed(action: AnAction?, dataContext: DataContext?, event: AnActionEvent?) {
             super.afterActionPerformed(action, dataContext, event)
 
-            if ((action is SaveAllAction || action is SaveDocumentAction)) {
+            if (action!=null && (action is SaveAllAction || action is SaveDocumentAction)) {
                 ProjectCustomDataHost.CallBackendRefresh(project)
             }
         }
