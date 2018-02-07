@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope
 
         public override string ToString() => "ShaderLab (Unity)";
 
-        public new string QuickListTitle => "Unity files";
-        public new Guid QuickListUID => QuickUID;
+        public string QuickListTitle => "Unity files";
+        public Guid QuickListUID => QuickUID;
     }
 }
