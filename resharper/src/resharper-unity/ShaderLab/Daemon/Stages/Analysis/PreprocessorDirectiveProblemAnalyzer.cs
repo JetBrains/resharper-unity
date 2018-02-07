@@ -1,9 +1,9 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
+namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IPreprocessorDirective), HighlightingTypes = new[]
     {
@@ -12,13 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         typeof(ShaderLabSyntaxError),
         typeof(ShaderLabSwallowedPreprocessorCharWarning)
     })]
-    public class PreprocessorDirectiveProblemAnalyzer : UnityElementProblemAnalyzer<IPreprocessorDirective>
+    public class PreprocessorDirectiveProblemAnalyzer : ShaderLabElementProblemAnalyzer<IPreprocessorDirective>
     {
-        public PreprocessorDirectiveProblemAnalyzer(UnityApi unityApi)
-            : base(unityApi)
-        {
-        }
-
         protected override void Analyze(IPreprocessorDirective element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             if (element is IPpErrorDirective errorDirective)
