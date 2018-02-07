@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.getLogger
-import com.jetbrains.rider.util.reactive.viewNotNull
+import com.jetbrains.rider.util.reactive.whenTrue
 
 class UnityToolWindowManager(project: Project,
                              private val projectCustomDataHost: ProjectCustomDataHost,
@@ -17,11 +17,8 @@ class UnityToolWindowManager(project: Project,
     }
 
     init {
-        projectCustomDataHost.isConnected.viewNotNull(componentLifetime) { sessionLifetime, _ ->
+        projectCustomDataHost.isConnected.whenTrue(componentLifetime) {
             myLogger.info("new session")
-            sessionLifetime.add {
-                myLogger.info("terminate")
-            }
             val context = unityToolWindowFactory.getOrCreateContext()
             //context.clear()
             val shouldReactivateBuildToolWindow = context.isActive
