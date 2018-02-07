@@ -55,6 +55,7 @@ Packages/*
 
 resharper/src/resharper-unity/_Generated/
 resharper/src/resharper-unity/templates/**/*.generated.dotSettings
+resharper/src/**/*.generated.cs
 resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp

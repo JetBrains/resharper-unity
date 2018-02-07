@@ -1,0 +1,16 @@
+﻿Shader "Unlit/SingleColor"
+{
+    Properties
+    {
+        _Op ("Op value", float) = 1
+    }
+    SubShader
+    {
+        BlendOp [_Op |(something something)|(0) ]
+    }
+}
+
+------------------------------------------------
+0: Parameters are not valid in this location
+QUICKFIXES:
+Remove invalid parameters

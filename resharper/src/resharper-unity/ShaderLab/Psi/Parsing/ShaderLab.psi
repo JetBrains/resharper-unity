@@ -744,9 +744,23 @@ private errorhandling colorLiteralValues
 
 variableReference
 :
-  LBRACK<LBRACK, LBRack>
+  LBRACK<LBRACK, LBrack>
   shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  // Technically, Unity parses a variable reference exactly as it does an attribute
+  // The parameters aren't an error, but are silently ignored
+  invalidVariableReferenceParameters<INVALID_PARAMETERS, InvalidParameters>?
   RBRACK<RBRACK, RBrack>
+;
+
+invalidVariableReferenceParameters
+:
+  (
+    LPAREN
+    | RPAREN
+    | COMMA
+    | DOT
+    | shaderLabIdentifier
+  )*
 ;
 
 interface value
@@ -1120,6 +1134,12 @@ options {
 //
 // **************************************************************************
 
+// TODO: Error handling of attributes - especially parameters
+// Unity's own parsing is very lax. Attributes and variable references
+// are interchangeable as far as their parser is concerned. An attribute
+// with parameters isn't structured - it just includes more characters.
+// If attribute parameters have invalid syntax, they're not treated as errors,
+// but silently ignored
 attribute
 :
   LBRACK<LBRACK, LBrack>

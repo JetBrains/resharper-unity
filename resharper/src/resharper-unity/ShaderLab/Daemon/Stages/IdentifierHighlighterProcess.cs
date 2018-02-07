@@ -1,7 +1,7 @@
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.VisualElements;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -45,8 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             // plus look for simple syntax validation errors, e.g. enums must have at
             // least one value defined, correct value for `syntax "proto3"`, etc.
             // And then a separate identifier
-            var errorElement = node as IErrorElement;
-            if (errorElement != null)
+            if (node is IErrorElement errorElement)
             {
                 var range = errorElement.GetDocumentRange();
                 if (!range.IsValid())

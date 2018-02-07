@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Intentions.QuickFixe
 
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
-    public class ShaderLabRedundantPreprocessorCharQuickFixQuickFixTests : CSharpQuickFixTestBase<ShaderLabRedundantPreprocessorCharQuickFix>
+    public class ShaderLabRedundantPreprocessorCharQuickFixTests : CSharpQuickFixTestBase<ShaderLabRedundantPreprocessorCharQuickFix>
     {
         protected override string RelativeTestDataPath=> @"ShaderLab\Intentions\QuickFixes\ShaderLabRedundantPreprocessorChar";
 
