@@ -46,4 +46,11 @@
     <Range>DirectiveNode.Directive.GetHighlightingRange()</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
   </Warning>
+  
+  <Warning name="ShaderLabInvalidVariableReferenceParameters" staticGroup="ShaderLabWarnings">
+    <Parameter type="DocumentRange" name="documentRange" />
+    <Message value="Parameters are not valid in this location" />
+    <Range>DocumentRange</Range>
+    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
+  </Warning>
 </Errors>

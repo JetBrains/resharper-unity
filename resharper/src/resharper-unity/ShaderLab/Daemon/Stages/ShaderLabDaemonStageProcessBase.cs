@@ -1,5 +1,4 @@
 ﻿using System;
-using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -42,9 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
 
         public virtual void ProcessAfterInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
-            var shaderLabElement = element as IShaderLabTreeNode;
-
-            if (shaderLabElement != null && !shaderLabElement.IsWhitespaceToken())
+            if (element is IShaderLabTreeNode shaderLabElement && !shaderLabElement.IsWhitespaceToken())
                 shaderLabElement.Accept(this, consumer);
             else
                 VisitNode(element, consumer);
