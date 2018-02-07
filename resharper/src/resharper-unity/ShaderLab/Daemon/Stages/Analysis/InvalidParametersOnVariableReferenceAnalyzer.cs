@@ -13,7 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Analysis
         {
             // I'd like this to be an error, but the shader compiler silently ignores it
             // and fails to create a valid variable reference
-            consumer.AddHighlighting(new ShaderLabInvalidVariableReferenceParametersWarning(element.GetHighlightingRange()));
+            consumer.AddHighlighting(new ShaderLabInvalidVariableReferenceParametersWarning(element, 
+                element.GetHighlightingRange()));
         }
     }
 }

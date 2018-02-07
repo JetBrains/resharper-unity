@@ -1,0 +1,20 @@
+﻿Shader "Unlit/SingleColor"
+{
+    Properties
+    {
+        _Op ("Op value", float) = 1
+    }
+    SubShader
+    {
+        BlendOp [_Op]
+        BlendOp [_Op ]
+        BlendOp [_Op |(something something)|(0) ]
+        BlendOp [_Op |(something, something)|(1) ]
+        BlendOp [_Op |(something, something|(2) ]
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Parameters are not valid in this location
+(1): ReSharper Warning: Parameters are not valid in this location
+(2): ReSharper Warning: Parameters are not valid in this location

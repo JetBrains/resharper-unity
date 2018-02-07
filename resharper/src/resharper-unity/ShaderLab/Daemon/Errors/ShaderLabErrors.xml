@@ -48,9 +48,11 @@
   </Warning>
   
   <Warning name="ShaderLabInvalidVariableReferenceParameters" staticGroup="ShaderLabWarnings">
+    <Parameter type="IInvalidVariableReferenceParameters" name="invalidParameters" />
     <Parameter type="DocumentRange" name="documentRange" />
     <Message value="Parameters are not valid in this location" />
     <Range>DocumentRange</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
+    <QuickFix>RemoveUnusedElementFix</QuickFix>
   </Warning>
 </Errors>
