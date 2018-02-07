@@ -10,14 +10,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RELEASE;NET452;RESHARPER</DefineConstants>
   </PropertyGroup>
-  <!-- ShaderLab language -->
   <PropertyGroup>
     <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
   </PropertyGroup>
   <ItemGroup>
-    <PsiLanguageNames Include="ShaderLab">
-      <Visible>False</Visible>
-    </PsiLanguageNames>
+    <!-- Cg language -->
     <PsiLanguageNames Include="Cg">
       <Visible>False</Visible>
     </PsiLanguageNames>
@@ -36,9 +33,15 @@
     <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
       <Namespace>JetBrains.ReSharper.Cg.Daemon.Errors</Namespace>
       <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
-      <SubType>Designer</SubType>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
+    <Compile Update="Cg\Daemon\Errors\CgErrors.Generated.cs">
+      <DependentUpon>CgErrors.xml</DependentUpon>
+    </Compile>
+    <!-- ShaderLab language -->
+    <PsiLanguageNames Include="ShaderLab">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
     <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" />
     <None Remove="ShaderLab\Psi\Parsing\ShaderLab_lex.depends" />
     <Compile Update="ShaderLab\Psi\Parsing\ShaderLab_lex.cs">
@@ -51,6 +54,14 @@
       <DependentUpon>ShaderLabTokenType.Tokens.xml</DependentUpon>
     </Compile>
     <ParserGen Include="ShaderLab\Psi\Parsing\ShaderLab.psi" />
+    <ErrorsGen Include="ShaderLab\Daemon\Errors\ShaderLabErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors</Namespace>
+      <OutputFile>ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
+      <DependentUpon>ShaderLabErrors.xml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
@@ -80,7 +91,6 @@
     <Compile Remove="VisualStudio\FormatDefinitions\CgFormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
   <!-- References -->
-  <!-- References -->
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(ReSharperSDKVersion)" />
     <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
@@ -91,30 +101,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Rider\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Rider\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Rider\**" />
+    <Compile Remove="**\Rider\**" />
+    <EmbeddedResource Remove="**\Rider\**" />
+    <None Remove="**\Rider\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ShaderLab\Host\**" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Remove="ShaderLab\Host\**" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="ShaderLab\Host\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Settings\Rider\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Settings\Rider\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Settings\Rider\**" />
   </ItemGroup>
 </Project>

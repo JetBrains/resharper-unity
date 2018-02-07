@@ -1,15 +1,14 @@
-﻿using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IPreprocessorDirective), HighlightingTypes = new[]
     {
-        typeof(ShaderLabErrorPreprocessorDirectiveError),
-        typeof(ShaderLabWarningPreprocessorDirectiveWarning),
+        typeof(ShaderLabPreprocessorDirectiveError),
+        typeof(ShaderLabPreprocessorDirectiveWarning),
         typeof(ShaderLabSyntaxError),
         typeof(ShaderLabSwallowedPreprocessorCharWarning)
     })]
@@ -22,20 +21,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 
         protected override void Analyze(IPreprocessorDirective element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            var errorDirective = element as IPpErrorDirective;
-            if (errorDirective != null)
-                AnalyzeErrorDirective(errorDirective, data, consumer);
+            if (element is IPpErrorDirective errorDirective)
+                AnalyzeErrorDirective(errorDirective, consumer);
 
-            var warningDirective = element as IPpWarningDirective;
-            if (warningDirective != null)
-                AnalyzeWarningDirective(warningDirective, data, consumer);
+            if (element is IPpWarningDirective warningDirective)
+                AnalyzeWarningDirective(warningDirective, consumer);
 
-            var lineDirective = element as IPpLineDirective;
-            if (lineDirective != null)
-                AnalyzeLineDirective(lineDirective, data, consumer);
+            if (element is IPpLineDirective lineDirective)
+                AnalyzeLineDirective(lineDirective, consumer);
         }
 
-        private void AnalyzeErrorDirective(IPpErrorDirective errorDirective, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        private void AnalyzeErrorDirective(IPpErrorDirective errorDirective, IHighlightingConsumer consumer)
         {
             if (errorDirective.Message == null)
             {
@@ -44,12 +40,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             }
             else
             {
-                consumer.AddHighlighting(new ShaderLabErrorPreprocessorDirectiveError(errorDirective,
+                consumer.AddHighlighting(new ShaderLabPreprocessorDirectiveError(errorDirective,
                     errorDirective.Message.GetText().Trim()));
             }
         }
 
-        private void AnalyzeWarningDirective(IPpWarningDirective warningDirective, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        private void AnalyzeWarningDirective(IPpWarningDirective warningDirective, IHighlightingConsumer consumer)
         {
             if (warningDirective.Message == null)
             {
@@ -58,12 +54,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             }
             else
             {
-                consumer.AddHighlighting(new ShaderLabWarningPreprocessorDirectiveWarning(warningDirective,
+                consumer.AddHighlighting(new ShaderLabPreprocessorDirectiveWarning(warningDirective,
                     warningDirective.Message.GetText().Trim()));
             }
         }
 
-        private void AnalyzeLineDirective(IPpLineDirective lineDirective, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        private void AnalyzeLineDirective(IPpLineDirective lineDirective, IHighlightingConsumer consumer)
         {
             // TODO: Show warning if line digits are missing? Defaults to 0
 

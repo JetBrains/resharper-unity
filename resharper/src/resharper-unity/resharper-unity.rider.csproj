@@ -11,7 +11,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RELEASE;NET452;RIDER</DefineConstants>
   </PropertyGroup>
-  <!-- ShaderLab language -->
   <PropertyGroup>
     <!-- Write to the same location as resharper.
          Not ideal, but required, as the ParserGen targets uses Assembly.LoadFrom
@@ -25,9 +24,7 @@
     <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
   </PropertyGroup>
   <ItemGroup>
-    <PsiLanguageNames Include="ShaderLab">
-      <Visible>False</Visible>
-    </PsiLanguageNames>
+    <!-- Cg language -->
     <PsiLanguageNames Include="Cg">
       <Visible>False</Visible>
     </PsiLanguageNames>
@@ -46,9 +43,15 @@
     <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
       <Namespace>JetBrains.ReSharper.Cg.Daemon.Errors</Namespace>
       <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
-      <SubType>Designer</SubType>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
+    <Compile Update="Cg\Daemon\Errors\CgErrors.Generated.cs">
+      <DependentUpon>CgErrors.xml</DependentUpon>
+    </Compile>
+    <!-- ShaderLab language -->
+    <PsiLanguageNames Include="ShaderLab">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
     <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" />
     <None Remove="ShaderLab\Psi\Parsing\ShaderLab_lex.depends" />
     <Compile Update="ShaderLab\Psi\Parsing\ShaderLab_lex.cs">
@@ -61,6 +64,14 @@
       <DependentUpon>ShaderLabTokenType.Tokens.xml</DependentUpon>
     </Compile>
     <ParserGen Include="ShaderLab\Psi\Parsing\ShaderLab.psi" />
+    <ErrorsGen Include="ShaderLab\Daemon\Errors\ShaderLabErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors</Namespace>
+      <OutputFile>ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
+      <DependentUpon>ShaderLabErrors.xml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
