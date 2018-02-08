@@ -77,15 +77,13 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       }
     }
     
-    private static void CopyStream(Stream origin, Stream target)
+    public static void CopyStream(Stream origin, Stream target)
     {
       var buffer = new byte[8192];
       int count;
       while ((count = origin.Read(buffer, 0, buffer.Length)) > 0)
         target.Write(buffer, 0, count);
     }
-
-    
 
     private static void ConvertSymbolsForAssembly(string asset)
     {

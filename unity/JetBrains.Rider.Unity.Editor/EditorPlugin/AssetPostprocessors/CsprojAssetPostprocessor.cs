@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Linq;
+using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
 
@@ -78,20 +80,57 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static void ChangeNunitReference(XElement projectContentElement, XNamespace xmlns)
     {
       var el = projectContentElement
-        .Elements(xmlns+"ItemGroup")
-        .Elements(xmlns+"Reference")
-        .FirstOrDefault(a =>  a.Attribute("Include") !=null && a.Attribute("Include").Value=="nunit.framework");
-      if (el != null)
+        .Elements(xmlns + "ItemGroup")
+        .Elements(xmlns + "Reference")
+        .FirstOrDefault(a => a.Attribute("Include") != null && a.Attribute("Include").Value == "nunit.framework");
+      
+      if (el == null)
+        return;
+
+      var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
+      if (hintPath == null) 
+        return;
+      
+      var path = Path.GetFullPath("Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
+      InstallFromResource(path, ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll");
+      if (new FileInfo(path).Exists)
+        hintPath.Value = path;
+    }
+
+    private static void InstallFromResource(string fullPath1, string namespacePath)
+    {
+      var targetFileInfo = new FileInfo(fullPath1);
+      if (targetFileInfo.Exists)
       {
-        var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
-        if (hintPath != null)
+        ourLogger.Log(LoggingLevel.VERBOSE, $"Already exists {targetFileInfo}");
+        return;
+      }
+
+      var assembly = Assembly.GetExecutingAssembly();
+      //JetBrains.ReSharper.Plugins.Unity.Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll
+      var resourceName = typeof(CsprojAssetPostprocessor).Namespace + namespacePath;
+
+      try
+      {
+        using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
         {
-          var path = Path.GetFullPath("Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
-          if (new FileInfo(path).Exists)
-            hintPath.Value = path;
+          targetFileInfo.Directory.Create();
+          using (var fileStream = new FileStream(targetFileInfo.FullName, FileMode.Create))
+          {
+            if (resourceStream == null)
+              ourLogger.Error("Plugin file not found in manifest resources. " + resourceName);
+            else
+              PdbAssetPostprocessor.CopyStream(resourceStream, fileStream);
+          }
         }
       }
+      catch (Exception e)
+      {
+        ourLogger.Verbose(e.ToString());
+        ourLogger.Warn($"{targetFileInfo} was not restored from resourse.");
+      }
     }
+
 
     private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";

@@ -39,9 +39,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IDeployedPackagesExpandLocationResolver myResolver;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
-        private static readonly string ourResourceNamespace =
-            typeof(KnownTypes).Namespace + ".Unity3dRider.Assets.Plugins.Editor.JetBrains.";
-
         private readonly ProcessingQueue myQueue;
 
         public UnityPluginInstaller(
@@ -109,8 +106,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (projects.Count == 0)
                 return;
             
-            InstallFromResource(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll", ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll");
-            
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
             
@@ -137,55 +132,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
         
         Version currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
-
-        private void InstallFromResource(string relPath, string namespacePath)
-        {
-            var solutionDir = mySolution.SolutionFilePath.Directory;
-            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solutionDir))
-            {
-                myLogger.Info($"No Assets directory in the same directory as solution. Skipping {relPath} installation.");
-                return;
-            }
-            
-            var fullPath = solutionDir.Combine(relPath);
-            if (!fullPath.IsAbsolute)
-            {
-                myLogger.Info($"Path {fullPath} is not Absolute.");
-                return;
-            }
-            if (fullPath.ExistsFile)
-            {
-                myLogger.Info($"Already exists {fullPath}");
-                return;
-            }
-            
-            myQueue.Enqueue(() =>
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                //JetBrains.ReSharper.Plugins.Unity.Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll
-                var resourceName = typeof(KnownTypes).Namespace +namespacePath;
-
-                try
-                {
-                    using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
-                    {
-                        fullPath.Directory.CreateDirectory();
-                        using (var fileStream = fullPath.OpenStream(FileMode.Create))
-                        {
-                            if (resourceStream == null)
-                                myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
-                            else
-                                resourceStream.CopyTo(fileStream);
-                        }    
-                    }
-                }
-                catch (Exception e)
-                {
-                    myLogger.LogExceptionSilently(e);
-                    myLogger.Warn($"{relPath} was not restored from resourse.");
-                }
-            });
-        }
 
         private void Install(UnityPluginDetector.InstallationInfo installationInfo)
         {
