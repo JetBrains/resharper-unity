@@ -73,11 +73,7 @@
       <DependentUpon>ShaderLabErrors.xml</DependentUpon>
     </Compile>
   </ItemGroup>
-  <!-- Resources - Unity3dRider, api.xml, icons -->
-  <ItemGroup>
-    <Compile Remove="Unity3dRider\**\*" />
-    <EmbeddedResource Include="Unity3dRider\Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll" />
-  </ItemGroup>
+  <!-- Resources - api.xml, icons -->
   <ItemGroup>
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
