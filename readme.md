@@ -210,9 +210,7 @@ This plugin does the following:
 
 Rider will automatically add this plugin to all Unity projects that are opened. It will initially install the plugin to `Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll`, but will look for the file by name if it is moved.
 
-Rider will automatically keep this file up to date, installing newer versions when available.
-
-This behaviour can be disabled in Rider's _Preferences &rarr; Languages &amp; Frameworks &rarr; Unity Engine_ page.
+Supported Unity versions: 4.7 and higher
 
 ## Roadmap
 
