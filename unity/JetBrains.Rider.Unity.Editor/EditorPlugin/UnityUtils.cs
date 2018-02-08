@@ -10,7 +10,7 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public static class UnityUtils
   {
-    private static readonly ILog ourLogger = Log.GetLog("UnityApplication");
+    private static readonly ILog ourLogger = Log.GetLog("UnityUtils");
 
     /// <summary>
     /// Force Unity To Write Project File
@@ -27,7 +27,6 @@ namespace JetBrains.Rider.Unity.Editor
       get
       {
         var ver = Application.unityVersion.Split(".".ToCharArray()).Take(2).Aggregate((a, b) => a + "." + b);
-        ourLogger.Verbose("Unity version: " + ver);
         return new Version(ver);
       }
     }

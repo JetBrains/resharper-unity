@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
@@ -22,8 +23,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public bool IsEnabled(LoggingLevel level)
     {
-      var levelFromSettings = LoggingLevel.OFF;
-      MainThreadDispatcher.Instance.Queue(() => { levelFromSettings = PluginSettings.SelectedLoggingLevel; });
+      var levelFromSettings = PluginSettings.SelectedLoggingLevel;
       return level <= levelFromSettings;
     }
 

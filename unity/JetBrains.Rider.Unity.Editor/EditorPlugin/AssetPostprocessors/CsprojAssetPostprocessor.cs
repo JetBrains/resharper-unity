@@ -92,35 +92,39 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         return;
       
       var path = Path.GetFullPath("Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
-      InstallFromResource(path, ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll");
+      InstallFromResource(path, ".nunit.framework.dll");
       if (new FileInfo(path).Exists)
         hintPath.Value = path;
     }
 
-    private static void InstallFromResource(string fullPath1, string namespacePath)
+    private static void InstallFromResource(string fullPath, string namespacePath)
     {
-      var targetFileInfo = new FileInfo(fullPath1);
+      var targetFileInfo = new FileInfo(fullPath);
       if (targetFileInfo.Exists)
       {
         ourLogger.Log(LoggingLevel.VERBOSE, $"Already exists {targetFileInfo}");
         return;
       }
+      
+      var ass = Assembly.GetExecutingAssembly();
+      ourLogger.Verbose("resources in {0}: {1}", ass.Location, ass.GetManifestResourceNames().Aggregate((a,b)=>a+", "+b));
 
-      var assembly = Assembly.GetExecutingAssembly();
-      //JetBrains.ReSharper.Plugins.Unity.Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll
-      var resourceName = typeof(CsprojAssetPostprocessor).Namespace + namespacePath;
+      var resourceName = typeof(PluginEntryPoint).Namespace + namespacePath;
 
       try
       {
-        using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
+        using (var resourceStream = ass.GetManifestResourceStream(resourceName))
         {
-          targetFileInfo.Directory.Create();
-          using (var fileStream = new FileStream(targetFileInfo.FullName, FileMode.Create))
+          if (resourceStream == null)
+            ourLogger.Error("Plugin file not found in manifest resources. " + resourceName);
+          else
           {
-            if (resourceStream == null)
-              ourLogger.Error("Plugin file not found in manifest resources. " + resourceName);
-            else
+            targetFileInfo.Directory.Create();
+            using (var fileStream = new FileStream(targetFileInfo.FullName, FileMode.Create))
+            {
+              ourLogger.Verbose("Coping {0} => {1} ", resourceName, targetFileInfo);
               PdbAssetPostprocessor.CopyStream(resourceStream, fileStream);
+            }  
           }
         }
       }

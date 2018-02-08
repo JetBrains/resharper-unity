@@ -41,14 +41,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         Assembly assembly;
         try
         {
-          var names = typeof(CsprojAssetPostprocessor).Assembly.GetManifestResourceNames();
-          foreach (var name in names)
-          {
-            ourLogger.Verbose(Environment.NewLine+name);  
-          }
+          var ass = Assembly.GetExecutingAssembly();
+          ourLogger.Verbose("resources in {0}: {1}", ass, ass.GetManifestResourceNames().Aggregate((a,b)=>a+", "+b));
           
           const string resourceName = "JetBrains.Rider.Unity.Editor.pdb2mdb.exe";
-          using (var resourceStream = typeof (CsprojAssetPostprocessor).Assembly.GetManifestResourceStream(resourceName))
+          using (var resourceStream = ass.GetManifestResourceStream(resourceName))
           {
             using (var memoryStream = new MemoryStream())
             {

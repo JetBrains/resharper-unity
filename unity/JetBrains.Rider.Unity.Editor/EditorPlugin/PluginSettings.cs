@@ -15,10 +15,16 @@ namespace JetBrains.Rider.Unity.Editor
   
   public class PluginSettings : IPluginSettings
   {
+    private static LoggingLevel ourSelectedLoggingLevel = (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1);
+    
     internal static LoggingLevel SelectedLoggingLevel
     {
-      get { return (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1); }
-      private set { EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value); }
+      get => ourSelectedLoggingLevel;
+      private set
+      {
+        EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
+        ourSelectedLoggingLevel = value;
+      }
     }
     
     private static string GetTargetFrameworkVersionDefault(string defaultValue)
@@ -182,9 +188,9 @@ namespace JetBrains.Rider.Unity.Editor
 
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
-      SelectedLoggingLevel =
+      ourSelectedLoggingLevel =
         (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg),
-          SelectedLoggingLevel);
+          ourSelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
       SendConsoleToRider =

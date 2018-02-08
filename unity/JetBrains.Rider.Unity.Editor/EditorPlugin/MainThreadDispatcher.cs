@@ -12,7 +12,7 @@ namespace JetBrains.Rider.Unity.Editor
   {
     internal static readonly MainThreadDispatcher Instance = new MainThreadDispatcher();
 
-    private static Thread ourUIThread = null;
+    private static Thread ourUIThread;
 
     private MainThreadDispatcher()
     {
