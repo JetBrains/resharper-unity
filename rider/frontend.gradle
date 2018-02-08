@@ -30,7 +30,7 @@ intellij {
 }
 
 ext.kotlin_version = '1.2.10'
-ext.unityeditorplugin_path = "$projectDir/../resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
+ext.unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

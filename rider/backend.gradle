@@ -216,23 +216,25 @@ task detectMSBuild {
 task buildUnity3dRider {
     dependsOn detectMSBuild, restorePackages
     group = backendGroup
-    description = 'Build Unity3dRider. Runs MSBuild and creates binaries.'
+    description = 'Build EditorPlugin. Runs MSBuild and creates binaries.'
 
     doLast {
-        def outputPath = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Repacked.dll")
+        def unityRoot = new File(backend.repositoryRoot, 'unity')
+
+        def outputPath = new File(unityRoot, "Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Repacked.dll")
         if (outputPath.isFile() && outputPath.exists())
         {
             logger.lifecycle("deleting $outputhPath")
             assert outputPath.delete()
         }
 
-        def file = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/JetBrains.Rider.Unity.Editor/AssemblyCustomAttributes.Generated.cs")
+        def file = new File(unityRoot, "JetBrains.Rider.Unity.Editor/AssemblyCustomAttributes.Generated.cs")
         file.write("[assembly: global::System.Reflection.AssemblyVersionAttribute(\"$version\")]")
 
-        def projectOrSolution = new File(backend.backendRoot, "src/resharper-unity/Unity3dRider/JetBrains.Rider.Unity.Editor/JetBrains.Rider.Unity.Editor.sln")
+        def projectOrSolution = new File(unityRoot, "JetBrains.Rider.Unity.Editor/JetBrains.Rider.Unity.Editor.sln")
         assert projectOrSolution.isFile()
 
-        backend.ReportProgress("Restoring packages for Unity3dRider")
+        backend.ReportProgress("Restoring packages for EditorPlugin")
         def restoreArguments = ["restore", projectOrSolution]
         exec {
             executable = "dotnet"
