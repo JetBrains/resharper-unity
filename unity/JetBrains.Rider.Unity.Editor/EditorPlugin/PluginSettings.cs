@@ -188,9 +188,9 @@ namespace JetBrains.Rider.Unity.Editor
 
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
-      ourSelectedLoggingLevel =
+      SelectedLoggingLevel =
         (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg),
-          ourSelectedLoggingLevel);
+          SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
       SendConsoleToRider =
