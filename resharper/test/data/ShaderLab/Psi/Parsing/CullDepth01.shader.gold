@@ -221,8 +221,9 @@ IShaderLabFile
                       ICullOrientation
                         IVariableReference
                           ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                          IShaderLabIdentifier
-                            Identifier(type:IDENTIFIER, text:_CullValue)
+                          IReferenceName
+                            IShaderLabIdentifier
+                              Identifier(type:IDENTIFIER, text:_CullValue)
                           ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:            ) spaces: "            "

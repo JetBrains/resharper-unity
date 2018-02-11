@@ -704,6 +704,10 @@ options {
 ;
 
 
+referenceName
+:
+  shaderLabIdentifier<SHADER_LAB_REFERENCE, Identifier>
+;
 
 // **************************************************************************
 //
@@ -739,13 +743,13 @@ colorLiteral
 // Private and error handling to allow resync on colorLiteralValue::RPAREN
 private errorhandling colorLiteralValues
 :
-  LIST numericValue<Number, Numbers> SEP COMMA<COMMA, Comma>
+  LIST numericValue<NUMBER, Numbers> SEP COMMA<COMMA, Comma>
 ;
 
 variableReference
 :
   LBRACK<LBRACK, LBrack>
-  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  referenceName<SHADER_LAB_REFERENCE, Name>
   // Technically, Unity parses a variable reference exactly as it does an attribute
   // The parameters aren't an error, but are silently ignored
   invalidVariableReferenceParameters<INVALID_PARAMETERS, InvalidParameters>?

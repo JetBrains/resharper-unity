@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.QuickFixe
                     var reference = VariableReferenceNavigator.GetByInvalidParameters(myToken);
                     ModificationUtil.DeleteChild(myToken);
                     // TODO: Remove this when we finally get a formatter
-                    var firstWhitespace = reference?.Identifier?.NextSibling;
+                    var firstWhitespace = reference?.Name?.NextSibling;
                     var lastWhitespace = reference?.RBrack?.PrevSibling;
                     if (firstWhitespace.IsWhitespaceToken() && lastWhitespace.IsWhitespaceToken())
                         ModificationUtil.DeleteChildRange(firstWhitespace, lastWhitespace);

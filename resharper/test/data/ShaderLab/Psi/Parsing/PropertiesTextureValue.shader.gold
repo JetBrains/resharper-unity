@@ -255,8 +255,9 @@ IShaderLabFile
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IVariableReference
                   ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:_Color)
+                  IReferenceName
+                    IShaderLabIdentifier
+                      Identifier(type:IDENTIFIER, text:_Color)
                   ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
