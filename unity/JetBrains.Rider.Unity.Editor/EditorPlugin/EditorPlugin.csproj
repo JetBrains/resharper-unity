@@ -5,8 +5,8 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ILRepack" Version="2.0.15" />
-    <PackageReference Include="ILRepack.MSBuild.Task" Version="1.0.9" />
+    <!--<PackageReference Include="ILRepack" Version="2.0.15" />-->
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.2" />
     <PackageReference Include="JetBrains.Unity.Libs.2017.2.0b3" Version="2017.7.21" />
   </ItemGroup>
   <ItemGroup>
@@ -41,7 +41,6 @@
     <ItemGroup>
       <SearchDirectories Include="$(OutputPath)" />
     </ItemGroup>
-    <ILRepack Parallel="true" Internalize="true" InputAssemblies="@(InputAssemblies)" LibraryPath="@(SearchDirectories)" OutputFile="../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll" />
-    <Copy SourceFiles="$(OutputPath)/$(AssemblyName).pdb" DestinationFiles="../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.pdb" />
+    <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(InputAssemblies)" LibraryPath="@(SearchDirectories)" OutputFile="../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll" />
   </Target>
 </Project>
