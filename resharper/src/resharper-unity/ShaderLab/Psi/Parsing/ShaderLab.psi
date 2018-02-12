@@ -107,7 +107,6 @@
 // `interfaceName`
 // `elementType`
 // `elementTypeSet`
-// `stubBase`
 // `fakeStub`
 // `result`
 // `multilevel`
@@ -966,6 +965,10 @@ propertiesValue
 ;
 
 propertyDeclaration
+options {
+  customInterface;
+  stubBase="ShaderLabDeclarationBase";
+}
 :
   propertyHeader
   EQUALS<EQUALS, Equals>
