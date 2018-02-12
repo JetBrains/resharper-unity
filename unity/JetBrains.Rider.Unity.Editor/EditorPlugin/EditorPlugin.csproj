@@ -5,8 +5,6 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <!--<PackageReference Include="ILRepack" Version="2.0.15" />-->
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.2" />
     <PackageReference Include="JetBrains.Unity.Libs.2017.2.0b3" Version="2017.7.21" />
   </ItemGroup>
   <ItemGroup>
@@ -24,8 +22,12 @@
   <PropertyGroup>
     <OutputPath>..\bin\</OutputPath>
     <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ILRepack.Lib.MSBuild.Task, Version=2.0.15.2, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\lib\ILRepack.Lib.MSBuild.Task.dll</HintPath>
+    </Reference>
     <Reference Include="JetBrains.Platform.RdCore35, Version=111.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
       <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
@@ -33,13 +35,15 @@
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <!--https://github.com/ravibpatel/ILRepack.Lib.MSBuild.Task/issues/6-->
+  <UsingTask AssemblyFile="..\lib\ILRepack.Lib.MSBuild.Task.dll" TaskName="ILRepack" />
   <Target Name="ILRepack" AfterTargets="Build">
     <ItemGroup>
       <InputAssemblies Include="$(OutputPath)/$(AssemblyName).dll" />
       <InputAssemblies Include="../lib/*.dll" />
     </ItemGroup>
     <ItemGroup>
-      <SearchDirectories Include="$(OutputPath)" />
+      <SearchDirectories Include="C:\Work\resharper-unity-main\unity\JetBrains.Rider.Unity.Editor\bin\net35" />
     </ItemGroup>
     <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(InputAssemblies)" LibraryPath="@(SearchDirectories)" OutputFile="../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll" />
   </Target>
