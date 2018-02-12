@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
@@ -43,7 +45,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
 
             public override ResolveResultWithInfo ResolveWithoutCache()
             {
-                // Look for the item in the properties
+                if (!(myOwner.GetContainingFile() is IShaderLabFile file))
+                    return ResolveResultWithInfo.Unresolved;
+
+                if (myOwner.Identifier?.Name == null)
+                    return ResolveResultWithInfo.Unresolved;
+
+                if (file.Command.Value is IShaderValue shaderValue)
+                {
+                    if (shaderValue.PropertiesCommand.Value is IPropertiesValue propertiesValue)
+                    {
+                        var name = myOwner.Identifier.Name;
+                        var declaredElements = new List<IDeclaredElement>();
+                        foreach (var propertyDeclaration in propertiesValue.DeclarationsEnumerable)
+                        {
+                            var declarationName = propertyDeclaration?.Name?.GetText();
+                            // TODO: Is ShaderLab case sensitive or not?
+                            // I suspect property references aren't, but Cg references are...
+                            if (string.Equals(name, declarationName, StringComparison.InvariantCulture))
+                                declaredElements.Add(propertyDeclaration.DeclaredElement);
+                        }
+
+                        if (declaredElements.Count > 1)
+                            return new ResolveResultWithInfo(ResolveResultFactory.CreateResolveResult(declaredElements), ResolveErrorType.MULTIPLE_CANDIDATES);
+                        if (declaredElements.Count == 1)
+                            return new ResolveResultWithInfo(ResolveResultFactory.CreateResolveResult(declaredElements[0]), ResolveErrorType.OK);
+                    }
+                }
+
                 return ResolveResultWithInfo.Unresolved;
             }
 
