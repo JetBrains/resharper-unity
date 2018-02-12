@@ -43,7 +43,7 @@
       <InputAssemblies Include="../lib/*.dll" />
     </ItemGroup>
     <ItemGroup>
-      <SearchDirectories Include="C:\Work\resharper-unity-main\unity\JetBrains.Rider.Unity.Editor\bin\net35" />
+      <SearchDirectories Include="$(OutputPath)" />
     </ItemGroup>
     <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(InputAssemblies)" LibraryPath="@(SearchDirectories)" OutputFile="../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll" />
   </Target>
