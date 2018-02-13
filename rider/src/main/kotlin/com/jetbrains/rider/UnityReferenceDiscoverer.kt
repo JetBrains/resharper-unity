@@ -6,6 +6,7 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.model.RdAssemblyReferenceDescriptor
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
+import com.jetbrains.rider.model.projectModelView
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 
 class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
