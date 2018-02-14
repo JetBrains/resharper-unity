@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Util.Logging;
@@ -63,5 +64,16 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return (length = path.LastIndexOf('.')) == -1 ? path : path.Substring(0, length);
     }
 
+    internal static string[] GetCsprojLinesInSln()
+    {
+      var slnFile = PluginEntryPoint.SlnFile;
+      if (!File.Exists(slnFile))
+        return new string[0];
+
+      var slnAllText = File.ReadAllText(slnFile);
+      var lines = slnAllText.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
+        .Where(a => a.StartsWith("Project(")).ToArray();
+      return lines;
+    }
   }
 }

@@ -18,15 +18,19 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       if (!PluginEntryPoint.Enabled)
         return;
-      var currentDirectory = Directory.GetCurrentDirectory();
-      var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj");
 
+      // get only csproj files, which are mentioned in sln
+      var lines = SlnAssetPostprocessor.GetCsprojLinesInSln();
+      var currentDirectory = Directory.GetCurrentDirectory();
+      var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj")
+        .Where(csprojFile => lines.Any(line => line.Contains("\"" + Path.GetFileName(csprojFile) + "\""))).ToArray();
+      
       foreach (var file in projectFiles)
       {
         UpgradeProjectFile(file);
       }
     }
-    
+
     private static void UpgradeProjectFile(string projectFile)
     {
       ourLogger.Verbose("Post-processing {0}", projectFile);
