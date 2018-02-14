@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
@@ -12,14 +13,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
 {
     internal partial class ReferenceName
     {
-        private IReference myReference;
+        private IVariableReferenceReference myReference;
 
         public override ReferenceCollection GetFirstClassReferences()
         {
             return new ReferenceCollection(Reference);
         }
 
-        public IReference Reference
+        public IVariableReferenceReference Reference
         {
             get
             {
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
             }
         }
 
-        private class PropertyReference : TreeReferenceBase<ReferenceName>
+        private class PropertyReference : TreeReferenceBase<ReferenceName>, IVariableReferenceReference
         {
             public PropertyReference([NotNull] ReferenceName owner)
                 : base(owner)
