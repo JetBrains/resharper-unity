@@ -65,7 +65,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
         }
 
         public string ShortName { get; }
-        public bool CaseSensitiveName => true;    // TODO: Check!
+
+        // Note that ShaderLab variable references and Cg parameters are case sensitive
+        public bool CaseSensitiveName => true;
 
         // ReSharper disable once AssignNullToNotNullAttribute
         public PsiLanguageType PresentationLanguage => ShaderLabLanguage.Instance;
