@@ -25,9 +25,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ILRepack.Lib.MSBuild.Task, Version=2.0.15.2, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\lib\ILRepack.Lib.MSBuild.Task.dll</HintPath>
-    </Reference>
     <Reference Include="JetBrains.Platform.RdCore35, Version=111.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
       <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
