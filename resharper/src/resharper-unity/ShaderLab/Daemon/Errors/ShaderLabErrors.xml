@@ -76,4 +76,26 @@
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
     <QuickFix>RemoveUnusedElementFix</QuickFix>
   </Warning>
+  
+  <Warning name="ShaderLabFirstDuplicateProperty" staticGroup="ShaderLabWarnings">
+    <Parameter type="IPropertyDeclaration" name="propertyDeclaration" />
+    <Parameter type="string" name="declarationName" />
+    <Parameter type="DocumentRange" name="documentRange" />
+    <Message value="Conflicting property '{0}' is defined below" >
+      <Argument>DeclarationName</Argument>
+    </Message>
+    <Range>DocumentRange</Range>
+    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="ShaderLabSubsequentDuplicateProperty" staticGroup="ShaderLabWarnings">
+    <Parameter type="IPropertyDeclaration" name="propertyDeclaration" />
+    <Parameter type="string" name="declarationName" />
+    <Parameter type="DocumentRange" name="documentRange" />
+    <Message value="There is already a property named '{0}' declared">
+      <Argument>DeclarationName</Argument>
+    </Message>
+    <Range>DocumentRange</Range>
+    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
+  </Warning>
 </Errors>
