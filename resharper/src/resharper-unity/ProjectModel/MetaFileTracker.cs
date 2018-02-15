@@ -41,9 +41,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             private readonly MetaFileTracker myMetaFileTracker;
             private readonly ILogger myLogger;
-            private readonly Lazy<IProgressIndicator> myProgressIndicator = Lazy.Of(NullProgressIndicator.Create, true);
-
-            private IProgressIndicator ProgressIndicator => myProgressIndicator.Value;
 
             public Visitor(MetaFileTracker metaFileTracker, ILogger logger)
             {
@@ -265,7 +262,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 // Create a transaction - Rider will hook the file system and cause the VFS to refresh
                 using (WriteLockCookie.Create())
-                using (myMetaFileTracker.mySolution.CreateTransactionCookie(DefaultAction.Commit, command, ProgressIndicator))
+                using (myMetaFileTracker.mySolution.CreateTransactionCookie(DefaultAction.Commit, command, NullProgressIndicator.Create()))
                     action();
             }
         }
