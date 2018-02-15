@@ -37,14 +37,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
         public static Action ProcessContext(
             [NotNull] Lifetime lifetime, [NotNull] HighlightingProlongedLifetime prolongedLifetime,
             [NotNull, ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView,
-            [NotNull] UsagesContextHighlighterAvailabilityComponent contextHighlighterAvailability)
+            [NotNull] ShaderLabUsageContextHighlighterAvailability contextHighlighterAvailability)
         {
             var psiView = psiDocumentRangeView.View<ShaderLabLanguage>();
 
-//            foreach (var file in psiView.SortedSourceFiles)
-//            {
-//                if (!contextHighlighterAvailability.IsAvailable(file)) return null;
-//            }
+            foreach (var file in psiView.SortedSourceFiles)
+            {
+                if (!contextHighlighterAvailability.IsAvailable(file)) return null;
+            }
 
             var declaredElement = FindDeclaredElement(psiView, out var declarationUnderCaret);
             if (declaredElement == null) return null;
