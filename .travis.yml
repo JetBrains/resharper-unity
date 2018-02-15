@@ -2,13 +2,11 @@ dist: trusty
 language: csharp
 mono: latest
 dotnet: 1.0.4
-script: 
-  - xbuild resharper/test/Unity3dRiderCompileTest/Unity3dRiderCompileTest.sln
+script:
   - ./build.sh
 os:
   - linux
 notifications:
   email: false
-solution: resharper/test/Unity3dRiderCompileTest/Unity3dRiderCompileTest.sln
 #  - osx
 # commented out due to being incredibly slow to start on Travis
