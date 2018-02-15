@@ -28,6 +28,18 @@
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR"/>
   </Error>
+ 
+  <Error name="MultipleResolveCandidates" staticGroup="ShaderLabErrors">
+    <Parameter type="JetBrains.DocumentModel.DocumentRange" name="textRange"/>
+    <Parameter type="string" name="candidates"/>
+    <Parameter type="IReference" name="reference"/>
+    <Message value="Ambiguous reference:{0}{1}match">
+      <Argument>Candidates</Argument>
+      <Argument>Environment.NewLine</Argument>
+    </Message>
+    <Range>TextRange</Range>
+    <Behavour overlapResolvePolicy="ERROR"/>
+  </Error>
 
   <Error name="ShaderLabPreprocessorDirective" staticGroup="ShaderLabErrors">
     <Parameter type="IPpErrorDirective" name="directiveNode" />

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
@@ -16,6 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
     public class ShaderLabLanguageService : LanguageService
     {
         private readonly CommonIdentifierIntern myCommonIdentifierIntern;
+        private IDeclaredElementPresenter myPresenter;
 
         public ShaderLabLanguageService(ShaderLabLanguage psiLanguageType, IConstantValueService constantValueService, CommonIdentifierIntern commonIdentifierIntern)
             : base(psiLanguageType, constantValueService)
@@ -49,6 +51,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
         public override bool IsCaseSensitive => true;
         public override bool SupportTypeMemberCache => false;
         public override ITypePresenter TypePresenter => DefaultTypePresenter.Instance;
+
+        public override IDeclaredElementPresenter DeclaredElementPresenter =>
+            myPresenter ?? (myPresenter = ShaderLabDeclaredElementPresenter.Instance);
 
         private class ShaderLabLexerFactory : ILexerFactory
         {

@@ -22,6 +22,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
         protected override IconId GetImage() => myIconId;
         public override bool IsPresentable(PsiLanguageType language) => language.Is<ShaderLabLanguage>();
         protected override IDeclaredElementPresenter DefaultPresenter =>
-            ShaderLabLanguage.Instance.DeclaredElementPresenter();
+            ShaderLabDeclaredElementPresenter.Instance;
     }
 }

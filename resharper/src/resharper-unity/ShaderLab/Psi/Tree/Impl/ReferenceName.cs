@@ -61,16 +61,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
                         foreach (var propertyDeclaration in propertiesValue.DeclarationsEnumerable)
                         {
                             var declarationName = propertyDeclaration?.Name?.GetText();
-                            // TODO: Is ShaderLab case sensitive or not?
-                            // I suspect property references aren't, but Cg references are...
+
+                            // Note that both ShaderLab and Cg are case sensitive
                             if (string.Equals(name, declarationName, StringComparison.InvariantCulture))
                                 declaredElements.Add(propertyDeclaration.DeclaredElement);
                         }
 
-                        if (declaredElements.Count > 1)
-                            return new ResolveResultWithInfo(ResolveResultFactory.CreateResolveResult(declaredElements), ResolveErrorType.MULTIPLE_CANDIDATES);
-                        if (declaredElements.Count == 1)
-                            return new ResolveResultWithInfo(ResolveResultFactory.CreateResolveResult(declaredElements[0]), ResolveErrorType.OK);
+                        return ResolveUtil.CreateResolveResult(declaredElements);
                     }
                 }
 
