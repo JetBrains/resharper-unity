@@ -52,9 +52,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
                 if (myOwner.Identifier?.Name == null)
                     return ResolveResultWithInfo.Unresolved;
 
-                if (file.Command.Value is IShaderValue shaderValue)
+                if (file.Command?.Value is IShaderValue shaderValue)
                 {
-                    if (shaderValue.PropertiesCommand.Value is IPropertiesValue propertiesValue)
+                    if (shaderValue.PropertiesCommand?.Value is IPropertiesValue propertiesValue)
                     {
                         var name = myOwner.Identifier.Name;
                         var declaredElements = new List<IDeclaredElement>();
