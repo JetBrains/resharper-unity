@@ -76,8 +76,9 @@ IShaderLabFile
                     ISetTextureValue
                       IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:_MainTex)
+                        IReferenceName
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:_MainTex)
                         ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
                       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
@@ -118,8 +119,9 @@ IShaderLabFile
                     ISetTextureValue
                       IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:_MainTex)
+                        IReferenceName
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:_MainTex)
                         ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
                       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
@@ -166,8 +168,9 @@ IShaderLabFile
                     ISetTextureValue
                       IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:_MainTex)
+                        IReferenceName
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:_MainTex)
                         ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
                       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)

@@ -19,7 +19,28 @@
     <Range>DocumentRange</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR"/>
   </Error>
-  
+
+  <Error name="NotResolved" staticGroup="ShaderLabErrors">
+    <Parameter type="IReference" name="reference"/>
+    <Message value="Cannot resolve symbol '{0}'">
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR"/>
+  </Error>
+ 
+  <Error name="MultipleResolveCandidates" staticGroup="ShaderLabErrors">
+    <Parameter type="JetBrains.DocumentModel.DocumentRange" name="textRange"/>
+    <Parameter type="string" name="candidates"/>
+    <Parameter type="IReference" name="reference"/>
+    <Message value="Ambiguous reference:{0}{1}match">
+      <Argument>Candidates</Argument>
+      <Argument>Environment.NewLine</Argument>
+    </Message>
+    <Range>TextRange</Range>
+    <Behavour overlapResolvePolicy="ERROR"/>
+  </Error>
+
   <Error name="ShaderLabPreprocessorDirective" staticGroup="ShaderLabErrors">
     <Parameter type="IPpErrorDirective" name="directiveNode" />
     <Parameter type="string" name="text" />
@@ -54,5 +75,27 @@
     <Range>DocumentRange</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
     <QuickFix>RemoveUnusedElementFix</QuickFix>
+  </Warning>
+  
+  <Warning name="ShaderLabFirstDuplicateProperty" staticGroup="ShaderLabWarnings">
+    <Parameter type="IPropertyDeclaration" name="propertyDeclaration" />
+    <Parameter type="string" name="declarationName" />
+    <Parameter type="DocumentRange" name="documentRange" />
+    <Message value="Conflicting property '{0}' is defined below" >
+      <Argument>DeclarationName</Argument>
+    </Message>
+    <Range>DocumentRange</Range>
+    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="ShaderLabSubsequentDuplicateProperty" staticGroup="ShaderLabWarnings">
+    <Parameter type="IPropertyDeclaration" name="propertyDeclaration" />
+    <Parameter type="string" name="declarationName" />
+    <Parameter type="DocumentRange" name="documentRange" />
+    <Message value="There is already a property named '{0}' declared">
+      <Argument>DeclarationName</Argument>
+    </Message>
+    <Range>DocumentRange</Range>
+    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
   </Warning>
 </Errors>
