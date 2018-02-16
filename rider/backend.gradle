@@ -153,6 +153,7 @@ task restorePackages {
         assert projectOrSolution.isFile()
 
         backend.ReportProgress("Restoring packages")
+        //def restoreArguments = Source == null ? ["restore", projectOrSolution, "--force"] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", "https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json", "--source", Source, projectOrSolution, "--force"]
         def restoreArguments = Source == null ? ["restore", projectOrSolution] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", "https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json", "--source", Source, projectOrSolution]
         exec {
             executable = "dotnet"
