@@ -328,9 +328,13 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
             ourLogger.Verbose("Latest runtime detected.");
         }
         catch(Exception){}
-        
-        if (scriptingRuntime>0)
-          targetFrameworkVersion.SetValue("v"+PluginSettings.TargetFrameworkVersion);
+
+        if (scriptingRuntime > 0)
+        {
+          var version = PluginSettings.TargetFrameworkVersion;
+          PluginSettings.WarnOnAvailbaleNewerNetFramework(version);
+          targetFrameworkVersion.SetValue("v" + version);
+        }
         else
           targetFrameworkVersion.SetValue("v"+PluginSettings.TargetFrameworkVersionOldMono);
       }

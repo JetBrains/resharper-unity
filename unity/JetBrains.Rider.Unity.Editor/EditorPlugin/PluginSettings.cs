@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,7 +16,9 @@ namespace JetBrains.Rider.Unity.Editor
   
   public class PluginSettings : IPluginSettings
   {
-    private static LoggingLevel ourSelectedLoggingLevel = (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 1);
+    private static ILog ourLogger = Log.GetLog<PluginSettings>();
+    
+    private static LoggingLevel ourSelectedLoggingLevel = (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 4);
     
     internal static LoggingLevel SelectedLoggingLevel
     {
@@ -31,22 +34,40 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
         return defaultValue;
+
+      var availableVersions = GetInstalledNetFrameworks();
+      if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
+      {
+        return availableVersions.OrderBy(a => new Version(a)).Last();
+      }
+
+      return defaultValue;
+    }
+    
+    public static void WarnOnAvailbaleNewerNetFramework(string version)
+    {
+      if (SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows) 
+        return;
       
+      var availableVersions = GetInstalledNetFrameworks();
+      var betterPossibleFramework = availableVersions.LastOrDefault(a => new Version(a) > new Version(version));
+      if (betterPossibleFramework!=null)
+        ourLogger.Warn($"Consider updating TargetFrameworkVersion to {betterPossibleFramework} in Unity preferences -> Rider.");
+    }
+
+    private static string[] GetInstalledNetFrameworks()
+    {
       var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
       if (!dir.Exists)
-        return defaultValue;
-      
+        return new string[0];
+
       var availableVersions = dir
         .GetDirectories("v*")
         .Select(a => a.Name.Substring(1))
         .Where(v => InvokeIfValidVersion(v, s => { }))
         .ToArray();
-      if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
-      {
-        defaultValue = availableVersions.OrderBy(a => new Version(a)).Last();
-      }
 
-      return defaultValue;
+      return availableVersions;
     }
 
     private static bool InvokeIfValidVersion(string value, Action<string> action)

@@ -114,7 +114,7 @@ namespace JetBrains.Rider.Unity.Editor
         lifetimeDefinition.Terminate();
       });
 
-      Debug.Log($"Rider plugin initialized. Logs are in: {LogPath}. Current Logging Level {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider.");
+      Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
 
       try
       {
