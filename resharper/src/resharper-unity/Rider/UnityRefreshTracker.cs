@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 try
                 {
                     var list = new List<string> {solFolder.FullPath};
-                    solution.FileSystemModel.RefreshPaths.Start(new RdRefreshRequest(list, true));
+                    solution.GetFileSystemModel().RefreshPaths.Start(new RdRefreshRequest(list, true));
                 }
                 finally
                 {
