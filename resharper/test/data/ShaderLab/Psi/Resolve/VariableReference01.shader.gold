@@ -1,0 +1,38 @@
+﻿Shader "Foo"
+{ 
+	Properties
+	{
+		_Color ("Color", Color) = (1,1,1,1)
+		_SrcBlend ("SrcBlend", Int) = 5.0
+		_DstBlend ("DstBlend", Int) = 10.0
+		_ZWrite ("ZWrite", Int) = 1.0
+		_ZTest ("ZTest", Int) = 4.0
+		_Cull ("Cull", Int) = 0.0
+		_ZBias ("ZBias", Float) = 0.0
+	}
+
+	SubShader
+	{
+		Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
+		Pass
+		{
+			Blend [|_SrcBlend|(0)] [|_DstBlend|(1)]
+			ZWrite [|_ZWrite|(2)]
+			ZTest [|_ZTest|(3)]
+			Cull [|_Cull|(4)]
+			Offset [|_ZBias|(5)], [|_ZBias|(6)]
+
+			CGPROGRAM
+			ENDCG  
+		}  
+	}
+}
+
+------------------------------------------------
+0: result=OK declaredElem=Int _SrcBlend "SrcBlend"
+1: result=OK declaredElem=Int _DstBlend "DstBlend"
+2: result=OK declaredElem=Int _ZWrite "ZWrite"
+3: result=OK declaredElem=Int _ZTest "ZTest"
+4: result=OK declaredElem=Int _Cull "Cull"
+5: result=OK declaredElem=Float _ZBias "ZBias"
+6: result=OK declaredElem=Float _ZBias "ZBias"

@@ -12,14 +12,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
     public abstract class ShaderLabDeclaredElementBase : IShaderLabDeclaredElement
     {
         private readonly IPsiSourceFile mySourceFile;
-        private readonly int myTreeOffset;
 
         protected ShaderLabDeclaredElementBase(string shortName, IPsiSourceFile sourceFile, int treeOffset)
         {
             mySourceFile = sourceFile;
-            myTreeOffset = treeOffset;
+            TreeOffset = treeOffset;
             ShortName = shortName;
         }
+
+        protected int TreeOffset { get; }
 
         public IPsiServices GetPsiServices()
         {
@@ -31,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
             if (!(mySourceFile.GetPrimaryPsiFile() is IShaderLabFile psi))
                 return EmptyList<IDeclaration>.InstanceList;
 
-            var node = psi.FindNodeAt(TreeTextRange.FromLength(new TreeOffset(myTreeOffset), 1));
+            var node = psi.FindNodeAt(TreeTextRange.FromLength(new TreeOffset(TreeOffset), 1));
             while (node != null && !(node is IDeclaration))
                 node = node.Parent;
             if (node == null)
