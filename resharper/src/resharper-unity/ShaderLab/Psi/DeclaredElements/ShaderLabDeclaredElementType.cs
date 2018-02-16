@@ -6,7 +6,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
 {
     public class ShaderLabDeclaredElementType : DeclaredElementType
     {
-        // TODO: Proper icon
         public static readonly ShaderLabDeclaredElementType Property = new ShaderLabDeclaredElementType("Property", PsiSymbolsThemedIcons.Property.Id);
 
         private readonly IconId myIconId;

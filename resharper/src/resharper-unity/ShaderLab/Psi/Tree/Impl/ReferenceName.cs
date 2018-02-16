@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
 {
@@ -46,32 +47,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
 
             public override ResolveResultWithInfo ResolveWithoutCache()
             {
-                if (!(myOwner.GetContainingFile() is IShaderLabFile file))
+                var declaredElements = GetPropertyDeclaredElements(true);
+                if (declaredElements.Count == 0)
                     return ResolveResultWithInfo.Unresolved;
 
-                if (myOwner.Identifier?.Name == null)
-                    return ResolveResultWithInfo.Unresolved;
-
-                if (file.Command?.Value is IShaderValue shaderValue)
-                {
-                    if (shaderValue.PropertiesCommand?.Value is IPropertiesValue propertiesValue)
-                    {
-                        var name = myOwner.Identifier.Name;
-                        var declaredElements = new List<IDeclaredElement>();
-                        foreach (var propertyDeclaration in propertiesValue.DeclarationsEnumerable)
-                        {
-                            var declarationName = propertyDeclaration?.Name?.GetText();
-
-                            // Note that both ShaderLab and Cg are case sensitive
-                            if (string.Equals(name, declarationName, StringComparison.InvariantCulture))
-                                declaredElements.Add(propertyDeclaration.DeclaredElement);
-                        }
-
-                        return ResolveUtil.CreateResolveResult(declaredElements);
-                    }
-                }
-
-                return ResolveResultWithInfo.Unresolved;
+                return ResolveUtil.CreateResolveResult(declaredElements);
             }
 
             public override string GetName()
@@ -81,7 +61,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
 
             public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
             {
-                return EmptySymbolTable.INSTANCE;
+                var declaredElements = GetPropertyDeclaredElements(useReferenceName);
+                if (declaredElements.Count == 0)
+                    return EmptySymbolTable.INSTANCE;
+
+                return ResolveUtil.CreateSymbolTable(declaredElements, 0);
             }
 
             public override TreeTextRange GetTreeTextRange()
@@ -113,6 +97,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
             public override IAccessContext GetAccessContext()
             {
                 return new DefaultAccessContext(myOwner);
+            }
+
+            public ISymbolTable GetCompletionSymbolTable()
+            {
+                return GetReferenceSymbolTable(false);
+            }
+
+            private IList<IDeclaredElement> GetPropertyDeclaredElements(bool useReferenceName)
+            {
+                if (!(myOwner.GetContainingFile() is IShaderLabFile file))
+                    return EmptyList<IDeclaredElement>.InstanceList;
+
+                var referenceName = myOwner.Identifier?.Name;
+                if (string.IsNullOrEmpty(referenceName))
+                    return EmptyList<IDeclaredElement>.InstanceList;
+
+                var declaredElements = new List<IDeclaredElement>();
+                if (file.Command?.Value is IShaderValue shaderValue)
+                {
+                    if (shaderValue.PropertiesCommand?.Value is IPropertiesValue propertiesValue)
+                    {
+                        foreach (var propertyDeclaration in propertiesValue.DeclarationsEnumerable)
+                        {
+                            if (useReferenceName)
+                            {
+                                // Note that both ShaderLab and Cg are case sensitive
+                                var declarationName = propertyDeclaration?.Name?.GetText();
+                                if (!string.Equals(referenceName, declarationName, StringComparison.InvariantCulture))
+                                    continue;
+                            }
+                            declaredElements.Add(propertyDeclaration.DeclaredElement);
+                        }
+                    }
+                }
+
+                return declaredElements;
             }
         }
     }
