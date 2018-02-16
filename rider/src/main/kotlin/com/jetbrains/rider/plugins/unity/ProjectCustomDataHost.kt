@@ -7,7 +7,6 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
-import com.jetbrains.rider.util.reactive.set
 import org.codehaus.jettison.json.JSONObject
 
 class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(project) {
