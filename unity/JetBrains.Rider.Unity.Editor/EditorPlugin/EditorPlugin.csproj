@@ -36,8 +36,8 @@
   <UsingTask AssemblyFile="..\lib\ILRepack.Lib.MSBuild.Task.dll" TaskName="ILRepack" />
   <Target Name="ILRepack" AfterTargets="Build">
     <ItemGroup>
-      <InputAssemblies Include="$(OutputPath)/$(AssemblyName).dll" />
-      <InputAssemblies Include="../lib/*.dll" />
+      <InputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
+      <InputAssemblies Include="../lib/*.dll" Exclude="../lib/ILRepack*.dll" />
     </ItemGroup>
     <ItemGroup>
       <SearchDirectories Include="$(OutputPath)" />
