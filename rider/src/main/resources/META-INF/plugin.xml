@@ -24,7 +24,9 @@
     <lang.syntaxHighlighterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabSyntaxHighlighterProvider" />
     <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
     <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
+    <backend.autoPopup.support language="ShaderLab" implementationClass="com.jetbrains.rider.completion.BackendAndGenericRider" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
+    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.completion.ReSharperCompletionContributor" />
     <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
 
     <!-- Cg support -->
