@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             foreach (var reference in unresolved)
             {
                 {
-                    myLogger.Warn($"Unresolved Unity reference: {reference.ReferenceTarget.AssemblyName}");
+                    myLogger.Warn($"Unresolved Unity reference: {reference.AssemblyName}");
                     projects.Add(reference.GetProject());
                 }
             }
@@ -111,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 
                 var reference = change.ProjectModelElement as IProjectToUnresolvedAssemblyReference;
                 if (reference != null &&
-                    ProjectExtensions.UnityReferenceNames.Contains(reference.ReferenceTarget.AssemblyName) &&
+                    ProjectExtensions.UnityReferenceNames.Contains(reference.AssemblyName) &&
                     change.IsAdded)
                 {
                     result.Add(reference);
