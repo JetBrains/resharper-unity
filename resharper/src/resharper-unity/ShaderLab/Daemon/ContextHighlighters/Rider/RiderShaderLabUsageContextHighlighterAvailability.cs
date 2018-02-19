@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
@@ -20,7 +21,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
 
         public override bool IsAvailable(IPsiSourceFile psiSourceFile)
         {
-            return myIsAvailable.HasValue() && myIsAvailable.Value;
+#pragma warning disable 618
+            return Shell.Instance.IsTestShell ||
+                (myIsAvailable.HasValue() && myIsAvailable.Value);
+#pragma warning restore 618
         }
     }
 }
