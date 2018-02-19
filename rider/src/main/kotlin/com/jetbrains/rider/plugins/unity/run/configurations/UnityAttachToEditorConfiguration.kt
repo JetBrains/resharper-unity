@@ -11,6 +11,7 @@ import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAc
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
+import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.unity.UnityProcessUtil
 import com.jetbrains.rider.use2
@@ -18,7 +19,7 @@ import org.apache.commons.logging.LogFactory
 import org.jdom.Element
 
 class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
-    : RunConfigurationBase(project, factory, "Attach To Unity Editor"),
+    : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
         RunConfigurationWithSuppressedDefaultRunAction,
         RemoteConfiguration,
         WithoutOwnBeforeRunSteps {
