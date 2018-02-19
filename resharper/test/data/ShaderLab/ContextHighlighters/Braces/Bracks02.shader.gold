@@ -1,8 +1,8 @@
-// ${MatchingBracePosition:BOTH_SIDES}
+﻿// ${MatchingBracePosition:BOTH_SIDES}
 Shader "Foo" {
   Properties {
-    |[|(0:LOuter)Hidden|]|(1:LOuter) _Color("Color", Color) = (1,1,1,1)
-    |[|(2:LInner)Hidden|]|(3:LInner) _Color2("Color2", Color) = (1,1,1,1)
+    |[|(0:LOuter)Hidden|]|(1:LOuter) |_Color|(2:LOuter)("Color", Color) = (1,1,1,1)
+    |[|(3:LInner)Hidden|]|(4:LInner) |_Color2|(5:LInner)("Color2", Color) = (1,1,1,1)
     _MainText("Albedo", 2D) = "white" {}
   }
 
@@ -14,8 +14,8 @@ Shader "Foo" {
       Name "Thing"
       Tags { "LightMode" = "ForwardBase" }
 
-      Blend |[|(4:ROuter)_SrcBlend|]|(5:ROuter) [_DstBlend]
-      ZWrite |[|(6:RInner)_ZWrite|]|(7:RInner)
+      Blend |[|(6:ROuter)_SrcBlend|]|(7:ROuter) [_DstBlend]
+      ZWrite |[|(8:RInner)_ZWrite|]|(9:RInner)
 
       CGPROGRAM
 #pragma target 3.0
@@ -28,9 +28,11 @@ Shader "Foo" {
 ---------------------------------------------------------
 (0:LOuter): ReSharper Matched Brace
 (1:LOuter): ReSharper Matched Brace
-(2:LInner): ReSharper Matched Brace
+(2:LOuter): ReSharper Usage of element under cursor
 (3:LInner): ReSharper Matched Brace
-(4:ROuter): ReSharper Matched Brace
-(5:ROuter): ReSharper Matched Brace
-(6:RInner): ReSharper Matched Brace
-(7:RInner): ReSharper Matched Brace
+(4:LInner): ReSharper Matched Brace
+(5:LInner): ReSharper Usage of element under cursor
+(6:ROuter): ReSharper Matched Brace
+(7:ROuter): ReSharper Matched Brace
+(8:RInner): ReSharper Matched Brace
+(9:RInner): ReSharper Matched Brace
