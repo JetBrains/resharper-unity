@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             OptionsSettingsSmartContext.SetBinding(myLifetime, settingsScalarEntry, valueProperty);
 
             var option = AddBoolOption(setting, caption, tooltip ?? settingsScalarEntry.Description);
-      
+
             SetIndent(option, myCurrentIndent);
 
             return option;

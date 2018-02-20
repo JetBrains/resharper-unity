@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityOptionsPage : OptionsPageBase
     {
         public const string PID = "UnityPluginSettings";
-        
+
         public UnityOptionsPage(
             Lifetime lifetime,
             OptionsSettingsSmartContext optionsSettingsSmartContext,
@@ -25,29 +25,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             : base(lifetime, optionsSettingsSmartContext)
         {
             Header("General");
-            
+
             CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin, "Install or update Rider plugin automatically");
-            
+
             Header("ShaderLab");
-            
+
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion, "Enable simple word-based completion in ShaderLab files");
-            AddEmptyLine();
-            
-            CheckBox((UnitySettings s) => s.EnableShaderLabParsing,
-                "Parse ShaderLab files for syntax errors");
-            
-            AddEmptyLine();
-            AddText("Disable this to avoid incorrect syntax error highlighting in .shader files.");
-            AddText("The solution must be reopened when changed.");
-            AddEmptyLine();
-            AddText("Note that CGPROGRAM blocks are not currently checked for syntax errors.");
 
             if (productConfigurations.IsInternalMode())
             {
+                AddEmptyLine();
                 CheckBox((UnitySettings s) => s.EnableCgErrorHighlighting, "Parse Cg files for syntax errors. Only works in internal mode.");
-                AddText("Requires solution reopen, same as ShaderLab settings.");
+                AddText("Requires solution reopen.");
             }
-            
+
             FinishPage();
         }
     }
