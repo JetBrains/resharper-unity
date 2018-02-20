@@ -1,0 +1,34 @@
+﻿using UnityEngine;
+
+public class Test : MonoBehaviour
+{
+    public void Method(GameObject go, Component c, Transform t, Object o)
+    {
+        var obj = |o ?? null|(0);
+        obj = |c ?? null|(1);
+        obj = |go ?? gameObject|(2);
+        obj = |go ?? this.gameObject|(3);
+        obj = |t ?? null|(4);
+        obj = |t ?? transform|(5);
+        obj = |t ?? this.transform|(6);
+        obj = |go ?? null|(7);
+        obj = |gameObject ?? null|(8);
+        obj = |transform ?? null|(9);
+        obj = |this.gameObject ?? null|(10);
+        obj = |this.transform ?? null|(11);
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(1): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(2): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(3): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(4): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(5): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(6): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(7): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(8): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(9): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(10): ReSharper Warning: Unity Object types can't be compared using null coalescing.
+(11): ReSharper Warning: Unity Object types can't be compared using null coalescing.
