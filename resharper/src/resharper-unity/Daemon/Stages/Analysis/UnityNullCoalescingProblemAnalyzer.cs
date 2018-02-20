@@ -2,6 +2,7 @@
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
@@ -18,25 +19,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 
         protected override void Analyze(INullCoalescingExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (expression.LeftOperand == null || expression.RightOperand == null)
+            if (!(expression.LeftOperand is IReferenceExpression leftOperand) || expression.RightOperand == null)
                 return;
-            if (!(expression.LeftOperand is IReferenceExpression leftOperand) || !IsDescendantOfUnityObject(leftOperand))
+            var resolve = leftOperand.Reference.Resolve();
+            if (resolve.ResolveErrorType != ResolveErrorType.OK)
+                return;
+            var unityObjectType = TypeFactory.CreateTypeByCLRName(KnownTypes.Object, expression.GetPsiModule());
+            if (!leftOperand.Type().IsSubtypeOf(unityObjectType))
                 return;
 
             consumer.AddHighlighting(new UnityNullCoalescingWarning(expression));
-        }
-
-        private static bool IsDescendantOfUnityObject([CanBeNull]IReferenceExpression expression)
-        {
-            var resolve = expression?.Reference.Resolve();
-            if (resolve == null || resolve.ResolveErrorType != ResolveErrorType.OK)
-                return false;
-
-            var typeElement = expression.Type().GetTypeElement();
-            if (typeElement == null)
-                return false;
-
-            return typeElement.IsDescendantOf(KnownTypes.Object);
         }
     }
 }
