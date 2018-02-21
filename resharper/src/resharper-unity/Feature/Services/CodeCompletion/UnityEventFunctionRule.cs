@@ -190,6 +190,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                 if (nodeInFile.GetContainingNode<IFormalParameterList>() != null)
                     return false;
 
+                // Don't complete in the attribute list
+                if (nodeInFile.GetContainingNode<IAttributeSectionList>() != null)
+                    return false;
+
                 // Check the whole text of the declaration - if it ends (or even starts)
                 // with "__" (which is the completion marker) then we have an incomplete
                 // method declaration and we're good to complete at this position
