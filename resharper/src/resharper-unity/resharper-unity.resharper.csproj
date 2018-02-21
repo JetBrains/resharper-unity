@@ -14,6 +14,15 @@
     <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
   </PropertyGroup>
   <ItemGroup>
+    <!-- C# -->
+    <ErrorsGen Include="Daemon\Errors\CSharpErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>Daemon\Errors\CSharpErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="Daemon\Errors\CSharpErrors.generated.cs">
+      <DependentUpon>CSharpErrors.xml</DependentUpon>
+    </Compile>
     <!-- Cg language -->
     <PsiLanguageNames Include="Cg">
       <Visible>False</Visible>
