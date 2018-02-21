@@ -29,6 +29,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public bool? IsStatic { get; }
         public Parameters Parameters { get; }
 
+        public string FormatSignature(string methodName)
+        {
+            return $"{GetReturnTypeName()} {methodName}({Parameters.GetParameterTypes()})";
+        }
+
         public string GetReturnTypeName()
         {
             return ReturnType.GetPresentableName(CSharpLanguage.Instance);

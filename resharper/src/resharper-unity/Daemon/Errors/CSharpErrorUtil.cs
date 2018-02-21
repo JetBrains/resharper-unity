@@ -80,11 +80,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors
                 {
                     if (modifier.NodeType == CSharpTokenType.STATIC_KEYWORD)
                         return modifier.GetDocumentRange();
-
-                    var modifiersListRange = modifiersList.GetDocumentRange();
-                    if (modifiersListRange.IsValid() && !modifiersListRange.IsEmpty)
-                        return modifiersListRange;
                 }
+
+                var modifiersListRange = modifiersList.GetDocumentRange();
+                if (modifiersListRange.IsValid() && !modifiersListRange.IsEmpty)
+                    return modifiersListRange;
             }
 
             return methodDeclaration.GetNameDocumentRange();
