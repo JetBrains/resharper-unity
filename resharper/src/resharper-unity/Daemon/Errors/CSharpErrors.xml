@@ -39,6 +39,31 @@
         <Title>Event function with the same name is already declared</Title>
         <Description>Event function with the same name is already declared</Description>
       </Tag>
+      
+      <Tag externalName="InvalidReturnTypeWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Incorrect return type</Title>
+        <Description>Incorrect return type for expected method signature.</Description>
+        <CompoundItemName>Incorrect method signature</CompoundItemName>
+      </Tag>
+      
+      <Tag externalName="InvalidParametersWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Incorrect method parameters</Title>
+        <Description>Incorrect parameters for expected method signature.</Description>
+        <CompoundItemName>Incorrect method signature</CompoundItemName>
+      </Tag>
+      
+      <Tag externalName="InvalidStaticModifierWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Incorrect or missing static modifier</Title>
+        <Description>Incorrect or missing static modifier for expected method signature.</Description>
+        <CompoundItemName>Incorrect method signature</CompoundItemName>
+      </Tag>
+      
+      <Tag externalName="InvalidTypeParametersWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Incorrect type parameters</Title>
+        <Description>Incorrect type parameters for expected method signature.</Description>
+        <CompoundItemName>Incorrect method signature</CompoundItemName>
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -69,9 +94,46 @@
   
   <Warning name="DuplicateEventFunction" configurableSeverity="Unity.DuplicateEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
-    <Parameter type="DocumentRange" name="documentRange" />
     <Message value="Event function with the same name is already declared" />
-    <Range>DocumentRange</Range>
+    <Range>CSharpErrorUtil.GetMethodNameAndParametersHighlightingRange(MethodDeclaration)</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="InvalidReturnType" configurableSeverity="Unity.InvalidReturnType">
+    <Parameter type="IMethodDeclaration" name="methodDeclaration" />
+    <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
+    <Message value="Incorrect return type. Expected '{0}'">
+      <Argument>ExpectedMethodSignature.GetReturnTypeName()</Argument>
+    </Message>
+    <Range>CSharpErrorUtil.GetReturnTypeHighlightingRange(MethodDeclaration)</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="InvalidParameters" configurableSeverity="Unity.InvalidParameters">
+    <Parameter type="IMethodDeclaration" name="methodDeclaration" />
+    <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
+    <Message value="Incorrect method parameters. Expected '({0})'">
+      <Argument>ExpectedMethodSignature.Parameters.GetParameterList()</Argument>
+    </Message>
+    <Range>CSharpErrorUtil.GetParametersHighlightingRange(MethodDeclaration)</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="InvalidStaticModifier" configurableSeverity="Unity.InvalidStaticModifier">
+    <Parameter type="IMethodDeclaration" name="methodDeclaration" />
+    <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
+    <Message value="{0}">
+      <Argument>MethodDeclaration.IsStatic ? "Incorrect static modifier" : "Missing static modifier"</Argument>
+    </Message>
+    <Range>CSharpErrorUtil.GetStaticModifierOrMethodNameHighlightingRange(MethodDeclaration)</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="InvalidTypeParameters" configurableSeverity="Unity.InvalidTypeParameters">
+    <Parameter type="IMethodDeclaration" name="methodDeclaration" />
+    <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
+    <Message value="Incorrect type parameters" />
+    <Range>CSharpErrorUtil.GetTypeParametersOrMethodNameHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 </Errors>

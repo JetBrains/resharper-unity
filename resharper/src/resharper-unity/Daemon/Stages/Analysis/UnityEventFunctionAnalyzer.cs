@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
@@ -20,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             typeof(DuplicateEventFunctionWarning),
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
-            typeof(InvalidSignatureWarning),
+            typeof(InvalidParametersWarning),
             typeof(InvalidTypeParametersWarning)
         })]
     public class UnityEventFunctionAnalyzer : UnityElementProblemAnalyzer<IMemberOwnerDeclaration>
@@ -86,10 +85,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                         {
                             foreach (var declaration in method.GetDeclarations())
                             {
-                                var methodDeclaration = (IMethodDeclaration) declaration;
-                                var range = GetDuplicateEventFunctionHighlightRange(methodDeclaration);
                                 consumer.AddHighlighting(
-                                    new DuplicateEventFunctionWarning(methodDeclaration, range));
+                                    new DuplicateEventFunctionWarning((IMethodDeclaration) declaration));
                             }
                         }
                     }
@@ -107,23 +104,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                     }
                 }
             }
-        }
-
-        private static DocumentRange GetDuplicateEventFunctionHighlightRange(IMethodDeclaration methodDeclaration)
-        {
-            var nameRange = methodDeclaration.GetNameDocumentRange();
-            if (!nameRange.IsValid())
-                return DocumentRange.InvalidRange;
-
-            var rpar = methodDeclaration.RPar;
-            if (rpar == null)
-                return nameRange;
-
-            var rparRange = rpar.GetDocumentRange();
-            if (!rparRange.IsValid() || nameRange.Document != rparRange.Document)
-                return nameRange;
-
-            return new DocumentRange(nameRange.Document, new TextRange(nameRange.TextRange.StartOffset, rparRange.TextRange.EndOffset));
         }
 
         private void AddGutterMark(IHighlightingConsumer consumer, IMethod method, UnityEventFunction function)
@@ -162,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                     if ((match & EventFunctionMatch.MatchingReturnType) != EventFunctionMatch.MatchingReturnType)
                         consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, methodSignature));
                     if ((match & EventFunctionMatch.MatchingSignature) != EventFunctionMatch.MatchingSignature)
-                        consumer.AddHighlighting(new InvalidSignatureWarning(methodDeclaration, methodSignature));
+                        consumer.AddHighlighting(new InvalidParametersWarning(methodDeclaration, methodSignature));
                     if ((match & EventFunctionMatch.MatchingTypeParameters) != EventFunctionMatch.MatchingTypeParameters)
                         consumer.AddHighlighting(new InvalidTypeParametersWarning(methodDeclaration, methodSignature));
                 }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Metadata.Reader.API;
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
@@ -16,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
             typeof(InvalidTypeParametersWarning),
-            typeof(InvalidSignatureWarning)
+            typeof(InvalidParametersWarning)
         })]
     public class AttributedMethodSignatureProblemAnalyzer : UnityElementProblemAnalyzer<IAttribute>
     {
@@ -60,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 if (!methodSignature.HasMatchingTypeParameters(methodDeclaration))
                     consumer.AddHighlighting(new InvalidTypeParametersWarning(methodDeclaration, methodSignature));
                 if (!methodSignature.HasMatchingParameters(methodDeclaration))
-                    consumer.AddHighlighting(new InvalidSignatureWarning(methodDeclaration, methodSignature));
+                    consumer.AddHighlighting(new InvalidParametersWarning(methodDeclaration, methodSignature));
             }
         }
 

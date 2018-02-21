@@ -8,7 +8,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.InplaceRefactorings;
 using JetBrains.ReSharper.Intentions.Util;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Refactorings.ChangeSignature;
@@ -18,20 +18,17 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class InvalidSignatureFix : QuickFixBase
+    public class InvalidParametersFix : QuickFixBase
     {
         private readonly IMethodDeclaration myMethodDeclaration;
         private readonly MethodSignature myMethodSignature;
 
-        public InvalidSignatureFix(InvalidSignatureWarning warning)
+        public InvalidParametersFix(InvalidParametersWarning warning)
         {
             myMethodSignature = warning.ExpectedMethodSignature;
             myMethodDeclaration = warning.MethodDeclaration;
 
-            var parameters = string.Join(", ", myMethodSignature.Parameters.Select(p =>
-                $"{p.Type.GetPresentableName(myMethodDeclaration.Language)} {p.Name}"));
-
-            Text = $"Change parameters to '({parameters})'";
+            Text = $"Change parameters to '({myMethodSignature.Parameters.GetParameterList()})'";
         }
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)

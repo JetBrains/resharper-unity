@@ -1,4 +1,3 @@
-using System.Linq;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
@@ -42,8 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             {
                 var methodSignature = myReference.MethodSignature;
                 var returnType = methodSignature.ReturnType.GetPresentableName(CSharpLanguage.Instance);
-                var parameterTypes = string.Join(", ",
-                    methodSignature.Parameters.Select(p => p.Type.GetPresentableName(CSharpLanguage.Instance)));
+                var parameterTypes = myReference.MethodSignature.Parameters.GetParameterTypes();
                 return string.Format(MESSAGE, returnType, myReference.GetName(), parameterTypes);
             }
         }

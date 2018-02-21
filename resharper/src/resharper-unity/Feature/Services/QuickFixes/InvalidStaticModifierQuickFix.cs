@@ -4,7 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
@@ -22,8 +22,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
         {
             myMethodDeclaration = warning.MethodDeclaration;
 
-            Assertion.Assert(warning.MethodSignature.IsStatic.HasValue, "warning.MethodSignature.IsStatic.HasValue");
-            myExpectedStatic = warning.MethodSignature.IsStatic.Value;
+            Assertion.Assert(warning.ExpectedMethodSignature.IsStatic.HasValue, "warning.MethodSignature.IsStatic.HasValue");
+            myExpectedStatic = warning.ExpectedMethodSignature.IsStatic.Value;
         }
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
