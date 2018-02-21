@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
+using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
@@ -85,8 +86,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                         {
                             foreach (var declaration in method.GetDeclarations())
                             {
+                                var methodDeclaration = (IMethodDeclaration) declaration;
+                                var range = GetDuplicateEventFunctionHighlightRange(methodDeclaration);
                                 consumer.AddHighlighting(
-                                    new DuplicateEventFunctionWarning((IMethodDeclaration) declaration));
+                                    new DuplicateEventFunctionWarning(methodDeclaration, range));
                             }
                         }
                     }
@@ -104,6 +107,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                     }
                 }
             }
+        }
+
+        private static DocumentRange GetDuplicateEventFunctionHighlightRange(IMethodDeclaration methodDeclaration)
+        {
+            var nameRange = methodDeclaration.GetNameDocumentRange();
+            if (!nameRange.IsValid())
+                return DocumentRange.InvalidRange;
+
+            var rpar = methodDeclaration.RPar;
+            if (rpar == null)
+                return nameRange;
+
+            var rparRange = rpar.GetDocumentRange();
+            if (!rparRange.IsValid() || nameRange.Document != rparRange.Document)
+                return nameRange;
+
+            return new DocumentRange(nameRange.Document, new TextRange(nameRange.TextRange.StartOffset, rparRange.TextRange.EndOffset));
         }
 
         private void AddGutterMark(IHighlightingConsumer consumer, IMethod method, UnityEventFunction function)

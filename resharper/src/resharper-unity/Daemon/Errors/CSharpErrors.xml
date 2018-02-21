@@ -33,6 +33,12 @@
         <Title>Redundant 'SerializeField' attribute</Title>
         <Description>Unity will ignore the 'SerializeField' attribute if a field is also marked with the 'NonSerialized' attribute</Description>
       </Tag>
+      
+      <Tag externalName="DuplicateEventFunctionWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Event function with the same name is already declared</Title>
+        <Description>Event function with the same name is already declared</Description>
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -59,5 +65,13 @@
     <Message value="Redundant 'SerializeField' attribute" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
+  </Warning>
+  
+  <Warning name="DuplicateEventFunction" configurableSeverity="Unity.DuplicateEventFunction">
+    <Parameter type="IMethodDeclaration" name="methodDeclaration" />
+    <Parameter type="DocumentRange" name="documentRange" />
+    <Message value="Event function with the same name is already declared" />
+    <Range>DocumentRange</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 </Errors>
