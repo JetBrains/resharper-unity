@@ -40,16 +40,27 @@
         <Description>Event function with the same name is already declared</Description>
       </Tag>
       
+      <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</Title>
+        <Description>Instantiating a MonoBehaviour based class with 'new' does not attach it to a GameObject, and Unity will not invoke any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;()</Description>
+      </Tag>
+      
+      <Tag externalName="IncorrectScriptableObjectInstantiationWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>ScriptableObjects must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'</Title>
+        <Description>Instantiating a ScriptableObject base class with 'new' means that Unity will not call any event functions. Use 'ScriptableObject.CreateInstance&lt;T&gt;()' instead.</Description>
+      </Tag>
+
+      <Tag externalName="InvalidParametersWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Incorrect method parameters</Title>
+        <Description>Incorrect parameters for expected method signature.</Description>
+        <CompoundItemName>Incorrect method signature</CompoundItemName>
+      </Tag>
+
       <Tag externalName="InvalidReturnTypeWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Incorrect return type</Title>
         <Description>Incorrect return type for expected method signature.</Description>
-        <CompoundItemName>Incorrect method signature</CompoundItemName>
-      </Tag>
-      
-      <Tag externalName="InvalidParametersWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Incorrect method parameters</Title>
-        <Description>Incorrect parameters for expected method signature.</Description>
         <CompoundItemName>Incorrect method signature</CompoundItemName>
       </Tag>
       
@@ -98,17 +109,21 @@
     <Range>CSharpErrorUtil.GetMethodNameAndParametersHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
-  <Warning name="InvalidReturnType" configurableSeverity="Unity.InvalidReturnType">
-    <Parameter type="IMethodDeclaration" name="methodDeclaration" />
-    <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
-    <Message value="Incorrect return type. Expected '{0}'">
-      <Argument>ExpectedMethodSignature.GetReturnTypeName()</Argument>
-    </Message>
-    <Range>CSharpErrorUtil.GetReturnTypeHighlightingRange(MethodDeclaration)</Range>
+
+  <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
+    <Parameter type="IObjectCreationExpression" name="creationExpression" />
+    <Message value="MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
+    <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
   
+  <Warning name="IncorrectScriptableObjectInstantiation" configurableSeverity="Unity.IncorrectScriptableObjectInstantiation">
+    <Parameter type="IObjectCreationExpression" name="creationExpression" />
+    <Message value="ScriptableObjects must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'" />
+    <Range>CreationExpression.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
   <Warning name="InvalidParameters" configurableSeverity="Unity.InvalidParameters">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
@@ -118,7 +133,17 @@
     <Range>CSharpErrorUtil.GetParametersHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
+  <Warning name="InvalidReturnType" configurableSeverity="Unity.InvalidReturnType">
+    <Parameter type="IMethodDeclaration" name="methodDeclaration" />
+    <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
+    <Message value="Incorrect return type. Expected '{0}'">
+      <Argument>ExpectedMethodSignature.GetReturnTypeName()</Argument>
+    </Message>
+    <Range>CSharpErrorUtil.GetReturnTypeHighlightingRange(MethodDeclaration)</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
   <Warning name="InvalidStaticModifier" configurableSeverity="Unity.InvalidStaticModifier">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
