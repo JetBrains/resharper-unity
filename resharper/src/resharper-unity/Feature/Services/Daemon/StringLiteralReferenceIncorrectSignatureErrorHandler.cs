@@ -14,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
     {
         public IHighlighting Run(IReference reference)
         {
-            if (reference is SyncVarHookReference)
-                return new StringLiteralReferenceIncorrectSignatureError(reference);
+            if (reference is SyncVarHookReference syncVarHookReference)
+                return new StringLiteralReferenceIncorrectSignatureError(syncVarHookReference);
             if (reference is UnityEventFunctionReference eventFunctionReference)
                 return new StringLiteralReferenceIncorrectSignatureWarning(eventFunctionReference);
             return null;

@@ -9,10 +9,19 @@
     JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
   </Usings>
   
+  <!-- Register the static severity groups. This is mostly used in grouping items in SWEA results.
+       The groups should be different to any configurable severity groups -->
+  <StaticSeverityGroups>
+    <Group name="Unity Errors" key="UnityErrors" />
+    <Group name="Unity Warnings" key="UnityWarnings" />
+  </StaticSeverityGroups>
+  
   <!-- Register the configurable severities
        Can take a child Tag or Group element
        * Tag is configurable severity without a group
-       * Group[@name] specifies the name of the group, expects child Tag elements
+       * Group[@name] specifies the name of the group, expects child Tag elements.
+         Note that the group name/title should be registered with 
+         [assembly: RegisterConfigurableHighlightingsGroup(name, "Title")]
        * Tag[@name] is the HIGHLIGHTING_ID of a warning/error. It is treated as a string
          literal and quoted. It is referenced in Warning[@configurableSeverity]
        * Tag[@default] is the default severity. Just the enum value, no leading "Severity."
@@ -230,7 +239,16 @@
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
-  
+
+  <Error name="StringLiteralReferenceIncorrectSignature" staticGroup="UnityErrors">
+    <Parameter type="SyncVarHookReference" name="reference" />
+    <Message value="Expected a method with '{0}' signature">
+      <Argument>Reference.MethodSignature.FormatSignature(Reference.GetName())</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Error>
+
   <Warning name="StringLiteralReferenceIncorrectSignature"
            configurableSeverity="Unity.IncorrectSignature">
     <Parameter type="UnityEventFunctionReference" name="reference" isValid="skip" />
@@ -240,6 +258,13 @@
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
+  
+  <Error name="SyncVarUsage" staticGroup="UnityErrors">
+    <Parameter type="IAttribute" name="attribute" />
+    <Message value="'SyncVar' attribute can only be applied in a class that derives from 'NetworkBehaviour'" />
+    <Range>Attribute.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="ERROR" />
+  </Error>
   
   <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
     <Parameter type="INullCoalescingExpression" name="expression" />
