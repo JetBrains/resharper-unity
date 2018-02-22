@@ -253,12 +253,6 @@ namespace JetBrains.Rider.Unity.Editor
       };
     }
 
-    // The default "Open C# Project" menu item will use the external script editor to load the .sln
-    // file, but unless Unity knows the external script editor can properly load solutions, it will
-    // also launch MonoDevelop (or the OS registered app for .sln files). This menu item side steps
-    // that issue, and opens the solution in Rider without opening MonoDevelop as well.
-    // Unity 2017.1 and later recognise Rider as an app that can load solutions, so this menu isn't
-    // needed in newer versions.
     private static void AddRiderToRecentlyUsedScriptApp(string userAppPath)
     {
       const string recentAppsKey = "RecentlyUsedScriptApp";
