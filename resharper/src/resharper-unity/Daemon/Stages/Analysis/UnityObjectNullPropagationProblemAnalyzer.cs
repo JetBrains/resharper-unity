@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -9,10 +9,10 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IConditionalAccessExpression), HighlightingTypes = new[] { typeof(UnityNullPropagationWarning) })]
-    public class UnityNullPropagationProblemAnalyzer : UnityElementProblemAnalyzer<IConditionalAccessExpression>
+    [ElementProblemAnalyzer(typeof(IConditionalAccessExpression), HighlightingTypes = new[] { typeof(UnityObjectNullPropagationWarning) })]
+    public class UnityObjectNullPropagationProblemAnalyzer : UnityElementProblemAnalyzer<IConditionalAccessExpression>
     {
-        public UnityNullPropagationProblemAnalyzer([NotNull] UnityApi unityApi)
+        public UnityObjectNullPropagationProblemAnalyzer([NotNull] UnityApi unityApi)
             : base(unityApi)
         {
         }
@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             if (!qualifier.Type().IsSubtypeOf(unityObjectType))
                 return;
 
-            consumer.AddHighlighting(new UnityNullPropagationWarning(expression));
+            consumer.AddHighlighting(new UnityObjectNullPropagationWarning(expression));
         }
     }
 }

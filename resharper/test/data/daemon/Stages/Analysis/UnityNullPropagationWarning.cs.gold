@@ -16,11 +16,11 @@ public class Test : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Warning: Unity Object properties can't be accessed via null propagation.
-(1): ReSharper Warning: Unity Object properties can't be accessed via null propagation.
-(2): ReSharper Warning: Unity Object properties can't be accessed via null propagation.
-(3): ReSharper Warning: Unity Object properties can't be accessed via null propagation.
-(4): ReSharper Warning: Unity Object properties can't be accessed via null propagation.
-(5): ReSharper Warning: Unity Object properties can't be accessed via null propagation.
-(6): ReSharper Warning: Unity Object properties can't be accessed via null propagation.
-(7): ReSharper Warning: Unity Object properties can't be accessed via null propagation.
+(0): ReSharper Warning: '?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(1): ReSharper Warning: '?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(2): ReSharper Warning: '?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(3): ReSharper Warning: '?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(4): ReSharper Warning: '?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(5): ReSharper Warning: '?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(6): ReSharper Warning: '?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(7): ReSharper Warning: '?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object

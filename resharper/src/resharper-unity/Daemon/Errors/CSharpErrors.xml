@@ -100,6 +100,28 @@
         <Title>Method referenced in string literal does not have the expected signature</Title>
         <Description>Method referenced in string literal does not have the expected signature.</Description>
       </Tag>
+      
+      <Tag externalName="UnityObjectNullCoalescingWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>'??' on a type deriving from 'UnityEngine.Object' bypasses the liftetime check on the underlying Unity engine object</Title>
+        <Description>
+          The null coalescing operator does not call the custom equality operators defined on 'UnityEngine.Object',
+          which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
+          comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
+          for a standard (and quicker) CLR null check.
+        </Description>
+        <CompoundItemName>Possible unintended bypass of lifetime check of underlying Unity engine object</CompoundItemName>
+      </Tag>
+      
+      <Tag externalName="UnityObjectNullPropagationWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>'?.' on a type deriving from 'UnityEngine.Object' bypasses the liftetime check on the underlying Unity engine object</Title>
+        <Description>
+          The null propagating operator does not call the custom equality operators defined on 'UnityEngine.Object',
+          which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
+          comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
+          for a standard (and quicker) CLR null check.
+        </Description>
+        <CompoundItemName>Possible unintended bypass of lifetime check of underlying Unity engine object</CompoundItemName>
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -216,6 +238,20 @@
       <Argument>Reference.MethodSignature.FormatSignature(Reference.GetName())</Argument>
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
+    <Parameter type="INullCoalescingExpression" name="expression" />
+    <Message value="'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />
+    <Range>Expression.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="UnityObjectNullPropagation" configurableSeverity="Unity.NoNullPropogation">
+    <Parameter type="IConditionalAccessExpression" name="expression" />
+    <Message value="'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />
+    <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 </Errors>
