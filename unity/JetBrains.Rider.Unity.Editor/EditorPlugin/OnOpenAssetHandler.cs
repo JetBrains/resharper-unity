@@ -91,10 +91,7 @@ namespace JetBrains.Rider.Unity.Editor
         myLogger.Verbose("{2}{0}{2}" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments, "\"");
       }
 
-      proc.StartInfo.UseShellExecute = false;
-      proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-      proc.StartInfo.CreateNoWindow = true;
-      proc.StartInfo.RedirectStandardOutput = true;
+      proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
       proc.Start();
 
       ActivateWindow();
