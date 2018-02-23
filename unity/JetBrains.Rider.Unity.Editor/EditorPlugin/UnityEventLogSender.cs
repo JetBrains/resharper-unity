@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
@@ -37,12 +38,20 @@ namespace JetBrains.Rider.Unity.Editor
       
       myModel.AdviseNotNull(domainLifetime.Lifetime, model =>
       {
-        myDelayedLogEvents.ForEach(evt => SendLogEvent(model, evt));
-        myDelayedLogEvents.Clear();
+        if (!myDelayedLogEvents.Any()) 
+          return;
+        
+        var head = myDelayedLogEvents.First;
+        while (head != null)
+        {
+          SendLogEvent(model, head.Value);
+          head = head.Next;
+        }
       });
     }
 
-    private readonly List<RdLogEvent> myDelayedLogEvents = new List<RdLogEvent>();
+    private readonly int myDelayedLogEventsMaxSize = 1000;
+    private readonly LinkedList<RdLogEvent> myDelayedLogEvents = new LinkedList<RdLogEvent>();
 
     public UnityEventLogSender(RProperty<UnityModel> model)
     {
@@ -74,7 +83,9 @@ namespace JetBrains.Rider.Unity.Editor
           var model = myModel.Maybe.ValueOrDefault;
           if (model == null)
           {
-            myDelayedLogEvents.Add(evt);
+            myDelayedLogEvents.AddLast(evt);
+            if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
+              myDelayedLogEvents.RemoveFirst(); // limit max size
           }
           else
           {
