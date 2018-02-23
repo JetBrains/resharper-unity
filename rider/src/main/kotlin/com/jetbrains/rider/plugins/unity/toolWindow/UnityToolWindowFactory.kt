@@ -46,7 +46,7 @@ class UnityToolWindowFactory(project: Project,
         // Required for hiding window without content
         ContentManagerWatcher(toolWindow, contentManager)
 
-        val logModel = UnityLogPanelModel(componentLifetime)
+        val logModel = UnityLogPanelModel(componentLifetime, project)
         val logView = UnityLogPanelView(project, logModel, projectCustomDataHost)
         val toolWindowContent = contentManager.factory.createContent(null, "Log", true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
