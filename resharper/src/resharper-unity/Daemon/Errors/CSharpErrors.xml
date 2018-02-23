@@ -14,6 +14,7 @@
   <StaticSeverityGroups>
     <Group name="Unity Errors" key="UnityErrors" />
     <Group name="Unity Warnings" key="UnityWarnings" />
+    <Group name="Unity Gutter Marks" key="UnityGutterMarks" />
   </StaticSeverityGroups>
   
   <!-- Register the configurable severities
@@ -265,6 +266,15 @@
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="ERROR" />
   </Error>
+  
+  <Info name="UnityGutterMark" staticGroup="UnityGutterMarks">
+    <Parameter type="IDeclaration" name="declaration" />
+    <Parameter type="string" name="text" />
+    <Message value="{0}">
+      <Argument>Text</Argument>
+    </Message>
+    <Range>Declaration.GetNameDocumentRange()</Range>
+  </Info>
   
   <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
     <Parameter type="INullCoalescingExpression" name="expression" />

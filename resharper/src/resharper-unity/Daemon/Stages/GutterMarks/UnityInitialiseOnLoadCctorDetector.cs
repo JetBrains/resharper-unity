@@ -1,13 +1,11 @@
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.GutterMarks
 {
-    [ElementProblemAnalyzer(typeof(IConstructorDeclaration), HighlightingTypes = new[] {typeof(UnityMarkOnGutter)})]
+    [ElementProblemAnalyzer(typeof(IConstructorDeclaration), HighlightingTypes = new[] {typeof(UnityGutterMarkInfo)})]
     public class UnityInitialiseOnLoadCctorDetector : UnityElementProblemAnalyzer<IConstructorDeclaration>
     {
         public UnityInitialiseOnLoadCctorDetector(UnityApi unityApi)
@@ -23,7 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.GutterMarks
             var containingType = element.GetContainingTypeDeclaration()?.DeclaredElement;
             if (containingType != null && containingType.HasAttributeInstance(KnownTypes.InitializeOnLoadAttribute, false))
             {
-                AddGutterMark(element, element.GetNameDocumentRange(), "Called when Unity first launches the editor, the player, or recompiles scripts", consumer);
+                var highlighting = new UnityGutterMarkInfo(element, "Called when Unity first launches the editor, the player, or recompiles scripts");
+                consumer.AddHighlighting(highlighting);
             }
         }
     }
