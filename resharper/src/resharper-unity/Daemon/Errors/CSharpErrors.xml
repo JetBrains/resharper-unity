@@ -96,7 +96,7 @@
       <Tag externalName="RedundantInitializeOnLoadAttributeWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Redundant 'InitializeOnLoad' attribute</Title>
-        <Description>InitializeOnLoad attribute is redundant when static constructor is missing.</Description>
+        <Description>The 'InitializeOnLoad' attribute is redundant when static constructor is missing.</Description>
       </Tag>
 
       <Tag externalName="RedundantSerializeFieldAttributeWarning.HIGHLIGHTING_ID"
@@ -229,7 +229,7 @@
   
   <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute">
     <Parameter type="IAttribute" name="attribute" />
-    <Message value="InitializeOnLoad attribute is redundant when static constructor is missing" />
+    <Message value="'InitializeOnLoad' attribute is redundant when static constructor is missing" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" attributeID="DEADCODE" />
   </Warning>
