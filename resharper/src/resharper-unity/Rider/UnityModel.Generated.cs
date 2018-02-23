@@ -25,7 +25,7 @@ namespace JetBrains.Platform.Unity.Model
 {
   
   
-  public class UnityModel : RdBindableBase {
+  public class UnityModel : RdExtBase {
     //fields
     //public fields
     [NotNull] public IRdProperty<bool> Play { get { return _Play; }}
@@ -56,7 +56,7 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdCall<RdVoid, RdVoid> _Refresh;
     
     //primary constructor
-    public UnityModel(
+    private UnityModel(
       [NotNull] RdProperty<bool> play,
       [NotNull] RdProperty<bool> pause,
       [NotNull] RdCall<RdVoid, RdVoid> step,
@@ -102,76 +102,58 @@ namespace JetBrains.Platform.Unity.Model
       _RiderProcessId.OptimizeNested = true;
       _ApplicationPath.OptimizeNested = true;
       _ApplicationVersion.OptimizeNested = true;
+      BindableChildren.Add(new KeyValuePair<string, object>("play", _Play));
+      BindableChildren.Add(new KeyValuePair<string, object>("pause", _Pause));
+      BindableChildren.Add(new KeyValuePair<string, object>("step", _Step));
+      BindableChildren.Add(new KeyValuePair<string, object>("unityPluginVersion", _UnityPluginVersion));
+      BindableChildren.Add(new KeyValuePair<string, object>("riderProcessId", _RiderProcessId));
+      BindableChildren.Add(new KeyValuePair<string, object>("applicationPath", _ApplicationPath));
+      BindableChildren.Add(new KeyValuePair<string, object>("applicationVersion", _ApplicationVersion));
+      BindableChildren.Add(new KeyValuePair<string, object>("logModelInitialized", _LogModelInitialized));
+      BindableChildren.Add(new KeyValuePair<string, object>("isClientConnected", _IsClientConnected));
+      BindableChildren.Add(new KeyValuePair<string, object>("openFileLineCol", _OpenFileLineCol));
+      BindableChildren.Add(new KeyValuePair<string, object>("updateUnityPlugin", _UpdateUnityPlugin));
+      BindableChildren.Add(new KeyValuePair<string, object>("refresh", _Refresh));
     }
     //secondary constructor
+    private UnityModel (
+    ) : this (
+      new RdProperty<bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
+      new RdProperty<bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
+      new RdCall<RdVoid, RdVoid>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid),
+      new RdProperty<string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString),
+      new RdProperty<int>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadInt, JetBrains.Platform.RdFramework.Impl.Serializers.WriteInt),
+      new RdProperty<string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString),
+      new RdProperty<string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString),
+      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write),
+      new RdEndpoint<RdVoid, bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
+      new RdEndpoint<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
+      new RdCall<string, bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
+      new RdCall<RdVoid, RdVoid>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid)
+    ) {}
     //statics
     
     
     
-    public static void Register(ISerializers serializers)
+    protected override Action<ISerializers> Register => RegisterDeclaredTypesSerializers;
+    public static void RegisterDeclaredTypesSerializers(ISerializers serializers)
     {
-      if (!serializers.Toplevels.Add(typeof(UnityModel))) return;
-      Protocol.InitializationLogger.Trace("REGISTER serializers for {0}", typeof(UnityModel).Name);
-      
       serializers.Register(RdOpenFileArgs.Read, RdOpenFileArgs.Write);
       serializers.Register(RdLogEvent.Read, RdLogEvent.Write);
       serializers.RegisterEnum<RdLogEventType>();
       serializers.RegisterEnum<RdLogEventMode>();
       serializers.Register(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write);
+      
     }
     
-    public UnityModel(Lifetime lifetime, IProtocol protocol) : this (
-      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.play"),
-      new RdProperty<bool>(Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.pause"),
-      new RdCall<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).WithIdFromName("UnityModel.step"),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).WithIdFromName("UnityModel.unityPluginVersion"),
-      new RdProperty<int>(Serializers.ReadInt, Serializers.WriteInt).WithIdFromName("UnityModel.riderProcessId"),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).WithIdFromName("UnityModel.applicationPath"),
-      new RdProperty<string>(Serializers.ReadString, Serializers.WriteString).WithIdFromName("UnityModel.applicationVersion"),
-      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write).WithIdFromName("UnityModel.logModelInitialized"),
-      new RdEndpoint<RdVoid, bool>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.isClientConnected"),
-      new RdEndpoint<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.openFileLineCol"),
-      new RdCall<string, bool>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadBool, Serializers.WriteBool).WithIdFromName("UnityModel.updateUnityPlugin"),
-      new RdCall<RdVoid, RdVoid>(Serializers.ReadVoid, Serializers.WriteVoid, Serializers.ReadVoid, Serializers.WriteVoid).WithIdFromName("UnityModel.refresh")
-    )
+    public UnityModel(Lifetime lifetime, IProtocol protocol) : this()
     {
-      UnityModel.Register(protocol.Serializers);
-      Register(protocol.Serializers);
+      Identify(protocol.Identities, RdId.Root.Mix(GetType().Name));
       Bind(lifetime, protocol, GetType().Name);
       if (Protocol.InitializationLogger.IsTraceEnabled())
         Protocol.InitializationLogger.Trace ("CREATED toplevel object {0}", this.PrintToString());
     }
     //custom body
-    //init method
-    protected override void Init(Lifetime lifetime) {
-      _Play.BindEx(lifetime, this, "play");
-      _Pause.BindEx(lifetime, this, "pause");
-      _Step.BindEx(lifetime, this, "step");
-      _UnityPluginVersion.BindEx(lifetime, this, "unityPluginVersion");
-      _RiderProcessId.BindEx(lifetime, this, "riderProcessId");
-      _ApplicationPath.BindEx(lifetime, this, "applicationPath");
-      _ApplicationVersion.BindEx(lifetime, this, "applicationVersion");
-      _LogModelInitialized.BindEx(lifetime, this, "logModelInitialized");
-      _IsClientConnected.BindEx(lifetime, this, "isClientConnected");
-      _OpenFileLineCol.BindEx(lifetime, this, "openFileLineCol");
-      _UpdateUnityPlugin.BindEx(lifetime, this, "updateUnityPlugin");
-      _Refresh.BindEx(lifetime, this, "refresh");
-    }
-    //identify method
-    public override void Identify(IIdentities ids, RdId id) {
-      _Play.IdentifyEx(ids, id.Mix(".play"));
-      _Pause.IdentifyEx(ids, id.Mix(".pause"));
-      _Step.IdentifyEx(ids, id.Mix(".step"));
-      _UnityPluginVersion.IdentifyEx(ids, id.Mix(".unityPluginVersion"));
-      _RiderProcessId.IdentifyEx(ids, id.Mix(".riderProcessId"));
-      _ApplicationPath.IdentifyEx(ids, id.Mix(".applicationPath"));
-      _ApplicationVersion.IdentifyEx(ids, id.Mix(".applicationVersion"));
-      _LogModelInitialized.IdentifyEx(ids, id.Mix(".logModelInitialized"));
-      _IsClientConnected.IdentifyEx(ids, id.Mix(".isClientConnected"));
-      _OpenFileLineCol.IdentifyEx(ids, id.Mix(".openFileLineCol"));
-      _UpdateUnityPlugin.IdentifyEx(ids, id.Mix(".updateUnityPlugin"));
-      _Refresh.IdentifyEx(ids, id.Mix(".refresh"));
-    }
     //equals trait
     //hash code trait
     //pretty print
@@ -249,8 +231,6 @@ namespace JetBrains.Platform.Unity.Model
       writer.Write(value.StackTrace);
     };
     //custom body
-    //init method
-    //identify method
     //equals trait
     public override bool Equals(object obj)
     {
@@ -351,8 +331,6 @@ namespace JetBrains.Platform.Unity.Model
       writer.Write(value.Col);
     };
     //custom body
-    //init method
-    //identify method
     //equals trait
     public override bool Equals(object obj)
     {
@@ -415,6 +393,7 @@ namespace JetBrains.Platform.Unity.Model
       if (log == null) throw new ArgumentNullException("log");
       
       _Log = log;
+      BindableChildren.Add(new KeyValuePair<string, object>("log", _Log));
     }
     //secondary constructor
     public UnityLogModelInitialized (
@@ -425,23 +404,17 @@ namespace JetBrains.Platform.Unity.Model
     
     public static CtxReadDelegate<UnityLogModelInitialized> Read = (ctx, reader) => 
     {
+      var _id = RdId.Read(reader);
       var log = RdSignal<RdLogEvent>.Read(ctx, reader, RdLogEvent.Read, RdLogEvent.Write);
-      return new UnityLogModelInitialized(log);
+      return new UnityLogModelInitialized(log).WithId(_id);
     };
     
     public static CtxWriteDelegate<UnityLogModelInitialized> Write = (ctx, writer, value) => 
     {
+      value.RdId.Write(writer);
       RdSignal<RdLogEvent>.Write(ctx, writer, value._Log);
     };
     //custom body
-    //init method
-    protected override void Init(Lifetime lifetime) {
-      _Log.BindEx(lifetime, this, "log");
-    }
-    //identify method
-    public override void Identify(IIdentities ids, RdId id) {
-      _Log.IdentifyEx(ids, id.Mix(".log"));
-    }
     //equals trait
     //hash code trait
     //pretty print

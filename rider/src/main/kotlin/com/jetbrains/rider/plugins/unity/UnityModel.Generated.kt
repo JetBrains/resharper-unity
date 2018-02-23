@@ -1,4 +1,4 @@
-@file:Suppress("PackageDirectoryMismatch", "UnusedImport", "unused")
+@file:Suppress("PackageDirectoryMismatch", "UnusedImport", "unused", "LocalVariableName")
 package com.jetbrains.rider.plugins.unity
 
 import com.jetbrains.rider.framework.*
@@ -16,7 +16,7 @@ import java.net.*
 
 
 
-class UnityModel (
+class UnityModel private constructor(
     private val _play : RdOptionalProperty<Boolean>,
     private val _pause : RdOptionalProperty<Boolean>,
     private val _step : RdCall<Unit, Unit>,
@@ -29,46 +29,31 @@ class UnityModel (
     private val _openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean>,
     private val _updateUnityPlugin : RdCall<String, Boolean>,
     private val _refresh : RdCall<Unit, Unit>
-) : RdBindableBase() {
+) : RdExtBase() {
     //companion
-    
-    companion object {
-        
-        public fun register(serializers : ISerializers) {
-            if (!serializers.toplevels.add(UnityModel::class.java)) return
-            Protocol.initializationLogger.trace { "REGISTER serializers for "+UnityModel::class.java.simpleName }
+
+    companion object : ISerializersOwner {
+        override fun registerSerializersCore(serializers : ISerializers) {
             serializers.register(RdOpenFileArgs)
             serializers.register(RdLogEvent)
             serializers.register(RdLogEventType.marshaller)
             serializers.register(RdLogEventMode.marshaller)
             serializers.register(UnityLogModelInitialized)
         }
-        
-        fun create(lifetime : Lifetime, protocol : IProtocol) : UnityModel {
+
+
+        fun create(lifetime: Lifetime, protocol: IProtocol) : UnityModel {
             UnityModel.register(protocol.serializers)
-            register(protocol.serializers)
-            
-            val __res = UnityModel (
-                RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool).withIdFromName("UnityModel.play"),
-                RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool).withIdFromName("UnityModel.pause"),
-                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).withIdFromName("UnityModel.step"),
-                RdOptionalProperty<String>(FrameworkMarshallers.String).withIdFromName("UnityModel.unityPluginVersion"),
-                RdOptionalProperty<Int>(FrameworkMarshallers.Int).withIdFromName("UnityModel.riderProcessId"),
-                RdOptionalProperty<String>(FrameworkMarshallers.String).withIdFromName("UnityModel.applicationPath"),
-                RdOptionalProperty<String>(FrameworkMarshallers.String).withIdFromName("UnityModel.applicationVersion"),
-                RdOptionalProperty<UnityLogModelInitialized>(UnityLogModelInitialized).withIdFromName("UnityModel.logModelInitialized"),
-                RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool).withIdFromName("UnityModel.isClientConnected"),
-                RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool).withIdFromName("UnityModel.openFileLineCol"),
-                RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool).withIdFromName("UnityModel.updateUnityPlugin"),
-                RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void).withIdFromName("UnityModel.refresh"))
-            __res.bind(lifetime, protocol, UnityModel::class.java.simpleName)
-            
-            Protocol.initializationLogger.trace { "CREATED toplevel object "+__res.printToString() }
-            
-            return __res
+
+            return UnityModel ().apply {
+                identify(protocol.identity, RdId.Null.mix("UnityModel"))
+                bind(lifetime, protocol, "UnityModel")
+            }
         }
-        
+
     }
+    override val serializersOwner = UnityModel
+
     //fields
     val play : IOptProperty<Boolean> get() = _play
     val pause : IOptProperty<Boolean> get() = _pause
@@ -82,7 +67,7 @@ class UnityModel (
     val openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean> get() = _openFileLineCol
     val updateUnityPlugin : IRdCall<String, Boolean> get() = _updateUnityPlugin
     val refresh : IRdCall<Unit, Unit> get() = _refresh
-    
+
     //initializer
     init {
         _play.optimizeNested = true
@@ -92,38 +77,39 @@ class UnityModel (
         _applicationPath.optimizeNested = true
         _applicationVersion.optimizeNested = true
     }
-    
+
+    init {
+        bindableChildren.add("play" to _play)
+        bindableChildren.add("pause" to _pause)
+        bindableChildren.add("step" to _step)
+        bindableChildren.add("unityPluginVersion" to _unityPluginVersion)
+        bindableChildren.add("riderProcessId" to _riderProcessId)
+        bindableChildren.add("applicationPath" to _applicationPath)
+        bindableChildren.add("applicationVersion" to _applicationVersion)
+        bindableChildren.add("logModelInitialized" to _logModelInitialized)
+        bindableChildren.add("isClientConnected" to _isClientConnected)
+        bindableChildren.add("openFileLineCol" to _openFileLineCol)
+        bindableChildren.add("updateUnityPlugin" to _updateUnityPlugin)
+        bindableChildren.add("refresh" to _refresh)
+    }
+
     //secondary constructor
-    //init method
-    override fun init(lifetime: Lifetime) {
-        _play.bind(lifetime, this, "play")
-        _pause.bind(lifetime, this, "pause")
-        _step.bind(lifetime, this, "step")
-        _unityPluginVersion.bind(lifetime, this, "unityPluginVersion")
-        _riderProcessId.bind(lifetime, this, "riderProcessId")
-        _applicationPath.bind(lifetime, this, "applicationPath")
-        _applicationVersion.bind(lifetime, this, "applicationVersion")
-        _logModelInitialized.bind(lifetime, this, "logModelInitialized")
-        _isClientConnected.bind(lifetime, this, "isClientConnected")
-        _openFileLineCol.bind(lifetime, this, "openFileLineCol")
-        _updateUnityPlugin.bind(lifetime, this, "updateUnityPlugin")
-        _refresh.bind(lifetime, this, "refresh")
-    }
-    //identify method
-    override fun identify(identities: IIdentities, id: RdId) {
-        _play.identify(identities, id.mix(".play"))
-        _pause.identify(identities, id.mix(".pause"))
-        _step.identify(identities, id.mix(".step"))
-        _unityPluginVersion.identify(identities, id.mix(".unityPluginVersion"))
-        _riderProcessId.identify(identities, id.mix(".riderProcessId"))
-        _applicationPath.identify(identities, id.mix(".applicationPath"))
-        _applicationVersion.identify(identities, id.mix(".applicationVersion"))
-        _logModelInitialized.identify(identities, id.mix(".logModelInitialized"))
-        _isClientConnected.identify(identities, id.mix(".isClientConnected"))
-        _openFileLineCol.identify(identities, id.mix(".openFileLineCol"))
-        _updateUnityPlugin.identify(identities, id.mix(".updateUnityPlugin"))
-        _refresh.identify(identities, id.mix(".refresh"))
-    }
+    private constructor(
+    ) : this (
+        RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool),
+        RdOptionalProperty<Boolean>(FrameworkMarshallers.Bool),
+        RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void),
+        RdOptionalProperty<String>(FrameworkMarshallers.String),
+        RdOptionalProperty<Int>(FrameworkMarshallers.Int),
+        RdOptionalProperty<String>(FrameworkMarshallers.String),
+        RdOptionalProperty<String>(FrameworkMarshallers.String),
+        RdOptionalProperty<UnityLogModelInitialized>(UnityLogModelInitialized),
+        RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool),
+        RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool),
+        RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool),
+        RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void)
+    )
+
     //equals trait
     //hash code trait
     //pretty print
@@ -155,10 +141,10 @@ data class RdLogEvent (
     val stackTrace : String
 ) : IPrintable {
     //companion
-    
+
     companion object : IMarshaller<RdLogEvent> {
         override val _type: Class<RdLogEvent> = RdLogEvent::class.java
-        
+
         @Suppress("UNCHECKED_CAST")
         override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): RdLogEvent {
             val type = buffer.readEnum<RdLogEventType>()
@@ -167,32 +153,30 @@ data class RdLogEvent (
             val stackTrace = buffer.readString()
             return RdLogEvent(type, mode, message, stackTrace)
         }
-        
+
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: RdLogEvent) {
             buffer.writeEnum(value.type)
             buffer.writeEnum(value.mode)
             buffer.writeString(value.message)
             buffer.writeString(value.stackTrace)
         }
-        
+
     }
     //fields
     //initializer
     //secondary constructor
-    //init method
-    //identify method
     //equals trait
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
-        
+
         other as RdLogEvent
-        
+
         if (type != other.type) return false
         if (mode != other.mode) return false
         if (message != other.message) return false
         if (stackTrace != other.stackTrace) return false
-        
+
         return true
     }
     //hash code trait
@@ -221,7 +205,7 @@ data class RdLogEvent (
 enum class RdLogEventMode {
     Edit,
     Play;
-    
+
     companion object { val marshaller = FrameworkMarshallers.enum<RdLogEventMode>() }
 }
 
@@ -230,7 +214,7 @@ enum class RdLogEventType {
     Error,
     Warning,
     Message;
-    
+
     companion object { val marshaller = FrameworkMarshallers.enum<RdLogEventType>() }
 }
 
@@ -241,10 +225,10 @@ data class RdOpenFileArgs (
     val col : Int
 ) : IPrintable {
     //companion
-    
+
     companion object : IMarshaller<RdOpenFileArgs> {
         override val _type: Class<RdOpenFileArgs> = RdOpenFileArgs::class.java
-        
+
         @Suppress("UNCHECKED_CAST")
         override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): RdOpenFileArgs {
             val path = buffer.readString()
@@ -252,30 +236,28 @@ data class RdOpenFileArgs (
             val col = buffer.readInt()
             return RdOpenFileArgs(path, line, col)
         }
-        
+
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: RdOpenFileArgs) {
             buffer.writeString(value.path)
             buffer.writeInt(value.line)
             buffer.writeInt(value.col)
         }
-        
+
     }
     //fields
     //initializer
     //secondary constructor
-    //init method
-    //identify method
     //equals trait
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
-        
+
         other as RdOpenFileArgs
-        
+
         if (path != other.path) return false
         if (line != other.line) return false
         if (col != other.col) return false
-        
+
         return true
     }
     //hash code trait
@@ -299,43 +281,41 @@ data class RdOpenFileArgs (
 }
 
 
-class UnityLogModelInitialized (
+class UnityLogModelInitialized private constructor(
     private val _log : RdSignal<RdLogEvent>
 ) : RdBindableBase() {
     //companion
-    
+
     companion object : IMarshaller<UnityLogModelInitialized> {
         override val _type: Class<UnityLogModelInitialized> = UnityLogModelInitialized::class.java
-        
+
         @Suppress("UNCHECKED_CAST")
         override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): UnityLogModelInitialized {
+            val _id = RdId.read(buffer)
             val _log = RdSignal.read(ctx, buffer, RdLogEvent)
-            return UnityLogModelInitialized(_log)
+            return UnityLogModelInitialized(_log).withId(_id)
         }
-        
+
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: UnityLogModelInitialized) {
+            value.rdid.write(buffer)
             RdSignal.write(ctx, buffer, value._log)
         }
-        
+
     }
     //fields
     val log : ISource<RdLogEvent> get() = _log
-    
+
     //initializer
+    init {
+        bindableChildren.add("log" to _log)
+    }
+
     //secondary constructor
     constructor(
     ) : this (
         RdSignal<RdLogEvent>(RdLogEvent)
     )
-    
-    //init method
-    override fun init(lifetime: Lifetime) {
-        _log.bind(lifetime, this, "log")
-    }
-    //identify method
-    override fun identify(identities: IIdentities, id: RdId) {
-        _log.identify(identities, id.mix(".log"))
-    }
+
     //equals trait
     //hash code trait
     //pretty print
