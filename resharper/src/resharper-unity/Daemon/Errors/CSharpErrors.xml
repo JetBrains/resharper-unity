@@ -3,6 +3,7 @@
         baseClass="CSharpUnityHighlightingBase">
   
   <Usings>
+    JetBrains.ReSharper.Psi.CSharp;
     JetBrains.ReSharper.Psi.CSharp.Tree;
     JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -85,6 +86,12 @@
         <Title>Incorrect type parameters</Title>
         <Description>Incorrect type parameters for expected method signature.</Description>
         <CompoundItemName>Incorrect method signature</CompoundItemName>
+      </Tag>
+      
+      <Tag externalName="RedundantAttributeOnTargetWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Attribute is redundant when applied to this declaration type</Title>
+        <Description>The attribute does not define any restrictions on valid targets, but is only useful when applied to specific declarations, e.g. field, class or method.</Description>
       </Tag>
 
       <Tag externalName="RedundantEventFunctionWarning.HIGHLIGHTING_ID"
@@ -219,19 +226,34 @@
     <Range>CSharpErrorUtil.GetTypeParametersOrMethodNameHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
+  
+  <Warning name="RedundantAttributeOnTarget" configurableSeverity="Unity.RedundantAttributeOnTarget">
+    <Parameter type="IAttribute" name="attribute" />
+    <Parameter type="ITypeElement" name="attributeType"/>
+    <Parameter type="System.AttributeTargets" name="validTargets" isValid="skip" />
+    <Message value="Attribute '{0}' is redundant on this declaration type. It is only used when applied to '{1}' declarations">
+      <Argument>DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, AttributeType)</Argument>
+      <Argument>ValidTargets</Argument>
+    </Message>
+    <Message value="Redundant attribute when applied here. Valid targets: {0}">
+      <Argument>ValidTargets</Argument>
+    </Message>
+    <Range>Attribute.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
+  </Warning>
 
   <Warning name="RedundantEventFunction" configurableSeverity="Unity.RedundantEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Message value="Redundant Unity event function" />
     <Range>MethodDeclaration.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" attributeID="DEADCODE" />
+    <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
   
   <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute">
     <Parameter type="IAttribute" name="attribute" />
     <Message value="'InitializeOnLoad' attribute is redundant when static constructor is missing" />
     <Range>Attribute.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" attributeID="DEADCODE" />
+    <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
   <Warning name="RedundantSerializeFieldAttribute" configurableSeverity="Unity.RedundantSerializeFieldAttribute">

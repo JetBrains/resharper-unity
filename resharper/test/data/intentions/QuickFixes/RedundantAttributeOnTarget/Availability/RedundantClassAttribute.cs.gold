@@ -1,0 +1,11 @@
+﻿using UnityEngine;
+
+[|SerializeField|(0)]
+public class Foo
+{
+}
+
+------------------------------------------------
+0: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+QUICKFIXES:
+Remove redundant attribute
