@@ -6,10 +6,17 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public static class KnownTypes
     {
         // UnityEngine
-        public static readonly IClrTypeName Object = new ClrTypeName("UnityEngine.Object");
+        public static readonly IClrTypeName AddComponentMenu = new ClrTypeName("UnityEngine.AddComponentMenu");
         public static readonly IClrTypeName Component = new ClrTypeName("UnityEngine.Component");
+        public static readonly IClrTypeName ExecuteInEditMode = new ClrTypeName("UnityEngine.ExecuteInEditMode");
         public static readonly IClrTypeName GameObject = new ClrTypeName("UnityEngine.GameObject");
+        public static readonly IClrTypeName HideInInspector = new ClrTypeName("UnityEngine.HideInInspector");
+        public static readonly IClrTypeName ImageEffectAfterScale = new ClrTypeName("UnityEngine.ImageEffectAfterScale");
+        public static readonly IClrTypeName ImageEffectAllowedInSceneView = new ClrTypeName("UnityEngine.ImageEffectAllowedInSceneView");
+        public static readonly IClrTypeName ImageEffectOpaque = new ClrTypeName("UnityEngine.ImageEffectOpaque");
+        public static readonly IClrTypeName ImageEffectTransformsToLDR = new ClrTypeName("UnityEngine.ImageEffectTransformsToLDR");
         public static readonly IClrTypeName MonoBehaviour = new ClrTypeName("UnityEngine.MonoBehaviour");
+        public static readonly IClrTypeName Object = new ClrTypeName("UnityEngine.Object");
         public static readonly IClrTypeName RuntimeInitializeOnLoadMethodAttribute = new ClrTypeName("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
         public static readonly IClrTypeName ScriptableObject = new ClrTypeName("UnityEngine.ScriptableObject");
         public static readonly IClrTypeName SerializeField = new ClrTypeName("UnityEngine.SerializeField");
@@ -20,6 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             new ClrTypeName("UnityEngine.Networking.SyncVarAttribute");
 
         // UnityEditor
+        public static readonly IClrTypeName CanEditMultipleObjects = new ClrTypeName("UnityEditor.CanEditMultipleObjects");
+        public static readonly IClrTypeName CustomEditor = new ClrTypeName("UnityEditor.CustomEditor");
+        public static readonly IClrTypeName DrawGizmo = new ClrTypeName("UnityEditor.DrawGizmo");
         public static readonly IClrTypeName InitializeOnLoadAttribute = new ClrTypeName("UnityEditor.InitializeOnLoadAttribute");
         public static readonly IClrTypeName InitializeOnLoadMethodAttribute = new ClrTypeName("UnityEditor.InitializeOnLoadMethodAttribute");
 
