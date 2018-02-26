@@ -6,7 +6,7 @@ public class MissingConstructor
 }
 
 ------------------------------------------------
-0: InitializeOnLoad attribute is redundant when static constructor is missing
+0: 'InitializeOnLoad' attribute is redundant when static constructor is missing
 QUICKFIXES:
 Create static constructor 'MissingConstructor'
 Remove redundant attribute

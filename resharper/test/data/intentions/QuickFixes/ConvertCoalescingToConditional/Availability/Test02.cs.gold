@@ -9,6 +9,6 @@ public class Foo : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Unity Object types can't be compared using null coalescing.
+0: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
 QUICKFIXES:
 Convert to conditional expression.

@@ -9,7 +9,7 @@ public class Foo : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Explicit string comparison is inefficient, use CompareTag instead
+0: Explicit string comparison is inefficient, use 'CompareTag' instead
 QUICKFIXES:
 Convert to CompareTag
 1: Qualifier 'this.' is redundant

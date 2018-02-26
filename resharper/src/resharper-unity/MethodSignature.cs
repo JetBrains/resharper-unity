@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
@@ -17,14 +19,48 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             ReturnType = returnType;
             IsStatic = isStatic;
-            Parameters = new ParameterSignature[parameterTypes.Count];
+            var parameters = new ParameterSignature[parameterTypes.Count];
             for (var i = 0; i < parameterTypes.Count; i++)
-                Parameters[i] = new ParameterSignature(parameterNames[i], parameterTypes[i]);
+                parameters[i] = new ParameterSignature(parameterNames[i], parameterTypes[i]);
+            Parameters = new Parameters(parameters);
         }
 
         public IType ReturnType { get; }
         public bool? IsStatic { get; }
-        public ParameterSignature[] Parameters { get; }
+        public Parameters Parameters { get; }
+
+        public string FormatSignature(string methodName)
+        {
+            return $"{GetReturnTypeName()} {methodName}({Parameters.GetParameterTypes()})";
+        }
+
+        public string GetReturnTypeName()
+        {
+            return ReturnType.GetPresentableName(CSharpLanguage.Instance);
+        }
+    }
+
+    public class Parameters
+    {
+        private readonly ParameterSignature[] myParameters;
+
+        public Parameters(ParameterSignature[] parameters)
+        {
+            myParameters = parameters;
+        }
+
+        public ParameterSignature this[int i] => myParameters[i];
+        public int Length => myParameters.Length;
+
+        public string GetParameterList()
+        {
+            return string.Join(", ", myParameters.Select(p => p.ToString()));
+        }
+
+        public string GetParameterTypes()
+        {
+            return string.Join(", ", myParameters.Select(p => p.GetTypeName()));
+        }
     }
 
     public class ParameterSignature
@@ -37,6 +73,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public string Name { get; }
         public IType Type { get; }
+
+        public string GetTypeName()
+        {
+            return Type.GetPresentableName(CSharpLanguage.Instance);
+        }
+
+        public override string ToString()
+        {
+            return $"{GetTypeName()} {Name}";
+        }
     }
 
     public static class MethodSignatureExtensions

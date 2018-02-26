@@ -1,13 +1,11 @@
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.GutterMarks
 {
-    [ElementProblemAnalyzer(typeof(IClassLikeDeclaration), HighlightingTypes = new[] {typeof(UnityMarkOnGutter)})]
+    [ElementProblemAnalyzer(typeof(IClassLikeDeclaration), HighlightingTypes = new[] {typeof(UnityGutterMarkInfo)})]
     public class UnityTypeDetector : UnityElementProblemAnalyzer<IClassLikeDeclaration>
     {
         public UnityTypeDetector(UnityApi unityApi)
@@ -20,7 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.GutterMarks
         {
             var @class = element.DeclaredElement;
             if (@class != null && Api.IsUnityType(@class))
-                AddGutterMark(element, element.GetNameDocumentRange(), "Unity scripting component", consumer);
+            {
+                var highlighting = new UnityGutterMarkInfo(element, "Unity scripting component");
+                consumer.AddHighlighting(highlighting);
+            }
         }
     }
 }

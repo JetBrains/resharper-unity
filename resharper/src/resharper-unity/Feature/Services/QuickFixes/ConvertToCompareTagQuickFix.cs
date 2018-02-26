@@ -3,7 +3,7 @@ using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 
         public ConvertToCompareTagQuickFix(ExplicitTagStringComparisonWarning warning)
         {
-            myExpression = warning.Expression;
+            myExpression = warning.EqualityExpression;
             myRewriteLeftOperand = warning.LeftOperandIsTagReference;
         }
 

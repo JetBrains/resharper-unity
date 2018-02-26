@@ -1,51 +1,33 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Resources.Icons;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
+// ReSharper disable once CheckNamespace
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors
 {
-    [StaticSeverityHighlighting(Severity.INFO, HighlightingGroupIds.GutterMarksGroup,
-        OverlapResolve = OverlapResolveKind.NONE, AttributeId = UnityHighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE)]
-    public class UnityMarkOnGutter : IHighlighting, IUnityHighlighting
+    public partial class UnityGutterMarkInfo : ICustomAttributeIdHighlighting
     {
-        private readonly UnityApi myUnityApi;
-        private readonly ITreeNode myElement;
-        private readonly DocumentRange myRange;
+        public string AttributeId => UnityHighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE;
 
-        public UnityMarkOnGutter(UnityApi unityApi, ITreeNode element, DocumentRange range, string tooltip)
-        {
-            myUnityApi = unityApi;
-            myElement = element;
-            myRange = range;
-            ToolTip = tooltip;
-        }
-
-        public bool IsValid()
-        {
-            return myElement == null || myElement.IsValid();
-        }
-
-        public DocumentRange CalculateRange() => myRange;
-        public string ToolTip { get; }
-        public string ErrorStripeToolTip => ToolTip;
-
+        // TODO: Move this somewhere better
         public IEnumerable<BulbMenuItem> GetBulbMenuItems(ISolution solution, ITextControl textControl)
         {
-            var classDeclaration = myElement as IClassLikeDeclaration;
-            if (classDeclaration != null)
+            var unityApi = solution.GetComponent<UnityApi>();
+
+            if (Declaration is IClassLikeDeclaration classDeclaration)
             {
                 var fix = new GenerateUnityEventFunctionsFix(classDeclaration);
                 return new[]
@@ -56,10 +38,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
                 };
             }
 
-            var methodDeclaration = myElement as IMethodDeclaration;
-            if (methodDeclaration != null)
+            if (Declaration is IMethodDeclaration methodDeclaration)
             {
-                var isCoroutine = IsCoroutine(methodDeclaration, myUnityApi);
+                var isCoroutine = IsCoroutine(methodDeclaration, unityApi);
                 if (isCoroutine.HasValue)
                 {
                     IBulbAction bulbAction;
