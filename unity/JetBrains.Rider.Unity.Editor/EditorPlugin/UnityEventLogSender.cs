@@ -47,6 +47,7 @@ namespace JetBrains.Rider.Unity.Editor
           SendLogEvent(model, head.Value);
           head = head.Next;
         }
+        myDelayedLogEvents.Clear();
       });
     }
 
