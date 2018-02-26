@@ -7,7 +7,7 @@ import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.fire
 
-class UnityLogPanelModel(val lifetime: Lifetime) {
+class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
     private val lock = Object()
 
     inner class TypeFilters {
@@ -88,6 +88,7 @@ class UnityLogPanelModel(val lifetime: Lifetime) {
     val typeFilters = TypeFilters()
     val modeFilters = ModeFilters()
     val events = Events()
+
     val onChanged = Signal<List<RdLogEvent>>()
 
     fun fire() = onChanged.fire(getVisibleEvents())
