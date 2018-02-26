@@ -14,4 +14,4 @@ public class ValidUsage : NetworkBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Underlined Error Highlighting: SyncVar can only be applied in a class deriving from NetworkBehaviour
+(0): ReSharper Underlined Error Highlighting: 'SyncVar' attribute can only be applied in a class that derives from 'NetworkBehaviour'

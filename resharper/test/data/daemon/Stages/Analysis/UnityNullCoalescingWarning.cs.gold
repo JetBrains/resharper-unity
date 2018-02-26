@@ -1,0 +1,34 @@
+﻿using UnityEngine;
+
+public class Test : MonoBehaviour
+{
+    public void Method(GameObject go, Component c, Transform t, Object o)
+    {
+        var obj = |o ?? null|(0);
+        obj = |c ?? null|(1);
+        obj = |go ?? gameObject|(2);
+        obj = |go ?? this.gameObject|(3);
+        obj = |t ?? null|(4);
+        obj = |t ?? transform|(5);
+        obj = |t ?? this.transform|(6);
+        obj = |go ?? null|(7);
+        obj = |gameObject ?? null|(8);
+        obj = |transform ?? null|(9);
+        obj = |this.gameObject ?? null|(10);
+        obj = |this.transform ?? null|(11);
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(1): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(2): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(3): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(4): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(5): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(6): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(7): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(8): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(9): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(10): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(11): ReSharper Warning: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object

@@ -1,0 +1,19 @@
+﻿Shader "Unlit/SingleColor"
+{
+    Properties
+    {
+        |_Op|(0) ("Op value", float) = 1
+        |_Op|(1) ("Another op value", float) = 1
+        |_Op|(2) ("Three ops!", float) = 1
+        _Nothing ("Boring", int) = 1
+        |_Another|(3) ("Something else", float) = 1
+        |_Another|(4) ("More", float) = 1
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Conflicting property '_Op' is defined below
+(1): ReSharper Warning: There is already a property named '_Op' declared
+(2): ReSharper Warning: There is already a property named '_Op' declared
+(3): ReSharper Warning: Conflicting property '_Another' is defined below
+(4): ReSharper Warning: There is already a property named '_Another' declared

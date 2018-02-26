@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Comment
                 : TextRange.InvalidRange;
         }
 
-        public int InsertBockCommentPosition(ILexer lexer, int position)
+        public int InsertBlockCommentPosition(ILexer lexer, int position)
         {
             return position == lexer.TokenStart ? position : lexer.TokenEnd;
         }

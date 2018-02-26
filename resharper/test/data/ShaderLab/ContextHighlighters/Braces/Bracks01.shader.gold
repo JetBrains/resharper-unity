@@ -1,8 +1,8 @@
-// ${MatchingBracePosition:OUTER_SIDE}
+﻿// ${MatchingBracePosition:OUTER_SIDE}
 Shader "Foo" {
   Properties {
-    |[|(0:LOuter)Hidden|]|(1:LOuter) _Color("Color", Color) = (1,1,1,1)
-    [Hidden] _Color2("Color2", Color) = (1,1,1,1)
+    |[|(0:LOuter)Hidden|]|(1:LOuter) |_Color|(2:LOuter)("Color", Color) = (1,1,1,1)
+    [Hidden] |_Color2|(3:LInner)("Color2", Color) = (1,1,1,1)
     _MainText("Albedo", 2D) = "white" {}
   }
 
@@ -14,7 +14,7 @@ Shader "Foo" {
       Name "Thing"
       Tags { "LightMode" = "ForwardBase" }
 
-      Blend |[|(2:ROuter)_SrcBlend|]|(3:ROuter) [_DstBlend]
+      Blend |[|(4:ROuter)_SrcBlend|]|(5:ROuter) [_DstBlend]
       ZWrite [_ZWrite]
 
       CGPROGRAM
@@ -28,5 +28,7 @@ Shader "Foo" {
 ---------------------------------------------------------
 (0:LOuter): ReSharper Matched Brace
 (1:LOuter): ReSharper Matched Brace
-(2:ROuter): ReSharper Matched Brace
-(3:ROuter): ReSharper Matched Brace
+(2:LOuter): ReSharper Usage of element under cursor
+(3:LInner): ReSharper Usage of element under cursor
+(4:ROuter): ReSharper Matched Brace
+(5:ROuter): ReSharper Matched Brace

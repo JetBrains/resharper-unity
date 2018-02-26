@@ -3,6 +3,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
@@ -17,6 +18,9 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
 {
+    // This class describes the UI of a highlight (gutter icon), while an IHighlighting
+    // is an instance of a highlight at a specific location in a document. The IHighlighting
+    // instance refers to this highlighter's attribute ID to wire up the UI
     public class UnityGutterMark : IconGutterMark
     {
         public UnityGutterMark()
@@ -36,8 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
             var textControl = textControlManager.FocusedTextControl.Value;
 
             var daemon = solution.GetComponent<IDaemon>();
-            var highlighting = daemon.GetHighlighting(highlighter) as UnityMarkOnGutter;
-            if (highlighting != null)
+            if (daemon.GetHighlighting(highlighter) is UnityGutterMarkInfo highlighting)
             {
                 using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
                     return highlighting.GetBulbMenuItems(solution, textControl);

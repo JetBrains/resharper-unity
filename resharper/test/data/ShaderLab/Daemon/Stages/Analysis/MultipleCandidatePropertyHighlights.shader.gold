@@ -1,0 +1,42 @@
+﻿Shader "Foo"
+{ 
+	Properties
+	{
+		_Color ("Color", Color) = (1,1,1,1)
+		_SrcBlend ("SrcBlend", Int) = 5.0
+		_DstBlend ("DstBlend", Int) = 10.0
+		_ZWrite ("ZWrite", Int) = 1.0
+		_ZTest ("ZTest", Int) = 4.0
+		_Cull ("Cull", Int) = 0.0
+		|_ZBias|(0) ("ZBias", Float) = 0.0
+		|_ZBias|(1) ("Duplicate ZBias property", Float) = 0.0
+	}
+
+	SubShader
+	{
+		Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
+		Pass
+		{
+			Blend [_SrcBlend] [_DstBlend]
+			ZWrite [_ZWrite]
+			ZTest [_ZTest]
+			Cull [_Cull]
+			Offset [|_ZBias|(2)], [|_ZBias|(3)]
+
+			CGPROGRAM
+			ENDCG  
+		}  
+	}
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Conflicting property '_ZBias' is defined below
+(1): ReSharper Warning: There is already a property named '_ZBias' declared
+(2): ReSharper Underlined Error Highlighting: Ambiguous reference:
+  Float _ZBias "Duplicate ZBias property"
+  Float _ZBias "ZBias"
+match
+(3): ReSharper Underlined Error Highlighting: Ambiguous reference:
+  Float _ZBias "Duplicate ZBias property"
+  Float _ZBias "ZBias"
+match

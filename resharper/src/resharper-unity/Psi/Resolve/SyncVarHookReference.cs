@@ -29,11 +29,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             myOwningType = owningType;
             myIsMethodFilter = new DeclaredElementTypeFilter(ResolveErrorType.NOT_RESOLVED, CLRDeclaredElementType.METHOD);
 
-            var methodSignature = GetMethodSignature(owningType, fieldType);
+            MethodSignature = GetMethodSignature(owningType, fieldType);
             myMethodSignatureFilter = new MethodSignatureFilter(
                 UnityResolveErrorType.UNITY_STRING_LITERAL_REFERENCE_INCORRECT_SIGNATURE_ERROR,
-                methodSignature);
+                MethodSignature);
         }
+
+        public MethodSignature MethodSignature { get; }
 
         private static MethodSignature GetMethodSignature(ITypeElement owningType, IType fieldType)
         {
@@ -72,8 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
 
         public override TreeTextRange GetTreeTextRange()
         {
-            var cSharpLiteral = myOwner as ICSharpLiteralExpression;
-            if (cSharpLiteral != null)
+            if (myOwner is ICSharpLiteralExpression cSharpLiteral)
             {
                 var range = cSharpLiteral.GetStringLiteralContentTreeRange();
                 if (range.Length != 0)
@@ -88,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
             var literalAlterer = StringLiteralAltererUtil.CreateStringLiteralByExpression(myOwner);
             var constantValue = (string)myOwner.ConstantValue.Value;
             Assertion.AssertNotNull(constantValue, "constantValue != null");
-            literalAlterer.Replace(constantValue, element.ShortName, myOwner.GetPsiModule());
+            literalAlterer.Replace(constantValue, element.ShortName);
             var newOwner = literalAlterer.Expression;
             if (!myOwner.Equals(newOwner))
                 return newOwner.FindReference<SyncVarHookReference>() ?? this;

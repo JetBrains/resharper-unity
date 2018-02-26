@@ -21,10 +21,8 @@ class UnityBasicCompletionTest : CompletionTestBase() {
     }
 
     private fun doTest(test: EditorImpl.() -> Unit) {
-        doTestWithDocuments {
-            withCaret("Assets\\NewSurfaceShader.shader", "NewSurfaceShader.shader") {
-                test()
-            }
+        withCaret("Assets\\NewSurfaceShader.shader", "NewSurfaceShader.shader") {
+            test()
         }
     }
 }

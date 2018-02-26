@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
@@ -13,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
     {
         public IHighlighting Run(IReference reference)
         {
-            if (reference is SyncVarHookReference)
-                return new StringLiteralReferenceIncorrectSignatureError(reference);
+            if (reference is SyncVarHookReference syncVarHookReference)
+                return new StringLiteralReferenceIncorrectSignatureError(syncVarHookReference);
             if (reference is UnityEventFunctionReference eventFunctionReference)
                 return new StringLiteralReferenceIncorrectSignatureWarning(eventFunctionReference);
             return null;

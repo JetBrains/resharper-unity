@@ -7,7 +7,7 @@ Shader "Unlit/SingleColor"
         Pass { Blend Off }
         Pass { Blend SrcAlpha OneMinusSrcAlpha }
         Pass { Blend One One }
-         Pass { Blend One One, Zero SrcColor }
+        Pass { Blend One One, Zero SrcColor }
         Pas{caret}s { Blend 2 One One }
         Pass { BlendOp Add }
         Pass { BlendOp 3 Sub }

@@ -86,8 +86,9 @@ IShaderLabFile
                     ISetTextureValue
                       IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:_MainTex)
+                        IReferenceName
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:_MainTex)
                         ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
                       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
@@ -115,8 +116,9 @@ IShaderLabFile
                     ISetTextureValue
                       IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:_BlendTex)
+                        IReferenceName
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:_BlendTex)
                         ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
                       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
@@ -151,8 +153,9 @@ IShaderLabFile
                     ISetTextureValue
                       IVariableReference
                         ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:_BlendTex)
+                        IReferenceName
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:_BlendTex)
                         ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:        ) spaces: "        "

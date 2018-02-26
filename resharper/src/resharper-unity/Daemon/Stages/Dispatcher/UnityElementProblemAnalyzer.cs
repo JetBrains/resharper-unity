@@ -1,8 +1,6 @@
 using JetBrains.Annotations;
-using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher
@@ -30,11 +28,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher
         }
 
         protected abstract void Analyze(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer);
-
-        protected void AddGutterMark(T element, DocumentRange documentRange, string tooltip, IHighlightingConsumer consumer)
-        {
-            var highlighting = new UnityMarkOnGutter(Api, element, documentRange, tooltip);
-            consumer.AddHighlighting(highlighting, documentRange);
-        }
     }
 }

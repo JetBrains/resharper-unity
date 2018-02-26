@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
                         // registry for HKEY_CURRENT_USER\Software\Unity Technologies\Installer
                         // and check the version under the children. Or we could just fall back
                         // to the online search
-                        return GetProgramFiles().Combine("Unity/Editor/Data/Documentation/en");
+                        return programFiles.Combine("Unity/Editor/Data/Documentation/en");
                     }
                     return FileSystemPath.Empty;
 

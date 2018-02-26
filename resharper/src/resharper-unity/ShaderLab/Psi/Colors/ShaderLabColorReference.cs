@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
@@ -20,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Colors
             myColorPropertyValue = colorPropertyValue;
             myColorValue = colorValue;
             ColorElement = colorElement;
-            Owner = (ITreeNode) colorValue ?? colorPropertyValue;
+            Owner = (ITreeNode)colorValue ?? colorPropertyValue;
             ColorConstantRange = colorConstantRange;
 
             BindOptions = new ColorBindOptions
@@ -34,13 +35,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Colors
         {
             var languageService = ShaderLabLanguage.Instance.LanguageService();
             Assertion.AssertNotNull(languageService, "languageService != null");
-            var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(new StringBuffer(
-                $"({colorElement.RGBColor.R/255.0:0.##}, {colorElement.RGBColor.G/255.0:0.##}, {colorElement.RGBColor.B/255.0:0.##}, {colorElement.RGBColor.A/255.0:0.##})"));
-            var parser = (IShaderLabParser) languageService.CreateParser(lexer, null, null);
+            var formattedString = GetFormattedString(colorElement);
+            var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(new StringBuffer(formattedString));
+            var parser = (IShaderLabParser)languageService.CreateParser(lexer, null, null);
             var newLiteral = parser.ParseColorLiteral();
 
             myColorPropertyValue?.SetColor(newLiteral);
             myColorValue?.SetConstant(newLiteral);
+        }
+
+        private static string GetFormattedString(IColorElement colorElement)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "({0:0.##}, {1:0.##}, {2:0.##}, {3:0.##})",
+                colorElement.RGBColor.R / 255.0,
+                colorElement.RGBColor.G / 255.0,
+                colorElement.RGBColor.B / 255.0,
+                colorElement.RGBColor.A / 255.0);
         }
 
         public IEnumerable<IColorElement> GetColorTable()

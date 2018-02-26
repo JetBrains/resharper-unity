@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Metadata.Reader.API;
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
@@ -16,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
             typeof(InvalidTypeParametersWarning),
-            typeof(InvalidSignatureWarning)
+            typeof(InvalidParametersWarning)
         })]
     public class AttributedMethodSignatureProblemAnalyzer : UnityElementProblemAnalyzer<IAttribute>
     {
@@ -26,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 {KnownTypes.InitializeOnLoadMethodAttribute, GetStaticVoidMethodSignature},
                 {KnownTypes.RuntimeInitializeOnLoadMethodAttribute, GetStaticVoidMethodSignature},
                 {KnownTypes.DidReloadScripts, GetStaticVoidMethodSignature},
-                {KnownTypes.OnOpenAssetAttribute, GetOnOpeAssetMethodSignature},
+                {KnownTypes.OnOpenAssetAttribute, GetOnOpenAssetMethodSignature},
                 {KnownTypes.PostProcessSceneAttribute, GetStaticVoidMethodSignature},
                 {KnownTypes.PostProcessBuildAttribute, GetPostProcessBuildMethodSignature}
             };
@@ -42,6 +41,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         protected override void Analyze(IAttribute element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             if (!(element.TypeReference?.Resolve().DeclaredElement is ITypeElement attributeTypeElement))
+                return;
+
+            // Otherwise we'll treat it as targeting a method
+            if (element.Target == AttributeTarget.Return)
                 return;
 
             if (ourAttributeLookups.TryGetValue(attributeTypeElement.GetClrName(), out var func))
@@ -60,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 if (!methodSignature.HasMatchingTypeParameters(methodDeclaration))
                     consumer.AddHighlighting(new InvalidTypeParametersWarning(methodDeclaration, methodSignature));
                 if (!methodSignature.HasMatchingParameters(methodDeclaration))
-                    consumer.AddHighlighting(new InvalidSignatureWarning(methodDeclaration, methodSignature));
+                    consumer.AddHighlighting(new InvalidParametersWarning(methodDeclaration, methodSignature));
             }
         }
 
@@ -69,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             return new MethodSignature(predefinedType.Void, true);
         }
 
-        private static MethodSignature GetOnOpeAssetMethodSignature(PredefinedType predefinedType)
+        private static MethodSignature GetOnOpenAssetMethodSignature(PredefinedType predefinedType)
         {
             return new MethodSignature(predefinedType.Bool, true,
                 new[] {predefinedType.Int, predefinedType.Int},

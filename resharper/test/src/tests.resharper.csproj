@@ -12,10 +12,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(ReSharperSDKVersion)" />
-    <PackageReference Include="JetBrains.Psi.Features.VisualStudio" Version="$(PsiFeaturesVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\resharper-unity\resharper-unity.resharper.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\..\src\resharper-unity\resharper-unity.resharper.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ShaderLab\Host\**" />

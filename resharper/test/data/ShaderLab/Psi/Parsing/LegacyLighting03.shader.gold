@@ -96,8 +96,9 @@ IShaderLabFile
                         IColorValue
                           IVariableReference
                             ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                            IShaderLabIdentifier
-                              Identifier(type:IDENTIFIER, text:_Color)
+                            IReferenceName
+                              IShaderLabIdentifier
+                                Identifier(type:IDENTIFIER, text:_Color)
                             ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       Whitespace(type:WHITESPACE, text:                ) spaces: "                "
@@ -122,8 +123,9 @@ IShaderLabFile
                             INumericValue
                               IVariableReference
                                 ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                                IShaderLabIdentifier
-                                  Identifier(type:IDENTIFIER, text:_ColorComponent)
+                                IReferenceName
+                                  IShaderLabIdentifier
+                                    Identifier(type:IDENTIFIER, text:_ColorComponent)
                                 ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                             ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"

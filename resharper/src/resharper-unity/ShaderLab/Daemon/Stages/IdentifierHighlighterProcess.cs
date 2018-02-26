@@ -1,9 +1,12 @@
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.VisualElements;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
@@ -13,6 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         private readonly DaemonProcessKind myProcessKind;
         private readonly bool myIdentifierHighlightingEnabled;
         private readonly VisualElementHighlighter myVisualElementHighlighter;
+        private readonly ResolveProblemHighlighter myResolveProblemHighlighter;
+        private readonly IReferenceProvider myReferenceProvider;
 
         public IdentifierHighlighterProcess(IDaemonProcess process, ResolveHighlighterRegistrar registrar,
             IContextBoundSettingsStore settingsStore, DaemonProcessKind processKind, IShaderLabFile file,
@@ -22,9 +27,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             myProcessKind = processKind;
             myIdentifierHighlightingEnabled = identifierHighlightingStageService.ShouldHighlightIdentifiers(settingsStore);
             myVisualElementHighlighter = new VisualElementHighlighter(ShaderLabLanguage.Instance, settingsStore);
+            myResolveProblemHighlighter = new ResolveProblemHighlighter(registrar);
+            myReferenceProvider = ((IFileImpl)file).ReferenceProvider;
         }
 
-        public override void VisitNode(ITreeNode node, IHighlightingConsumer context)
+        public override void VisitNode(ITreeNode node, IHighlightingConsumer consumer)
         {
             if (myProcessKind == DaemonProcessKind.VISIBLE_DOCUMENT)
             {
@@ -33,11 +40,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
 
                 var info = myVisualElementHighlighter.CreateColorHighlightingInfo(node);
                 if (info != null)
-                    context.AddHighlighting(info.Highlighting, info.Range);
+                    consumer.AddHighlighting(info.Highlighting, info.Range);
             }
 
-            // TODO: Resolve problem highlighter
-            // That is, highlight problems with resolve
+            var references = node.GetReferences(myReferenceProvider);
+            myResolveProblemHighlighter.CheckForResolveProblems(node, consumer, references);
 
             // TODO: Move to ShaderLabSyntaxHighlightingStage
             // (Not Rider's syntax highlighting though!)
@@ -45,8 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             // plus look for simple syntax validation errors, e.g. enums must have at
             // least one value defined, correct value for `syntax "proto3"`, etc.
             // And then a separate identifier
-            var errorElement = node as IErrorElement;
-            if (errorElement != null)
+            if (node is IErrorElement errorElement)
             {
                 var range = errorElement.GetDocumentRange();
                 if (!range.IsValid())
@@ -58,10 +64,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
                     else if (range.TextRange.StartOffset > 0)
                         range = range.ExtendLeft(1);
                 }
-                context.AddHighlighting(new ShaderLabSyntaxError(errorElement.ErrorDescription, range));
+                consumer.AddHighlighting(new ShaderLabSyntaxError(errorElement.ErrorDescription, range));
             }
 
-            base.VisitNode(node, context);
+            base.VisitNode(node, consumer);
         }
     }
 }

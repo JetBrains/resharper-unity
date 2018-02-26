@@ -20,6 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
         [Test] public void MonoBehaviour04() { DoNamedTest(); }
         [Test] public void MonoBehaviour05() { DoNamedTest(); }
         [Test] public void MonoBehaviour06() { DoNamedTest(); }
+        [Test] public void MonoBehaviour07() { DoNamedTest(); }
+        [Test] public void MonoBehaviour08() { DoNamedTest(); }
+        [Test] public void NoCompletionInsideAttributeSectionList() { DoNamedTest(); }
         [Test] public void UnityEditor01() { DoNamedTest(); }
     }
 }

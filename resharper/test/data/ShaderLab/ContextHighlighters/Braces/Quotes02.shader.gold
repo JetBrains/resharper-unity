@@ -1,14 +1,17 @@
-// ${MatchingBracePosition:BOTH_SIDES}
+﻿// ${MatchingBracePosition:BOTH_SIDES}
 Shader |"|(0:LQuoteOuter)Foo|"|(1:LQuoteOuter) {
   Properties {
-    _Color("Color", Color) = (1,1,1,1)
-    _MainText("Albedo", 2D) = "white" {}
-    _MainText(|"|(2:RQuoteOuter)Albedo2|"|(3:RQuoteOuter), 2D) = "white" {}
+    |_Color|(2:LQuoteInner)("Color", Color) = (1,1,1,1)
+    |_MainText|(3:RQuoteInner)("Albedo", 2D) = "white" {}
+    |_MainText|(4:RQuoteOuter)(|"|(5:RQuoteOuter)Albedo2|"|(6:RQuoteOuter), 2D) = "white" {}
   }
 }
 
 ---------------------------------------------------------
 (0:LQuoteOuter): ReSharper Matched Brace
 (1:LQuoteOuter): ReSharper Matched Brace
-(2:RQuoteOuter): ReSharper Matched Brace
-(3:RQuoteOuter): ReSharper Matched Brace
+(2:LQuoteInner): ReSharper Usage of element under cursor
+(3:RQuoteInner): ReSharper Usage of element under cursor
+(4:RQuoteOuter): ReSharper Usage of element under cursor
+(5:RQuoteOuter): ReSharper Matched Brace
+(6:RQuoteOuter): ReSharper Matched Brace

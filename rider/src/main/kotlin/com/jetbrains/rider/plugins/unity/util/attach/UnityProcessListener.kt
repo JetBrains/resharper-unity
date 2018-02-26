@@ -3,7 +3,7 @@ package com.jetbrains.rider.plugins.unity.util.attach
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
-import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
+import com.jetbrains.rider.run.configurations.remote.unity.UnityProcessUtil
 import com.jetbrains.rider.util.idea.getLogger
 import java.net.*
 import java.util.*

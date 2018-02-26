@@ -55,6 +55,7 @@ Packages/*
 
 resharper/src/resharper-unity/_Generated/
 resharper/src/resharper-unity/templates/**/*.generated.dotSettings
+resharper/src/**/*.generated.cs
 resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp
@@ -69,3 +70,9 @@ Desktop.ini
 .DS_Store
 rider/out/*
 rider/.idea/uiDesigner.xml
+resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
+resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove
+resharper/src/resharper-unity/Unity3dRider/Packages/manifest.json
+resharper/test/Unity3dRiderCompileTest/.idea/*
+resharper/test/Unity3dRiderCompileTest/packages/*
+unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll

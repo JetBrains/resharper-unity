@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using JetBrains.Annotations;
+using JetBrains.Application;
+using JetBrains.Application.BuildScript.Application;
+using JetBrains.Application.Environment;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
@@ -12,8 +16,10 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
+using JetBrains.Build.Serialization;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.Util.Special;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -27,10 +33,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityPluginDetector myDetector;
         private readonly ILogger myLogger;
         private readonly RdNotificationsModel myNotifications;
+        private readonly ApplicationPackages myApplicationPackages;
+        private readonly ApplicationPackagesLocallyInstalled myApplicationPackagesLocallyInstalled;
+        private readonly IEnumerable<ApplicationPackageArtifact> myPackages;
+        private readonly IDeployedPackagesExpandLocationResolver myResolver;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
-
-        private static readonly string ourResourceNamespace =
-            typeof(KnownTypes).Namespace + ".Unity3dRider.Assets.Plugins.Editor.JetBrains.";
 
         private readonly ProcessingQueue myQueue;
 
@@ -41,7 +48,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             IShellLocks shellLocks,
             UnityPluginDetector detector,
             RdNotificationsModel notifications,
-            ISettingsStore settingsStore)
+            ISettingsStore settingsStore,
+            ApplicationPackages applicationPackages,
+            ApplicationPackagesLocallyInstalled applicationPackagesLocallyInstalled,
+            IEnumerable<ApplicationPackageArtifact> packages, IDeployedPackagesExpandLocationResolver resolver)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
@@ -51,7 +61,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myShellLocks = shellLocks;
             myDetector = detector;
             myNotifications = notifications;
-            
+            myApplicationPackages = applicationPackages;
+            myApplicationPackagesLocallyInstalled = applicationPackagesLocallyInstalled;
+            myPackages = packages;
+            myResolver = resolver;
+
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
         }
@@ -92,8 +106,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (projects.Count == 0)
                 return;
             
-            InstallNunitFramework();
-            
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
             
@@ -118,57 +130,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myPluginInstallations.Add(mySolution.SolutionFilePath);
             });
         }
-
-        private void InstallNunitFramework()
-        {
-            var solutionDir = mySolution.SolutionFilePath.Directory;
-            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solutionDir))
-            {
-                myLogger.Info("No Assets directory in the same directory as solution. Skipping NunitFramework installation.");
-                return;
-            }
-            
-            var nunitFrameworkPath = solutionDir.Combine(@"Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll");
-            if (!nunitFrameworkPath.IsAbsolute)
-            {
-                myLogger.Info($"Path to nunit.framework.dll {nunitFrameworkPath} is not Absolute.");
-                return;
-            }
-            if (nunitFrameworkPath.ExistsFile)
-            {
-                myLogger.Info($"Already exists nunit.framework.dll in {nunitFrameworkPath}");
-                return;
-            }
-            
-            // install nunit.framework.dll
-            myQueue.Enqueue(() =>
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                //JetBrains.ReSharper.Plugins.Unity.Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll
-                var resourceName = typeof(KnownTypes).Namespace +
-                                   ".Unity3dRider.Library.resharper_unity_libs.nunit3._5._0.nunit.framework.dll";
-
-                try
-                {
-                    using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
-                    {
-                        nunitFrameworkPath.Directory.CreateDirectory();
-                        using (var fileStream = nunitFrameworkPath.OpenStream(FileMode.Create))
-                        {
-                            if (resourceStream == null)
-                                myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
-                            else
-                                resourceStream.CopyTo(fileStream);
-                        }    
-                    }
-                }
-                catch (Exception e)
-                {
-                    myLogger.LogExceptionSilently(e);
-                    myLogger.Warn("nunit.framework.dll was not restored from resourse.");
-                }
-            });
-        }
+        
+        Version currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
 
         private void Install(UnityPluginDetector.InstallationInfo installationInfo)
         {
@@ -184,7 +147,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
 
-            var currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
             if (currentVersion <= installationInfo.Version)
             {
                 myLogger.Verbose($"Plugin v{installationInfo.Version} already installed.");
@@ -254,35 +216,46 @@ Please switch back to Unity to make plugin file appear in the solution.";
         {
             installedPath = null;
 
-            var backups = installation.ExistingFiles.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+            var originPaths = new List<FileSystemPath>();
+            originPaths.AddRange(installation.ExistingFiles);
 
-            foreach (var originPath in installation.ExistingFiles)
+            var backups = originPaths.ToDictionary(f => f, f => f.AddSuffix(".backup"));
+
+            foreach (var originPath in originPaths)
             {
                 var backupPath = backups[originPath];
-                originPath.MoveFile(backupPath, true);
-                myLogger.Info($"backing up: {originPath.Name} -> {backupPath.Name}");
+                if (originPath.ExistsFile)
+                {
+                    originPath.MoveFile(backupPath, true);
+                    myLogger.Info($"backing up: {originPath.Name} -> {backupPath.Name}");
+                }
+                else
+                    myLogger.Info($"backing up failed: {originPath.Name} doesn't exist.");
             }
 
             try
             {
-                var path = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
 
-                var resourceName = ourResourceNamespace + UnityPluginDetector.MergedPluginFile;
-                using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+                //var assembly = Assembly.GetExecutingAssembly();
+                //var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
+                //var subplatformName = package.SubplatformName;
+                //FileSystemPath dir = myResolver.GetDeployedPackageDirectory(package);
+
+                var installDirectory = myApplicationPackagesLocallyInstalled
+                    .Single(a => a.Id == "JetBrains.plugin_com_intellij_resharper_unity").LocalInstallDirectory;
+                var editorPluginPath =
+                    installDirectory.Parent.Combine(@"EditorPlugin\JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll");
+
+                var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
+                try
                 {
-                    if (resourceStream == null)
-                    {
-                        myLogger.Error("Plugin file not found in manifest resources. " + resourceName);
-
-                        RestoreFromBackup(backups);
-
-                        return false;
-                    }
-
-                    using (var fileStream = path.OpenStream(FileMode.OpenOrCreate))
-                    {
-                        resourceStream.CopyTo(fileStream);
-                    }
+                    editorPluginPath.CopyFile(targetPath, true);
+                }
+                catch (Exception e)
+                {
+                    myLogger.LogException(LoggingLevel.ERROR, e, ExceptionOrigin.Assertion,
+                        $"Failed to copy {editorPluginPath} => {targetPath}");
+                    RestoreFromBackup(backups);
                 }
 
                 foreach (var backup in backups)
@@ -290,8 +263,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
                     backup.Value.DeleteFile();
                 }
 
-                installedPath = path;
-
+                installedPath = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
                 return true;
             }
             catch (Exception e)

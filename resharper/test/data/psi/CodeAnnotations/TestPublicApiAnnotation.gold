@@ -1,0 +1,20 @@
+﻿using JetBrains.Annotations;
+
+[PublicAPI]
+public class MyUnusedClass
+{
+    public string UnusedProperty { get; set; }
+    public void UnusedMethod() {}
+}
+
+public class |MyUnannotatedClass|(0)
+{
+    public string |UnusedProperty|(1) { get; set; }
+    public void |UnusedMethod|(2)() {}
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Class 'MyUnannotatedClass' is never used
+(1): ReSharper Dead Code: Property 'UnusedProperty' is never used
+(2): ReSharper Dead Code: Method 'UnusedMethod' is never used
+

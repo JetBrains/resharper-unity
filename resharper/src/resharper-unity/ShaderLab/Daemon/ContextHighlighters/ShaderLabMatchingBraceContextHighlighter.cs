@@ -29,12 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
            IPsiDocumentRangeView psiDocumentRangeView,
             [NotNull] InvisibleBraceHintManager invisibleBraceHintManager,
             [NotNull] MatchingBraceSuggester matchingBraceSuggester,
+            [NotNull] MatchingBraceConsumerFactory consumerFactory,
             [NotNull] HighlightingProlongedLifetime prolongedLifetime)
         {
             var highlighter = new ShaderLabMatchingBraceContextHighlighter();
-            return
-                highlighter.ProcessDataContextImpl(lifetime, prolongedLifetime, psiDocumentRangeView,
-                    invisibleBraceHintManager, matchingBraceSuggester);
+            return highlighter.ProcessDataContextImpl(lifetime, prolongedLifetime, psiDocumentRangeView,
+                    invisibleBraceHintManager, matchingBraceSuggester, consumerFactory);
         }
 
         protected override void TryHighlightToLeft(MatchingHighlightingsConsumer consumer, ITokenNode selectedToken, TreeOffset treeOffset)
@@ -43,11 +43,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
 
             if (IsRightBracket(selectedTokenType))
             {
-                ITokenNode matchedNode;
-                if (FindMatchingLeftBracket(selectedToken, out matchedNode))
+                if (FindMatchingLeftBracket(selectedToken, out var matchedNode))
                 {
                     var singleChar = IsSingleCharToken(matchedNode);
-                    consumer.ConsumeMatchingBracesHighlighting(matchedNode.GetDocumentRange(), selectedToken.GetDocumentRange(), singleChar);
+                    consumer.ConsumeMatchedBraces(matchedNode.GetDocumentRange(), selectedToken.GetDocumentRange(), singleChar);
                     consumer.ConsumeInvisibleBraceHint(new InvisibleBraceHint(
                         matchedNode.GetDocumentRange(), selectedToken.GetDocumentRange(), textControl => GetHintText(textControl, matchedNode)));
                 }
@@ -63,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
             {
                 if (treeOffset == selectedToken.GetTreeTextRange().EndOffset)
                 {
-                    consumer.ConsumeMatchingBracesHighlighting(
+                    consumer.ConsumeMatchedBraces(
                         selectedToken.GetDocumentStartOffset().ExtendRight(1), selectedToken.GetDocumentEndOffset().ExtendLeft(1));
                 }
             }
@@ -75,11 +74,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
 
             if (IsLeftBracket(selectedTokenType))
             {
-                ITokenNode matchedNode;
-                if (FindMatchingRightBracket(selectedToken, out matchedNode))
+                if (FindMatchingRightBracket(selectedToken, out var matchedNode))
                 {
                     var singleChar = IsSingleCharToken(matchedNode);
-                    consumer.ConsumeMatchingBracesHighlighting(selectedToken.GetDocumentRange(), matchedNode.GetDocumentRange(), singleChar);
+                    consumer.ConsumeMatchedBraces(selectedToken.GetDocumentRange(), matchedNode.GetDocumentRange(), singleChar);
                 }
                 else
                 {
@@ -93,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
             {
                 if (treeOffset == selectedToken.GetTreeTextRange().StartOffset)
                 {
-                    consumer.ConsumeMatchingBracesHighlighting(
+                    consumer.ConsumeMatchedBraces(
                         selectedToken.GetDocumentStartOffset().ExtendRight(1), selectedToken.GetDocumentEndOffset().ExtendLeft(1));
                 }
             }

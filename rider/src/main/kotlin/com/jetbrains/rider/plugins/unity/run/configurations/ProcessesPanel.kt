@@ -65,12 +65,13 @@ class ProcessesPanel : PanelWithButtons() {
             }
         }
 
-        vm.editorProcesses.advise(vm.lifetime, { addRemove, editorProcessInfo, i ->
-            when (addRemove) {
-                AddRemove.Add -> dataModel.fireTableRowsInserted(i, i)
-                AddRemove.Remove -> dataModel.fireTableRowsDeleted(i, i)
-            }
-        })
+        vm.editorProcesses.advise(vm.lifetime,
+            {
+                if (it.newValueOpt == null)
+                    dataModel.fireTableRowsDeleted(it.index, it.index)
+                else
+                    dataModel.fireTableRowsInserted(it.index, it.index)
+            })
 
         table = JBTable(dataModel)
         with(table!!) {

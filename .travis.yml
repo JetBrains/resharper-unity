@@ -2,7 +2,7 @@ dist: trusty
 language: csharp
 mono: latest
 dotnet: 1.0.4
-script: 
+script:
   - ./build.sh
 os:
   - linux

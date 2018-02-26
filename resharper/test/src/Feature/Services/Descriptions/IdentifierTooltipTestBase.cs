@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
                 myCaretRange = caretRange;
             }
 
-            public override void CommitHighlighters(DaemonCommitContext context)
+            protected override void CommitHighlighters(DaemonCommitContext context)
             {
                 HighlightingSettingsManager instance = HighlightingSettingsManager.Instance;
                 foreach (HighlightingInfo highlightingInfo in context.HighlightingsToAdd)

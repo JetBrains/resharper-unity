@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -15,11 +14,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
     [ElementProblemAnalyzer(typeof(IMemberOwnerDeclaration),
         HighlightingTypes = new[]
         {
-            typeof(UnityMarkOnGutter),
+            typeof(UnityGutterMarkInfo),
             typeof(DuplicateEventFunctionWarning),
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
-            typeof(InvalidSignatureWarning),
+            typeof(InvalidParametersWarning),
             typeof(InvalidTypeParametersWarning)
         })]
     public class UnityEventFunctionAnalyzer : UnityElementProblemAnalyzer<IMemberOwnerDeclaration>
@@ -115,14 +114,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         private void AddGutterMark(IDeclaration declaration, UnityEventFunction eventFunction,
             IHighlightingConsumer consumer)
         {
-            var documentRange = declaration.GetNameDocumentRange();
             var tooltip = "Unity event function";
             if (!string.IsNullOrEmpty(eventFunction.Description))
                 tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
             if (eventFunction.Coroutine)
                 tooltip += Environment.NewLine + "This function can be a coroutine.";
-            var highlighting = new UnityMarkOnGutter(Api, declaration, documentRange, tooltip);
-            consumer.AddHighlighting(highlighting, documentRange);
+
+            var highlighting = new UnityGutterMarkInfo(declaration, tooltip);
+            consumer.AddHighlighting(highlighting);
         }
 
         private static void AddMethodSignatureInspections(IHighlightingConsumer consumer, IMethod method,
@@ -142,7 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                     if ((match & EventFunctionMatch.MatchingReturnType) != EventFunctionMatch.MatchingReturnType)
                         consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, methodSignature));
                     if ((match & EventFunctionMatch.MatchingSignature) != EventFunctionMatch.MatchingSignature)
-                        consumer.AddHighlighting(new InvalidSignatureWarning(methodDeclaration, methodSignature));
+                        consumer.AddHighlighting(new InvalidParametersWarning(methodDeclaration, methodSignature));
                     if ((match & EventFunctionMatch.MatchingTypeParameters) != EventFunctionMatch.MatchingTypeParameters)
                         consumer.AddHighlighting(new InvalidTypeParametersWarning(methodDeclaration, methodSignature));
                 }

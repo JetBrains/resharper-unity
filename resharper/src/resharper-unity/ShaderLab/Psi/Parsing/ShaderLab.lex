@@ -89,7 +89,7 @@ PP_DIGITS={DECIMAL_DIGIT}(({WHITESPACE})*{DECIMAL_DIGIT})*
 
 %%
 
-<YYINITIAL,PPMESSAGE,PPDIGITS,PARENS>
+<YYINITIAL,PPMESSAGE,PPDIGITS,BRACKETS,PARENS>
                {WHITESPACE}                     { return ShaderLabTokenType.WHITESPACE; }
 <YYINITIAL>    {NEW_LINE}                       { return ShaderLabTokenType.NEW_LINE; }
 

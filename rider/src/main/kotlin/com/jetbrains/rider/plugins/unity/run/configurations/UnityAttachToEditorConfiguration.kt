@@ -11,19 +11,18 @@ import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAc
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
+import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import com.jetbrains.rider.run.configurations.remote.Unity.UnityProcessUtil
+import com.jetbrains.rider.run.configurations.remote.unity.UnityProcessUtil
 import com.jetbrains.rider.use2
 import org.apache.commons.logging.LogFactory
 import org.jdom.Element
 
-class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToEditorFactory)
-    : RunConfigurationBase(project, factory, "Attach To Unity Editor"),
+class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
+    : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
         RunConfigurationWithSuppressedDefaultRunAction,
         RemoteConfiguration,
         WithoutOwnBeforeRunSteps {
-
-    var play: Boolean = false   // TODO: Play after attach! (Don't forget to clone)
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
     override var port: Int = -1
@@ -41,7 +40,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
         if (executor.id != DefaultDebugExecutor.EXECUTOR_ID)
             return null
-        return UnityAttachToEditorProfileState(this, environment)
+        return UnityAttachToPlayerProfileState(this, environment)
     }
 
     override var listenPortForConnections: Boolean = false
@@ -57,7 +56,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
         // We might have a pid from a previous run, but the editor might have died
         pid = checkValidEditorInstance(pid, processList)
                 ?: findUnityEditorInstance(processList)
-                ?: throw throw RuntimeConfigurationError("Cannot find Unity Editor instance")
+                ?: throw RuntimeConfigurationError("Cannot find Unity Editor instance")
 
         port = convertPortToDebuggerPort(pid!!)
     }
@@ -81,7 +80,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
         project.baseDir.findFileByRelativePath("Library/EditorInstance.json")?.let { file ->
             try {
                 // Not a RuntimeConfigurationError, mainly because we can recover
-                file.inputStream.reader().use2 { reader ->
+                return file.inputStream.reader().use2 { reader ->
                     val jsonObject = JsonParser().parse(reader).asJsonObject
                     val processId = jsonObject["process_id"].asInt
 
@@ -113,21 +112,12 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
         // Too expensive to check here?
     }
 
-    override fun readExternal(element: Element) {
-        super.readExternal(element)
-        val shouldPlay = element.getAttributeValue("play")
-        play = shouldPlay != null && java.lang.Boolean.parseBoolean(shouldPlay)
-    }
-
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
         // Write it, but don't read it. We need to write it so that the modified check
         // works, but we're not interested in reading it as we will recalculate it
         if (pid != null) {
             element.setAttribute("pid", pid.toString())
-        }
-        if (play) {
-            element.setAttribute("play", play.toString())
         }
     }
 }

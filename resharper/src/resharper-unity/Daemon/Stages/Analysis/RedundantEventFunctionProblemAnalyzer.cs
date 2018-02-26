@@ -1,14 +1,13 @@
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
 {
-    // Empty event functions are still caused, which is a performance overhead
+    // Empty event functions are still called, which is a performance overhead
     // https://blogs.unity3d.com/2015/12/23/1k-update-calls/
     [ElementProblemAnalyzer(typeof(IMethodDeclaration), HighlightingTypes = new[] { typeof(RedundantEventFunctionWarning) })]
     public class RedundantEventFunctionProblemAnalyzer : UnityElementProblemAnalyzer<IMethodDeclaration>

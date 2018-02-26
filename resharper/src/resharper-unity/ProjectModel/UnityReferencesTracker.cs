@@ -4,6 +4,7 @@ using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.DataFlow.StandardPreconditions;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
@@ -20,7 +21,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             void OnSolutionLoaded(UnityProjectsCollection solution);
         }
 
+        private readonly IProperty<bool> myIsUnityProject = new Property<bool>("IsUnityProject").EnsureReadonly(myToken);
+        public IProperty<bool> IsUnityProject => myIsUnityProject;
+
         private readonly Lifetime myLifetime;
+        private readonly ILogger myLogger;
         private readonly ISolution mySolution;
         private readonly IShellLocks myShellLocks;
         private readonly ModuleReferenceResolveSync myModuleReferenceResolveSync;
@@ -28,6 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly IViewableProjectsCollection myProjects;
         private readonly ICollection<IHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
+        private static readonly ReadonlyToken myToken = new ReadonlyToken("IsUnityProjectToken");
 
         public UnityReferencesTracker(
             Lifetime lifetime,
@@ -40,12 +46,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             ModuleReferenceResolveSync moduleReferenceResolveSync,
             ChangeManager changeManager,
-            IViewableProjectsCollection projects)
+            IViewableProjectsCollection projects,
+            ILogger logger
+            )
         {
             myProjectLifetimes = new Dictionary<IProject, Lifetime>();
 
             myHandlers = handlers.ToList();
             myLifetime = lifetime;
+            myLogger = logger;
             mySolution = solution;
             myShellLocks = shellLocks;
             myModuleReferenceResolveSync = moduleReferenceResolveSync;
@@ -94,6 +103,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 try
                 {
                     handler.OnReferenceAdded(project, projectLifetime);
+                    if (project.IsUnityProject())
+                      myIsUnityProject.SetValue(true, myToken);
                 }
                 catch (Exception e)
                 {
@@ -117,8 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             // to the IViewableProjectsCollection. Keep an eye on reference changes, add the
             // project settings if/when the project becomes a unity project
             var projects = new JetHashSet<IProject>();
-
-            var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames);
+            var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange, ProjectExtensions.UnityReferenceNames, myLogger);
 
             foreach (var change in changes)
             {

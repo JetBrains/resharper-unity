@@ -4,9 +4,8 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
 {
-    // A named identifier, so presumably only used when referring to a thing
-    // e.g. property definition name, property reference name, shader name, etc.
-    // Except shader name is a string literal...
+    // A token to represent an identifier name. Note that an identifier can also be another token
+    // as the tokens for command names and values are not keywords as such
     internal class Identifier : ShaderLabTokenBase, IIdentifier
     {
         private readonly string myText;
@@ -24,6 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
         public string Name => GetText();
     }
 
+    // An element to represent an identifier. We need an element instead of just a tree
+    // node, because the name of the identifier might clash with one of the "keyword" tokens
     internal abstract partial class ShaderLabIdentifierStub
     {
         public abstract string Name { get; }

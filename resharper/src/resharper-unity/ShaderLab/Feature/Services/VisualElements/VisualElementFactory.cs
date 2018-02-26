@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Globalization;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.VisualElements;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
@@ -44,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualEle
 
         private int GetColorValue(INumericValue value)
         {
-            double.TryParse(value.Constant.GetText(), out var d);
+            double.TryParse(value.Constant.GetText(), NumberStyles.Float, CultureInfo.InvariantCulture, out var d);
             return (int) (255 * d);
         }
     }

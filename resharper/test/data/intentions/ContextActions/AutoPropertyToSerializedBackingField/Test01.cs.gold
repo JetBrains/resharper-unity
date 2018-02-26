@@ -1,0 +1,12 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+  [SerializeField] private int myMyAutoProp1;
+
+  public int MyAutoProp1{caret}
+  {
+    get => myMyAutoProp1;
+    set => myMyAutoProp1 = value;
+  }
+}

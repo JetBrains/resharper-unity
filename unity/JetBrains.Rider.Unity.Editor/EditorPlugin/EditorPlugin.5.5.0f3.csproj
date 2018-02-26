@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net35</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Unity.Libs.2017.2.0b3" Version="2017.7.21" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="JetBrains.Platform.RdCore35">
+      <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.RdFramework35">
+      <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
