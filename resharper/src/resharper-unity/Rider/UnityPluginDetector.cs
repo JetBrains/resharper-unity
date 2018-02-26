@@ -129,21 +129,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myLogger.Warn("Plugin files do not have parent directory (?).");
                 return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, ZeroVersion);
             }
-            
+
             var pluginDir = parentDirs[0];
 
-            if (pluginFiles.Count == 1)
+            if (pluginFiles.Count == 1 && pluginFiles[0].Name == PluginDllFile)
             {
-                if (pluginFiles[0].Name == PluginDllFile)
-                {
-                    var version = new Version(FileVersionInfo.GetVersionInfo(pluginFiles[0].FullPath).FileVersion);
-                    return new InstallationInfo(version != ZeroVersion, pluginDir, pluginFiles, version);
-                }
-                
-                myLogger.Warn("One file found, but filename is not the same as v1.9.0+");
-                return new InstallationInfo(false, FileSystemPath.Empty, pluginFiles, ZeroVersion);
+                var version = new Version(FileVersionInfo.GetVersionInfo(pluginFiles[0].FullPath).FileVersion);
+                return new InstallationInfo(version != ZeroVersion, pluginDir, pluginFiles, version);
             }
-            
+
+            // update from Unity3dRider.cs to dll
+            // or
             // both old and new plugins together
             return new InstallationInfo(true, pluginDir, pluginFiles, ZeroVersion);
         }
