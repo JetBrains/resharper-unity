@@ -15,42 +15,42 @@ public class Foo
     [SerializeField]
     public string Field;
 
-    [|SerializeField|(3)]
+    [SerializeField]
     public const string ConstField = "Hello world";
 
-    [|SerializeField|(4)]
+    [|SerializeField|(3)]
     public string Property { get; set; }
 
-    [|SerializeField|(5)]
-    [return: |SerializeField|(6)]
-    public string Method<[|SerializeField|(7)] T>([|SerializeField|(8)] int param1)
+    [|SerializeField|(4)]
+    [return: |SerializeField|(5)]
+    public string Method<[|SerializeField|(6)] T>([|SerializeField|(7)] int param1)
     {
         return null;
     }
 
-    [|SerializeField|(9)]
+    [|SerializeField|(8)]
     public event EventHandler MyEvent;
 
     [field: SerializeField]
     public event EventHandler MyEvent2;
 }
 
-[|SerializeField|(10)]
+[|SerializeField|(9)]
 public delegate void MyEventHandler(object sender, EventArgs e);
 
-[|SerializeField|(11)]
+[|SerializeField|(10)]
 public struct Bar
 {
 }
 
-[|SerializeField|(12)]
+[|SerializeField|(11)]
 public enum Baz
 {
     One,
     Two
 }
 
-[|SerializeField|(13)]
+[|SerializeField|(12)]
 public interface Quux
 {
 }
@@ -69,4 +69,3 @@ public interface Quux
 (10): ReSharper Dead Code: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations
 (11): ReSharper Dead Code: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations
 (12): ReSharper Dead Code: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations
-(13): ReSharper Dead Code: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations

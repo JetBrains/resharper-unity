@@ -15,42 +15,42 @@ public class Foo
     [HideInInspector]
     public string Field;
 
-    [|HideInInspector|(3)]
+    [HideInInspector]
     public const string ConstField = "Hello world";
 
-    [|HideInInspector|(4)]
+    [|HideInInspector|(3)]
     public string Property { get; set; }
 
-    [|HideInInspector|(5)]
-    [return: |HideInInspector|(6)]
-    public string Method<[|HideInInspector|(7)] T>([|HideInInspector|(8)] int param1)
+    [|HideInInspector|(4)]
+    [return: |HideInInspector|(5)]
+    public string Method<[|HideInInspector|(6)] T>([|HideInInspector|(7)] int param1)
     {
         return null;
     }
 
-    [|HideInInspector|(9)]
+    [|HideInInspector|(8)]
     public event EventHandler MyEvent;
 
     [field: HideInInspector]
     public event EventHandler MyEvent2;
 }
 
-[|HideInInspector|(10)]
+[|HideInInspector|(9)]
 public delegate void MyEventHandler(object sender, EventArgs e);
 
-[|HideInInspector|(11)]
+[|HideInInspector|(10)]
 public struct Bar
 {
 }
 
-[|HideInInspector|(12)]
+[|HideInInspector|(11)]
 public enum Baz
 {
     One,
     Two
 }
 
-[|HideInInspector|(13)]
+[|HideInInspector|(12)]
 public interface Quux
 {
 }
@@ -69,4 +69,3 @@ public interface Quux
 (10): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
 (11): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
 (12): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
-(13): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
