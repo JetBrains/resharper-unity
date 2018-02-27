@@ -1,9 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using UnityEditor;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -115,9 +123,25 @@ namespace JetBrains.Rider.Unity.Editor
           if (string.IsNullOrEmpty(home))
             return new string[0];
           //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
+          //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
           var riderPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
-          var results = Directory.GetDirectories(riderPath).SelectMany(Directory.GetDirectories).Select(b=>Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
-          return results;
+          var channels = Directory.GetDirectories(riderPath).ToArray();
+          var channelFiles = channels.Select(b=>Path.Combine(b, ".channel.settings.json")).Where(File.Exists).ToArray();
+
+          var paths = channelFiles.Select(a =>
+            {
+              var channelDir = Path.GetDirectoryName(a);
+              var json = File.ReadAllText(a);
+              var data = (JObject) JsonConvert.DeserializeObject(json);
+              var builds = data["active-application/builds"].Value<List<string>>();
+              var buildName = builds.FirstOrDefault();
+              if (buildName != null)
+                return Path.Combine(Path.Combine(channelDir, buildName), @"bin/rider.sh");
+              return null;
+            })
+            .Where(c=>!string.IsNullOrEmpty(c))
+            .ToArray();
+          return paths;
         }
       }
 

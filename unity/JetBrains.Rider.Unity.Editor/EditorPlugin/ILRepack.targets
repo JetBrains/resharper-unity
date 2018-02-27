@@ -2,6 +2,7 @@
 <Target Name="RiderILRepack" AfterTargets="Build">
     <ItemGroup>
         <InputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
+        <InputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll" />
         <InputAssemblies Include="../lib/*.dll" />
     </ItemGroup>
     <ItemGroup>
