@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.2017.2.0b3" Version="2017.7.21" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
@@ -32,16 +33,5 @@
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <!--https://github.com/ravibpatel/ILRepack.Lib.MSBuild.Task/issues/6-->
-  <UsingTask AssemblyFile="..\lib\ILRepack.Lib.MSBuild.Task.dll" TaskName="ILRepack" />
-  <Target Name="ILRepack" AfterTargets="Build">
-    <ItemGroup>
-      <InputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
-      <InputAssemblies Include="../lib/*.dll" Exclude="../lib/ILRepack*.dll" />
-    </ItemGroup>
-    <ItemGroup>
-      <SearchDirectories Include="$(OutputPath)" />
-    </ItemGroup>
-    <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(InputAssemblies)" LibraryPath="@(SearchDirectories)" OutputFile="../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll" />
-  </Target>
+  <Import Project="$(ProjectDir)ILRepack.targets"/>
 </Project>
