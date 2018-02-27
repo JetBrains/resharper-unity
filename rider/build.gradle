@@ -11,7 +11,7 @@ dependencies {
 group 'com.jetbrains'
 
 wrapper {
-    gradleVersion '4.2'
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 if (!ext.has("Source"))
