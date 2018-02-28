@@ -31,7 +31,7 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
 
     private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
         if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
-            myEventDispatcher.multicaster.HasUnityReference()
+            myEventDispatcher.multicaster.hasUnityReference()
         }
     }
 
