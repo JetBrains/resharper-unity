@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 var nodes = document.DocumentElement?.SelectNodes(@"/api/type");
                 Assertion.AssertNotNull(nodes, "nodes != null");
                 foreach (XmlNode type in nodes)
-                    types.Add(CreateUnityType(type));
+                    types.Add(CreateUnityType(type, minimumVersion, maximumVersion));
 
                 return new UnityTypes(types, Version.Parse(minimumVersion), Version.Parse(maximumVersion));
             }
@@ -47,8 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         private IClrTypeName GetClrTypeName(string typeName)
         {
-            IClrTypeName clrTypeName;
-            if (!myTypeNames.TryGetValue(typeName, out clrTypeName))
+            if (!myTypeNames.TryGetValue(typeName, out var clrTypeName))
             {
                 clrTypeName = new ClrTypeName(typeName);
                 myTypeNames.Add(typeName, clrTypeName);
@@ -56,13 +55,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return clrTypeName;
         }
 
-        private UnityType CreateUnityType(XmlNode type)
+        private UnityType CreateUnityType(XmlNode type, string defaultMinimumVersion, string defaultMaximumVersion)
         {
             var name = type.Attributes?["name"].Value;
             var ns = type.Attributes?["ns"].Value;
 
-            var minimumVersion = ParseVersionAttribute(type, "minimumVersion", "1.0");
-            var maximumVersion = ParseVersionAttribute(type, "maximumVersion", "655356.0");
+            var minimumVersion = ParseVersionAttribute(type, "minimumVersion", defaultMinimumVersion);
+            var maximumVersion = ParseVersionAttribute(type, "maximumVersion", defaultMaximumVersion);
 
             var typeName = GetClrTypeName($"{ns}.{name}");
             var messageNodes = type.SelectNodes("message");
@@ -70,19 +69,20 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (messageNodes != null)
             {
                 messages = messageNodes.OfType<XmlNode>().Select(
-                    node => CreateUnityMessage(node, typeName.GetFullNameFast())).OrderBy(m => m.Name).ToArray();
+                    node => CreateUnityMessage(node, typeName.GetFullNameFast(), defaultMinimumVersion,
+                        defaultMaximumVersion)).OrderBy(m => m.Name).ToArray();
             }
 
             return new UnityType(typeName, messages, minimumVersion, maximumVersion);
         }
 
-        private Version ParseVersionAttribute(XmlNode node, string attributeName, string defaultValue)
+        private static Version ParseVersionAttribute(XmlNode node, string attributeName, string defaultValue)
         {
             var attributeValue = node.Attributes?[attributeName]?.Value ?? defaultValue;
             return Version.Parse(attributeValue);
         }
 
-        private UnityEventFunction CreateUnityMessage(XmlNode node, string typeName)
+        private UnityEventFunction CreateUnityMessage(XmlNode node, string typeName, string defaultMinimumVersion, string defaultMaximumVersion)
         {
             var name = node.Attributes?["name"].Value ?? "Invalid";
             var description = node.Attributes?["description"]?.Value;
@@ -90,8 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var isCoroutine = bool.Parse(node.Attributes?["coroutine"]?.Value ?? "false");
             var isUndocumented = bool.Parse(node.Attributes?["undocumented"]?.Value ?? "false");
 
-            var minimumVersion = ParseVersionAttribute(node, "minimumVersion", "1.0");
-            var maximumVersion = ParseVersionAttribute(node, "maximumVersion", "655356.0");
+            var minimumVersion = ParseVersionAttribute(node, "minimumVersion", defaultMinimumVersion);
+            var maximumVersion = ParseVersionAttribute(node, "maximumVersion", defaultMaximumVersion);
 
             var parameters = EmptyArray<UnityEventFunctionParameter>.Instance;
 
