@@ -11,9 +11,9 @@ namespace ApiParser
     public class ApiParser
     {
         // "Namespace:" is only used in 5.0
-        private static readonly Regex NsRegex = new Regex(@"^((?<type>class|struct) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)$");
-        private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$");
-        private static readonly Regex CoroutineRegex = new Regex(@"(?:can be|as) a co-routine", RegexOptions.IgnoreCase);
+        private static readonly Regex NsRegex = new Regex(@"^((?<type>class|struct) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)$", RegexOptions.Compiled);
+        private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$", RegexOptions.Compiled);
+        private static readonly Regex CoroutineRegex = new Regex(@"(?:can be|as) a co-routine", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private readonly UnityApi myApi;
         private readonly string myScriptReferenceRelativePath;
@@ -38,11 +38,12 @@ namespace ApiParser
             {
                 Directory.SetCurrentDirectory(path);
 
-                var files = Directory.EnumerateFiles(myScriptReferenceRelativePath, @"*.html").ToArray();
+                var files = Directory.EnumerateFiles(myScriptReferenceRelativePath, @"*.html").Reverse().ToArray();
+                var processed = new HashSet<string>();
 
                 for (var i = 0; i < files.Length; ++i)
                 {
-                    ParseFile(files[i], apiVersion);
+                    ParseFile(files[i], apiVersion, processed);
                     OnProgress(new ProgressEventArgs(i + 1, files.Length));
                 }
 
@@ -74,16 +75,31 @@ namespace ApiParser
             Progress?.Invoke(this, e);
         }
 
-        private void ParseFile(string filename, Version apiVersion)
+        private void ParseFile(string filename, Version apiVersion, HashSet<string> processed)
         {
-            var document = ApiNode.Load(filename);
+            if (processed.Contains(filename))
+                return;
+
+            processed.Add(filename);
+
+            // We're only interested in the file if it contains messages. Bail early
+            // so we don't have to parse it to HTML
+            var content = File.ReadAllText(filename);
+            if (!content.Contains("Messages"))
+                return;
+
+            var document = ApiNode.LoadContent(content);
             var section = document?.SelectOne(@"//div.content/div.section");
             var header = section?.SelectOne(@"div.mb20.clear");
             var name = header?.SelectOne(@"h1.heading.inherit"); // Type or type member name
             var ns = header?.SelectOne(@"p");   // "class in {ns}"/"struct in {ns}"/"Namespace: {ns}"
 
             // Only interested in types at this point
-            if (name == null || ns == null) return;
+            if (name == null || ns == null)
+            {
+//                Console.WriteLine("File has no types: {0}", filename);
+                return;
+            }
 
             // Only types that have messages
             var messages = section.Subsection("Messages").ToArray();
@@ -100,13 +116,14 @@ namespace ApiParser
 
             foreach (var message in messages)
             {
-                var eventFunction = ParseMessage(message, apiVersion, nsName);
+                var eventFunction = ParseMessage(message, apiVersion, nsName, processed);
                 unityApiType.MergeEventFunction(eventFunction, apiVersion);
             }
         }
 
         [CanBeNull]
-        private UnityApiEventFunction ParseMessage(ApiNode message, Version apiVersion, string hintNamespace)
+        private UnityApiEventFunction ParseMessage(ApiNode message, Version apiVersion, string hintNamespace,
+            HashSet<string> processed)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
@@ -116,6 +133,7 @@ namespace ApiParser
             if (string.IsNullOrWhiteSpace(detailsPath)) return null;
 
             var path = Path.Combine(myScriptReferenceRelativePath, detailsPath);
+            processed.Add(path);
             if (!File.Exists(path)) return null;
 
             var detailsDoc = ApiNode.Load(path);

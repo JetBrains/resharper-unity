@@ -56,6 +56,14 @@ namespace ApiParser
             return new ApiNode(document.DocumentNode);
         }
 
+        [CanBeNull]
+        public static ApiNode LoadContent(string content)
+        {
+            var document = new HtmlDocument();
+            document.LoadHtml(content);
+            return new ApiNode(document.DocumentNode);
+        }
+
         [NotNull]
         private IEnumerable<ApiNode> SelectMany([NotNull] string xpath)
         {
