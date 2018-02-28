@@ -139,8 +139,7 @@ namespace JetBrains.Rider.Unity.Editor
               }
               catch (Exception e)
               {
-                ourLogger.Error(e, "Failed to get RiderPath via .channel.settings.json");
-                UnityEngine.Debug.Log(e);                
+                ourLogger.Warn(e, "Failed to get RiderPath via .channel.settings.json");                
               }    
               return null;
             })
