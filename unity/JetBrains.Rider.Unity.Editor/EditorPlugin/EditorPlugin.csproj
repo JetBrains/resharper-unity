@@ -25,10 +25,13 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Platform.RdCore35, Version=111.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
+    <Reference Include="JetBrains.Annotations">
+      <HintPath>..\lib\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.RdCore35">
       <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Platform.RdFramework35, Version=111.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
+    <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
   </ItemGroup>
