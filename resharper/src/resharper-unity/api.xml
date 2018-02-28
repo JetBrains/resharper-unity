@@ -1,4 +1,4 @@
-﻿<api minimumVersion="5.0" maximumVersion="2017.3">
+﻿<api minimumVersion="5.0" maximumVersion="2018.1">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" minimumVersion="5.1" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="IsOpenForEdit" static="True" minimumVersion="5.1" description="This is called by Unity when inspecting an asset to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
       <parameters>
@@ -68,9 +68,15 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostprocessAudio" static="False" description="Add this function in a subclass to get a notification when an audio clip has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAudio.html">
+    <message name="OnPostprocessAudio" static="False" description="Add this function to a subclass to get a notification when an audio clip has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAudio.html">
       <parameters>
         <parameter type="UnityEngine.AudioClip" array="False" name="arg" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPostprocessCubemap" static="False" minimumVersion="2018.1" description="Add this function to a subclass to get a notification just before a cubemap texture has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessCubemap.html">
+      <parameters>
+        <parameter type="UnityEngine.Cubemap" array="False" name="texture" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -82,50 +88,53 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostprocessMaterial" static="False" minimumVersion="2017.3" description="Add this function in a subclass to get a notification when a Material asset has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessMaterial.html">
+    <message name="OnPostprocessMaterial" static="False" minimumVersion="2017.3" description="Add this function to a subclass to get a notification when a Material asset has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessMaterial.html">
       <parameters>
         <parameter type="UnityEngine.Material" array="False" name="material" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostprocessModel" static="False" description="Add this function in a subclass to get a notification when a model has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessModel.html">
+    <message name="OnPostprocessModel" static="False" description="Add this function to a subclass to get a notification when a model has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessModel.html">
       <parameters>
         <parameter type="UnityEngine.GameObject" array="False" name="g" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostprocessSpeedTree" static="False" description="Add this function in a subclass to get a notification when a SpeedTree asset has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessSpeedTree.html">
+    <message name="OnPostprocessSpeedTree" static="False" description="Add this function to a subclass to get a notification when a SpeedTree asset has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessSpeedTree.html">
       <parameters>
         <parameter type="UnityEngine.GameObject" array="False" name="arg" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostprocessSprites" static="False" minimumVersion="5.3" description="Add this function in a subclass to get a notification when an texture of sprite(s)  has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessSprites.html">
+    <message name="OnPostprocessSprites" static="False" minimumVersion="5.3" description="Add this function to a subclass to get a notification when an texture of sprite(s)  has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessSprites.html">
       <parameters>
         <parameter type="UnityEngine.Texture2D" array="False" name="texture" />
         <parameter type="UnityEngine.Sprite" array="True" name="sprites" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostprocessTexture" static="False" description="Add this function in a subclass to get a notification when a texture has completed importing just before." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture.html">
+    <message name="OnPostprocessTexture" static="False" description="Add this function to a subclass to get a notification when a texture has completed importing just before." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture.html">
       <parameters>
         <parameter type="UnityEngine.Texture2D" array="False" name="texture" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreprocessAnimation" static="False" description="Add this function in a subclass to get a notification just before animation from a model (.fbx, .mb file etc.) is imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessAnimation.html">
+    <message name="OnPreprocessAnimation" static="False" description="Add this function to a subclass to get a notification just before animation from a model (.fbx, .mb file etc.) is imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessAnimation.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreprocessAudio" static="False" description="Add this function in a subclass to get a notification just before an audio clip is being imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessAudio.html">
+    <message name="OnPreprocessAsset" static="False" minimumVersion="2018.1" description="Add this function to a subclass to get a notification just before any Asset is imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessAsset.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreprocessModel" static="False" description="Add this function in a subclass to get a notification just before a model (.fbx, .mb file etc.) is imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessModel.html">
+    <message name="OnPreprocessAudio" static="False" description="Add this function to a subclass to get a notification just before an audio clip is being imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessAudio.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreprocessSpeedTree" static="False" description="Add this function in a subclass to get a notification just before a SpeedTree asset (.spm file) is imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessSpeedTree.html">
+    <message name="OnPreprocessModel" static="False" description="Add this function to a subclass to get a notification just before a model (.fbx, .mb file etc.) is imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessModel.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreprocessTexture" static="False" description="Add this function in a subclass to get a notification just before the texture importer is run." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessTexture.html">
+    <message name="OnPreprocessSpeedTree" static="False" description="Add this function to a subclass to get a notification just before a SpeedTree asset (.spm file) is imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessSpeedTree.html">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPreprocessTexture" static="False" description="Add this function to a subclass to get a notification just before the texture importer is run." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessTexture.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnGeneratedCSProjectFiles" static="True" undocumented="True">
@@ -204,7 +213,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTriggerStay" static="False" description="OnTriggerStay is called almost all the frames for every Collider other that is touching the trigger." path="Documentation/en/ScriptReference/Collider.OnTriggerStay.html">
+    <message name="OnTriggerStay" static="False" description="OnTriggerStay is called almost all the frames for every Collider other that is touching the trigger. The function is on the physics timer so it won't necessarily run every frame." path="Documentation/en/ScriptReference/Collider.OnTriggerStay.html">
       <parameters>
         <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
       </parameters>
@@ -258,7 +267,7 @@
     <message name="Awake" static="False" minimumVersion="5.5" description="Called as the new window is opened." path="Documentation/en/ScriptReference/EditorWindow.Awake.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnDestroy" static="False" description="OnDestroy is called when the EditorWindow is closed." path="Documentation/en/ScriptReference/EditorWindow.OnDestroy.html">
+    <message name="OnDestroy" static="False" description="OnDestroy is called to close the EditorWindow window." path="Documentation/en/ScriptReference/EditorWindow.OnDestroy.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnFocus" static="False" description="Called when the window gets keyboard focus." path="Documentation/en/ScriptReference/EditorWindow.OnFocus.html">
@@ -267,7 +276,7 @@
     <message name="OnGUI" static="False" description="Implement your own editor GUI here." path="Documentation/en/ScriptReference/EditorWindow.OnGUI.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnHierarchyChange" static="False" description="Called whenever the scene hierarchy has changed." path="Documentation/en/ScriptReference/EditorWindow.OnHierarchyChange.html">
+    <message name="OnHierarchyChange" static="False" description="Handler for message that is sent when an object or group of objects in the hierarchy changes." path="Documentation/en/ScriptReference/EditorWindow.OnHierarchyChange.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnInspectorUpdate" static="False" description="OnInspectorUpdate is called at 10 frames per second to give the inspector a chance to update." path="Documentation/en/ScriptReference/EditorWindow.OnInspectorUpdate.html">
@@ -276,7 +285,7 @@
     <message name="OnLostFocus" static="False" description="Called when the window loses keyboard focus." path="Documentation/en/ScriptReference/EditorWindow.OnLostFocus.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnProjectChange" static="False" description="Called whenever the project has changed." path="Documentation/en/ScriptReference/EditorWindow.OnProjectChange.html">
+    <message name="OnProjectChange" static="True" description="Handler for message that is sent whenever the state of the project changes." path="Documentation/en/ScriptReference/EditorWindow.OnProjectChange.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnSelectionChange" static="False" description="Called whenever the selection has changed." path="Documentation/en/ScriptReference/EditorWindow.OnSelectionChange.html">
@@ -581,7 +590,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTriggerStay" static="False" coroutine="True" description="OnTriggerStay is called once per frame for every Collider other that is touching the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay.html">
+    <message name="OnTriggerStay" static="False" coroutine="True" description="OnTriggerStay is called once per physics update for every Collider other that is touching the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay.html">
       <parameters>
         <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
       </parameters>
@@ -596,13 +605,13 @@
     <message name="OnValidate" static="False" description="This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnValidate.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnWillRenderObject" static="False" description="OnWillRenderObject is called for each camera if the object is visible." path="Documentation/en/ScriptReference/MonoBehaviour.OnWillRenderObject.html">
+    <message name="OnWillRenderObject" static="False" description="OnWillRenderObject is called for each camera if the object is visible and not a UI element." path="Documentation/en/ScriptReference/MonoBehaviour.OnWillRenderObject.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="Reset" static="False" description="Reset to default values." path="Documentation/en/ScriptReference/MonoBehaviour.Reset.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="Start" static="False" coroutine="True" description="Start is called on the frame when a script is enabled just before any of the Update methods is called the first time." path="Documentation/en/ScriptReference/MonoBehaviour.Start.html">
+    <message name="Start" static="False" coroutine="True" description="Start is called on the frame when a script is enabled just before any of the Update methods are called the first time." path="Documentation/en/ScriptReference/MonoBehaviour.Start.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="Update" static="False" description="Update is called every frame, if the MonoBehaviour is enabled." path="Documentation/en/ScriptReference/MonoBehaviour.Update.html">

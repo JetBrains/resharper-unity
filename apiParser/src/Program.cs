@@ -25,7 +25,8 @@ namespace ApiParser
             Tuple.Create("Documentation-5.6.3f1", new Version(5, 6)),
             Tuple.Create("Documentation-2017.1.2f1", new Version(2017, 1)),
             Tuple.Create("Documentation-2017.2.0f2", new Version(2017, 2)),
-            Tuple.Create("Documentation-2017.3.0b3", new Version(2017, 3))
+            Tuple.Create("Documentation-2017.3.0b3", new Version(2017, 3)),
+            Tuple.Create("Documentation-2018.1.0b9", new Version(2018, 1))
         };
 
         public static void Main(string[] args)
