@@ -3,7 +3,7 @@ using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 
         public InvalidReturnTypeFix(InvalidReturnTypeWarning warning)
         {
-            myMethodSignature = warning.MethodSignature;
+            myMethodSignature = warning.ExpectedMethodSignature;
             myMethodDeclaration = warning.MethodDeclaration;
         }
 
@@ -34,14 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
             return null;
         }
 
-        public override string Text
-        {
-            get
-            {
-                var returnType = myMethodSignature.ReturnType.GetPresentableName(myMethodDeclaration.Language);
-                return $"Change return type to '{returnType}'";
-            }
-        }
+        public override string Text => $"Change return type to '{myMethodSignature.GetReturnTypeName()}'";
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

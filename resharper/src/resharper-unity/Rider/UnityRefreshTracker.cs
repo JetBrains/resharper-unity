@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var solFolder = mySolution.SolutionFilePath.Directory;
                 
             mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime, 
-                RiderBackgroundTaskBuilder.Create().WithHeader("Refresh").AsIndeterminate().AsNonCancelable());
+                RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...").AsIndeterminate().AsNonCancelable());
                         
             result.Advise(lifetimeDef.Lifetime, _ =>
             {

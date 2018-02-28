@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.CreateFromUsage;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
@@ -26,10 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
         // The submenu is pushed below us because it doesn't have a position, so is unsorted.
         // Its items are also added unsorted, so we can't add anything without it going to the
         // top of the list.
-        private static readonly InvisibleAnchor AfterCreateFromUsageAnchor =
+        private static readonly InvisibleAnchor ourAfterCreateFromUsageAnchor =
             CreateFromUsageFixBase.CreateFromUsageAnchor.CreateNext();
 
-        private static readonly InvisibleAnchor AfterCreateFromUsageOthersAnchor = new InvisibleAnchor(
+        private static readonly InvisibleAnchor ourAfterCreateFromUsageOthersAnchor = new InvisibleAnchor(
             CreateFromUsageFixBase.CreateFromUsageOthersAnchor, AnchorPosition.BasePosition.GetNext());
 
         private readonly List<ICreateFromUsageActionProvider> myUnfilteredItems;
@@ -71,22 +71,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 
         public bool IsAvailable(IUserDataHolder cache)
         {
-            IEnumerable<IBulbAction> firstLevelItems, secondLevelItems;
-            GetItems(out firstLevelItems, out secondLevelItems);
+            GetItems(out var firstLevelItems, out var secondLevelItems);
             return firstLevelItems.Any() || secondLevelItems.Any();
         }
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
-            IEnumerable<IBulbAction> firstLevelItems, secondLevelItems;
-            GetItems(out firstLevelItems, out secondLevelItems);
+            GetItems(out var firstLevelItems, out var secondLevelItems);
 
             // This is where we differ from CreateFromUsageFixBase. Don't promote anything from the "create other" menu
             foreach (var firstLevelItem in firstLevelItems)
-                yield return new IntentionAction(firstLevelItem, null, AfterCreateFromUsageAnchor);
+                yield return new IntentionAction(firstLevelItem, null, ourAfterCreateFromUsageAnchor);
 
             foreach (var secondLevelItem in secondLevelItems)
-                yield return new IntentionAction(secondLevelItem, null, AfterCreateFromUsageOthersAnchor);
+                yield return new IntentionAction(secondLevelItem, null, ourAfterCreateFromUsageOthersAnchor);
         }
 
         private void GetItems(out IEnumerable<IBulbAction> firstLevelItems, out IEnumerable<IBulbAction> secondLevelItems)

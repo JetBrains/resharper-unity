@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     }
 
     [TestUnity]
-    public class InvalidSignatureFixTests : CSharpQuickFixTestBase<InvalidSignatureFix>
+    public class InvalidSignatureFixTests : CSharpQuickFixTestBase<InvalidParametersFix>
     {
         protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\InvalidSignature";
 

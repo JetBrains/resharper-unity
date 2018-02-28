@@ -5,6 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
@@ -23,6 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
         }
 
         public RedundantAttributeDeadCodeQuickFix(RedundantSerializeFieldAttributeWarning highlighting)
+        {
+            myAttribute = highlighting.Attribute;
+        }
+
+        public RedundantAttributeDeadCodeQuickFix(RedundantAttributeOnTargetWarning highlighting)
         {
             myAttribute = highlighting.Attribute;
         }

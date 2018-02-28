@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -22,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
     {
         private readonly INullCoalescingExpression myExpression;
 
-        public ConvertCoalesingToConditionalQuickFix(UnityNullCoalescingWarning warning)
+        public ConvertCoalesingToConditionalQuickFix(UnityObjectNullCoalescingWarning warning)
         {
             myExpression = warning.Expression;
         }

@@ -1,7 +1,7 @@
 ﻿using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.QuickFixes.UsageChecking;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
 {
@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
         public QuickFixRegistrar(IQuickFixes table)
         {
             table.RegisterQuickFix<RedundantEventFunctionWarning>(null,
-                h => new RemoveUnusedElementFix(h.Declaration, "Remove redundant Unity event function"),
+                h => new RemoveUnusedElementFix(h.MethodDeclaration, "Remove redundant Unity event function"),
                 typeof(RemoveUnusedElementFix));
         }
     }

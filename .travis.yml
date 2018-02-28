@@ -1,7 +1,7 @@
 dist: trusty
 language: csharp
 mono: latest
-dotnet: 1.0.4
+dotnet: 2.1.4
 script:
   - ./build.sh
 os:
