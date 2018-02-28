@@ -12,10 +12,13 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="JetBrains.Unity.Libs.2017.2.0b3" Version="2017.7.21" />
+    <PackageReference Include="JetBrains.Unity.Libs.5.5.0f3" Version="2017.7.21" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="JetBrains.Annotations">
+      <HintPath>..\lib\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="JetBrains.Platform.RdCore35">
       <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
