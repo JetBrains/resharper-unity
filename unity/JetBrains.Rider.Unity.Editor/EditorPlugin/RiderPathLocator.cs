@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Util.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using UnityEditor;
-using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
   public class RiderPathLocator
   {
+    private static readonly ILog ourLogger = Log.GetLog<RiderPathLocator>();
     private readonly IPluginSettings myPluginSettings;
     public RiderPathLocator(IPluginSettings pluginSettings)
     {
@@ -125,22 +120,34 @@ namespace JetBrains.Rider.Unity.Editor
           //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
           //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
           var riderPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
-          var channels = Directory.GetDirectories(riderPath).ToArray();
-          var channelFiles = channels.Select(b=>Path.Combine(b, ".channel.settings.json")).Where(File.Exists).ToArray();
+          var channelFiles = Directory.GetDirectories(riderPath)
+            .Select(b=>Path.Combine(b, ".channel.settings.json")).Where(File.Exists).ToArray();
 
           var paths = channelFiles.Select(a =>
             {
-              var channelDir = Path.GetDirectoryName(a);
-              var json = File.ReadAllText(a);
-              var data = (JObject) JsonConvert.DeserializeObject(json);
-              var builds = data["active-application/builds"].Value<List<string>>();
-              var buildName = builds.FirstOrDefault();
-              if (buildName != null)
-                return Path.Combine(Path.Combine(channelDir, buildName), @"bin/rider.sh");
+              try
+              {
+                var channelDir = Path.GetDirectoryName(a);
+                var json = File.ReadAllText(a);
+                var data = (JObject) JsonConvert.DeserializeObject(json);
+                var builds = data["active-application"]["builds"];
+                if (builds.HasValues)
+                {
+                  var build = builds.First;
+                  return Path.Combine(Path.Combine(channelDir, build.Value<string>()), @"bin/rider.sh");
+                }
+              }
+              catch (Exception e)
+              {
+                ourLogger.Error(e, "Failed to get RiderPath via .channel.settings.json");
+                UnityEngine.Debug.Log(e);                
+              }    
               return null;
             })
             .Where(c=>!string.IsNullOrEmpty(c))
             .ToArray();
+          if (!paths.Any())
+            return Directory.GetDirectories(riderPath).SelectMany(Directory.GetDirectories).Select(b=>Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
           return paths;
         }
       }
