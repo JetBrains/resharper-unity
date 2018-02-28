@@ -10,17 +10,26 @@ namespace ApiParser
     public static class TypeResolver
     {
         private static readonly HashSet<Assembly> Assemblies = new HashSet<Assembly>();
-        private static readonly OneToListMap<string, Type> Types = new OneToListMap<string, Type>();
+        private static readonly OneToListMap<string, string> FullNames = new OneToListMap<string, string>();
 
         static TypeResolver()
         {
-            Types.Add("string", typeof(string));
-            Types.Add("int", typeof(int));
-            Types.Add("void", typeof(void));
-            Types.Add("bool", typeof(bool));
-            Types.Add("object", typeof(object));
-            Types.Add("float", typeof(float));
-            Types.Add("double", typeof(double));
+            FullNames.Add("string", typeof(string).FullName);
+            FullNames.Add("int", typeof(int).FullName);
+            FullNames.Add("void", typeof(void).FullName);
+            FullNames.Add("bool", typeof(bool).FullName);
+            FullNames.Add("object", typeof(object).FullName);
+            FullNames.Add("float", typeof(float).FullName);
+            FullNames.Add("double", typeof(double).FullName);
+
+            // UnityEngine.Experimental.Director.Playable moved to UnityEngine.Playables in 2017.1
+            // We correctly set the max version to 5.6, but if we resolve against types in a newer
+            // UnityEngine.dll, we resolve PlayState incorrectly. The heuristic when we have multiple
+            // candidates (such as UnityEngine.Experimental.Director.PlayState and
+            // UnityEngine.Playables.PlayState) is to prefer the one in the same namespace. This
+            // works nicely, so let's give an extra candidate
+            FullNames.Add("FrameData", "UnityEngine.Experimental.Director.FrameData");
+            FullNames.Add("PlayState", "UnityEngine.Experimental.Director.PlayState");
         }
 
         public static void AddAssembly([NotNull] Assembly assembly)
@@ -33,16 +42,17 @@ namespace ApiParser
 
             foreach (var type in types)
             {
-                Types.Add(type.Name, type);
-                if (type.FullName != null)
-                    Types.Add(type.FullName, type);
+                FullNames.Add(type.Name, type.FullName);
+                FullNames.Add(
+                    type.FullName ?? throw new InvalidOperationException($"Got null full name for type: {type.Name}"),
+                    type.FullName);
             }
         }
 
         [NotNull]
-        public static Type Resolve([NotNull] string name, string namespaceHint)
+        public static string ResolveFullName([NotNull] string name, string namespaceHint)
         {
-            var candidates = Types[name];
+            var candidates = FullNames[name];
             if (!candidates.Any()) throw new ApplicationException($"Unknown type '{name}'.");
 
             if (candidates.Count > 1)
@@ -52,9 +62,9 @@ namespace ApiParser
                 foreach (var candidate in candidates)
                 {
                     Console.WriteLine($"Namespace hint: {namespaceHint}");
-                    if (candidate.Namespace == namespaceHint)
+                    if (candidate.StartsWith(namespaceHint))
                     {
-                        Console.WriteLine("WARNING: Multiple candidates for `{0}`. Choosing `{1}` based on namespace", name, candidate.FullName);
+                        Console.WriteLine("WARNING: Multiple candidates for `{0}`. Choosing `{1}` based on namespace", name, candidate);
                         return candidate;
                     }
                 }
@@ -62,7 +72,7 @@ namespace ApiParser
                 Console.WriteLine("Cannot resolve type: {0}", name);
                 Console.WriteLine("Candidates:");
                 foreach (var candidate in candidates)
-                    Console.WriteLine(candidate.FullName);
+                    Console.WriteLine(candidate);
                 throw new InvalidOperationException("Cannot resolve type");
             }
 

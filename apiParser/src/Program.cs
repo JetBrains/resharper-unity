@@ -72,7 +72,7 @@ namespace ApiParser
             {
                 Console.WriteLine(doc.Item1);
                 parser.ParseFolder(doc.Item1, doc.Item2);
-                AddUndocumentApis(unityApi, doc.Item2);
+                AddUndocumentedApis(unityApi, doc.Item2);
             }
             AddUndocumentedOptionalParameters(unityApi);
             AddUndocumentedCoroutines(unityApi);
@@ -191,7 +191,7 @@ namespace ApiParser
             }
         }
 
-        private static void AddUndocumentApis(UnityApi unityApi, Version apiVersion)
+        private static void AddUndocumentedApis(UnityApi unityApi, Version apiVersion)
         {
             // From AssetPostprocessingInternal
             var type = unityApi.FindType("AssetPostprocessor");
