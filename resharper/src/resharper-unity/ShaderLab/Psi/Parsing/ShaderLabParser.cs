@@ -48,13 +48,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
             });
         }
 
-        IColorLiteral IShaderLabParser.ParseColorLiteral()
+        IVectorLiteral IShaderLabParser.ParseVectorLiteral()
         {
             return myIntern.DoWithIdentifierIntern(intern =>
             {
-                var element = ParseColorLiteral();
+                var element = ParseVectorLiteral();
                 InsertMissingTokens(element, intern);
-                return (IColorLiteral) element;
+                return (IVectorLiteral) element;
             });
         }
 

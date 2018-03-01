@@ -735,15 +735,15 @@ boolLiteral
   | falseLiteral{SHADER_LAB_KEYWORD, Keyword}
 ;
 
-colorLiteral
+vectorLiteral
 :
   LPAREN<LPAREN, LParen>
-  colorLiteralValues
+  vectorLiteralValues
   RPAREN<RPAREN, RParen>
 ;
 
-// Private and error handling to allow resync on colorLiteralValue::RPAREN
-private errorhandling colorLiteralValues
+// Private and error handling to allow resync on vectorLiteralValue::RPAREN
+private errorhandling vectorLiteralValues
 :
   LIST numericValue<NUMBER, Numbers> SEP COMMA<COMMA, Comma>
 ;
@@ -793,7 +793,7 @@ numericValue
 
 colorValue
 :
-  colorLiteral<SHADER_LAB_CONSTANT, Constant>
+  vectorLiteral<SHADER_LAB_CONSTANT, Constant>
   | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
@@ -1036,7 +1036,7 @@ errorhandling rangePropertyType
 interface propertyValue
 :
   scalarPropertyValue
-  | colorPropertyValue
+  | vectorPropertyValue
   | texturePropertyValue
   | errorPropertyValue
 ;
@@ -1046,9 +1046,9 @@ scalarPropertyValue
   NUMERIC_LITERAL<SHADER_LAB_VALUE, Number>
 ;
 
-colorPropertyValue
+vectorPropertyValue
 :
-  colorLiteral<SHADER_LAB_VALUE, Color>
+  vectorLiteral<SHADER_LAB_VALUE, Vector>
 ;
 
 texturePropertyValue

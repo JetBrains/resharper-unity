@@ -6,6 +6,8 @@
     _MyColour4 ("Invalid values", Color) = (0, foo, bar, oink)
     _MyColour5 ("Missing values", Color) = (0)
     _MyColour6 ("Too many values", Color) = (1, 1, 1, 1, 1)
+    _MyColour7 ("Out of range values", Color) = (|0, 0, 32767, 32767|(2))
+    _MyVector ("Out of range values. Also, vector", Vector) = (0, 0, 32767, 32767)
   }
 }
 
@@ -16,3 +18,6 @@ HEX:  FF, 4C, 66, 99' (E) ''
 (1): : (T) '|   | 
 ARGB:  255, 76, 102, 153
 HEX:  FF, 4C, 66, 99' (E) ''
+(2): : (T) '|   | 
+ARGB:  255, 0, 0, 255
+HEX:  FF, 0, 0, FF' (E) ''
