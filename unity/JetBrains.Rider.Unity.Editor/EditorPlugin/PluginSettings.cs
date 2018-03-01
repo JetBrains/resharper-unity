@@ -89,13 +89,6 @@ namespace JetBrains.Rider.Unity.Editor
       return false;
     }
 
-
-    public static bool SendConsoleToRider
-    {
-      get { return EditorPrefs.GetBool("Rider_SendConsoleToRider", true); }
-      private set { EditorPrefs.SetBool("Rider_SendConsoleToRider", value); }
-    }
-
     public static string TargetFrameworkVersion
     {
       get { return EditorPrefs.GetString("Rider_TargetFrameworkVersion", GetTargetFrameworkVersionDefault("4.6")); }
@@ -219,11 +212,6 @@ namespace JetBrains.Rider.Unity.Editor
         (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg),
           SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
-
-      SendConsoleToRider =
-        EditorGUILayout.Toggle(
-          new GUIContent("Send output from Unity to Rider.",
-            help), SendConsoleToRider);
 
       EditorGUI.EndChangeCheck();
 
