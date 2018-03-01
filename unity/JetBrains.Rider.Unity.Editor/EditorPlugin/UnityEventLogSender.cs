@@ -61,41 +61,38 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
-      if (PluginSettings.SendConsoleToRider)
+      // use Protocol to pass log entries to Rider
+      MainThreadDispatcher.Instance.InvokeOrQueue(() =>
       {
-        // use Protocol to pass log entries to Rider
-        MainThreadDispatcher.Instance.InvokeOrQueue(() =>
+        RdLogEvent evt;
+        switch (type)
         {
-          RdLogEvent evt;
-          switch (type)
-          {
-            case LogType.Error:
-            case LogType.Exception:
-              evt = new RdLogEvent(RdLogEventType.Error, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace);
-              break;
-            case LogType.Warning:
-              evt = new RdLogEvent(RdLogEventType.Warning, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace);
-              break;
-            default:
-              evt = new RdLogEvent(RdLogEventType.Message, EditorApplication.isPlaying?RdLogEventMode.Play:RdLogEventMode.Edit, message, stackTrace);
-              break;
-          }
-          
-          var model = myModel.Maybe.ValueOrDefault;
-          if (model == null)
-          {
-            myDelayedLogEvents.AddLast(evt);
-            if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
-              myDelayedLogEvents.RemoveFirst(); // limit max size
-          }
-          else
-          {
-            SendLogEvent(model, evt);
-          }
-        });
-      }
+          case LogType.Error:
+          case LogType.Exception:
+            evt = new RdLogEvent(RdLogEventType.Error, EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit, message, stackTrace);
+            break;
+          case LogType.Warning:
+            evt = new RdLogEvent(RdLogEventType.Warning, EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit, message, stackTrace);
+            break;
+          default:
+            evt = new RdLogEvent(RdLogEventType.Message, EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit, message, stackTrace);
+            break;
+        }
+
+        var model = myModel.Maybe.ValueOrDefault;
+        if (model == null)
+        {
+          myDelayedLogEvents.AddLast(evt);
+          if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
+            myDelayedLogEvents.RemoveFirst(); // limit max size
+        }
+        else
+        {
+          SendLogEvent(model, evt);
+        }
+      });
     }
-    
+
     private void SendLogEvent(UnityModel model, RdLogEvent logEvent)
     {
       //if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
