@@ -1,14 +1,17 @@
 ﻿using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Util.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JetBrains.Rider.Unity.Editor
 {
   public class RiderPathLocator
   {
+    private static readonly ILog ourLogger = Log.GetLog<RiderPathLocator>();
     private readonly IPluginSettings myPluginSettings;
     public RiderPathLocator(IPluginSettings pluginSettings)
     {
@@ -115,9 +118,36 @@ namespace JetBrains.Rider.Unity.Editor
           if (string.IsNullOrEmpty(home))
             return new string[0];
           //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
+          //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
           var riderPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
-          var results = Directory.GetDirectories(riderPath).SelectMany(Directory.GetDirectories).Select(b=>Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
-          return results;
+          var channelFiles = Directory.GetDirectories(riderPath)
+            .Select(b=>Path.Combine(b, ".channel.settings.json")).Where(File.Exists).ToArray();
+
+          var paths = channelFiles.Select(a =>
+            {
+              try
+              {
+                var channelDir = Path.GetDirectoryName(a);
+                var json = File.ReadAllText(a);
+                var data = (JObject) JsonConvert.DeserializeObject(json);
+                var builds = data["active-application"]["builds"];
+                if (builds.HasValues)
+                {
+                  var build = builds.First;
+                  return Path.Combine(Path.Combine(channelDir, build.Value<string>()), @"bin/rider.sh");
+                }
+              }
+              catch (Exception e)
+              {
+                ourLogger.Warn(e, "Failed to get RiderPath via .channel.settings.json");                
+              }    
+              return null;
+            })
+            .Where(c=>!string.IsNullOrEmpty(c))
+            .ToArray();
+          if (!paths.Any())
+            return Directory.GetDirectories(riderPath).SelectMany(Directory.GetDirectories).Select(b=>Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
+          return paths;
         }
       }
 
