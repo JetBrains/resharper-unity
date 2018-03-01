@@ -617,6 +617,21 @@
     <message name="Update" static="False" description="Update is called every frame, if the MonoBehaviour is enabled." path="Documentation/en/ScriptReference/MonoBehaviour.Update.html">
       <returns type="System.Void" array="False" />
     </message>
+    <message name="OnBeforeTransformParentChanged" static="False" undocumented="True">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnCanvasGroupChanged" static="False" undocumented="True">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnCanvasHierarchyChanged" static="False" undocumented="True">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnDidApplyAnimationProperties" static="False" undocumented="True">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnRectTransformDimensionsChange" static="False" undocumented="True" description="This callback is called if an associated RectTransform has its dimensions changed.">
+      <returns type="System.Void" array="False" />
+    </message>
   </type>
   <type kind="class" name="Network" ns="UnityEngine" path="Documentation/en/ScriptReference/Network.html">
     <message name="OnConnectedToServer" static="False" description="Called on the client when you have successfully connected to a server." path="Documentation/en/ScriptReference/Network.OnConnectedToServer.html">

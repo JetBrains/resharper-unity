@@ -73,11 +73,15 @@ namespace ApiParser
             {
                 Console.WriteLine(doc.Item1);
                 parser.ParseFolder(doc.Item1, doc.Item2);
+
+                // These are valid for all versions
                 AddUndocumentedApis(unityApi, doc.Item2);
             }
+
+            // THese modify existing functions
             AddUndocumentedOptionalParameters(unityApi);
             AddUndocumentedCoroutines(unityApi);
-            Fixup(unityApi);
+            FixDataFromIncorrectDocs(unityApi);
 
             using (var writer = new XmlTextWriter(@"api.xml", Encoding.UTF8) {Formatting = Formatting.Indented})
             {
@@ -144,7 +148,7 @@ namespace ApiParser
                 function.MakeParameterOptional(parameterName, justification);
         }
 
-        private static void Fixup(UnityApi unityApi)
+        private static void FixDataFromIncorrectDocs(UnityApi unityApi)
         {
             // Documentation doesn't state that it's static, or has wrong types
             Console.WriteLine("Fixing incorrect documentation");
@@ -219,6 +223,32 @@ namespace ApiParser
             {
                 var eventFunction = new UnityApiEventFunction("OnStatusUpdated", true,
                     false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+            }
+
+            type = unityApi.FindType("MonoBehaviour");
+            if (type != null)
+            {
+                const string description =
+                    "This callback is called if an associated RectTransform has its dimensions changed.";
+                var eventFunction = new UnityApiEventFunction("OnRectTransformDimensionsChange",
+                    false, false, ApiType.Void, apiVersion, description, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                eventFunction = new UnityApiEventFunction("OnBeforeTransformParentChanged",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                eventFunction = new UnityApiEventFunction("OnDidApplyAnimationProperties",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                eventFunction = new UnityApiEventFunction("OnCanvasGroupChanged",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                eventFunction = new UnityApiEventFunction("OnCanvasHierarchyChanged",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
             }
 
