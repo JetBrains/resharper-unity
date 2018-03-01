@@ -31,7 +31,7 @@ class UnityLogPanelView(project: Project, val model: UnityLogPanelModel, project
             console.clear()
             if (selectedIndex >= 0) {
                 console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
-                console.scrollToEnd()
+                console.scrollTo(0)
             }
         }
         val eventList1 = this
