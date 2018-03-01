@@ -36,7 +36,8 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdProperty<string> ApplicationPath { get { return _ApplicationPath; }}
     [NotNull] public IRdProperty<string> ApplicationVersion { get { return _ApplicationVersion; }}
     [NotNull] public IRdProperty<UnityLogModelInitialized> LogModelInitialized { get { return _LogModelInitialized; }}
-    [NotNull] public IRdCall<RdVoid, bool> IsClientConnected { get { return _IsClientConnected; }}
+    [NotNull] public IRdCall<RdVoid, bool> IsBackendConnected { get { return _IsBackendConnected; }}
+    [NotNull] public RdEndpoint<RdVoid, UnityEditorState> GetUnityEditorState { get { return _GetUnityEditorState; }}
     [NotNull] public IRdCall<RdOpenFileArgs, bool> OpenFileLineCol { get { return _OpenFileLineCol; }}
     [NotNull] public RdEndpoint<string, bool> UpdateUnityPlugin { get { return _UpdateUnityPlugin; }}
     [NotNull] public RdEndpoint<RdVoid, RdVoid> Refresh { get { return _Refresh; }}
@@ -50,7 +51,8 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdProperty<string> _ApplicationPath;
     [NotNull] private readonly RdProperty<string> _ApplicationVersion;
     [NotNull] private readonly RdProperty<UnityLogModelInitialized> _LogModelInitialized;
-    [NotNull] private readonly RdCall<RdVoid, bool> _IsClientConnected;
+    [NotNull] private readonly RdCall<RdVoid, bool> _IsBackendConnected;
+    [NotNull] private readonly RdEndpoint<RdVoid, UnityEditorState> _GetUnityEditorState;
     [NotNull] private readonly RdCall<RdOpenFileArgs, bool> _OpenFileLineCol;
     [NotNull] private readonly RdEndpoint<string, bool> _UpdateUnityPlugin;
     [NotNull] private readonly RdEndpoint<RdVoid, RdVoid> _Refresh;
@@ -65,7 +67,8 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdProperty<string> applicationPath,
       [NotNull] RdProperty<string> applicationVersion,
       [NotNull] RdProperty<UnityLogModelInitialized> logModelInitialized,
-      [NotNull] RdCall<RdVoid, bool> isClientConnected,
+      [NotNull] RdCall<RdVoid, bool> isBackendConnected,
+      [NotNull] RdEndpoint<RdVoid, UnityEditorState> getUnityEditorState,
       [NotNull] RdCall<RdOpenFileArgs, bool> openFileLineCol,
       [NotNull] RdEndpoint<string, bool> updateUnityPlugin,
       [NotNull] RdEndpoint<RdVoid, RdVoid> refresh
@@ -79,7 +82,8 @@ namespace JetBrains.Platform.Unity.Model
       if (applicationPath == null) throw new ArgumentNullException("applicationPath");
       if (applicationVersion == null) throw new ArgumentNullException("applicationVersion");
       if (logModelInitialized == null) throw new ArgumentNullException("logModelInitialized");
-      if (isClientConnected == null) throw new ArgumentNullException("isClientConnected");
+      if (isBackendConnected == null) throw new ArgumentNullException("isBackendConnected");
+      if (getUnityEditorState == null) throw new ArgumentNullException("getUnityEditorState");
       if (openFileLineCol == null) throw new ArgumentNullException("openFileLineCol");
       if (updateUnityPlugin == null) throw new ArgumentNullException("updateUnityPlugin");
       if (refresh == null) throw new ArgumentNullException("refresh");
@@ -92,7 +96,8 @@ namespace JetBrains.Platform.Unity.Model
       _ApplicationPath = applicationPath;
       _ApplicationVersion = applicationVersion;
       _LogModelInitialized = logModelInitialized;
-      _IsClientConnected = isClientConnected;
+      _IsBackendConnected = isBackendConnected;
+      _GetUnityEditorState = getUnityEditorState;
       _OpenFileLineCol = openFileLineCol;
       _UpdateUnityPlugin = updateUnityPlugin;
       _Refresh = refresh;
@@ -110,7 +115,8 @@ namespace JetBrains.Platform.Unity.Model
       BindableChildren.Add(new KeyValuePair<string, object>("applicationPath", _ApplicationPath));
       BindableChildren.Add(new KeyValuePair<string, object>("applicationVersion", _ApplicationVersion));
       BindableChildren.Add(new KeyValuePair<string, object>("logModelInitialized", _LogModelInitialized));
-      BindableChildren.Add(new KeyValuePair<string, object>("isClientConnected", _IsClientConnected));
+      BindableChildren.Add(new KeyValuePair<string, object>("isBackendConnected", _IsBackendConnected));
+      BindableChildren.Add(new KeyValuePair<string, object>("getUnityEditorState", _GetUnityEditorState));
       BindableChildren.Add(new KeyValuePair<string, object>("openFileLineCol", _OpenFileLineCol));
       BindableChildren.Add(new KeyValuePair<string, object>("updateUnityPlugin", _UpdateUnityPlugin));
       BindableChildren.Add(new KeyValuePair<string, object>("refresh", _Refresh));
@@ -127,13 +133,16 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString),
       new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write),
       new RdCall<RdVoid, bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
+      new RdEndpoint<RdVoid, UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, ReadUnityEditorState, WriteUnityEditorState),
       new RdCall<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
       new RdEndpoint<string, bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
       new RdEndpoint<RdVoid, RdVoid>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid)
     ) {}
     //statics
     
+    public static CtxReadDelegate<UnityEditorState> ReadUnityEditorState = new CtxReadDelegate<UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadEnum<UnityEditorState>);
     
+    public static CtxWriteDelegate<UnityEditorState> WriteUnityEditorState = new CtxWriteDelegate<UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.WriteEnum<UnityEditorState>);
     
     protected override Action<ISerializers> Register => RegisterDeclaredTypesSerializers;
     public static void RegisterDeclaredTypesSerializers(ISerializers serializers)
@@ -143,7 +152,9 @@ namespace JetBrains.Platform.Unity.Model
       serializers.RegisterEnum<RdLogEventType>();
       serializers.RegisterEnum<RdLogEventMode>();
       serializers.Register(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write);
+      serializers.RegisterEnum<UnityEditorState>();
       
+      serializers.RegisterToplevelOnce(typeof(UnityModel), UnityModel.RegisterDeclaredTypesSerializers);
     }
     
     public UnityModel(Lifetime lifetime, IProtocol protocol) : this()
@@ -169,7 +180,8 @@ namespace JetBrains.Platform.Unity.Model
         printer.Print("applicationPath = "); _ApplicationPath.PrintEx(printer); printer.Println();
         printer.Print("applicationVersion = "); _ApplicationVersion.PrintEx(printer); printer.Println();
         printer.Print("logModelInitialized = "); _LogModelInitialized.PrintEx(printer); printer.Println();
-        printer.Print("isClientConnected = "); _IsClientConnected.PrintEx(printer); printer.Println();
+        printer.Print("isBackendConnected = "); _IsBackendConnected.PrintEx(printer); printer.Println();
+        printer.Print("getUnityEditorState = "); _GetUnityEditorState.PrintEx(printer); printer.Println();
         printer.Print("openFileLineCol = "); _OpenFileLineCol.PrintEx(printer); printer.Println();
         printer.Print("updateUnityPlugin = "); _UpdateUnityPlugin.PrintEx(printer); printer.Println();
         printer.Print("refresh = "); _Refresh.PrintEx(printer); printer.Println();
@@ -374,6 +386,14 @@ namespace JetBrains.Platform.Unity.Model
       Print(printer);
       return printer.ToString();
     }
+  }
+  
+  
+  public enum UnityEditorState {
+    Disconnected,
+    Idle,
+    Play,
+    Refresh
   }
   
   

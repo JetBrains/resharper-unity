@@ -53,13 +53,13 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    public static bool IsProtocolConnected()
+    internal static bool CheckConnectedToBackendSync()
     {
         var connected = false;
         try
         {
           // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = ourModel.Maybe.ValueOrDefault.IsClientConnected.Sync(RdVoid.Instance,
+          connected = ourModel.Maybe.ValueOrDefault.IsBackendConnected.Sync(RdVoid.Instance,
             new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
         }
         catch (Exception)
@@ -125,14 +125,16 @@ namespace JetBrains.Rider.Unity.Editor
         
         MainThreadDispatcher.AssertThread();
         
-        riderProtocolController.Wire.Connected.View(lifetime, (lt, connected) =>
+        riderProtocolController.Wire.Connected.View(lifetime, (connectionLifetime, connected) =>
         {
           if (connected)
           {
             var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
             ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
-            ourModel.Value = CreateModel(protocol, lt);
+            var modelValue = CreateModel(protocol, connectionLifetime);
+            AdviseModel(connectionLifetime, modelValue);
+            ourModel.Value = modelValue;
           }
           else
             ourModel.Value = null;
@@ -146,6 +148,24 @@ namespace JetBrains.Rider.Unity.Editor
       ourAssetHandler = new OnOpenAssetHandler(ourModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
       
       ourInitialized = true;
+    }
+
+    private static void AdviseModel(Lifetime connectionLifetime, UnityModel modelValue)
+    {
+      modelValue.GetUnityEditorState.Set(rdVoid =>
+      {
+        if (EditorApplication.isPlaying)
+        {
+          return UnityEditorState.Play;
+        }
+
+        if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+        {
+          return UnityEditorState.Refresh;
+        }
+        
+        return UnityEditorState.Idle;
+      }); 
     }
 
     private static UnityModel CreateModel(Protocol protocol, Lifetime lt)

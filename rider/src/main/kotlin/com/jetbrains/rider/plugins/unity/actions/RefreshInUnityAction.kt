@@ -15,7 +15,7 @@ class RefreshInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : An
     }
 
     override fun update(e: AnActionEvent?) {
-        e?.presentation?.isEnabled = projectCustomDataHost.isConnected.value
+        e?.presentation?.isEnabled = projectCustomDataHost.sessionInitialized.value
         super.update(e)
     }
 }

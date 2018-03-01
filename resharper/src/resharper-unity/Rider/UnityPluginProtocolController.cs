@@ -153,20 +153,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 
                     var protocol = new Protocol(new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
                     var model = new UnityModel(lf, protocol);
-                    model.IsClientConnected.Set(rdVoid => true);
+                    model.IsBackendConnected.Set(rdVoid => true);
                     model.RiderProcessId.SetValue(Process.GetCurrentProcess().Id);
-                    SetOrCreateDataKeyValuePair(solution, "UNITY_SessionInitialized", "true");
+                    solution.SetCustomData("UNITY_SessionInitialized", "true");
                     
                     SubscribeToLogs(lf, model, solution);
                     SubscribeToOpenFile(model, solution);
-                    model.Play.AdviseNotNull(lf, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Play", b.ToString().ToLower()));
-                    model.Pause.AdviseNotNull(lf, b => SetOrCreateDataKeyValuePair(solution, "UNITY_Pause", b.ToString().ToLower()));
+                    model.Play.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Play", b.ToString().ToLower()));
+                    model.Pause.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Pause", b.ToString().ToLower()));
                     
                     UnityModel = model;
                     lf.AddAction(() =>
                     {
                         myLogger.Info("Wire disconnected.");
-                        SetOrCreateDataKeyValuePair(solution, "UNITY_SessionInitialized", "false");
+                        solution.SetCustomData("UNITY_SessionInitialized", "false");
                         UnityModel = null;
                     });
                 });
@@ -193,18 +193,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     }
                 }
 
-                SetOrCreateDataKeyValuePair(solution, "UNITY_ActivateRider", "true");
+                solution.SetCustomData("UNITY_ActivateRider", "true");
                 return true;
             });
-        }
-
-        private static void SetOrCreateDataKeyValuePair(Solution solution, string key, string value)
-        {
-            var data = solution.CustomData.Data;
-            if (data.ContainsKey(key))
-                data[key] = value;
-            else
-                data.Add(key, value);
         }
 
         private void SubscribeToLogs(Lifetime lifetime, UnityModel model, Solution solution)
@@ -214,7 +205,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 modelInitialized.Log.Advise(lifetime, entry =>
                 {
                     myLogger.Verbose(entry.Mode +" " + entry.Type +" "+ entry.Message +" "+ Environment.NewLine +" "+ entry.StackTrace);
-                    SetOrCreateDataKeyValuePair(solution, "UNITY_LogEntry", JsonConvert.SerializeObject(entry));
+                    solution.SetCustomData("UNITY_LogEntry", JsonConvert.SerializeObject(entry));
                 });
             });
         }

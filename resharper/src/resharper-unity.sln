@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin", "..\..\unity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.Tests", "..\..\unity\JetBrains.Rider.Unity.Editor\EditorPlugin.Tests\EditorPlugin.Tests.csproj", "{0E4211DB-DA60-416B-A13C-14D45410F768}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnityEditor", "UnityEditor", "{27FAB5DF-2272-44E7-9BCE-41508F24C07B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReSharper", "ReSharper", "{9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,5 +60,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{67CFB019-CE94-4251-8C3A-4DC70E4E4A52} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
+		{0E4211DB-DA60-416B-A13C-14D45410F768} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
+		{DF42F23E-46F3-4798-8B16-024619FA5E46} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{849CDA2E-35FC-49A8-A755-C3216B72BAB9} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{31338488-0C08-43C2-884F-A38485E2FA2F} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 	EndGlobalSection
 EndGlobal

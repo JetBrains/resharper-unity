@@ -25,7 +25,8 @@ class UnityModel private constructor(
     private val _applicationPath : RdOptionalProperty<String>,
     private val _applicationVersion : RdOptionalProperty<String>,
     private val _logModelInitialized : RdOptionalProperty<UnityLogModelInitialized>,
-    private val _isClientConnected : RdEndpoint<Unit, Boolean>,
+    private val _isBackendConnected : RdEndpoint<Unit, Boolean>,
+    private val _getUnityEditorState : RdCall<Unit, UnityEditorState>,
     private val _openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean>,
     private val _updateUnityPlugin : RdCall<String, Boolean>,
     private val _refresh : RdCall<Unit, Unit>
@@ -39,6 +40,8 @@ class UnityModel private constructor(
             serializers.register(RdLogEventType.marshaller)
             serializers.register(RdLogEventMode.marshaller)
             serializers.register(UnityLogModelInitialized)
+            serializers.register(UnityEditorState.marshaller)
+            UnityModel.register(serializers)
         }
 
 
@@ -63,7 +66,8 @@ class UnityModel private constructor(
     val applicationPath : IOptProperty<String> get() = _applicationPath
     val applicationVersion : IOptProperty<String> get() = _applicationVersion
     val logModelInitialized : IOptProperty<UnityLogModelInitialized> get() = _logModelInitialized
-    val isClientConnected : RdEndpoint<Unit, Boolean> get() = _isClientConnected
+    val isBackendConnected : RdEndpoint<Unit, Boolean> get() = _isBackendConnected
+    val getUnityEditorState : IRdCall<Unit, UnityEditorState> get() = _getUnityEditorState
     val openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean> get() = _openFileLineCol
     val updateUnityPlugin : IRdCall<String, Boolean> get() = _updateUnityPlugin
     val refresh : IRdCall<Unit, Unit> get() = _refresh
@@ -87,7 +91,8 @@ class UnityModel private constructor(
         bindableChildren.add("applicationPath" to _applicationPath)
         bindableChildren.add("applicationVersion" to _applicationVersion)
         bindableChildren.add("logModelInitialized" to _logModelInitialized)
-        bindableChildren.add("isClientConnected" to _isClientConnected)
+        bindableChildren.add("isBackendConnected" to _isBackendConnected)
+        bindableChildren.add("getUnityEditorState" to _getUnityEditorState)
         bindableChildren.add("openFileLineCol" to _openFileLineCol)
         bindableChildren.add("updateUnityPlugin" to _updateUnityPlugin)
         bindableChildren.add("refresh" to _refresh)
@@ -105,6 +110,7 @@ class UnityModel private constructor(
         RdOptionalProperty<String>(FrameworkMarshallers.String),
         RdOptionalProperty<UnityLogModelInitialized>(UnityLogModelInitialized),
         RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool),
+        RdCall<Unit, UnityEditorState>(FrameworkMarshallers.Void, UnityEditorState.marshaller),
         RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool),
         RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool),
         RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void)
@@ -124,7 +130,8 @@ class UnityModel private constructor(
             print("applicationPath = "); _applicationPath.print(printer); println()
             print("applicationVersion = "); _applicationVersion.print(printer); println()
             print("logModelInitialized = "); _logModelInitialized.print(printer); println()
-            print("isClientConnected = "); _isClientConnected.print(printer); println()
+            print("isBackendConnected = "); _isBackendConnected.print(printer); println()
+            print("getUnityEditorState = "); _getUnityEditorState.print(printer); println()
             print("openFileLineCol = "); _openFileLineCol.print(printer); println()
             print("updateUnityPlugin = "); _updateUnityPlugin.print(printer); println()
             print("refresh = "); _refresh.print(printer); println()
@@ -278,6 +285,16 @@ data class RdOpenFileArgs (
         }
         printer.print(")")
     }
+}
+
+
+enum class UnityEditorState {
+    Disconnected,
+    Idle,
+    Play,
+    Refresh;
+
+    companion object { val marshaller = FrameworkMarshallers.enum<UnityEditorState>() }
 }
 
 
