@@ -13,6 +13,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.plugins.unity.RdLogEvent
+import com.jetbrains.rider.ui.RiderGroupingEvent
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import java.awt.BorderLayout
@@ -30,6 +31,7 @@ class UnityLogPanelView(project: Project, val model: UnityLogPanelModel, project
         addListSelectionListener {
             console.clear()
             if (selectedIndex >= 0) {
+                console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
                 console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
                 console.scrollTo(0)
             }
@@ -38,7 +40,7 @@ class UnityLogPanelView(project: Project, val model: UnityLogPanelModel, project
         addKeyListener(object: KeyAdapter() {
             override fun keyPressed(e: KeyEvent?) {
                 if (e?.keyCode == KeyEvent.VK_ENTER) {
-                    e?.consume()
+                    e.consume()
                     getNavigatableForSelected(eventList1, project)?.navigate(true)
                 }
             }
@@ -73,7 +75,13 @@ class UnityLogPanelView(project: Project, val model: UnityLogPanelModel, project
     private fun refreshList(newEvents: List<RdLogEvent>) {
         eventList.riderModel.clear()
         for (event in newEvents)
+        {
             eventList.riderModel.addElement(event)
+        }
+
+        if (eventList.isSelectionEmpty)
+            eventList.selectedIndex = eventList.itemsCount-1
+        eventList.ensureIndexIsVisible(eventList.itemsCount-1)
     }
 
     init {

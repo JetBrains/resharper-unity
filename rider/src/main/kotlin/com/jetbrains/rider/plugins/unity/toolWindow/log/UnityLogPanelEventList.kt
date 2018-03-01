@@ -30,7 +30,7 @@ class UnityLogPanelEventList : JBList<RdLogEvent>(emptyList()), DataProvider, Co
 
     fun getNavigatableForSelected(list: UnityLogPanelEventList, project: Project): Navigatable? {
         val node = list.selectedValue
-        if (node!=null && (node.stackTrace==null || node.stackTrace=="")) {
+        if (node!=null && (node.stackTrace=="")) {
             var index = node.message.indexOf("(");
             if (index<0)
                 return null
