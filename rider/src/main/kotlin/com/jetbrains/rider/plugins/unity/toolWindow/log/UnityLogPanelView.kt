@@ -16,12 +16,14 @@ import com.jetbrains.rider.plugins.unity.RdLogEvent
 import com.jetbrains.rider.ui.RiderGroupingEvent
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
+import com.jetbrains.rider.util.lifetime.Lifetime
+import com.jetbrains.rider.util.reactive.whenTrue
 import java.awt.BorderLayout
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 
-class UnityLogPanelView(project: Project, val model: UnityLogPanelModel, projectCustomDataHost: ProjectCustomDataHost) {
+class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, projectCustomDataHost: ProjectCustomDataHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
         .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME, project))
@@ -51,11 +53,15 @@ class UnityLogPanelView(project: Project, val model: UnityLogPanelModel, project
                 return true
             }
         }.installOn(this)
+
+        projectCustomDataHost.play.whenTrue(logModel.lifetime) {
+            logModel.events.clear()
+        }
     }
 
     private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(projectCustomDataHost)
 
-    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar(model)
+    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar(logModel)
 
     private val content = JBSplitter().apply {
         proportion = 1f / 2
@@ -86,7 +92,7 @@ class UnityLogPanelView(project: Project, val model: UnityLogPanelModel, project
 
     init {
         Disposer.register(project, console)
-        model.onChanged.advise(model.lifetime) { refreshList(it) }
-        model.fire()
+        logModel.onChanged.advise(logModel.lifetime) { refreshList(it) }
+        logModel.fire()
     }
 }
