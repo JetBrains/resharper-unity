@@ -23,9 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
-        private readonly UnityPluginProtocolController myPluginProtocolController;
+        private readonly UnityEditorProtocol myPluginProtocolController;
 
-        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityPluginProtocolController pluginProtocolController)
+        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityEditorProtocol pluginProtocolController)
         {
             myLocks = locks;
             myLifetime = lifetime;
@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityPluginProtocolController protocolController, 
+        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityEditorProtocol protocolController, 
             ILogger logger)
         {
             if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)

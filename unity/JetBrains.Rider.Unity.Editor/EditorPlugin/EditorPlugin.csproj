@@ -31,6 +31,15 @@
     <Reference Include="JetBrains.Platform.RdFramework35, Version=111.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Unity\Editor\Data\UnityExtensions\Unity\TestRunner\net35\unity-custom\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.TestRunner">
+      <HintPath>..\..\..\..\..\.nuget\packages\jetbrains.unity.libs.2017.2.0b3\2017.7.21\lib\UnityEditor.TestRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TestRunner">
+      <HintPath>..\..\..\..\..\.nuget\packages\jetbrains.unity.libs.2017.2.0b3\2017.7.21\lib\UnityEngine.TestRunner.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <!--https://github.com/ravibpatel/ILRepack.Lib.MSBuild.Task/issues/6-->
   <UsingTask AssemblyFile="..\lib\ILRepack.Lib.MSBuild.Task.dll" TaskName="ILRepack" />

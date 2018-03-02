@@ -24,7 +24,7 @@ using Newtonsoft.Json;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
-    public class UnityPluginProtocolController
+    public class UnityEditorProtocol
     {
         private readonly Lifetime myLifetime;
         private readonly SequentialLifetimes mySessionLifetimes;
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public readonly ISignal<UnityModel> Refresh = new DataFlow.Signal<UnityModel>("Refresh");
 
-        public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, 
+        public UnityEditorProtocol(Lifetime lifetime, ILogger logger, 
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
             if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath.Directory))

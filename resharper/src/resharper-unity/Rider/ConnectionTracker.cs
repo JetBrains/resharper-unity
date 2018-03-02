@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private UnityEditorState myLastCheckResult = UnityEditorState.Disconnected;
         
-        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityPluginProtocolController unityEditorProtocolController, IShellLocks locks, ISolution solution)
+        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityEditorProtocol unityEditorProtocolController, IShellLocks locks, ISolution solution)
         {
             //check connection between backend and unity editor
             locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
