@@ -1,14 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.2017.2.0b3" Version="2017.7.21" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
@@ -36,6 +34,9 @@
     </Reference>
     <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(ProjectDir)ILRepack.targets" />
