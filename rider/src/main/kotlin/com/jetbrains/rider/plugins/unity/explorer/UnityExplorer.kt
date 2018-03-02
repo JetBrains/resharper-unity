@@ -23,11 +23,6 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
         val IgnoredExtensions = hashSetOf("meta", "tmp")
     }
 
-    init {
-        IncludeExcludeActionBase.isAvailable = false
-        AddReferenceAction.isAvailable = false
-    }
-
     override fun isInitiallyVisible(): Boolean {
         val assetsFolder = project.baseDir?.findChild("Assets")
         return assetsFolder != null
