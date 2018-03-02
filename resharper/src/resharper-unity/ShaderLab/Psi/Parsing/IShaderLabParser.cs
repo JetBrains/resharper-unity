@@ -5,6 +5,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
 {
     internal interface IShaderLabParser : IParser
     {
-        IColorLiteral ParseColorLiteral();
+        IVectorLiteral ParseVectorLiteral();
     }
 }

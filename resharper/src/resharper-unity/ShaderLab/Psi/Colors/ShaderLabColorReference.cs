@@ -13,15 +13,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Colors
 {
     public class ShaderLabColorReference : IColorReference
     {
-        private readonly IColorPropertyValue myColorPropertyValue;
+        private readonly IVectorPropertyValue myVectorPropertyValue;
         private readonly IColorValue myColorValue;
 
-        public ShaderLabColorReference(IColorElement colorElement, IColorPropertyValue colorPropertyValue, IColorValue colorValue, DocumentRange colorConstantRange)
+        public ShaderLabColorReference(IColorElement colorElement, IVectorPropertyValue vectorpertyValue,
+            IColorValue colorValue, DocumentRange colorConstantRange)
         {
-            myColorPropertyValue = colorPropertyValue;
+            myVectorPropertyValue = vectorpertyValue;
             myColorValue = colorValue;
             ColorElement = colorElement;
-            Owner = (ITreeNode)colorValue ?? colorPropertyValue;
+            Owner = (ITreeNode) colorValue ?? vectorpertyValue;
             ColorConstantRange = colorConstantRange;
 
             BindOptions = new ColorBindOptions
@@ -38,9 +39,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Colors
             var formattedString = GetFormattedString(colorElement);
             var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(new StringBuffer(formattedString));
             var parser = (IShaderLabParser)languageService.CreateParser(lexer, null, null);
-            var newLiteral = parser.ParseColorLiteral();
+            var newLiteral = parser.ParseVectorLiteral();
 
-            myColorPropertyValue?.SetColor(newLiteral);
+            // One of these will be null
+            myVectorPropertyValue?.SetVector(newLiteral);
             myColorValue?.SetConstant(newLiteral);
         }
 
