@@ -1,14 +1,16 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Platform.Unity.Model;
 using JetBrains.Util.Logging;
 using NUnit.Framework.Interfaces;
 using UnityEngine.Events;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
-  public static class UnityEditorTestLauncher
+  public class UnityEditorTestLauncher
   {
+    private readonly UnitTestLaunch myLaunch;
     private const string RunnerAddlistener = "AddsfdListener";
     private const string LauncherRun = "Run";
     private const string MTeststartedevent = "m_TestStartedEvent";
@@ -17,8 +19,13 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     private const string EditModeLauncher = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
     private const string TestRunnerFilter = "UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter";
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
+
+    public UnityEditorTestLauncher(UnitTestLaunch launch)
+    {
+      myLaunch = launch;
+    }
     
-    public static void TryLaunchUnitTests()
+    public void TryLaunchUnitTests()
     {
       try
       {
@@ -78,7 +85,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
     }
 
-    private static bool AdviseTestStarted(object runner)
+    private bool AdviseTestStarted(object runner)
     {
       var mTestStartedEventMethodInfo = runner.GetType()
         .GetField(MTeststartedevent, BindingFlags.Instance | BindingFlags.NonPublic);
@@ -104,7 +111,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       return true;
     }
 
-    private static bool AdviseTestFinished(object runner)
+    private bool AdviseTestFinished(object runner)
     {
       var mTestFinishedEventMethodInfo = runner.GetType()
         .GetField(MTestfinishedevent, BindingFlags.Instance | BindingFlags.NonPublic);
@@ -130,14 +137,16 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       return true;
     }
 
-    private static void TestStarted(ITest arg0)
+    private void TestStarted(ITest test)
     {
-      ourLogger.Verbose($"TestStarted : {arg0.FullName}");
+      ourLogger.Verbose($"TestStarted : {test.FullName}");
+      myLaunch.TestResult.Fire(new TestResult(test.FullName, Status.Running));
     }
     
-    private static void TestFinished(ITestResult arg0)
+    private void TestFinished(ITestResult test)
     {
-      ourLogger.Verbose($"TestFinished : {arg0.FullName}");
+      ourLogger.Verbose($"TestFinished : {test.FullName}");
+      myLaunch.TestResult.Fire(new TestResult(test.FullName, Equals(test.ResultState, ResultState.Success) ? Status.Running : Status.Failed));
     }
   }
   

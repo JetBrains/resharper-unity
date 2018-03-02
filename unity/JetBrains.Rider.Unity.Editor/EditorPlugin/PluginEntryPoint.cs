@@ -15,6 +15,7 @@ using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.Unity.Editor.UnitTesting;
 using UnityEditor.Callbacks;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -166,6 +167,12 @@ namespace JetBrains.Rider.Unity.Editor
         
         return UnityEditorState.Idle;
       }); 
+      
+      modelValue.UnitTestLaunch.Change.Advise(connectionLifetime, launch =>
+      {
+        var unityEditorTestLauncher = new UnityEditorTestLauncher(launch);
+        unityEditorTestLauncher.TryLaunchUnitTests();
+      });
     }
 
     private static UnityModel CreateModel(Protocol protocol, Lifetime lt)

@@ -2,13 +2,10 @@
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Host.Features.Documents;
 using JetBrains.Util;
-using JetBrains.Util.Logging;
 using ILogger = JetBrains.Util.ILogger;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -23,10 +20,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             //check connection between backend and unity editor
             locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
             {
-                if (unityEditorProtocolController.UnityModel == null)
+                if (unityEditorProtocolController.UnityModel.Value == null)
                     myLastCheckResult = UnityEditorState.Disconnected;
 
-                var rdTask = unityEditorProtocolController.UnityModel?.GetUnityEditorState.Start(RdVoid.Instance);
+                var rdTask = unityEditorProtocolController.UnityModel.Value?.GetUnityEditorState.Start(RdVoid.Instance);
                 rdTask?.Result.Advise(lifetime, result =>
                 {
                     myLastCheckResult = result.Result;

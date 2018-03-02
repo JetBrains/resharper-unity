@@ -6,9 +6,7 @@ using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.ProjectsHost.Impl;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.Rider.Model;
@@ -46,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (IsRefreshing) return;
 
             IsRefreshing = true;
-            var result = myPluginProtocolController.UnityModel?.Refresh.Start(RdVoid.Instance)?.Result;
+            var result = myPluginProtocolController.UnityModel.Value?.Refresh.Start(RdVoid.Instance)?.Result;
 
             if (result == null)
             {
@@ -93,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
             {
                 if (refresher.IsRefreshing) return;
-                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
+                var isPlay = protocolController.UnityModel.Value?.Play.HasTrueValue();
                 if (isPlay==null || (bool)isPlay) return;
                 
                 groupingEvent.FireIncoming();
@@ -112,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (!hasChange)
                     return;
                 
-                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
+                var isPlay = protocolController.UnityModel.Value?.Play.HasTrueValue();
                 if (isPlay==null || (bool)isPlay) 
                     return;
 
