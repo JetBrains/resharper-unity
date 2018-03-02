@@ -28,6 +28,14 @@ namespace ApiParser
             xmlWriter.WriteAttributeString("minimumVersion", myMinimumVersion.ToString(2));
             xmlWriter.WriteAttributeString("maximumVersion", myMaximumVersion.ToString(2));
         }
+
+        protected void ExportVersionRange(XmlTextWriter xmlWriter, HasVersionRange defaults)
+        {
+            if (myMinimumVersion > defaults.myMinimumVersion)
+                xmlWriter.WriteAttributeString("minimumVersion", myMinimumVersion.ToString(2));
+            if (myMaximumVersion < defaults.myMaximumVersion)
+                xmlWriter.WriteAttributeString("maximumVersion", myMaximumVersion.ToString(2));
+        }
     }
 
     public class UnityApi : HasVersionRange
@@ -62,7 +70,7 @@ namespace ApiParser
             xmlWriter.WriteStartElement("api");
             ExportVersionRange(xmlWriter);
             foreach (var type in myTypes.OrderBy(t => t.Name))
-                type.ExportTo(xmlWriter);
+                type.ExportTo(xmlWriter, this);
             xmlWriter.WriteEndElement();
         }
 
@@ -128,16 +136,16 @@ namespace ApiParser
             return myEventFunctions.Where(f => f.Name == name);
         }
 
-        public void ExportTo(XmlTextWriter xmlWriter)
+        public void ExportTo(XmlTextWriter xmlWriter, HasVersionRange defaultVersions)
         {
             xmlWriter.WriteStartElement("type");
             xmlWriter.WriteAttributeString("kind", Kind);
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("ns", Namespace);
-            ExportVersionRange(xmlWriter);
+            ExportVersionRange(xmlWriter, defaultVersions);
             xmlWriter.WriteAttributeString("path", myDocPath.Replace(@"\", "/"));
             foreach (var eventFunction in myEventFunctions.OrderBy(f => f.OrderingString))
-                eventFunction.ExportTo(xmlWriter);
+                eventFunction.ExportTo(xmlWriter, defaultVersions);
             xmlWriter.WriteEndElement();
         }
 
@@ -238,14 +246,14 @@ namespace ApiParser
             return myParameters.Single(p => p.Name == name);
         }
 
-        public void ExportTo(XmlTextWriter xmlWriter)
+        public void ExportTo(XmlTextWriter xmlWriter, HasVersionRange defaultVersions)
         {
             xmlWriter.WriteStartElement("message");
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("static", myIsStatic.ToString());
             if (myIsCoroutine)
                 xmlWriter.WriteAttributeString("coroutine", "True");
-            ExportVersionRange(xmlWriter);
+            ExportVersionRange(xmlWriter, defaultVersions);
             if (myUndocumented)
                 xmlWriter.WriteAttributeString("undocumented", "True");
             if (!string.IsNullOrEmpty(myDescription))

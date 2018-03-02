@@ -5,15 +5,19 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using JetBrains.Annotations;
+using JetBrains.Util;
 
 namespace ApiParser
 {
     public class ApiParser
     {
         // "Namespace:" is only used in 5.0
-        private static readonly Regex NsRegex = new Regex(@"^((?<type>class|struct) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)$");
-        private static readonly Regex SigRegex = new Regex(@"^(?:[\w.]+)?\.(\w+)(?:\((.*)\)|(.*))$");
-        private static readonly Regex CoroutineRegex = new Regex(@"(?:can be|as) a co-routine", RegexOptions.IgnoreCase);
+        private static readonly Regex CaptureKindAndNamespaceRegex = new Regex(@"^((?<type>class|struct) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)$", RegexOptions.Compiled);
+        private static readonly Regex IsCoroutineRegex = new Regex(@"(?:can be|as) a co-routine", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        // Capture the argument string from e.g. Class.Method(string s, int a)
+        // I don't know why we match without brackets
+        private static readonly Regex CaptureArgumentsRegex = new Regex(@"^(?:[\w.]+)?\.(?:\w+)(?:\((?<args>.*)\)|(?<args>.*))$", RegexOptions.Compiled);
 
         private readonly UnityApi myApi;
         private readonly string myScriptReferenceRelativePath;
@@ -38,11 +42,12 @@ namespace ApiParser
             {
                 Directory.SetCurrentDirectory(path);
 
-                var files = Directory.EnumerateFiles(myScriptReferenceRelativePath, @"*.html").ToArray();
+                var files = Directory.EnumerateFiles(myScriptReferenceRelativePath, @"*.html").Reverse().ToArray();
+                var processed = new HashSet<string>();
 
                 for (var i = 0; i < files.Length; ++i)
                 {
-                    ParseFile(files[i], apiVersion);
+                    ParseFile(files[i], apiVersion, processed);
                     OnProgress(new ProgressEventArgs(i + 1, files.Length));
                 }
 
@@ -74,22 +79,37 @@ namespace ApiParser
             Progress?.Invoke(this, e);
         }
 
-        private void ParseFile(string filename, Version apiVersion)
+        private void ParseFile(string filename, Version apiVersion, HashSet<string> processed)
         {
-            var document = ApiNode.Load(filename);
+            if (processed.Contains(filename))
+                return;
+
+            processed.Add(filename);
+
+            // We're only interested in the file if it contains messages. Bail early
+            // so we don't have to parse it to HTML
+            var content = File.ReadAllText(filename);
+            if (!content.Contains("Messages"))
+                return;
+
+            var document = ApiNode.LoadContent(content);
             var section = document?.SelectOne(@"//div.content/div.section");
             var header = section?.SelectOne(@"div.mb20.clear");
             var name = header?.SelectOne(@"h1.heading.inherit"); // Type or type member name
             var ns = header?.SelectOne(@"p");   // "class in {ns}"/"struct in {ns}"/"Namespace: {ns}"
 
             // Only interested in types at this point
-            if (name == null || ns == null) return;
+            if (name == null || ns == null)
+            {
+//                Console.WriteLine("File has no types: {0}", filename);
+                return;
+            }
 
             // Only types that have messages
             var messages = section.Subsection("Messages").ToArray();
             if (messages.Length == 0) return;
 
-            var match = NsRegex.Match(ns.Text);
+            var match = CaptureKindAndNamespaceRegex.Match(ns.Text);
             var clsType = match.Groups["type"].Value;
             var nsName = match.Groups["namespace"].Value;
 
@@ -100,13 +120,14 @@ namespace ApiParser
 
             foreach (var message in messages)
             {
-                var eventFunction = ParseMessage(message, apiVersion, nsName);
+                var eventFunction = ParseMessage(message, apiVersion, nsName, processed);
                 unityApiType.MergeEventFunction(eventFunction, apiVersion);
             }
         }
 
         [CanBeNull]
-        private UnityApiEventFunction ParseMessage(ApiNode message, Version apiVersion, string hintNamespace)
+        private UnityApiEventFunction ParseMessage(ApiNode message, Version apiVersion, string hintNamespace,
+            HashSet<string> processed)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
@@ -116,6 +137,7 @@ namespace ApiParser
             if (string.IsNullOrWhiteSpace(detailsPath)) return null;
 
             var path = Path.Combine(myScriptReferenceRelativePath, detailsPath);
+            processed.Add(path);
             if (!File.Exists(path)) return null;
 
             var detailsDoc = ApiNode.Load(path);
@@ -125,17 +147,23 @@ namespace ApiParser
 
             if (signature == null) return null;
 
-            var isCoroutine = CoroutineRegex.IsMatch(details.Text);
+            var isCoroutine = IsCoroutineRegex.IsMatch(details.Text);
 
             var messageName = link.Text;
             var returnType = ApiType.Void;
-            string[] argumentNames = null;
+            var argumentNames = EmptyArray<string>.Instance;
             var isStaticFromExample = false;
 
             var example = PickExample(details);
             if (example != null)
             {
                 var tuple = ParseDetailsFromExample(messageName, example, hintNamespace);
+                if (tuple == null)
+                {
+                    Console.WriteLine(example.Text);
+                    Console.WriteLine();
+                    throw new InvalidOperationException($"Failed to parse example for {messageName}");
+                }
                 returnType = tuple.Item1;
                 argumentNames = tuple.Item2;
                 isStaticFromExample = tuple.Item3;
@@ -150,14 +178,15 @@ namespace ApiParser
             return eventFunction;
         }
 
-        private static void ParseParameters(UnityApiEventFunction  eventFunction, ApiNode signature, ApiNode details, string owningMessageNamespace, string[] argumentNames)
+        private static void ParseParameters(UnityApiEventFunction eventFunction, ApiNode signature, ApiNode details, string owningMessageNamespace, string[] argumentNames)
         {
-            // E.g. OnCollisionExit2D(Collision2D) - doesn't always include the argument name
-            // Hopefully, we parsed the argument name from the example
-            var argumentString = SigRegex.Replace(signature.Text, "$2$3");
-            if (string.IsNullOrWhiteSpace(argumentString)) return;
+            // Capture the arguments string. Note that this might be `string s, int i` or `string, int`
+            var match = CaptureArgumentsRegex.Match(signature.Text);
+            if (!match.Success)
+                return;
 
-            var argumentStrings = argumentString.Split(',')
+            var argumentString = match.Groups["args"].Value;
+            var argumentStrings = argumentString.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim())
                 .ToArray();
             var total = argumentStrings.Length;
@@ -171,17 +200,14 @@ namespace ApiParser
 
         private static void ResolveArguments([NotNull] ApiNode details, [NotNull] IReadOnlyList<Argument> arguments, string[] argumentNames)
         {
-            if (argumentNames != null)
+            for (var i = 0; i < arguments.Count && i < argumentNames.Length; i++)
             {
-                for (var i = 0; i < arguments.Count; i++)
-                {
-                    if (!string.IsNullOrEmpty(argumentNames[i]))
-                        arguments[i].Name = argumentNames[i];
-                }
+                if (!string.IsNullOrEmpty(argumentNames[i]))
+                    arguments[i].Name = argumentNames[i];
             }
 
             var parameters = details.Subsection("Parameters").ToArray();
-            if (parameters.Any())
+            if (Enumerable.Any(parameters))
                 ParseMessageParameters(arguments, parameters);
         }
 
@@ -196,49 +222,46 @@ namespace ApiParser
             }
         }
 
+        private static readonly Regex SingleLineCommentsRegex = new Regex(@"^\s*//.*$", RegexOptions.Compiled | RegexOptions.Multiline);
+        private static readonly Regex BlankCleanup1 = new Regex(@"\s+", RegexOptions.Compiled);
+        private static readonly Regex BlankCleanup2 = new Regex(@"\s*(\W)\s*", RegexOptions.Compiled);
+        private static readonly Regex ArrayFixup = new Regex(@"(\[\])(\w)", RegexOptions.Compiled);
+        private static readonly Regex ParameterNameRegex = new Regex(@"^.*?\W(\w+)$", RegexOptions.Compiled);
+
         // Gets return type and argument names from example
         private static Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, ApiNode example, string owningMessageNamespace)
         {
-            var blankCleanup1 = new Regex(@"\s+");
-            var blankCleanup2 = new Regex(@"\s*(\W)\s*");
-            var arrayFixup = new Regex(@"(\[\])(\w)");
+            // Grr. This took far too long to figure out...
+            // The example for OnProjectChange uses "OnProjectChanged" instead
+            // https://docs.unity3d.com/ScriptReference/EditorWindow.OnProjectChange.html
+            if (messageName == "OnProjectChange" && example.Text.Contains("OnProjectChanged"))
+                messageName = "OnProjectChanged";
 
             var exampleText = example.Text;
-            exampleText = blankCleanup1.Replace(exampleText, " ");
-            exampleText = blankCleanup2.Replace(exampleText, "$1");
-            exampleText = arrayFixup.Replace(exampleText, "$1 $2");
+            exampleText = SingleLineCommentsRegex.Replace(exampleText, string.Empty);
+            exampleText = BlankCleanup1.Replace(exampleText, " ");
+            exampleText = BlankCleanup2.Replace(exampleText, "$1");
+            exampleText = ArrayFixup.Replace(exampleText, "$1 $2");
 
-            var jsRegex = new Regex($@"(?:\W|^)(?<static>static\s+)?function {messageName}\((?<parameters>[^)]*)\)(?::(?<returnType>\w+\W*))?\{{");
-            var m = jsRegex.Match(exampleText);
+            // This matches both C# and JS function signatures
+            var functionRegex = new Regex($@"(?:\W|^)(?<static>static\s+)?(?<returnType>\w+\W*)\s+{messageName}\((?<parameters>[^)]*)\)(?::(?<returnType>\w+\W*))?{{");
+            var m = functionRegex.Match(exampleText);
             if (m.Success)
             {
-                var returnType = new ApiType(m.Groups["returnType"].Value, owningMessageNamespace);
-                var parameters = m.Groups["parameters"].Value.Split(',');
+                var returnTypeName = m.Groups["returnType"].Value;
+                if (returnTypeName == "function")    // JS without an explicit return type
+                    returnTypeName = "void";
+                var returnType = new ApiType(returnTypeName, owningMessageNamespace);
+                var parameters = m.Groups["parameters"].Value.Split(new []{','}, StringSplitOptions.RemoveEmptyEntries);
                 var isStatic = m.Groups["static"].Success;
 
                 var arguments = new string[parameters.Length];
                 for (var i = 0; i < parameters.Length; ++i)
                 {
-                    arguments[i] = parameters[i].Split(':')[0];
-                }
-
-                return Tuple.Create(returnType, arguments, isStatic);
-            }
-
-            var csRegex = new Regex($@"(?:\W|^)(?<static>static\s+)?(?<returnType>\w+\W*) {messageName}\((?<parameters>[^)]*)\)");
-            m = csRegex.Match(exampleText);
-            if (m.Success)
-            {
-                var nameRegex = new Regex(@"^.*?\W(\w+)$");
-
-                var returnType = new ApiType(m.Groups["returnType"].Value, owningMessageNamespace);
-                var parameters = m.Groups["parameters"].Value.Split(',');
-                var isStatic = m.Groups["static"].Success;
-
-                var arguments = new string[parameters.Length];
-                for (var i = 0; i < parameters.Length; ++i)
-                {
-                    arguments[i] = nameRegex.Replace(parameters[i], "$1");
+                    if (parameters[i].Contains(":"))
+                        arguments[i] = parameters[i].Split(':')[0];
+                    else
+                        arguments[i] = ParameterNameRegex.Replace(parameters[i], "$1");
                 }
 
                 return Tuple.Create(returnType, arguments, isStatic);

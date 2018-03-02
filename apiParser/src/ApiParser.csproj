@@ -4,6 +4,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ApiParser</RootNamespace>
     <AssemblyName>ApiParser</AssemblyName>
+    <!-- Causes the JB SDK assemblies to be copied to output folder -->
+    <JetReferencesPrivate>True</JetReferencesPrivate>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;NET452;JET_MODE_ASSERT</DefineConstants>
