@@ -5,7 +5,7 @@ type: File
 reformat: True
 shortenReferences: True
 customProperties: Extension=cs, FileName=MonoBehaviour, ValidateFileName=True
-scopes: InUnityCSharpAssetsFolder
+scopes: InUnityCSharpProject
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
