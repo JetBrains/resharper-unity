@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
-using JetBrains.ReSharper.Daemon.CSharp.ContextHighlighters;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
@@ -61,7 +60,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
             if (referenceName != null)
                 return referenceName.Reference.Resolve().DeclaredElement;
 
-            declarationUnderCaret = psiView.GetSelectedTreeNode<IPropertyDeclaration>();
+            var identifier = psiView.GetSelectedTreeNode<IShaderLabIdentifier>();
+            declarationUnderCaret = PropertyDeclarationNavigator.GetByName(identifier);
             return declarationUnderCaret?.DeclaredElement;
         }
 

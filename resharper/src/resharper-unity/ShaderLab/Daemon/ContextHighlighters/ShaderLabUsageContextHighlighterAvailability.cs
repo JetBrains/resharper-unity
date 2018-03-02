@@ -4,9 +4,11 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
 {
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global - derived in Rider
     [ShellComponent]
     public class ShaderLabUsageContextHighlighterAvailability
     {
+        // ReSharper disable once UnusedParameter.Global
         public virtual bool IsAvailable([NotNull] IPsiSourceFile psiSourceFile)
         {
             // Always available in ReSharper - R# doesn't have an option for this,
