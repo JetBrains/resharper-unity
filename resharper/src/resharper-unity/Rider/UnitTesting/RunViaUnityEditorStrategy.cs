@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
@@ -10,7 +11,10 @@ using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.ReSharper.UnitTestProvider.nUnit.v26.Elements;
 using JetBrains.Util;
+using NUnitTestElement = JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements.NUnitTestElement;
+using NUnitTestFixtureElement = JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements.NUnitTestFixtureElement;
 using UnitTestLaunch = JetBrains.Platform.Unity.Model.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
@@ -94,14 +98,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private List<string> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
         {
-            var result = new List<string>();
+            var result = new JetHashSet<string>();
             foreach (var unitTestElement in unitTestElements)
             {
-                var unityName = string.Format($"{unitTestElement.Parent.ShortName}.{unitTestElement.ShortName}"); 
-                myElements[unityName] = unitTestElement;
+                if (unitTestElement is NUnitTestElement)
+                {
+                    var unityName = string.Format($"{unitTestElement.Parent.ShortName}.{unitTestElement.ShortName}"); 
+                    myElements[unityName] = unitTestElement;
+                    result.Add(unityName);
+                    continue;
+                }
+
+                if (unitTestElement is NUnitTestFixtureElement)
+                {
+                    foreach (var testElement in unitTestElement.Children)
+                    {
+                        var unityName = string.Format($"{testElement.Parent.ShortName}.{testElement.ShortName}"); 
+                        myElements[unityName] = testElement;
+                        result.Add(unityName);
+                    }
+                }
             }
 
-            return result;
+            return result.ToList();
         }
 
         [NotNull]
