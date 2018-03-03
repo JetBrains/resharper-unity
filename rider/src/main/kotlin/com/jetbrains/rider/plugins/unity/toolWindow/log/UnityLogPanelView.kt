@@ -6,6 +6,7 @@ import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
@@ -82,7 +83,7 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
         }
     }
 
-    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar(logModel, mainSplitterToggleAction)
+
 
     private val mainSplitter = JBSplitter().apply {
         proportion = 1f / 2
@@ -110,6 +111,9 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
         true -> RiderUnitTestSessionPanel.splitBottomIcon
         false -> RiderUnitTestSessionPanel.splitRightIcon
     }
+
+    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar(logModel, mainSplitterToggleAction, console.createConsoleActions()
+        .filter {  it is ToggleUseSoftWrapsToolbarAction }.toList())
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
