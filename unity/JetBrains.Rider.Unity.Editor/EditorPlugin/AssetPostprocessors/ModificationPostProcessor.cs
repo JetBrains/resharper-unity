@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace JetBrains.Rider.Unity.Editor
+namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
   public class ModificationPostProcessor : UnityEditor.AssetModificationProcessor
   {

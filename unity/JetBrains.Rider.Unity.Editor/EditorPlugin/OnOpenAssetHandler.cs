@@ -2,10 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
+using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util.Logging;
 using UnityEditor;
@@ -45,14 +44,15 @@ namespace JetBrains.Rider.Unity.Editor
             )))
         return false;
 
-      var shouldSync = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
-      myLogger.Verbose("shouldSync: {0}", shouldSync);
-      
-      if(shouldSync)
-        UnityUtils.SyncSolution(); // added to handle opening file, which was just recently created.
+      var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
+      myLogger.Verbose("ModifiedSource: {0} EditorApplication.isPlaying: {1} EditorPrefsWrapper.AutoRefresh: {2}", modifiedSource, EditorApplication.isPlaying, EditorPrefsWrapper.AutoRefresh);
 
-      EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
-      
+      if (modifiedSource && !EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh)
+      {
+        UnityUtils.SyncSolution(); // added to handle opening file, which was just recently created.
+        EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
+      }
+
       var model = myModel.Maybe.ValueOrDefault;
       if (model != null)
       {
