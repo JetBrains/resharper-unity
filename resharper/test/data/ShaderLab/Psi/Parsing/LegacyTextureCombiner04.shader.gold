@@ -30,8 +30,8 @@ IShaderLabFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            IColorPropertyValue
-              IColorLiteral
+            IVectorPropertyValue
+              IVectorLiteral
                 ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                 INumericValue
                   ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
@@ -61,8 +61,8 @@ IShaderLabFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            IColorPropertyValue
-              IColorLiteral
+            IVectorPropertyValue
+              IVectorLiteral
                 ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                 INumericValue
                   ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
@@ -92,8 +92,8 @@ IShaderLabFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            IColorPropertyValue
-              IColorLiteral
+            IVectorPropertyValue
+              IVectorLiteral
                 ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                 INumericValue
                   ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
@@ -123,8 +123,8 @@ IShaderLabFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            IColorPropertyValue
-              IColorLiteral
+            IVectorPropertyValue
+              IVectorLiteral
                 ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                 INumericValue
                   ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)

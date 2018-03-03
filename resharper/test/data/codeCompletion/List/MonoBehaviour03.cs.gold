@@ -1,9 +1,11 @@
-﻿# 2 ITEMS #
+﻿# 3 ITEMS #
 
 + OnAnimatorIK(int) { ... }
 OnAnimatorMove() { ... }
+OnDidApplyAnimationProperties() { ... }
 # AUTOMATIC #
-# 2 ITEMS #
+# 3 ITEMS #
 
 + OnAnimatorIK(int) { ... }
 OnAnimatorMove() { ... }
+OnDidApplyAnimationProperties() { ... }

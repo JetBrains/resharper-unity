@@ -70,7 +70,7 @@ IShaderLabFile
                         ShaderLabTokenType+KeywordTokenElement(type:DIFFUSE_KEYWORD, text:Diffuse)
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IColorValue
-                          IColorLiteral
+                          IVectorLiteral
                             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                             INumericValue
                               ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
@@ -90,7 +90,7 @@ IShaderLabFile
                         ShaderLabTokenType+KeywordTokenElement(type:AMBIENT_KEYWORD, text:Ambient)
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IColorValue
-                          IColorLiteral
+                          IVectorLiteral
                             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                             INumericValue
                               ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
@@ -138,7 +138,7 @@ IShaderLabFile
                         ShaderLabTokenType+KeywordTokenElement(type:CONSTANT_COLOR_KEYWORD, text:constantColor)
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IColorValue
-                          IColorLiteral
+                          IVectorLiteral
                             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
                             INumericValue
                               ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)

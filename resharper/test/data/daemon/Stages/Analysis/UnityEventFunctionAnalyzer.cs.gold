@@ -77,7 +77,7 @@ public class |TypeParameters|(23) : MonoBehaviour
 (0): Unity Gutter Icon: Unity scripting component
 (1): Unity Gutter Icon: Unity event function
 
-Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
 (2): Unity Gutter Icon: Unity scripting component
 (3): ReSharper Warning: Event function with the same name is already declared
@@ -93,7 +93,7 @@ This function can be a coroutine.
 (7): Unity Gutter Icon: Unity scripting component
 (8): Unity Gutter Icon: Unity event function
 
-Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
 (9): ReSharper Warning: Incorrect method parameters. Expected '()'
 (10): ReSharper Warning: Incorrect return type. Expected 'void'
@@ -119,6 +119,6 @@ Callback for setting up animation IK (inverse kinematics).
 (23): Unity Gutter Icon: Unity scripting component
 (24): Unity Gutter Icon: Unity event function
 
-Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
 (25): ReSharper Warning: Incorrect type parameters
