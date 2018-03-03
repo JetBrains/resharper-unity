@@ -21,7 +21,7 @@ object UnityLogPanelToolbarBuilder {
         return JPanel(BorderLayout()).apply { add(component, layout) }
     }
 
-    fun createTopToolbar(model: UnityLogPanelModel, mainSplitterToggleAction: DumbAwareAction): JPanel {
+    fun createTopToolbar(model: UnityLogPanelModel, mainSplitterToggleAction: DumbAwareAction, consoleActionsList : List<AnAction>): JPanel {
 
         fun createType(type: RdLogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
             override fun isSelected(e: AnActionEvent?) = model.typeFilters.getShouldBeShown(type)
@@ -43,6 +43,7 @@ object UnityLogPanelToolbarBuilder {
             add(createMode(RdLogEventMode.Edit))
             add(createMode(RdLogEventMode.Play))
             add(mainSplitterToggleAction)
+            addAll(consoleActionsList)
         }
 
         return create(actionGroup, BorderLayout.NORTH, true)
