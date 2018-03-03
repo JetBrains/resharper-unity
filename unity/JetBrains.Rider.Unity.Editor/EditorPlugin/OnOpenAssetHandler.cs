@@ -45,8 +45,14 @@ namespace JetBrains.Rider.Unity.Editor
             )))
         return false;
 
-      UnityUtils.SyncSolution(); // added to handle opening file, which was just recently created.
+      var shouldSync = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
+      myLogger.Verbose("shouldSync: {0}", shouldSync);
+      
+      if(shouldSync)
+        UnityUtils.SyncSolution(); // added to handle opening file, which was just recently created.
 
+      EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
+      
       var model = myModel.Maybe.ValueOrDefault;
       if (model != null)
       {
@@ -66,7 +72,6 @@ namespace JetBrains.Rider.Unity.Editor
 
       var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", mySlnFile, line, assetFilePath);
       return CallRider(args);
-
     }
 
     public bool CallRider(string args)
