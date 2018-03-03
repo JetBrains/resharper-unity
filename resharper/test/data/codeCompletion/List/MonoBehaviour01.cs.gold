@@ -1,4 +1,4 @@
-﻿# 737 ITEMS #
+﻿# 742 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -734,11 +734,16 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
+private OnBeforeTransformParentChanged() { ... }
+private OnCanvasGroupChanged() { ... }
+private OnCanvasHierarchyChanged() { ... }
+private OnDidApplyAnimationProperties() { ... }
+private OnRectTransformDimensionsChange() { ... }
 public override Equals(object) { ... }
 public override GetHashCode() { ... }
 public override ToString() { ... }
 # AUTOMATIC #
-# 737 ITEMS #
+# 742 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -1474,6 +1479,11 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
+private OnBeforeTransformParentChanged() { ... }
+private OnCanvasGroupChanged() { ... }
+private OnCanvasHierarchyChanged() { ... }
+private OnDidApplyAnimationProperties() { ... }
+private OnRectTransformDimensionsChange() { ... }
 public override Equals(object) { ... }
 public override GetHashCode() { ... }
 public override ToString() { ... }
