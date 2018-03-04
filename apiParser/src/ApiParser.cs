@@ -114,7 +114,17 @@ namespace ApiParser
             var nsName = match.Groups["namespace"].Value;
 
             if (string.IsNullOrEmpty(clsType)) clsType = "class";
-            if (string.IsNullOrEmpty(nsName)) return;
+            if (string.IsNullOrEmpty(nsName))
+            {
+                // Quick fix up for the 5.0 docs, which don't specify a namespace for AssetModificationProcessor
+                if (apiVersion == new Version(5, 0) && name.Text == "AssetModificationProcessor")
+                    nsName = "UnityEditor";
+                else
+                {
+                    Console.WriteLine("Missing namespace: {0}", name.Text);
+                    return;
+                }
+            }
 
             var unityApiType = myApi.AddType(nsName, name.Text, clsType, filename, apiVersion);
 
