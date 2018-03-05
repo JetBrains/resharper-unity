@@ -1,7 +1,9 @@
-﻿# 1 ITEM #
+﻿# 2 ITEMS #
 
 + private OnAnimatorMove() { ... }
+private OnDidApplyAnimationProperties() { ... }
 # AUTOMATIC #
-# 1 ITEM #
+# 2 ITEMS #
 
 + private OnAnimatorMove() { ... }
+private OnDidApplyAnimationProperties() { ... }

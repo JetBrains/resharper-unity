@@ -107,7 +107,7 @@ class MyClass
 This function is called when the MonoBehaviour will be destroyed.
 (6): Unity Gutter Icon: Unity event function
 
-Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
 (7): Unity Gutter Icon: Unity event function
 

@@ -115,7 +115,8 @@ namespace JetBrains.Rider.Unity.Editor
         lifetimeDefinition.Terminate();
       });
 
-      Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+      if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.INFO)
+        Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
 
       try
       {
@@ -181,7 +182,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          var isPlaying = EditorApplication.isPlaying;
+          var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
           ourModel?.Maybe.ValueOrDefault?.Play.SetValue(isPlaying);
 
           var isPaused = EditorApplication.isPaused;
@@ -194,7 +195,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          var res = EditorApplication.isPlaying;
+          var res = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
           if (res != play)
             EditorApplication.isPlaying = play;
         });
@@ -208,7 +209,6 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
       model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
-
       model.Refresh.Set((l, x) =>
       {
         var task = new RdTask<RdVoid>();
@@ -219,7 +219,6 @@ namespace JetBrains.Rider.Unity.Editor
         });
         return task;
       });
-
       model.Step.Set((l, x) =>
       {
         var task = new RdTask<RdVoid>();
@@ -237,7 +236,7 @@ namespace JetBrains.Rider.Unity.Editor
       lt.AddBracket(() => { EditorApplication.playmodeStateChanged += isPlayingHandler; },
         () => { EditorApplication.playmodeStateChanged -= isPlayingHandler; });
 #pragma warning restore 618
-      isPlayingHandler();
+      //isPlayingHandler();
       
       // new api - not present in Unity 5.5
       //lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},

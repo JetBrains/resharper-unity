@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -9,7 +10,7 @@ namespace ApiParser
 {
     public static class Program
     {
-        private const string ScriptReferenceRelativePath = @"Documentation\en\ScriptReference";
+        private static readonly string ScriptReferenceRelativePath = @"Documentation" + Path.DirectorySeparatorChar + "en" + Path.DirectorySeparatorChar + "ScriptReference";
 
         private static readonly IList<Tuple<string, Version>> Docs = new List<Tuple<string, Version>>
         {
@@ -24,7 +25,8 @@ namespace ApiParser
             Tuple.Create("Documentation-5.6.3f1", new Version(5, 6)),
             Tuple.Create("Documentation-2017.1.2f1", new Version(2017, 1)),
             Tuple.Create("Documentation-2017.2.0f2", new Version(2017, 2)),
-            Tuple.Create("Documentation-2017.3.0b3", new Version(2017, 3))
+            Tuple.Create("Documentation-2017.3.1f1", new Version(2017, 3)),
+            Tuple.Create("Documentation-2018.1.0b9", new Version(2018, 1))
         };
 
         public static void Main(string[] args)
@@ -37,17 +39,24 @@ namespace ApiParser
                 return;
             }
 
+            var stopwatch = Stopwatch.StartNew();
+
             Directory.SetCurrentDirectory(args[0]);
 
             var progPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            var dataPath = Path.Combine(progPath, @"Unity\Editor\Data");
-            var monoPath = Path.Combine(dataPath, @"Mono\lib\mono\unity");
-            var basePath = Path.Combine(dataPath, @"Managed");
+            var managedPath = Path.Combine(progPath, "Unity", "Editor", "Data", "Managed");
+            if (!Directory.Exists(managedPath))
+            {
+                // TODO: Find the latest version rather than hardcode it
+                // TODO: Handle this in Windows, too
+                //managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", "2018.1.0b9", "Unity.app", "Contents", "Managed");
+                managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", "2017.3.1f1", "Unity.app", "Contents", "Managed");
+            }
 
-            TypeResolver.AddAssembly(typeof(string).Assembly);
-            TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(basePath, @"UnityEngine.dll")));
-            TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(monoPath, @"UnityScript.dll")));
-            TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(basePath, @"UnityEditor.dll")));
+            // Add assemblies to the type resolver so we can get the fully qualified names of types
+            // The Unity docs only give us the short names
+            TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(managedPath, @"UnityEngine.dll")));
+            TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(managedPath, @"UnityEditor.dll")));
             Console.WriteLine();
 
             var unityApi = new UnityApi();
@@ -64,16 +73,22 @@ namespace ApiParser
             {
                 Console.WriteLine(doc.Item1);
                 parser.ParseFolder(doc.Item1, doc.Item2);
-                AddUndocumentApis(unityApi, doc.Item2);
+
+                // These are valid for all versions
+                AddUndocumentedApis(unityApi, doc.Item2);
             }
+
+            // THese modify existing functions
             AddUndocumentedOptionalParameters(unityApi);
             AddUndocumentedCoroutines(unityApi);
-            Fixup(unityApi);
+            FixDataFromIncorrectDocs(unityApi);
 
             using (var writer = new XmlTextWriter(@"api.xml", Encoding.UTF8) {Formatting = Formatting.Indented})
             {
                 parser.ExportTo(writer);
             }
+
+            Console.WriteLine("Done. Elapsed time: {0}", stopwatch.Elapsed);
 
             // Console.WriteLine( "Press <Enter> key to continue..." );
             // Console.ReadLine();
@@ -133,7 +148,7 @@ namespace ApiParser
                 function.MakeParameterOptional(parameterName, justification);
         }
 
-        private static void Fixup(UnityApi unityApi)
+        private static void FixDataFromIncorrectDocs(UnityApi unityApi)
         {
             // Documentation doesn't state that it's static, or has wrong types
             Console.WriteLine("Fixing incorrect documentation");
@@ -181,7 +196,7 @@ namespace ApiParser
             }
         }
 
-        private static void AddUndocumentApis(UnityApi unityApi, Version apiVersion)
+        private static void AddUndocumentedApis(UnityApi unityApi, Version apiVersion)
         {
             // From AssetPostprocessingInternal
             var type = unityApi.FindType("AssetPostprocessor");
@@ -208,6 +223,32 @@ namespace ApiParser
             {
                 var eventFunction = new UnityApiEventFunction("OnStatusUpdated", true,
                     false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+            }
+
+            type = unityApi.FindType("MonoBehaviour");
+            if (type != null)
+            {
+                const string description =
+                    "This callback is called if an associated RectTransform has its dimensions changed.";
+                var eventFunction = new UnityApiEventFunction("OnRectTransformDimensionsChange",
+                    false, false, ApiType.Void, apiVersion, description, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                eventFunction = new UnityApiEventFunction("OnBeforeTransformParentChanged",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                eventFunction = new UnityApiEventFunction("OnDidApplyAnimationProperties",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                eventFunction = new UnityApiEventFunction("OnCanvasGroupChanged",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                eventFunction = new UnityApiEventFunction("OnCanvasHierarchyChanged",
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
             }
 

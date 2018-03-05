@@ -43,6 +43,10 @@ resharper/src/.idea/**/contentModel.xml
 
 resharper/src/.vs/
 
+apiParser/.idea/**/*.iml
+apiParser/.idea/**/modules.xml
+apiParser/.idea/**/contentModel.xml
+
 # New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
 # Would be nice to download them somewhere outside of the source tree.
 Packages/*

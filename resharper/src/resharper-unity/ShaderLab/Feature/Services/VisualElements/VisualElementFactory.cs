@@ -1,9 +1,11 @@
+using System;
 using System.Drawing;
 using System.Globalization;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.VisualElements;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Colors;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
@@ -16,9 +18,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualEle
     {
         public IColorReference GetColorReference(ITreeNode element)
         {
-            if (element is IColorLiteral colorLiteral)
+            if (element is IVectorLiteral vectorLiteral)
             {
-                var values = colorLiteral.Numbers;
+                var vectorPropertyValue = VectorPropertyValueNavigator.GetByVector(vectorLiteral);
+                if (vectorPropertyValue != null)
+                {
+                    // Does the vector literal belong to a vector property or a color property?
+                    var propertyDeclation = PropertyDeclarationNavigator.GetByPropertValue(vectorPropertyValue);
+                    if (propertyDeclation == null)
+                        return null;
+
+                    if (!(propertyDeclation.PropertyType is ISimplePropertyType simplePropertyType)
+                        || simplePropertyType.Keyword?.NodeType != ShaderLabTokenType.COLOR_KEYWORD)
+                    {
+                        return null;
+                    }
+                }
+
+                var values = vectorLiteral.Numbers;
                 if (values.Count == 3 || values.Count == 4)
                 {
                     var r = GetColorValue(values[0]);
@@ -29,8 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualEle
                     var colorElement = new ColorElement(Color.FromArgb(a, r, g, b));
                     var range = GetDocumentRange(values[0], values.Last());
                     return new ShaderLabColorReference(colorElement,
-                        ColorPropertyValueNavigator.GetByColor(colorLiteral),
-                        ColorValueNavigator.GetByConstant(colorLiteral), range);
+                        VectorPropertyValueNavigator.GetByVector(vectorLiteral),
+                        ColorValueNavigator.GetByConstant(vectorLiteral), range);
                 }
             }
             return null;
@@ -43,10 +60,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualEle
             return new DocumentRange(startOffset, endOffset);
         }
 
-        private int GetColorValue(INumericValue value)
+        private static int GetColorValue(INumericValue value)
         {
             double.TryParse(value.Constant.GetText(), NumberStyles.Float, CultureInfo.InvariantCulture, out var d);
-            return (int) (255 * d);
+            return Math.Min(Math.Abs((int) (255 * d)), byte.MaxValue);
         }
     }
 }

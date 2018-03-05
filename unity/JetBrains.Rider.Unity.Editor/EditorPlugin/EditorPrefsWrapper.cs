@@ -9,5 +9,12 @@ namespace JetBrains.Rider.Unity.Editor
       get { return EditorPrefs.GetString("kScriptsDefaultApp"); }
       set { EditorPrefs.SetString("kScriptsDefaultApp", value); }
     }
+
+    public static bool AutoRefresh
+    {
+      get { return EditorPrefs.GetBool("kAutoRefresh"); }
+      set { EditorPrefs.SetBool("kAutoRefresh", value); }
+    }
+    
   }
 }

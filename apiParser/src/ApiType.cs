@@ -1,4 +1,3 @@
-using System;
 using JetBrains.Annotations;
 
 namespace ApiParser
@@ -10,8 +9,6 @@ namespace ApiParser
         public static readonly ApiType StringArray = new ApiType("string[]");
         public static readonly ApiType Bool = new ApiType("bool");
         public static readonly ApiType StringByRef = new ApiType("string&");
-
-        private readonly Type myType;
 
         public ApiType([NotNull] string name, string namespaceHint = "")
         {
@@ -29,10 +26,10 @@ namespace ApiParser
                 IsArray = true;
             }
 
-            myType = TypeResolver.Resolve(name, namespaceHint);
+            FullName = TypeResolver.ResolveFullName(name, namespaceHint);
         }
 
-        public string FullName => myType.FullName;
+        public string FullName { get; }
 
         public bool IsArray { get; }
         public bool IsByRef { get; }
