@@ -3,7 +3,9 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util.Logging;
+#if !(UNITY_5_5 || UNITY_4_7)
 using NUnit.Framework.Interfaces;
+#endif
 using UnityEngine.Events;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
@@ -107,7 +109,9 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       //subscribe for tests callbacks
+#if !(UNITY_5_5 || UNITY_4_7)
       addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITest>(TestStarted)});
+#endif
       return true;
     }
 
@@ -133,10 +137,12 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       //subscribe for tests callbacks
+#if !(UNITY_5_5 || UNITY_4_7)
       addListenertMethod.Invoke(mTestFinished, new object[] {new UnityAction<ITestResult>(TestFinished)});
+#endif
       return true;
     }
-
+#if !(UNITY_5_5 || UNITY_4_7)
     private void TestStarted(ITest test)
     {
       ourLogger.Verbose($"TestStarted : {test.FullName}");
@@ -148,6 +154,6 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       ourLogger.Verbose($"TestFinished : {test.FullName}");
       myLaunch.TestResult.Fire(new TestResult(test.FullName, Equals(test.ResultState, ResultState.Success) ? Status.Running : Status.Failed));
     }
+#endif
   }
-  
 }

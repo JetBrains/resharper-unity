@@ -1,12 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>obj\EditorPlugin\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Unity.Libs.2017.2.0b3" Version="2017.7.21" />
+    <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
@@ -23,18 +29,13 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations">
-      <HintPath>..\lib\JetBrains.Annotations.dll</HintPath>
-    </Reference>
     <Reference Include="JetBrains.Platform.RdCore35">
       <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(ProjectDir)ILRepack.targets" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

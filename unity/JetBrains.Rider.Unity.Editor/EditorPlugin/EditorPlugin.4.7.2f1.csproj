@@ -4,6 +4,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <BaseIntermediateOutputPath>obj\EditorPlugin4.7.2f1\</BaseIntermediateOutputPath>
+    <DefineConstants>UNITY_4_7</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.4.7.2f1" Version="2017.7.21" />
