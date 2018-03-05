@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon.Stages.Analysis
 {
-    public class ShaderLabMultipleCandidatesPropertyHighlightingTests : ShaderLabHighlightingTestBase
+    public class ShaderLabResolveHighlightingTests : ShaderLabHighlightingTestBase
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Daemon\Stages\Analysis";
 
@@ -14,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon.Stages.Analys
             return highlighting is ShaderLabHighlightingBase;
         }
 
+        [Test] public void TestUnresolvedPropertyHighlights() { DoNamedTest2(); }
         [Test] public void TestMultipleCandidatePropertyHighlights() { DoNamedTest2(); }
     }
 }

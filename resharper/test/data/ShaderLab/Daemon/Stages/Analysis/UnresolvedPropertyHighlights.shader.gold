@@ -1,4 +1,4 @@
-Shader "Foo"
+﻿Shader "Foo"
 { 
 	Properties
 	{
@@ -15,8 +15,8 @@ Shader "Foo"
 		Pass
 		{
 			Blend [_SrcBlend] [_DstBlend]
-			ZWrite [_ZWrite]
-			ZTest [_ZTest]
+			ZWrite [|_ZWrite|(0)]
+			ZTest [|_ZTest|(1)]
 			Cull [_Cull]
 			Offset [_ZBias], [_ZBias]
 
@@ -25,3 +25,7 @@ Shader "Foo"
 		}  
 	}
 }
+
+---------------------------------------------------------
+(0): ReSharper Warning: Possible unintended use of undeclared property '_ZWrite'. Property may be set from code
+(1): ReSharper Warning: Possible unintended use of undeclared property '_ZTest'. Property may be set from code
