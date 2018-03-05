@@ -1,23 +1,28 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util.Logging;
 #if !(UNITY_5_5 || UNITY_4_7)
+using NUnit.Framework.Internal;
 using NUnit.Framework.Interfaces;
 #endif
 using UnityEngine.Events;
+using TestResult = JetBrains.Platform.Unity.Model.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
   public class UnityEditorTestLauncher
   {
     private readonly UnitTestLaunch myLaunch;
-    private const string RunnerAddlistener = "AddsfdListener";
+    private const string RunnerAddlistener = "AddListener";
     private const string LauncherRun = "Run";
     private const string MTeststartedevent = "m_TestStartedEvent";
+    private const string MRunfinishedevent = "m_RunFinishedEvent";
     private const string MTestfinishedevent = "m_TestFinishedEvent";
     private const string MEditmoderunner = "m_EditModeRunner";
+    private const string TestNames = "testNames";
     private const string EditModeLauncher = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
     private const string TestRunnerFilter = "UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter";
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
@@ -52,6 +57,16 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         }
         
         var filter = Activator.CreateInstance(filterType);
+        var fieldInfo = filter.GetType().GetField(TestNames, BindingFlags.Instance | BindingFlags.Public);
+        if(fieldInfo == null)
+        {
+          ourLogger.Verbose("Could not find testNames field via reflection");
+          return;
+        }
+        
+        var testNameStrings = (object)myLaunch.TestNames.ToArray();
+        fieldInfo.SetValue(filter, testNameStrings);
+
         var launcher = Activator.CreateInstance(launcherType,
           BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
           null, new[] {filter},
@@ -72,6 +87,9 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         if (!AdviseTestFinished(runner)) 
           return;
 
+        if(!AdviseSessionFinished(runner))
+          return;
+        
         var runMethod = launcherType.GetMethod(LauncherRun, BindingFlags.Instance | BindingFlags.Public);
         if (runMethod == null)
         {
@@ -87,6 +105,34 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
     }
 
+    private bool AdviseSessionFinished(object runner)
+    {
+      var mTestStartedEventMethodInfo = runner.GetType()
+        .GetField(MRunfinishedevent, BindingFlags.Instance | BindingFlags.NonPublic);
+
+      if (mTestStartedEventMethodInfo == null)
+      {
+        ourLogger.Verbose("Could not find mRunFinishedEventMethodInfo via reflection");
+        return false;
+      }
+
+      var mTestStarted = mTestStartedEventMethodInfo.GetValue(runner);
+      var addListenertMethod =
+        mTestStarted.GetType().GetMethod(RunnerAddlistener, BindingFlags.Instance | BindingFlags.Public);
+
+      if (addListenertMethod == null)
+      {
+        ourLogger.Verbose("Could not find addListenertMethod via reflection");
+        return false;
+      }
+
+      //subscribe for tests callbacks
+#if !(UNITY_5_5 || UNITY_4_7)
+      addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITestResult>(RunFinished)});
+#endif
+      return true;
+    }
+    
     private bool AdviseTestStarted(object runner)
     {
       var mTestStartedEventMethodInfo = runner.GetType()
@@ -143,16 +189,46 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       return true;
     }
 #if !(UNITY_5_5 || UNITY_4_7)
-    private void TestStarted(ITest test)
+   
+    private void RunFinished(ITestResult test)
     {
-      ourLogger.Verbose($"TestStarted : {test.FullName}");
-      myLaunch.TestResult.Fire(new TestResult(test.FullName, Status.Running));
+      myLaunch.RunResult.Fire(new RunResult(true));
     }
     
-    private void TestFinished(ITestResult test)
+    private void TestStarted(ITest test)
     {
+      if (!(test is TestMethod))
+        return;
+
+      ourLogger.Verbose($"TestStarted : {test.FullName}");
+      var id = GetIdFromNUnitTest(test);
+      
+      myLaunch.TestResult.Fire(new TestResult(id, Status.Running));
+    }
+    
+    private void TestFinished(ITestResult testResult)
+    {
+      var test = testResult.Test;
+      if (!(test is TestMethod))
+        return;
+
       ourLogger.Verbose($"TestFinished : {test.FullName}");
-      myLaunch.TestResult.Fire(new TestResult(test.FullName, Equals(test.ResultState, ResultState.Success) ? Status.Running : Status.Failed));
+      var id = GetIdFromNUnitTest(test);
+      
+      myLaunch.TestResult.Fire(new TestResult(id, Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed));
+    }
+
+    [NotNull]
+    private string GetIdFromNUnitTest(ITest test)
+    {
+      var testMethod = test as TestMethod;
+      if(testMethod == null)
+        throw new ArgumentException("Could not get id from NUnit test {0}", test.FullName);
+
+      var methodName = testMethod.Name;
+      var className = testMethod.ClassName;
+
+      return string.Format("{0}.{1}", className, methodName);
     }
 #endif
   }

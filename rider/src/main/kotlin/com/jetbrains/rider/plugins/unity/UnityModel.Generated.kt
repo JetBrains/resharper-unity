@@ -42,6 +42,7 @@ class UnityModel private constructor(
             serializers.register(RdLogEventMode.marshaller)
             serializers.register(UnityLogModelInitialized)
             serializers.register(TestResult)
+            serializers.register(RunResult)
             serializers.register(UnitTestLaunch)
             serializers.register(UnityEditorState.marshaller)
             serializers.register(Status.marshaller)
@@ -296,6 +297,56 @@ data class RdOpenFileArgs (
 }
 
 
+data class RunResult (
+    val passed : Boolean
+) : IPrintable {
+    //companion
+
+    companion object : IMarshaller<RunResult> {
+        override val _type: Class<RunResult> = RunResult::class.java
+
+        @Suppress("UNCHECKED_CAST")
+        override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): RunResult {
+            val passed = buffer.readBool()
+            return RunResult(passed)
+        }
+
+        override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: RunResult) {
+            buffer.writeBool(value.passed)
+        }
+
+    }
+    //fields
+    //initializer
+    //secondary constructor
+    //equals trait
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as RunResult
+
+        if (passed != other.passed) return false
+
+        return true
+    }
+    //hash code trait
+    override fun hashCode(): Int {
+        var __r = 0
+        __r = __r*31 + passed.hashCode()
+        return __r
+    }
+    //pretty print
+    override fun print(printer: PrettyPrinter) {
+        printer.println("RunResult (")
+        printer.indent {
+            print("passed = "); passed.print(printer); println()
+        }
+        printer.print(")")
+    }
+}
+
+
 enum class Status {
     Pending,
     Running,
@@ -366,7 +417,8 @@ class UnitTestLaunch private constructor(
     val testNames : List<String>,
     val testGroups : List<String>,
     val testCategories : List<String>,
-    private val _testResult : RdSignal<TestResult>
+    private val _testResult : RdSignal<TestResult>,
+    private val _runResult : RdSignal<RunResult>
 ) : RdBindableBase() {
     //companion
 
@@ -380,7 +432,8 @@ class UnitTestLaunch private constructor(
             val testGroups = buffer.readList {buffer.readString()}
             val testCategories = buffer.readList {buffer.readString()}
             val _testResult = RdSignal.read(ctx, buffer, TestResult)
-            return UnitTestLaunch(testNames, testGroups, testCategories, _testResult).withId(_id)
+            val _runResult = RdSignal.read(ctx, buffer, RunResult)
+            return UnitTestLaunch(testNames, testGroups, testCategories, _testResult, _runResult).withId(_id)
         }
 
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: UnitTestLaunch) {
@@ -389,15 +442,18 @@ class UnitTestLaunch private constructor(
             buffer.writeList(value.testGroups) {v -> buffer.writeString(v)}
             buffer.writeList(value.testCategories) {v -> buffer.writeString(v)}
             RdSignal.write(ctx, buffer, value._testResult)
+            RdSignal.write(ctx, buffer, value._runResult)
         }
 
     }
     //fields
     val testResult : ISource<TestResult> get() = _testResult
+    val runResult : ISource<RunResult> get() = _runResult
 
     //initializer
     init {
         bindableChildren.add("testResult" to _testResult)
+        bindableChildren.add("runResult" to _runResult)
     }
 
     //secondary constructor
@@ -409,7 +465,8 @@ class UnitTestLaunch private constructor(
         testNames,
         testGroups,
         testCategories,
-        RdSignal<TestResult>(TestResult)
+        RdSignal<TestResult>(TestResult),
+        RdSignal<RunResult>(RunResult)
     )
 
     //equals trait
@@ -422,6 +479,7 @@ class UnitTestLaunch private constructor(
             print("testGroups = "); testGroups.print(printer); println()
             print("testCategories = "); testCategories.print(printer); println()
             print("testResult = "); _testResult.print(printer); println()
+            print("runResult = "); _runResult.print(printer); println()
         }
         printer.print(")")
     }
