@@ -28,6 +28,15 @@
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR"/>
   </Error>
+  
+  <Warning name="NotResolvedProperty" staticGroup="ShaderLabWarnings">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Possible unintended use of undeclared property '{0}'. Property may be set from code" >
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING"/>
+  </Warning>
  
   <Error name="MultipleResolveCandidates" staticGroup="ShaderLabErrors">
     <Parameter type="JetBrains.DocumentModel.DocumentRange" name="textRange"/>
