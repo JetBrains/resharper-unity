@@ -141,7 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
 
-            if (currentVersion <= installationInfo.Version)
+            if (currentVersion == installationInfo.Version)
             {
                 myLogger.Verbose($"Plugin v{installationInfo.Version} already installed.");
                 return;
