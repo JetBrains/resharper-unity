@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
@@ -239,7 +240,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             return false;
         }
 
-        private static bool HasExistingReturnType(ITreeNode identifier, out ITypeUsage typeUsage)
+        private static bool HasExistingReturnType(ITreeNode identifier, [CanBeNull] out ITypeUsage typeUsage)
         {
             // Only return true if the user has explicitly typed a return type.
             // If they haven't, then our completion identifier will be parsed
@@ -258,9 +259,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             return false;
         }
 
-        private static bool HasExisitingVisibilityModifier(ITreeNode typeUsage)
+        private static bool HasExisitingVisibilityModifier([CanBeNull] ITreeNode typeUsage)
         {
-            if (!(typeUsage.GetPreviousMeaningfulSibling() is IModifiersList modifiersList))
+            if (typeUsage == null || !(typeUsage.GetPreviousMeaningfulSibling() is IModifiersList modifiersList))
                 return false;
 
             // TODO: What about virtual or override?
