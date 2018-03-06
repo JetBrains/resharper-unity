@@ -3,6 +3,7 @@
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
