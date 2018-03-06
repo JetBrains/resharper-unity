@@ -187,7 +187,10 @@ namespace JetBrains.Rider.Unity.Editor
         var task = new RdTask<RdVoid>();
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          UnityUtils.SyncSolution();
+          if (EditorPrefsWrapper.AutoRefresh)
+            UnityUtils.SyncSolution();
+          else
+            ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
           task.Set(RdVoid.Instance);
         });
         return task;
