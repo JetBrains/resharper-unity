@@ -1,30 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
-  </ItemGroup>
-  
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.5.5.0f3" Version="2017.7.21" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
-
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations">
-      <HintPath>..\lib\JetBrains.Annotations.dll</HintPath>
-    </Reference>
     <Reference Include="JetBrains.Platform.RdCore35">
       <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
   </ItemGroup>
 </Project>

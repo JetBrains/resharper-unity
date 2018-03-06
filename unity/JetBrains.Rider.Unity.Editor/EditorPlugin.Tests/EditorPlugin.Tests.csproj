@@ -3,12 +3,7 @@
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Tests</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor.Tests</RootNamespace>
-  </PropertyGroup>
-  <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputPath>..\bin\</OutputPath>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
