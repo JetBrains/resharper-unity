@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
@@ -77,20 +79,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var typeElement = GetTypeElement();
             if (typeElement == null)
                 return null;
-            
-            foreach (var member in typeElement.EnumerateMembers(myMethodName, typeElement.CaseSensitiveName))
-            {
-                var method = member as IMethod;
-                if (method == null)
-                    continue;
-                if (method.IsAbstract)
-                    continue;
-                if (method.TypeParameters.Count > 0)
-                    continue;
 
-                return member;
+            using (CompilationContextCookie.GetOrCreate(myProject.GetResolveContext()))
+            {
+                foreach (var member in typeElement.EnumerateMembers(myMethodName, typeElement.CaseSensitiveName))
+                {
+                    var method = member as IMethod;
+                    if (method == null)
+                        continue;
+                    if (method.IsAbstract)
+                        continue;
+                    if (method.TypeParameters.Count > 0)
+                        continue;
+
+                    return member;
+                }
+                return null;    
             }
-            return null;
         }
 
         public IEnumerable<IProjectFile> GetProjectFiles()
@@ -116,7 +121,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public IList<UnitTestTask> GetTaskSequence(ICollection<IUnitTestElement> explicitElements, IUnitTestRun run)
         {
-            return null;
+            var unitTestTasks = new List<UnitTestTask> {new UnitTestTask(this, new StubRemoteTask("stub"))};
+            return unitTestTasks;
         }
 
         public UnitTestElementId Id
@@ -162,5 +168,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         }
 
         public UnitTestElementState State { get; set; }
+        
+        private class StubRemoteTask : RemoteTask
+        {
+            public StubRemoteTask(XmlElement element)
+                : base(element)
+            {
+            }
+
+            public StubRemoteTask(string runnerID)
+                : base(runnerID)
+            {
+            }
+
+
+            public override bool Equals(RemoteTask other)
+            {
+                return other is StubRemoteTask;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is StubRemoteTask;
+            }
+
+            public override int GetHashCode()
+            {
+                return 239;
+            }
+
+            public override bool IsMeaningfulTask
+            {
+                get { return true; }
+            }
+        }
     }
 }

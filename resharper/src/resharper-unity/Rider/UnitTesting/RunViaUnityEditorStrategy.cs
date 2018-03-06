@@ -11,8 +11,8 @@ using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Util;
-using NUnitTestElement = JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements.NUnitTestElement;
 using UnitTestLaunch = JetBrains.Platform.Unity.Model.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
@@ -135,6 +135,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     elementToIdMap[unityName] = unitTestElement;
                     result.Add(unityName);
                 }
+
+                if (unitTestElement is UnityTestElement)
+                {
+                    var unityName = string.Format(unitTestElement.Id); 
+                    elementToIdMap[unityName] = unitTestElement;
+                    result.Add(unityName);
+                }
             }
 
             return result.ToList();
@@ -154,6 +161,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Abort(IUnitTestRun run)
         {
+        }
+
+        protected bool Equals(RunViaUnityEditorStrategy other)
+        {
+            return Equals(mySolution, other.mySolution);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((RunViaUnityEditorStrategy) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (mySolution != null ? mySolution.GetHashCode() : 0);
         }
     }
 }
