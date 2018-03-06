@@ -58,9 +58,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // todo: consider non-Unity Solution with Unity-generated projects
             var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
 
-            if (!protocolInstancePath.ExistsFile)
-                File.Create(protocolInstancePath.FullPath);
-
+            protocolInstancePath.Directory.CreateDirectory();
+            
             var watcher = new FileSystemWatcher();
             watcher.Path = protocolInstancePath.Directory.FullPath;
             watcher.NotifyFilter =
