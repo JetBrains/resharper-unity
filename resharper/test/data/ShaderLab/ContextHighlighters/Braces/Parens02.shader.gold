@@ -1,22 +1,19 @@
 ﻿// ${MatchingBracePosition:BOTH_SIDES}
 Shader "Foo" {
   Properties {
-    ||_Color|(0:LParenOuter)|(1:RParenInner)|(|(2:LParenOuter)"Color", Color|)|(3:LParenOuter) = |(|(4:RParenInner)1,1,1,1|)|(5:RParenInner)
-    |_Color2|(6:RParenOuter)("Color2", Color) = |(|(7:RParenOuter)1,1,1,1|)|(8:RParenOuter)
-    |_MainText|(9:LParenInner)|(|(10:LParenInner) "Albedo", 2D|)|(11:LParenInner) = "white" {}
+    |_Color|(0:LParenOuter)|(|(1:LParenOuter)"Color", Color|)|(2:LParenOuter) = |(|(3:RParenInner)1,1,1,1|)|(4:RParenInner)
+    _Color2("Color2", Color) = |(|(5:RParenOuter)1,1,1,1|)|(6:RParenOuter)
+    _MainText|(|(7:LParenInner) "Albedo", 2D|)|(8:LParenInner) = "white" {}
   }
 }
 
 ---------------------------------------------------------
 (0:LParenOuter): ReSharper Usage of element under cursor
-(1:RParenInner): ReSharper Usage of element under cursor
+(1:LParenOuter): ReSharper Matched Brace
 (2:LParenOuter): ReSharper Matched Brace
-(3:LParenOuter): ReSharper Matched Brace
+(3:RParenInner): ReSharper Matched Brace
 (4:RParenInner): ReSharper Matched Brace
-(5:RParenInner): ReSharper Matched Brace
-(6:RParenOuter): ReSharper Usage of element under cursor
-(7:RParenOuter): ReSharper Matched Brace
-(8:RParenOuter): ReSharper Matched Brace
-(9:LParenInner): ReSharper Usage of element under cursor
-(10:LParenInner): ReSharper Matched Brace
-(11:LParenInner): ReSharper Matched Brace
+(5:RParenOuter): ReSharper Matched Brace
+(6:RParenOuter): ReSharper Matched Brace
+(7:LParenInner): ReSharper Matched Brace
+(8:LParenInner): ReSharper Matched Brace

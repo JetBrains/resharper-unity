@@ -1,14 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-<Target Name="RiderILRepack" AfterTargets="Build">
+﻿<Project>
+  <Target Name="RiderILRepack" AfterTargets="Build">
     <ItemGroup>
-        <InputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
-        <InputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll" />
-        <InputAssemblies Include="../lib/*.dll" />
+      <InputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
+      <InputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll" />
+      <InputAssemblies Include="../lib/*.dll" />
     </ItemGroup>
     <ItemGroup>
-        <SearchDirectories Include="$(OutputPath)" />
+      <SearchDirectories Include="$(OutputPath)" />
     </ItemGroup>
     <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(InputAssemblies)" LibraryPath="@(SearchDirectories)" 
               OutputFile="../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll" />
-</Target>
+  </Target>
 </Project>

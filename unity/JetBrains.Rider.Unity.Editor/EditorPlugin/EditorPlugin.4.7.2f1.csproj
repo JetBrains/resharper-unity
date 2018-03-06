@@ -1,18 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <BaseIntermediateOutputPath>obj\EditorPlugin4.7.2f1\</BaseIntermediateOutputPath>
     <DefineConstants>UNITY_4_7</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.4.7.2f1" Version="2017.7.21" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Annotations">
@@ -24,5 +18,8 @@
     <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
   </ItemGroup>
 </Project>
