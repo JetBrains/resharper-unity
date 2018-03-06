@@ -150,12 +150,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 myLogger.Trace("*** resharper-unity: Item renamed {0} -> {1}", change.OldLocation, change.ProjectItem.Location);
 
-                var oldMetaFile = change.OldParentFolder.Location.Combine(change.OldLocation.Name + ".meta");
                 var newMetaFile = GetMetaFile(change.ProjectItem.Location);
-                if (oldMetaFile.ExistsFile)
-                    RenameMetaFile(oldMetaFile, newMetaFile, string.Empty);
-                else
-                    CreateMetaFile(newMetaFile);
+                if (!newMetaFile.ExistsFile)
+                {
+                    var oldMetaFile = change.OldParentFolder.Location.Combine(change.OldLocation.Name + ".meta");
+                    if (newMetaFile != oldMetaFile)
+                    {
+                        if (oldMetaFile.ExistsFile)
+                            RenameMetaFile(oldMetaFile, newMetaFile, string.Empty);
+                        else
+                            CreateMetaFile(newMetaFile);
+                    }
+                }
 
                 // Don't recurse for folder renames - the child contents will be "renamed", but
                 // the old location will no longer be there, and the meta files don't need moving
