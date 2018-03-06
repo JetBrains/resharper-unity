@@ -5,6 +5,7 @@ import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
+import com.jetbrains.rider.build.actions.ActiveConfigurationAndPlatformAction
 import com.jetbrains.rider.util.idea.application
 
 class UnityUIMinimizer : StartupActivity {
@@ -24,7 +25,7 @@ class UnityUIMinimizer : StartupActivity {
                     toolWindowManager.unregisterToolWindow("NuGet")
                     toolWindowManager.unregisterToolWindow("Database")
 
-                    //ActiveConfigurationAndPlatformAction.hiddenForProjects.add(project)
+                    ActiveConfigurationAndPlatformAction.hiddenForProjects.add(project)
                 } finally {
                     minimizedUIs.add(project)
                 }
@@ -43,7 +44,7 @@ class UnityUIMinimizer : StartupActivity {
                     toolWindowManager.registerToolWindow("NuGet", true, ToolWindowAnchor.BOTTOM)
                     toolWindowManager.registerToolWindow("Database", true, ToolWindowAnchor.RIGHT)
 
-                    //ActiveConfigurationAndPlatformAction.hiddenForProjects.remove(project)
+                    ActiveConfigurationAndPlatformAction.hiddenForProjects.remove(project)
 
                 } finally {
                     minimizedUIs.remove(project)

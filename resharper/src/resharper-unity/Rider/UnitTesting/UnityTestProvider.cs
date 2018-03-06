@@ -9,7 +9,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
-    [SolutionComponent]
+    [UnitTestProvider]
     public class UnityTestProvider : IUnitTestProvider
     {
         public static readonly IClrTypeName UnityTestAttribute = new ClrTypeName("UnityEngine.TestTools.UnityTestAttribute");
