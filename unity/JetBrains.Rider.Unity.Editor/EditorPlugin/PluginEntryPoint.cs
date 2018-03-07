@@ -59,7 +59,7 @@ namespace JetBrains.Rider.Unity.Editor
         try
         {
           // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = ourModel.Maybe.ValueOrDefault.IsClientConnected.Sync(RdVoid.Instance,
+          connected = ourModel.Maybe.ValueOrDefault.IsBackendConnected.Sync(RdVoid.Instance,
             new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
         }
         catch (Exception)
