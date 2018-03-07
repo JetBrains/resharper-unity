@@ -74,6 +74,152 @@
             Methods &amp; callstacks tracing, more than verbose
             </summary>
         </member>
+        <member name="T:JetBrains.Util.Monad.Result">
+            <summary>
+            Helper methods for <see cref="T:JetBrains.Util.Monad.Result`1" /> and <see cref="T:JetBrains.Util.Monad.Result`2"/> building
+            </summary>
+        </member>
+        <member name="F:JetBrains.Util.Monad.Result.EmptyFailMessage">
+            <summary>
+            Message that is being applied to Result.Fail when no message provided 
+            </summary>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result.Success``1(``0)">
+            <summary>
+            Creates successful <see cref="T:JetBrains.Util.Monad.Result`1"/> with value <see cref="!:value"/>
+            </summary>
+            <param name="value"></param>
+            <typeparam name="T"></typeparam>
+            <returns>Result with <see cref="P:JetBrains.Util.Monad.Result`1.Success"/> == true</returns>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result.Fail(System.Exception)">
+            <summary>
+            Creates failed <see cref="T:JetBrains.Util.Monad.Result`1"/>
+            </summary>
+            <param name="exception"></param>
+            <returns>Result with <see cref="P:JetBrains.Util.Monad.Result`1.Success"/> == false. Returned type could be implicitly casted to any <see cref="T:JetBrains.Util.Monad.Result`1"/></returns>
+            <exception cref="T:System.ArgumentNullException">if <see cref="!:exception"/> is null</exception>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result.Fail``1(System.Exception,``0)">
+            <summary>
+            Creates failed <see cref="T:JetBrains.Util.Monad.Result`2"/> with corresponding <see cref="!:failValue"/>
+            </summary>
+            <param name="exception"></param>
+            <param name="failValue">Special user-defined value provided for failed Result</param>
+            <returns>Result with <see cref="P:JetBrains.Util.Monad.Result`2.Success"/> == false. Returned type could be implicitly casted to any <see cref="T:JetBrains.Util.Monad.Result`2"/></returns>
+            <exception cref="T:System.ArgumentNullException">if <see cref="!:exception"/> is null</exception>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result.Fail(System.String)">
+            <summary>
+            Creates failed <see cref="T:JetBrains.Util.Monad.Result`1"/> with <see cref="T:System.InvalidOperationException"/> that wraps provided <see cref="!:message"/>
+            </summary>
+            <param name="message">Reason of failure. If not defined, <see cref="F:JetBrains.Util.Monad.Result.EmptyFailMessage"/> is used.</param>
+            <returns>Result with <see cref="P:JetBrains.Util.Monad.Result`1.Success"/> == false. Returned type could be implicitly casted to any <see cref="T:JetBrains.Util.Monad.Result`1"/></returns>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result.Fail``1(System.String,``0)">
+            <summary>
+            Creates failed <see cref="T:JetBrains.Util.Monad.Result`2"/> with <see cref="T:System.InvalidOperationException"/> that wraps provided <see cref="!:message"/>
+            </summary>
+            <param name="message">Reason of failure. If not defined, <see cref="F:JetBrains.Util.Monad.Result.EmptyFailMessage"/> is used.</param>
+            <param name="failValue">Special user-defined value provided for failed Result</param>
+            <returns>Result with <see cref="P:JetBrains.Util.Monad.Result`2.Success"/> == false. Returned type could be implicitly casted to any <see cref="T:JetBrains.Util.Monad.Result`1"/></returns>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result.FailWithValue``1(``0)">
+            <summary>
+            Creates failed <see cref="T:JetBrains.Util.Monad.Result`1"/> with message= <see cref="F:JetBrains.Util.Monad.Result.EmptyFailMessage"/> and user-defined failure parameter 
+            </summary>
+            <param name="failValue">Special user-defined value provided for failed Result</param>
+            <returns>Result with <see cref="P:JetBrains.Util.Monad.Result`2.Success"/> == false. Returned type could be implicitly casted to any <see cref="T:JetBrains.Util.Monad.Result`1"/></returns>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result.Canceled">
+            <summary>
+            Creates special failed <see cref="T:JetBrains.Util.Monad.Result`1"/> that wraps <see cref="T:System.OperationCanceledException"/>
+            </summary>
+            <returns>Result with <see cref="P:JetBrains.Util.Monad.Result`1.Success"/> == false and <see cref="P:JetBrains.Util.Monad.Result`1.Canceled"/> == true. Returned type could be implicitly casted to any <see cref="T:JetBrains.Util.Monad.Result`1"/></returns>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result.Wrap``1(System.Func{``0})">
+            <summary>
+            Wrap execution of <see cref="!:f"/>() into <see cref="T:JetBrains.Util.Monad.Result`1"/>. 
+            </summary>
+            <param name="f">Function  to execute</param>
+            <typeparam name="TRes">type argument of returned Result</typeparam>
+            <returns>Succeed result with <see cref="F:JetBrains.Util.Monad.Result`1.Value"/> == f() if no exception happened during <see cref="!:f"/> execution. Failed result with corresponding exception otherwise </returns>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result.Wrap``2(System.Func{``0,``1},``0)">
+            <summary>
+            Wrap execution of <see cref="!:f"/>(<see cref="!:param"/>) into <see cref="T:JetBrains.Util.Monad.Result`1"/>. 
+            </summary>
+            <param name="f">Function with parameter to execute</param>
+            <param name="param">function argument</param>
+            <typeparam name="T"><see cref="!:param"/> type</typeparam>
+            <typeparam name="TRes">type argument of returned Result</typeparam>
+            <returns>Succeed eesult with <see cref="F:JetBrains.Util.Monad.Result`1.Value"/> == f(param) if no exception happened during <see cref="!:f"/> execution. Failed result with corresponding exception otherwise </returns>    
+        </member>
+        <member name="T:JetBrains.Util.Monad.Result`1">
+            <summary>
+            Monad that can can have two states: <see cref="P:JetBrains.Util.Monad.Result`1.Success"/> and Fail (!<see cref="P:JetBrains.Util.Monad.Result`1.Success"/>). Also we distinct special type of Fail: <see cref="P:JetBrains.Util.Monad.Result`1.Canceled"/>.  
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="F:JetBrains.Util.Monad.Result`1.Value">
+            <summary>
+            Value in case of <see cref="P:JetBrains.Util.Monad.Result`1.Success"/>, default(T) otherwise
+            </summary>
+        </member>
+        <member name="F:JetBrains.Util.Monad.Result`1.Exception">
+            <summary>
+            Exception in case of (!<see cref="P:JetBrains.Util.Monad.Result`1.Success"/>), null otherwise
+            </summary>
+        </member>
+        <member name="P:JetBrains.Util.Monad.Result`1.FailMessage">
+            <summary>
+            Exception message in case of (!<see cref="P:JetBrains.Util.Monad.Result`1.Success"/>), null otherwise 
+            </summary>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result`1.#ctor(`0,System.Exception)">
+            <summary>
+            Shouldn't be invoked in user's code
+            </summary>
+            <param name="success"></param>
+            <param name="failure"></param>
+        </member>
+        <member name="P:JetBrains.Util.Monad.Result`1.Success">
+            <summary>
+            !<see cref="P:JetBrains.Util.Monad.Result`1.Success"/> and <see cref="P:JetBrains.Util.Monad.Result`1.Canceled"/>
+            </summary>
+        </member>
+        <member name="P:JetBrains.Util.Monad.Result`1.FailedNotCanceled">
+            <summary>
+            (!<see cref="P:JetBrains.Util.Monad.Result`1.Success"/>) and (<see cref="P:JetBrains.Util.Monad.Result`1.Canceled"/>
+            </summary>
+        </member>
+        <member name="P:JetBrains.Util.Monad.Result`1.Canceled">
+            <summary>
+            Exception has specials type of <see cref="T:System.OperationCanceledException"/> or <see cref="!:AggregateException"/> that has <see cref="T:System.OperationCanceledException"/> inside.
+            </summary>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result`1.Map``1(System.Func{`0,``0})">
+            <summary>
+            Transform this result into new one with given function. if !<see cref="P:JetBrains.Util.Monad.Result`1.Success"/>, stays untouched./> 
+            </summary>
+            <param name="transform"></param>
+            <typeparam name="TRes"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:JetBrains.Util.Monad.Result`1.Unwrap">
+            <summary>
+            Returns <see cref="F:JetBrains.Util.Monad.Result`1.Value"/> if <see cref="P:JetBrains.Util.Monad.Result`1.Success"/>, throws <see cref="F:JetBrains.Util.Monad.Result`1.Exception"/> otherwise
+            </summary>
+            <returns> <see cref="F:JetBrains.Util.Monad.Result`1.Value"/> if <see cref="P:JetBrains.Util.Monad.Result`1.Success"/> </returns>
+            <exception cref="F:JetBrains.Util.Monad.Result`1.Exception">if !<see cref="P:JetBrains.Util.Monad.Result`1.Success"/></exception>
+        </member>
+        <member name="T:JetBrains.Util.Monad.Result`2">
+            <summary>
+            Special kind of <see cref="T:JetBrains.Util.Monad.Result`1"/> to store custom <see cref="F:JetBrains.Util.Monad.Result`2.FailValue"/> in case of !<see cref="P:JetBrains.Util.Monad.Result`2.Success"/>. 
+            </summary>
+            <typeparam name="TSuccess"></typeparam>
+            <typeparam name="TFailure"></typeparam>
+        </member>
         <member name="M:JetBrains.Util.PersistentMap.UnsafeReader.ReadCollection``2(JetBrains.Util.PersistentMap.UnsafeReader.ReadDelegate{``0},System.Func{System.Int32,``1})">
             <summary>
             Non optimal collection serialization. One can serialize internal structure (eg. array) instead.
@@ -134,6 +280,62 @@
             </summary>
             <param name="timeoutMs">Timeout to wait. -1 for infinite waiting.</param>
             <returns>'true' if Join(timeoutMs) was successful, false otherwise. Also returns 'false' if thread is already stopped or killed."></returns>
+        </member>
+        <member name="T:JetBrains.Util.Util.RName">
+            <summary>
+            Recursive name. For constructs like Aaaa.Bbb::CCC
+            </summary>
+        </member>
+        <member name="M:JetBrains.Util.Util.RName.Sub(System.String,System.String)">
+            <summary>
+            Separator doesn't count if localName is empty or parent is empty.
+            </summary>
+            <param name="localName"></param>
+            <param name="separator"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="T:JetBrains.Util.Util.Statics">
+            <summary>
+            Represents global statics in a stack-like way 
+            </summary>
+        </member>
+        <member name="M:JetBrains.Util.Util.Statics.For``1">
+            <summary>
+            Gets statics holder for type <see cref="!:T"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns>Stack-like holder</returns>
+        </member>
+        <member name="T:JetBrains.Util.Util.Types">
+            <summary>
+            Extensions to <see cref="T:System.Type"/>
+            </summary>
+        </member>
+        <member name="F:JetBrains.Util.Util.Types.ourPrimitives">
+            <summary>
+            To prettify Int32, Int64 and so on.
+            </summary>
+        </member>
+        <member name="M:JetBrains.Util.Util.Types.ToString(System.Type,System.Boolean,System.Boolean)">
+            <summary>
+            Different <c>ToString()</c> of <see cref="T:System.Type"/>.
+            
+            Samples are provide for:  
+            <code>
+            namespace Foo { 
+              class Outer&lt;T1&gt;
+              {
+                 internal class Inner&lt;T2&gt; {}
+              }    
+            }
+            
+            </code>     
+            </summary>
+            <param name="thisType"><c>typeof(Outer&lt;string&gt;.Inner&lt;int&gt;)</c></param>
+            <param name="withNamespaces">if `true` (and <see cref="!:withGenericArguments"/> == `false`) then <c>Foo.Outer+Inner</c> else <c>Outer+Inner</c> </param>
+            <param name="withGenericArguments">if `true` (and <see cref="!:withNamespaces"/> == `false`) then <c>Outer&lt;string&gt;+Inner&lt;int&gt;</c> else <c>Outer+Inner</c> </param>
+            <returns>More natural than <see cref="M:System.Type.ToString"/> string representation of type</returns>
         </member>
         <member name="T:JetBrains.DataFlow.EternalLifetime">
             <summary>

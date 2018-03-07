@@ -130,7 +130,7 @@ namespace JetBrains.Rider.Unity.Editor
         {
           if (connected)
           {
-            var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
+            var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
             ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
             ourModel.Value = CreateModel(protocol, lt);

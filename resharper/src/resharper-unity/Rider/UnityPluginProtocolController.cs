@@ -150,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     myLogger.Info("WireConnected.");
                 
-                    var protocol = new Protocol(new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
+                    var protocol = new Protocol("UnityEditorPlugin", new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
                     var model = new UnityModel(lf, protocol);
                     model.IsClientConnected.Set(rdVoid => true);
                     model.RiderProcessId.SetValue(Process.GetCurrentProcess().Id);

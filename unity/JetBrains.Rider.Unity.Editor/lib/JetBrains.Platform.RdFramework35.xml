@@ -4,6 +4,12 @@
         <name>JetBrains.Platform.RdFramework35</name>
     </assembly>
     <members>
+        <member name="T:JetBrains.Platform.RdFramework.Impl.RdSecureString">
+            <summary>
+            This is a temporary stub for proper secure strings in protocol
+            Unlike a normal string, this one won't be stored in logs or any other string representations of protocol entities
+            </summary>
+        </member>
         <member name="F:JetBrains.Platform.RdFramework.Impl.SocketWire.Base.TimeoutMs">
             <summary>
             Timeout for <see cref="M:System.Net.Sockets.Socket.Connect(System.Net.EndPoint)"/>  and for <see cref="M:System.Net.Sockets.Socket.Receive(System.Byte[],System.Int32,System.Net.Sockets.SocketFlags)"/>  from socket (to guarantee read_thread termination if <see cref="M:System.Net.Sockets.Socket.Close"/> doesn't
