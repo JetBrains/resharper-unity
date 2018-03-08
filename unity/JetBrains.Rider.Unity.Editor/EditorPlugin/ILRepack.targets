@@ -1,13 +1,16 @@
 ﻿<Project>
-  <Target Name="RiderILRepack" AfterTargets="Build">
-    <ItemGroup>
-      <InputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
-      <InputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll" />
-      <InputAssemblies Include="../lib/*.dll" />
-    </ItemGroup>
+  <ItemGroup>
+    <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
+    <ILRepackInputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll" />
+    <ILRepackInputAssemblies Include="../lib/*.dll" />
+  </ItemGroup>
+  <PropertyGroup>
+    <ILRepackOutputAssembly>../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll</ILRepackOutputAssembly>
+  </PropertyGroup>
+  <Target Name="RiderILRepack" AfterTargets="Build" Inputs="@(ILRepackInputAssemblies)" Outputs="$(ILRepackOutputAssembly)">
     <ItemGroup>
       <SearchDirectories Include="$(OutputPath)" />
     </ItemGroup>
-    <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(InputAssemblies)" LibraryPath="@(SearchDirectories)" OutputFile="../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll" />
+    <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(ILRepackInputAssemblies)" LibraryPath="@(SearchDirectories)" OutputFile="$(ILRepackOutputAssembly)" />
   </Target>
 </Project>
