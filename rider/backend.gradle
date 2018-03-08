@@ -242,9 +242,10 @@ task buildUnity3dRider {
             args = restoreArguments
         }
 
+        backend.ReportProgress("Building EditorPlugin ($BuildConfiguration)")
         exec {
             executable = msbuild.path
-            args = [ projectOrSolution.path]
+            args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration" ]
         }
     }
 }
@@ -255,14 +256,14 @@ task runMSBuild {
     description = 'Runs MSBuild and creates binaries.'
 
     doLast {
-        backend.ReportProgress("Building Configuration=$BuildConfiguration")
+        backend.ReportProgress("Building resharper-unity.sln ($BuildConfiguration)")
 
         def projectOrSolution = RiderOnly ? backend.riderTestsProject : backend.solution
         assert projectOrSolution.isFile()
 
         exec {
             executable = msbuild.path
-            args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration"]
+            args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration" ]
         }
     }
 }
