@@ -1,21 +1,12 @@
-using JetBrains.Annotations;
-using JetBrains.Application.Settings;
+using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Host.Features.SyntaxHighlighting;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
-using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.SyntaxHighlighting
 {
-    internal class ShaderLabSyntaxHighlightingProcess : RiderSyntaxHighlightingProcessBase
+    internal class ShaderLabSyntaxHighlightingProcess : SyntaxHighlightingProcessor
     {
-        public ShaderLabSyntaxHighlightingProcess([NotNull] IDaemonProcess process,
-            [NotNull] IContextBoundSettingsStore settingsStore, [NotNull] IFile file)
-            : base(process, settingsStore, file)
-        {
-        }
-
         protected override string GetAttributeId(TokenNodeType tokenType)
         {
             if (tokenType == ShaderLabTokenType.CG_CONTENT)
