@@ -105,6 +105,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(ReSharperSDKVersion)" />
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.3.0" />
+    <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
