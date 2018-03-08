@@ -7,6 +7,8 @@ using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
+// ReSharper disable UnassignedField.Global
+
 // Field is never assigned to, and will always have its default value null
 #pragma warning disable 649
 
