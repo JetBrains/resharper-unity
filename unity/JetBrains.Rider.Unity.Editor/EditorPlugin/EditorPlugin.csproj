@@ -28,5 +28,4 @@
   <ItemGroup>
     <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
   </ItemGroup>
-  <Import Project="$(ProjectDir)ILRepack.targets" />
 </Project>
