@@ -162,19 +162,6 @@ task restorePackages {
     }
 }
 
-task updatePackagingPropsVersion {
-    group = backendGroup
-    description = 'Updates packaging.props file with BuildCounter value.'
-
-    doLast {
-        def packagingPropsFile = new File(backend.repositoryRoot, "Packaging.props")
-        assert packagingPropsFile.isFile()
-
-        backend.PatchXmlNodeValue(packagingPropsFile, "Version", version.toString())
-        backend.PatchXmlNodeValue(packagingPropsFile, "AssemblyVersion", version.toString())
-    }
-}
-
 task detectMSBuild {
     group = backendGroup
     description = 'Detects MSBuild and sets the corresponding property.'
@@ -229,9 +216,6 @@ task buildUnity3dRider {
             assert outputPath.delete()
         }
 
-        def file = new File(unityRoot, "JetBrains.Rider.Unity.Editor/AssemblyCustomAttributes.Generated.cs")
-        file.write("[assembly: global::System.Reflection.AssemblyVersionAttribute(\"$version\")]")
-
         def projectOrSolution = new File(unityRoot, "JetBrains.Rider.Unity.Editor/JetBrains.Rider.Unity.Editor.sln")
         assert projectOrSolution.isFile()
 
@@ -245,13 +229,13 @@ task buildUnity3dRider {
         backend.ReportProgress("Building EditorPlugin ($BuildConfiguration)")
         exec {
             executable = msbuild.path
-            args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration" ]
+            args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration;Version=$version" ]
         }
     }
 }
 
 task runMSBuild {
-    dependsOn restorePackages, updatePackagingPropsVersion, detectMSBuild, buildUnity3dRider
+    dependsOn restorePackages, detectMSBuild, buildUnity3dRider
     group = backendGroup
     description = 'Runs MSBuild and creates binaries.'
 
@@ -263,7 +247,7 @@ task runMSBuild {
 
         exec {
             executable = msbuild.path
-            args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration" ]
+            args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration;Version=$version" ]
         }
     }
 }

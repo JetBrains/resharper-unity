@@ -3,12 +3,8 @@
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Tests</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor.Tests</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="2.6.4" />
   </ItemGroup>
