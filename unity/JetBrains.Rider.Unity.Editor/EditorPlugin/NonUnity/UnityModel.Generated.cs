@@ -36,10 +36,12 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdProperty<string> ApplicationPath { get { return _ApplicationPath; }}
     [NotNull] public IRdProperty<string> ApplicationVersion { get { return _ApplicationVersion; }}
     [NotNull] public IRdProperty<UnityLogModelInitialized> LogModelInitialized { get { return _LogModelInitialized; }}
-    [NotNull] public IRdCall<RdVoid, bool> IsClientConnected { get { return _IsClientConnected; }}
+    [NotNull] public IRdCall<RdVoid, bool> IsBackendConnected { get { return _IsBackendConnected; }}
+    [NotNull] public RdEndpoint<RdVoid, UnityEditorState> GetUnityEditorState { get { return _GetUnityEditorState; }}
     [NotNull] public IRdCall<RdOpenFileArgs, bool> OpenFileLineCol { get { return _OpenFileLineCol; }}
     [NotNull] public RdEndpoint<string, bool> UpdateUnityPlugin { get { return _UpdateUnityPlugin; }}
     [NotNull] public RdEndpoint<RdVoid, RdVoid> Refresh { get { return _Refresh; }}
+    [NotNull] public IRdProperty<JetBrains.Platform.Unity.Model.UnitTestLaunch> UnitTestLaunch { get { return _UnitTestLaunch; }}
     
     //private fields
     [NotNull] private readonly RdProperty<bool> _Play;
@@ -50,10 +52,12 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdProperty<string> _ApplicationPath;
     [NotNull] private readonly RdProperty<string> _ApplicationVersion;
     [NotNull] private readonly RdProperty<UnityLogModelInitialized> _LogModelInitialized;
-    [NotNull] private readonly RdCall<RdVoid, bool> _IsClientConnected;
+    [NotNull] private readonly RdCall<RdVoid, bool> _IsBackendConnected;
+    [NotNull] private readonly RdEndpoint<RdVoid, UnityEditorState> _GetUnityEditorState;
     [NotNull] private readonly RdCall<RdOpenFileArgs, bool> _OpenFileLineCol;
     [NotNull] private readonly RdEndpoint<string, bool> _UpdateUnityPlugin;
     [NotNull] private readonly RdEndpoint<RdVoid, RdVoid> _Refresh;
+    [NotNull] private readonly RdProperty<JetBrains.Platform.Unity.Model.UnitTestLaunch> _UnitTestLaunch;
     
     //primary constructor
     private UnityModel(
@@ -65,10 +69,12 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdProperty<string> applicationPath,
       [NotNull] RdProperty<string> applicationVersion,
       [NotNull] RdProperty<UnityLogModelInitialized> logModelInitialized,
-      [NotNull] RdCall<RdVoid, bool> isClientConnected,
+      [NotNull] RdCall<RdVoid, bool> isBackendConnected,
+      [NotNull] RdEndpoint<RdVoid, UnityEditorState> getUnityEditorState,
       [NotNull] RdCall<RdOpenFileArgs, bool> openFileLineCol,
       [NotNull] RdEndpoint<string, bool> updateUnityPlugin,
-      [NotNull] RdEndpoint<RdVoid, RdVoid> refresh
+      [NotNull] RdEndpoint<RdVoid, RdVoid> refresh,
+      [NotNull] RdProperty<JetBrains.Platform.Unity.Model.UnitTestLaunch> unitTestLaunch
     )
     {
       if (play == null) throw new ArgumentNullException("play");
@@ -79,10 +85,12 @@ namespace JetBrains.Platform.Unity.Model
       if (applicationPath == null) throw new ArgumentNullException("applicationPath");
       if (applicationVersion == null) throw new ArgumentNullException("applicationVersion");
       if (logModelInitialized == null) throw new ArgumentNullException("logModelInitialized");
-      if (isClientConnected == null) throw new ArgumentNullException("isClientConnected");
+      if (isBackendConnected == null) throw new ArgumentNullException("isBackendConnected");
+      if (getUnityEditorState == null) throw new ArgumentNullException("getUnityEditorState");
       if (openFileLineCol == null) throw new ArgumentNullException("openFileLineCol");
       if (updateUnityPlugin == null) throw new ArgumentNullException("updateUnityPlugin");
       if (refresh == null) throw new ArgumentNullException("refresh");
+      if (unitTestLaunch == null) throw new ArgumentNullException("unitTestLaunch");
       
       _Play = play;
       _Pause = pause;
@@ -92,10 +100,12 @@ namespace JetBrains.Platform.Unity.Model
       _ApplicationPath = applicationPath;
       _ApplicationVersion = applicationVersion;
       _LogModelInitialized = logModelInitialized;
-      _IsClientConnected = isClientConnected;
+      _IsBackendConnected = isBackendConnected;
+      _GetUnityEditorState = getUnityEditorState;
       _OpenFileLineCol = openFileLineCol;
       _UpdateUnityPlugin = updateUnityPlugin;
       _Refresh = refresh;
+      _UnitTestLaunch = unitTestLaunch;
       _Play.OptimizeNested = true;
       _Pause.OptimizeNested = true;
       _UnityPluginVersion.OptimizeNested = true;
@@ -110,10 +120,12 @@ namespace JetBrains.Platform.Unity.Model
       BindableChildren.Add(new KeyValuePair<string, object>("applicationPath", _ApplicationPath));
       BindableChildren.Add(new KeyValuePair<string, object>("applicationVersion", _ApplicationVersion));
       BindableChildren.Add(new KeyValuePair<string, object>("logModelInitialized", _LogModelInitialized));
-      BindableChildren.Add(new KeyValuePair<string, object>("isClientConnected", _IsClientConnected));
+      BindableChildren.Add(new KeyValuePair<string, object>("isBackendConnected", _IsBackendConnected));
+      BindableChildren.Add(new KeyValuePair<string, object>("getUnityEditorState", _GetUnityEditorState));
       BindableChildren.Add(new KeyValuePair<string, object>("openFileLineCol", _OpenFileLineCol));
       BindableChildren.Add(new KeyValuePair<string, object>("updateUnityPlugin", _UpdateUnityPlugin));
       BindableChildren.Add(new KeyValuePair<string, object>("refresh", _Refresh));
+      BindableChildren.Add(new KeyValuePair<string, object>("unitTestLaunch", _UnitTestLaunch));
     }
     //secondary constructor
     private UnityModel (
@@ -127,13 +139,19 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString),
       new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write),
       new RdCall<RdVoid, bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
+      new RdEndpoint<RdVoid, UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, ReadUnityEditorState, WriteUnityEditorState),
       new RdCall<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
       new RdEndpoint<string, bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
-      new RdEndpoint<RdVoid, RdVoid>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid)
+      new RdEndpoint<RdVoid, RdVoid>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid),
+      new RdProperty<JetBrains.Platform.Unity.Model.UnitTestLaunch>(JetBrains.Platform.Unity.Model.UnitTestLaunch.Read, JetBrains.Platform.Unity.Model.UnitTestLaunch.Write)
     ) {}
     //statics
     
+    public static CtxReadDelegate<UnityEditorState> ReadUnityEditorState = new CtxReadDelegate<UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadEnum<UnityEditorState>);
     
+    public static CtxWriteDelegate<UnityEditorState> WriteUnityEditorState = new CtxWriteDelegate<UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.WriteEnum<UnityEditorState>);
+    
+    protected override long SerializationHash => -6185208528177099467L;
     
     protected override Action<ISerializers> Register => RegisterDeclaredTypesSerializers;
     public static void RegisterDeclaredTypesSerializers(ISerializers serializers)
@@ -143,7 +161,12 @@ namespace JetBrains.Platform.Unity.Model
       serializers.RegisterEnum<RdLogEventType>();
       serializers.RegisterEnum<RdLogEventMode>();
       serializers.Register(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write);
+      serializers.Register(TestResult.Read, TestResult.Write);
+      serializers.Register(JetBrains.Platform.Unity.Model.UnitTestLaunch.Read, JetBrains.Platform.Unity.Model.UnitTestLaunch.Write);
+      serializers.RegisterEnum<UnityEditorState>();
+      serializers.RegisterEnum<Status>();
       
+      serializers.RegisterToplevelOnce(typeof(UnityModel), UnityModel.RegisterDeclaredTypesSerializers);
     }
     
     public UnityModel(Lifetime lifetime, IProtocol protocol) : this()
@@ -169,10 +192,12 @@ namespace JetBrains.Platform.Unity.Model
         printer.Print("applicationPath = "); _ApplicationPath.PrintEx(printer); printer.Println();
         printer.Print("applicationVersion = "); _ApplicationVersion.PrintEx(printer); printer.Println();
         printer.Print("logModelInitialized = "); _LogModelInitialized.PrintEx(printer); printer.Println();
-        printer.Print("isClientConnected = "); _IsClientConnected.PrintEx(printer); printer.Println();
+        printer.Print("isBackendConnected = "); _IsBackendConnected.PrintEx(printer); printer.Println();
+        printer.Print("getUnityEditorState = "); _GetUnityEditorState.PrintEx(printer); printer.Println();
         printer.Print("openFileLineCol = "); _OpenFileLineCol.PrintEx(printer); printer.Println();
         printer.Print("updateUnityPlugin = "); _UpdateUnityPlugin.PrintEx(printer); printer.Println();
         printer.Print("refresh = "); _Refresh.PrintEx(printer); printer.Println();
+        printer.Print("unitTestLaunch = "); _UnitTestLaunch.PrintEx(printer); printer.Println();
       }
       printer.Print(")");
     }
@@ -374,6 +399,188 @@ namespace JetBrains.Platform.Unity.Model
       Print(printer);
       return printer.ToString();
     }
+  }
+  
+  
+  public enum Status {
+    Pending,
+    Running,
+    Passed,
+    Failed
+  }
+  
+  
+  public class TestResult : IPrintable, IEquatable<TestResult> {
+    //fields
+    //public fields
+    [NotNull] public string TestId {get; private set;}
+    public JetBrains.Platform.Unity.Model.Status Status {get; private set;}
+    
+    //private fields
+    //primary constructor
+    public TestResult(
+      [NotNull] string testId,
+      JetBrains.Platform.Unity.Model.Status status
+    )
+    {
+      if (testId == null) throw new ArgumentNullException("testId");
+      
+      TestId = testId;
+      Status = status;
+    }
+    //secondary constructor
+    //statics
+    
+    public static CtxReadDelegate<TestResult> Read = (ctx, reader) => 
+    {
+      var testId = reader.ReadString();
+      var status = (JetBrains.Platform.Unity.Model.Status)reader.ReadInt();
+      return new TestResult(testId, status);
+    };
+    
+    public static CtxWriteDelegate<TestResult> Write = (ctx, writer, value) => 
+    {
+      writer.Write(value.TestId);
+      writer.Write((int)value.Status);
+    };
+    //custom body
+    //equals trait
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != GetType()) return false;
+      return Equals((TestResult) obj);
+    }
+    public bool Equals(TestResult other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return TestId == other.TestId && Status == other.Status;
+    }
+    //hash code trait
+    public override int GetHashCode()
+    {
+      unchecked {
+        var hash = 0;
+        hash = hash * 31 + TestId.GetHashCode();
+        hash = hash * 31 + (int) Status;
+        return hash;
+      }
+    }
+    //pretty print
+    public void Print(PrettyPrinter printer)
+    {
+      printer.Println("TestResult (");
+      using (printer.IndentCookie()) {
+        printer.Print("testId = "); TestId.PrintEx(printer); printer.Println();
+        printer.Print("status = "); Status.PrintEx(printer); printer.Println();
+      }
+      printer.Print(")");
+    }
+    //toString
+    public override string ToString()
+    {
+      var printer = new SingleLinePrettyPrinter();
+      Print(printer);
+      return printer.ToString();
+    }
+  }
+  
+  
+  public class UnitTestLaunch : RdBindableBase {
+    //fields
+    //public fields
+    [NotNull] public List<string> TestNames {get; private set;}
+    [NotNull] public List<string> TestGroups {get; private set;}
+    [NotNull] public List<string> TestCategories {get; private set;}
+    [NotNull] public ISource<JetBrains.Platform.Unity.Model.TestResult> TestResult { get { return _TestResult; }}
+    
+    //private fields
+    [NotNull] private readonly RdSignal<JetBrains.Platform.Unity.Model.TestResult> _TestResult;
+    
+    //primary constructor
+    private UnitTestLaunch(
+      [NotNull] List<string> testNames,
+      [NotNull] List<string> testGroups,
+      [NotNull] List<string> testCategories,
+      [NotNull] RdSignal<JetBrains.Platform.Unity.Model.TestResult> testResult
+    )
+    {
+      if (testNames == null) throw new ArgumentNullException("testNames");
+      if (testGroups == null) throw new ArgumentNullException("testGroups");
+      if (testCategories == null) throw new ArgumentNullException("testCategories");
+      if (testResult == null) throw new ArgumentNullException("testResult");
+      
+      TestNames = testNames;
+      TestGroups = testGroups;
+      TestCategories = testCategories;
+      _TestResult = testResult;
+      BindableChildren.Add(new KeyValuePair<string, object>("testResult", _TestResult));
+    }
+    //secondary constructor
+    public UnitTestLaunch (
+      [NotNull] List<string> testNames,
+      [NotNull] List<string> testGroups,
+      [NotNull] List<string> testCategories
+    ) : this (
+      testNames,
+      testGroups,
+      testCategories,
+      new RdSignal<JetBrains.Platform.Unity.Model.TestResult>(JetBrains.Platform.Unity.Model.TestResult.Read, JetBrains.Platform.Unity.Model.TestResult.Write)
+    ) {}
+    //statics
+    
+    public static CtxReadDelegate<UnitTestLaunch> Read = (ctx, reader) => 
+    {
+      var _id = RdId.Read(reader);
+      var testNames = ReadStringList(ctx, reader);
+      var testGroups = ReadStringList(ctx, reader);
+      var testCategories = ReadStringList(ctx, reader);
+      var testResult = RdSignal<JetBrains.Platform.Unity.Model.TestResult>.Read(ctx, reader, JetBrains.Platform.Unity.Model.TestResult.Read, JetBrains.Platform.Unity.Model.TestResult.Write);
+      return new UnitTestLaunch(testNames, testGroups, testCategories, testResult).WithId(_id);
+    };
+    public static CtxReadDelegate<List<string>> ReadStringList = JetBrains.Platform.RdFramework.Impl.Serializers.ReadString.List();
+    
+    public static CtxWriteDelegate<UnitTestLaunch> Write = (ctx, writer, value) => 
+    {
+      value.RdId.Write(writer);
+      WriteStringList(ctx, writer, value.TestNames);
+      WriteStringList(ctx, writer, value.TestGroups);
+      WriteStringList(ctx, writer, value.TestCategories);
+      RdSignal<JetBrains.Platform.Unity.Model.TestResult>.Write(ctx, writer, value._TestResult);
+    };
+    public static CtxWriteDelegate<List<string>> WriteStringList = JetBrains.Platform.RdFramework.Impl.Serializers.WriteString.List();
+    //custom body
+    //equals trait
+    //hash code trait
+    //pretty print
+    public override void Print(PrettyPrinter printer)
+    {
+      printer.Println("UnitTestLaunch (");
+      using (printer.IndentCookie()) {
+        printer.Print("testNames = "); TestNames.PrintEx(printer); printer.Println();
+        printer.Print("testGroups = "); TestGroups.PrintEx(printer); printer.Println();
+        printer.Print("testCategories = "); TestCategories.PrintEx(printer); printer.Println();
+        printer.Print("testResult = "); _TestResult.PrintEx(printer); printer.Println();
+      }
+      printer.Print(")");
+    }
+    //toString
+    public override string ToString()
+    {
+      var printer = new SingleLinePrettyPrinter();
+      Print(printer);
+      return printer.ToString();
+    }
+  }
+  
+  
+  public enum UnityEditorState {
+    Disconnected,
+    Idle,
+    Play,
+    Refresh
   }
   
   
