@@ -40,7 +40,7 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdCall<RdVoid, UnityEditorState> GetUnityEditorState { get { return _GetUnityEditorState; }}
     [NotNull] public RdEndpoint<RdOpenFileArgs, bool> OpenFileLineCol { get { return _OpenFileLineCol; }}
     [NotNull] public IRdCall<string, bool> UpdateUnityPlugin { get { return _UpdateUnityPlugin; }}
-    [NotNull] public IRdCall<RdVoid, RdVoid> Refresh { get { return _Refresh; }}
+    [NotNull] public IRdCall<bool, RdVoid> Refresh { get { return _Refresh; }}
     [NotNull] public IRdProperty<JetBrains.Platform.Unity.Model.UnitTestLaunch> UnitTestLaunch { get { return _UnitTestLaunch; }}
     
     //private fields
@@ -56,7 +56,7 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdCall<RdVoid, UnityEditorState> _GetUnityEditorState;
     [NotNull] private readonly RdEndpoint<RdOpenFileArgs, bool> _OpenFileLineCol;
     [NotNull] private readonly RdCall<string, bool> _UpdateUnityPlugin;
-    [NotNull] private readonly RdCall<RdVoid, RdVoid> _Refresh;
+    [NotNull] private readonly RdCall<bool, RdVoid> _Refresh;
     [NotNull] private readonly RdProperty<JetBrains.Platform.Unity.Model.UnitTestLaunch> _UnitTestLaunch;
     
     //primary constructor
@@ -73,7 +73,7 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdCall<RdVoid, UnityEditorState> getUnityEditorState,
       [NotNull] RdEndpoint<RdOpenFileArgs, bool> openFileLineCol,
       [NotNull] RdCall<string, bool> updateUnityPlugin,
-      [NotNull] RdCall<RdVoid, RdVoid> refresh,
+      [NotNull] RdCall<bool, RdVoid> refresh,
       [NotNull] RdProperty<JetBrains.Platform.Unity.Model.UnitTestLaunch> unitTestLaunch
     )
     {
@@ -142,7 +142,7 @@ namespace JetBrains.Platform.Unity.Model
       new RdCall<RdVoid, UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, ReadUnityEditorState, WriteUnityEditorState),
       new RdEndpoint<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
       new RdCall<string, bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
-      new RdCall<RdVoid, RdVoid>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid),
+      new RdCall<bool, RdVoid>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool, JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid),
       new RdProperty<JetBrains.Platform.Unity.Model.UnitTestLaunch>(JetBrains.Platform.Unity.Model.UnitTestLaunch.Read, JetBrains.Platform.Unity.Model.UnitTestLaunch.Write)
     ) {}
     //statics

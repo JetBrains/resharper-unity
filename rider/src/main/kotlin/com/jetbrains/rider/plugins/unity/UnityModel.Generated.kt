@@ -29,7 +29,7 @@ class UnityModel private constructor(
     private val _getUnityEditorState : RdCall<Unit, UnityEditorState>,
     private val _openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean>,
     private val _updateUnityPlugin : RdCall<String, Boolean>,
-    private val _refresh : RdCall<Unit, Unit>,
+    private val _refresh : RdCall<Boolean, Unit>,
     private val _unitTestLaunch : RdOptionalProperty<UnitTestLaunch>
 ) : RdExtBase() {
     //companion
@@ -76,7 +76,7 @@ class UnityModel private constructor(
     val getUnityEditorState : IRdCall<Unit, UnityEditorState> get() = _getUnityEditorState
     val openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean> get() = _openFileLineCol
     val updateUnityPlugin : IRdCall<String, Boolean> get() = _updateUnityPlugin
-    val refresh : IRdCall<Unit, Unit> get() = _refresh
+    val refresh : IRdCall<Boolean, Unit> get() = _refresh
     val unitTestLaunch : IOptProperty<UnitTestLaunch> get() = _unitTestLaunch
     
     //initializer
@@ -121,7 +121,7 @@ class UnityModel private constructor(
         RdCall<Unit, UnityEditorState>(FrameworkMarshallers.Void, UnityEditorState.marshaller),
         RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool),
         RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool),
-        RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void),
+        RdCall<Boolean, Unit>(FrameworkMarshallers.Bool, FrameworkMarshallers.Void),
         RdOptionalProperty<UnitTestLaunch>(UnitTestLaunch)
     )
     

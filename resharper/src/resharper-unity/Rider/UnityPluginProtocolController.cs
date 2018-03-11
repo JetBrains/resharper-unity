@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ISolution mySolution;
         [CanBeNull] public UnityModel UnityModel;
 
-        public readonly ISignal<UnityModel> Refresh = new DataFlow.Signal<UnityModel>("Refresh");
+        public readonly ISignal<RefreshModel> Refresh = new DataFlow.Signal<RefreshModel>("Refresh");
 
         public UnityPluginProtocolController(Lifetime lifetime, ILogger logger, 
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
@@ -94,13 +94,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 switch (e.Key)
                 {
                     case "UNITY_Refresh":
-                        if (e.NewValue.ToLower() == true.ToString().ToLower())
-                        {
-                            myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                            if (model!=null)
-                                Refresh.Fire(model);
-                        }
-
+                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
+                        if (model != null && e.NewValue != null)
+                            Refresh.Fire(new RefreshModel(model, Convert.ToBoolean(e.NewValue)));
                         break;
                     case "UNITY_Step":
                         if (e.NewValue.ToLower() == true.ToString().ToLower())
@@ -225,5 +221,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public int port_id { get; set; }
+    }
+
+    public class RefreshModel
+    {
+        public UnityModel Model;
+        public bool Force;
+        
+        public RefreshModel(UnityModel model, bool force)
+        {
+            this.Model = model;
+            this.Force = force;
+        }
     }
 }

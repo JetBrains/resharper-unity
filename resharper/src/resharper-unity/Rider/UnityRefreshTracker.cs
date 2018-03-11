@@ -35,18 +35,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
                         
-            myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(); });
+            myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(model.Force); });
         }
 
         public bool IsRefreshing { get; private set; }
 
-        public void Refresh()
+        public void Refresh(bool force)
         {
             myLocks.AssertMainThread();
             if (IsRefreshing) return;
 
             IsRefreshing = true;
-            var result = myPluginProtocolController.UnityModel?.Refresh.Start(RdVoid.Instance)?.Result;
+            var result = myPluginProtocolController.UnityModel?.Refresh.Start(force)?.Result;
 
             if (result == null)
             {
@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             
             var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
-                Rgc.Invariant, refresher.Refresh);
+                Rgc.Invariant, ()=>refresher.Refresh(false));
 
             var protocolSolution = solution.GetProtocolSolution();
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
