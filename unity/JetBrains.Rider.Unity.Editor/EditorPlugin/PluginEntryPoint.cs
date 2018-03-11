@@ -182,12 +182,12 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
       model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
-      model.Refresh.Set((l, x) =>
+      model.Refresh.Set((l, force) =>
       {
         var task = new RdTask<RdVoid>();
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          if (EditorPrefsWrapper.AutoRefresh)
+          if (EditorPrefsWrapper.AutoRefresh || force)
             UnityUtils.SyncSolution();
           else
             ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
