@@ -151,6 +151,8 @@ namespace JetBrains.Platform.Unity.Model
     
     public static CtxWriteDelegate<UnityEditorState> WriteUnityEditorState = new CtxWriteDelegate<UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.WriteEnum<UnityEditorState>);
     
+    protected override long SerializationHash => -6185208528177099467L;
+    
     protected override Action<ISerializers> Register => RegisterDeclaredTypesSerializers;
     public static void RegisterDeclaredTypesSerializers(ISerializers serializers)
     {

@@ -35,6 +35,7 @@ class UnityModel private constructor(
     //companion
     
     companion object : ISerializersOwner {
+        
         override fun registerSerializersCore(serializers : ISerializers) {
             serializers.register(RdOpenFileArgs)
             serializers.register(RdLogEvent)
@@ -59,7 +60,8 @@ class UnityModel private constructor(
         }
         
     }
-    override val serializersOwner = UnityModel
+    override val serializersOwner : ISerializersOwner get() = UnityModel
+    override val serializationHash : Long get() = -6185208528177099467L
     
     //fields
     val play : IOptProperty<Boolean> get() = _play
