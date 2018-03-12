@@ -14,8 +14,11 @@ wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
+// Renaming to be more meaningful, but would also require updating build.ps1
+// and also the build configuration settings in TeamCity
 if (!ext.has("Source"))
     ext.Source = null
+ext.PackageSource = ext.Source
 
 if (!ext.has("BuildCounter"))
     ext.BuildCounter = 9999

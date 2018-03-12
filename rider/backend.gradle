@@ -8,7 +8,6 @@ import java.util.regex.Pattern
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 ext.backend = new BackendHelper("..", logger)
 
-ext.msbuild = new File("")
 ext.artifactDefs = []
 
 class MSBuildTask extends DefaultTask {
@@ -78,8 +77,9 @@ class RestorePackagesTask extends DefaultTask {
 
         project.backend.ReportProgress("Restoring packages for $packagesFile")
 
-        // TODO: What is Source?
-        def restoreArguments = project.Source == null ? [ 'restore', packagesFile ] : [ 'restore', '--source', 'https://api.nuget.org/v3/index.json', '--source', 'https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json', '--source', project.Source, packagesFile]
+        def restoreArguments = project.PackageSource == null
+            ? [ 'restore', packagesFile ]
+            : [ 'restore', '--source', 'https://api.nuget.org/v3/index.json', '--source', 'https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json', '--source', project.PackageSource, packagesFile]
         project.exec {
             executable = 'dotnet'
             args = restoreArguments
@@ -159,20 +159,23 @@ class BackendHelper {
 
 task updateDirectoryBuildProps {
     group = backendGroup
-    description = 'Parses SDK version from Source parameter and updates .props file accordingly. Does nothing if the Source is not set.'
+    description = 'Parses SDK version from PackageSource parameter and updates .props file accordingly. Does nothing if PackageSource is not set.'
 
     doLast {
-        if (Source == null) {
+        if (PackageSource == null) {
             logger.lifecycle("Explict SDK version is not set, skipping .props modification")
             return
         }
+
         // Get package version from folder
-        def directory = new File(Source as String)
+        def directory = new File(PackageSource as String)
         assert directory.isDirectory()
 
         def packageName = "JetBrains.Rider.SDK"
         def escapedPackagedName = Pattern.quote(packageName)
+
         logger.lifecycle("Looking for package $packageName among items:")
+
         String sdkPackageVersion = directory.listFiles().collect {
             File f ->
                 if (f.isDirectory())
@@ -197,6 +200,7 @@ task updateDirectoryBuildProps {
         logger.lifecycle("JetBrains.Rider.SDK -> $sdkPackageVersion")
         logger.lifecycle("JetBrains.Rider.SDK.Tests -> $sdkPackageVersion")
         logger.lifecycle("- ${buildPropsFile.name}: $sdkPropertyName -> $sdkPackageVersion")
+
         backend.PatchXmlNodeValue(buildPropsFile, sdkPropertyName, sdkPackageVersion)
     }
 }
@@ -254,12 +258,14 @@ task prepareNuspec() {
 task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
     group backendGroup
     description 'Restores packages for Unity Editor plugin'
+    dependsOn updateDirectoryBuildProps
     packagesFile backend.unityPluginSolution
 }
 
 task restoreBackendPluginPackages(type: RestorePackagesTask) {
     group backendGroup
     description 'Restores packages for backend plugin'
+    dependsOn updateDirectoryBuildProps
     packagesFile backend.solution
 }
 
