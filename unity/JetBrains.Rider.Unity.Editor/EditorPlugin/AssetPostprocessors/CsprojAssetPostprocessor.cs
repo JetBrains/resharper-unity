@@ -313,31 +313,44 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // Set appropriate version
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
-      var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
-        .Elements(xmlns + "TargetFrameworkVersion")
-        .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
-      if (targetFrameworkVersion != null)
-      {
-        var scriptingRuntime = 0; // legacy runtime
-        try
-        {
-          // not available in earlier runtime versions
-          var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
-          scriptingRuntime = (int)property.GetValue(null, null);
-          if (scriptingRuntime>0)
-            ourLogger.Verbose("Latest runtime detected.");
-        }
-        catch(Exception){}
+        var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
+          .Elements(xmlns + "TargetFrameworkVersion")
+          .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
+        if (targetFrameworkVersion == null) 
+          return;
 
-        if (scriptingRuntime > 0)
+      if (UnityUtils.ScriptingRuntime > 0)
         {
           var version = PluginSettings.TargetFrameworkVersion;
-          PluginSettings.WarnOnAvailbaleNewerNetFramework(version);
+          if (!PluginSettings.OverrideTargetFrameworkVersion)
+          {
+            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            {
+              var versions = PluginSettings.GetInstalledNetFrameworks();
+              if (versions.Any())
+              {
+                version = versions.OrderBy(v => new Version(v)).Last();
+              }
+            }
+          }
           targetFrameworkVersion.SetValue("v" + version);
         }
         else
-          targetFrameworkVersion.SetValue("v"+PluginSettings.TargetFrameworkVersionOldMono);
-      }
+        {
+          var version = PluginSettings.TargetFrameworkVersionOldMono;
+          if (!PluginSettings.OverrideTargetFrameworkVersionOldMono)
+          {
+            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            {
+              var versions = PluginSettings.GetInstalledNetFrameworks();
+              if (versions.Any())
+              {
+                version = versions.OrderBy(v => new Version(v)).First();
+              }
+            }
+          }
+          targetFrameworkVersion.SetValue("v" + version);
+        }
     }
 
     private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
