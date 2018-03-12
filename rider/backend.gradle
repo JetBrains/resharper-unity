@@ -251,6 +251,32 @@ task prepareNuspec() {
     }
 }
 
+task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
+    group backendGroup
+    description 'Restores packages for Unity Editor plugin'
+    packagesFile backend.unityPluginSolution
+}
+
+task restoreBackendPluginPackages(type: RestorePackagesTask) {
+    group backendGroup
+    description 'Restores packages for backend plugin'
+    packagesFile backend.solution
+}
+
+task buildUnityEditorPlugin(type: MSBuildTask) {
+    dependsOn restoreUnityEditorPluginPackages
+    group backendGroup
+    description 'Builds Unity Editor plugin assemblies'
+    buildFile = backend.unityPluginSolution
+}
+
+task buildBackendPlugin(type: MSBuildTask) {
+    dependsOn restoreBackendPluginPackages, buildUnityEditorPlugin
+    group backendGroup
+    description 'Builds ReSharper plugin assemblies'
+    buildFile = RiderOnly ? backend.riderTestsProject : backend.solution
+}
+
 task packReSharperPlugin {
     dependsOn buildBackendPlugin, prepareNuspec
     group = backendGroup
@@ -298,32 +324,6 @@ task packReSharperPlugin {
             backend.ServiceMessage("publishArtifacts", "$outputDir\\*.nupkg")
         }
     }
-}
-
-task restoreUnityPluginPackages(type: RestorePackagesTask) {
-    group backendGroup
-    description 'Restores packages for Unity plugin'
-    packagesFile backend.unityPluginSolution
-}
-
-task restoreBackendPluginPackages(type: RestorePackagesTask) {
-    group backendGroup
-    description 'Restores packages for backend plugin'
-    packagesFile backend.solution
-}
-
-task buildUnityPlugin(type: MSBuildTask) {
-    dependsOn restoreBackendPluginPackages
-    group backendGroup
-    description 'Builds Unity3dRider assemblies'
-    buildFile = backend.unityPluginSolution
-}
-
-task buildBackendPlugin(type: MSBuildTask) {
-    dependsOn restoreBackendPlugin, buildUnityPlugin
-    group backendGroup
-    description 'Builds ReSharper plugin assemblies'
-    buildFile = RiderOnly ? backend.riderTestsProject : backend.solution
 }
 
 task buildBackend {
