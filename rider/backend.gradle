@@ -7,6 +7,7 @@ import java.util.regex.Pattern
 
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 ext.backend = new BackendHelper("..", logger)
+ext.extraMSBuildArgs = []
 
 ext.artifactDefs = []
 
@@ -20,9 +21,11 @@ class MSBuildTask extends DefaultTask {
     def build() {
         project.backend.ReportProgress("Building $buildFile ($project.BuildConfiguration)")
 
+        def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:minimal', '/nologo' ]
+        arguments.addAll(project.extraMSBuildArgs)
         project.exec {
             executable = findMSBuildPath()
-            args = [ buildFile, "/p:Configuration=$project.BuildConfiguration;Version=$project.version", "/v:minimal", "/nologo" ]
+            args = arguments
         }
     }
 
@@ -77,9 +80,14 @@ class RestorePackagesTask extends DefaultTask {
 
         project.backend.ReportProgress("Restoring packages for $packagesFile")
 
-        def restoreArguments = project.PackageSource == null
-            ? [ 'restore', packagesFile ]
-            : [ 'restore', '--source', 'https://api.nuget.org/v3/index.json', '--source', 'https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json', '--source', project.PackageSource, packagesFile]
+        def restoreArguments = [ 'restore' ]
+        if (project.PackageSource != null) {
+            restoreArguments << '--source' << 'https://api.nuget.org/v3/index.json'
+            restoreArguments << '--source' << 'https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json'
+            restoreArguments << '--source' << project.PackageSource
+        }
+        restoreArguments.addAll project.extraMSBuildArgs
+        restoreArguments << packagesFile
         project.exec {
             executable = 'dotnet'
             args = restoreArguments
@@ -120,34 +128,6 @@ class BackendHelper {
         this.logger = logger
     }
 
-    // relies on pretty simplistic structure (e.g. no attributes)
-    void PatchXmlNodeValue(File file, String nodeName, String value) {
-        logger.lifecycle("- ${file.name}: $nodeName -> $value")
-        PatchFile(file, /(\s*<$nodeName>)[^<]*(<\\/$nodeName>)\s*/, "\$1$value\$2")
-    }
-
-    void PatchFile(File file, String regex, String replacement) {
-        def pattern = Pattern.compile(regex)
-        logger.lifecycle("- ${file.name}: $pattern -> $replacement")
-
-        def lines = file.readLines()
-        def replaced = lines.collect {
-            String line -> pattern.matcher(line).replaceAll(replacement)
-        }
-
-        def fullText = replaced.join("\n")
-        file.withOutputStream {
-            OutputStream os ->
-                os.withWriter {
-                    Writer w -> w.write(fullText)
-                }
-                os.flush()
-                os.close()
-        }
-
-        // TODO: notify if no matches found ?
-    }
-
     void ReportProgress(String message) {
         ServiceMessage("progressMessage", message)
     }
@@ -157,51 +137,37 @@ class BackendHelper {
     }
 }
 
-task updateDirectoryBuildProps {
-    group = backendGroup
-    description = 'Parses SDK version from PackageSource parameter and updates .props file accordingly. Does nothing if PackageSource is not set.'
+task findLocalRiderSDKVersion {
+    group backendGroup
+    description 'Find version of local Rider SDK version'
+
+    onlyIf { PackageSource != null }
 
     doLast {
-        if (PackageSource == null) {
-            logger.lifecycle("Explict SDK version is not set, skipping .props modification")
-            return
-        }
-
-        // Get package version from folder
-        def directory = new File(PackageSource as String)
+        def directory = file(PackageSource)
         assert directory.isDirectory()
 
-        def packageName = "JetBrains.Rider.SDK"
-        def escapedPackagedName = Pattern.quote(packageName)
+        def packageName = 'JetBrains.Rider.SDK'
+        def escapedPackageName = Pattern.quote(packageName)
 
-        logger.lifecycle("Looking for package $packageName among items:")
+        logger.lifecycle("Looking for package $packageName in $directory")
 
-        String sdkPackageVersion = directory.listFiles().collect {
-            File f ->
-                if (f.isDirectory())
-                    return null
-
+        def packageVersion = directory.listFiles().collect { File f ->
+            if (f.isFile()) {
                 logger.trace(f.name)
-                def match = (f.name =~ /^(?i)$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(d?)(pre|internal)?)?)\.nupkg\u0024/)
-                if (!match.matches())
-                    return null
 
-                def matchValue = match[0][1]
-                return matchValue
+                def match = (f.name =~ /^(?i)$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(d?)(pre|internal)?)?)\.nupkg\u0024/)
+                if (math.matches()) {
+                    return match[0][1]
+                }
+            }
+
+            return null
         }.find { String s -> s != null }
 
-        assert sdkPackageVersion != null : "No files found matching the package version regex"
+        assert packageVersion != null : 'No files found matching the package version regex'
 
-        // Set Rider SDK version
-        def buildPropsFile = new File(backend.backendRoot, "Directory.Build.props")
-        def sdkPropertyName = "RiderSDKVersion"
-
-        logger.lifecycle("Setting versions:")
-        logger.lifecycle("JetBrains.Rider.SDK -> $sdkPackageVersion")
-        logger.lifecycle("JetBrains.Rider.SDK.Tests -> $sdkPackageVersion")
-        logger.lifecycle("- ${buildPropsFile.name}: $sdkPropertyName -> $sdkPackageVersion")
-
-        backend.PatchXmlNodeValue(buildPropsFile, sdkPropertyName, sdkPackageVersion)
+        extraMSBuildArgs << "/p:RiderSDKVersion=$packageVersion"
     }
 }
 
@@ -258,14 +224,14 @@ task prepareNuspec() {
 task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
     group backendGroup
     description 'Restores packages for Unity Editor plugin'
-    dependsOn updateDirectoryBuildProps
+    dependsOn findLocalRiderSDKVersion
     packagesFile backend.unityPluginSolution
 }
 
 task restoreBackendPluginPackages(type: RestorePackagesTask) {
     group backendGroup
     description 'Restores packages for backend plugin'
-    dependsOn updateDirectoryBuildProps
+    dependsOn findLocalRiderSDKVersion
     packagesFile backend.solution
 }
 

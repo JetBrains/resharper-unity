@@ -23,9 +23,8 @@
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
-  <!-- Specify Rider SDK version in one place -->
   <PropertyGroup>
-    <RiderSDKVersion>2018.1-SNAPSHOT*</RiderSDKVersion>
+    <RiderSDKVersion Condition=" '$(RiderSDKVersion)' == '' ">2018.1-SNAPSHOT*</RiderSDKVersion>
     <ReSharperSDKVersion>2018.1-SNAPSHOT*</ReSharperSDKVersion>    
   </PropertyGroup>  
 
