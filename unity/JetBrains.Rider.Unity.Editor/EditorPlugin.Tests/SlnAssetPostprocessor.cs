@@ -2,7 +2,7 @@
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using NUnit.Framework;
 
-namespace EditorPlugin.Tests
+namespace JetBrains.Rider.Unity.Editor.Tests
 {
   [TestFixture]
   public class SlnAssetPostprocessorTest
