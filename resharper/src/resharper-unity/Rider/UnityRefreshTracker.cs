@@ -6,7 +6,9 @@ using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Util;
+using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.ProjectsHost.Impl;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.Rider.Model;
@@ -21,9 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
-        private readonly UnityEditorProtocol myPluginProtocolController;
+        private readonly UnityPluginProtocolController myPluginProtocolController;
 
-        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityEditorProtocol pluginProtocolController)
+        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityPluginProtocolController pluginProtocolController)
         {
             myLocks = locks;
             myLifetime = lifetime;
@@ -33,18 +35,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
                         
-            myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(); });
+            myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(model.Force); });
         }
 
         public bool IsRefreshing { get; private set; }
 
-        public void Refresh()
+        public void Refresh(bool force)
         {
             myLocks.AssertMainThread();
             if (IsRefreshing) return;
 
             IsRefreshing = true;
-            var result = myPluginProtocolController.UnityModel.Value?.Refresh.Start(RdVoid.Instance)?.Result;
+            var result = myPluginProtocolController.UnityModel?.Refresh.Start(force)?.Result;
 
             if (result == null)
             {
@@ -78,20 +80,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityEditorProtocol protocolController, 
+        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityPluginProtocolController protocolController, 
             ILogger logger)
         {
             if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
             
             var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
-                Rgc.Invariant, refresher.Refresh);
+                Rgc.Invariant, ()=>refresher.Refresh(false));
 
             var protocolSolution = solution.GetProtocolSolution();
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
             {
                 if (refresher.IsRefreshing) return;
-                var isPlay = protocolController.UnityModel.Value?.Play.HasTrueValue();
+                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
                 if (isPlay==null || (bool)isPlay) return;
                 
                 groupingEvent.FireIncoming();
@@ -110,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (!hasChange)
                     return;
                 
-                var isPlay = protocolController.UnityModel.Value?.Play.HasTrueValue();
+                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
                 if (isPlay==null || (bool)isPlay) 
                     return;
 

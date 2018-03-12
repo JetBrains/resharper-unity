@@ -29,12 +29,13 @@ class UnityModel private constructor(
     private val _getUnityEditorState : RdCall<Unit, UnityEditorState>,
     private val _openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean>,
     private val _updateUnityPlugin : RdCall<String, Boolean>,
-    private val _refresh : RdCall<Unit, Unit>,
+    private val _refresh : RdCall<Boolean, Unit>,
     private val _unitTestLaunch : RdOptionalProperty<UnitTestLaunch>
 ) : RdExtBase() {
     //companion
-
+    
     companion object : ISerializersOwner {
+        
         override fun registerSerializersCore(serializers : ISerializers) {
             serializers.register(RdOpenFileArgs)
             serializers.register(RdLogEvent)
@@ -42,26 +43,26 @@ class UnityModel private constructor(
             serializers.register(RdLogEventMode.marshaller)
             serializers.register(UnityLogModelInitialized)
             serializers.register(TestResult)
-            serializers.register(RunResult)
             serializers.register(UnitTestLaunch)
             serializers.register(UnityEditorState.marshaller)
             serializers.register(Status.marshaller)
             UnityModel.register(serializers)
         }
-
-
+        
+        
         fun create(lifetime: Lifetime, protocol: IProtocol) : UnityModel {
             UnityModel.register(protocol.serializers)
-
+            
             return UnityModel ().apply {
                 identify(protocol.identity, RdId.Null.mix("UnityModel"))
                 bind(lifetime, protocol, "UnityModel")
             }
         }
-
+        
     }
-    override val serializersOwner = UnityModel
-
+    override val serializersOwner : ISerializersOwner get() = UnityModel
+    override val serializationHash : Long get() = -6185208528177099467L
+    
     //fields
     val play : IOptProperty<Boolean> get() = _play
     val pause : IOptProperty<Boolean> get() = _pause
@@ -75,9 +76,9 @@ class UnityModel private constructor(
     val getUnityEditorState : IRdCall<Unit, UnityEditorState> get() = _getUnityEditorState
     val openFileLineCol : RdEndpoint<RdOpenFileArgs, Boolean> get() = _openFileLineCol
     val updateUnityPlugin : IRdCall<String, Boolean> get() = _updateUnityPlugin
-    val refresh : IRdCall<Unit, Unit> get() = _refresh
+    val refresh : IRdCall<Boolean, Unit> get() = _refresh
     val unitTestLaunch : IOptProperty<UnitTestLaunch> get() = _unitTestLaunch
-
+    
     //initializer
     init {
         _play.optimizeNested = true
@@ -87,7 +88,7 @@ class UnityModel private constructor(
         _applicationPath.optimizeNested = true
         _applicationVersion.optimizeNested = true
     }
-
+    
     init {
         bindableChildren.add("play" to _play)
         bindableChildren.add("pause" to _pause)
@@ -104,7 +105,7 @@ class UnityModel private constructor(
         bindableChildren.add("refresh" to _refresh)
         bindableChildren.add("unitTestLaunch" to _unitTestLaunch)
     }
-
+    
     //secondary constructor
     private constructor(
     ) : this (
@@ -120,10 +121,10 @@ class UnityModel private constructor(
         RdCall<Unit, UnityEditorState>(FrameworkMarshallers.Void, UnityEditorState.marshaller),
         RdEndpoint<RdOpenFileArgs, Boolean>(RdOpenFileArgs, FrameworkMarshallers.Bool),
         RdCall<String, Boolean>(FrameworkMarshallers.String, FrameworkMarshallers.Bool),
-        RdCall<Unit, Unit>(FrameworkMarshallers.Void, FrameworkMarshallers.Void),
+        RdCall<Boolean, Unit>(FrameworkMarshallers.Bool, FrameworkMarshallers.Void),
         RdOptionalProperty<UnitTestLaunch>(UnitTestLaunch)
     )
-
+    
     //equals trait
     //hash code trait
     //pretty print
@@ -157,10 +158,10 @@ data class RdLogEvent (
     val stackTrace : String
 ) : IPrintable {
     //companion
-
+    
     companion object : IMarshaller<RdLogEvent> {
         override val _type: Class<RdLogEvent> = RdLogEvent::class.java
-
+        
         @Suppress("UNCHECKED_CAST")
         override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): RdLogEvent {
             val type = buffer.readEnum<RdLogEventType>()
@@ -169,14 +170,14 @@ data class RdLogEvent (
             val stackTrace = buffer.readString()
             return RdLogEvent(type, mode, message, stackTrace)
         }
-
+        
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: RdLogEvent) {
             buffer.writeEnum(value.type)
             buffer.writeEnum(value.mode)
             buffer.writeString(value.message)
             buffer.writeString(value.stackTrace)
         }
-
+        
     }
     //fields
     //initializer
@@ -185,14 +186,14 @@ data class RdLogEvent (
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
-
+        
         other as RdLogEvent
-
+        
         if (type != other.type) return false
         if (mode != other.mode) return false
         if (message != other.message) return false
         if (stackTrace != other.stackTrace) return false
-
+        
         return true
     }
     //hash code trait
@@ -221,7 +222,7 @@ data class RdLogEvent (
 enum class RdLogEventMode {
     Edit,
     Play;
-
+    
     companion object { val marshaller = FrameworkMarshallers.enum<RdLogEventMode>() }
 }
 
@@ -230,7 +231,7 @@ enum class RdLogEventType {
     Error,
     Warning,
     Message;
-
+    
     companion object { val marshaller = FrameworkMarshallers.enum<RdLogEventType>() }
 }
 
@@ -241,10 +242,10 @@ data class RdOpenFileArgs (
     val col : Int
 ) : IPrintable {
     //companion
-
+    
     companion object : IMarshaller<RdOpenFileArgs> {
         override val _type: Class<RdOpenFileArgs> = RdOpenFileArgs::class.java
-
+        
         @Suppress("UNCHECKED_CAST")
         override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): RdOpenFileArgs {
             val path = buffer.readString()
@@ -252,13 +253,13 @@ data class RdOpenFileArgs (
             val col = buffer.readInt()
             return RdOpenFileArgs(path, line, col)
         }
-
+        
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: RdOpenFileArgs) {
             buffer.writeString(value.path)
             buffer.writeInt(value.line)
             buffer.writeInt(value.col)
         }
-
+        
     }
     //fields
     //initializer
@@ -267,13 +268,13 @@ data class RdOpenFileArgs (
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
-
+        
         other as RdOpenFileArgs
-
+        
         if (path != other.path) return false
         if (line != other.line) return false
         if (col != other.col) return false
-
+        
         return true
     }
     //hash code trait
@@ -297,62 +298,12 @@ data class RdOpenFileArgs (
 }
 
 
-data class RunResult (
-    val passed : Boolean
-) : IPrintable {
-    //companion
-
-    companion object : IMarshaller<RunResult> {
-        override val _type: Class<RunResult> = RunResult::class.java
-
-        @Suppress("UNCHECKED_CAST")
-        override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): RunResult {
-            val passed = buffer.readBool()
-            return RunResult(passed)
-        }
-
-        override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: RunResult) {
-            buffer.writeBool(value.passed)
-        }
-
-    }
-    //fields
-    //initializer
-    //secondary constructor
-    //equals trait
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other?.javaClass != javaClass) return false
-
-        other as RunResult
-
-        if (passed != other.passed) return false
-
-        return true
-    }
-    //hash code trait
-    override fun hashCode(): Int {
-        var __r = 0
-        __r = __r*31 + passed.hashCode()
-        return __r
-    }
-    //pretty print
-    override fun print(printer: PrettyPrinter) {
-        printer.println("RunResult (")
-        printer.indent {
-            print("passed = "); passed.print(printer); println()
-        }
-        printer.print(")")
-    }
-}
-
-
 enum class Status {
     Pending,
     Running,
     Passed,
     Failed;
-
+    
     companion object { val marshaller = FrameworkMarshallers.enum<Status>() }
 }
 
@@ -362,22 +313,22 @@ data class TestResult (
     val status : Status
 ) : IPrintable {
     //companion
-
+    
     companion object : IMarshaller<TestResult> {
         override val _type: Class<TestResult> = TestResult::class.java
-
+        
         @Suppress("UNCHECKED_CAST")
         override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): TestResult {
             val testId = buffer.readString()
             val status = buffer.readEnum<Status>()
             return TestResult(testId, status)
         }
-
+        
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: TestResult) {
             buffer.writeString(value.testId)
             buffer.writeEnum(value.status)
         }
-
+        
     }
     //fields
     //initializer
@@ -386,12 +337,12 @@ data class TestResult (
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
-
+        
         other as TestResult
-
+        
         if (testId != other.testId) return false
         if (status != other.status) return false
-
+        
         return true
     }
     //hash code trait
@@ -417,14 +368,13 @@ class UnitTestLaunch private constructor(
     val testNames : List<String>,
     val testGroups : List<String>,
     val testCategories : List<String>,
-    private val _testResult : RdSignal<TestResult>,
-    private val _runResult : RdSignal<RunResult>
+    private val _testResult : RdSignal<TestResult>
 ) : RdBindableBase() {
     //companion
-
+    
     companion object : IMarshaller<UnitTestLaunch> {
         override val _type: Class<UnitTestLaunch> = UnitTestLaunch::class.java
-
+        
         @Suppress("UNCHECKED_CAST")
         override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): UnitTestLaunch {
             val _id = RdId.read(buffer)
@@ -432,30 +382,26 @@ class UnitTestLaunch private constructor(
             val testGroups = buffer.readList {buffer.readString()}
             val testCategories = buffer.readList {buffer.readString()}
             val _testResult = RdSignal.read(ctx, buffer, TestResult)
-            val _runResult = RdSignal.read(ctx, buffer, RunResult)
-            return UnitTestLaunch(testNames, testGroups, testCategories, _testResult, _runResult).withId(_id)
+            return UnitTestLaunch(testNames, testGroups, testCategories, _testResult).withId(_id)
         }
-
+        
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: UnitTestLaunch) {
             value.rdid.write(buffer)
             buffer.writeList(value.testNames) {v -> buffer.writeString(v)}
             buffer.writeList(value.testGroups) {v -> buffer.writeString(v)}
             buffer.writeList(value.testCategories) {v -> buffer.writeString(v)}
             RdSignal.write(ctx, buffer, value._testResult)
-            RdSignal.write(ctx, buffer, value._runResult)
         }
-
+        
     }
     //fields
     val testResult : ISource<TestResult> get() = _testResult
-    val runResult : ISource<RunResult> get() = _runResult
-
+    
     //initializer
     init {
         bindableChildren.add("testResult" to _testResult)
-        bindableChildren.add("runResult" to _runResult)
     }
-
+    
     //secondary constructor
     constructor(
         testNames : List<String>,
@@ -465,10 +411,9 @@ class UnitTestLaunch private constructor(
         testNames,
         testGroups,
         testCategories,
-        RdSignal<TestResult>(TestResult),
-        RdSignal<RunResult>(RunResult)
+        RdSignal<TestResult>(TestResult)
     )
-
+    
     //equals trait
     //hash code trait
     //pretty print
@@ -479,7 +424,6 @@ class UnitTestLaunch private constructor(
             print("testGroups = "); testGroups.print(printer); println()
             print("testCategories = "); testCategories.print(printer); println()
             print("testResult = "); _testResult.print(printer); println()
-            print("runResult = "); _runResult.print(printer); println()
         }
         printer.print(")")
     }
@@ -491,7 +435,7 @@ enum class UnityEditorState {
     Idle,
     Play,
     Refresh;
-
+    
     companion object { val marshaller = FrameworkMarshallers.enum<UnityEditorState>() }
 }
 
@@ -500,37 +444,37 @@ class UnityLogModelInitialized private constructor(
     private val _log : RdSignal<RdLogEvent>
 ) : RdBindableBase() {
     //companion
-
+    
     companion object : IMarshaller<UnityLogModelInitialized> {
         override val _type: Class<UnityLogModelInitialized> = UnityLogModelInitialized::class.java
-
+        
         @Suppress("UNCHECKED_CAST")
         override fun read(ctx: SerializationCtx, buffer: AbstractBuffer): UnityLogModelInitialized {
             val _id = RdId.read(buffer)
             val _log = RdSignal.read(ctx, buffer, RdLogEvent)
             return UnityLogModelInitialized(_log).withId(_id)
         }
-
+        
         override fun write(ctx: SerializationCtx, buffer: AbstractBuffer, value: UnityLogModelInitialized) {
             value.rdid.write(buffer)
             RdSignal.write(ctx, buffer, value._log)
         }
-
+        
     }
     //fields
     val log : ISource<RdLogEvent> get() = _log
-
+    
     //initializer
     init {
         bindableChildren.add("log" to _log)
     }
-
+    
     //secondary constructor
     constructor(
     ) : this (
         RdSignal<RdLogEvent>(RdLogEvent)
     )
-
+    
     //equals trait
     //hash code trait
     //pretty print

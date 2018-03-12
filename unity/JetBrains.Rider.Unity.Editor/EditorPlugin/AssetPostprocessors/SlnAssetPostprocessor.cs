@@ -23,6 +23,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       
       ourLogger.Verbose("Post-processing {0}", slnFile);
       var slnAllText = File.ReadAllText(slnFile);
+      var text = ProcessSlnText(slnAllText);
+      File.WriteAllText(slnFile, text);
+    }
+
+    public static string ProcessSlnText(string slnAllText)
+    {
       const string unityProjectGuid = @"Project(""{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1}"")";
       if (!slnAllText.Contains(unityProjectGuid))
       {
@@ -40,7 +46,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           var mc = Regex.Matches(line, "\"([^\"]*)\"");
           //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "mc[1]: "+mc[1].Value);
           //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "mc[2]: "+mc[2].Value);
-          var to = GetFileNameWithoutExtension(mc[2].Value.Substring(1, mc[2].Value.Length-1)); // remove quotes
+          var to = GetFileNameWithoutExtension(mc[2].Value.Substring(1, mc[2].Value.Length - 2)); // remove quotes
           //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, "to:" + to);
           //RiderPlugin.Log(RiderPlugin.LoggingLevel.Info, line);
           var newLine = line.Substring(0, mc[1].Index + 1) + to + line.Substring(mc[1].Index + mc[1].Value.Length - 1);
@@ -51,11 +57,13 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         {
           sb.Append(line);
         }
+
         sb.Append(Environment.NewLine);
       }
-      File.WriteAllText(slnFile, sb.ToString());
+
+      return sb.ToString();
     }
-    
+
     private static string GetFileNameWithoutExtension(string path)
     {
       if (string.IsNullOrEmpty(path))

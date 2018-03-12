@@ -115,7 +115,7 @@ namespace JetBrains.Rider.Unity.Editor
         lifetimeDefinition.Terminate();
       });
 
-      if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.INFO)
+      if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
         Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
 
       try
@@ -131,7 +131,7 @@ namespace JetBrains.Rider.Unity.Editor
         {
           if (connected)
           {
-            var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
+            var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
             ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
             var modelValue = CreateModel(protocol, connectionLifetime);
@@ -209,12 +209,15 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
       model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
-      model.Refresh.Set((l, x) =>
+      model.Refresh.Set((l, force) =>
       {
         var task = new RdTask<RdVoid>();
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          UnityUtils.SyncSolution();
+          if (EditorPrefsWrapper.AutoRefresh || force)
+            UnityUtils.SyncSolution();
+          else
+            ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
           task.Set(RdVoid.Instance);
         });
         return task;

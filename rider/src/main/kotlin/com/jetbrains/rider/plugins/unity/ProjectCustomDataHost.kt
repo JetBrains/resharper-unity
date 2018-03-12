@@ -43,7 +43,7 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
         }
     }
     companion object {
-        fun CallBackendRefresh(project: Project) { CallBackend(project, "UNITY_Refresh", "true") }
+        fun CallBackendRefresh(project: Project, force:Boolean) { CallBackend(project, "UNITY_Refresh", force.toString().toLowerCase()) }
         fun CallBackendPlay(project: Project, value:Boolean) { CallBackend(project, "UNITY_Play", value.toString().toLowerCase()) }
         fun CallBackendPause(project: Project, value:Boolean) { CallBackend(project, "UNITY_Pause", value.toString().toLowerCase()) }
         fun CallBackendStep(project: Project) { CallBackend(project, "UNITY_Step", "true") }

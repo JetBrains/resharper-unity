@@ -12,4 +12,4 @@ Make property 'Prop' abstract
 To property with serialized backing field
 Add accessor body
 To property with backing field
-Enable C# 6.0 support for this project
+Allow ReSharper to suggest C# 6.0 features for this project

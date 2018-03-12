@@ -11,7 +11,7 @@ class RefreshInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : An
         val project = e.project?: return
 
         application.saveAll()
-        ProjectCustomDataHost.CallBackendRefresh(project)
+        ProjectCustomDataHost.CallBackendRefresh(project, true)
     }
 
     override fun update(e: AnActionEvent?) {
