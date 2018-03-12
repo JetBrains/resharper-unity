@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using JetBrains.Rider.Unity.Editor;
+using EditorPlugin.Tests;
 using NUnit.Framework;
 
-namespace EditorPlugin.Tests
+namespace JetBrains.Rider.Unity.Editor.Tests
 {
   [TestFixture]
   public class RiderPluginTest
