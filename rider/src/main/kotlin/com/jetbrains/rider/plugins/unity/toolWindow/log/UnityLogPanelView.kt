@@ -123,6 +123,8 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
         for (event in newEvents)
         {
             eventList.riderModel.addElement(event)
+            if (eventList.itemsCount>1000)
+                eventList.riderModel.removeRange(1000, 2000)
         }
 
         if (eventList.isSelectionEmpty)
