@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using EditorPlugin.Tests;
 using NUnit.Framework;
 
 namespace JetBrains.Rider.Unity.Editor.Tests
