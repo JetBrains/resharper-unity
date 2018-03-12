@@ -12,6 +12,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
   {
     private static readonly ILog ourLogger = Log.GetLog<SlnAssetPostprocessor>();
     
+    public override int GetPostprocessOrder()
+    {
+      return 10;
+    }
+    
     public static void OnGeneratedCSProjectFiles()
     {
       if (!PluginEntryPoint.Enabled)

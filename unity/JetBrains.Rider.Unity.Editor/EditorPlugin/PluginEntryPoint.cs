@@ -126,17 +126,12 @@ namespace JetBrains.Rider.Unity.Editor
         
         MainThreadDispatcher.AssertThread();
         
-        riderProtocolController.Wire.Connected.View(lifetime, (lt, connected) =>
+        riderProtocolController.Wire.Connected.WhenTrue(lifetime, lt =>
         {
-          if (connected)
-          {
-            var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
-            ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
+          var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
+          ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
-            ourModel.Value = CreateModel(protocol, lt);
-          }
-          else
-            ourModel.Value = null;
+          ourModel.Value = CreateModel(protocol, lt);
         });
       }
       catch (Exception ex)
@@ -218,6 +213,7 @@ namespace JetBrains.Rider.Unity.Editor
       //lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},
       //  () => { EditorApplication.pauseStateChanged -= IsPauseStateChanged(model); });
       
+      ourLogger.Verbose("CreateModel finished.");
 
       return model;
     }
