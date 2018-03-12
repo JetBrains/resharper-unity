@@ -362,7 +362,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
       if (Directory.Exists(Path.GetFullPath("CSharp70Support")))
-        return "7";
+        return "latest";
       if (Directory.Exists(Path.GetFullPath("CSharp60Support")))
         return "6";
 
