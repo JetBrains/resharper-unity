@@ -26,7 +26,7 @@ namespace JetBrains.Rider.Model
   
   
   [JetBrains.Application.ShellComponent]
-  public class RdUnityModel : RdBindableBase {
+  public class RdUnityModel : RdExtBase {
     //fields
     //public fields
     [NotNull] public IViewableMap<string, string> Data { get { return _Data; }}
@@ -35,7 +35,7 @@ namespace JetBrains.Rider.Model
     [NotNull] private readonly RdMap<string, string> _Data;
     
     //primary constructor
-    public RdUnityModel(
+    private RdUnityModel(
       [NotNull] RdMap<string, string> data
     )
     {
@@ -43,38 +43,34 @@ namespace JetBrains.Rider.Model
       
       _Data = data;
       _Data.OptimizeNested = true;
+      BindableChildren.Add(new KeyValuePair<string, object>("data", _Data));
     }
     //secondary constructor
+    private RdUnityModel (
+    ) : this (
+      new RdMap<string, string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString, JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString)
+    ) {}
     //statics
     
     
     
-    public static void Register(ISerializers serializers)
+    protected override long SerializationHash => -8346968635933216692L;
+    
+    protected override Action<ISerializers> Register => RegisterDeclaredTypesSerializers;
+    public static void RegisterDeclaredTypesSerializers(ISerializers serializers)
     {
-      if (!serializers.Toplevels.Add(typeof(RdUnityModel))) return;
-      Protocol.InitializationLogger.Trace("REGISTER serializers for {0}", typeof(RdUnityModel).Name);
       
+      serializers.RegisterToplevelOnce(typeof(IdeRoot), IdeRoot.RegisterDeclaredTypesSerializers);
     }
     
-    public RdUnityModel(Lifetime lifetime, IProtocol protocol) : this (
-      new RdMap<string, string>(Serializers.ReadString, Serializers.WriteString, Serializers.ReadString, Serializers.WriteString).Static(1001)
-    )
+    public RdUnityModel(Lifetime lifetime, IProtocol protocol) : this()
     {
-      IdeRoot.Register(protocol.Serializers);
-      Register(protocol.Serializers);
+      Identify(protocol.Identities, RdId.Root.Mix(GetType().Name));
       Bind(lifetime, protocol, GetType().Name);
       if (Protocol.InitializationLogger.IsTraceEnabled())
         Protocol.InitializationLogger.Trace ("CREATED toplevel object {0}", this.PrintToString());
     }
     //custom body
-    //init method
-    protected override void Init(Lifetime lifetime) {
-      _Data.BindEx(lifetime, this, "data");
-    }
-    //identify method
-    public override void Identify(IIdentities ids) {
-      _Data.IdentifyEx(ids);
-    }
     //equals trait
     //hash code trait
     //pretty print

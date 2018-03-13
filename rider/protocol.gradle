@@ -14,14 +14,18 @@ task generateModel {
         def csOutput = new File(repoRoot, "resharper/src/resharper-unity/RdUnityProtocol")
         def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol")
         def packageName = "com.jetbrains.rider.plugins.unity.model"
+        def kotlinCompilerClasspath = "C:/work/dotnet-products/Packages/JetBrains.Platform.Kotlin.1.1.0.3/Kotlin/kotlinc/lib/*;C:/work/resharper-unity/rider/build/riderRD-2018.1-SNAPSHOT/lib/*"
 
         javaexec {
             main = "com.jetbrains.rider.generator.nova.MainKt"
-            classpath = files(['C:/work/dotnet-products/Packages/JetBrains.Platform.Kotlin.1.1.0.3/Kotlin/kotlinc/lib/*', 'C:/work/resharper-unity/rider/lib/rdgen.jar'])
+            // ['C:/work/resharper-unity/rider/build/riderRD-2018.1-SNAPSHOT/lib/*',
+            // classpath = files(['C:/work/resharper-unity/rider/build/riderRD-2018.1-SNAPSHOT/lib/*', kotlinCompilerClasspath, 'C:/work/resharper-unity/rider/lib/rdgen.jar'])
+            classpath = files([kotlinCompilerClasspath, 'C:/work/resharper-unity/rider/lib/rdgen.jar'])
             systemProperty "model.out.src.cs.dir", "$csOutput"
             systemProperty "model.out.src.kt.dir", "$ktOutput"
             args = [
                     "-v", // verbose
+                    "--compiler-classpath=C:/work/resharper-unity/rider/lib/rdgen.jar",
                     "--source=$modelDir",
                     "--packages=$packageName"
             ]

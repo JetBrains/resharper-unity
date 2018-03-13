@@ -1,4 +1,4 @@
-@file:Suppress("PackageDirectoryMismatch", "UnusedImport", "unused")
+@file:Suppress("PackageDirectoryMismatch", "UnusedImport", "unused", "LocalVariableName")
 package com.jetbrains.rider.model
 
 import com.jetbrains.rider.framework.*
@@ -16,32 +16,30 @@ import java.net.*
 
 
 
-class RdUnityModel (
+class RdUnityModel private constructor(
     private val _data : RdMap<String, String>
-) : RdBindableBase() {
+) : RdExtBase() {
     //companion
     
-    companion object {
+    companion object : ISerializersOwner {
         
-        public fun register(serializers : ISerializers) {
-            if (!serializers.toplevels.add(RdUnityModel::class.java)) return
-            Protocol.initializationLogger.trace { "REGISTER serializers for "+RdUnityModel::class.java.simpleName }
+        override fun registerSerializersCore(serializers : ISerializers) {
         }
         
-        fun create(lifetime : Lifetime, protocol : IProtocol) : RdUnityModel {
+        
+        fun create(lifetime: Lifetime, protocol: IProtocol) : RdUnityModel {
             IdeRoot.register(protocol.serializers)
-            register(protocol.serializers)
             
-            val __res = RdUnityModel (
-                RdMap<String, String>(FrameworkMarshallers.String, FrameworkMarshallers.String).static(1001))
-            __res.bind(lifetime, protocol, RdUnityModel::class.java.simpleName)
-            
-            Protocol.initializationLogger.trace { "CREATED toplevel object "+__res.printToString() }
-            
-            return __res
+            return RdUnityModel ().apply {
+                identify(protocol.identity, RdId.Null.mix("RdUnityModel"))
+                bind(lifetime, protocol, "RdUnityModel")
+            }
         }
         
     }
+    override val serializersOwner : ISerializersOwner get() = RdUnityModel
+    override val serializationHash : Long get() = -8346968635933216692L
+    
     //fields
     val data : IMutableViewableMap<String, String> get() = _data
     
@@ -50,15 +48,16 @@ class RdUnityModel (
         _data.optimizeNested = true
     }
     
+    init {
+        bindableChildren.add("data" to _data)
+    }
+    
     //secondary constructor
-    //init method
-    override fun init(lifetime: Lifetime) {
-        _data.bind(lifetime, this, "data")
-    }
-    //identify method
-    override fun identify(ids: IIdentities) {
-        _data.identify(ids)
-    }
+    private constructor(
+    ) : this (
+        RdMap<String, String>(FrameworkMarshallers.String, FrameworkMarshallers.String)
+    )
+    
     //equals trait
     //hash code trait
     //pretty print
