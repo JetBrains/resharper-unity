@@ -74,7 +74,7 @@ Desktop.ini
 .DS_Store
 rider/out/*
 rider/.idea/uiDesigner.xml
-rider/lib/.rdgen
+**/.rdgen
 
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove
