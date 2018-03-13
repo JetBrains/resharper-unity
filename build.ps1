@@ -1,8 +1,6 @@
 param (
   [string]$Source, # Rider SDK Packages folder, optional
   [string]$BuildCounter = 9999, # Sets Rider plugin version to version from Packaging.Props with the last zero replaced by $BuildCounter
-  [string]$SinceBuild, # Set since-build in Rider plugin descriptor
-  [string]$UntilBuild, # Set until-build in Rider plugin descriptor
   [string]$Configuration = "Release", # Release / Debug
   [switch]$RiderOnly # Build only Rider csprojects
 )

@@ -6,7 +6,8 @@ sourceSets {
 }
 
 intellij {
-    type = 'RD'
+    pluginName 'rider-unity'
+    type 'RD'
 
     // Download a version of Rider to compile and run with. Either set `version` to
     // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
@@ -25,8 +26,6 @@ intellij {
     } else {
         version = '2018.1-SNAPSHOT'
     }
-
-    // intellijRepo = "https://www.jetbrains.com/intellij-repository"
 
     // Sources aren't available for Rider
     downloadSources = false
@@ -48,37 +47,6 @@ repositories {
     mavenCentral()
 }
 
-task prepareForBuild{
-    group = "intellij"
-    description = "Checks that backend is built and updates plugin.xml with IDEA and plugin versions."
-    doLast {
-        def pluginXml = new File("src/main/resources/META-INF/plugin.xml")
-        assert pluginXml.isFile()
-        def tempXml = new File(pluginXml.path + ".tmp")
-
-        copy {
-            from pluginXml.parent
-            into pluginXml.parent
-            include pluginXml.name
-            rename(pluginXml.name, tempXml.name)
-
-            filter { line -> line.replaceAll(/<version>((\d+\.)+\d+)<\/version>/, "<version>$version</version>")}
-
-            if (SinceBuild != null)
-                filter { line -> line.replaceAll(/since-build=\"[^\"]+\"/, "since-build=\"$SinceBuild\"")}
-            if (UntilBuild != null)
-                filter { line -> line.replaceAll(/until-build=\"[^\"]+\"/, "until-build=\"$UntilBuild\"")}
-        }
-
-        pluginXml.delete()
-        tempXml.renameTo(pluginXml)
-    }
-}
-
-buildPlugin {
-    dependsOn prepareForBuild
-}
-
 def dllFiles = [
     "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net452/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net452/JetBrains.ReSharper.Plugins.Unity.pdb",
@@ -88,7 +56,6 @@ def annotationsFrom = '../resharper/src/resharper-unity/annotations'
 def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 
 prepareSandbox {
-    dependsOn prepareForBuild
 
 doLast{
     assert file(unityeditorplugin_path).exists()

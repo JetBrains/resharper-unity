@@ -23,12 +23,6 @@ ext.PackageSource = ext.Source
 if (!ext.has("BuildCounter"))
     ext.BuildCounter = 9999
 
-if (!ext.has("SinceBuild"))
-    ext.SinceBuild = null
-
-if (!ext.has("UntilBuild"))
-    ext.UntilBuild = null
-
 if (!ext.has("BuildConfiguration"))
     ext.BuildConfiguration = "Release"
 
