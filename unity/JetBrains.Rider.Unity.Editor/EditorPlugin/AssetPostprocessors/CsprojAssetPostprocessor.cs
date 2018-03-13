@@ -145,7 +145,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     }
 
 
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
+    private static readonly string PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
@@ -300,17 +300,36 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
           foreach (var referenceName in referenceList)
           {
-            ApplyCustomReference(referenceName, projectContentElement, xmlns);  
+            string hintPath = null;
+            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            {
+              var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+              var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
+              if (!monoDir.Exists)
+                monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
+              
+              var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
+              if (newestApiDir != null)
+              {
+                var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, referenceName));
+                if (dllPath.Exists)
+                  hintPath = dllPath.FullName;  
+              }
+            }
+            
+            ApplyCustomReference(referenceName, projectContentElement, xmlns, hintPath);  
           }
         }
       }
     }
 
-    private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns)
+    private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns, string hintPath = null)
     {
       var itemGroup = new XElement(xmlns + "ItemGroup");
       var reference = new XElement(xmlns + "Reference");
       reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(name)));
+      if (!string.IsNullOrEmpty(hintPath))
+        reference.Add(new XElement(xmlns + "HintPath", hintPath));
       itemGroup.Add(reference);
       projectContentElement.Add(itemGroup);
     }
