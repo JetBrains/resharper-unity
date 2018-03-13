@@ -56,7 +56,7 @@ namespace JetBrains.Rider.Unity.Editor
       var model = myModel.Maybe.ValueOrDefault;
       if (model != null)
       {
-        if (PluginEntryPoint.IsProtocolConnected())
+        if (PluginEntryPoint.CheckConnectedToBackendSync())
         {
           const int column = 0;
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);

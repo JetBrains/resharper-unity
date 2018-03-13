@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
-import com.jetbrains.rider.util.idea.application
 
 class PlayInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : ToggleAction("Play/Edit", "Change Play/Edit mode in Unity", UnityIcons.PlayInUnity) {
 
@@ -17,7 +16,7 @@ class PlayInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : Toggl
         ProjectCustomDataHost.CallBackendPlay(project, value)
     }
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = projectCustomDataHost.isConnected.value
+        e.presentation.isEnabled = projectCustomDataHost.sessionInitialized.value
         super.update(e)
     }
 }
@@ -32,7 +31,7 @@ class PauseInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : Togg
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.isConnected.value
+        e.presentation.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.sessionInitialized.value
         super.update(e)
     }
 }
@@ -44,7 +43,7 @@ class StepInUnityAction(val projectCustomDataHost:ProjectCustomDataHost) : AnAct
     }
 
     override fun update(e: AnActionEvent?) {
-        e?.presentation?.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.isConnected.value
+        e?.presentation?.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.sessionInitialized.value
         super.update(e)
     }
 }

@@ -10,6 +10,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugAndPlayConfigurationType" />
     <applicationConfigurable groupId="language" instance="com.jetbrains.rider.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
 
@@ -46,6 +47,7 @@
 
   <project-components>
     <component><implementation-class>com.jetbrains.rider.UnityReferenceDiscoverer</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.RiderUnitySettings</implementation-class></component>
@@ -57,6 +59,9 @@
   </project-components>
 
   <actions>
+    <!--<action id="UnityShowImportantAction" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions">
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="before" />
+    </action>-->
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>
