@@ -17,6 +17,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         
         public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityEditorProtocol unityEditorProtocolController, IShellLocks locks, ISolution solution)
         {
+            // this shouldn't be up in tests until we figure out how to test unity-editor requiring features
+            if (locks.Dispatcher.IsAsyncBehaviorProhibited)
+                return;
+            
             //check connection between backend and unity editor
             locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
             {
