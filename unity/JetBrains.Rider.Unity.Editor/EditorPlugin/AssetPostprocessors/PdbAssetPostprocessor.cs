@@ -11,6 +11,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
   {
     private static readonly ILog ourLogger = Log.GetLog<PdbAssetPostprocessor>();
     
+    public override int GetPostprocessOrder()
+    {
+      return 10;
+    }
+    
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)
     {
       if (!PluginEntryPoint.Enabled)
