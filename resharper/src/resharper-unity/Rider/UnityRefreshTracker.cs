@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return;
                 
                 var isPlay = protocolController.UnityModel.Value?.Play.HasTrueValue();
-                if (isPlay==null || (bool)isPlay) 
+                if (isPlay == null || (bool)isPlay) 
                     return;
 
                 groupingEvent.FireIncoming();

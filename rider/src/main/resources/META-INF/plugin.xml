@@ -59,9 +59,9 @@
   </project-components>
 
   <actions>
-    <action id="UnityShowImportantAction" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions">
+    <!--<action id="UnityShowImportantAction" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="before" />
-    </action>
+    </action>-->
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>

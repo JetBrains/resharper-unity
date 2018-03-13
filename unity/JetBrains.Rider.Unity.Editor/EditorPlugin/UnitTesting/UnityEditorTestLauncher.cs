@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util.Logging;
@@ -203,7 +204,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       ourLogger.Verbose($"TestStarted : {test.FullName}");
       var id = GetIdFromNUnitTest(test);
       
-      myLaunch.TestResult.Fire(new TestResult(id, Status.Running));
+      myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running));
     }
     
     private void TestFinished(ITestResult testResult)
@@ -214,8 +215,37 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
       ourLogger.Verbose($"TestFinished : {test.FullName}");
       var id = GetIdFromNUnitTest(test);
-      
-      myLaunch.TestResult.Fire(new TestResult(id, Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed));
+
+      var output = ExtractOutput(testResult);
+      myLaunch.TestResult.Fire(new TestResult(id, output, (int)TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds, Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed));
+    }
+
+    private static string ExtractOutput(ITestResult testResult)
+    {
+      var stringBuilder = new StringBuilder();
+      if (testResult.Message != null)
+      {
+        stringBuilder.AppendLine("Message: ");
+        stringBuilder.AppendLine(testResult.Message);
+      }
+
+      if (!string.IsNullOrEmpty(testResult.Output))
+      {
+        stringBuilder.AppendLine("Output: ");
+        stringBuilder.AppendLine(testResult.Output);
+      }
+
+      if (!string.IsNullOrEmpty(testResult.StackTrace))
+      {
+        stringBuilder.AppendLine("Stacktrace: ");
+        stringBuilder.AppendLine(testResult.StackTrace);
+      }
+
+      var result = stringBuilder.ToString();
+      if (result.Length > 0)
+        return result;
+
+      return testResult.Output ?? String.Empty;
     }
 
     [NotNull]

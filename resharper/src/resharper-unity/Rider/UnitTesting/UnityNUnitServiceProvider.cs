@@ -20,13 +20,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public UnityNUnitServiceProvider(ISolution solution, IPsiModules psiModules, ISymbolCache symbolCache,
             IUnitTestElementIdFactory idFactory, IUnitTestElementManager elementManager, NUnitTestProvider provider,
             ISettingsStore settingsStore, ISettingsOptimization settingsOptimization, ISettingsCache settingsCache,
-            UnitTestingCachingService cachingService, IDotNetCoreSdkResolver dotNetCoreSdkResolver, 
-            UnityEditorProtocol unityEditorProtocol, IUnitTestResultManager unitTestResultManager)
+            UnitTestingCachingService cachingService, IDotNetCoreSdkResolver dotNetCoreSdkResolver,
+            UnityEditorProtocol unityEditorProtocol,
+            RunViaUnityEditorStrategy runViaUnityEditorStrategy)
             : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settingsStore,
                 settingsOptimization, settingsCache, cachingService, dotNetCoreSdkResolver)
         {
             myUnityEditorProtocol = unityEditorProtocol;
-            myUnityEditorStrategy = new RunViaUnityEditorStrategy(solution, myUnityEditorProtocol.UnityModel.Value, unitTestResultManager, myUnityEditorProtocol);
+            myUnityEditorStrategy = runViaUnityEditorStrategy;
         }
 
         public override IUnitTestRunStrategy GetRunStrategy(IUnitTestElement element)

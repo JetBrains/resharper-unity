@@ -42,9 +42,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger,
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
-            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath.Directory))
-                return;
-
             myLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
@@ -52,6 +49,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution = solution;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
             myUnityModel = new Property<UnityModel>(lifetime, "unityModelProperty", null).EnsureReadonly(myReadonlyToken).EnsureThisThread();
+            
+            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath.Directory))
+                return;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;

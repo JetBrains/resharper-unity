@@ -13,6 +13,7 @@ import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.lifetime.LifetimeDefinition
+import com.jetbrains.rider.util.reactive.Property
 import org.jdom.Element
 
 @State(name = "UnityProjectConfiguration", storages = [(Storage(value = "other.xml"))])
@@ -24,38 +25,42 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
         const val isUnityProjectAttribute = "isUnityUI"
     }
 
+    private var frameLifetime: LifetimeDefinition? = null
+    val isUnityUI: Property<Boolean> = Property(false)
+
     init {
         WindowManager.getInstance().addListener(this)
         componentLifetime.add {
             WindowManager.getInstance().removeListener(this)
         }
         solutionLifecycleHost.isBackendLoaded.advise(componentLifetime) {
-            if (it && isUnityUI == null && unityReferenceDiscoverer.isUnityProject) {
-                isUnityUI = true
+            if (it && unityReferenceDiscoverer.isUnityProject) {
+                isUnityUI.value = true
             }
         }
-
-
     }
-    private var frameLifetime: LifetimeDefinition? = null
-    private var isUnityUI: Boolean? = null
+
 
     override fun getState(): Element? {
         val element = Element("state")
-        val value = isUnityUI ?: ""
+        val value = isUnityUI.value
         element.setAttribute(isUnityProjectAttribute, value.toString())
         return element
     }
 
     override fun loadState(element: Element) {
         val attributeValue = element.getAttributeValue(isUnityProjectAttribute, "") ?: return
-        if (!attributeValue.isNullOrEmpty()) {
+        if (!attributeValue.isEmpty()) {
         }
-        isUnityUI = attributeValue.toBoolean()
+        isUnityUI.value = attributeValue.toBoolean()
     }
 
     override fun frameCreated(frame: IdeFrame) {
         frameLifetime?.terminate()
+
+        if(!isUnityUI.value)
+            return
+
         frameLifetime = Lifetime.create(componentLifetime)
         val frameLifetime = frameLifetime?.lifetime ?: error("frameLifetime was terminated from non-ui thread")
         installWidget(frame, frameLifetime)

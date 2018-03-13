@@ -17,13 +17,16 @@ using UnitTestLaunch = JetBrains.Platform.Unity.Model.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
+    [SolutionComponent]
     public class RunViaUnityEditorStrategy : IUnitTestRunStrategy
     {
         private readonly ISolution mySolution;
         private readonly IUnitTestResultManager myUnitTestResultManager;
         private readonly UnityEditorProtocol myUnityEditorProtocol;
 
-        public RunViaUnityEditorStrategy(ISolution solution, UnityModel unityModel,
+        private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
+        
+        public RunViaUnityEditorStrategy(ISolution solution,
             IUnitTestResultManager unitTestResultManager, UnityEditorProtocol unityEditorProtocol)
         {
             mySolution = solution;
@@ -59,6 +62,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Run(IUnitTestRun run)
         {
+            var key = run.Launch.GetData(ourLaunchedInUnityKey);
+            if (key != null)
+            {
+                run.Finish();
+                return;
+            }
+            
+            run.Launch.PutData(ourLaunchedInUnityKey, "smth");
+
             mySolution.Locks.ExecuteOrQueueEx(mySolution.GetLifetime(), "ExecuteRunUT", () =>
             {
                 if(myUnityEditorProtocol.UnityModel.Value == null)
@@ -75,12 +87,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             });
         }
 
-        private void RunInternal(IUnitTestRun run, Lifetime connectionLifetime, UnityModel unityModel)
+        private void RunInternal(IUnitTestRun firstRun, Lifetime connectionLifetime, UnityModel unityModel)
         {
             mySolution.Locks.AssertMainThread();
             
             var elementToIdMap = new Dictionary<string, IUnitTestElement>();
-            var allNames = InitElementsMap(run.Elements, elementToIdMap);
+            var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
+            var allNames = InitElementsMap(unitTestElements, elementToIdMap);
             var emptyList = new List<string>();
 
             var launch = new UnitTestLaunch(allNames, emptyList, emptyList);
@@ -95,19 +108,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 {
                     case Status.Pending:
                         myUnitTestResultManager.MarkPending(unitTestElement,
-                            run.Launch.Session);
+                            firstRun.Launch.Session);
                         break;
                     case Status.Running:
                         myUnitTestResultManager.TestStarting(unitTestElement,
-                            run.Launch.Session);
+                            firstRun.Launch.Session);
                         break;
                     case Status.Passed:
-                        myUnitTestResultManager.TestFinishing(unitTestElement,
-                            run.Launch.Session, "Passed", TaskResult.Success);
-                        break;
                     case Status.Failed:
+                        var taskResult = result.Status == Status.Failed ? TaskResult.Error : TaskResult.Success;
+                        var message = result.Status == Status.Failed ? "Failed" : "Passed";
+                        
+                        myUnitTestResultManager.TestOutput(unitTestElement, firstRun.Launch.Session, result.Output, TaskOutputType.STDOUT);
+                        myUnitTestResultManager.TestDuration(unitTestElement, firstRun.Launch.Session, TimeSpan.FromMilliseconds(result.Duration));
                         myUnitTestResultManager.TestFinishing(unitTestElement,
-                            run.Launch.Session, "Passed", TaskResult.Error);
+                            firstRun.Launch.Session, message, taskResult);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(
@@ -117,10 +132,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             launch.RunResult.Advise(connectionLifetime, result =>
             {
-                run.Finish();
+                firstRun.Finish();
             });
 
             unityModel.UnitTestLaunch.Value = launch;
+        }
+
+        private IEnumerable<IUnitTestElement> CollectElementsToRunInUnityEditor(IUnitTestRun firstRun)
+        {
+            var result = new JetHashSet<IUnitTestElement>();
+            foreach (var unitTestRun in firstRun.Launch.Runs)
+            {
+                if (unitTestRun.RunStrategy.Equals(this))
+                {
+                    result.AddRange(unitTestRun.Elements);
+                }
+            }
+
+            return result.ToList();
         }
 
         private List<string> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements,
@@ -157,28 +186,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
+            run.Finish();
         }
 
         public void Abort(IUnitTestRun run)
         {
-        }
-
-        protected bool Equals(RunViaUnityEditorStrategy other)
-        {
-            return Equals(mySolution, other.mySolution);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((RunViaUnityEditorStrategy) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (mySolution != null ? mySolution.GetHashCode() : 0);
+            run.Finish();
         }
     }
 }

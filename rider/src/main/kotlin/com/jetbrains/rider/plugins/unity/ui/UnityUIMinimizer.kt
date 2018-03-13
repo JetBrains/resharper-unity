@@ -7,6 +7,9 @@ import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
 import com.jetbrains.rider.build.actions.ActiveConfigurationAndPlatformAction
 import com.jetbrains.rider.util.idea.application
+import com.jetbrains.rider.util.idea.lifetime
+import com.jetbrains.rider.util.idea.tryGetComponent
+import com.jetbrains.rider.util.reactive.whenTrue
 
 class UnityUIMinimizer : StartupActivity {
     companion object {
@@ -54,8 +57,12 @@ class UnityUIMinimizer : StartupActivity {
     }
 
     override fun runActivity(project: Project) {
-        application.invokeLater {
-            ensureMinimizedUI(project)
-        }
+        val unityUiManager = project.tryGetComponent<UnityUIManager>() ?: return
+
+        unityUiManager.isUnityUI.whenTrue(project.lifetime, {
+            application.invokeLater {
+                ensureMinimizedUI(project)
+            }
+        })
     }
 }

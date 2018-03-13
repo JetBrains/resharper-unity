@@ -70,9 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             foreach (var method in testMethods)
             {
                 var typeName = myTypeNameCache.GetClrName(method.DeclaringType);
-                var baseTypePrefix = GetBaseTypePrefix(method);
-                
-                var id = string.Format("{0}{1}", baseTypePrefix, method.Name);
+                var id = string.Format("{0}.{1}", typeName, method.Name);
 
                 var testElement = GetOrCreateTest(id, typeName, method.Name);
                 myUnitTestCollector.OnUnitTestElement(testElement);
