@@ -16,12 +16,11 @@ task generateModel {
         def packageName = "com.jetbrains.rider.plugins.unity.model"
 
         javaexec {
-            main = "-jar"
-            classpath = files('build/')
+            main = "com.jetbrains.rider.generator.nova.MainKt"
+            classpath = files(['C:/work/dotnet-products/Packages/JetBrains.Platform.Kotlin.1.1.0.3/Kotlin/kotlinc/lib/*', 'C:/work/resharper-unity/rider/lib/rdgen.jar'])
+            systemProperty "model.out.src.cs.dir", "$csOutput"
+            systemProperty "model.out.src.kt.dir", "$ktOutput"
             args = [
-                    "-Dmodel.out.src.cs.dir=$csOutput",
-                    "-Dmodel.out.src.kt.dir=$ktOutput",
-                    "$rdgenJar",
                     "-v", // verbose
                     "--source=$modelDir",
                     "--packages=$packageName"
