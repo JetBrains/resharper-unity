@@ -55,7 +55,7 @@ class UnityStatusBarIcon(private val projectCustomDataHost: ProjectCustomDataHos
 
     override fun getTooltipText(): String? {
         if(projectCustomDataHost.sessionInitialized.value)
-            return "Rider and Unity Editor are connected with each other.\nSome features like Run Unit Tests will be performed via the Unity Editor"
+            return "Rider and Unity Editor are connected with each other.\nTo enhance productivity some features will work through the Unity Editor"
         else
             return "No launched Unity Editor found.\nWith Unity Editor being launch, Rider will perform important actions via the Unity Editor."
     }
