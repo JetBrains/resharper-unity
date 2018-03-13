@@ -82,11 +82,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var element = myElementFactory.GetOrCreateTest(id, myProject, myUnitTestCollector.TargetFrameworkId,  typeName, methodName);
             return element;
         }
-        
-        private string GetBaseTypePrefix(IMetadataMethod method)
-        {
-            return method.DeclaringType.Name + ".";
-        }
 
         private List<IMetadataMethod> GetAllTestMethods(IMetadataTypeInfo type)
         {

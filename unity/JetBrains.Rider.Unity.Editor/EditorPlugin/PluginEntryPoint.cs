@@ -127,12 +127,13 @@ namespace JetBrains.Rider.Unity.Editor
         
         MainThreadDispatcher.AssertThread();
         
-        riderProtocolController.Wire.Connected.WhenTrue(lifetime, lt =>
+        riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
         {
           var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-
-          ourModel.Value = CreateModel(protocol, lt);
+          var modelValue = CreateModel(protocol, connectionLifetime);
+          AdviseModel(connectionLifetime, modelValue);
+          ourModel.Value = modelValue;
         });
       }
       catch (Exception ex)

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml;
+using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -25,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private ISet<UnitTestElementCategory> myCategories;
         private string myExplicitReason;
 
-        public UnityTestElement(IProject project, IClrTypeName clrTypeName, UnitTestElementId id, UnityNUnitServiceProvider unityNUnitServiceProvider, string methodName)
+        public UnityTestElement([NotNull] IProject project, [NotNull] IClrTypeName clrTypeName, UnitTestElementId id, UnityNUnitServiceProvider unityNUnitServiceProvider, string methodName)
         {
             myUnitTestingCachingService = unityNUnitServiceProvider.CachingService;
             myProject = project;

@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
@@ -28,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myUnitTestProvider = unityTestProvider;
         }
 
-        public UnityTestElement GetOrCreateTest(string id, IProject project, TargetFrameworkId targetFrameworkId, IClrTypeName typeName, string methodName)
+        public UnityTestElement GetOrCreateTest(string id, [NotNull] IProject project, TargetFrameworkId targetFrameworkId, IClrTypeName typeName, string methodName)
         {
             lock (myLock)
             {
