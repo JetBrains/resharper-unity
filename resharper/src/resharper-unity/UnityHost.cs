@@ -1,4 +1,5 @@
 ﻿using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Host.Features;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -8,9 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         public RdUnityModel Model { get; }
 
-        public UnityHost(RdUnityModel model)
+        public UnityHost(ISolution solution)
         {
-            Model = model;
+            Model = solution.GetProtocolSolution().GetRdUnityModel();
         }
     }
 }
