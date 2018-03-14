@@ -1,8 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DefineConstants>UNITY_5_5</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.5.5.0f3" Version="2017.7.21" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
@@ -14,8 +20,5 @@
     <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
   </ItemGroup>
 </Project>

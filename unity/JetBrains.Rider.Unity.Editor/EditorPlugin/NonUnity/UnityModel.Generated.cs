@@ -162,6 +162,7 @@ namespace JetBrains.Platform.Unity.Model
       serializers.RegisterEnum<RdLogEventMode>();
       serializers.Register(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write);
       serializers.Register(TestResult.Read, TestResult.Write);
+      serializers.Register(RunResult.Read, RunResult.Write);
       serializers.Register(JetBrains.Platform.Unity.Model.UnitTestLaunch.Read, JetBrains.Platform.Unity.Model.UnitTestLaunch.Write);
       serializers.RegisterEnum<UnityEditorState>();
       serializers.RegisterEnum<Status>();
@@ -402,6 +403,75 @@ namespace JetBrains.Platform.Unity.Model
   }
   
   
+  public class RunResult : IPrintable, IEquatable<RunResult> {
+    //fields
+    //public fields
+    public bool Passed {get; private set;}
+    
+    //private fields
+    //primary constructor
+    public RunResult(
+      bool passed
+    )
+    {
+      Passed = passed;
+    }
+    //secondary constructor
+    //statics
+    
+    public static CtxReadDelegate<RunResult> Read = (ctx, reader) => 
+    {
+      var passed = reader.ReadBool();
+      return new RunResult(passed);
+    };
+    
+    public static CtxWriteDelegate<RunResult> Write = (ctx, writer, value) => 
+    {
+      writer.Write(value.Passed);
+    };
+    //custom body
+    //equals trait
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != GetType()) return false;
+      return Equals((RunResult) obj);
+    }
+    public bool Equals(RunResult other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return Passed == other.Passed;
+    }
+    //hash code trait
+    public override int GetHashCode()
+    {
+      unchecked {
+        var hash = 0;
+        hash = hash * 31 + Passed.GetHashCode();
+        return hash;
+      }
+    }
+    //pretty print
+    public void Print(PrettyPrinter printer)
+    {
+      printer.Println("RunResult (");
+      using (printer.IndentCookie()) {
+        printer.Print("passed = "); Passed.PrintEx(printer); printer.Println();
+      }
+      printer.Print(")");
+    }
+    //toString
+    public override string ToString()
+    {
+      var printer = new SingleLinePrettyPrinter();
+      Print(printer);
+      return printer.ToString();
+    }
+  }
+  
+  
   public enum Status {
     Pending,
     Running,
@@ -414,18 +484,25 @@ namespace JetBrains.Platform.Unity.Model
     //fields
     //public fields
     [NotNull] public string TestId {get; private set;}
+    [NotNull] public string Output {get; private set;}
+    public int Duration {get; private set;}
     public JetBrains.Platform.Unity.Model.Status Status {get; private set;}
     
     //private fields
     //primary constructor
     public TestResult(
       [NotNull] string testId,
+      [NotNull] string output,
+      int duration,
       JetBrains.Platform.Unity.Model.Status status
     )
     {
       if (testId == null) throw new ArgumentNullException("testId");
+      if (output == null) throw new ArgumentNullException("output");
       
       TestId = testId;
+      Output = output;
+      Duration = duration;
       Status = status;
     }
     //secondary constructor
@@ -434,13 +511,17 @@ namespace JetBrains.Platform.Unity.Model
     public static CtxReadDelegate<TestResult> Read = (ctx, reader) => 
     {
       var testId = reader.ReadString();
+      var output = reader.ReadString();
+      var duration = reader.ReadInt();
       var status = (JetBrains.Platform.Unity.Model.Status)reader.ReadInt();
-      return new TestResult(testId, status);
+      return new TestResult(testId, output, duration, status);
     };
     
     public static CtxWriteDelegate<TestResult> Write = (ctx, writer, value) => 
     {
       writer.Write(value.TestId);
+      writer.Write(value.Output);
+      writer.Write(value.Duration);
       writer.Write((int)value.Status);
     };
     //custom body
@@ -456,7 +537,7 @@ namespace JetBrains.Platform.Unity.Model
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return TestId == other.TestId && Status == other.Status;
+      return TestId == other.TestId && Output == other.Output && Duration == other.Duration && Status == other.Status;
     }
     //hash code trait
     public override int GetHashCode()
@@ -464,6 +545,8 @@ namespace JetBrains.Platform.Unity.Model
       unchecked {
         var hash = 0;
         hash = hash * 31 + TestId.GetHashCode();
+        hash = hash * 31 + Output.GetHashCode();
+        hash = hash * 31 + Duration.GetHashCode();
         hash = hash * 31 + (int) Status;
         return hash;
       }
@@ -474,6 +557,8 @@ namespace JetBrains.Platform.Unity.Model
       printer.Println("TestResult (");
       using (printer.IndentCookie()) {
         printer.Print("testId = "); TestId.PrintEx(printer); printer.Println();
+        printer.Print("output = "); Output.PrintEx(printer); printer.Println();
+        printer.Print("duration = "); Duration.PrintEx(printer); printer.Println();
         printer.Print("status = "); Status.PrintEx(printer); printer.Println();
       }
       printer.Print(")");
@@ -495,28 +580,34 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public List<string> TestGroups {get; private set;}
     [NotNull] public List<string> TestCategories {get; private set;}
     [NotNull] public ISource<JetBrains.Platform.Unity.Model.TestResult> TestResult { get { return _TestResult; }}
+    [NotNull] public ISource<JetBrains.Platform.Unity.Model.RunResult> RunResult { get { return _RunResult; }}
     
     //private fields
     [NotNull] private readonly RdSignal<JetBrains.Platform.Unity.Model.TestResult> _TestResult;
+    [NotNull] private readonly RdSignal<JetBrains.Platform.Unity.Model.RunResult> _RunResult;
     
     //primary constructor
     private UnitTestLaunch(
       [NotNull] List<string> testNames,
       [NotNull] List<string> testGroups,
       [NotNull] List<string> testCategories,
-      [NotNull] RdSignal<JetBrains.Platform.Unity.Model.TestResult> testResult
+      [NotNull] RdSignal<JetBrains.Platform.Unity.Model.TestResult> testResult,
+      [NotNull] RdSignal<JetBrains.Platform.Unity.Model.RunResult> runResult
     )
     {
       if (testNames == null) throw new ArgumentNullException("testNames");
       if (testGroups == null) throw new ArgumentNullException("testGroups");
       if (testCategories == null) throw new ArgumentNullException("testCategories");
       if (testResult == null) throw new ArgumentNullException("testResult");
+      if (runResult == null) throw new ArgumentNullException("runResult");
       
       TestNames = testNames;
       TestGroups = testGroups;
       TestCategories = testCategories;
       _TestResult = testResult;
+      _RunResult = runResult;
       BindableChildren.Add(new KeyValuePair<string, object>("testResult", _TestResult));
+      BindableChildren.Add(new KeyValuePair<string, object>("runResult", _RunResult));
     }
     //secondary constructor
     public UnitTestLaunch (
@@ -527,7 +618,8 @@ namespace JetBrains.Platform.Unity.Model
       testNames,
       testGroups,
       testCategories,
-      new RdSignal<JetBrains.Platform.Unity.Model.TestResult>(JetBrains.Platform.Unity.Model.TestResult.Read, JetBrains.Platform.Unity.Model.TestResult.Write)
+      new RdSignal<JetBrains.Platform.Unity.Model.TestResult>(JetBrains.Platform.Unity.Model.TestResult.Read, JetBrains.Platform.Unity.Model.TestResult.Write),
+      new RdSignal<JetBrains.Platform.Unity.Model.RunResult>(JetBrains.Platform.Unity.Model.RunResult.Read, JetBrains.Platform.Unity.Model.RunResult.Write)
     ) {}
     //statics
     
@@ -538,7 +630,8 @@ namespace JetBrains.Platform.Unity.Model
       var testGroups = ReadStringList(ctx, reader);
       var testCategories = ReadStringList(ctx, reader);
       var testResult = RdSignal<JetBrains.Platform.Unity.Model.TestResult>.Read(ctx, reader, JetBrains.Platform.Unity.Model.TestResult.Read, JetBrains.Platform.Unity.Model.TestResult.Write);
-      return new UnitTestLaunch(testNames, testGroups, testCategories, testResult).WithId(_id);
+      var runResult = RdSignal<JetBrains.Platform.Unity.Model.RunResult>.Read(ctx, reader, JetBrains.Platform.Unity.Model.RunResult.Read, JetBrains.Platform.Unity.Model.RunResult.Write);
+      return new UnitTestLaunch(testNames, testGroups, testCategories, testResult, runResult).WithId(_id);
     };
     public static CtxReadDelegate<List<string>> ReadStringList = JetBrains.Platform.RdFramework.Impl.Serializers.ReadString.List();
     
@@ -549,6 +642,7 @@ namespace JetBrains.Platform.Unity.Model
       WriteStringList(ctx, writer, value.TestGroups);
       WriteStringList(ctx, writer, value.TestCategories);
       RdSignal<JetBrains.Platform.Unity.Model.TestResult>.Write(ctx, writer, value._TestResult);
+      RdSignal<JetBrains.Platform.Unity.Model.RunResult>.Write(ctx, writer, value._RunResult);
     };
     public static CtxWriteDelegate<List<string>> WriteStringList = JetBrains.Platform.RdFramework.Impl.Serializers.WriteString.List();
     //custom body
@@ -563,6 +657,7 @@ namespace JetBrains.Platform.Unity.Model
         printer.Print("testGroups = "); TestGroups.PrintEx(printer); printer.Println();
         printer.Print("testCategories = "); TestCategories.PrintEx(printer); printer.Println();
         printer.Print("testResult = "); _TestResult.PrintEx(printer); printer.Println();
+        printer.Print("runResult = "); _RunResult.PrintEx(printer); printer.Println();
       }
       printer.Print(")");
     }

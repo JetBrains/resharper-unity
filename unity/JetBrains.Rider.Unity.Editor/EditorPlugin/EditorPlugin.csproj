@@ -4,6 +4,13 @@
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+  <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -24,9 +31,6 @@
   <ItemGroup>
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
     <EmbeddedResource Include="..\..\Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
   </ItemGroup>
   <Import Project="$(ProjectDir)ILRepack.targets" />
 </Project>

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application;
 using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetExtensions;
 using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetTemplates;
 using JetBrains.Rider.Model;
-using JetBrains.Util;
-using JetBrains.Util.Interop;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {

@@ -33,17 +33,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             try
             {
-                var unityGeneratedProjects = mySolution.GetAllProjects().Where(a => a.IsProjectCompiledByUnity()).ToArray();
-                if (!unityGeneratedProjects.Any())
-                {
-                    myLogger.Info("No unity generated projects found. Skipping installation.");
-                    return ShouldNotInstall;
-                }
-                var assetsDir = unityGeneratedProjects.First().GetSubItems("Assets").First().Location;
-                   
+                var assetsDir = mySolution.SolutionFilePath.Directory.CombineWithShortName("Assets");
                 if (!assetsDir.IsAbsolute)
                 {
                     myLogger.Warn($"Computed assetsDir {assetsDir} is not absolute. Skipping installation.");
+                    return ShouldNotInstall;
+                }
+                
+                if (!assetsDir.ExistsDirectory)
+                {
+                    myLogger.Info("No Assets directory in the same directory as solution. Skipping installation.");
+                    return ShouldNotInstall;
                 }
                 
                 var defaultDir = assetsDir

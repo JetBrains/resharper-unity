@@ -71,6 +71,8 @@
     <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
       <DependentUpon>ShaderLabErrors.xml</DependentUpon>
     </Compile>
+    <Compile Remove="Rider\UnitTesting\**" />
+    <None Remove="Rider\UnitTesting\**" />
   </ItemGroup>
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
@@ -79,6 +81,7 @@
   <ItemGroup>
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
+    <EmbeddedResource Remove="Rider\UnitTesting\**" />
   </ItemGroup>
   <ItemGroup>
     <LiveTemplate Include="Templates\**\*.md">
@@ -118,5 +121,8 @@
     <Compile Remove="ShaderLab\Host\**" />
     <EmbeddedResource Remove="ShaderLab\Host\**" />
     <None Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Rider" />
   </ItemGroup>
 </Project>

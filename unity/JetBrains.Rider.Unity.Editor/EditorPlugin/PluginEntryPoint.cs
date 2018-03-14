@@ -15,6 +15,7 @@ using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.Unity.Editor.UnitTesting;
 using UnityEditor.Callbacks;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -53,7 +54,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    public static bool IsProtocolConnected()
+    internal static bool CheckConnectedToBackendSync()
     {
         var connected = false;
         try
@@ -126,12 +127,13 @@ namespace JetBrains.Rider.Unity.Editor
         
         MainThreadDispatcher.AssertThread();
         
-        riderProtocolController.Wire.Connected.WhenTrue(lifetime, lt =>
+        riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
         {
           var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-
-          ourModel.Value = CreateModel(protocol, lt);
+          var modelValue = CreateModel(protocol, connectionLifetime);
+          AdviseModel(connectionLifetime, modelValue);
+          ourModel.Value = modelValue;
         });
       }
       catch (Exception ex)
@@ -142,6 +144,30 @@ namespace JetBrains.Rider.Unity.Editor
       ourAssetHandler = new OnOpenAssetHandler(ourModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
       
       ourInitialized = true;
+    }
+
+    private static void AdviseModel(Lifetime connectionLifetime, UnityModel modelValue)
+    {
+      modelValue.GetUnityEditorState.Set(rdVoid =>
+      {
+        if (EditorApplication.isPlaying)
+        {
+          return UnityEditorState.Play;
+        }
+
+        if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+        {
+          return UnityEditorState.Refresh;
+        }
+        
+        return UnityEditorState.Idle;
+      }); 
+      
+      modelValue.UnitTestLaunch.Change.Advise(connectionLifetime, launch =>
+      {
+        var unityEditorTestLauncher = new UnityEditorTestLauncher(launch);
+        unityEditorTestLauncher.TryLaunchUnitTests();
+      });
     }
 
     private static UnityModel CreateModel(Protocol protocol, Lifetime lt)

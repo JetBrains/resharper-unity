@@ -29,7 +29,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
 
     init {
         unityReferenceDiscoverer.addUnityReferenceListener(object : UnityReferenceListener {
-            override fun HasUnityReference() {
+            override fun hasUnityReference() {
                 showNotificationIfNeeded()
             }
         })
