@@ -70,7 +70,7 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
 
     val mainSplitterOrientation = RiderUnitySettings.BooleanViewProperty("mainSplitterOrientation")
 
-    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(projectCustomDataHost)
+    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar()
 
     val mainSplitterToggleAction = object : DumbAwareAction("Toggle Output Position", "Toggle Output pane position (right/bottom)", AllIcons.Actions.SplitHorizontally) {
         override fun actionPerformed(e: AnActionEvent) {
