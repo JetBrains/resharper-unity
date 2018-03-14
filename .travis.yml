@@ -1,7 +1,16 @@
 dist: trusty
+
+# Disable fancy gradle reporting
+env:
+  - TERM=dumb
+
 language: csharp
 mono: latest
 dotnet: 2.1.4
+
+# Initialise gradle before we start the actual build
+before_script:
+  - ./rider/gradlew --version
 script:
   - ./build.sh
 os:
