@@ -49,12 +49,12 @@ object UnityLogPanelToolbarBuilder {
         return create(actionGroup, BorderLayout.NORTH, true)
     }
 
-    fun createLeftToolbar(rdUnityHost: UnityHost): JPanel {
+    fun createLeftToolbar(host: UnityHost): JPanel {
         val actionGroup = DefaultActionGroup().apply {
-            add(RefreshInUnityAction(rdUnityHost))
-            add(PlayInUnityAction(rdUnityHost))
-            add(PauseInUnityAction(rdUnityHost))
-            add(StepInUnityAction(rdUnityHost))
+            add(RefreshInUnityAction(host))
+            add(PlayInUnityAction(host))
+            add(PauseInUnityAction(host))
+            add(StepInUnityAction(host))
             addSeparator()
             add(UnityPluginShowSettingsAction())
         }

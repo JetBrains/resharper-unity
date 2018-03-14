@@ -15,7 +15,7 @@ import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 
 class UnityToolWindowFactory(project: Project,
                              private val toolWindowManager: ToolWindowManager,
-                             private val rdUnityHost: UnityHost)
+                             private val host: UnityHost)
     : LifetimedProjectComponent(project) {
 
     companion object {
@@ -47,7 +47,7 @@ class UnityToolWindowFactory(project: Project,
         ContentManagerWatcher(toolWindow, contentManager)
 
         val logModel = UnityLogPanelModel(componentLifetime, project)
-        val logView = UnityLogPanelView(project, logModel, rdUnityHost)
+        val logView = UnityLogPanelView(project, logModel, host)
         val toolWindowContent = contentManager.factory.createContent(null, "Log", true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel

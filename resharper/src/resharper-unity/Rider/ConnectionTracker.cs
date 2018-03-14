@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private UnityEditorState myLastCheckResult = UnityEditorState.Disconnected;
         
-        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol unityEditorProtocolController, IShellLocks locks)
+        public ConnectionTracker(Lifetime lifetime, ILogger logger, RiderUnityHost host, UnityEditorProtocol unityEditorProtocolController, IShellLocks locks)
         {
             // this shouldn't be up in tests until we figure out how to test unity-editor requiring features
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)

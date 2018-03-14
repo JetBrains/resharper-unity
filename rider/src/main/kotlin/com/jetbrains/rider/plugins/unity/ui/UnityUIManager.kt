@@ -18,7 +18,7 @@ import org.jdom.Element
 
 @State(name = "UnityProjectConfiguration", storages = [(Storage(value = "other.xml"))])
 class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscoverer,
-                     private val projectCustomDataHost : UnityHost,
+                     private val host : UnityHost,
                      solutionLifecycleHost: SolutionLifecycleHost,
                      project: Project) : LifetimedProjectComponent(project), PersistentStateComponent<Element>, WindowManagerListener {
     companion object {
@@ -68,9 +68,9 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
 
     private fun installWidget(frame: IdeFrame, lifetime: Lifetime) {
         val statusBar = frame.statusBar ?: return
-        val iconWidget = UnityStatusBarIcon(projectCustomDataHost)
+        val iconWidget = UnityStatusBarIcon(host)
 
-        projectCustomDataHost.unityState.advise(componentLifetime){
+        host.unityState.advise(componentLifetime){
             statusBar.updateWidget(iconWidget.ID())
         }
 

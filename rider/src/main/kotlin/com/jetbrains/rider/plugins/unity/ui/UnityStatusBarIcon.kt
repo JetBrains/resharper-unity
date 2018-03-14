@@ -19,7 +19,7 @@ import javax.swing.Icon
 /**
  * @author Kirill.Skrygan
  */
-class UnityStatusBarIcon(private val projectCustomDataHost: UnityHost): StatusBarWidget, StatusBarWidget.IconPresentation {
+class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBarWidget.IconPresentation {
     private var icon : Icon = UnityIcons.Logo
     private var myTooltip : String = ""
     private var myStatusBar: StatusBar? = null
@@ -54,7 +54,7 @@ class UnityStatusBarIcon(private val projectCustomDataHost: UnityHost): StatusBa
     }
 
     override fun getTooltipText(): String? {
-        if(projectCustomDataHost.sessionInitialized.value)
+        if(host.sessionInitialized.value)
             return "Rider and Unity Editor are connected with each other.\nTo enhance productivity some features will work through the Unity Editor"
         else
             return "No launched Unity Editor found.\nWith Unity Editor being launch, Rider will perform important actions via the Unity Editor."
@@ -72,7 +72,7 @@ class UnityStatusBarIcon(private val projectCustomDataHost: UnityHost): StatusBa
     }
 
     override fun getIcon(): Icon {
-        when (projectCustomDataHost.unityState.value) {
+        when (host.unityState.value) {
             DISCONNECTED -> return UnityIcons.Logo
             CONNECTED_IDLE -> return connectedIcon
             CONNECTED_PLAY -> return LayeredIcon(connectedIcon, AllIcons.General.Run)
