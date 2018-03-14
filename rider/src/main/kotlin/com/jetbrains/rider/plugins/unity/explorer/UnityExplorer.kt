@@ -1,7 +1,13 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
+import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.util.treeView.AbstractTreeNode
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.ToggleAction
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.ui.stripe.ErrorStripe
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.ProjectModelDataKeys
@@ -9,17 +15,22 @@ import com.jetbrains.rider.projectView.fileSystem.FileSystemNodeBase
 import com.jetbrains.rider.projectView.fileSystem.FileSystemViewPaneBase
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
 import com.jetbrains.rider.projectView.nodes.VirtualProjectModelNode
+import org.jdom.Element
 
 class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
 
     companion object {
         const val ID = "UnityExplorer"
         const val Title = "Unity Explorer"
+        const val ShowHiddenItemsOption = "show-hidden-items"
+
         val Icon = UnityIcons.Logo
 
         const val DefaultProjectPrefix = "Assembly-CSharp"
         val IgnoredExtensions = hashSetOf("meta", "tmp")
     }
+
+    var myShowHiddenItems = false
 
     override fun isInitiallyVisible(): Boolean {
         val assetsFolder = project.baseDir?.findChild("Assets")
@@ -28,7 +39,7 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
 
     override fun createRootNode(): FileSystemNodeBase {
         val assetsFolder = project.baseDir?.findChild("Assets")!!
-        return UnityExplorerNode.Root(project, assetsFolder)
+        return UnityExplorerNode.Root(project, assetsFolder, this)
     }
 
     override fun getData(selected: MutableList<AbstractTreeNode<Any>>, dataId: String?): Any? {
@@ -45,6 +56,17 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
         }.flatMap { it.asIterable() }
     }
 
+    override fun writeExternal(element: Element) {
+        super.writeExternal(element)
+        JDOMExternalizerUtil.writeField(element, ShowHiddenItemsOption, true.toString())
+    }
+
+    override fun readExternal(element: Element) {
+        super.readExternal(element)
+        val option = JDOMExternalizerUtil.readField(element, ShowHiddenItemsOption)
+        myShowHiddenItems = option != null && java.lang.Boolean.parseBoolean(option)
+    }
+
     override fun getTitle() = Title
     override fun getIcon() = Icon
     override fun getId() = ID
@@ -54,6 +76,10 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
     override fun supportsSortByType() = false
     override fun supportsFoldersAlwaysOnTop() = false
 
+    override fun addToolbarActions(actionGroup: DefaultActionGroup?) {
+        actionGroup?.addAction(ShowHiddenItemsAction())?.setAsSecondary(true)
+    }
+
     override fun getStripe(data: Any?, expanded: Boolean): ErrorStripe? {
         if (expanded) {
             val node = data as? UnityExplorerNode
@@ -62,5 +88,24 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
             }
         }
         return super.getStripe(data, expanded)
+    }
+
+    private inner class ShowHiddenItemsAction : ToggleAction("Show Hidden Items"), DumbAware {
+
+        override fun isSelected(event: AnActionEvent): Boolean {
+            return myShowHiddenItems
+        }
+
+        override fun setSelected(event: AnActionEvent, flag: Boolean) {
+            if (myShowHiddenItems != flag) {
+                myShowHiddenItems = flag
+                updateFromRoot(false)
+            }
+        }
+
+        override fun update(e: AnActionEvent) {
+            super.update(e)
+            e.presentation.isEnabledAndVisible = ProjectView.getInstance(myProject).currentProjectViewPane === this@UnityExplorer
+        }
     }
 }

@@ -15,7 +15,8 @@ import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.solutionName
 import javax.swing.Icon
 
-open class UnityExplorerNode(project: Project, virtualFile: VirtualFile) : FileSystemNodeBase(project, virtualFile) {
+open class UnityExplorerNode(project: Project, virtualFile: VirtualFile, private val owner: UnityExplorer)
+    : FileSystemNodeBase(project, virtualFile) {
 
     val nodes = ProjectModelViewHost.getInstance(project).getItemsByVirtualFile(virtualFile)
 
@@ -80,10 +81,14 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile) : FileS
     }
 
     override fun createNode(virtualFile: VirtualFile): FileSystemNodeBase {
-        return UnityExplorerNode(project!!, virtualFile)
+        return UnityExplorerNode(project!!, virtualFile, owner)
     }
 
     override fun filterNode(node: FileSystemNodeBase): Boolean {
+        if (owner.myShowHiddenItems) {
+            return true
+        }
+
         // See https://docs.unity3d.com/Manual/SpecialFolders.html
         val file = node.virtualFile
 
@@ -100,7 +105,8 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile) : FileS
         return true
     }
 
-    class Root(project: Project, virtualFile: VirtualFile) : UnityExplorerNode(project, virtualFile) {
+    class Root(project: Project, virtualFile: VirtualFile, owner: UnityExplorer)
+        : UnityExplorerNode(project, virtualFile, owner) {
 
         private val referenceRoot = ReferenceRoot(project)
 
@@ -120,7 +126,8 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile) : FileS
         }
     }
 
-    class ReferenceRoot(project: Project) : ProjectViewNode<Any>(project, key, null) {
+    class ReferenceRoot(project: Project)
+        : ProjectViewNode<Any>(project, key, null) {
 
         companion object {
             val key = Any()
@@ -150,7 +157,9 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile) : FileS
         }
     }
 
-    class ReferenceItem(project: Project, private val referenceName: String) : ProjectViewNode<String>(project, referenceName, null) {
+    class ReferenceItem(project: Project, private val referenceName: String)
+        : ProjectViewNode<String>(project, referenceName, null) {
+
         override fun contains(virtualFile: VirtualFile) = false
         override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
         override fun canRepresent(element: Any?): Boolean  = false
