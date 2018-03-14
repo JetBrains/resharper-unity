@@ -60,9 +60,22 @@ task resolveDependencies {
   }
 }
 
-if (System.env['TRAVIS'] != null) {
+if (System.env['TEAMCITY_VERSION'] != null) {
+    gradle.taskGraph.addTaskExecutionListener(new TeamCityEventLogger())
+} else if (System.env['TRAVIS'] != null) {
     gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger())
-    // gradle.useLogger(new TravisEventLogger())
+}
+
+class TeamCityEventLogger extends BuildAdapter implements TaskExecutionListener {
+
+    public void beforeExecute(Task task) {
+        println "##teamcity[progressMessage, name='gradle:$task.name']"
+        println "##teamcity[blockOpened, name='gradle:$task.name']"
+    }
+
+    public void afterExecute(Task task, TaskState state) {
+        println "##teamcity[blockClosed, name='gradle:$task.name']"
+    }
 }
 
 class TravisEventLogger extends BuildAdapter implements TaskExecutionListener {
@@ -75,3 +88,4 @@ class TravisEventLogger extends BuildAdapter implements TaskExecutionListener {
         println "\ntravis_fold:end:$task.name\r"
     }
 }
+
