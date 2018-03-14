@@ -10,7 +10,10 @@ dotnet: 2.1.4
 
 # Initialise gradle before we start the actual build
 before_script:
-  - ./rider/gradlew --version
+  - pushd rider
+  - ./gradlew --version
+  - ./gradlew resolveDependencies
+  - popd
 script:
   - ./build.sh
 os:

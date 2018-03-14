@@ -39,6 +39,26 @@ logger.lifecycle("version=$version")
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
 
+task resolveDependencies {
+  description 'Resolves all projects dependencies from the repository'
+  group 'Build Server'
+
+  doLast {
+    rootProject.allprojects { project ->
+      project.buildscript.configurations.forEach { configuration ->
+        if (configuration.canBeResolved) {
+          configuration.resolve()
+        }
+      }
+
+      project.configurations.forEach { configuration ->
+        if (configuration.canBeResolved) {
+          configuration.resolve()
+        }
+      }
+    }
+  }
+}
 
 if (System.env['TRAVIS'] != null) {
     gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger())
