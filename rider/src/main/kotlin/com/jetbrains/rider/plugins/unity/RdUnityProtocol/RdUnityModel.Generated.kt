@@ -27,14 +27,6 @@ class RdUnityModel private constructor(
         }
         
         
-        fun create(lifetime: Lifetime, protocol: IProtocol) : RdUnityModel {
-            IdeRoot.register(protocol.serializers)
-            
-            return RdUnityModel ().apply {
-                identify(protocol.identity, RdId.Null.mix("RdUnityModel"))
-                bind(lifetime, protocol, "RdUnityModel")
-            }
-        }
         
     }
     override val serializersOwner : ISerializersOwner get() = RdUnityModel
@@ -53,7 +45,7 @@ class RdUnityModel private constructor(
     }
     
     //secondary constructor
-    private constructor(
+    internal constructor(
     ) : this (
         RdMap<String, String>(FrameworkMarshallers.String, FrameworkMarshallers.String)
     )
@@ -69,3 +61,5 @@ class RdUnityModel private constructor(
         printer.print(")")
     }
 }
+val Solution.rdUnityModel get() = getOrCreateExtension("rdUnityModel", ::RdUnityModel)
+

@@ -25,7 +25,6 @@ namespace JetBrains.Rider.Model
 {
   
   
-  [JetBrains.Application.ShellComponent]
   public class RdUnityModel : RdExtBase {
     //fields
     //public fields
@@ -46,7 +45,7 @@ namespace JetBrains.Rider.Model
       BindableChildren.Add(new KeyValuePair<string, object>("data", _Data));
     }
     //secondary constructor
-    private RdUnityModel (
+    internal RdUnityModel (
     ) : this (
       new RdMap<string, string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString, JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString)
     ) {}
@@ -63,13 +62,6 @@ namespace JetBrains.Rider.Model
       serializers.RegisterToplevelOnce(typeof(IdeRoot), IdeRoot.RegisterDeclaredTypesSerializers);
     }
     
-    public RdUnityModel(Lifetime lifetime, IProtocol protocol) : this()
-    {
-      Identify(protocol.Identities, RdId.Root.Mix(GetType().Name));
-      Bind(lifetime, protocol, GetType().Name);
-      if (Protocol.InitializationLogger.IsTraceEnabled())
-        Protocol.InitializationLogger.Trace ("CREATED toplevel object {0}", this.PrintToString());
-    }
     //custom body
     //equals trait
     //hash code trait
@@ -88,6 +80,13 @@ namespace JetBrains.Rider.Model
       var printer = new SingleLinePrettyPrinter();
       Print(printer);
       return printer.ToString();
+    }
+  }
+  public static class SolutionRdUnityModelEx
+   {
+    public static RdUnityModel GetRdUnityModel(this Solution solution)
+    {
+      return solution.GetOrCreateExtension("rdUnityModel", () => new RdUnityModel());
     }
   }
 }
