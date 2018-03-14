@@ -44,7 +44,7 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile) : FileS
             "Resources" -> IconLoader.getIcon("/Icons/Explorer/FolderResources.svg")
             else -> null
         }
-        if (globalSpecialIcon != null) {
+        if (globalSpecialIcon != null && !underAssemblyDefinition()) {
             return globalSpecialIcon
         }
 
@@ -64,6 +64,19 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile) : FileS
         }
 
         return virtualFile.calculateFileSystemIcon(project!!)
+    }
+
+    private fun underAssemblyDefinition() : Boolean {
+        // Fix for #380
+        var parent = this.parent
+        while (parent != null && parent is UnityExplorerNode) {
+            if (parent.virtualFile.children.any { it.extension.equals("asmdef", true) }) {
+                return true
+            }
+
+            parent = parent.parent
+        }
+        return false
     }
 
     override fun createNode(virtualFile: VirtualFile): FileSystemNodeBase {
