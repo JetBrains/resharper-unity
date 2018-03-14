@@ -78,8 +78,7 @@ class MSBuildTask extends DefaultTask {
     def findMSBuildPathWindows() {
         def stdout = new ByteArrayOutputStream()
         project.exec {
-            executable = project.file(project.backend.repositoryRoot, "tools\\vswhere.exe")
-            assert executable.isFile()
+            executable = project.file(new File(project.backend.repositoryRoot, 'tools/vswhere.exe'))
             args = [ "-latest", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-property", "installationPath" ]
             standardOutput = stdout
         }
@@ -87,7 +86,7 @@ class MSBuildTask extends DefaultTask {
         def buildToolsDir = project.file(stdout.toString().trim())
         assert buildToolsDir.isDirectory()
 
-        return project.file(buildToolsDir, 'MSBuild\\15.0\\Bin\\MSBuild.exe')
+        return project.file(new File(buildToolsDir, 'MSBuild/15.0/Bin/MSBuild.exe'))
     }
 
     def findMSBuildPathUnix() {
