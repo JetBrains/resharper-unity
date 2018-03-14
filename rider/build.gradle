@@ -38,3 +38,20 @@ logger.lifecycle("version=$version")
 
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
+
+
+if (System.env['TRAVIS'] != null) {
+    gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger())
+    // gradle.useLogger(new TravisEventLogger())
+}
+
+class TravisEventLogger extends BuildAdapter implements TaskExecutionListener {
+
+    public void beforeExecute(Task task) {
+        println "travis_fold:start:$task.name\033[33;1m:$task.name\033[0m"
+    }
+
+    public void afterExecute(Task task, TaskState state) {
+        println "\ntravis_fold:end:$task.name\r"
+    }
+}
