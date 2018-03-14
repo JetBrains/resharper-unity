@@ -3,10 +3,8 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.ui.stripe.ErrorStripe
-import com.jetbrains.rider.addProjectReference.AddReferenceAction
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.ProjectModelDataKeys
-import com.jetbrains.rider.projectView.actions.IncludeExcludeActionBase
 import com.jetbrains.rider.projectView.fileSystem.FileSystemNodeBase
 import com.jetbrains.rider.projectView.fileSystem.FileSystemViewPaneBase
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode

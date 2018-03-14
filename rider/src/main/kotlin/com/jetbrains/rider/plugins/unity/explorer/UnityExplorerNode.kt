@@ -1,14 +1,17 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.projectView.PresentationData
+import com.intellij.ide.projectView.ProjectViewNode
+import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
+import com.jetbrains.rider.icons.ReSharperCommonIcons
+import com.jetbrains.rider.icons.ReSharperProjectModelIcons
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.fileSystem.FileSystemNodeBase
-import com.jetbrains.rider.projectView.nodes.calculateFileSystemIcon
-import com.jetbrains.rider.projectView.nodes.containingProject
+import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.solutionName
 import javax.swing.Icon
 
@@ -86,6 +89,8 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile) : FileS
 
     class Root(project: Project, virtualFile: VirtualFile) : UnityExplorerNode(project, virtualFile) {
 
+        private val referenceRoot = ReferenceRoot(project)
+
         override fun update(presentation: PresentationData?) {
             if (!virtualFile.isValid) return
             presentation?.presentableText = project!!.solutionName
@@ -93,5 +98,53 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile) : FileS
         }
 
         override fun isAlwaysExpand() = true
+
+        override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> {
+            val children = arrayListOf<AbstractTreeNode<Any>>()
+            children.add(referenceRoot as AbstractTreeNode<Any>)
+            children.addAll(super.getChildren())
+            return children
+        }
+    }
+
+    class ReferenceRoot(project: Project) : ProjectViewNode<Any>(project, key, null) {
+
+        companion object {
+            val key = Any()
+        }
+
+        override fun contains(virtualFile: VirtualFile) = false
+        override fun canRepresent(element: Any?): Boolean  = false
+
+        override fun update(presentation: PresentationData?) {
+            presentation?.presentableText = "References"
+            presentation?.setIcon(ReSharperCommonIcons.CompositeElement)
+        }
+
+        override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> {
+            val children = arrayListOf<AbstractTreeNode<Any>>()
+            val referenceNames = hashSetOf<String>()
+            val visitor = object : ProjectModelNodeVisitor() {
+                override fun visitReference(node: ProjectModelNode): Result {
+                    if (node.isAssemblyReference() && referenceNames.add(node.name)) {
+                        children.add(ReferenceItem(project!!, node.name) as AbstractTreeNode<Any>)
+                    }
+                    return Result.Stop
+                }
+            }
+            visitor.visit(project!!)
+            return children
+        }
+    }
+
+    class ReferenceItem(project: Project, private val referenceName: String) : ProjectViewNode<String>(project, referenceName, null) {
+        override fun contains(virtualFile: VirtualFile) = false
+        override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
+        override fun canRepresent(element: Any?): Boolean  = false
+
+        override fun update(presentation: PresentationData?) {
+            presentation?.presentableText = referenceName
+            presentation?.setIcon(ReSharperProjectModelIcons.Assembly)
+        }
     }
 }
