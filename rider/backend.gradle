@@ -6,7 +6,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-ext.backend = new BackendHelper("..", logger)
+ext.backend = new BackendHelper("..")
 ext.extraMSBuildArgs = []
 
 class BackendHelper {
@@ -16,9 +16,8 @@ class BackendHelper {
     File solution
     File unityPluginSolution
     File riderTestsProject // used to build RiderOnly configurations
-    Logger logger
 
-    BackendHelper(String repoRoot, Logger logger) {
+    BackendHelper(String repoRoot) {
         repositoryRoot = new File(repoRoot).canonicalFile
         assert repositoryRoot.isDirectory()
 
@@ -33,16 +32,6 @@ class BackendHelper {
 
         riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
         assert riderTestsProject.isFile()
-
-        this.logger = logger
-    }
-
-    void ReportProgress(String message) {
-        ServiceMessage("progressMessage", message)
-    }
-
-    void ServiceMessage(String type, String message){
-        logger.lifecycle("##teamcity[$type '$message']")
     }
 }
 
@@ -54,7 +43,7 @@ class MSBuildTask extends DefaultTask {
 
     @TaskAction
     def build() {
-        project.backend.ReportProgress("Building $buildFile ($project.BuildConfiguration)")
+        project.ci.Progress("Building $buildFile ($project.BuildConfiguration)")
 
         def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:minimal', '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
         arguments.addAll(project.extraMSBuildArgs)
@@ -129,7 +118,7 @@ class RestorePackagesTask extends DefaultTask {
             return
         }
 
-        project.backend.ReportProgress("Restoring packages for $packagesFile")
+        project.ci.Progress("Restoring packages for $packagesFile")
 
         def restoreArguments = [ 'restore' ]
         if (project.PackageSource != null) {
@@ -228,7 +217,7 @@ task packReSharperPlugin(type: MonoExecTask) {
     args = arguments
 
     doFirst {
-        backend.ReportProgress("Packing: $nuspecFile.name")
+        ci.Progress("Packing: $nuspecFile.name")
     }
 }
 
@@ -236,7 +225,7 @@ task publishBackendArtifacts {
     inputs.file(packReSharperPlugin.outputs)
 
     doLast {
-        backend.ServiceMessage('publishArtifacts', packReSharperPlugin.outputs.files.singleFile.absolutePath)
+        ci.PublishArtifact(packReSharperPlugin.outputs.files.singleFile)
     }
 }
 
@@ -246,6 +235,6 @@ task buildBackend {
     description = 'Builds .NET part of the plugin.'
 
     doLast {
-        backend.ServiceMessage('buildNumber', "$version")
+        ci.SetBuildNumber(version)
     }
 }

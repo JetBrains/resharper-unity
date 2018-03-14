@@ -60,32 +60,120 @@ task resolveDependencies {
   }
 }
 
+interface CIService {
+    void Progress(String message)
+    void OpenBlock(String name, String description)
+    void CloseBlock(String name)
+    void PublishArtifact(File path)
+}
+
 if (System.env['TEAMCITY_VERSION'] != null) {
-    gradle.taskGraph.addTaskExecutionListener(new TeamCityEventLogger())
+    ext.ci = new TeamCityService()
+    gradle.taskGraph.addTaskExecutionListener(new TeamCityEventLogger(ci))
 } else if (System.env['TRAVIS'] != null) {
-    gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger())
+    ext.ci = new TravisService()
+    gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger(ci))
+} else {
+    ext.ci = new NullService()
+}
+
+class NullService implements CIService {
+    void Progress(String message) {
+        println message
+    }
+
+    void OpenBlock(String name, String description) { }
+    void CloseBlock(String name) { }
+
+    void PublishArtifact(File path) {
+        println "Publish: $path.absolutePath"
+    }
+
+    void SetBuildNumber(String version) {
+        println "Build: $version"
+    }
+}
+
+class TeamCityService implements CIService {
+
+    // TODO: These values should be escaped
+    void Progress(String message) {
+        println "##teamcity[progressMessage, name='$message']"
+    }
+
+    void OpenBlock(String name, String description) {
+        println "##teamcity[blockOpened, name='$name', description='$description']"
+    }
+
+    void CloseBlock(String name) {
+        println "##teamcity[blockClosed, name='$name']"
+    }
+
+    void PublishArtifact(File path) {
+        println "##teamcity[publishArtifacts, '$path.absolutePath']"
+    }
+
+    void SetBuildNumber(String version) {
+        println "##teamcity[buildNumber, '$version']"
+    }
 }
 
 class TeamCityEventLogger extends BuildAdapter implements TaskExecutionListener {
 
+    private CIService ci
+
+    TeamCityEventLogger(CIService ci) {
+        this.ci = ci
+    }
+
     public void beforeExecute(Task task) {
-        println "##teamcity[progressMessage, name='gradle:$task.name']"
-        println "##teamcity[blockOpened, name='gradle:$task.name']"
+        ci.Progress("gradle:$task.name")
+        ci.OpenBlock("gradle:$task.name", "gradle:$task.name")
     }
 
     public void afterExecute(Task task, TaskState state) {
-        println "##teamcity[blockClosed, name='gradle:$task.name']"
+        ci.CloseBlock("gradle:$task.name")
+    }
+}
+
+
+class TravisService implements CIService {
+
+    void Progress(String message) {
+        println message
+    }
+
+    void OpenBlock(String name, String description) {
+        println "travis_fold:start:$name\033[33;1m:$description\033[0m"
+    }
+
+    void CloseBlock(String name) {
+        println "\ntravis_fold:end:$name\r"
+    }
+
+    void PublishArtifact(File path) {
+        println "Artifact: $path.absolutePath"
+    }
+
+    void SetBuildNumber(String version) {
+        println "Build number: $version"
     }
 }
 
 class TravisEventLogger extends BuildAdapter implements TaskExecutionListener {
 
+    private CIService ci
+
+    TravisEventLogger(CIService ci) {
+        this.ci = ci
+    }
+
     public void beforeExecute(Task task) {
-        println "travis_fold:start:$task.name\033[33;1m:$task.name\033[0m"
+        ci.OpenBlock(task.name, task.name)
     }
 
     public void afterExecute(Task task, TaskState state) {
-        println "\ntravis_fold:end:$task.name\r"
+        ci.CloseBlock(task.name)
     }
 }
 
