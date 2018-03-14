@@ -3,15 +3,16 @@ package com.jetbrains.rider.plugins.unity
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
 import org.codehaus.jettison.json.JSONObject
 
-class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(project) {
+class UnityHost(project: Project) : LifetimedProjectComponent(project) {
 
-    val logger = Logger.getInstance(ProjectCustomDataHost::class.java)
+    val logger = Logger.getInstance(UnityHost::class.java)
 
     val sessionInitialized = Property(false)
     val unityState = Property(DISCONNECTED)
@@ -19,12 +20,14 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
     val play = Property(false)
     val pause = Property(false)
 
+    val model = project.solution.rdUnityModel
+
     init {
-        project.solution.customData.data.advise(componentLifetime) { item ->
+        model.data.advise(componentLifetime) { item ->
             if (item.key == "UNITY_ActivateRider" && item.newValueOpt == "true") {
                 logger.info(item.key+" "+ item.newValueOpt)
                 ProjectUtil.focusProjectWindow(project, true)
-                project.solution.customData.data["UNITY_ActivateRider"] = "false";
+                model.data["UNITY_ActivateRider"] = "false";
             }else if (item.key == "UNITY_Play" && item.newValueOpt!=null) {
                 play.set(item.newValueOpt!!.toBoolean())
             } else if (item.key == "UNITY_EditorState" && item.newValueOpt!=null) {
@@ -54,8 +57,8 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
         const val CONNECTED_REFRESH = "ConnectedRefresh"
 
         private fun CallBackend(project: Project, key : String, value:String) {
-            project.solution.customData.data.remove(key)
-            project.solution.customData.data[key] = value
+            project.solution.rdUnityModel.data.remove(key)
+            project.solution.rdUnityModel.data[key] = value
         }
     }
 }

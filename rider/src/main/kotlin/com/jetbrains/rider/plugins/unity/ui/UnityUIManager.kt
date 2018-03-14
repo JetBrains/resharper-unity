@@ -8,7 +8,7 @@ import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.WindowManagerListener
 import com.jetbrains.rider.UnityReferenceDiscoverer
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
@@ -18,7 +18,7 @@ import org.jdom.Element
 
 @State(name = "UnityProjectConfiguration", storages = [(Storage(value = "other.xml"))])
 class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscoverer,
-                     private val projectCustomDataHost : ProjectCustomDataHost,
+                     private val projectCustomDataHost : UnityHost,
                      solutionLifecycleHost: SolutionLifecycleHost,
                      project: Project) : LifetimedProjectComponent(project), PersistentStateComponent<Element>, WindowManagerListener {
     companion object {

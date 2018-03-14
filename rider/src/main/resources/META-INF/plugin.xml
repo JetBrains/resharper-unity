@@ -52,7 +52,7 @@
     <component><implementation-class>com.jetbrains.rider.settings.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.RiderUnitySettings</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.RdUnityHost</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.UnityHost</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.SaveAllTracker</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory</implementation-class></component>

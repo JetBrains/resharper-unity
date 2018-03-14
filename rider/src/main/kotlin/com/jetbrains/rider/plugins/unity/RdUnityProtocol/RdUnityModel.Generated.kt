@@ -26,8 +26,6 @@ class RdUnityModel private constructor(
         override fun registerSerializersCore(serializers : ISerializers) {
         }
         
-        
-        
     }
     override val serializersOwner : ISerializersOwner get() = RdUnityModel
     override val serializationHash : Long get() = -8346968635933216692L

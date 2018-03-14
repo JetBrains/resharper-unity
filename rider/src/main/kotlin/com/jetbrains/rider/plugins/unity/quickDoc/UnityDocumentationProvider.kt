@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.util.SystemProperties
 import com.intellij.util.io.exists
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Files
 import java.nio.file.Path
@@ -16,7 +17,7 @@ class UnityDocumentationProvider : DocumentationProvider {
     private val documentationRoot by lazy(this::findFallbackDocumentationRoot)
 
     override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String>? {
-        val data = p0?.project?.solution?.customData?.data
+        val data = p0?.project?.solution?.rdUnityModel?.data
         val context = data?.get("UNITY_ExternalDocContext")
         if (!context.isNullOrBlank())
             return arrayListOf(getUrlForContext(context!!))

@@ -16,8 +16,8 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
-import com.jetbrains.rider.plugins.unity.RdUnityHost
 import com.jetbrains.rider.plugins.unity.RdLogEvent
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -32,7 +32,7 @@ import javax.swing.Icon
 import javax.swing.JMenuItem
 import javax.swing.JPopupMenu
 
-class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, projectCustomDataHost: ProjectCustomDataHost) {
+class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, unityHost: UnityHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
         .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME, project))
@@ -63,14 +63,14 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
             }
         }.installOn(this)
 
-        projectCustomDataHost.play.whenTrue(logModel.lifetime) {
+        unityHost.play.whenTrue(logModel.lifetime) {
             logModel.events.clear()
         }
     }
 
     val mainSplitterOrientation = RiderUnitySettings.BooleanViewProperty("mainSplitterOrientation")
 
-    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(rdUnityHost)
+    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(unityHost)
 
     val mainSplitterToggleAction = object : DumbAwareAction("Toggle Output Position", "Toggle Output pane position (right/bottom)", AllIcons.Actions.SplitHorizontally) {
         override fun actionPerformed(e: AnActionEvent) {

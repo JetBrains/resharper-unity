@@ -7,11 +7,11 @@ import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.LayeredIcon
 import com.intellij.util.Consumer
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost.Companion.CONNECTED_IDLE
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost.Companion.CONNECTED_PLAY
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost.Companion.CONNECTED_REFRESH
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost.Companion.DISCONNECTED
+import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_IDLE
+import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_PLAY
+import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_REFRESH
+import com.jetbrains.rider.plugins.unity.UnityHost.Companion.DISCONNECTED
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import java.awt.event.MouseEvent
 import javax.swing.Icon
@@ -19,7 +19,7 @@ import javax.swing.Icon
 /**
  * @author Kirill.Skrygan
  */
-class UnityStatusBarIcon(private val projectCustomDataHost: ProjectCustomDataHost): StatusBarWidget, StatusBarWidget.IconPresentation {
+class UnityStatusBarIcon(private val projectCustomDataHost: UnityHost): StatusBarWidget, StatusBarWidget.IconPresentation {
     private var icon : Icon = UnityIcons.Logo
     private var myTooltip : String = ""
     private var myStatusBar: StatusBar? = null

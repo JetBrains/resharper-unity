@@ -12,6 +12,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
+import com.jetbrains.rider.model.rdUnityModel
 //import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
@@ -36,9 +37,9 @@ class UnityAttachToEditorProfileState(val remoteConfiguration: UnityAttachToEdit
                 logger.info("Pass value to backend, which will push Unity to enter play mode.")
                 sessionLifetime.bracket(opening = {
                     // pass value to backend, which will push Unity to enter play mode.
-                    executionEnvironment.project.solution.customData.data["UNITY_Play"] = true.toString();
+                    executionEnvironment.project.solution.rdUnityModel.data["UNITY_Play"] = true.toString();
                 }, closing = {
-                    executionEnvironment.project.solution.customData.data["UNITY_Play"] = false.toString()
+                    executionEnvironment.project.solution.rdUnityModel.data["UNITY_Play"] = false.toString()
                 })
             }
         }

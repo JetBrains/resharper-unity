@@ -2,13 +2,13 @@ package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.notification.NotificationGroup
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.getLogger
 import com.jetbrains.rider.util.reactive.whenTrue
 
 class UnityToolWindowManager(project: Project,
-                             private val projectCustomDataHost: ProjectCustomDataHost,
+                             private val projectCustomDataHost: UnityHost,
                              private val unityToolWindowFactory: UnityToolWindowFactory)
     : LifetimedProjectComponent(project) {
     companion object {
