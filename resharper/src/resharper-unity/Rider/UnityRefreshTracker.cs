@@ -4,11 +4,8 @@ using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.ProjectsHost.Impl;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.Rider.Model;
@@ -34,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
                         
-            myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(model.Force); });
+            myPluginProtocolController.Refresh.Advise(lifetime, Refresh);
         }
 
         public bool IsRefreshing { get; private set; }
@@ -42,7 +39,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public void Refresh(bool force)
         {
             myLocks.AssertMainThread();
-            if (IsRefreshing) return;
+            if (IsRefreshing)
+                return;
+            
+            if (myPluginProtocolController.UnityModel.Value == null)
+                return;
 
             IsRefreshing = true;
             var result = myPluginProtocolController.UnityModel.Value.Refresh.Start(force)?.Result;
