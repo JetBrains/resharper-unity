@@ -101,6 +101,23 @@ class MSBuildTask extends DefaultTask {
     }
 }
 
+class MonoExecTask extends AbstractExecTask {
+    MonoExecTask() {
+        super(MonoExecTask.class)
+    }
+
+    @TaskAction
+    protected void exec() {
+        if (!project.isWindows) {
+            def newCommandLine = [ 'mono' ]
+            newCommandLine.addAll(commandLine)
+            commandLine = newCommandLine
+        }
+
+        super.exec()
+    }
+}
+
 class RestorePackagesTask extends DefaultTask {
     @InputFile
     def File packagesFile
@@ -191,7 +208,7 @@ task buildBackendPlugin(type: MSBuildTask) {
     buildFile = RiderOnly ? backend.riderTestsProject : backend.solution
 }
 
-task packReSharperPlugin {
+task packReSharperPlugin(type: MonoExecTask) {
     dependsOn buildBackendPlugin
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
@@ -200,22 +217,17 @@ task packReSharperPlugin {
     def outputDir = file(new File(backend.backendRoot, "build/resharper-unity.resharper/bin/$BuildConfiguration"))
     def nupkgFile = file(new File(outputDir, "JetBrains.Unity.${version}.nupkg"))
 
-    inputs.files(nuspecFile)
+    // TODO: Make the output of the compile step the inputs of this step, as well as the nuspec
+    // inputs.files(nuspecFile)
     outputs.files(nupkgFile)
 
     def nugetExe = file(new File(backend.repositoryRoot, 'tools/nuget.exe'))
     def arguments = [ 'pack', nuspecFile, '-NoPackageAnalysis', '-Properties', "Configuration=$BuildConfiguration", '-Version', "$version", '-OutputDirectory', outputDir ]
 
-    if (!isWindows) {
-        arguments.add(0, nugetExe)
-    }
+    executable = nugetExe
+    args = arguments
 
-    exec {
-        executable = isWindows ? nugetExe : 'mono'
-        args = arguments
-    }
-
-    doLast {
+    doFirst {
         backend.ReportProgress("Packing: $nuspecFile.name")
     }
 }
