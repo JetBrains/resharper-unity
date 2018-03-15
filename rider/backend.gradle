@@ -154,8 +154,8 @@ task findLocalRiderSDKVersion {
             if (f.isFile()) {
                 logger.trace(f.name)
 
-                def match = (f.name =~ /^(?i)$escapedPackagedName\.((\d+\.)+\d+((-eap|-snapshot)\d+(d?)(pre|internal)?)?)\.nupkg\u0024/)
-                if (math.matches()) {
+                def match = (f.name =~ /^(?i)$escapedPackageName\.((\d+\.)+\d+((-eap|-snapshot)\d+(d?)(pre|internal)?)?)\.nupkg\u0024/)
+                if (match.matches()) {
                     return match[0][1]
                 }
             }
