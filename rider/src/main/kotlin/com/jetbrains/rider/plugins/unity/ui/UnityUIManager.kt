@@ -34,7 +34,7 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
             WindowManager.getInstance().removeListener(this)
         }
         solutionLifecycleHost.isBackendLoaded.advise(componentLifetime) {
-            if (it && unityReferenceDiscoverer.isUnityProject) {
+            if (it && unityReferenceDiscoverer.isUnityGeneratedProject) {
                 isUnityUI.value = true
             }
         }

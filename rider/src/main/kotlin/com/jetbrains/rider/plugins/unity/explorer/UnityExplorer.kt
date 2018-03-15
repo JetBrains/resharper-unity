@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.ui.stripe.ErrorStripe
+import com.jetbrains.rider.UnityReferenceDiscoverer
 import com.jetbrains.rider.addProjectReference.AddReferenceAction
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.ProjectModelDataKeys
@@ -24,8 +25,7 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
     }
 
     override fun isInitiallyVisible(): Boolean {
-        val assetsFolder = project.baseDir?.findChild("Assets")
-        return assetsFolder != null
+        return UnityReferenceDiscoverer.hasAssetsFolder(project)
     }
 
     override fun createRootNode(): FileSystemNodeBase {
