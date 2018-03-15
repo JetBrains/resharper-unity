@@ -5,6 +5,7 @@ using JetBrains.Application.Progress;
 using JetBrains.DataFlow;
 using JetBrains.DocumentManagers.Transactions;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
@@ -19,12 +20,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ILogger myLogger;
         private IProjectItem myLastAddedItem;
 
-        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger)
+        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger, ISolutionLoadTasksScheduler solutionLoadTasksScheduler)
         {
             mySolution = solution;
             myLogger = logger;
-            changeManager.RegisterChangeProvider(lifetime, this);
-            changeManager.AddDependency(lifetime, this, solution);
+            
+            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("AdviseForChanges", SolutionLoadTaskKinds.AfterDone,
+                () =>
+                {
+                    changeManager.RegisterChangeProvider(lifetime, this);
+                    changeManager.AddDependency(lifetime, this, solution);        
+                }));
         }
 
         public object Execute(IChangeMap changeMap)
