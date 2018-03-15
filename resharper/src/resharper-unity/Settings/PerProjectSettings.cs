@@ -120,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         private void InitLanguageLevelSettings(IProject project, SettingsStorageMountPoint mountPoint)
         {
-            if (!project.IsProjectCompiledByUnity())
+            if (!project.IsUnityGeneratedProject())
                 return; // https://github.com/JetBrains/resharper-unity/issues/150
 
             // Make sure ReSharper doesn't suggest code changes that won't compile in Unity
