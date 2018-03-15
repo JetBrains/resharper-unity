@@ -7,6 +7,7 @@ using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.DotNetCore;
 using JetBrains.ReSharper.UnitTestFramework.Elements;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.ReSharper.UnitTestProvider.nUnit;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
@@ -22,9 +23,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             ISettingsStore settingsStore, ISettingsOptimization settingsOptimization, ISettingsCache settingsCache,
             UnitTestingCachingService cachingService, IDotNetCoreSdkResolver dotNetCoreSdkResolver,
             UnityEditorProtocol unityEditorProtocol,
-            RunViaUnityEditorStrategy runViaUnityEditorStrategy)
+            RunViaUnityEditorStrategy runViaUnityEditorStrategy,
+            NUnitOutOfProcessUnitTestRunStrategy nUnitOutOfProcessUnitTestRunStrategy)
             : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settingsStore,
-                settingsOptimization, settingsCache, cachingService, dotNetCoreSdkResolver)
+                settingsOptimization, settingsCache, cachingService, dotNetCoreSdkResolver, nUnitOutOfProcessUnitTestRunStrategy)
         {
             myUnityEditorProtocol = unityEditorProtocol;
             myUnityEditorStrategy = runViaUnityEditorStrategy;
