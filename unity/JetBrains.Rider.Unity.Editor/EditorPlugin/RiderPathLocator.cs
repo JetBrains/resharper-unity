@@ -107,8 +107,8 @@ namespace JetBrains.Rider.Unity.Editor
           if (string.IsNullOrEmpty(home))
             return new string[0];
 
-          var riderPath = Path.Combine(home, @"Library/Application Support/JetBrains/Toolbox/apps/Rider");
-          var paths = GetAllRiderPaths(riderPath, "", "Rider*.app", true);
+          var toolboxRiderRootPath = Path.Combine(home, @"Library/Application Support/JetBrains/Toolbox/apps/Rider");
+          var paths = GetAllRiderPaths(toolboxRiderRootPath, "", "Rider*.app", true);
           // "/Applications/*Rider*.app"
           //"~/Applications/JetBrains Toolbox/*Rider*.app"
           string[] folders =
@@ -130,11 +130,11 @@ namespace JetBrains.Rider.Unity.Editor
             return new string[0];
           //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
           //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
-          var riderPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
-          var paths = GetAllRiderPaths(riderPath, "bin", "rider.sh", false);
+          var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
+          var paths = GetAllRiderPaths(toolboxRiderRootPath, "bin", "rider.sh", false);
           if (paths.Any())
             return paths;
-          return Directory.GetDirectories(riderPath).SelectMany(Directory.GetDirectories)
+          return Directory.GetDirectories(toolboxRiderRootPath).SelectMany(Directory.GetDirectories)
               .Select(b => Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
         }
       }
@@ -142,9 +142,12 @@ namespace JetBrains.Rider.Unity.Editor
       return new string[0];
     }
 
-    private static string[] GetAllRiderPaths(string riderPath, string dirName, string searchPattern, bool isMac)
+    private static string[] GetAllRiderPaths(string toolboxRiderRootPath, string dirName, string searchPattern, bool isMac)
     {
-      var channelFiles = Directory.GetDirectories(riderPath)
+      if (!Directory.Exists(toolboxRiderRootPath))
+        return new string[0];
+      
+      var channelFiles = Directory.GetDirectories(toolboxRiderRootPath)
         .Select(b => Path.Combine(b, ".channel.settings.json")).Where(File.Exists).ToArray();
 
       var paths = channelFiles.SelectMany(a =>
@@ -169,7 +172,7 @@ namespace JetBrains.Rider.Unity.Editor
             ourLogger.Warn(e, "Failed to get RiderPath via .channel.settings.json");
           }
 
-          return null;
+          return new string[0];
         })
         
         .Where(c => !string.IsNullOrEmpty(c))
