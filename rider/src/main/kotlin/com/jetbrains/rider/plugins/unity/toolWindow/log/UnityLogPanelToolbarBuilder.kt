@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAwareAction
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.plugins.unity.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.RdLogEventType
 import com.jetbrains.rider.plugins.unity.actions.*
@@ -49,12 +48,10 @@ object UnityLogPanelToolbarBuilder {
         return create(actionGroup, BorderLayout.NORTH, true)
     }
 
-    fun createLeftToolbar(projectCustomDataHost: ProjectCustomDataHost): JPanel {
+    fun createLeftToolbar(): JPanel {
         val actionGroup = DefaultActionGroup().apply {
-            add(RefreshInUnityAction(projectCustomDataHost))
-            add(PlayInUnityAction(projectCustomDataHost))
-            add(PauseInUnityAction(projectCustomDataHost))
-            add(StepInUnityAction(projectCustomDataHost))
+            val actionGroupID = "UnityLogPanelViewToolbar"
+            this.add(ActionManager.getInstance().getAction(actionGroupID))
             addSeparator()
             add(UnityPluginShowSettingsAction())
         }
