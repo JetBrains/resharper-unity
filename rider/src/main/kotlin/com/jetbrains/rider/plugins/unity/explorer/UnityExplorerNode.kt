@@ -22,6 +22,13 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile, private
 
     public override fun hasProblemFileBeneath() = nodes.any { it.hasErrors() }
 
+    override fun compareTo(other: ProjectViewNode<*>): Int {
+        if (other !is UnityExplorerNode){
+            return 1
+        }
+        return super.compareTo(other)
+    }
+
     override fun update(presentation: PresentationData?) {
         if (!virtualFile.isValid) return
         presentation?.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
@@ -67,7 +74,7 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile, private
         return virtualFile.calculateFileSystemIcon(project!!)
     }
 
-    private fun underAssemblyDefinition() : Boolean {
+    private fun underAssemblyDefinition(): Boolean {
         // Fix for #380
         var parent = this.parent
         while (parent != null && parent is UnityExplorerNode) {
@@ -126,15 +133,16 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile, private
         }
     }
 
-    class ReferenceRoot(project: Project)
-        : ProjectViewNode<Any>(project, key, null) {
+    class ReferenceRoot(project: Project) : ProjectViewNode<Any>(project, key, null), Comparable<ProjectViewNode<*>> {
 
         companion object {
             val key = Any()
         }
 
         override fun contains(virtualFile: VirtualFile) = false
-        override fun canRepresent(element: Any?): Boolean  = false
+        override fun canRepresent(element: Any?): Boolean = false
+        override fun compareTo(other: ProjectViewNode<*>) = -1
+        override fun getSortKey() = this
 
         override fun update(presentation: PresentationData?) {
             presentation?.presentableText = "References"
@@ -162,7 +170,8 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile, private
 
         override fun contains(virtualFile: VirtualFile) = false
         override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
-        override fun canRepresent(element: Any?): Boolean  = false
+        override fun canRepresent(element: Any?): Boolean = false
+        override fun isAlwaysLeaf() = true
 
         override fun update(presentation: PresentationData?) {
             presentation?.presentableText = referenceName
