@@ -62,7 +62,7 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
-        JDOMExternalizerUtil.writeField(element, ShowHiddenItemsOption, true.toString())
+        JDOMExternalizerUtil.writeField(element, ShowHiddenItemsOption, myShowHiddenItems.toString())
     }
 
     override fun readExternal(element: Element) {
