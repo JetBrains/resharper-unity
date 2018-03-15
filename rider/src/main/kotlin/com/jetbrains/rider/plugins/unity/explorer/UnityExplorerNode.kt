@@ -13,6 +13,7 @@ import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.fileSystem.FileSystemNodeBase
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.solutionName
+import com.jetbrains.rider.util.getOrCreate
 import javax.swing.Icon
 
 open class UnityExplorerNode(project: Project, virtualFile: VirtualFile, private val owner: UnityExplorer)
@@ -150,22 +151,27 @@ open class UnityExplorerNode(project: Project, virtualFile: VirtualFile, private
         }
 
         override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> {
-            val children = arrayListOf<AbstractTreeNode<Any>>()
-            val referenceNames = hashSetOf<String>()
+            val referenceNames = hashMapOf<String, ArrayList<ProjectModelNodeKey>>()
             val visitor = object : ProjectModelNodeVisitor() {
                 override fun visitReference(node: ProjectModelNode): Result {
-                    if (node.isAssemblyReference() && referenceNames.add(node.name)) {
-                        children.add(ReferenceItem(project!!, node.name) as AbstractTreeNode<Any>)
+                    if (node.isAssemblyReference()) {
+                        val keys = referenceNames.getOrCreate(node.name, { _ -> arrayListOf() })
+                        keys.add(node.key)
                     }
                     return Result.Stop
                 }
             }
             visitor.visit(project!!)
+
+            val children = arrayListOf<AbstractTreeNode<Any>>()
+            for ((referenceName, keys) in referenceNames) {
+                children.add(ReferenceItem(project!!, referenceName, keys) as AbstractTreeNode<Any>)
+            }
             return children
         }
     }
 
-    class ReferenceItem(project: Project, private val referenceName: String)
+    class ReferenceItem(project: Project, private val referenceName: String, val keys : ArrayList<ProjectModelNodeKey>)
         : ProjectViewNode<String>(project, referenceName, null) {
 
         override fun contains(virtualFile: VirtualFile) = false

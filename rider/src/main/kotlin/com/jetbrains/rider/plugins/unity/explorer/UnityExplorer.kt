@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.project.DumbAware
@@ -28,6 +29,8 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
 
         const val DefaultProjectPrefix = "Assembly-CSharp"
         val IgnoredExtensions = hashSetOf("meta", "tmp")
+
+        val SELECTED_REFERENCE_KEY: DataKey<UnityExplorerNode.ReferenceItem> = DataKey.create("selectedReference")
     }
 
     var myShowHiddenItems = false
@@ -43,10 +46,11 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
     }
 
     override fun getData(selected: MutableList<AbstractTreeNode<Any>>, dataId: String?): Any? {
-        when {
-            ProjectModelDataKeys.PROJECT_MODEL_NODES.`is`(dataId) -> return getProjectModelNodes(selected).toTypedArray()
+        return when {
+            ProjectModelDataKeys.PROJECT_MODEL_NODES.`is`(dataId) -> getProjectModelNodes(selected).toTypedArray()
+            SELECTED_REFERENCE_KEY.`is`(dataId) -> selected.filterIsInstance<UnityExplorerNode.ReferenceItem>().singleOrNull()
+            else -> null
         }
-        return null
     }
 
     private fun getProjectModelNodes(selected: MutableList<AbstractTreeNode<Any>>): List<IProjectModelNode> {
