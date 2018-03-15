@@ -107,7 +107,7 @@
   </ItemGroup>
   <!-- References -->
   <ItemGroup>
-    <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />
+    <PackageReference Include="JetBrains.Rider.SDK" Version="2018.1-eap03" />
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.3.0" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
