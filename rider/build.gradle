@@ -98,23 +98,23 @@ class TeamCityService implements CIService {
 
     // TODO: These values should be escaped
     void Progress(String message) {
-        println "##teamcity[progressMessage, name='$message']"
+        println "##teamcity[progressMessage '$message']"
     }
 
     void OpenBlock(String name, String description) {
-        println "##teamcity[blockOpened, name='$name', description='$description']"
+        println "##teamcity[blockOpened name='$name' description='$description']"
     }
 
     void CloseBlock(String name) {
-        println "##teamcity[blockClosed, name='$name']"
+        println "##teamcity[blockClosed name='$name']"
     }
 
     void PublishArtifact(File path) {
-        println "##teamcity[publishArtifacts, '$path.absolutePath']"
+        println "##teamcity[publishArtifacts '$path.absolutePath']"
     }
 
     void SetBuildNumber(String version) {
-        println "##teamcity[buildNumber, '$version']"
+        println "##teamcity[buildNumber '$version']"
     }
 }
 
