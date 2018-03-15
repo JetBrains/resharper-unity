@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Metadata.Access;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.TaskRunnerFramework;
@@ -20,6 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     [SolutionComponent]
     public class RunViaUnityEditorStrategy : IUnitTestRunStrategy
     {
+        private static readonly Key<TaskCompletionSource<bool>> ourCompletionSourceKey =
+            new Key<TaskCompletionSource<bool>>("RunViaUnityEditorStrategy.TaskCompletionSource");
+        
         private readonly ISolution mySolution;
         private readonly IUnitTestResultManager myUnitTestResultManager;
         private readonly UnityEditorProtocol myUnityEditorProtocol;
@@ -44,31 +49,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return false;
         }
 
-        public bool RequiresSeparateRunPerProject(IProject project)
-        {
-            return false;
-        }
-
         public bool RequiresProjectPropertiesRefreshBeforeLaunch()
         {
             return false;
         }
 
-        public RuntimeEnvironment GetRuntimeEnvironment(IProject project, RuntimeEnvironment projectRuntimeEnvironment,
-            TargetPlatform targetPlatform, IUserDataHolder userData)
+        public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project, TargetFrameworkId targetFrameworkId)
         {
-            return projectRuntimeEnvironment;
+            var targetPlaform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
+            return new UnityRuntimeEnvironment(targetPlaform);
         }
 
-        public void Run(IUnitTestRun run)
+        Task IUnitTestRunStrategy.Run(IUnitTestRun run)
         {
             var key = run.Launch.GetData(ourLaunchedInUnityKey);
             if (key != null)
             {
-                run.Finish();
-                return;
+                return Task.FromResult(false);
             }
             
+            var tcs = new TaskCompletionSource<bool>();
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
 
             mySolution.Locks.ExecuteOrQueueEx(mySolution.GetLifetime(), "ExecuteRunUT", () =>
@@ -83,11 +83,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         currentConnectionLifetime.Terminate();
                 });
             
-                RunInternal(run, currentConnectionLifetime.Lifetime, myUnityEditorProtocol.UnityModel.Value);    
+                RunInternal(run, currentConnectionLifetime.Lifetime, myUnityEditorProtocol.UnityModel.Value, tcs);
             });
+
+            return tcs.Task;
         }
 
-        private void RunInternal(IUnitTestRun firstRun, Lifetime connectionLifetime, UnityModel unityModel)
+        private void RunInternal(IUnitTestRun firstRun, Lifetime connectionLifetime, UnityModel unityModel, TaskCompletionSource<bool> tcs)
         {
             mySolution.Locks.AssertMainThread();
             
@@ -132,7 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             launch.RunResult.Advise(connectionLifetime, result =>
             {
-                firstRun.Finish();
+                tcs.SetResult(true);
             });
 
             unityModel.UnitTestLaunch.Value = launch;
@@ -186,12 +188,52 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
-            run.Finish();
+            // TODO: cancel tests in Unity Editor
+            run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 
         public void Abort(IUnitTestRun run)
         {
-            run.Finish();
+            // TODO: cancel tests in Unity Editor
+            run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
+        }
+
+        private class UnityRuntimeEnvironment : IRuntimeEnvironment
+        {
+            public UnityRuntimeEnvironment(TargetPlatform targetPlatform)
+            {
+                TargetPlatform = targetPlatform;
+            }
+
+            public TargetPlatform TargetPlatform { get; }
+
+            private bool Equals(UnityRuntimeEnvironment other)
+            {
+                return TargetPlatform == other.TargetPlatform;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != GetType()) return false;
+                return Equals((UnityRuntimeEnvironment) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return (int) TargetPlatform;
+            }
+
+            public static bool operator ==(UnityRuntimeEnvironment left, UnityRuntimeEnvironment right)
+            {
+                return Equals(left, right);
+            }
+
+            public static bool operator !=(UnityRuntimeEnvironment left, UnityRuntimeEnvironment right)
+            {
+                return !Equals(left, right);
+            }
         }
     }
 }
