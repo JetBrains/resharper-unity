@@ -10,9 +10,8 @@ using JetBrains.IDE;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
-using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Resources.Shell;
@@ -48,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution = solution;
             myHost = host;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
-            UnityModel = new Property<UnityModel>(lifetime, "unityModelProperty", null).EnsureReadonly(myReadonlyToken).EnsureThisThread();
+            UnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null).EnsureReadonly(myReadonlyToken).EnsureThisThread();
             
             if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath.Directory))
                 return;
@@ -82,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         [NotNull]
-        public IProperty<UnityModel> UnityModel { get; }
+        public IProperty<EditorPluginModel> UnityModel { get; }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
@@ -161,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     myLogger.Info("WireConnected.");
                 
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
-                    var model = new UnityModel(lf, protocol);
+                    var model = new EditorPluginModel(lf, protocol);
                     model.IsBackendConnected.Set(rdVoid => true);
                     model.RiderProcessId.SetValue(Process.GetCurrentProcess().Id);
                     myHost.SetModelData("UNITY_SessionInitialized", "true");
@@ -190,7 +189,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        private void SubscribeToOpenFile([NotNull] UnityModel model)
+        private void SubscribeToOpenFile([NotNull] EditorPluginModel model)
         {
             model.OpenFileLineCol.Set(args =>
             {
@@ -212,7 +211,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private void SubscribeToLogs(Lifetime lifetime, UnityModel model)
+        private void SubscribeToLogs(Lifetime lifetime, EditorPluginModel model)
         {
             model.LogModelInitialized.Advise(lifetime, modelInitialized =>
             {

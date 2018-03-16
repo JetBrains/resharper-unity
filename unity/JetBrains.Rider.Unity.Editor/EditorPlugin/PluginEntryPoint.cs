@@ -7,7 +7,7 @@ using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -29,7 +29,7 @@ namespace JetBrains.Rider.Unity.Editor
     // This an entry point
     static PluginEntryPoint()
     {
-      ourModel = new RProperty<UnityModel>();
+      ourModel = new RProperty<EditorPluginModel>();
       
       var logSender = new UnityEventLogSender(ourModel);
       logSender.UnityLogRegisterCallBack();
@@ -77,7 +77,7 @@ namespace JetBrains.Rider.Unity.Editor
     }
     
     private static bool ourInitialized;
-    private static readonly RProperty<UnityModel> ourModel;
+    private static readonly RProperty<EditorPluginModel> ourModel;
     
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     
@@ -146,7 +146,7 @@ namespace JetBrains.Rider.Unity.Editor
       ourInitialized = true;
     }
 
-    private static void AdviseModel(Lifetime connectionLifetime, UnityModel modelValue)
+    private static void AdviseModel(Lifetime connectionLifetime, EditorPluginModel modelValue)
     {
       modelValue.GetUnityEditorState.Set(rdVoid =>
       {
@@ -170,7 +170,7 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static UnityModel CreateModel(Protocol protocol, Lifetime lt)
+    private static EditorPluginModel CreateModel(Protocol protocol, Lifetime lt)
     {
       var isPlayingAction = new Action(() =>
       {
@@ -183,7 +183,7 @@ namespace JetBrains.Rider.Unity.Editor
           ourModel?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
         });
       });
-      var model = new UnityModel(lt, protocol);
+      var model = new EditorPluginModel(lt, protocol);
       isPlayingAction(); // get Unity state
       model.Play.Advise(lt, play =>
       {

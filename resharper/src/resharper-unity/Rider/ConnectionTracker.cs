@@ -2,9 +2,8 @@
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features;
 using JetBrains.Util;
 using ILogger = JetBrains.Util.ILogger;
 

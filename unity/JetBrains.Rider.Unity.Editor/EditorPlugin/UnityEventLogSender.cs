@@ -5,7 +5,7 @@ using System.Reflection;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,7 +13,7 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public class UnityEventLogSender
   {
-    private readonly RProperty<UnityModel> myModel;
+    private readonly RProperty<EditorPluginModel> myModel;
 
     public void UnityLogRegisterCallBack()
     {
@@ -54,7 +54,7 @@ namespace JetBrains.Rider.Unity.Editor
     private readonly int myDelayedLogEventsMaxSize = 1000;
     private readonly LinkedList<RdLogEvent> myDelayedLogEvents = new LinkedList<RdLogEvent>();
 
-    public UnityEventLogSender(RProperty<UnityModel> model)
+    public UnityEventLogSender(RProperty<EditorPluginModel> model)
     {
       myModel = model;
     }
@@ -93,7 +93,7 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private void SendLogEvent(UnityModel model, RdLogEvent logEvent)
+    private void SendLogEvent(EditorPluginModel model, RdLogEvent logEvent)
     {
       //if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
       model.LogModelInitialized.Value.Log.Fire(logEvent);

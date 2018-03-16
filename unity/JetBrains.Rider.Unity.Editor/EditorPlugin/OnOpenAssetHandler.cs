@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util.Logging;
@@ -14,12 +14,12 @@ namespace JetBrains.Rider.Unity.Editor
   internal class OnOpenAssetHandler
   {
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
-    private readonly RProperty<UnityModel> myModel;
+    private readonly RProperty<EditorPluginModel> myModel;
     private readonly RiderPathLocator myRiderPathLocator;
     private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
 
-    public OnOpenAssetHandler(RProperty<UnityModel> model, RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
+    public OnOpenAssetHandler(RProperty<EditorPluginModel> model, RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
     {
       myModel = model;
       myRiderPathLocator = riderPathLocator;

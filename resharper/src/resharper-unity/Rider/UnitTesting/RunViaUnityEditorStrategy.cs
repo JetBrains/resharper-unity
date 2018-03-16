@@ -7,7 +7,7 @@ using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Metadata.Access;
 using JetBrains.Metadata.Reader.API;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -15,7 +15,7 @@ using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Util;
-using UnitTestLaunch = JetBrains.Platform.Unity.Model.UnitTestLaunch;
+using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
@@ -89,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return tcs.Task;
         }
 
-        private void RunInternal(IUnitTestRun firstRun, Lifetime connectionLifetime, UnityModel unityModel, TaskCompletionSource<bool> tcs)
+        private void RunInternal(IUnitTestRun firstRun, Lifetime connectionLifetime, EditorPluginModel unityModel, TaskCompletionSource<bool> tcs)
         {
             mySolution.Locks.AssertMainThread();
             

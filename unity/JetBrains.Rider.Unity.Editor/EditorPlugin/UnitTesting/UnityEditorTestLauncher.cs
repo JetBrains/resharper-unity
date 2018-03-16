@@ -3,14 +3,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using JetBrains.Annotations;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util.Logging;
 #if !(UNITY_5_5 || UNITY_4_7)
 using NUnit.Framework.Internal;
 using NUnit.Framework.Interfaces;
 #endif
 using UnityEngine.Events;
-using TestResult = JetBrains.Platform.Unity.Model.TestResult;
+using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
