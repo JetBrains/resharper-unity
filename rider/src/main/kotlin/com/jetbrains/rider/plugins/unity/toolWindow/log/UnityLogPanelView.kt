@@ -32,7 +32,7 @@ import javax.swing.Icon
 import javax.swing.JMenuItem
 import javax.swing.JPopupMenu
 
-class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, unityHost: UnityHost) {
+class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
         .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME, project))
@@ -70,7 +70,6 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, unit
 
     val mainSplitterOrientation = RiderUnitySettings.BooleanViewProperty("mainSplitterOrientation")
 
-    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(unityHost)
     private val mainSplitterToggleAction = object : DumbAwareAction("Toggle Output Position", "Toggle Output pane position (right/bottom)", AllIcons.Actions.SplitVertically) {
         override fun actionPerformed(e: AnActionEvent) {
             mainSplitterOrientation.invert()

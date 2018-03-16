@@ -8,9 +8,9 @@ import com.jetbrains.rider.generator.nova.util.syspropertyOrEmpty
 import java.io.File
 
 object EditorPluginModel: Root(
-    CSharp50Generator(FlowTransform.AsIs, "JetBrains.Platform.Unity.EditorPluginModel", File("src/")),
-    CSharp50Generator(FlowTransform.Reversed, "JetBrains.Platform.Unity.EditorPluginModel", File(syspropertyOrEmpty("model.out.src.unity.dir"))),
-    Kotlin11Generator(FlowTransform.AsIs, "com.jetbrains.rider.plugins.unity.editorPlugin.model", File(syspropertyOrEmpty("model.out.src.resharper-unity-front.dir")))
+    CSharp50Generator(FlowTransform.AsIs, "JetBrains.Platform.Unity.EditorPluginModel", File("../resharper/src/resharper-unity/Rider")),
+    CSharp50Generator(FlowTransform.Reversed, "JetBrains.Platform.Unity.EditorPluginModel", File("../unity/JetBrains.Rider.Unity.Editor/EditorPlugin/NonUnity")),
+    Kotlin11Generator(FlowTransform.AsIs, "com.jetbrains.rider.plugins.unity.editorPlugin.model", File("src/main/kotlin/com/jetbrains/rider"))
 ){
     var RdOpenFileArgs = structdef{
         field("path", string)
