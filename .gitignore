@@ -66,6 +66,9 @@ resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp
 
+rider/src/**/*.generated.kt
+unity/**/*.generated.cs
+
 # Backup & report files from converting an old project file to a newer Visual Studio version
 _UpgradeReport_Files/
 Backup*/
