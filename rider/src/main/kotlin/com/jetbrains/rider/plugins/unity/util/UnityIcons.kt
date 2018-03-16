@@ -14,7 +14,6 @@ class UnityIcons {
         val RefreshInUnity = IconLoader.getIcon("/Icons/UnityLogView/forceRefresh.png")
         val PlayInUnity = IconLoader.getIcon("/Icons/UnityLogView/progressResume.png")
         val PauseInUnity = IconLoader.getIcon("/Icons/UnityLogView/progressPause.png")
-        val StopInUnity = IconLoader.getIcon("/Icons/UnityLogView/stop.png")
         val StepInUnity = IconLoader.getIcon("/Icons/UnityLogView/stop.png")
     }
 }
