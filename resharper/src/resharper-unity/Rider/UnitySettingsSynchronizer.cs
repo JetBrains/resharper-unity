@@ -2,6 +2,7 @@
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
+using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
@@ -12,13 +13,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnitySettingsSynchronizer : UnityReferencesTracker.IHandler
     {
         private readonly Lifetime myLifetime;
-        private readonly RdUnityModel myHost;
+        private readonly UnityHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundStore;
 
         public UnitySettingsSynchronizer(
             Lifetime lifetime,
             ISolution solution,
-            RdUnityModel host,
+            UnityHost host,
             ISettingsStore settingsStore)
         {
             myLifetime = lifetime;
@@ -37,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (pcea.HasNew)
                 {
-                    myHost.Data["UNITY_SETTINGS_EnableShaderLabHippieCompletion"] = pcea.New.ToString();
+                    myHost.SetModelData("UNITY_SETTINGS_EnableShaderLabHippieCompletion", pcea.New.ToString());
                 }
             });
         }
