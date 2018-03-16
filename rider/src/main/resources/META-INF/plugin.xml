@@ -59,9 +59,23 @@
   </project-components>
 
   <actions>
-    <!--<action id="UnityShowImportantAction" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions">
-      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="before" />
-    </action>-->
+
+    <group id="UnityToolbarActions">
+      <separator/>
+      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
+        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
+      </group>
+
+      <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />
+      <action id="TriggerPlayInUnity" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction" text="Trigger Play in Unity Editor" />
+      <action id="TriggerPauseInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction" text="Trigger Pause in Unity editor" />
+      <action id="TriggerStepInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" text="Trigger Step In Unity Editor" />
+      <separator/>
+
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
+    </group>
+
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>

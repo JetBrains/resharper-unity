@@ -20,6 +20,10 @@ import javax.swing.Icon
  * @author Kirill.Skrygan
  */
 class UnityStatusBarIcon(private val projectCustomDataHost: ProjectCustomDataHost): StatusBarWidget, StatusBarWidget.IconPresentation {
+    companion object {
+        const val StatusBarIconId = "UnityStatusIcon"
+    }
+
     private var icon : Icon = UnityIcons.Logo
     private var myTooltip : String = ""
     private var myStatusBar: StatusBar? = null
