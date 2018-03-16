@@ -100,31 +100,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             solution.CustomData.Data.Advise(lifetime, e =>
             {
                 var model = myUnityModel.Value;
-                if (e.NewValue == e.OldValue || e.NewValue == null)
+                if (e.NewValue == e.OldValue)
                     return;
+                if (e.NewValue == null)
+                    return;
+                if (model==null)
+                    return;
+                
                 switch (e.Key)
                 {
                     case "UNITY_Refresh":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        if (model != null && e.NewValue != null)
-                            Refresh.Fire(Convert.ToBoolean(e.NewValue));
+                        Refresh.Fire(Convert.ToBoolean(e.NewValue));
                         break;
+                    
                     case "UNITY_Step":
                         if (e.NewValue.ToLower() == true.ToString().ToLower())
                         {
                             myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                            model?.Step.Start(RdVoid.Instance);
+                            model.Step.Start(RdVoid.Instance);
                         }
-
                         break;
+                    
                     case "UNITY_Play":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        model?.Play.SetValue(Convert.ToBoolean(e.NewValue));
+                        model.Play.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
 
                     case "UNITY_Pause":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        model?.Pause.SetValue(Convert.ToBoolean(e.NewValue));
+                        model.Pause.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
                 }
             });
