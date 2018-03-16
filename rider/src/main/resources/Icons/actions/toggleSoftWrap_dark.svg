@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>toggleSoftWrap_dark</title>
+  <g>
+    <g>
+      <path d="M11.5,2H10V6H4.5a3.5,3.5,0,0,0,0,7H5v2H6.362L10,11.968v-.936L7.562,9H11.5a3.5,3.5,0,0,0,0-7Z" fill="#252525"/>
+      <g>
+        <rect x="4" y="-2" width="4" height="10" transform="translate(9 -3) rotate(90)" fill="#252525"/>
+        <rect x="2" y="2" width="8" height="2" fill="#c4c4c4"/>
+      </g>
+      <g>
+        <rect x="10" y="9" width="4" height="6" transform="translate(24) rotate(90)" fill="#252525"/>
+        <rect x="10" y="11" width="4" height="2" fill="#c4c4c4"/>
+      </g>
+      <path d="M11.5,3H11V4h.5a1.5,1.5,0,0,1,0,3h-7a2.5,2.5,0,0,0,0,5H6v2l3-2.5L6,9v2H4.5a1.5,1.5,0,0,1,0-3h7a2.5,2.5,0,0,0,0-5Z" fill="#7cbeff"/>
+    </g>
+    <rect width="16" height="16" fill="#f0f" opacity="0"/>
+  </g>
+</svg>

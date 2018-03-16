@@ -25,8 +25,7 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
         const val ID = "UnityExplorer"
         const val Title = "Unity Explorer"
         const val ShowHiddenItemsOption = "show-hidden-items"
-
-        val Icon = UnityIcons.Logo
+        val Icon = UnityIcons.Toolwindows.ToolWindowUnityLog
 
         const val DefaultProjectPrefix = "Assembly-CSharp"
         val IgnoredExtensions = hashSetOf("meta", "tmp")

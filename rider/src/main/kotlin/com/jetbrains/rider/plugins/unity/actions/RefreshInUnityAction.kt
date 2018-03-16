@@ -7,7 +7,7 @@ import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
 
-class RefreshInUnityAction : AnAction(UnityIcons.RefreshInUnity) {
+class RefreshInUnityAction : AnAction(UnityIcons.Actions.ForceRefresh) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project?: return
 

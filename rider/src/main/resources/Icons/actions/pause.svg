@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>pause</title>
+  <g>
+    <g>
+      <rect x="3" y="2" width="10" height="12" fill="#f4f4f4"/>
+      <path d="M4,3H7V13H4Zm8,0H9V13h3Z" fill="#323232" fill-rule="evenodd"/>
+    </g>
+    <rect width="16" height="16" fill="#f0f" opacity="0"/>
+  </g>
+</svg>
