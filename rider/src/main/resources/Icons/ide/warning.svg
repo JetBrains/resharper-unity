@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>warning</title>
+  <g>
+    <g>
+      <polygon points="1.49 15 0 13.104 7.015 0 8.985 0 16 13.104 14.509 15 1.49 15" fill="#f4f4f4"/>
+      <polygon points="8.382 1 7.618 1 1.217 13 2 14 14 14 14.783 13 8.382 1" fill="#fa0"/>
+      <path d="M9,9H7V5H9Zm0,1H7v2H9Z" fill="#323232"/>
+    </g>
+    <rect width="16" height="16" fill="#f0f" opacity="0"/>
+  </g>
+</svg>

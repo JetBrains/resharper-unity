@@ -59,12 +59,37 @@
   </project-components>
 
   <actions>
-    <!--<action id="UnityShowImportantAction" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions">
-      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="before" />
-    </action>-->
+
+    <group id="UnityToolbarActions">
+      <separator/>
+      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
+        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
+      </group>
+
+      <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />
+      <action id="TriggerPlayInUnity" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"/>
+      <action id="TriggerPauseInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"  />
+      <action id="TriggerStepInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" />
+      <separator/>
+
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
+    </group>
+
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>
+
+    <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties...">
+      <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
+    </action>
+
+    <group id="UnityLogPanelViewToolbar" text="Unity log panel">
+      <action id="RefreshInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Refresh" description="Starts refresh in Unity" />
+      <action id="PlayInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction" text="Play/Edit" description="Change Play/Edit mode in Unity" />
+      <action id="PauseInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction" text="Pause/Resume" description="Pause/Resume play in Unity" />
+      <action id="StepInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" text="Step" description="Perform a single frame step in Unity" />
+    </group>
   </actions>
 
   <description><![CDATA[

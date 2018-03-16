@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly RiderUnityHost myHost;
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
-        public readonly ISignal<RefreshModel> Refresh = new DataFlow.Signal<RefreshModel>("Refresh");
+        public readonly ISignal<bool> Refresh = new DataFlow.Signal<bool>("Refresh");
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, RiderUnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
@@ -97,31 +97,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myHost.Model.Data.Advise(lifetime, e =>
             {
                 var model = UnityModel.Value;
-                if (e.NewValue == e.OldValue || e.NewValue == null)
+                if (e.NewValue == e.OldValue)
                     return;
+                if (e.NewValue == null)
+                    return;
+                if (model==null)
+                    return;
+                
                 switch (e.Key)
                 {
                     case "UNITY_Refresh":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        if (model != null && e.NewValue != null)
-                            Refresh.Fire(new RefreshModel(model, Convert.ToBoolean(e.NewValue)));
+                        Refresh.Fire(Convert.ToBoolean(e.NewValue));
                         break;
+                    
                     case "UNITY_Step":
                         if (e.NewValue.ToLower() == true.ToString().ToLower())
                         {
                             myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                            model?.Step.Sync(RdVoid.Instance, RpcTimeouts.Default);
+                            model.Step.Start(RdVoid.Instance);
                         }
-
                         break;
+                    
                     case "UNITY_Play":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        model?.Play.SetValue(Convert.ToBoolean(e.NewValue));
+                        model.Play.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
 
                     case "UNITY_Pause":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        model?.Pause.SetValue(Convert.ToBoolean(e.NewValue));
+                        model.Pause.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
                 }
             });
@@ -227,17 +232,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public int port_id { get; set; }
-    }
-
-    public class RefreshModel
-    {
-        public UnityModel Model;
-        public bool Force;
-        
-        public RefreshModel(UnityModel model, bool force)
-        {
-            this.Model = model;
-            this.Force = force;
-        }
     }
 }

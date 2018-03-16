@@ -42,7 +42,7 @@ class UnityToolWindowFactory(project: Project,
             }
         })
         toolWindow.title = ""
-        toolWindow.icon = UnityIcons.Logo
+        toolWindow.icon = UnityIcons.Toolwindows.ToolWindowUnityLog
         // Required for hiding window without content
         ContentManagerWatcher(toolWindow, contentManager)
 

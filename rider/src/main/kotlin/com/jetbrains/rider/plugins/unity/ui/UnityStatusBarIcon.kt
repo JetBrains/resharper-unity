@@ -20,10 +20,14 @@ import javax.swing.Icon
  * @author Kirill.Skrygan
  */
 class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBarWidget.IconPresentation {
-    private var icon : Icon = UnityIcons.Logo
+    companion object {
+        const val StatusBarIconId = "UnityStatusIcon"
+    }
+
+    private var icon : Icon = UnityIcons.Icons.AttachEditorDebugConfiguration
     private var myTooltip : String = ""
     private var myStatusBar: StatusBar? = null
-    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Logo)
+    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Icons.AttachEditorDebugConfiguration)
 
     override fun ID(): String {
         return "UnityStatusIcon"
@@ -34,7 +38,7 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
     }
 
     fun setDisconnectedIcon() {
-        icon = UnityIcons.Logo
+        icon = UnityIcons.Icons.AttachEditorDebugConfiguration
     }
 
     fun setTooltip(text: String) {
@@ -73,13 +77,13 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
 
     override fun getIcon(): Icon {
         when (host.unityState.value) {
-            DISCONNECTED -> return UnityIcons.Logo
+            DISCONNECTED -> return UnityIcons.Icons.AttachEditorDebugConfiguration
             CONNECTED_IDLE -> return connectedIcon
             CONNECTED_PLAY -> return LayeredIcon(connectedIcon, AllIcons.General.Run)
             CONNECTED_REFRESH -> return LayeredIcon(connectedIcon, AnimatedIcon.Grey())
         }
 
-        return UnityIcons.Logo
+        return UnityIcons.Icons.AttachEditorDebugConfiguration
     }
 }
 

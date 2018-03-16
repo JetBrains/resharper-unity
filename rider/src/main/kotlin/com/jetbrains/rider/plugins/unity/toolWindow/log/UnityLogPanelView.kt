@@ -71,8 +71,7 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, unit
     val mainSplitterOrientation = RiderUnitySettings.BooleanViewProperty("mainSplitterOrientation")
 
     private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(unityHost)
-
-    val mainSplitterToggleAction = object : DumbAwareAction("Toggle Output Position", "Toggle Output pane position (right/bottom)", AllIcons.Actions.SplitHorizontally) {
+    private val mainSplitterToggleAction = object : DumbAwareAction("Toggle Output Position", "Toggle Output pane position (right/bottom)", AllIcons.Actions.SplitVertically) {
         override fun actionPerformed(e: AnActionEvent) {
             mainSplitterOrientation.invert()
             update(e)
@@ -82,8 +81,6 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, unit
             e.presentation.icon = getMainSplitterIcon()
         }
     }
-
-
 
     private val mainSplitter = JBSplitter().apply {
         proportion = 1f / 2
@@ -107,13 +104,15 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, unit
         })
     }
 
+    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(logModel, mainSplitterToggleAction, console.createConsoleActions()
+        .filter {  it is ToggleUseSoftWrapsToolbarAction }.toList())
+
+    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
+
     fun getMainSplitterIcon(invert: Boolean = false): Icon? = when (mainSplitterOrientation.value xor invert) {
         true -> RiderUnitTestSessionPanel.splitBottomIcon
         false -> RiderUnitTestSessionPanel.splitRightIcon
     }
-
-    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar(logModel, mainSplitterToggleAction, console.createConsoleActions()
-        .filter {  it is ToggleUseSoftWrapsToolbarAction }.toList())
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 

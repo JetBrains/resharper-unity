@@ -21,8 +21,11 @@ object UnityLogPanelToolbarBuilder {
         return JPanel(BorderLayout()).apply { add(component, layout) }
     }
 
-    fun createTopToolbar(model: UnityLogPanelModel, mainSplitterToggleAction: DumbAwareAction, consoleActionsList : List<AnAction>): JPanel {
+    fun createTopToolbar(): JPanel {
+        return create(ActionGroup.EMPTY_GROUP, BorderLayout.NORTH, true)
+    }
 
+    fun createLeftToolbar(model: UnityLogPanelModel, mainSplitterToggleAction: DumbAwareAction, consoleActionsList : List<AnAction>): JPanel {
         fun createType(type: RdLogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
             override fun isSelected(e: AnActionEvent?) = model.typeFilters.getShouldBeShown(type)
             override fun setSelected(e: AnActionEvent?, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
@@ -34,28 +37,17 @@ object UnityLogPanelToolbarBuilder {
         }
 
         val actionGroup = DefaultActionGroup().apply {
-            add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
+            addSeparator("Mode filters")
+            add(createMode(RdLogEventMode.Edit))
+            add(createMode(RdLogEventMode.Play))
             addSeparator("Type filters")
             add(createType(RdLogEventType.Error))
             add(createType(RdLogEventType.Warning))
             add(createType(RdLogEventType.Message))
-            addSeparator("Mode filters")
-            add(createMode(RdLogEventMode.Edit))
-            add(createMode(RdLogEventMode.Play))
-            add(mainSplitterToggleAction)
+            addSeparator("Other")
+            add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
             addAll(consoleActionsList)
-        }
-
-        return create(actionGroup, BorderLayout.NORTH, true)
-    }
-
-    fun createLeftToolbar(host: UnityHost): JPanel {
-        val actionGroup = DefaultActionGroup().apply {
-            add(RefreshInUnityAction(host))
-            add(PlayInUnityAction(host))
-            add(PauseInUnityAction(host))
-            add(StepInUnityAction(host))
-            addSeparator()
+            add(mainSplitterToggleAction)
             add(UnityPluginShowSettingsAction())
         }
 

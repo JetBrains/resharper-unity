@@ -25,14 +25,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
             {
                 if (unityEditorProtocolController.UnityModel.Value == null)
-                    myLastCheckResult = UnityEditorState.Disconnected;
-
-                var rdTask = unityEditorProtocolController.UnityModel.Value?.GetUnityEditorState.Start(RdVoid.Instance);
-                rdTask?.Result.Advise(lifetime, result =>
                 {
-                    myLastCheckResult = result.Result;
-                    logger.Trace($"myIsConnected = {myLastCheckResult}");
-                });
+                    myLastCheckResult = UnityEditorState.Disconnected;
+                }
+                else
+                {
+                    var rdTask = unityEditorProtocolController.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
+                    rdTask?.Result.Advise(lifetime, result =>
+                    {
+                        myLastCheckResult = result.Result;
+                        logger.Trace($"myIsConnected = {myLastCheckResult}");
+                    });    
+                }
 
                 logger.Trace($"Sending connection state. State: {myLastCheckResult}");
                 host.SetModelData("UNITY_EditorState", Wrap(myLastCheckResult));

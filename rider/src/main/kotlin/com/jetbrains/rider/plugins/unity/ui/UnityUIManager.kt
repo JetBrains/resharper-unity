@@ -34,7 +34,7 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
             WindowManager.getInstance().removeListener(this)
         }
         solutionLifecycleHost.isBackendLoaded.advise(componentLifetime) {
-            if (it && unityReferenceDiscoverer.isUnityProject) {
+            if (it && unityReferenceDiscoverer.isUnityGeneratedProject) {
                 isUnityUI.value = true
             }
         }
@@ -68,8 +68,11 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
 
     private fun installWidget(frame: IdeFrame, lifetime: Lifetime) {
         val statusBar = frame.statusBar ?: return
-        val iconWidget = UnityStatusBarIcon(host)
+        if (frame.statusBar.getWidget(UnityStatusBarIcon.StatusBarIconId) != null) {
+            return
+        }
 
+        val iconWidget = UnityStatusBarIcon(host)
         host.unityState.advise(componentLifetime){
             statusBar.updateWidget(iconWidget.ID())
         }

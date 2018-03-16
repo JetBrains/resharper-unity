@@ -3,6 +3,7 @@
 # User-specific stuff:
 **/.idea/**/workspace.xml
 **/.idea/**/tasks.xml
+**/.idea/**/codeStyleConfig.xml
 **/.idea/shelf/*
 **/.idea/dictionaries
 
@@ -40,6 +41,7 @@ resharper/src/.idea/**/*.iml
 
 # ContentModel.xml is also auto-generated
 resharper/src/.idea/**/contentModel.xml
+resharper/src/.idea/**/other.xml
 
 resharper/src/.vs/
 
@@ -49,7 +51,7 @@ apiParser/.idea/**/contentModel.xml
 
 # New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
 # Would be nice to download them somewhere outside of the source tree.
-Packages/*
+**/Packages/*
 *.nupkg
 
 *.suo
@@ -85,4 +87,6 @@ resharper/test/Unity3dRiderCompileTest/packages/*
 unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
 unity/CSharp70Support/*
 unity/Assets/CSharp vNext Support/*
-resharper/src/.idea/.idea.resharper-unity/.idea/other.xml
+unity/Assets/Plugins/Editor/JetBrains/*
+unity/compilation.log
+unity/**/manifest.json
