@@ -7,7 +7,7 @@ import com.intellij.ui.awt.RelativePoint
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import java.awt.event.MouseEvent
 
-class UnityImportantActions : AnAction(null, "Unity Related Actions", UnityIcons.Logo) {
+class UnityImportantActions : AnAction(null, "Unity Related Actions", UnityIcons.Toolwindows.ToolWindowUnityLog) {
     override fun actionPerformed(e: AnActionEvent) {
         val popup = JBPopupFactory.getInstance().createActionGroupPopup("", UnityImportantActionsGroup(), e.dataContext, JBPopupFactory.ActionSelectionAid.MNEMONICS, true)
         var point = JBPopupFactory.getInstance().guessBestPopupLocation(e.dataContext)

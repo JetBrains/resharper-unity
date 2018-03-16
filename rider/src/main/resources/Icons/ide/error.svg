@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>error</title>
+  <g>
+    <g>
+      <circle cx="8" cy="8" r="7" fill="#f4f4f4"/>
+      <circle cx="8" cy="8" r="6" fill="#e51400"/>
+      <rect x="4" y="7" width="8" height="2" fill="#fff"/>
+    </g>
+    <rect width="16" height="16" fill="#f0f" opacity="0"/>
+  </g>
+</svg>

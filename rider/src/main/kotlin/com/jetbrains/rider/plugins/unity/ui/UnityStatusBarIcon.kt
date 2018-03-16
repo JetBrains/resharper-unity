@@ -20,10 +20,10 @@ import javax.swing.Icon
  * @author Kirill.Skrygan
  */
 class UnityStatusBarIcon(private val projectCustomDataHost: ProjectCustomDataHost): StatusBarWidget, StatusBarWidget.IconPresentation {
-    private var icon : Icon = UnityIcons.Logo
+    private var icon : Icon = UnityIcons.Toolwindows.ToolWindowUnityLog
     private var myTooltip : String = ""
     private var myStatusBar: StatusBar? = null
-    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Logo)
+    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Toolwindows.ToolWindowUnityLog)
 
     override fun ID(): String {
         return "UnityStatusIcon"
@@ -34,7 +34,7 @@ class UnityStatusBarIcon(private val projectCustomDataHost: ProjectCustomDataHos
     }
 
     fun setDisconnectedIcon() {
-        icon = UnityIcons.Logo
+        icon = UnityIcons.Toolwindows.ToolWindowUnityLog
     }
 
     fun setTooltip(text: String) {
@@ -73,13 +73,13 @@ class UnityStatusBarIcon(private val projectCustomDataHost: ProjectCustomDataHos
 
     override fun getIcon(): Icon {
         when (projectCustomDataHost.unityState.value) {
-            DISCONNECTED -> return UnityIcons.Logo
+            DISCONNECTED -> return UnityIcons.Toolwindows.ToolWindowUnityLog
             CONNECTED_IDLE -> return connectedIcon
             CONNECTED_PLAY -> return LayeredIcon(connectedIcon, AllIcons.General.Run)
             CONNECTED_REFRESH -> return LayeredIcon(connectedIcon, AnimatedIcon.Grey())
         }
 
-        return UnityIcons.Logo
+        return UnityIcons.Toolwindows.ToolWindowUnityLog
     }
 }
 

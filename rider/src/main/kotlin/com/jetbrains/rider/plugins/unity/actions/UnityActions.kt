@@ -7,7 +7,7 @@ import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.util.idea.getComponent
 
-class PlayInUnityAction() : ToggleAction(null, null, UnityIcons.PlayInUnity) {
+class PlayInUnityAction() : ToggleAction(null, null, UnityIcons.Icons.PlayInUnity) {
     override fun isSelected(e: AnActionEvent):Boolean {
         val project = e.project
         val result = project != null && project.getComponent<ProjectCustomDataHost>().play.value
@@ -23,7 +23,7 @@ class PlayInUnityAction() : ToggleAction(null, null, UnityIcons.PlayInUnity) {
     }
 }
 
-class PauseInUnityAction() : ToggleAction(null, null, UnityIcons.PauseInUnity) {
+class PauseInUnityAction() : ToggleAction(null, null, UnityIcons.Icons.PauseInUnity) {
     override fun isSelected(e: AnActionEvent):Boolean {
         val project = e.project
         return project != null && project.getComponent<ProjectCustomDataHost>().pause.value
@@ -40,7 +40,7 @@ class PauseInUnityAction() : ToggleAction(null, null, UnityIcons.PauseInUnity) {
     }
 }
 
-class StepInUnityAction() : AnAction(UnityIcons.StepInUnity) {
+class StepInUnityAction() : AnAction(UnityIcons.Icons.StepInUnity) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project?: return
         ProjectCustomDataHost.CallBackendStep(project)

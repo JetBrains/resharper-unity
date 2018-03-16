@@ -11,7 +11,7 @@ object UnityLogPanelIcons {
     val Message = ReSharperCommonIcons.MessageInfo
 
     val Edit = ReSharperCommonIcons.Edit
-    val Play = UnityIcons.Logo
+    val Play = UnityIcons.Toolwindows.ToolWindowUnityLog
 }
 
 fun RdLogEventType.getIcon() = when (this) {
