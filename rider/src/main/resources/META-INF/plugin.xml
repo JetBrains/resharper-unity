@@ -79,6 +79,17 @@
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>
+
+    <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties...">
+      <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
+    </action>
+
+    <group id="UnityLogPanelViewToolbar" text="Unity log panel">
+      <action id="RefreshInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Refresh" description="Starts refresh in Unity" />
+      <action id="PlayInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction" text="Play/Edit" description="Change Play/Edit mode in Unity" />
+      <action id="PauseInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction" text="Pause/Resume" description="Pause/Resume play in Unity" />
+      <action id="StepInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" text="Step" description="Perform a single frame step in Unity" />
+    </group>
   </actions>
 
   <description><![CDATA[

@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.util.idea.application
+import com.jetbrains.rider.util.idea.getComponent
 
 class RefreshInUnityAction : AnAction("Refresh", "Triggers Refresh in Unity Editor", AllIcons.Actions.Refresh) {
     override fun actionPerformed(e: AnActionEvent) {

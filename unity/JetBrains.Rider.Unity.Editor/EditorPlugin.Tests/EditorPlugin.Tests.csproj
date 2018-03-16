@@ -10,14 +10,14 @@
     <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="2.6.4" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="JetBrains.Platform.RdCore35">
       <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb">
+      <HintPath>..\..\Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 # User-specific stuff:
 **/.idea/**/workspace.xml
 **/.idea/**/tasks.xml
+**/.idea/**/codeStyleConfig.xml
 **/.idea/shelf/*
 **/.idea/dictionaries
 
@@ -49,7 +50,7 @@ apiParser/.idea/**/contentModel.xml
 
 # New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
 # Would be nice to download them somewhere outside of the source tree.
-Packages/*
+**/Packages/*
 *.nupkg
 
 *.suo
