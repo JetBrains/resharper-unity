@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.Application;
 using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetExtensions;
 using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetTemplates;
+using JetBrains.ReSharper.Plugins.Unity.Rider.MonoPathProviders;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider

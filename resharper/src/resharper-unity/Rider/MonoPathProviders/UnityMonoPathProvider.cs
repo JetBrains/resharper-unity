@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Host.Features.Runtime;
 using JetBrains.Util;
 using JetBrains.Util.Interop;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.MonoPathProviders
 {
     [ShellComponent]
     public class UnityMonoPathProvider : IMonoPathProvider
