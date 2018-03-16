@@ -37,16 +37,18 @@ object UnityLogPanelToolbarBuilder {
         }
 
         val actionGroup = DefaultActionGroup().apply {
-            add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
+            addSeparator("Mode filters")
+            add(createMode(RdLogEventMode.Edit))
+            add(createMode(RdLogEventMode.Play))
             addSeparator("Type filters")
             add(createType(RdLogEventType.Error))
             add(createType(RdLogEventType.Warning))
             add(createType(RdLogEventType.Message))
-            addSeparator("Mode filters")
-            add(createMode(RdLogEventMode.Edit))
-            add(createMode(RdLogEventMode.Play))
-            add(mainSplitterToggleAction)
+            addSeparator("Other")
+            add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
             addAll(consoleActionsList)
+            add(mainSplitterToggleAction)
+            add(UnityPluginShowSettingsAction())
         }
 
         return create(actionGroup, BorderLayout.WEST, false)

@@ -11,13 +11,6 @@ class UnityIcons {
             // TODO: Proper icons!
             @JvmField
             val AttachEditorDebugConfiguration = IconLoader.getIcon("/Icons/Logo/UnityLogo.png")
-
-            @JvmField
-            val PlayInUnity = IconLoader.getIcon("/Icons/UnityLogView/progressResume.png")
-            @JvmField
-            val PauseInUnity = IconLoader.getIcon("/Icons/UnityLogView/progressPause.png")
-            @JvmField
-            val StepInUnity = IconLoader.getIcon("/Icons/UnityLogView/stop.png")
         }
     }
 

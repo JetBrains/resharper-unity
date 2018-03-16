@@ -24,6 +24,6 @@ class UnityImportantActions : DefaultActionGroup(), DumbAware {
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.icon = UnityIcons.Logo
+        e.presentation.icon = UnityIcons.Icons.AttachEditorDebugConfiguration
     }
 }
