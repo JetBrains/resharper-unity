@@ -40,6 +40,8 @@ object EditorPluginModel: Root(
 
     val TestResult = structdef {
         field("testId", string)
+        field("output", string)
+        field("duration", int)
         field("status", enum {
             +"Pending"
             +"Running"
@@ -48,11 +50,16 @@ object EditorPluginModel: Root(
         })
     }
 
+    val RunResult = structdef {
+        field("passed", bool)
+    }
+
     val UnitTestLaunch = classdef {
         field("testNames", immutableList(string))
         field("testGroups", immutableList(string))
         field("testCategories", immutableList(string))
         sink("testResult", TestResult)
+        sink("runResult", RunResult)
     }
 
     val UnityEditorState = enum {
