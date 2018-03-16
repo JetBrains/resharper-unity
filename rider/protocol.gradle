@@ -20,26 +20,29 @@ task generateModel {
             main = "com.jetbrains.rider.generator.nova.MainKt"
             // ['C:/work/resharper-unity/rider/build/riderRD-2018.1-SNAPSHOT/lib/*',
             // classpath = files(['C:/work/resharper-unity/rider/build/riderRD-2018.1-SNAPSHOT/lib/*', kotlinCompilerClasspath, 'C:/work/resharper-unity/rider/lib/rdgen.jar'])
-            classpath = files([kotlinCompilerClasspath, 'C:/work/resharper-unity/rider/lib/rdgen.jar'])
+            classpath = files([kotlinCompilerClasspath, rdgenJar.absolutePath])
             systemProperty "model.out.src.cs.dir", "$csOutput"
             systemProperty "model.out.src.kt.dir", "$ktOutput"
             args = [
                     "-v", // verbose
-                    "--compiler-classpath=C:/work/resharper-unity/rider/lib/rdgen.jar",
-                    "--source=$modelDir",
-                    "--packages=$packageName"
+                    "--compiler-classpath=$rdgenJar.absolutePath",
+                    "--source=${modelDir}/rider",
+                    "--packages=${packageName}.rider"
             ]
         }
 
-        // TODO: remove after this is fixed
-        def csIdeRoot = new File(csOutput, "IdeRoot.Generated.cs")
-        def ktIdeRoot = new File(ktOutput, "IdeRoot.Generated.kt")
-        def ideRoots = [csIdeRoot, ktIdeRoot]
-        for (ideRoot in ideRoots){
-            if (ideRoot.exists())
-                ideRoot.delete()
-            else
-                logger.warn("$ideRoot was not generated. Workaround in 'generateModel' task can be removed.")
+        // TODO: if placed in one dir with different packages there will be generator clash
+        javaexec {
+            main = "com.jetbrains.rider.generator.nova.MainKt"
+            // ['C:/work/resharper-unity/rider/build/riderRD-2018.1-SNAPSHOT/lib/*',
+            // classpath = files(['C:/work/resharper-unity/rider/build/riderRD-2018.1-SNAPSHOT/lib/*', kotlinCompilerClasspath, 'C:/work/resharper-unity/rider/lib/rdgen.jar'])
+            classpath = files([kotlinCompilerClasspath, rdgenJar.absolutePath])
+            args = [
+                "-v", // verbose
+                "--compiler-classpath=$rdgenJar.absolutePath",
+                "--source=${modelDir}/editorPlugin",
+                "--packages=${packageName}.editorPlugin"
+            ]
         }
     }
 }

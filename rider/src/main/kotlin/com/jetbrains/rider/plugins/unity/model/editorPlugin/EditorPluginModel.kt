@@ -1,10 +1,9 @@
-package com.jetbrains.rider.plugins.unity.model
+package com.jetbrains.rider.plugins.unity.model.editorPlugin
 
 import com.jetbrains.rider.generator.nova.*
 import com.jetbrains.rider.generator.nova.PredefinedType.*
 import com.jetbrains.rider.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rider.generator.nova.kotlin.Kotlin11Generator
-import com.jetbrains.rider.generator.nova.util.syspropertyOrEmpty
 import java.io.File
 
 object EditorPluginModel: Root(
