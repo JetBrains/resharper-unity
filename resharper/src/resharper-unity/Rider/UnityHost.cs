@@ -2,14 +2,14 @@
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
-    public class RiderUnityHost
+    public class UnityHost
     {
         public RdUnityModel Model { get; }
 
-        public RiderUnityHost(ISolution solution)
+        public UnityHost(ISolution solution)
         {
             Model = solution.GetProtocolSolution().GetRdUnityModel();
         }

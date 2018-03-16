@@ -33,12 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private readonly RiderUnityHost myHost;
+        private readonly UnityHost myHost;
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
         public readonly ISignal<bool> Refresh = new DataFlow.Signal<bool>("Refresh");
 
-        public UnityEditorProtocol(Lifetime lifetime, ILogger logger, RiderUnityHost host,
+        public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
             myLifetime = lifetime;
