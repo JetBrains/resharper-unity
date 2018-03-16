@@ -21,7 +21,7 @@
          Furthermore, the GenerateParserGen_AddToItemGroups target has the same problem
          with the RemoveItemsInFolderTaskStub. We can override that target directly
          as a workaround. See below -->
-    <ParserGenOutputBase>$(IntermediateOutputPath)\_Generated</ParserGenOutputBase>
+    <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
   </PropertyGroup>
   <ItemGroup>
     <!-- C# -->
@@ -119,5 +119,23 @@
        PsiGen.exe is resolved from Assembly.LoadFrom. I don't think we really need to
        do anything here other than record the newly written files for clean - the new
        .csproj files will automatically update the Compile folder -->
-  <!-- I removed it becuase it not matched with current PsiGen -->
+  <Target Name="GenerateParserGen_AddToItemGroups">
+    <!-- Stage 1: collect the generated files, ParserGenOutputSrc item group. -->
+    <ItemGroup>
+      <!-- Clean prev run results (if more than one parsergen in this project). -->
+      <ParserGenOutputSrc Remove="%(ParserGenOutputSrc.Identity)" />
+      <!-- Re-query for the files generated during the run. -->
+      <ParserGenOutputSrc Include="$(ParserGenOutputBase)/Parsing/%(PsiLanguageNames.Identity)/**/*">
+        <AutoGen>True</AutoGen>
+      </ParserGenOutputSrc>
+      <ParserGenOutputSrc Include="$(ParserGenOutputBase)/Psi/%(PsiLanguageNames.Identity)/**/*">
+        <AutoGen>True</AutoGen>
+      </ParserGenOutputSrc>
+      <ParserGenOutputSrc Include="$(ParserGenOutputBase)/Psi/Test/%(PsiLanguageNames.Identity)/**/*">
+        <AutoGen>True</AutoGen>
+      </ParserGenOutputSrc>
+      <!-- Support incremental clean for our files. -->
+      <FileWrites Include="%(ParserGenOutputSrc.FullPath)" />
+    </ItemGroup>
+  </Target>
 </Project>
