@@ -11,7 +11,7 @@
     <DefineConstants>TRACE;RELEASE;NET452;RESHARPER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <ParserGenOutputBase>$(IntermediateOutputPath)\_Generated</ParserGenOutputBase>
+    <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
   </PropertyGroup>
   <ItemGroup>
     <!-- C# -->
