@@ -113,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         if (e.NewValue.ToLower() == true.ToString().ToLower())
                         {
                             myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                            model?.Step.Sync(RdVoid.Instance, RpcTimeouts.Default);
+                            model?.Step.Start(RdVoid.Instance);
                         }
 
                         break;
