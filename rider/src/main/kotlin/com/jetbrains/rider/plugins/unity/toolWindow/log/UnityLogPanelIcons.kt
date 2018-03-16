@@ -1,8 +1,7 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.jetbrains.rider.icons.ReSharperCommonIcons
-import com.jetbrains.rider.plugins.unity.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.RdLogEventType
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 
 object UnityLogPanelIcons {

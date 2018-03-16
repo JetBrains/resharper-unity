@@ -16,7 +16,7 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
-import com.jetbrains.rider.plugins.unity.RdLogEvent
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel

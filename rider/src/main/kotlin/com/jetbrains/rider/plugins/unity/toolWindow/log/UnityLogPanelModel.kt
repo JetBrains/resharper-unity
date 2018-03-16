@@ -1,9 +1,6 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
-import com.jetbrains.rider.plugins.unity.RdLogEvent
-import com.jetbrains.rider.plugins.unity.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.RdLogEventType
-import com.jetbrains.rider.settings.RiderUnitySettings
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.fire

@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.openapi.wm.ToolWindow
-import com.jetbrains.rider.plugins.unity.RdLogEvent
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 
 class UnityToolWindowContext(private val toolWindow: ToolWindow,

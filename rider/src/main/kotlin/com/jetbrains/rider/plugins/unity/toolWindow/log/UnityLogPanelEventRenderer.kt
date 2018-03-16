@@ -4,7 +4,7 @@ import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.RowIcon
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.speedSearch.SpeedSearchUtil
-import com.jetbrains.rider.plugins.unity.RdLogEvent
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import javax.swing.JList
 
 class UnityLogPanelEventRenderer : ColoredListCellRenderer<RdLogEvent>() {
