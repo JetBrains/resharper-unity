@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>splitHorizontally</title>
+  <g>
+    <g>
+      <g>
+        <path d="M16,14H1V1H16Z" fill="#f4f4f4"/>
+        <rect x="2" y="5" width="13" height="4" fill="#323232"/>
+        <rect x="2" y="9" width="13" height="4" fill="#323232"/>
+        <rect x="3" y="5" width="11" height="4" fill="#ebebeb"/>
+        <rect x="2" y="2" width="13" height="3" fill="#323232"/>
+        <rect x="3" y="9" width="11" height="3" fill="#ebebeb"/>
+      </g>
+      <g>
+        <path d="M4,9H3V8H4ZM6,8H5V9H6ZM8,8H7V9H8Zm2,0H9V9h1Zm2,0H11V9h1Zm2,0H13V9h1Z" fill="#323232"/>
+        <path d="M16,9H15V8h1ZM2,8H1V9H2Z" fill="#f4f4f4"/>
+        <path d="M15,9H14V8h1ZM3,8H2V9H3ZM5,8H4V9H5ZM7,8H6V9H7ZM9,8H8V9H9Zm2,0H10V9h1Zm2,0H12V9h1Z" fill="#ebebeb"/>
+      </g>
+    </g>
+    <rect width="16" height="16" fill="#f0f" opacity="0"/>
+  </g>
+</svg>

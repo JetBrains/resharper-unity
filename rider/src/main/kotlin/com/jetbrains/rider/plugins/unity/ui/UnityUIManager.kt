@@ -68,6 +68,10 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
 
     private fun installWidget(frame: IdeFrame, lifetime: Lifetime) {
         val statusBar = frame.statusBar ?: return
+        if (frame.statusBar.getWidget(UnityStatusBarIcon.StatusBarIconId) != null) {
+            return
+        }
+
         val iconWidget = UnityStatusBarIcon(projectCustomDataHost)
 
         projectCustomDataHost.unityState.advise(componentLifetime){

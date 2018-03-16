@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.actions
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
@@ -7,7 +8,7 @@ import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
 
-class RefreshInUnityAction : AnAction(UnityIcons.RefreshInUnity) {
+class RefreshInUnityAction : AnAction("Refresh", "Triggers Refresh in Unity Editor", AllIcons.Actions.Refresh) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project?: return
 
@@ -16,7 +17,9 @@ class RefreshInUnityAction : AnAction(UnityIcons.RefreshInUnity) {
     }
 
     override fun update(e: AnActionEvent) {
-        val project = e.project
-        e.presentation.isEnabled = project != null && project.getComponent<ProjectCustomDataHost>().sessionInitialized.value
+        val projectCustomDataHost = e.getHost() ?: return
+
+        e.presentation.isEnabled = projectCustomDataHost.sessionInitialized.value
+        super.update(e)
     }
 }
