@@ -49,6 +49,8 @@ repositories {
 }
 
 task prepareForBuild{
+    dependsOn generateModel
+
     group = "intellij"
     description = "Checks that backend is built and updates plugin.xml with IDEA and plugin versions."
     doLast {
@@ -90,14 +92,14 @@ def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 prepareSandbox {
     dependsOn prepareForBuild
 
-doLast{
-    assert file(unityeditorplugin_path).exists()
+    doLast{
+        assert file(unityeditorplugin_path).exists()
 
-    dllFiles.forEach({ f ->
-        def file = file("$f")
-        if (!file.exists()) throw new RuntimeException("File $file does not exist")
-    })
-}
+        dllFiles.forEach({ f ->
+            def file = file("$f")
+            if (!file.exists()) throw new RuntimeException("File $file does not exist")
+        })
+    }
 
     from(unityeditorplugin_path, {
         into "$intellij.pluginName/EditorPlugin"

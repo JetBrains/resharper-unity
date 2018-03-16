@@ -47,6 +47,6 @@ version ext.version
 
 logger.lifecycle("version=$ext.version")
 
+apply from: 'protocol.gradle'
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
-apply from: 'protocol.gradle'
