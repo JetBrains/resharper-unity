@@ -235,8 +235,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             var fieldDeclaration = identifier.GetContainingNode<IFieldDeclaration>();
             if (fieldDeclaration?.LBracket != null)
             {
-                if (!fieldDeclaration.FixedBufferSizeExpression.IsConstantValue())
+                if (fieldDeclaration.FixedBufferSizeExpression == null
+                    || !fieldDeclaration.FixedBufferSizeExpression.IsConstantValue())
+                {
                     return identifier == fieldDeclaration.NameIdentifier;
+                }
             }
 
             return false;
