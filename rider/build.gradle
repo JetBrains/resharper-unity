@@ -35,6 +35,7 @@ if (!ext.has("SkipNuGetRestore"))
 version "2.1.3.$BuildCounter"
 
 logger.lifecycle("version=$version")
+logger.lifecycle("Configuration=$BuildConfiguration")
 
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
