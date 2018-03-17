@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IProperty<UnityModel> myUnityModel;
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
-        public readonly ISignal<bool> Refresh = new DataFlow.Signal<bool>("Refresh");
+        public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger,
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
@@ -111,7 +111,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     case "UNITY_Refresh":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        Refresh.Fire(Convert.ToBoolean(e.NewValue));
+                        var force = Convert.ToBoolean(e.NewValue);
+                        Refresh.Fire(force);
                         break;
                     
                     case "UNITY_Step":
