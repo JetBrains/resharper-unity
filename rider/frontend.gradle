@@ -32,7 +32,6 @@ intellij {
 }
 
 ext.kotlin_version = '1.2.10'
-ext.unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -47,6 +46,9 @@ repositories {
     mavenCentral()
 }
 
+
+
+
 def dllFiles = [
     "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net452/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net452/JetBrains.ReSharper.Plugins.Unity.pdb",
@@ -55,29 +57,34 @@ def dllFiles = [
 def annotationsFrom = '../resharper/src/resharper-unity/annotations'
 def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 
+def unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
+
+
+buildPlugin.dependsOn buildBackend
+
+
 prepareSandbox {
 
-doLast{
-    assert file(unityeditorplugin_path).exists()
+    doLast {
+        assert file(unityeditorplugin_path).exists()
 
-    dllFiles.forEach({ f ->
-        def file = file("$f")
-        if (!file.exists()) throw new RuntimeException("File $file does not exist")
-    })
-}
+        dllFiles.forEach({ f ->
+            def file = file("$f")
+            if (!file.exists()) throw new RuntimeException("File $file does not exist")
+        })
+    }
 
     from(unityeditorplugin_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
 
     dllFiles.forEach({ f ->
-        def file = file("$f")
-        logger.warn("prepareSandbox: " +
-            file.toString() + " -> " +
-            "$destinationDir/$intellij.pluginName/dotnet")
+        def file = file(f)
+        //logger.warn("prepareSandbox: " +
+            //file.toString() + " -> " +
+            //"$destinationDir/$intellij.pluginName/dotnet")
         from(file, { into "$intellij.pluginName/dotnet" })
     })
-
 
     from(annotationsFrom, { into "$intellij.pluginName/dotnet/$annotationsTo" })
     into("$intellij.pluginName/projectTemplates") {
