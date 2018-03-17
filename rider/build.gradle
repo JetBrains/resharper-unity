@@ -14,6 +14,16 @@ wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
+if (System.env['TEAMCITY_VERSION'] != null) {
+    ext.ci = new TeamCityService()
+    gradle.taskGraph.addTaskExecutionListener(new TeamCityEventLogger(ci))
+} else if (System.env['TRAVIS'] != null) {
+    ext.ci = new TravisService()
+    gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger(ci))
+} else {
+    ext.ci = new NullService()
+}
+
 // Renaming to be more meaningful, but would also require updating build.ps1
 // and also the build configuration settings in TeamCity
 if (!ext.has("Source"))
@@ -23,8 +33,9 @@ ext.PackageSource = ext.Source
 if (!ext.has("BuildCounter"))
     ext.BuildCounter = 9999
 
-if (!ext.has("BuildConfiguration"))
-    ext.BuildConfiguration = "Release"
+if (!ext.has("BuildConfiguration")) {
+    ext.BuildConfiguration = ext.ci.isBuildingUnderCi ? "Release" : "Debug"
+}
 
 if (!ext.has("RiderOnly") || ext.RiderOnly ==~ "(?i)False")
     ext.RiderOnly = false
@@ -62,23 +73,18 @@ task resolveDependencies {
 }
 
 interface CIService {
+    final Boolean isBuildingUnderCi
+
     void Progress(String message)
     void OpenBlock(String name, String description)
     void CloseBlock(String name)
     void PublishArtifact(File path)
 }
 
-if (System.env['TEAMCITY_VERSION'] != null) {
-    ext.ci = new TeamCityService()
-    gradle.taskGraph.addTaskExecutionListener(new TeamCityEventLogger(ci))
-} else if (System.env['TRAVIS'] != null) {
-    ext.ci = new TravisService()
-    gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger(ci))
-} else {
-    ext.ci = new NullService()
-}
-
 class NullService implements CIService {
+
+    final Boolean isBuildingUnderCi = false
+
     void Progress(String message) {
         println message
     }
@@ -96,6 +102,8 @@ class NullService implements CIService {
 }
 
 class TeamCityService implements CIService {
+
+    final Boolean isBuildingUnderCi = true
 
     // TODO: These values should be escaped
     void Progress(String message) {
@@ -139,6 +147,8 @@ class TeamCityEventLogger extends BuildAdapter implements TaskExecutionListener 
 
 
 class TravisService implements CIService {
+
+    final Boolean isBuildingUnderCi = true
 
     void Progress(String message) {
         println message
