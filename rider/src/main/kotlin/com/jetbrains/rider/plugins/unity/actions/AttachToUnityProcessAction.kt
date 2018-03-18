@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.plugins.unity.util.attach.UnityProcessPickerDialog
 
-class AttachToUnityProcessAction : AnAction(UnityIcons.AttachEditorDebugConfiguration) {
+class AttachToUnityProcessAction : AnAction(UnityIcons.Icons.AttachEditorDebugConfiguration) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project?: return
 

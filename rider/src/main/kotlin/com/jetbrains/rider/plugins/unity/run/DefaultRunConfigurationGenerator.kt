@@ -14,7 +14,7 @@ class DefaultRunConfigurationGenerator(unityReferenceDiscoverer: UnityReferenceD
 
     init {
         unityReferenceDiscoverer.addUnityReferenceListener(object: UnityReferenceListener {
-            override fun HasUnityReference() {
+            override fun hasUnityReference() {
                 // Replace the "Default" run configuration that Rider creates. If there is more than one
                 // run configuration, the user has explicitly modified them. Don't create the Attach
                 // config, but do make sure there's something selected.

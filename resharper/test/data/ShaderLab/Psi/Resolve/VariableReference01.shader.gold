@@ -5,8 +5,6 @@
 		_Color ("Color", Color) = (1,1,1,1)
 		_SrcBlend ("SrcBlend", Int) = 5.0
 		_DstBlend ("DstBlend", Int) = 10.0
-		_ZWrite ("ZWrite", Int) = 1.0
-		_ZTest ("ZTest", Int) = 4.0
 		_Cull ("Cull", Int) = 0.0
 		_ZBias ("ZBias", Float) = 0.0
 	}
@@ -31,8 +29,8 @@
 ------------------------------------------------
 0: result=OK declaredElem=Int _SrcBlend "SrcBlend"
 1: result=OK declaredElem=Int _DstBlend "DstBlend"
-2: result=OK declaredElem=Int _ZWrite "ZWrite"
-3: result=OK declaredElem=Int _ZTest "ZTest"
+2: result=NOT_RESOLVED declaredElem=null
+3: result=NOT_RESOLVED declaredElem=null
 4: result=OK declaredElem=Int _Cull "Cull"
 5: result=OK declaredElem=Float _ZBias "ZBias"
 6: result=OK declaredElem=Float _ZBias "ZBias"

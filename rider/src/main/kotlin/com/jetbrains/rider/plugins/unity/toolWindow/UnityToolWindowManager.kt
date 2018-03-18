@@ -17,7 +17,7 @@ class UnityToolWindowManager(project: Project,
     }
 
     init {
-        projectCustomDataHost.isConnected.whenTrue(componentLifetime) {
+        projectCustomDataHost.sessionInitialized.whenTrue(componentLifetime) {
             myLogger.info("new session")
             val context = unityToolWindowFactory.getOrCreateContext()
             //context.clear()
@@ -36,4 +36,3 @@ class UnityToolWindowManager(project: Project,
         }
     }
 }
-

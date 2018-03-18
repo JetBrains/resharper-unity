@@ -12,6 +12,8 @@ import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
     private val myProjectModelView = project.solution.projectModelView
     private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
+    var isUnityProject = false
+    var isUnityGeneratedProject = false
 
     init {
         application.invokeLater {
@@ -31,11 +33,20 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
 
     private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
         if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
-            myEventDispatcher.multicaster.HasUnityReference()
+            myEventDispatcher.multicaster.hasUnityReference()
+            isUnityProject = true
+            isUnityGeneratedProject = hasAssetsFolder(project)
         }
     }
 
     fun addUnityReferenceListener(listener: UnityReferenceListener) {
         myEventDispatcher.addListener(listener)
+    }
+
+    companion object {
+        fun hasAssetsFolder (project:Project):Boolean {
+            val assetsFolder = project.baseDir?.findChild("Assets")
+            return assetsFolder != null
+        }
     }
 }

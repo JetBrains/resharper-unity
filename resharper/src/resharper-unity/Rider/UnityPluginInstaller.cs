@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
 using JetBrains.Annotations;
-using JetBrains.Application;
 using JetBrains.Application.BuildScript.Application;
 using JetBrains.Application.Environment;
 using JetBrains.Application.Settings;
@@ -16,10 +12,8 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
-using JetBrains.Build.Serialization;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
-using JetBrains.Util.Special;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -114,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
-            var installationInfo = myDetector.GetInstallationInfo(projects, previousInstallationDir: FileSystemPath.Empty);
+            var installationInfo = myDetector.GetInstallationInfo(previousInstallationDir: FileSystemPath.Empty);
             if (!installationInfo.ShouldInstallPlugin)
             {
                 myLogger.Info("Plugin should not be installed.");
@@ -130,8 +124,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myPluginInstallations.Add(mySolution.SolutionFilePath);
             });
         }
-        
-        Version currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
+
+        readonly Version currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
 
         private void Install(UnityPluginDetector.InstallationInfo installationInfo)
         {
@@ -147,7 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
 
-            if (currentVersion <= installationInfo.Version)
+            if (currentVersion == installationInfo.Version)
             {
                 myLogger.Verbose($"Plugin v{installationInfo.Version} already installed.");
                 return;
@@ -263,7 +257,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
                     backup.Value.DeleteFile();
                 }
 
-                installedPath = installation.PluginDirectory.Combine(UnityPluginDetector.MergedPluginFile);
+                installedPath = installation.PluginDirectory.Combine(UnityPluginDetector.PluginDllFile);
                 return true;
             }
             catch (Exception e)

@@ -339,6 +339,7 @@ task packArtifacts {
                 packArguments = ["pack", csprojPath.path, "/p:Configuration=$BuildConfiguration", "/p:NuspecFile=$artifact.generatedNuspecPath.path", "--no-build"]
             }
             else {
+                // todo: sudo apt-get install nuget may be required on linux for this to work
                 packExecutable = "nuget"
                 packArguments = ["pack", artifact.generatedNuspecPath, "-OutputDirectory", outputDir]
             }

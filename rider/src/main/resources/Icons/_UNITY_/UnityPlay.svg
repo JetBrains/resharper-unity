@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>UnityPlay</title>
+  <g>
+    <g>
+      <polygon points="1 7.675 1 7.325 3.657 0 4.445 0 11.399 1.219 16 7.158 16 7.842 11.399 13.781 4.445 15 3.657 15 1 7.675" fill="#f4f4f4"/>
+      <polygon points="15 7.5 10.846 12.863 4.359 14 2 7.5 4.359 1 10.846 2.137 15 7.5" fill="#323232"/>
+      <polygon points="10.292 11.945 13.735 7.5 10.292 3.055 5.013 2.13 3.064 7.5 5.013 12.87 10.292 11.945" fill="#ebebeb"/>
+      <polygon points="6 3.824 11.844 7.5 6 11.176 6 3.824" fill="#388a34"/>
+    </g>
+    <rect width="16" height="16" fill="#f0f" opacity="0"/>
+  </g>
+</svg>

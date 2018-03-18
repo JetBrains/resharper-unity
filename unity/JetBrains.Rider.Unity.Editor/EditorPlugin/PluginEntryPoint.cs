@@ -15,6 +15,7 @@ using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.Unity.Editor.UnitTesting;
 using UnityEditor.Callbacks;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -53,13 +54,13 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    public static bool IsProtocolConnected()
+    internal static bool CheckConnectedToBackendSync()
     {
         var connected = false;
         try
         {
           // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = ourModel.Maybe.ValueOrDefault.IsClientConnected.Sync(RdVoid.Instance,
+          connected = ourModel.Maybe.ValueOrDefault.IsBackendConnected.Sync(RdVoid.Instance,
             new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
         }
         catch (Exception)
@@ -114,7 +115,8 @@ namespace JetBrains.Rider.Unity.Editor
         lifetimeDefinition.Terminate();
       });
 
-      Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+      if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
+        Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
 
       try
       {
@@ -125,17 +127,13 @@ namespace JetBrains.Rider.Unity.Editor
         
         MainThreadDispatcher.AssertThread();
         
-        riderProtocolController.Wire.Connected.View(lifetime, (lt, connected) =>
+        riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
         {
-          if (connected)
-          {
-            var protocol = new Protocol(serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
-            ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-
-            ourModel.Value = CreateModel(protocol, lt);
-          }
-          else
-            ourModel.Value = null;
+          var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
+          ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
+          var modelValue = CreateModel(protocol, connectionLifetime);
+          AdviseModel(connectionLifetime, modelValue);
+          ourModel.Value = modelValue;
         });
       }
       catch (Exception ex)
@@ -148,13 +146,37 @@ namespace JetBrains.Rider.Unity.Editor
       ourInitialized = true;
     }
 
+    private static void AdviseModel(Lifetime connectionLifetime, UnityModel modelValue)
+    {
+      modelValue.GetUnityEditorState.Set(rdVoid =>
+      {
+        if (EditorApplication.isPlaying)
+        {
+          return UnityEditorState.Play;
+        }
+
+        if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+        {
+          return UnityEditorState.Refresh;
+        }
+        
+        return UnityEditorState.Idle;
+      }); 
+      
+      modelValue.UnitTestLaunch.Change.Advise(connectionLifetime, launch =>
+      {
+        var unityEditorTestLauncher = new UnityEditorTestLauncher(launch);
+        unityEditorTestLauncher.TryLaunchUnitTests();
+      });
+    }
+
     private static UnityModel CreateModel(Protocol protocol, Lifetime lt)
     {
       var isPlayingAction = new Action(() =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          var isPlaying = EditorApplication.isPlaying;
+          var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
           ourModel?.Maybe.ValueOrDefault?.Play.SetValue(isPlaying);
 
           var isPaused = EditorApplication.isPaused;
@@ -167,7 +189,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          var res = EditorApplication.isPlaying;
+          var res = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
           if (res != play)
             EditorApplication.isPlaying = play;
         });
@@ -181,18 +203,19 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
       model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
-
-      model.Refresh.Set((l, x) =>
+      model.Refresh.Set((l, force) =>
       {
         var task = new RdTask<RdVoid>();
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          UnityUtils.SyncSolution();
+          if (EditorPrefsWrapper.AutoRefresh || force)
+            UnityUtils.SyncSolution();
+          else
+            ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
           task.Set(RdVoid.Instance);
         });
         return task;
       });
-
       model.Step.Set((l, x) =>
       {
         var task = new RdTask<RdVoid>();
@@ -210,12 +233,13 @@ namespace JetBrains.Rider.Unity.Editor
       lt.AddBracket(() => { EditorApplication.playmodeStateChanged += isPlayingHandler; },
         () => { EditorApplication.playmodeStateChanged -= isPlayingHandler; });
 #pragma warning restore 618
-      isPlayingHandler();
+      //isPlayingHandler();
       
       // new api - not present in Unity 5.5
       //lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},
       //  () => { EditorApplication.pauseStateChanged -= IsPauseStateChanged(model); });
       
+      ourLogger.Verbose("CreateModel finished.");
 
       return model;
     }

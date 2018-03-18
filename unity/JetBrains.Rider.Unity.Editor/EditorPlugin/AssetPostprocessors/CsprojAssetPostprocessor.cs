@@ -13,7 +13,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
   public class CsprojAssetPostprocessor : AssetPostprocessor
   { 
     private static readonly ILog ourLogger = Log.GetLog<CsprojAssetPostprocessor>();
-    
+
+    public override int GetPostprocessOrder()
+    {
+      return 10;
+    }
+
     public static void OnGeneratedCSProjectFiles()
     {
       if (!PluginEntryPoint.Enabled)
@@ -140,7 +145,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     }
 
 
-    private static readonly string  PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
+    private static readonly string PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
@@ -295,17 +300,36 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
           foreach (var referenceName in referenceList)
           {
-            ApplyCustomReference(referenceName, projectContentElement, xmlns);  
+            string hintPath = null;
+            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            {
+              var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+              var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
+              if (!monoDir.Exists)
+                monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
+              
+              var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
+              if (newestApiDir != null)
+              {
+                var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, referenceName));
+                if (dllPath.Exists)
+                  hintPath = dllPath.FullName;  
+              }
+            }
+            
+            ApplyCustomReference(referenceName, projectContentElement, xmlns, hintPath);  
           }
         }
       }
     }
 
-    private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns)
+    private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns, string hintPath = null)
     {
       var itemGroup = new XElement(xmlns + "ItemGroup");
       var reference = new XElement(xmlns + "Reference");
       reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(name)));
+      if (!string.IsNullOrEmpty(hintPath))
+        reference.Add(new XElement(xmlns + "HintPath", hintPath));
       itemGroup.Add(reference);
       projectContentElement.Add(itemGroup);
     }
@@ -313,31 +337,44 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // Set appropriate version
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
-      var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
-        .Elements(xmlns + "TargetFrameworkVersion")
-        .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
-      if (targetFrameworkVersion != null)
-      {
-        var scriptingRuntime = 0; // legacy runtime
-        try
-        {
-          // not available in earlier runtime versions
-          var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
-          scriptingRuntime = (int)property.GetValue(null, null);
-          if (scriptingRuntime>0)
-            ourLogger.Verbose("Latest runtime detected.");
-        }
-        catch(Exception){}
+        var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
+          .Elements(xmlns + "TargetFrameworkVersion")
+          .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
+        if (targetFrameworkVersion == null) 
+          return;
 
-        if (scriptingRuntime > 0)
+      if (UnityUtils.ScriptingRuntime > 0)
         {
           var version = PluginSettings.TargetFrameworkVersion;
-          PluginSettings.WarnOnAvailbaleNewerNetFramework(version);
+          if (!PluginSettings.OverrideTargetFrameworkVersion)
+          {
+            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            {
+              var versions = PluginSettings.GetInstalledNetFrameworks();
+              if (versions.Any())
+              {
+                version = versions.OrderBy(v => new Version(v)).Last();
+              }
+            }
+          }
           targetFrameworkVersion.SetValue("v" + version);
         }
         else
-          targetFrameworkVersion.SetValue("v"+PluginSettings.TargetFrameworkVersionOldMono);
-      }
+        {
+          var version = PluginSettings.TargetFrameworkVersionOldMono;
+          if (!PluginSettings.OverrideTargetFrameworkVersionOldMono)
+          {
+            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            {
+              var versions = PluginSettings.GetInstalledNetFrameworks();
+              if (versions.Any())
+              {
+                version = versions.OrderBy(v => new Version(v)).First();
+              }
+            }
+          }
+          targetFrameworkVersion.SetValue("v" + version);
+        }
     }
 
     private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
@@ -362,7 +399,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
       if (Directory.Exists(Path.GetFullPath("CSharp70Support")))
-        return "7";
+        return "latest";
       if (Directory.Exists(Path.GetFullPath("CSharp60Support")))
         return "6";
 

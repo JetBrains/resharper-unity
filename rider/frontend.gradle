@@ -12,6 +12,7 @@ intellij {
     // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
     // This will download from www.jetbrains.com/intellij-repository/snapshots or
     // www.jetbrains.com/intellij-repository/releases, respectively.
+    // http://jetbrains-com-mirror.labs.intellij.net/intellij-repository/snapshots/
     // Note that there's no guarantee that these are kept up to date
     // version = 'LATEST-TRUNK-SNAPSHOT'
     // If the build isn't available in intellij-repository, use an installed version via `localPath`
@@ -24,6 +25,8 @@ intellij {
     } else {
         version = '2018.1-SNAPSHOT'
     }
+
+    // intellijRepo = "https://www.jetbrains.com/intellij-repository"
 
     // Sources aren't available for Rider
     downloadSources = false

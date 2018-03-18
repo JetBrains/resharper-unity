@@ -5,8 +5,8 @@ import com.jetbrains.rider.plugins.unity.util.UnityIcons
 
 // "UNITY_DEBUG_RUN_CONFIGURATION" is used for a historical reason to avoid undef configuration when updated from old plugin to new one
 class UnityDebugConfigurationType : ConfigurationTypeBase("UNITY_DEBUG_RUN_CONFIGURATION",
-        "Attach Unity", "Attach to Unity process and debug",
-        UnityIcons.AttachEditorDebugConfiguration) {
+    "Attach Unity", "Attach to Unity process and debug",
+    UnityIcons.Icons.AttachEditorDebugConfiguration) {
 
     val attachToEditorFactory = UnityAttachToEditorFactory(this)
     // TODO: Add AttachToPlayer factory
@@ -20,7 +20,7 @@ class UnityDebugConfigurationType : ConfigurationTypeBase("UNITY_DEBUG_RUN_CONFI
 
 class UnityDebugAndPlayConfigurationType : ConfigurationTypeBase("UNITY_ATTACH_RUN_CONFIGURATION",
     "Attach Unity and Play", "Attach to UnityEditor and Play",
-    UnityIcons.AttachEditorDebugConfiguration) {
+    UnityIcons.Icons.AttachEditorDebugConfiguration) {
 
     val attachToEditorAndPlayFactory = UnityAttachToEditorAndPlayFactory(this)
 

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
 using JetBrains.DataFlow;
 using JetBrains.DocumentManagers.Transactions;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
@@ -18,12 +20,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ILogger myLogger;
         private IProjectItem myLastAddedItem;
 
-        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger)
+        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger, ISolutionLoadTasksScheduler solutionLoadTasksScheduler)
         {
             mySolution = solution;
             myLogger = logger;
-            changeManager.RegisterChangeProvider(lifetime, this);
-            changeManager.AddDependency(lifetime, this, solution);
+            
+            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("AdviseForChanges", SolutionLoadTaskKinds.AfterDone,
+                () =>
+                {
+                    changeManager.RegisterChangeProvider(lifetime, this);
+                    changeManager.AddDependency(lifetime, this, solution);        
+                }));
         }
 
         public object Execute(IChangeMap changeMap)
@@ -33,7 +40,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             if (projectModelChange.IsOpeningSolution || projectModelChange.IsClosingSolution)
                 return null;
 
-            projectModelChange.Accept(new Visitor(this, myLogger));
+            try
+            {
+                projectModelChange.Accept(new Visitor(this, myLogger));
+            }
+            catch (Exception e)
+            {
+                using (var sw = new StringWriter())
+                {
+                    projectModelChange.Dump(sw);
+                    myLogger.LogException(LoggingLevel.ERROR, e, ExceptionOrigin.Algorithmic,
+                        $"Unity::MetaFileTracker - Error processing project model change{Environment.NewLine}{sw}");
+                }
+            }
             return null;
         }
 
@@ -51,16 +70,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             // Note that this method is called recursively, for projects, folders and files
             public override void VisitItemDelta(ProjectItemChange change)
             {
-                if (change.ProjectModelElement is IProject)
-                    VisitProjectDelta(change);
+                if (change.ProjectModelElement is IProject project)
+                    VisitProjectDelta(change, project);
                 else
                     VisitFileOrFolderDelta(change);
             }
 
-            private void VisitProjectDelta(ProjectItemChange projectChange)
+            private void VisitProjectDelta(ProjectItemChange projectChange, IProject project)
             {
-                var project = projectChange.ProjectModelElement as IProject;
-
                 // When a project is reloaded, we get a removal notification for it and all of its
                 // files, followed by a load of addition notifications. If we don't handle this
                 // properly, we'll delete a load of .meta files and create new ones, causing big problems.
@@ -132,19 +149,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             private static bool IsItemMetaFile(ProjectItemChange change)
             {
-                return change.ProjectItem.Location.ExtensionWithDot.Equals(".meta", StringComparison.OrdinalIgnoreCase);
+                return change.ProjectItem.Name.EndsWith(".meta", StringComparison.OrdinalIgnoreCase);
             }
 
             private bool OnItemRenamed(ProjectItemChange change)
             {
                 myLogger.Trace("*** resharper-unity: Item renamed {0} -> {1}", change.OldLocation, change.ProjectItem.Location);
 
-                var oldMetaFile = change.OldParentFolder.Location.Combine(change.OldLocation.Name + ".meta");
                 var newMetaFile = GetMetaFile(change.ProjectItem.Location);
-                if (oldMetaFile.ExistsFile)
-                    RenameMetaFile(oldMetaFile, newMetaFile, string.Empty);
-                else
-                    CreateMetaFile(newMetaFile);
+                if (!newMetaFile.ExistsFile)
+                {
+                    var oldMetaFile = change.OldParentFolder.Location.Combine(change.OldLocation.Name + ".meta");
+                    if (newMetaFile != oldMetaFile)
+                    {
+                        if (oldMetaFile.ExistsFile)
+                            RenameMetaFile(oldMetaFile, newMetaFile, string.Empty);
+                        else
+                            CreateMetaFile(newMetaFile);
+                    }
+                }
 
                 // Don't recurse for folder renames - the child contents will be "renamed", but
                 // the old location will no longer be there, and the meta files don't need moving
@@ -172,8 +195,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 myLogger.Trace("*** resharper-unity: Item removed {0}", change.OldLocation);
 
+                // Only delete the meta file if the original file or folder is missing
+                if (change.OldLocation.Exists != FileSystemPath.Existence.Missing)
+                    return;
+
                 var metaFile = GetMetaFile(change.OldLocation);
-                if (!metaFile.ExistsFile) return;
+                if (!metaFile.ExistsFile)
+                    return;
 
                 if (IsMoveToFolderRefactoring(change))
                 {

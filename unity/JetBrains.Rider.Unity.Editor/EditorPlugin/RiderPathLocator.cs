@@ -1,20 +1,24 @@
 ﻿using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Util.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JetBrains.Rider.Unity.Editor
 {
   public class RiderPathLocator
   {
+    private static readonly ILog ourLogger = Log.GetLog<RiderPathLocator>();
     private readonly IPluginSettings myPluginSettings;
+
     public RiderPathLocator(IPluginSettings pluginSettings)
     {
       myPluginSettings = pluginSettings;
     }
-    
+
     /// <summary>
     /// Returns RiderPath, if it exists
     /// </summary>
@@ -36,8 +40,9 @@ namespace JetBrains.Rider.Unity.Editor
           }
         }
       }
-      
-      if (!string.IsNullOrEmpty(myPluginSettings.RiderPath) && allFoundPaths.Contains(new FileInfo(myPluginSettings.RiderPath).FullName))
+
+      if (!string.IsNullOrEmpty(myPluginSettings.RiderPath) &&
+          allFoundPaths.Contains(new FileInfo(myPluginSettings.RiderPath).FullName))
       {
         // Settings.RiderPath is good enough
       }
@@ -46,7 +51,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       return myPluginSettings.RiderPath;
     }
-  
+
     private bool RiderPathExist(string path)
     {
       if (string.IsNullOrEmpty(path))
@@ -66,7 +71,7 @@ namespace JetBrains.Rider.Unity.Editor
       return GetAllRiderPaths(operatingSystemFamily).Select(a => new FileInfo(a).FullName).ToArray();
     }
 
-    private static string[] GetAllRiderPaths( OperatingSystemFamilyRider operatingSystemFamily)
+    private static string[] GetAllRiderPaths(OperatingSystemFamilyRider operatingSystemFamily)
     {
       switch (operatingSystemFamily)
       {
@@ -97,31 +102,82 @@ namespace JetBrains.Rider.Unity.Editor
 
         case OperatingSystemFamilyRider.MacOSX:
         {
+          // /Users/user/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/181.3870.267/Rider EAP.app
+          var home = Environment.GetEnvironmentVariable("HOME");
+          if (string.IsNullOrEmpty(home))
+            return new string[0];
+
+          var toolboxRiderRootPath = Path.Combine(home, @"Library/Application Support/JetBrains/Toolbox/apps/Rider");
+          var paths = GetAllRiderPaths(toolboxRiderRootPath, "", "Rider*.app", true);
           // "/Applications/*Rider*.app"
           //"~/Applications/JetBrains Toolbox/*Rider*.app"
           string[] folders =
           {
-            "/Applications", Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications/JetBrains Toolbox")
+            "/Applications",
+            Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Applications/JetBrains Toolbox")
           };
           var results = folders.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
             .SelectMany(c => c.GetDirectories("*Rider*.app"))
-            .Select(a => a.FullName).ToArray();
-          return results;
+            .Select(a => a.FullName).ToList();
+          results.AddRange(paths);
+          return results.ToArray();
         }
-          
+
         case OperatingSystemFamilyRider.Linux:
         {
           var home = Environment.GetEnvironmentVariable("HOME");
           if (string.IsNullOrEmpty(home))
             return new string[0];
           //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
-          var riderPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
-          var results = Directory.GetDirectories(riderPath).SelectMany(Directory.GetDirectories).Select(b=>Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
-          return results;
+          //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
+          var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
+          var paths = GetAllRiderPaths(toolboxRiderRootPath, "bin", "rider.sh", false);
+          if (paths.Any())
+            return paths;
+          return Directory.GetDirectories(toolboxRiderRootPath).SelectMany(Directory.GetDirectories)
+              .Select(b => Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
         }
       }
 
       return new string[0];
+    }
+
+    private static string[] GetAllRiderPaths(string toolboxRiderRootPath, string dirName, string searchPattern, bool isMac)
+    {
+      if (!Directory.Exists(toolboxRiderRootPath))
+        return new string[0];
+      
+      var channelFiles = Directory.GetDirectories(toolboxRiderRootPath)
+        .Select(b => Path.Combine(b, ".channel.settings.json")).Where(File.Exists).ToArray();
+
+      var paths = channelFiles.SelectMany(a =>
+        {
+          try
+          {
+            var channelDir = Path.GetDirectoryName(a);
+            var json = File.ReadAllText(a);
+            var data = (JObject) JsonConvert.DeserializeObject(json);
+            var builds = data["active-application"]["builds"];
+            if (builds.HasValues)
+            {
+              var build = builds.First;
+              var folder = Path.Combine(Path.Combine(channelDir, build.Value<string>()), dirName);
+              if (!isMac)
+                return new[] {Path.Combine(folder, searchPattern)};
+              return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f=>f.FullName);
+            }
+          }
+          catch (Exception e)
+          {
+            ourLogger.Warn(e, "Failed to get RiderPath via .channel.settings.json");
+          }
+
+          return new string[0];
+        })
+        
+        .Where(c => !string.IsNullOrEmpty(c))
+        .ToArray();
+      return paths;
     }
   }
 }

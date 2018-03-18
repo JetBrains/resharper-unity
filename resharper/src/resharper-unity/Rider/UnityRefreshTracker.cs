@@ -4,16 +4,12 @@ using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.ProjectsHost.Impl;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.Rider.Model;
 using JetBrains.Threading;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -23,30 +19,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
-        private readonly UnityPluginProtocolController myPluginProtocolController;
+        private readonly UnityEditorProtocol myPluginProtocolController;
 
-        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityPluginProtocolController pluginProtocolController)
+        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityEditorProtocol pluginProtocolController)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
             myPluginProtocolController = pluginProtocolController;
             
-            if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
                         
-            myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(); });
+            myPluginProtocolController.Refresh.Advise(lifetime, Refresh);
         }
 
         public bool IsRefreshing { get; private set; }
 
-        public void Refresh()
+        public void Refresh(bool force)
         {
             myLocks.AssertMainThread();
-            if (IsRefreshing) return;
+            if (IsRefreshing)
+                return;
+            
+            if (myPluginProtocolController.UnityModel.Value == null)
+                return;
 
             IsRefreshing = true;
-            var result = myPluginProtocolController.UnityModel?.Refresh.Start(RdVoid.Instance)?.Result;
+            var result = myPluginProtocolController.UnityModel.Value.Refresh.Start(force)?.Result;
 
             if (result == null)
             {
@@ -80,21 +80,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityPluginProtocolController protocolController, 
-            ILogger logger)
+        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityEditorProtocol protocolController)
         {
-            if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
             
             var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
-                Rgc.Invariant, refresher.Refresh);
+                Rgc.Invariant, ()=>refresher.Refresh(false));
 
             var protocolSolution = solution.GetProtocolSolution();
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
             {
                 if (refresher.IsRefreshing) return;
-                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
-                if (isPlay==null || (bool)isPlay) return;
+
+                if (protocolController.UnityModel.Value == null)
+                    return;
+                
+                var isPlay = protocolController.UnityModel.Value.Play.HasTrueValue();
+                if (isPlay) return;
                 
                 groupingEvent.FireIncoming();
             });
@@ -112,8 +115,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (!hasChange)
                     return;
                 
-                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
-                if (isPlay==null || (bool)isPlay) 
+                var isPlay = protocolController.UnityModel.Value?.Play.HasTrueValue();
+                if (isPlay == null || (bool)isPlay) 
                     return;
 
                 groupingEvent.FireIncoming();

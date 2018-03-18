@@ -10,12 +10,14 @@ import com.jetbrains.rider.util.reactive.Signal
 import org.codehaus.jettison.json.JSONObject
 
 class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(project) {
+
     val logger = Logger.getInstance(ProjectCustomDataHost::class.java)
 
-    val isConnected = Property<Boolean>(false)
+    val sessionInitialized = Property(false)
+    val unityState = Property(DISCONNECTED)
     val logSignal = Signal<RdLogEvent>()
-    val play = Property<Boolean>(false)
-    val pause = Property<Boolean>(false)
+    val play = Property(false)
+    val pause = Property(false)
 
     init {
         project.solution.customData.data.advise(componentLifetime) { item ->
@@ -23,31 +25,16 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
                 logger.info(item.key+" "+ item.newValueOpt)
                 ProjectUtil.focusProjectWindow(project, true)
                 project.solution.customData.data["UNITY_ActivateRider"] = "false";
-            }
-        }
-
-        project.solution.customData.data.advise(componentLifetime) { item ->
-            if (item.key == "UNITY_Play" && item.newValueOpt!=null) {
+            }else if (item.key == "UNITY_Play" && item.newValueOpt!=null) {
                 play.set(item.newValueOpt!!.toBoolean())
-            }
-        }
-
-        project.solution.customData.data.advise(componentLifetime) { item ->
-            if (item.key == "UNITY_Pause" && item.newValueOpt!=null) {
+            } else if (item.key == "UNITY_EditorState" && item.newValueOpt!=null) {
+                unityState.set(item.newValueOpt.toString())
+            } else if (item.key == "UNITY_Pause" && item.newValueOpt!=null) {
                 pause.set(item.newValueOpt!!.toBoolean())
-            }
-        }
-
-        project.solution.customData.data.advise(componentLifetime) { item ->
-            if (item.key == "UNITY_SessionInitialized" && item.newValueOpt!=null) {
-                isConnected.set(item.newValueOpt!!.toBoolean())
-            }
-        }
-
-        project.solution.customData.data.advise(componentLifetime) { item ->
-            if (item.key == "UNITY_LogEntry" && item.newValueOpt!=null) {
+            } else if (item.key == "UNITY_SessionInitialized" && item.newValueOpt!=null) {
+                sessionInitialized.set(item.newValueOpt!!.toBoolean())
+            } else if (item.key == "UNITY_LogEntry" && item.newValueOpt!=null) {
                 logger.info(item.key+" "+ item.newValueOpt)
-                
                 val jsonObj = JSONObject(item.newValueOpt)
                 val type = RdLogEventType.values().get(jsonObj.getInt("Type"))
                 val mode = RdLogEventMode.values().get(jsonObj.getInt("Mode"))
@@ -56,10 +43,15 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
         }
     }
     companion object {
-        fun CallBackendRefresh(project: Project) { CallBackend(project, "UNITY_Refresh", "true") }
+        fun CallBackendRefresh(project: Project, force:Boolean) { CallBackend(project, "UNITY_Refresh", force.toString().toLowerCase()) }
         fun CallBackendPlay(project: Project, value:Boolean) { CallBackend(project, "UNITY_Play", value.toString().toLowerCase()) }
         fun CallBackendPause(project: Project, value:Boolean) { CallBackend(project, "UNITY_Pause", value.toString().toLowerCase()) }
         fun CallBackendStep(project: Project) { CallBackend(project, "UNITY_Step", "true") }
+
+        const val DISCONNECTED = "Disconnected"
+        const val CONNECTED_IDLE = "ConnectedIdle"
+        const val CONNECTED_PLAY = "ConnectedPlay"
+        const val CONNECTED_REFRESH = "ConnectedRefresh"
 
         private fun CallBackend(project: Project, key : String, value:String) {
             project.solution.customData.data.remove(key)

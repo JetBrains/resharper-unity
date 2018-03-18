@@ -6,5 +6,7 @@ Shader "Test" {
     _MyColour4 ("Invalid values", Color) = (0, foo, bar, oink)
     _MyColour5 ("Missing values", Color) = (0)
     _MyColour6 ("Too many values", Color) = (1, 1, 1, 1, 1)
+    _MyColour7 ("Out of range values", Color) = (0, 0, 32767, 32767)
+    _MyVector ("Out of range values. Also, vector", Vector) = (0, 0, 32767, 32767)
   }
 }

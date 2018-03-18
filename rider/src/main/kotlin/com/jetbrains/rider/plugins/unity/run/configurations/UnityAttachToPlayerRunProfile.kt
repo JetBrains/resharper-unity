@@ -19,6 +19,6 @@ class UnityAttachToPlayerRunProfile(private val configurationName: String, priva
     }
 
     override fun getIcon(): Icon {
-        return UnityIcons.AttachEditorDebugConfiguration
+        return UnityIcons.Icons.AttachEditorDebugConfiguration
     }
 }

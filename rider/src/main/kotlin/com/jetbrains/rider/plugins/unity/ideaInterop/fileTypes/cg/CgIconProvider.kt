@@ -12,7 +12,7 @@ class CgIconProvider : IconProvider(), DumbAware {
     override fun getIcon(element: PsiElement, @Iconable.IconFlags flags: Int): Icon? {
         val fileElement = element as? PsiFile
         if ((fileElement != null) && fileElement.name.endsWith(".cginc", true))
-            return UnityIcons.ShaderLabFile
+            return UnityIcons.Icons.ShaderLabFile
         return null
     }
 }
