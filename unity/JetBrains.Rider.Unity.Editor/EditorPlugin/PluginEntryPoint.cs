@@ -131,9 +131,10 @@ namespace JetBrains.Rider.Unity.Editor
         {
           var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-          var modelValue = CreateModel(protocol, connectionLifetime);
-          AdviseModel(connectionLifetime, modelValue);
-          ourModel.Value = modelValue;
+           var model = new UnityModel(connectionLifetime, protocol);
+          AdviseModel1(model, connectionLifetime);
+          AdviseModel(connectionLifetime, model);
+          ourModel.Value = model;
         });
       }
       catch (Exception ex)
@@ -170,20 +171,21 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static UnityModel CreateModel(Protocol protocol, Lifetime lt)
+    private static void AdviseModel1(UnityModel model, Lifetime lt)
     {
       var isPlayingAction = new Action(() =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-          ourModel?.Maybe.ValueOrDefault?.Play.SetValue(isPlaying);
-
+          var isPlayOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode;
+          var isPlaying = isPlayOrWillChange && EditorApplication.isPlaying;
+          if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
+            model.Play.SetValue(isPlaying);  
+         
           var isPaused = EditorApplication.isPaused;
           ourModel?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
         });
       });
-      var model = new UnityModel(lt, protocol);
       isPlayingAction(); // get Unity state
       model.Play.Advise(lt, play =>
       {
@@ -239,9 +241,7 @@ namespace JetBrains.Rider.Unity.Editor
       //lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},
       //  () => { EditorApplication.pauseStateChanged -= IsPauseStateChanged(model); });
       
-      ourLogger.Verbose("CreateModel finished.");
-
-      return model;
+      ourLogger.Verbose("AdviseModel1 finished.");
     }
 
     // new api - not present in Unity 5.5
