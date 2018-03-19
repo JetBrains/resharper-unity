@@ -16,12 +16,15 @@ wrapper {
 
 if (System.env['TEAMCITY_VERSION'] != null) {
     ext.ci = new TeamCityService()
+    ext.isBuildingUnderCi = true
     gradle.taskGraph.addTaskExecutionListener(new TeamCityEventLogger(ci))
 } else if (System.env['TRAVIS'] != null) {
     ext.ci = new TravisService()
+    ext.isBuildingUnderCi = true
     gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger(ci))
 } else {
     ext.ci = new NullService()
+    ext.isBuildingUnderCi = false
 }
 
 // Renaming to be more meaningful, but would also require updating build.ps1
@@ -34,14 +37,13 @@ if (!ext.has("BuildCounter"))
     ext.BuildCounter = 9999
 
 if (!ext.has("BuildConfiguration")) {
-    ext.BuildConfiguration = ext.ci.isBuildingUnderCi ? "Release" : "Debug"
+    ext.BuildConfiguration = ext.isBuildingUnderCi ? "Release" : "Debug"
 }
 
-if (!ext.has("RiderOnly") || ext.RiderOnly ==~ "(?i)False")
-    ext.RiderOnly = false
+if (!ext.has('dotNetUpToDate') || ext.dotNetUpToDate ==~ "(?i)False")
+    ext.dotNetUpToDate = false
 
-if (!ext.has("SkipNuGetRestore"))
-    ext.SkipNuGetRestore = false
+ext.shouldBuildRiderOnly = false
 
 version "2.1.3.$BuildCounter"
 
@@ -73,8 +75,6 @@ task resolveDependencies {
 }
 
 interface CIService {
-    final Boolean isBuildingUnderCi
-
     void Progress(String message)
     void OpenBlock(String name, String description)
     void CloseBlock(String name)
@@ -82,8 +82,6 @@ interface CIService {
 }
 
 class NullService implements CIService {
-
-    final Boolean isBuildingUnderCi = false
 
     void Progress(String message) {
         println message
@@ -102,8 +100,6 @@ class NullService implements CIService {
 }
 
 class TeamCityService implements CIService {
-
-    final Boolean isBuildingUnderCi = true
 
     // TODO: These values should be escaped
     void Progress(String message) {
@@ -135,20 +131,18 @@ class TeamCityEventLogger extends BuildAdapter implements TaskExecutionListener 
         this.ci = ci
     }
 
-    public void beforeExecute(Task task) {
+    void beforeExecute(Task task) {
         ci.Progress("gradle:$task.name")
         ci.OpenBlock("gradle:$task.name", "gradle:$task.name")
     }
 
-    public void afterExecute(Task task, TaskState state) {
+    void afterExecute(Task task, TaskState state) {
         ci.CloseBlock("gradle:$task.name")
     }
 }
 
 
 class TravisService implements CIService {
-
-    final Boolean isBuildingUnderCi = true
 
     void Progress(String message) {
         println message
@@ -179,11 +173,11 @@ class TravisEventLogger extends BuildAdapter implements TaskExecutionListener {
         this.ci = ci
     }
 
-    public void beforeExecute(Task task) {
+    void beforeExecute(Task task) {
         ci.OpenBlock(task.name, task.name)
     }
 
-    public void afterExecute(Task task, TaskState state) {
+    void afterExecute(Task task, TaskState state) {
         ci.CloseBlock(task.name)
     }
 }

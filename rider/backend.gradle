@@ -13,9 +13,10 @@ class BackendHelper {
     File repositoryRoot
     File unityRoot
     File backendRoot
-    File solution
+    File resharperHostPluginSolution
     File unityPluginSolution
-    File riderTestsProject // used to build RiderOnly configurations
+    File unityPluginSingleProject   // For "rider only" configuration
+    File riderTestsProject  // For "rider only" configuration
 
     BackendHelper(String repoRoot) {
         repositoryRoot = new File(repoRoot).canonicalFile
@@ -26,9 +27,10 @@ class BackendHelper {
 
         unityRoot = new File(repositoryRoot, 'unity')
         unityPluginSolution = new File(unityRoot, 'JetBrains.Rider.Unity.Editor/JetBrains.Rider.Unity.Editor.sln')
+        unityPluginSingleProject = new File(unityRoot, 'JetBrains.Rider.Unity.Editor/EditorPlugin/EditorPlugin.csproj')
 
-        solution = new File(backendRoot, 'src/resharper-unity.sln')
-        assert solution.isFile()
+        resharperHostPluginSolution = new File(backendRoot, 'src/resharper-unity.sln')
+        assert resharperHostPluginSolution.isFile()
 
         riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
         assert riderTestsProject.isFile()
@@ -37,9 +39,13 @@ class BackendHelper {
 
 class MSBuildTask extends DefaultTask {
     @InputFile
-    def File buildFile
+    File buildFile
 
-    // Set msbuild verbosity based on gradle log level
+    MSBuildTask() {
+        onlyIf { !project.dotNetUpToDate }
+    }
+
+    // TODO: Set msbuild verbosity based on gradle log level
 
     @TaskAction
     def build() {
@@ -109,15 +115,14 @@ class MonoExecTask extends AbstractExecTask {
 
 class RestorePackagesTask extends DefaultTask {
     @InputFile
-    def File packagesFile
+    File packagesFile
+
+    RestorePackagesTask() {
+        onlyIf { !project.dotNetUpToDate }
+    }
 
     @TaskAction
     def restore() {
-        if (project.SkipNuGetRestore) {
-            logger.lifecycle('SkipNuGetRestore=true, skipping restore')
-            return
-        }
-
         project.ci.Progress("Restoring packages for $packagesFile")
 
         def restoreArguments = [ 'restore' ]
@@ -136,8 +141,6 @@ class RestorePackagesTask extends DefaultTask {
 }
 
 task findLocalRiderSDKVersion {
-    group backendGroup
-    description 'Find version of local Rider SDK version'
 
     onlyIf { PackageSource != null }
 
@@ -176,29 +179,83 @@ task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
     packagesFile backend.unityPluginSolution
 }
 
-task restoreBackendPluginPackages(type: RestorePackagesTask) {
+task restoreReSharperHostPluginPackages(type: RestorePackagesTask) {
     group backendGroup
     description 'Restores packages for backend plugin'
     dependsOn findLocalRiderSDKVersion
-    packagesFile backend.solution
+    packagesFile backend.resharperHostPluginSolution
 }
 
-task buildUnityEditorPlugin(type: MSBuildTask) {
-    dependsOn restoreUnityEditorPluginPackages
+
+task buildFullReSharperPlugin(type: MSBuildTask) {
     group backendGroup
-    description 'Builds Unity Editor plugin assemblies'
+    description 'Builds the fill ReSharper backend plugin solution'
+    dependsOn restoreReSharperHostPluginPackages
+
+    onlyIf { !project.shouldBuildRiderOnly }
+
+    buildFile = backend.resharperHostPluginSolution
+}
+
+task buildRiderOnlyPlugin(type: MSBuildTask) {
+    group backendGroup
+    description 'Builds the Rider plugin project'
+    dependsOn restoreReSharperHostPluginPackages
+
+    onlyIf { project.shouldBuildRiderOnly }
+
+    buildFile = backend.riderTestsProject
+}
+
+
+task buildUnityEditorPluginFull(type: MSBuildTask) {
+    group backendGroup
+    description 'Builds full Unity editor plugin solution'
+    dependsOn restoreUnityEditorPluginPackages
+
+    onlyIf { !project.shouldBuildRiderOnly }
+
     buildFile = backend.unityPluginSolution
 }
 
-task buildBackendPlugin(type: MSBuildTask) {
-    dependsOn restoreBackendPluginPackages, buildUnityEditorPlugin
+task buildUnityEditorPluginLight(type: MSBuildTask) {
     group backendGroup
-    description 'Builds ReSharper plugin assemblies'
-    buildFile = RiderOnly ? backend.riderTestsProject : backend.solution
+    description 'Builds the Unity editor plugin project'
+    dependsOn restoreUnityEditorPluginPackages
+
+    onlyIf { project.shouldBuildRiderOnly }
+
+    buildFile = backend.unityPluginSingleProject
 }
 
+
+task buildReSharperHostPlugin {
+    group = backendGroup
+    description = 'Build the ReSharper plugin for Rider and/or ReSharper'
+
+    // We need to have two dependencies here. We want to change behaviour based on
+    // which root level task we're executing, and we only know that at execution time.
+    // The `buildPlugin` and `runIde` tasks will set the `shouldBuildRiderOnly` flag,
+    // but only at execution time, not at configuration time. So we don't know what we're
+    // building until we start building.
+    // So, set up two tasks that are really only different in what project or solution
+    // they build, and skip one of them at execution time by checking `shouldBuildRiderOnly`.
+    // I can't think of a nicer way to have `prepareSandbox` depend on different tasks
+    // based on what's executing
+    dependsOn buildRiderOnlyPlugin, buildFullReSharperPlugin
+}
+
+task buildUnityEditorPlugin {
+    group = backendGroup
+    description = 'Build the Unity editor plugin'
+
+    // See comment above
+    dependsOn buildUnityEditorPluginLight, buildUnityEditorPluginFull
+}
+
+
 task packReSharperPlugin(type: MonoExecTask) {
-    dependsOn buildBackendPlugin
+    dependsOn buildReSharperHostPlugin
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
@@ -221,20 +278,10 @@ task packReSharperPlugin(type: MonoExecTask) {
     }
 }
 
-task publishBackendArtifacts {
+task publishCiBackendArtifacts {
     inputs.file(packReSharperPlugin.outputs)
 
     doLast {
         ci.PublishArtifact(packReSharperPlugin.outputs.files.singleFile)
-    }
-}
-
-task buildBackend {
-    dependsOn publishBackendArtifacts
-    group = backendGroup
-    description = 'Builds .NET part of the plugin.'
-
-    doLast {
-        ci.SetBuildNumber(version)
     }
 }

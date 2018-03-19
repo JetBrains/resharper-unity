@@ -47,6 +47,43 @@ repositories {
 }
 
 
+// When running in CI, we call `gradle buildPlugin`
+// When running interactively, we call `gradle runIde`
+// When running from the open rider solution, we call `gradle runIde -PDotNetUpToDate=true`
+//   to skip slow, no-op nuget restore and msbuild. Maybe .NET Core 2.1 will speed that up for us
+
+// buildPlugin depends on prepareSandbox, then zips up the sandbox dir
+// runIde depends on prepareSandbox, then executes IJ inside that dir
+// prepareSandbox dependsOn standard java build/jar then copies everything to the sandbox dir
+
+// When calling buildPlugin, we should build everything on the backend
+// When calling runIde, we should only build Rider and the Unity editor
+// prepareSandbox should also make sure that all of the Rider and Unity editor bits are copied
+//   (who owns this, frontend, or backend?)
+
+
+task publishCiBuildNumber {
+    doLast {
+        ci.SetBuildNumber(version)
+    }
+}
+
+task publishCiBuildData {
+    if (project.isBuildingUnderCi) {
+        dependsOn publishCiBuildNumber
+        dependsOn publishCiBackendArtifacts
+    }
+}
+
+buildPlugin.finalizedBy publishCiBuildData
+
+
+// If we're building `runIde`, only build Rider bits. We only know this once the task graph
+// has been evaluated. It's now too late to change inputs/outputs or dependencies. An alternative
+// approach would be to set the appropriate tasks `enabled` flag
+gradle.taskGraph.whenReady { taskGraph ->
+    project.shouldBuildRiderOnly = taskGraph.hasTask(runIde) && !taskGraph.hasTask(buildPlugin)
+}
 
 
 def dllFiles = [
@@ -59,11 +96,23 @@ def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 
 def unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
 
-
-buildPlugin.dependsOn buildBackend
-
-
 prepareSandbox {
+    // Already depends on the standard Java build/jar task
+    dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
+
+    // Have dependent tasks use uptodateWhen { project.isRunningUnderCi etc. }
+    //inputs.files(buildRiderPlugin.outputs)
+    //inputs.files(buildUnityEditorPlugin.packedPath)
+
+    // Backend:
+    // Copy unity editor plugin repacked file to `rider-unity/EditorPlugin`
+    // Copy JetBrains.ReSharper.Plugins.Unity.dll to `rider-unity/dotnet`
+    // Copy annotations to `rider-unity/dotnet/Extensions/JetBrains.Unity/annotations`
+
+    // Frontend:
+    // Copy projectTemplates to `rider-unity/projectTemplates`
+
+    // Assert these files exist?
 
     doLast {
         assert file(unityeditorplugin_path).exists()
@@ -80,9 +129,6 @@ prepareSandbox {
 
     dllFiles.forEach({ f ->
         def file = file(f)
-        //logger.warn("prepareSandbox: " +
-            //file.toString() + " -> " +
-            //"$destinationDir/$intellij.pluginName/dotnet")
         from(file, { into "$intellij.pluginName/dotnet" })
     })
 
