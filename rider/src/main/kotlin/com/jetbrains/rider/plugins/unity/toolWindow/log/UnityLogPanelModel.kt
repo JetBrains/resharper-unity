@@ -72,7 +72,17 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
         }
 
         fun addEvent(event: RdLogEvent) {
-            synchronized(lock) { allEvents.add(event) }
+            synchronized(lock) {
+                if (allEvents.count()>1000)
+                {
+//                    if (allEvents.get(0)!=null && allEvents.get(0)== selectedItem)
+//                        selectedItem =null
+//                    allEvents.removeAt(0)
+                    allEvents.clear()
+                    selectedItem = null
+                }
+                allEvents.add(event)
+            }
             onChanged.fire()
         }
 
@@ -93,6 +103,8 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
     val onChanged = Signal<List<RdLogEvent>>()
 
     fun fire() = onChanged.fire(getVisibleEvents())
+
+    var selectedItem : RdLogEvent? = null
 
     init {
         typeFilters.onChanged.advise(lifetime) { fire() }

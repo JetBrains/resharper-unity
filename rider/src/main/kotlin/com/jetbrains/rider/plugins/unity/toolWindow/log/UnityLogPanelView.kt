@@ -40,13 +40,18 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
 
     private val eventList = UnityLogPanelEventList().apply {
         addListSelectionListener {
-            console.clear()
-            if (selectedIndex >= 0) {
-                console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
-                console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
-                console.scrollTo(0)
+            if (logModel.selectedItem != selectedValue && selectedValue != null) {
+                logModel.selectedItem = selectedValue
+
+                console.clear()
+                if (selectedIndex >= 0) {
+                    console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
+                    console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
+                    console.scrollTo(0)
+                }
             }
         }
+
         val eventList1 = this
         addKeyListener(object: KeyAdapter() {
             override fun keyPressed(e: KeyEvent?) {
@@ -121,13 +126,12 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
         for (event in newEvents)
         {
             eventList.riderModel.addElement(event)
-            if (eventList.itemsCount>1000)
-                eventList.riderModel.removeElementAt(0)
         }
 
-        if (eventList.isSelectionEmpty)
-            eventList.selectedIndex = eventList.itemsCount-1
-        eventList.ensureIndexIsVisible(eventList.itemsCount-1)
+        if (logModel.selectedItem != null)
+            eventList.setSelectedValue(logModel.selectedItem, true)
+        else
+            eventList.ensureIndexIsVisible(eventList.itemsCount-1)
     }
 
     init {
