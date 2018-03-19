@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.2.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.30-eap-60-IJ2018.1-1:ideadev'
     id 'org.jetbrains.intellij' version '0.2.18'
 }
 

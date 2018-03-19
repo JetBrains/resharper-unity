@@ -13,7 +13,7 @@ task generateModel {
         def csOutput = new File(repoRoot, "resharper/src/resharper-unity/RdUnityProtocol")
         def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol")
         def packageName = "com.jetbrains.rider.plugins.unity.model"
-        def kotlincLib = "C:/work/dotnet-products/Packages/JetBrains.Platform.Kotlin.1.1.0.3/Kotlin/kotlinc/lib/"
+        def kotlincLib = "C:/Users/ivan.pashchenko/Downloads/kotlin-plugin-1.2.30-eap-60-IJ2018.1-1/Kotlin/kotlinc/lib"
 
         def compilerClasspath = "$rdLibDirectory/rd-gen.jar;$rdLibDirectory/rider-model.jar"
         def rdGenClasspath = files(compilerClasspath, "$kotlincLib/kotlin-compiler.jar")
