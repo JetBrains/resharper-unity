@@ -9,6 +9,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.IconUtil
+import com.jetbrains.rider.plugins.unity.actions.isUnityProject
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import java.awt.event.MouseEvent
 
@@ -24,6 +25,12 @@ class UnityImportantActions : DefaultActionGroup(), DumbAware {
     }
 
     override fun update(e: AnActionEvent) {
+        if (!e.isUnityProject()) {
+            e.presentation.isVisible = false
+            return
+        }
+
+        e.presentation.isVisible = true
         e.presentation.icon = UnityIcons.Icons.AttachEditorDebugConfiguration
     }
 }
