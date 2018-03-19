@@ -5,6 +5,22 @@ sourceSets {
     }
 }
 
+ext.kotlin_version = '1.2.10'
+ext.unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
 intellij {
     type = 'RD'
 
@@ -23,29 +39,13 @@ intellij {
     if (dir.exists()) {
         localPath = dir.absolutePath
     } else {
-        version = '2018.1-SNAPSHOT'
+        version = frontendSdkVersion
     }
 
     // intellijRepo = "https://www.jetbrains.com/intellij-repository"
 
     // Sources aren't available for Rider
     downloadSources = false
-}
-
-ext.kotlin_version = '1.2.10'
-ext.unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-repositories {
-    mavenCentral()
 }
 
 task prepareForBuild{

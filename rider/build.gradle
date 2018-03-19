@@ -4,15 +4,19 @@ plugins {
     id 'org.jetbrains.intellij' version '0.2.18'
 }
 
+ext.repoRoot = new File("..").canonicalFile
+ext.frontendSdkVersion = '2018.1-SNAPSHOT' // don't forget to update the dependency for rd libs (repositories -> flatDir -> dirs)
+ext.rdLibDirectory = new File(ext.repoRoot, "rider/build/riderRD-$ext.frontendSdkVersion/lib/rd").canonicalFile
+logger.lifecycle("frontendSdkVersion=$ext.frontendSdkVersion")
+
 repositories{
-    flatDir{
-        dirs 'lib'
+    flatDir {
+        dirs rdLibDirectory
     }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib"
-    compile name: 'rdgen'
 }
 
 group 'com.jetbrains'
