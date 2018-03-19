@@ -157,26 +157,22 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       string configPath = null;
 
-      if (IsPlayerProjectFile(projectFile) || IsEditorProjectFile(projectFile))
+      //Prefer mcs.rsp if it exists
+      if (File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
       {
-        //Prefer mcs.rsp if it exists
-        if (File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
-        {
-          configPath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
-        }
-        else
-        {
-          if (IsPlayerProjectFile(projectFile))
-            configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
-          else if (IsEditorProjectFile(projectFile))
-            configPath = EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;          
-        }
+        configPath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+      }
+      else
+      {
+        if (IsPlayerProjectFile(projectFile))
+          configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+        else if (IsEditorProjectFile(projectFile))
+          configPath = EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
       }
 
-      if(!string.IsNullOrEmpty(configPath))
-        ApplyManualCompilingSettings(configPath
-          , projectContentElement
-          , xmlns);
+
+      if (!string.IsNullOrEmpty(configPath))
+        ApplyManualCompilingSettings(configPath, projectContentElement, xmlns);
     }
 
     private static void ApplyManualCompilingSettings(string configFilePath, XElement projectContentElement, XNamespace xmlns)
