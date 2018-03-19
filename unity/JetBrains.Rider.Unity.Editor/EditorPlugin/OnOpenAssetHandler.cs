@@ -47,7 +47,7 @@ namespace JetBrains.Rider.Unity.Editor
       var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
       myLogger.Verbose("ModifiedSource: {0} EditorApplication.isPlaying: {1} EditorPrefsWrapper.AutoRefresh: {2}", modifiedSource, EditorApplication.isPlaying, EditorPrefsWrapper.AutoRefresh);
 
-      if (modifiedSource && !EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh)
+      if (modifiedSource && !EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || !File.Exists(PluginEntryPoint.SlnFile))
       {
         UnityUtils.SyncSolution(); // added to handle opening file, which was just recently created.
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
