@@ -16,7 +16,7 @@ task generateModel {
         def kotlincLib = "C:/work/dotnet-products/Packages/JetBrains.Platform.Kotlin.1.1.0.3/Kotlin/kotlinc/lib/"
 
         def compilerClasspath = "$rdLibDirectory/rd-gen.jar;$rdLibDirectory/rider-model.jar"
-        def rdGenClasspath = files(compilerClasspath, "$kotlincLib/kotlin-compiler.jar", "$rdLibDirectory.parent/rider-framework.jar")
+        def rdGenClasspath = files(compilerClasspath, "$kotlincLib/kotlin-compiler.jar")
 
         javaexec {
             main = "com.jetbrains.rider.generator.nova.MainKt"
