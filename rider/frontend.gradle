@@ -5,22 +5,6 @@ sourceSets {
     }
 }
 
-ext.kotlin_version = '1.2.10'
-ext.unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
 intellij {
     type = 'RD'
 
@@ -46,6 +30,22 @@ intellij {
 
     // Sources aren't available for Rider
     downloadSources = false
+}
+
+ext.kotlin_version = '1.2.10'
+ext.unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+repositories {
+    mavenCentral()
 }
 
 task prepareForBuild{
