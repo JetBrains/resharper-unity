@@ -11,12 +11,14 @@ logger.lifecycle("frontendSdkVersion=$ext.frontendSdkVersion")
 
 repositories{
     flatDir {
-        dirs rdLibDirectory
+        dirs rdLibDirectory.absolutePath
     }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile name: "rd-gen"
+    compile name: "rider-model"
 }
 
 group 'com.jetbrains'
