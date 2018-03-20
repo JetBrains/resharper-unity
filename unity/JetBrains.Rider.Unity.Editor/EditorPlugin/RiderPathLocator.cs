@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using JetBrains.Util.Logging;
 using Microsoft.Win32;
+#if UNITY_4_7 || UNITY_5_5
+using Newtonsoft.Json;
+#endif
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -203,7 +206,11 @@ namespace JetBrains.Rider.Unity.Editor
 
       public static ToolboxInstallData FromJson(string json)
       {
+#if UNITY_4_7 || UNITY_5_5
+        return JsonConvert.DeserializeObject<ToolboxInstallData>(json);
+#else
         return JsonUtility.FromJson<ToolboxInstallData>(json);
+#endif
       }
     }
 
