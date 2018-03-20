@@ -12,7 +12,8 @@ class PlayInUnityAction() : ToggleAction("Play/Edit", "Change Play/Edit mode in 
 
     override fun isSelected(e: AnActionEvent):Boolean {
         val projectCustomDataHost = e.getHost() ?: return false
-        return projectCustomDataHost.play.value
+        val play = projectCustomDataHost.play.value
+        return play!=null && play
     }
     override fun setSelected(e: AnActionEvent?, value: Boolean) {
         val project = e?.project?: return
@@ -37,7 +38,8 @@ class PauseInUnityAction() : ToggleAction("Pause/Resume", "Pause/Resume play in 
 
     override fun update(e: AnActionEvent) {
         val projectCustomDataHost = e.getHost() ?: return
-        e.presentation.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.sessionInitialized.value
+        val play = projectCustomDataHost.play.value;
+        e.presentation.isEnabled =  play!= null && play && projectCustomDataHost.sessionInitialized.value
         super.update(e)
     }
 }
@@ -50,7 +52,8 @@ class StepInUnityAction() : AnAction("Step", "Perform a single frame step.", Uni
 
     override fun update(e: AnActionEvent) {
         val projectCustomDataHost = e.getHost() ?: return
-        e.presentation.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.sessionInitialized.value
+        val play = projectCustomDataHost.play.value
+        e.presentation.isEnabled = play!=null && play && projectCustomDataHost.sessionInitialized.value
         super.update(e)
     }
 }

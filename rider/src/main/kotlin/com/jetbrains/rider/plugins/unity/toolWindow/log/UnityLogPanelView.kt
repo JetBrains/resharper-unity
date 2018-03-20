@@ -68,8 +68,14 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
             }
         }.installOn(this)
 
-        projectCustomDataHost.play.whenTrue(logModel.lifetime) {
-            logModel.events.clear()
+        var prevVal:Boolean? = null
+
+        projectCustomDataHost.play.advise(logModel.lifetime) {
+            if (it!=null && it && prevVal == false) {
+                logModel.events.clear()
+                console.clear()
+            }
+            prevVal = it
         }
     }
 
