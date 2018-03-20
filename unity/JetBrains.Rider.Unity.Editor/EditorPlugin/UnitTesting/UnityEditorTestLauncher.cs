@@ -42,7 +42,6 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     {
       try
       {
-        Thread.Sleep(30000);
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         var testEditorAssembly = assemblies
           .FirstOrDefault(assembly => assembly.GetName().Name.Equals("UnityEditor.TestRunner"));
