@@ -75,9 +75,6 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
             synchronized(lock) {
                 if (allEvents.count()>1000)
                 {
-//                    if (allEvents.get(0)!=null && allEvents.get(0)== selectedItem)
-//                        selectedItem =null
-//                    allEvents.removeAt(0)
                     allEvents.clear()
                     selectedItem = null
                 }
