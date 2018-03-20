@@ -75,29 +75,32 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
 #if !(UNITY_5_5 || UNITY_4_7)
 
-#if UNITY_2018_1
-        var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
-          BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-          new[] {(object) TestPlatform.EditMode}, null);
-        ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
+        object launcher;
+        if (UnityUtils.UnityVersion >= new Version(2018, 1))
+        {
+          var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
+            new[] {(object) TestPlatform.EditMode}, null);
+          ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
         
-        var testNameStrings = (object)myLaunch.TestNames.ToArray();
-        fieldInfo.SetValue(filter, testNameStrings);
+          var testNameStrings = (object)myLaunch.TestNames.ToArray();
+          fieldInfo.SetValue(filter, testNameStrings);
 
-        var launcher = Activator.CreateInstance(launcherType,
-          BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-          null, new[] {filter, assemblyProvider},
-          null);
-#else
-        
-        var testNameStrings = (object)myLaunch.TestNames.ToArray();
-        fieldInfo.SetValue(filter, testNameStrings);
+          launcher = Activator.CreateInstance(launcherType,
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+            null, new[] {filter, assemblyProvider},
+            null);  
+        }
+        else
+        {
+          var testNameStrings = (object)myLaunch.TestNames.ToArray();
+          fieldInfo.SetValue(filter, testNameStrings);
 
-        var launcher = Activator.CreateInstance(launcherType,
-          BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-          null, new[] {filter},
-          null);
-#endif
+          launcher = Activator.CreateInstance(launcherType,
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+            null, new[] {filter},
+            null);  
+        }
 
         var runnerField = launcherType.GetField(MEditmoderunner, BindingFlags.Instance | BindingFlags.NonPublic);
         if (runnerField == null)

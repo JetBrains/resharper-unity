@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.4.7.2f1", "Edi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.5.5.0f3", "EditorPlugin\EditorPlugin.5.5.0f3.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.20181", "EditorPlugin\EditorPlugin.20181.csproj", "{B9929EC2-2A62-4510-A7B6-48F6469588BE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,9 +30,5 @@ Global
 		{0E4211DB-DA60-416B-A13C-14D45410F768}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E4211DB-DA60-416B-A13C-14D45410F768}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E4211DB-DA60-416B-A13C-14D45410F768}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B9929EC2-2A62-4510-A7B6-48F6469588BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B9929EC2-2A62-4510-A7B6-48F6469588BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B9929EC2-2A62-4510-A7B6-48F6469588BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B9929EC2-2A62-4510-A7B6-48F6469588BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
