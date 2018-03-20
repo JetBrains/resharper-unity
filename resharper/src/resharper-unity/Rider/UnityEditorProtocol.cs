@@ -113,14 +113,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         var force = Convert.ToBoolean(e.NewValue);
                         Refresh.Fire(force);
+                        solution.CustomData.Data.Remove("UNITY_Refresh");
                         break;
                     
                     case "UNITY_Step":
-                        if (e.NewValue.ToLower() == true.ToString().ToLower())
-                        {
-                            myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                            model.Step.Start(RdVoid.Instance);
-                        }
+                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
+                        model.Step.Start(RdVoid.Instance);
+                        solution.CustomData.Data.Remove("UNITY_Step");
                         break;
                     
                     case "UNITY_Play":
@@ -163,6 +162,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
+                    solution.SetCustomData("UNITY_Play", "undef");
                 
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
                     var model = new UnityModel(lf, protocol);

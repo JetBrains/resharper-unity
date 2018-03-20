@@ -16,7 +16,7 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
     val sessionInitialized = Property(false)
     val unityState = Property(DISCONNECTED)
     val logSignal = Signal<RdLogEvent>()
-    val play = Property(false)
+    val play = Property<Boolean?>(null)
     val pause = Property(false)
 
     init {
@@ -25,8 +25,11 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
                 logger.info(item.key+" "+ item.newValueOpt)
                 ProjectUtil.focusProjectWindow(project, true)
                 project.solution.customData.data["UNITY_ActivateRider"] = "false";
-            }else if (item.key == "UNITY_Play" && item.newValueOpt!=null) {
-                play.set(item.newValueOpt!!.toBoolean())
+            }else if (item.key == "UNITY_Play") {
+                if (item.newValueOpt != "undef")
+                    play.set(item.newValueOpt!!.toBoolean())
+                else
+                    play.set(null)
             } else if (item.key == "UNITY_EditorState" && item.newValueOpt!=null) {
                 unityState.set(item.newValueOpt.toString())
             } else if (item.key == "UNITY_Pause" && item.newValueOpt!=null) {
@@ -54,7 +57,6 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
         const val CONNECTED_REFRESH = "ConnectedRefresh"
 
         private fun CallBackend(project: Project, key : String, value:String) {
-            project.solution.customData.data.remove(key)
             project.solution.customData.data[key] = value
         }
     }
