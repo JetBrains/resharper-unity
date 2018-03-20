@@ -157,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       //subscribe for tests callbacks
-#if !(UNITY_5_5 || UNITY_4_7 || UNITY_2018_1)
+#if !(UNITY_5_5 || UNITY_4_7)
       addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITestResult>(RunFinished)});
 #endif
       return true;
@@ -185,7 +185,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       //subscribe for tests callbacks
-#if !(UNITY_5_5 || UNITY_4_7 || UNITY_2018_1)
+#if !(UNITY_5_5 || UNITY_4_7)
       addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITest>(TestStarted)});
 #endif
       return true;
@@ -213,12 +213,12 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       //subscribe for tests callbacks
-#if !(UNITY_5_5 || UNITY_4_7 || UNITY_2018_1)
+#if !(UNITY_5_5 || UNITY_4_7)
       addListenertMethod.Invoke(mTestFinished, new object[] {new UnityAction<ITestResult>(TestFinished)});
 #endif
       return true;
     }
-#if !(UNITY_5_5 || UNITY_4_7 || UNITY_2018_1)
+#if !(UNITY_5_5 || UNITY_4_7)
    
     private void RunFinished(ITestResult test)
     {
