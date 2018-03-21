@@ -81,12 +81,12 @@ namespace JetBrains.Rider.Unity.Editor
         {
           var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
           var toolboxRiderRootPath = Path.Combine(localAppData, @"JetBrains\Toolbox\apps\Rider");
-          var installPaths = GetAllRiderPaths(toolboxRiderRootPath, "bin", "rider64.exe", false).ToList();
+          var installPaths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider64.exe", false).ToList();
 
           var registryKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
-          GetPathFromRegistry(registryKey, installPaths);
+          CollectPathsFromRegistry(registryKey, installPaths);
           var wowRegistryKey = @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
-          GetPathFromRegistry(wowRegistryKey, installPaths);
+          CollectPathsFromRegistry(wowRegistryKey, installPaths);
           
           if (installPaths.Any())
             return installPaths.ToArray();
@@ -113,7 +113,7 @@ namespace JetBrains.Rider.Unity.Editor
           if (!string.IsNullOrEmpty(home))
           {
             var toolboxRiderRootPath = Path.Combine(home, @"Library/Application Support/JetBrains/Toolbox/apps/Rider");
-            var paths = GetAllRiderPaths(toolboxRiderRootPath, "", "Rider*.app", true);
+            var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "", "Rider*.app", true);
             results.AddRange(paths);  
           }
 
@@ -128,7 +128,7 @@ namespace JetBrains.Rider.Unity.Editor
           //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
           //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
           var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
-          var paths = GetAllRiderPaths(toolboxRiderRootPath, "bin", "rider.sh", false);
+          var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false);
           if (paths.Any())
             return paths;
           return Directory.GetDirectories(toolboxRiderRootPath).SelectMany(Directory.GetDirectories)
@@ -139,7 +139,7 @@ namespace JetBrains.Rider.Unity.Editor
       return new string[0];
     }
 
-    private static void GetPathFromRegistry(string registryKey, List<string> installPaths)
+    private static void CollectPathsFromRegistry(string registryKey, List<string> installPaths)
     {
       using (var key = Registry.LocalMachine.OpenSubKey(registryKey))
       {
@@ -159,8 +159,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static string[] GetAllRiderPaths(string toolboxRiderRootPath, string dirName, string searchPattern,
-      bool isMac)
+    private static string[] CollectPathsFromToolbox(string toolboxRiderRootPath, string dirName, string searchPattern, bool isMac)
     {
       if (!Directory.Exists(toolboxRiderRootPath))
         return new string[0];
