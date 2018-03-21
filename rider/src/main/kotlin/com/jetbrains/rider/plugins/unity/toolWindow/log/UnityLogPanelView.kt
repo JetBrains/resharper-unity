@@ -53,7 +53,7 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
         }
 
         val eventList1 = this
-        addKeyListener(object: KeyAdapter() {
+        addKeyListener(object : KeyAdapter() {
             override fun keyPressed(e: KeyEvent?) {
                 if (e?.keyCode == KeyEvent.VK_ENTER) {
                     e.consume()
@@ -61,17 +61,17 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
                 }
             }
         })
-        object: DoubleClickListener() {
+        object : DoubleClickListener() {
             override fun onDoubleClick(event: MouseEvent?): Boolean {
                 getNavigatableForSelected(eventList1, project)?.navigate(true)
                 return true
             }
         }.installOn(this)
 
-        var prevVal:Boolean? = null
+        var prevVal: Boolean? = null
 
         projectCustomDataHost.play.advise(logModel.lifetime) {
-            if (it!=null && it && prevVal == false) {
+            if (it != null && it && prevVal == false) {
                 logModel.events.clear()
                 console.clear()
             }
@@ -115,7 +115,7 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
     }
 
     private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(logModel, mainSplitterToggleAction, console.createConsoleActions()
-        .filter {  it is ToggleUseSoftWrapsToolbarAction }.toList())
+        .filter { it is ToggleUseSoftWrapsToolbarAction }.toList())
 
     private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
 
@@ -129,15 +129,14 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
     // TODO: optimize
     private fun refreshList(newEvents: List<RdLogEvent>) {
         eventList.riderModel.clear()
-        for (event in newEvents)
-        {
+        for (event in newEvents) {
             eventList.riderModel.addElement(event)
         }
 
         if (logModel.selectedItem != null)
             eventList.setSelectedValue(logModel.selectedItem, true)
         else
-            eventList.ensureIndexIsVisible(eventList.itemsCount-1)
+            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
     }
 
     init {

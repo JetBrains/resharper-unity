@@ -21,24 +21,25 @@ class ProjectCustomDataHost(project: Project) : LifetimedProjectComponent(projec
 
     init {
         project.solution.customData.data.advise(componentLifetime) { item ->
-            if (item.key == "UNITY_ActivateRider" && item.newValueOpt == "true") {
-                logger.info(item.key+" "+ item.newValueOpt)
+            val newVal = item.newValueOpt
+            if (item.key == "UNITY_ActivateRider" && newVal == "true") {
+                logger.info(item.key+" "+ newVal)
                 ProjectUtil.focusProjectWindow(project, true)
                 project.solution.customData.data["UNITY_ActivateRider"] = "false";
-            }else if (item.key == "UNITY_Play") {
-                if (item.newValueOpt != "undef")
-                    play.set(item.newValueOpt!!.toBoolean())
+            }else if (item.key == "UNITY_Play" && newVal != null) {
+                if (newVal != "undef")
+                    play.set(newVal.toBoolean())
                 else
                     play.set(null)
-            } else if (item.key == "UNITY_EditorState" && item.newValueOpt!=null) {
-                unityState.set(item.newValueOpt.toString())
-            } else if (item.key == "UNITY_Pause" && item.newValueOpt!=null) {
-                pause.set(item.newValueOpt!!.toBoolean())
-            } else if (item.key == "UNITY_SessionInitialized" && item.newValueOpt!=null) {
-                sessionInitialized.set(item.newValueOpt!!.toBoolean())
-            } else if (item.key == "UNITY_LogEntry" && item.newValueOpt!=null) {
-                logger.info(item.key+" "+ item.newValueOpt)
-                val jsonObj = JSONObject(item.newValueOpt)
+            } else if (item.key == "UNITY_EditorState" && newVal != null) {
+                unityState.set(newVal.toString())
+            } else if (item.key == "UNITY_Pause" && newVal!=null) {
+                pause.set(newVal.toBoolean())
+            } else if (item.key == "UNITY_SessionInitialized" && newVal!=null) {
+                sessionInitialized.set(newVal.toBoolean())
+            } else if (item.key == "UNITY_LogEntry" && newVal!=null) {
+                logger.info(item.key+" "+ newVal)
+                val jsonObj = JSONObject(newVal)
                 val type = RdLogEventType.values().get(jsonObj.getInt("Type"))
                 val mode = RdLogEventMode.values().get(jsonObj.getInt("Mode"))
                 logSignal.fire(RdLogEvent(type, mode, jsonObj.getString("Message"), jsonObj.getString("StackTrace")))

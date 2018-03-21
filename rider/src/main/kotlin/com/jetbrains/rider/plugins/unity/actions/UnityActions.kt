@@ -59,7 +59,7 @@ class PauseInUnityAction() : ToggleAction("Pause/Resume", "Pause/Resume play in 
     }
 }
 
-class StepInUnityAction() : AnAction("Step", "Perform a single frame step.", UnityIcons.Actions.Step) {
+class StepInUnityAction() : AnAction(UnityIcons.Actions.Step) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         ProjectCustomDataHost.CallBackendStep(project)
