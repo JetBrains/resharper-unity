@@ -267,7 +267,8 @@ namespace JetBrains.Rider.Unity.Editor
   ""version"": ""{Application.unityVersion}"",
   ""app_path"": ""{EditorApplication.applicationPath}"",
   ""app_contents_path"": ""{EditorApplication.applicationContentsPath}"",
-  ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}""
+  ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}"",
+  ""is_loaded_from_assets"": ""{IsLoadedFromAssets()}"",
 }}");
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
@@ -308,6 +309,13 @@ namespace JetBrains.Rider.Unity.Editor
       }
       
       return ourAssetHandler.OnOpenedAsset(instanceID, line);
+    }
+
+    private static bool IsLoadedFromAssets()
+    {
+      var currentDir = Directory.GetCurrentDirectory();
+      var location = typeof(PluginEntryPoint).Assembly.Location;
+      return location.StartsWith(currentDir, StringComparison.InvariantCultureIgnoreCase);
     }
   }
 }
