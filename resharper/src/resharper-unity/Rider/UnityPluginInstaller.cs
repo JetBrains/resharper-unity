@@ -234,7 +234,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
                 var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
                 var installDirectory = myResolver.GetDeployedPackageDirectory(package);
                 var editorPluginPath =
-                    installDirectory.Parent.Combine(@"EditorPlugin\JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll");
+                    installDirectory.Parent.Combine(@"EditorPlugin").Combine(UnityPluginDetector.PluginDllFile);
 
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
