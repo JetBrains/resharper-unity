@@ -131,9 +131,14 @@ namespace JetBrains.Rider.Unity.Editor
         {
           var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-           var model = new UnityModel(connectionLifetime, protocol);
-          AdviseModel1(model, connectionLifetime);
-          AdviseModel(connectionLifetime, model);
+          var model = new UnityModel(connectionLifetime, protocol);
+          AdviseUnityActions(model, connectionLifetime);
+          AdviseUnityEditorState(model);
+          AdviseUnitTestLaunch(model, connectionLifetime);
+          AdviseRefresh(model);
+          model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
+          
+          ourLogger.Verbose("UnityModel initialized.");
           ourModel.Value = model;
         });
       }
@@ -147,7 +152,7 @@ namespace JetBrains.Rider.Unity.Editor
       ourInitialized = true;
     }
 
-    private static void AdviseModel(Lifetime connectionLifetime, UnityModel modelValue)
+    private static void AdviseUnityEditorState(UnityModel modelValue)
     {
       modelValue.GetUnityEditorState.Set(rdVoid =>
       {
@@ -162,8 +167,11 @@ namespace JetBrains.Rider.Unity.Editor
         }
         
         return UnityEditorState.Idle;
-      }); 
-      
+      });
+    }
+    
+    private static void AdviseUnitTestLaunch(UnityModel modelValue, Lifetime connectionLifetime)
+    {     
       modelValue.UnitTestLaunch.Change.Advise(connectionLifetime, launch =>
       {
         var unityEditorTestLauncher = new UnityEditorTestLauncher(launch);
@@ -171,7 +179,24 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static void AdviseModel1(UnityModel model, Lifetime lt)
+    private static void AdviseRefresh(UnityModel model)
+    {
+      model.Refresh.Set((l, force) =>
+      {
+        var task = new RdTask<RdVoid>();
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          if (EditorPrefsWrapper.AutoRefresh || force)
+            UnityUtils.SyncSolution();
+          else
+            ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
+          task.Set(RdVoid.Instance);
+        });
+        return task;
+      });
+    }
+
+    private static void AdviseUnityActions(UnityModel model, Lifetime connectionLifetime)
     {
       var isPlayingAction = new Action(() =>
       {
@@ -187,7 +212,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
       isPlayingAction(); // get Unity state
-      model.Play.Advise(lt, play =>
+      model.Play.Advise(connectionLifetime, play =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -197,27 +222,14 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.Pause.Advise(lt, pause =>
+      model.Pause.Advise(connectionLifetime, pause =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
           EditorApplication.isPaused = pause;
         });
       });
-      model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
-      model.Refresh.Set((l, force) =>
-      {
-        var task = new RdTask<RdVoid>();
-        MainThreadDispatcher.Instance.Queue(() =>
-        {
-          if (EditorPrefsWrapper.AutoRefresh || force)
-            UnityUtils.SyncSolution();
-          else
-            ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
-          task.Set(RdVoid.Instance);
-        });
-        return task;
-      });
+      
       model.Step.Set((l, x) =>
       {
         var task = new RdTask<RdVoid>();
@@ -232,23 +244,15 @@ namespace JetBrains.Rider.Unity.Editor
       var isPlayingHandler = new EditorApplication.CallbackFunction(() => isPlayingAction());
 // left for compatibility with Unity <= 5.5
 #pragma warning disable 618
-      lt.AddBracket(() => { EditorApplication.playmodeStateChanged += isPlayingHandler; },
+      connectionLifetime.AddBracket(() => { EditorApplication.playmodeStateChanged += isPlayingHandler; },
         () => { EditorApplication.playmodeStateChanged -= isPlayingHandler; });
 #pragma warning restore 618
-      //isPlayingHandler();
-      
       // new api - not present in Unity 5.5
-      //lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},
-      //  () => { EditorApplication.pauseStateChanged -= IsPauseStateChanged(model); });
-      
-      ourLogger.Verbose("AdviseModel1 finished.");
+      // private static Action<PauseState> IsPauseStateChanged(UnityModel model)
+      //    {
+      //      return state => model?.Pause.SetValue(state == PauseState.Paused);
+      //    }
     }
-
-    // new api - not present in Unity 5.5
-    // private static Action<PauseState> IsPauseStateChanged(UnityModel model)
-    //    {
-    //      return state => model?.Pause.SetValue(state == PauseState.Paused);
-    //    }
 
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
     private static OnOpenAssetHandler ourAssetHandler;
