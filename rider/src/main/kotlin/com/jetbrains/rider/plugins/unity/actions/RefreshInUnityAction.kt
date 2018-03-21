@@ -17,6 +17,13 @@ class RefreshInUnityAction : AnAction("Refresh", "Triggers Refresh in Unity Edit
     }
 
     override fun update(e: AnActionEvent) {
+        if (!e.isUnityProject()) {
+            e.presentation.isVisible = false
+            return
+        }
+
+        e.presentation.isVisible = true
+
         val projectCustomDataHost = e.getHost() ?: return
 
         e.presentation.isEnabled = projectCustomDataHost.sessionInitialized.value
