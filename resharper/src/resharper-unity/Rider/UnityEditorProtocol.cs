@@ -176,16 +176,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.Play.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Pause", b.ToString().ToLower()));
 
-                    myLocks.ExecuteOrQueueEx(lf, "setModel",
-                        () => { myUnityModel.SetValue(model, myReadonlyToken); });
+                    if (!myComponentLifetime.IsTerminated)
+                        myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
                     lf.AddAction(() =>
                     {
-                        myLocks.ExecuteOrQueueEx(lf, "clearModel", () =>
-                        {
-                            myLogger.Info("Wire disconnected.");
-                            solution.SetCustomData("UNITY_SessionInitialized", "false");
-                            myUnityModel.SetValue(null, myReadonlyToken);
-                        });
+                        if (!myComponentLifetime.IsTerminated)
+                            myLocks.ExecuteOrQueueEx(myComponentLifetime, "clearModel", () =>
+                            {
+                                myLogger.Info("Wire disconnected.");
+                                solution.SetCustomData("UNITY_SessionInitialized", "false");
+                                myUnityModel.SetValue(null, myReadonlyToken);                                
+                            });
                     });
                 });
             }
