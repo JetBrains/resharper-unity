@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
@@ -153,6 +154,8 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       ourAssetHandler = new OnOpenAssetHandler(ourModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
+      
+      PluginInstaller.TryInstallAdditionalPlugins();
       
       ourInitialized = true;
     }
@@ -311,10 +314,10 @@ namespace JetBrains.Rider.Unity.Editor
       return ourAssetHandler.OnOpenedAsset(instanceID, line);
     }
 
-    private static bool IsLoadedFromAssets()
+    public static bool IsLoadedFromAssets()
     {
       var currentDir = Directory.GetCurrentDirectory();
-      var location = typeof(PluginEntryPoint).Assembly.Location;
+      var location = Assembly.GetExecutingAssembly().Location;
       return location.StartsWith(currentDir, StringComparison.InvariantCultureIgnoreCase);
     }
   }
