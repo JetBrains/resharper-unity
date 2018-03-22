@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using JetBrains.DataFlow;
@@ -15,7 +16,6 @@ using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using JetBrains.Rider.Unity.Editor.NonUnity;
-using JetBrains.Rider.Unity.Editor.UnitTesting;
 using UnityEditor.Callbacks;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -53,6 +53,8 @@ namespace JetBrains.Rider.Unity.Editor
         Init();
       }
     }
+    
+    public static readonly List<Action<UnityModel,Lifetime>> ModelCallbacksList = new List<Action<UnityModel,Lifetime>>();
 
     internal static bool CheckConnectedToBackendSync()
     {
@@ -134,7 +136,10 @@ namespace JetBrains.Rider.Unity.Editor
           var model = new UnityModel(connectionLifetime, protocol);
           AdviseUnityActions(model, connectionLifetime);
           AdviseUnityEditorState(model);
-          AdviseUnitTestLaunch(model, connectionLifetime);
+          foreach (var action in ModelCallbacksList)
+          {
+            action(model, connectionLifetime);
+          }
           AdviseRefresh(model);
           model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
           
@@ -170,15 +175,6 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
     
-    private static void AdviseUnitTestLaunch(UnityModel modelValue, Lifetime connectionLifetime)
-    {     
-      modelValue.UnitTestLaunch.Change.Advise(connectionLifetime, launch =>
-      {
-        var unityEditorTestLauncher = new UnityEditorTestLauncher(launch);
-        unityEditorTestLauncher.TryLaunchUnitTests();
-      });
-    }
-
     private static void AdviseRefresh(UnityModel model)
     {
       model.Refresh.Set((l, force) =>

@@ -23,7 +23,7 @@ namespace JetBrains.Rider.Unity.Editor
       syncSolution.Invoke(null, null);
     }
 
-    internal static Version UnityVersion
+    public static Version UnityVersion
     {
       get
       {
