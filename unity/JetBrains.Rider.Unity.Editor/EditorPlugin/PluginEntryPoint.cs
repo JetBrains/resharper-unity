@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
@@ -53,8 +53,11 @@ namespace JetBrains.Rider.Unity.Editor
         Init();
       }
     }
-    
-    public static readonly List<Action<UnityModel,Lifetime>> ModelCallbacksList = new List<Action<UnityModel,Lifetime>>();
+
+    public delegate void MyEventHandler(UnityModelAndLifetime e);
+    [UsedImplicitly]
+    public static event MyEventHandler OnModelInitialization = delegate {};
+    //public static readonly List<Action<UnityModel,Lifetime>> ActionsOnModelInitialization = new List<Action<UnityModel,Lifetime>>();
 
     internal static bool CheckConnectedToBackendSync()
     {
@@ -136,10 +139,7 @@ namespace JetBrains.Rider.Unity.Editor
           var model = new UnityModel(connectionLifetime, protocol);
           AdviseUnityActions(model, connectionLifetime);
           AdviseUnityEditorState(model);
-          foreach (var action in ModelCallbacksList)
-          {
-            action(model, connectionLifetime);
-          }
+          OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
           
@@ -316,6 +316,18 @@ namespace JetBrains.Rider.Unity.Editor
       var currentDir = Directory.GetCurrentDirectory();
       var location = typeof(PluginEntryPoint).Assembly.Location;
       return location.StartsWith(currentDir, StringComparison.InvariantCultureIgnoreCase);
+    }
+  }
+
+  public struct UnityModelAndLifetime
+  {
+    public UnityModel Model;
+    public Lifetime Lifetime;
+
+    public UnityModelAndLifetime(UnityModel model, Lifetime lifetime)
+    {
+      Model = model;
+      Lifetime = lifetime;
     }
   }
 }

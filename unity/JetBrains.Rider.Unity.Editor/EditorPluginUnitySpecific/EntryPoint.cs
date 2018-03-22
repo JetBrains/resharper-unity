@@ -1,4 +1,5 @@
-﻿using JetBrains.Rider.Unity.Editor.Ge56.UnitTesting;
+﻿using System;
+using JetBrains.Rider.Unity.Editor.Ge56.UnitTesting;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.Ge56
@@ -8,7 +9,11 @@ namespace JetBrains.Rider.Unity.Editor.Ge56
   {
     static EntryPoint()
     {
-      PluginEntryPoint.ModelCallbacksList.Add(ModelAdviceExtension.AdviseUnitTestLaunch);
+      PluginEntryPoint.OnModelInitialization+=ModelAdviceExtension.AdviseUnitTestLaunch;
+      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
+      {
+        PluginEntryPoint.OnModelInitialization-=ModelAdviceExtension.AdviseUnitTestLaunch;
+      });
     }
   }
 }
