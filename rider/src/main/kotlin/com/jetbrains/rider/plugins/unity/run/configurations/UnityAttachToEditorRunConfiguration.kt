@@ -13,12 +13,12 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import com.jetbrains.rider.plugins.unity.util.attach.UnityProcessUtil
+import com.jetbrains.rider.plugins.unity.run.attach.UnityProcessUtil
 import com.jetbrains.rider.use2
 import org.apache.commons.logging.LogFactory
 import org.jdom.Element
 
-class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
+class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
         RunConfigurationWithSuppressedDefaultRunAction,
         RemoteConfiguration,
@@ -30,7 +30,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
     var pid: Int? = null
 
     override fun clone(): RunConfiguration {
-        val configuration = super.clone() as UnityAttachToEditorConfiguration
+        val configuration = super.clone() as UnityAttachToEditorRunConfiguration
         configuration.pid = pid
         return configuration
     }
@@ -40,7 +40,7 @@ class UnityAttachToEditorConfiguration(project: Project, factory: UnityAttachToE
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
         if (executor.id != DefaultDebugExecutor.EXECUTOR_ID)
             return null
-        return UnityAttachToPlayerProfileState(this, environment)
+        return UnityAttachToEditorProfileState(this, environment)
     }
 
     override var listenPortForConnections: Boolean = false

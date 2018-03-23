@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.util.attach
+package com.jetbrains.rider.plugins.unity.run.attach
 
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RunProfile
@@ -11,7 +11,7 @@ import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileSta
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import javax.swing.Icon
 
-class UnityLocalAttachConfiguration(private val pid: Int) : RemoteConfiguration, RunProfile, IDotNetDebuggable {
+class UnityLocalAttachConfiguration(private val pid: Int, host: String = "127.0.0.1") : RemoteConfiguration, RunProfile, IDotNetDebuggable {
 
     override fun getName(): String = pid.toString()
     override fun getIcon(): Icon = AllIcons.General.Debug
@@ -23,7 +23,7 @@ class UnityLocalAttachConfiguration(private val pid: Int) : RemoteConfiguration,
     }
 
     override var port: Int = 56000 + pid % 1000
-    override var address: String = "localhost"
+    override var address: String = host
     override var listenPortForConnections: Boolean = false
 
 }

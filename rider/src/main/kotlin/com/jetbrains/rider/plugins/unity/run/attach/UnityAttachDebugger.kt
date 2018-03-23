@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.util.attach
+package com.jetbrains.rider.plugins.unity.run.attach
 
 import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.executors.DefaultDebugExecutor
