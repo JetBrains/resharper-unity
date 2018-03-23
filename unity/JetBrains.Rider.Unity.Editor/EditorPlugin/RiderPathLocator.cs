@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Util.Logging;
 using Microsoft.Win32;
 #if UNITY_4_7 || UNITY_5_5 || UNITY_2017_3
@@ -79,64 +80,71 @@ namespace JetBrains.Rider.Unity.Editor
       {
         case OperatingSystemFamilyRider.Windows:
         {
-          var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-          var toolboxRiderRootPath = Path.Combine(localAppData, @"JetBrains\Toolbox\apps\Rider");
-          var installPaths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider64.exe", false).ToList();
-
-          var registryKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
-          CollectPathsFromRegistry(registryKey, installPaths);
-          var wowRegistryKey = @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
-          CollectPathsFromRegistry(wowRegistryKey, installPaths);
-          
-          if (installPaths.Any())
-            return installPaths.ToArray();
+          return CollectAllRiderPathsWindows();
         }
-          break;
-
         case OperatingSystemFamilyRider.MacOSX:
         {
-          var home = Environment.GetEnvironmentVariable("HOME");
-          // "/Applications/*Rider*.app"
-          string[] folders =
-          {
-            "/Applications"
-          };
-          //"~/Applications/JetBrains Toolbox/*Rider*.app"
-          if (!string.IsNullOrEmpty(home))
-            folders.ToList().Add(Path.Combine(home, "Applications/JetBrains Toolbox"));
-          
-          var results = folders.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
-            .SelectMany(c => c.GetDirectories("*Rider*.app"))
-            .Select(a => a.FullName).ToList();
-          
-          // /Users/user/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/181.3870.267/Rider EAP.app
-          if (!string.IsNullOrEmpty(home))
-          {
-            var toolboxRiderRootPath = Path.Combine(home, @"Library/Application Support/JetBrains/Toolbox/apps/Rider");
-            var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "", "Rider*.app", true);
-            results.AddRange(paths);  
-          }
-
-          return results.ToArray();
+          return CollectAllRiderPathsMac();
         }
-
         case OperatingSystemFamilyRider.Linux:
         {
-          var home = Environment.GetEnvironmentVariable("HOME");
-          if (string.IsNullOrEmpty(home))
-            return new string[0];
-          //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
-          //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
-          var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
-          var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false);
-          if (paths.Any())
-            return paths;
-          return Directory.GetDirectories(toolboxRiderRootPath).SelectMany(Directory.GetDirectories)
-            .Select(b => Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
+          return CollectAllRiderPathsLinux();
         }
       }
-
       return new string[0];
+    }
+
+    private static string[] CollectAllRiderPathsLinux()
+    {
+      var home = Environment.GetEnvironmentVariable("HOME");
+      if (string.IsNullOrEmpty(home))
+        return new string[0];
+      //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
+      //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
+      var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
+      var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false);
+      if (paths.Any())
+        return paths;
+      return Directory.GetDirectories(toolboxRiderRootPath).SelectMany(Directory.GetDirectories)
+        .Select(b => Path.Combine(b, "bin/rider.sh")).Where(File.Exists).ToArray();
+    }
+
+    private static string[] CollectAllRiderPathsMac()
+    {
+      var home = Environment.GetEnvironmentVariable("HOME");
+      // "/Applications/*Rider*.app"
+      string[] folders = {"/Applications"};
+      //"~/Applications/JetBrains Toolbox/*Rider*.app"
+      if (!string.IsNullOrEmpty(home))
+        folders.ToList().Add(Path.Combine(home, "Applications/JetBrains Toolbox"));
+
+      var results = folders.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
+        .SelectMany(c => c.GetDirectories("*Rider*.app"))
+        .Select(a => a.FullName).ToList();
+
+      // /Users/user/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/181.3870.267/Rider EAP.app
+      if (!string.IsNullOrEmpty(home))
+      {
+        var toolboxRiderRootPath = Path.Combine(home, @"Library/Application Support/JetBrains/Toolbox/apps/Rider");
+        var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "", "Rider*.app", true);
+        results.AddRange(paths);
+      }
+
+      return results.ToArray();
+    }
+
+    private static string[] CollectAllRiderPathsWindows()
+    {
+      var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+      var toolboxRiderRootPath = Path.Combine(localAppData, @"JetBrains\Toolbox\apps\Rider");
+      var installPaths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider64.exe", false).ToList();
+
+      var registryKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+      CollectPathsFromRegistry(registryKey, installPaths);
+      var wowRegistryKey = @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
+      CollectPathsFromRegistry(wowRegistryKey, installPaths);
+
+      return installPaths.ToArray();
     }
 
     private static void CollectPathsFromRegistry(string registryKey, List<string> installPaths)
@@ -158,6 +166,29 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
     }
+    
+#if UNITY_4_7 || UNITY_5_5 || UNITY_2017_3
+    [UsedImplicitly]
+    public static string[] GetAllRiderPaths()
+    {
+      switch (SystemInfo.operatingSystemFamily)
+      {
+        case OperatingSystemFamily.Windows:
+        {
+          return CollectAllRiderPathsWindows();
+        }
+        case OperatingSystemFamily.MacOSX:
+        {
+          return CollectAllRiderPathsMac();
+        }
+        case OperatingSystemFamily.Linux:
+        {
+          return CollectAllRiderPathsLinux();
+        }
+      }
+      return new string[0];
+    }
+#endif 
 
     private static string[] CollectPathsFromToolbox(string toolboxRiderRootPath, string dirName, string searchPattern, bool isMac)
     {
@@ -195,7 +226,6 @@ namespace JetBrains.Rider.Unity.Editor
         .ToArray();
       return paths;
     }
-
 
     // ReSharper disable once ClassNeverInstantiated.Global
     [Serializable]
