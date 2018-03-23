@@ -111,18 +111,12 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static string[] CollectAllRiderPathsMac()
     {
-      var home = Environment.GetEnvironmentVariable("HOME");
       // "/Applications/*Rider*.app"
-      string[] folders = {"/Applications"};
-      //"~/Applications/JetBrains Toolbox/*Rider*.app"
-      if (!string.IsNullOrEmpty(home))
-        folders.ToList().Add(Path.Combine(home, "Applications/JetBrains Toolbox"));
-
-      var results = folders.Select(b => new DirectoryInfo(b)).Where(a => a.Exists)
-        .SelectMany(c => c.GetDirectories("*Rider*.app"))
-        .Select(a => a.FullName).ToList();
+      var folder = new DirectoryInfo("/Applications");
+      var results = folder.GetDirectories("*Rider*.app").Select(a=>a.FullName).ToList();
 
       // /Users/user/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/181.3870.267/Rider EAP.app
+      var home = Environment.GetEnvironmentVariable("HOME");
       if (!string.IsNullOrEmpty(home))
       {
         var toolboxRiderRootPath = Path.Combine(home, @"Library/Application Support/JetBrains/Toolbox/apps/Rider");
@@ -167,7 +161,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
     
-#if UNITY_4_7 || UNITY_5_5 || UNITY_2017_3
+#if UNITY_4_7 || UNITY_5_5
     [UsedImplicitly]
     public static string[] GetAllRiderPaths()
     {

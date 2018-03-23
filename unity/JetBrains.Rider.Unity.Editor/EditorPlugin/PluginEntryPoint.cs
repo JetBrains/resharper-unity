@@ -154,9 +154,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       ourAssetHandler = new OnOpenAssetHandler(ourModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
-      
-      PluginInstaller.TryInstallAdditionalPlugins();
-      
+      AdditionalPluginsInstaller.TryInstallAdditionalPlugins();
       ourInitialized = true;
     }
 
