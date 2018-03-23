@@ -5,7 +5,7 @@ import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.plugins.unity.run.attach.UnityProcessUtil
+import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
 import com.jetbrains.rider.use2
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.IProperty
@@ -36,7 +36,7 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
 
     private fun updateProcessList(processList: Array<out ProcessInfo>) {
         processList.forEach {
-            if (UnityProcessUtil.isUnityEditorProcess(it))
+            if (UnityRunUtil.isUnityEditorProcess(it))
                 editorProcesses.add(EditorProcessInfo(it.executableName, it.pid))
         }
     }
@@ -66,7 +66,7 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
     private fun checkValidEditorInstance(pid: Int, processList: Array<ProcessInfo>): Boolean {
         // Look for processes, if it exists and has the correct name, return it unchanged,
         // else return invalidValue. Do not throw, as we'll attempt to recover
-        return processList.any { it.pid == pid && UnityProcessUtil.isUnityEditorProcess(it) }
+        return processList.any { it.pid == pid && UnityRunUtil.isUnityEditorProcess(it) }
     }
 
     fun updateProcessList() {

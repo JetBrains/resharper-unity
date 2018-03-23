@@ -54,7 +54,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
             refreshUnityPlayersList()
         })
 
-        OSProcessUtil.getProcessList().filter { UnityProcessUtil.isUnityEditorProcess(it) }.map { processInfo ->
+        OSProcessUtil.getProcessList().filter { UnityRunUtil.isUnityEditorProcess(it) }.map { processInfo ->
             val port = convertPortToDebuggerPort(processInfo.pid)
             UnityPlayer("127.0.0.1", port, 0, port.toLong(), port.toLong(), 0, processInfo.executableName, true, port)
         }.forEach {

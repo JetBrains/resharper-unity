@@ -1,8 +1,5 @@
 package com.jetbrains.rider.plugins.unity.run.attach
 
-import com.intellij.execution.ProgramRunnerUtil
-import com.intellij.execution.executors.DefaultDebugExecutor
-import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.ColoredListCellRenderer
@@ -13,7 +10,10 @@ import com.intellij.ui.components.JBList
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.panel
 import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.Dimension
+import java.awt.FlowLayout
+import java.awt.Insets
 import javax.swing.*
 
 class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
@@ -57,12 +57,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val player = list.selectedValue
             if (player != null) {
                 val port = if (player.debuggerPort != 0) player.debuggerPort else convertPortToDebuggerPort(player.guid)
-                val configuration = UnityLocalAttachConfiguration(port, player.host)
-                val profile = UnityLocalAttachRunProfile(player.id, configuration)
-                val environment = ExecutionEnvironmentBuilder
-                        .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), profile)
-                        .build()
-                ProgramRunnerUtil.executeConfiguration(environment, false, true)
+                UnityRunUtil.runAttach(player.host, port, player.id, project)
             }
             close(OK_EXIT_CODE)
         }

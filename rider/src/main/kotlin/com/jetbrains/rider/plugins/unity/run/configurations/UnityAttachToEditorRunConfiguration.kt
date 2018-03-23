@@ -13,7 +13,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import com.jetbrains.rider.plugins.unity.run.attach.UnityProcessUtil
+import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
 import com.jetbrains.rider.use2
 import org.apache.commons.logging.LogFactory
 import org.jdom.Element
@@ -65,7 +65,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
         if (pid != null) {
             // Look for processes, if it exists and has the correct name, return it unchanged,
             // else return invalidValue. Do not throw, as we'll attempt to recover
-            if (processList.any { it.pid == pid && UnityProcessUtil.isUnityEditorProcess(it) })
+            if (processList.any { it.pid == pid && UnityRunUtil.isUnityEditorProcess(it) })
                 return pid
         }
         return null
@@ -96,7 +96,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
 
     private fun findUnityEditorInstanceFromProcesses(processList: Array<ProcessInfo>): Int {
 
-        val pids = processList.filter { UnityProcessUtil.isUnityEditorProcess(it) }
+        val pids = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
                 .map { it.pid }
 
         if (pids.isEmpty()) {

@@ -12,7 +12,7 @@ class UnityAttachProvider : XLocalAttachDebuggerProvider {
     override fun getAttachGroup(): XLocalAttachGroup = UnityAttachGroup
 
     override fun getAvailableDebuggers(project: Project, processInfo: ProcessInfo, contextHolder: UserDataHolder): List<XLocalAttachDebugger> {
-        if (UnityProcessUtil.isUnityEditorProcess(processInfo))
+        if (UnityRunUtil.isUnityEditorProcess(processInfo))
             return arrayListOf(UnityAttachDebugger())
         return emptyList()
     }
