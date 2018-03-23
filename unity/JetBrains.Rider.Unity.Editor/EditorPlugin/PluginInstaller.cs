@@ -27,7 +27,6 @@ namespace JetBrains.Rider.Unity.Editor
       string relPath = @"../../plugins/rider-unity/EditorPlugin/JetBrains.Rider.Unity.Editor.Plugin.Ge56.dll";
       if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
         relPath = @"Contents/plugins/rider-unity/EditorPlugin/JetBrains.Rider.Unity.Editor.Plugin.Ge56.dll";
-      // todo: for path like Applications/JetBrains Toolbox/Rider.app this will probably not work
       
       var riderPath = EditorPrefsWrapper.ExternalScriptEditor;
       var origin = new FileInfo(Path.Combine(riderPath, relPath));
@@ -39,7 +38,10 @@ namespace JetBrains.Rider.Unity.Editor
 
       var target = Path.Combine(AssemblyDirectory, origin.Name);
       if (!File.Exists(target) || FileVersionInfo.GetVersionInfo(target) != FileVersionInfo.GetVersionInfo(origin.FullName))
+      {
+        ourLogger.Verbose($"Coping ${origin} -> ${target}.");
         origin.CopyTo(target, true);
+      }
       return true;
     }
 
