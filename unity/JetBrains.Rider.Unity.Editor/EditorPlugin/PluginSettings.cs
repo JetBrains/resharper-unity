@@ -167,8 +167,8 @@ namespace JetBrains.Rider.Unity.Editor
               presentation += " (Toolbox)";
             return presentation;
           })
-          .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-        RiderPathInternal = paths[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
+          .ToArray();
+        RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
         EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
         
         if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))

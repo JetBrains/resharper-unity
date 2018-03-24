@@ -32,7 +32,12 @@ namespace JetBrains.Rider.Unity.Editor
         var origin = new FileInfo(Path.Combine(Path.Combine(riderPath, relPath), ge56PluginName));
         if (!origin.Exists)
         {
-          ourLogger.Warn($"${origin} doesn't exist.");
+          ourLogger.Verbose($"${origin} doesn't exist.");
+          if (File.Exists(target))
+          {
+            ourLogger.Verbose($"Removing ${target}.");
+            File.Delete(target);
+          }
           return;
         }
 
