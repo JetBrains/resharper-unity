@@ -155,13 +155,22 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUILayout.BeginVertical();
       EditorGUI.BeginChangeCheck();
 
-      var alternatives = RiderPathLocator.GetAllFoundPaths(SystemInfoRiderPlugin.operatingSystemFamily);
+      var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
+      var paths = alternatives.Select(a => a.Path).ToArray();
       if (alternatives.Any())
       {
-        var index = Array.IndexOf(alternatives, RiderPathInternal);
-        var alts = alternatives.Select(s => s.Replace("/", ":"))
+        var index = Array.IndexOf(paths, RiderPathInternal);
+        var alts = alternatives.Select(s =>
+          {
+            var presentation = s.BuildVersion;
+            if (s.IsToolbox)
+              presentation += " (Toolbox)";
+            return presentation;
+          })
           .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-        RiderPathInternal = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
+        RiderPathInternal = paths[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
+        EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
+        
         if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))
         {
           EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
