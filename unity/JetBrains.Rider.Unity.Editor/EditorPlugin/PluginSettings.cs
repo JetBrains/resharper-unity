@@ -164,7 +164,10 @@ namespace JetBrains.Rider.Unity.Editor
           {
             var presentation = s.BuildVersion;
             if (s.IsToolbox)
-              presentation += " (Toolbox)";
+              presentation += " (JetBrains Toolbox)";
+            else
+              presentation += $" {Path.GetPathRoot(s.Path)}";
+             
             return presentation;
           })
           .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
