@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
@@ -26,7 +27,7 @@ namespace JetBrains.Rider.Unity.Editor
       myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
     }
-
+    
     public bool OnOpenedAsset(int instanceID, int line)
     {
       // determine asset that has been double clicked in the project view
@@ -44,8 +45,15 @@ namespace JetBrains.Rider.Unity.Editor
             )))
         return false;
 
+      return OnOpenedAsset(assetFilePath, line);
+    }
+
+    [UsedImplicitly] // https://github.com/JetBrains/resharper-unity/issues/475
+    public bool OnOpenedAsset(string assetFilePath, int line)
+    {
       var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
-      myLogger.Verbose("ModifiedSource: {0} EditorApplication.isPlaying: {1} EditorPrefsWrapper.AutoRefresh: {2}", modifiedSource, EditorApplication.isPlaying, EditorPrefsWrapper.AutoRefresh);
+      myLogger.Verbose("ModifiedSource: {0} EditorApplication.isPlaying: {1} EditorPrefsWrapper.AutoRefresh: {2}",
+        modifiedSource, EditorApplication.isPlaying, EditorPrefsWrapper.AutoRefresh);
 
       if (modifiedSource && !EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || !File.Exists(PluginEntryPoint.SlnFile))
       {
