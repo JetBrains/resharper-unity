@@ -170,7 +170,13 @@ namespace JetBrains.Rider.Unity.Editor
             if (s.IsToolbox)
               presentation += " (JetBrains Toolbox)";
             else
-              presentation += $" {Path.GetPathRoot(s.Path)}";
+            {
+              if (s.Path.Length>=15)
+                presentation += $" ({s.Path.Substring(0, 15)}...)";
+              else
+                presentation += $" ({s.Path})";
+            }
+              
              
             return presentation;
           })
