@@ -11,40 +11,51 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly ILog ourLogger = Log.GetLog("AdditionalPluginsInstaller");
     private static string pluginName = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
     private static string ge56PluginName = "JetBrains.Rider.Unity.Editor.Plugin.Ge56.dll";
+    private static string target = Path.Combine(AssemblyDirectory, ge56PluginName);
     
-    public static bool TryInstallAdditionalPlugins()
+    public static void InstallRemoveAdditionalPlugins()
     {
       if (!PluginEntryPoint.IsLoadedFromAssets())
       {
         ourLogger.Verbose($"Plugin was not loaded from Assets.");
-        return false;
+        return;
       }
 
-      if (UnityUtils.UnityVersion < new Version(5, 6))
+      ourLogger.Verbose($"UnityUtils.UnityVersion: {UnityUtils.UnityVersion}");
+      if (UnityUtils.UnityVersion >= new Version(5, 6))
       {
-        ourLogger.Verbose($"UnityUtils.UnityVersion: {UnityUtils.UnityVersion}");
-        return false;
-      }
-      
-      string relPath = @"../../plugins/rider-unity/EditorPlugin";
-      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
-        relPath = @"Contents/plugins/rider-unity/EditorPlugin";
-      
-      var riderPath = EditorPrefsWrapper.ExternalScriptEditor;
-      var origin = new FileInfo(Path.Combine(Path.Combine(riderPath, relPath), ge56PluginName));
-      if (!origin.Exists)
-      {
-        ourLogger.Warn($"${origin} doesn't exist.");
-        return false;
-      }
+        string relPath = @"../../plugins/rider-unity/EditorPlugin";
+        if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
+          relPath = @"Contents/plugins/rider-unity/EditorPlugin";
 
-      var target = Path.Combine(AssemblyDirectory, origin.Name);
-      if (!File.Exists(target) || FileVersionInfo.GetVersionInfo(target) != FileVersionInfo.GetVersionInfo(origin.FullName))
-      {
-        ourLogger.Verbose($"Coping ${origin} -> ${target}.");
-        origin.CopyTo(target, true);
+        var riderPath = EditorPrefsWrapper.ExternalScriptEditor;
+        var origin = new FileInfo(Path.Combine(Path.Combine(riderPath, relPath), ge56PluginName));
+        if (!origin.Exists)
+        {
+          ourLogger.Verbose($"${origin} doesn't exist.");
+          if (File.Exists(target))
+          {
+            ourLogger.Verbose($"Removing ${target}.");
+            File.Delete(target);
+          }
+          return;
+        }
+
+        if (!File.Exists(target) ||
+            FileVersionInfo.GetVersionInfo(target) != FileVersionInfo.GetVersionInfo(origin.FullName))
+        {
+          ourLogger.Verbose($"Coping ${origin} -> ${target}.");
+          origin.CopyTo(target, true);
+        }
       }
-      return true;
+      else
+      {
+        if (File.Exists(target))
+        {
+          ourLogger.Verbose($"Removing ${target}.");
+          File.Delete(target);
+        }
+      }
     }
 
     private static string AssemblyDirectory
