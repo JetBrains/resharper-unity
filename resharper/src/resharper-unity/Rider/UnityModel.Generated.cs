@@ -35,6 +35,7 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdProperty<int> RiderProcessId { get { return _RiderProcessId; }}
     [NotNull] public IRdProperty<string> ApplicationPath { get { return _ApplicationPath; }}
     [NotNull] public IRdProperty<string> ApplicationVersion { get { return _ApplicationVersion; }}
+    [NotNull] public IRdProperty<int> ScriptingRuntime { get { return _ScriptingRuntime; }}
     [NotNull] public ISink<RdLogEvent> Log { get { return _Log; }}
     [NotNull] public RdEndpoint<RdVoid, bool> IsBackendConnected { get { return _IsBackendConnected; }}
     [NotNull] public IRdCall<RdVoid, UnityEditorState> GetUnityEditorState { get { return _GetUnityEditorState; }}
@@ -51,6 +52,7 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdProperty<int> _RiderProcessId;
     [NotNull] private readonly RdProperty<string> _ApplicationPath;
     [NotNull] private readonly RdProperty<string> _ApplicationVersion;
+    [NotNull] private readonly RdProperty<int> _ScriptingRuntime;
     [NotNull] private readonly RdSignal<RdLogEvent> _Log;
     [NotNull] private readonly RdEndpoint<RdVoid, bool> _IsBackendConnected;
     [NotNull] private readonly RdCall<RdVoid, UnityEditorState> _GetUnityEditorState;
@@ -68,6 +70,7 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdProperty<int> riderProcessId,
       [NotNull] RdProperty<string> applicationPath,
       [NotNull] RdProperty<string> applicationVersion,
+      [NotNull] RdProperty<int> scriptingRuntime,
       [NotNull] RdSignal<RdLogEvent> log,
       [NotNull] RdEndpoint<RdVoid, bool> isBackendConnected,
       [NotNull] RdCall<RdVoid, UnityEditorState> getUnityEditorState,
@@ -84,6 +87,7 @@ namespace JetBrains.Platform.Unity.Model
       if (riderProcessId == null) throw new ArgumentNullException("riderProcessId");
       if (applicationPath == null) throw new ArgumentNullException("applicationPath");
       if (applicationVersion == null) throw new ArgumentNullException("applicationVersion");
+      if (scriptingRuntime == null) throw new ArgumentNullException("scriptingRuntime");
       if (log == null) throw new ArgumentNullException("log");
       if (isBackendConnected == null) throw new ArgumentNullException("isBackendConnected");
       if (getUnityEditorState == null) throw new ArgumentNullException("getUnityEditorState");
@@ -99,6 +103,7 @@ namespace JetBrains.Platform.Unity.Model
       _RiderProcessId = riderProcessId;
       _ApplicationPath = applicationPath;
       _ApplicationVersion = applicationVersion;
+      _ScriptingRuntime = scriptingRuntime;
       _Log = log;
       _IsBackendConnected = isBackendConnected;
       _GetUnityEditorState = getUnityEditorState;
@@ -112,6 +117,7 @@ namespace JetBrains.Platform.Unity.Model
       _RiderProcessId.OptimizeNested = true;
       _ApplicationPath.OptimizeNested = true;
       _ApplicationVersion.OptimizeNested = true;
+      _ScriptingRuntime.OptimizeNested = true;
       BindableChildren.Add(new KeyValuePair<string, object>("play", _Play));
       BindableChildren.Add(new KeyValuePair<string, object>("pause", _Pause));
       BindableChildren.Add(new KeyValuePair<string, object>("step", _Step));
@@ -119,6 +125,7 @@ namespace JetBrains.Platform.Unity.Model
       BindableChildren.Add(new KeyValuePair<string, object>("riderProcessId", _RiderProcessId));
       BindableChildren.Add(new KeyValuePair<string, object>("applicationPath", _ApplicationPath));
       BindableChildren.Add(new KeyValuePair<string, object>("applicationVersion", _ApplicationVersion));
+      BindableChildren.Add(new KeyValuePair<string, object>("scriptingRuntime", _ScriptingRuntime));
       BindableChildren.Add(new KeyValuePair<string, object>("log", _Log));
       BindableChildren.Add(new KeyValuePair<string, object>("isBackendConnected", _IsBackendConnected));
       BindableChildren.Add(new KeyValuePair<string, object>("getUnityEditorState", _GetUnityEditorState));
@@ -137,6 +144,7 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<int>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadInt, JetBrains.Platform.RdFramework.Impl.Serializers.WriteInt),
       new RdProperty<string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString),
       new RdProperty<string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString),
+      new RdProperty<int>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadInt, JetBrains.Platform.RdFramework.Impl.Serializers.WriteInt),
       new RdSignal<RdLogEvent>(RdLogEvent.Read, RdLogEvent.Write),
       new RdEndpoint<RdVoid, bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
       new RdCall<RdVoid, UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, ReadUnityEditorState, WriteUnityEditorState),
@@ -191,6 +199,7 @@ namespace JetBrains.Platform.Unity.Model
         printer.Print("riderProcessId = "); _RiderProcessId.PrintEx(printer); printer.Println();
         printer.Print("applicationPath = "); _ApplicationPath.PrintEx(printer); printer.Println();
         printer.Print("applicationVersion = "); _ApplicationVersion.PrintEx(printer); printer.Println();
+        printer.Print("scriptingRuntime = "); _ScriptingRuntime.PrintEx(printer); printer.Println();
         printer.Print("log = "); _Log.PrintEx(printer); printer.Println();
         printer.Print("isBackendConnected = "); _IsBackendConnected.PrintEx(printer); printer.Println();
         printer.Print("getUnityEditorState = "); _GetUnityEditorState.PrintEx(printer); printer.Println();

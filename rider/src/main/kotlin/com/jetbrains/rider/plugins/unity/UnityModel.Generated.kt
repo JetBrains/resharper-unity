@@ -24,6 +24,7 @@ class UnityModel private constructor(
     private val _riderProcessId : RdOptionalProperty<Int>,
     private val _applicationPath : RdOptionalProperty<String>,
     private val _applicationVersion : RdOptionalProperty<String>,
+    private val _scriptingRuntime : RdOptionalProperty<Int>,
     private val _log : RdSignal<RdLogEvent>,
     private val _isBackendConnected : RdEndpoint<Unit, Boolean>,
     private val _getUnityEditorState : RdCall<Unit, UnityEditorState>,
@@ -71,6 +72,7 @@ class UnityModel private constructor(
     val riderProcessId : IOptProperty<Int> get() = _riderProcessId
     val applicationPath : IOptProperty<String> get() = _applicationPath
     val applicationVersion : IOptProperty<String> get() = _applicationVersion
+    val scriptingRuntime : IOptProperty<Int> get() = _scriptingRuntime
     val log : ISource<RdLogEvent> get() = _log
     val isBackendConnected : RdEndpoint<Unit, Boolean> get() = _isBackendConnected
     val getUnityEditorState : IRdCall<Unit, UnityEditorState> get() = _getUnityEditorState
@@ -87,6 +89,7 @@ class UnityModel private constructor(
         _riderProcessId.optimizeNested = true
         _applicationPath.optimizeNested = true
         _applicationVersion.optimizeNested = true
+        _scriptingRuntime.optimizeNested = true
     }
     
     init {
@@ -97,6 +100,7 @@ class UnityModel private constructor(
         bindableChildren.add("riderProcessId" to _riderProcessId)
         bindableChildren.add("applicationPath" to _applicationPath)
         bindableChildren.add("applicationVersion" to _applicationVersion)
+        bindableChildren.add("scriptingRuntime" to _scriptingRuntime)
         bindableChildren.add("log" to _log)
         bindableChildren.add("isBackendConnected" to _isBackendConnected)
         bindableChildren.add("getUnityEditorState" to _getUnityEditorState)
@@ -116,6 +120,7 @@ class UnityModel private constructor(
         RdOptionalProperty<Int>(FrameworkMarshallers.Int),
         RdOptionalProperty<String>(FrameworkMarshallers.String),
         RdOptionalProperty<String>(FrameworkMarshallers.String),
+        RdOptionalProperty<Int>(FrameworkMarshallers.Int),
         RdSignal<RdLogEvent>(RdLogEvent),
         RdEndpoint<Unit, Boolean>(FrameworkMarshallers.Void, FrameworkMarshallers.Bool),
         RdCall<Unit, UnityEditorState>(FrameworkMarshallers.Void, UnityEditorState.marshaller),
@@ -138,6 +143,7 @@ class UnityModel private constructor(
             print("riderProcessId = "); _riderProcessId.print(printer); println()
             print("applicationPath = "); _applicationPath.print(printer); println()
             print("applicationVersion = "); _applicationVersion.print(printer); println()
+            print("scriptingRuntime = "); _scriptingRuntime.print(printer); println()
             print("log = "); _log.print(printer); println()
             print("isBackendConnected = "); _isBackendConnected.print(printer); println()
             print("getUnityEditorState = "); _getUnityEditorState.print(printer); println()
