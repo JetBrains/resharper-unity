@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -35,8 +36,19 @@ namespace JetBrains.Rider.Unity.Editor
       // ReSharper disable once StringLastIndexOfIsCultureSpecific.1
       var dotidx = Category.LastIndexOf(".");
       var categoryText = Category.Substring(dotidx >= 0 ? dotidx + 1 : 0);
-      var text = categoryText + "[" + level + "]" +
-                 DateTime.Now.ToString(Util.Logging.Log.DefaultDateFormat) + " " + message;
+
+      var dateTime = "";
+      try
+      {
+        dateTime = DateTime.Now.ToString(Util.Logging.Log.DefaultDateFormat);
+      }
+      catch (Exception e)
+      {
+        Debug.Log("DateTime.Now: "+ DateTime.Now);
+        Debug.LogError(e);
+      }
+      
+      var text = categoryText + "[" + level + "]" + dateTime + " " + message;
       if (exception != null)
         text = text + Environment.NewLine + exception.Message + Environment.NewLine + exception.StackTrace;
 
