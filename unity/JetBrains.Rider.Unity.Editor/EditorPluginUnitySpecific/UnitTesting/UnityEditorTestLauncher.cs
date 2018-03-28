@@ -2,21 +2,18 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using JetBrains.Annotations;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
-#if !(UNITY_5_5 || UNITY_4_7)
-using NUnit.Framework.Internal;
 using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 using UnityEngine.Events;
 using UnityEngine.TestTools;
-#endif
 
 using TestResult = JetBrains.Platform.Unity.Model.TestResult;
 
-namespace JetBrains.Rider.Unity.Editor.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
 {
   public class UnityEditorTestLauncher
   {
@@ -30,14 +27,17 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     private const string TestNames = "testNames";
     private const string EditModeLauncher = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
     private const string TestRunnerFilter = "UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter";
-    private const string TestInEditorTestAssemblyProvider = "UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider";
+
+    private const string TestInEditorTestAssemblyProvider =
+      "UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider";
+
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
 
     public UnityEditorTestLauncher(UnitTestLaunch launch)
     {
       myLaunch = launch;
     }
-    
+
     public void TryLaunchUnitTests()
     {
       try
@@ -50,10 +50,11 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
         if (testEditorAssembly == null || testEngineAssembly == null)
         {
-          ourLogger.Verbose("Could not find UnityEditor.TestRunner or UnityEngine.TestRunner assemblies in current AppDomain");
+          ourLogger.Verbose(
+            "Could not find UnityEditor.TestRunner or UnityEngine.TestRunner assemblies in current AppDomain");
           return;
         }
-        
+
         var launcherType = testEditorAssembly.GetType(EditModeLauncher);
         var filterType = testEngineAssembly.GetType(TestRunnerFilter);
         var assemblyProviderType = testEditorAssembly.GetType(TestInEditorTestAssemblyProvider);
@@ -64,16 +65,14 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           throw new ArgumentException();
           return;
         }
-        
+
         var filter = Activator.CreateInstance(filterType);
         var fieldInfo = filter.GetType().GetField(TestNames, BindingFlags.Instance | BindingFlags.Public);
-        if(fieldInfo == null)
+        if (fieldInfo == null)
         {
           ourLogger.Verbose("Could not find testNames field via reflection");
           return;
         }
-
-#if !(UNITY_5_5 || UNITY_4_7)
 
         object launcher;
         if (UnityUtils.UnityVersion >= new Version(2018, 1))
@@ -82,24 +81,24 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
             new[] {(object) TestPlatform.EditMode}, null);
           ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
-        
-          var testNameStrings = (object)myLaunch.TestNames.ToArray();
+
+          var testNameStrings = (object) myLaunch.TestNames.ToArray();
           fieldInfo.SetValue(filter, testNameStrings);
 
           launcher = Activator.CreateInstance(launcherType,
             BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
             null, new[] {filter, assemblyProvider},
-            null);  
+            null);
         }
         else
         {
-          var testNameStrings = (object)myLaunch.TestNames.ToArray();
+          var testNameStrings = (object) myLaunch.TestNames.ToArray();
           fieldInfo.SetValue(filter, testNameStrings);
 
           launcher = Activator.CreateInstance(launcherType,
             BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
             null, new[] {filter},
-            null);  
+            null);
         }
 
         var runnerField = launcherType.GetField(MEditmoderunner, BindingFlags.Instance | BindingFlags.NonPublic);
@@ -108,34 +107,33 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           ourLogger.Verbose("Could not find runnerField via reflection");
           return;
         }
-        
+
         var runner = runnerField.GetValue(launcher);
-        
-        if (!AdviseTestStarted(runner)) 
-          return;
-        
-        if (!AdviseTestFinished(runner)) 
+
+        if (!AdviseTestStarted(runner))
           return;
 
-        if(!AdviseSessionFinished(runner))
+        if (!AdviseTestFinished(runner))
           return;
-        
+
+        if (!AdviseSessionFinished(runner))
+          return;
+
         var runMethod = launcherType.GetMethod(LauncherRun, BindingFlags.Instance | BindingFlags.Public);
         if (runMethod == null)
         {
           ourLogger.Verbose("Could not find runMethod via reflection");
           return;
         }
+
         //run!
         runMethod.Invoke(launcher, null);
-#endif
-
       }
       catch (Exception e)
       {
         ourLogger.Error(e, "Exception while launching Unity Editor tests.");
       }
-      
+
     }
 
     private bool AdviseSessionFinished(object runner)
@@ -160,12 +158,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       //subscribe for tests callbacks
-#if !(UNITY_5_5 || UNITY_4_7)
       addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITestResult>(RunFinished)});
-#endif
       return true;
     }
-    
+
     private bool AdviseTestStarted(object runner)
     {
       var mTestStartedEventMethodInfo = runner.GetType()
@@ -188,9 +184,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       //subscribe for tests callbacks
-#if !(UNITY_5_5 || UNITY_4_7)
       addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITest>(TestStarted)});
-#endif
       return true;
     }
 
@@ -216,18 +210,15 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       //subscribe for tests callbacks
-#if !(UNITY_5_5 || UNITY_4_7)
       addListenertMethod.Invoke(mTestFinished, new object[] {new UnityAction<ITestResult>(TestFinished)});
-#endif
       return true;
     }
-#if !(UNITY_5_5 || UNITY_4_7)
-   
+    
     private void RunFinished(ITestResult test)
     {
       myLaunch.RunResult.Fire(new RunResult(true));
     }
-    
+
     private void TestStarted(ITest test)
     {
       if (!(test is TestMethod))
@@ -235,10 +226,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
       ourLogger.Verbose($"TestStarted : {test.FullName}");
       var id = GetIdFromNUnitTest(test);
-      
+
       myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running));
     }
-    
+
     private void TestFinished(ITestResult testResult)
     {
       var test = testResult.Test;
@@ -249,7 +240,9 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       var id = GetIdFromNUnitTest(test);
 
       var output = ExtractOutput(testResult);
-      myLaunch.TestResult.Fire(new TestResult(id, output, (int)TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds, Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed));
+      myLaunch.TestResult.Fire(new TestResult(id, output,
+        (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
+        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed));
     }
 
     private static string ExtractOutput(ITestResult testResult)
@@ -280,11 +273,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       return testResult.Output ?? String.Empty;
     }
 
-    [NotNull]
     private string GetIdFromNUnitTest(ITest test)
     {
       var testMethod = test as TestMethod;
-      if(testMethod == null)
+      if (testMethod == null)
         throw new ArgumentException("Could not get id from NUnit test {0}", test.FullName);
 
       var methodName = testMethod.Name;
@@ -292,6 +284,5 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
       return string.Format("{0}.{1}", className, methodName);
     }
-#endif
   }
 }

@@ -84,7 +84,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     public bool CallRider(string args)
     {
-      var defaultApp = myRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor, RiderPathLocator.GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider));
+      var paths = RiderPathLocator.GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider);
+      var defaultApp = myRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor, paths);
       if (string.IsNullOrEmpty(defaultApp))
       {
         return false;

@@ -10,7 +10,6 @@ using JetBrains.IDE;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
-using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
@@ -27,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityEditorProtocol
     {
-        private readonly Lifetime myLifetime;
+        private readonly Lifetime myComponentLifetime;
         private readonly SequentialLifetimes mySessionLifetimes;
         private readonly ILogger myLogger;
         private readonly IScheduler myDispatcher;
@@ -42,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger,
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
-            myLifetime = lifetime;
+            myComponentLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
             myLocks = locks;
@@ -91,7 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
             // connect on reload of server
-            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol",
+            if (!myComponentLifetime.IsTerminated)
+              myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
                 () => CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
@@ -175,16 +175,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.Play.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Pause", b.ToString().ToLower()));
 
-                    myLocks.ExecuteOrQueueEx(myLifetime, "setModel",
-                        () => { myUnityModel.SetValue(model, myReadonlyToken); });
+                    if (!myComponentLifetime.IsTerminated)
+                        myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
                     lf.AddAction(() =>
                     {
-                        myLocks.ExecuteOrQueueEx(myLifetime, "clearModel", () =>
-                        {
-                            myLogger.Info("Wire disconnected.");
-                            solution.SetCustomData("UNITY_SessionInitialized", "false");
-                            myUnityModel.SetValue(null, myReadonlyToken);
-                        });
+                        if (!myComponentLifetime.IsTerminated)
+                            myLocks.ExecuteOrQueueEx(myComponentLifetime, "clearModel", () =>
+                            {
+                                myLogger.Info("Wire disconnected.");
+                                solution.SetCustomData("UNITY_SessionInitialized", "false");
+                                myUnityModel.SetValue(null, myReadonlyToken);                                
+                            });
                     });
                 });
             }
@@ -218,14 +219,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void SubscribeToLogs(Lifetime lifetime, UnityModel model, Solution solution)
         {
-            model.LogModelInitialized.Advise(lifetime, modelInitialized =>
+
+            model.Log.Advise(lifetime, entry =>
             {
-                modelInitialized.Log.Advise(lifetime, entry =>
-                {
-                    myLogger.Verbose(entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine +
-                                     " " + entry.StackTrace);
-                    solution.SetCustomData("UNITY_LogEntry", JsonConvert.SerializeObject(entry));
-                });
+                myLogger.Verbose(entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
+                solution.SetCustomData("UNITY_LogEntry", JsonConvert.SerializeObject(entry));
             });
         }
     }
