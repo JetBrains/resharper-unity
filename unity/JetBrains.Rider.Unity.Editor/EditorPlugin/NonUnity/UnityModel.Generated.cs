@@ -35,7 +35,8 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] public IRdProperty<int> RiderProcessId { get { return _RiderProcessId; }}
     [NotNull] public IRdProperty<string> ApplicationPath { get { return _ApplicationPath; }}
     [NotNull] public IRdProperty<string> ApplicationVersion { get { return _ApplicationVersion; }}
-    [NotNull] public IRdProperty<UnityLogModelInitialized> LogModelInitialized { get { return _LogModelInitialized; }}
+    [NotNull] public IRdProperty<int> ScriptingRuntime { get { return _ScriptingRuntime; }}
+    [NotNull] public ISource<RdLogEvent> Log { get { return _Log; }}
     [NotNull] public IRdCall<RdVoid, bool> IsBackendConnected { get { return _IsBackendConnected; }}
     [NotNull] public RdEndpoint<RdVoid, UnityEditorState> GetUnityEditorState { get { return _GetUnityEditorState; }}
     [NotNull] public IRdCall<RdOpenFileArgs, bool> OpenFileLineCol { get { return _OpenFileLineCol; }}
@@ -51,7 +52,8 @@ namespace JetBrains.Platform.Unity.Model
     [NotNull] private readonly RdProperty<int> _RiderProcessId;
     [NotNull] private readonly RdProperty<string> _ApplicationPath;
     [NotNull] private readonly RdProperty<string> _ApplicationVersion;
-    [NotNull] private readonly RdProperty<UnityLogModelInitialized> _LogModelInitialized;
+    [NotNull] private readonly RdProperty<int> _ScriptingRuntime;
+    [NotNull] private readonly RdSignal<RdLogEvent> _Log;
     [NotNull] private readonly RdCall<RdVoid, bool> _IsBackendConnected;
     [NotNull] private readonly RdEndpoint<RdVoid, UnityEditorState> _GetUnityEditorState;
     [NotNull] private readonly RdCall<RdOpenFileArgs, bool> _OpenFileLineCol;
@@ -68,7 +70,8 @@ namespace JetBrains.Platform.Unity.Model
       [NotNull] RdProperty<int> riderProcessId,
       [NotNull] RdProperty<string> applicationPath,
       [NotNull] RdProperty<string> applicationVersion,
-      [NotNull] RdProperty<UnityLogModelInitialized> logModelInitialized,
+      [NotNull] RdProperty<int> scriptingRuntime,
+      [NotNull] RdSignal<RdLogEvent> log,
       [NotNull] RdCall<RdVoid, bool> isBackendConnected,
       [NotNull] RdEndpoint<RdVoid, UnityEditorState> getUnityEditorState,
       [NotNull] RdCall<RdOpenFileArgs, bool> openFileLineCol,
@@ -84,7 +87,8 @@ namespace JetBrains.Platform.Unity.Model
       if (riderProcessId == null) throw new ArgumentNullException("riderProcessId");
       if (applicationPath == null) throw new ArgumentNullException("applicationPath");
       if (applicationVersion == null) throw new ArgumentNullException("applicationVersion");
-      if (logModelInitialized == null) throw new ArgumentNullException("logModelInitialized");
+      if (scriptingRuntime == null) throw new ArgumentNullException("scriptingRuntime");
+      if (log == null) throw new ArgumentNullException("log");
       if (isBackendConnected == null) throw new ArgumentNullException("isBackendConnected");
       if (getUnityEditorState == null) throw new ArgumentNullException("getUnityEditorState");
       if (openFileLineCol == null) throw new ArgumentNullException("openFileLineCol");
@@ -99,7 +103,8 @@ namespace JetBrains.Platform.Unity.Model
       _RiderProcessId = riderProcessId;
       _ApplicationPath = applicationPath;
       _ApplicationVersion = applicationVersion;
-      _LogModelInitialized = logModelInitialized;
+      _ScriptingRuntime = scriptingRuntime;
+      _Log = log;
       _IsBackendConnected = isBackendConnected;
       _GetUnityEditorState = getUnityEditorState;
       _OpenFileLineCol = openFileLineCol;
@@ -112,6 +117,7 @@ namespace JetBrains.Platform.Unity.Model
       _RiderProcessId.OptimizeNested = true;
       _ApplicationPath.OptimizeNested = true;
       _ApplicationVersion.OptimizeNested = true;
+      _ScriptingRuntime.OptimizeNested = true;
       BindableChildren.Add(new KeyValuePair<string, object>("play", _Play));
       BindableChildren.Add(new KeyValuePair<string, object>("pause", _Pause));
       BindableChildren.Add(new KeyValuePair<string, object>("step", _Step));
@@ -119,7 +125,8 @@ namespace JetBrains.Platform.Unity.Model
       BindableChildren.Add(new KeyValuePair<string, object>("riderProcessId", _RiderProcessId));
       BindableChildren.Add(new KeyValuePair<string, object>("applicationPath", _ApplicationPath));
       BindableChildren.Add(new KeyValuePair<string, object>("applicationVersion", _ApplicationVersion));
-      BindableChildren.Add(new KeyValuePair<string, object>("logModelInitialized", _LogModelInitialized));
+      BindableChildren.Add(new KeyValuePair<string, object>("scriptingRuntime", _ScriptingRuntime));
+      BindableChildren.Add(new KeyValuePair<string, object>("log", _Log));
       BindableChildren.Add(new KeyValuePair<string, object>("isBackendConnected", _IsBackendConnected));
       BindableChildren.Add(new KeyValuePair<string, object>("getUnityEditorState", _GetUnityEditorState));
       BindableChildren.Add(new KeyValuePair<string, object>("openFileLineCol", _OpenFileLineCol));
@@ -137,7 +144,8 @@ namespace JetBrains.Platform.Unity.Model
       new RdProperty<int>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadInt, JetBrains.Platform.RdFramework.Impl.Serializers.WriteInt),
       new RdProperty<string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString),
       new RdProperty<string>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadString, JetBrains.Platform.RdFramework.Impl.Serializers.WriteString),
-      new RdProperty<UnityLogModelInitialized>(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write),
+      new RdProperty<int>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadInt, JetBrains.Platform.RdFramework.Impl.Serializers.WriteInt),
+      new RdSignal<RdLogEvent>(RdLogEvent.Read, RdLogEvent.Write),
       new RdCall<RdVoid, bool>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
       new RdEndpoint<RdVoid, UnityEditorState>(JetBrains.Platform.RdFramework.Impl.Serializers.ReadVoid, JetBrains.Platform.RdFramework.Impl.Serializers.WriteVoid, ReadUnityEditorState, WriteUnityEditorState),
       new RdCall<RdOpenFileArgs, bool>(RdOpenFileArgs.Read, RdOpenFileArgs.Write, JetBrains.Platform.RdFramework.Impl.Serializers.ReadBool, JetBrains.Platform.RdFramework.Impl.Serializers.WriteBool),
@@ -160,7 +168,6 @@ namespace JetBrains.Platform.Unity.Model
       serializers.Register(RdLogEvent.Read, RdLogEvent.Write);
       serializers.RegisterEnum<RdLogEventType>();
       serializers.RegisterEnum<RdLogEventMode>();
-      serializers.Register(UnityLogModelInitialized.Read, UnityLogModelInitialized.Write);
       serializers.Register(TestResult.Read, TestResult.Write);
       serializers.Register(RunResult.Read, RunResult.Write);
       serializers.Register(JetBrains.Platform.Unity.Model.UnitTestLaunch.Read, JetBrains.Platform.Unity.Model.UnitTestLaunch.Write);
@@ -192,7 +199,8 @@ namespace JetBrains.Platform.Unity.Model
         printer.Print("riderProcessId = "); _RiderProcessId.PrintEx(printer); printer.Println();
         printer.Print("applicationPath = "); _ApplicationPath.PrintEx(printer); printer.Println();
         printer.Print("applicationVersion = "); _ApplicationVersion.PrintEx(printer); printer.Println();
-        printer.Print("logModelInitialized = "); _LogModelInitialized.PrintEx(printer); printer.Println();
+        printer.Print("scriptingRuntime = "); _ScriptingRuntime.PrintEx(printer); printer.Println();
+        printer.Print("log = "); _Log.PrintEx(printer); printer.Println();
         printer.Print("isBackendConnected = "); _IsBackendConnected.PrintEx(printer); printer.Println();
         printer.Print("getUnityEditorState = "); _GetUnityEditorState.PrintEx(printer); printer.Println();
         printer.Print("openFileLineCol = "); _OpenFileLineCol.PrintEx(printer); printer.Println();
@@ -676,64 +684,5 @@ namespace JetBrains.Platform.Unity.Model
     Idle,
     Play,
     Refresh
-  }
-  
-  
-  public class UnityLogModelInitialized : RdBindableBase {
-    //fields
-    //public fields
-    [NotNull] public ISource<RdLogEvent> Log { get { return _Log; }}
-    
-    //private fields
-    [NotNull] private readonly RdSignal<RdLogEvent> _Log;
-    
-    //primary constructor
-    private UnityLogModelInitialized(
-      [NotNull] RdSignal<RdLogEvent> log
-    )
-    {
-      if (log == null) throw new ArgumentNullException("log");
-      
-      _Log = log;
-      BindableChildren.Add(new KeyValuePair<string, object>("log", _Log));
-    }
-    //secondary constructor
-    public UnityLogModelInitialized (
-    ) : this (
-      new RdSignal<RdLogEvent>(RdLogEvent.Read, RdLogEvent.Write)
-    ) {}
-    //statics
-    
-    public static CtxReadDelegate<UnityLogModelInitialized> Read = (ctx, reader) => 
-    {
-      var _id = RdId.Read(reader);
-      var log = RdSignal<RdLogEvent>.Read(ctx, reader, RdLogEvent.Read, RdLogEvent.Write);
-      return new UnityLogModelInitialized(log).WithId(_id);
-    };
-    
-    public static CtxWriteDelegate<UnityLogModelInitialized> Write = (ctx, writer, value) => 
-    {
-      value.RdId.Write(writer);
-      RdSignal<RdLogEvent>.Write(ctx, writer, value._Log);
-    };
-    //custom body
-    //equals trait
-    //hash code trait
-    //pretty print
-    public override void Print(PrettyPrinter printer)
-    {
-      printer.Println("UnityLogModelInitialized (");
-      using (printer.IndentCookie()) {
-        printer.Print("log = "); _Log.PrintEx(printer); printer.Println();
-      }
-      printer.Print(")");
-    }
-    //toString
-    public override string ToString()
-    {
-      var printer = new SingleLinePrettyPrinter();
-      Print(printer);
-      return printer.ToString();
-    }
   }
 }
