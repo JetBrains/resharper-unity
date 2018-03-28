@@ -273,7 +273,6 @@ namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
       return testResult.Output ?? String.Empty;
     }
 
-//    [NotNull]
     private string GetIdFromNUnitTest(ITest test)
     {
       var testMethod = test as TestMethod;
