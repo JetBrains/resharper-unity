@@ -40,6 +40,7 @@ namespace JetBrains.Rider.Unity.Editor
       var dateTime = "";
       try
       {
+        // Unity may crash on this 
         dateTime = DateTime.Now.ToString(Util.Logging.Log.DefaultDateFormat);
       }
       catch (Exception e)
