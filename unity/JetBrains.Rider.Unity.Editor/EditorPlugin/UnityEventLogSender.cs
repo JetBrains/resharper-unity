@@ -41,25 +41,22 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
-      RdLogEvent evt;
+      RdLogEventType eventType;
       switch (type)
       {
         case LogType.Error:
         case LogType.Exception:
-          evt = new RdLogEvent(RdLogEventType.Error,
-            EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit, message, stackTrace);
+          eventType = RdLogEventType.Error;
           break;
         case LogType.Warning:
-          evt = new RdLogEvent(RdLogEventType.Warning,
-            EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit, message, stackTrace);
+          eventType = RdLogEventType.Warning;
           break;
         default:
-          evt = new RdLogEvent(RdLogEventType.Message,
-            EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit, message, stackTrace);
+          eventType = RdLogEventType.Message;
           break;
       }
-
-//        AddEvent(evt);
+      var eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;
+      var evt = new RdLogEvent(eventType, eventMode, message, stackTrace);
       myDelayedLogEvents.AddLast(evt);
       if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
         myDelayedLogEvents.RemoveFirst(); // limit max size
@@ -103,23 +100,9 @@ namespace JetBrains.Rider.Unity.Editor
 
       collector.myDelayedLogEvents.Clear();
     }
-
-//    public void RouteEvent(RdLogEvent evt)
-//    {
-//      var model = myModel.Maybe.ValueOrDefault;
-//      if (model == null)
-//      {
-//        //myCollector.
-//      }
-//      else
-//      {
-//        SendLogEvent(model, evt);
-//      }
-//    }
     
     private void SendLogEvent(UnityModel model, RdLogEvent logEvent)
     {
-      //if (!message.StartsWith("[Rider][TRACE]")) // avoid sending because in Trace mode log about sending log event to Rider, will also appear in unity log
       model.Log.Fire(logEvent);
     }
   }
