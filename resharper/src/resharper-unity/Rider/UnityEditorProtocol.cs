@@ -10,7 +10,6 @@ using JetBrains.IDE;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
-using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.Model;
 using JetBrains.ProjectModel;
@@ -220,14 +219,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void SubscribeToLogs(Lifetime lifetime, UnityModel model, Solution solution)
         {
-            model.LogModelInitialized.Advise(lifetime, modelInitialized =>
+
+            model.Log.Advise(lifetime, entry =>
             {
-                modelInitialized.Log.Advise(lifetime, entry =>
-                {
-                    myLogger.Verbose(entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine +
-                                     " " + entry.StackTrace);
-                    solution.SetCustomData("UNITY_LogEntry", JsonConvert.SerializeObject(entry));
-                });
+                myLogger.Verbose(entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
+                solution.SetCustomData("UNITY_LogEntry", JsonConvert.SerializeObject(entry));
             });
         }
     }

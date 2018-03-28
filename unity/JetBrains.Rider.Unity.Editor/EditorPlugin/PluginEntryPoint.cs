@@ -26,15 +26,14 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
+    public static readonly RProperty<UnityModel> UnityModel = new RProperty<UnityModel>();
+    private static readonly UnityEventCollector ourLogEventCollector;
 
     // This an entry point
     static PluginEntryPoint()
     {
-      ourModel = new RProperty<UnityModel>();
-      
-      var logSender = new UnityEventLogSender(ourModel);
-      logSender.UnityLogRegisterCallBack();
-      
+      ourLogEventCollector = new UnityEventCollector();
+
       ourPluginSettings = new PluginSettings();
       ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
       var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
@@ -66,7 +65,7 @@ namespace JetBrains.Rider.Unity.Editor
         try
         {
           // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = ourModel.Maybe.ValueOrDefault.IsBackendConnected.Sync(RdVoid.Instance,
+          connected = UnityModel.Maybe.ValueOrDefault.IsBackendConnected.Sync(RdVoid.Instance,
             new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
         }
         catch (Exception)
@@ -79,11 +78,10 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool CallRider(string args)
     {
-      return ourAssetHandler.CallRider(args);
+      return ourOpenAssetHandler.CallRider(args);
     }
     
     private static bool ourInitialized;
-    private static readonly RProperty<UnityModel> ourModel;
     
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     
@@ -132,20 +130,21 @@ namespace JetBrains.Rider.Unity.Editor
         var identities = new Identities(IdKind.Server);
         
         MainThreadDispatcher.AssertThread();
-        
+
         riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
         {
-          var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
+          var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance,
+            riderProtocolController.Wire);
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
           var model = new UnityModel(connectionLifetime, protocol);
           AdviseUnityActions(model, connectionLifetime);
           AdviseUnityEditorState(model);
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
-          model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
           
           ourLogger.Verbose("UnityModel initialized.");
-          ourModel.Value = model;
+          UnityModel.SetValue(model);
+          new UnityEventLogSender(ourLogEventCollector);
         });
       }
       catch (Exception ex)
@@ -153,7 +152,7 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Error("Init Rider Plugin " + ex);
       }
 
-      ourAssetHandler = new OnOpenAssetHandler(ourModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
+      ourOpenAssetHandler = new OnOpenAssetHandler(UnityModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
       AdditionalPluginsInstaller.InstallRemoveAdditionalPlugins();
       ourInitialized = true;
     }
@@ -205,7 +204,7 @@ namespace JetBrains.Rider.Unity.Editor
             model.Play.SetValue(isPlaying);  
          
           var isPaused = EditorApplication.isPaused;
-          ourModel?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
+          UnityModel?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
         });
       });
       isPlayingAction(); // get Unity state
@@ -252,7 +251,7 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
-    private static OnOpenAssetHandler ourAssetHandler;
+    private static OnOpenAssetHandler ourOpenAssetHandler;
 
     /// <summary>
     /// Creates and deletes Library/EditorInstance.json containing info about unity instance
@@ -309,7 +308,7 @@ namespace JetBrains.Rider.Unity.Editor
         Init();
       }
       
-      return ourAssetHandler.OnOpenedAsset(instanceID, line);
+      return ourOpenAssetHandler.OnOpenedAsset(instanceID, line);
     }
 
     public static bool IsLoadedFromAssets()
