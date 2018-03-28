@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityEditorProtocol
     {
-        private readonly Lifetime myLifetime;
+        private readonly Lifetime myComponentLifetime;
         private readonly SequentialLifetimes mySessionLifetimes;
         private readonly ILogger myLogger;
         private readonly IScheduler myDispatcher;
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger,
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
-            myLifetime = lifetime;
+            myComponentLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
             myLocks = locks;
@@ -90,7 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
             // connect on reload of server
-            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol",
+            if (!myComponentLifetime.IsTerminated)
+              myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
                 () => CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
@@ -174,16 +175,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.Play.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Pause", b.ToString().ToLower()));
 
-                    myLocks.ExecuteOrQueueEx(myLifetime, "setModel",
-                        () => { myUnityModel.SetValue(model, myReadonlyToken); });
+                    if (!myComponentLifetime.IsTerminated)
+                        myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
                     lf.AddAction(() =>
                     {
-                        myLocks.ExecuteOrQueueEx(myLifetime, "clearModel", () =>
-                        {
-                            myLogger.Info("Wire disconnected.");
-                            solution.SetCustomData("UNITY_SessionInitialized", "false");
-                            myUnityModel.SetValue(null, myReadonlyToken);
-                        });
+                        if (!myComponentLifetime.IsTerminated)
+                            myLocks.ExecuteOrQueueEx(myComponentLifetime, "clearModel", () =>
+                            {
+                                myLogger.Info("Wire disconnected.");
+                                solution.SetCustomData("UNITY_SessionInitialized", "false");
+                                myUnityModel.SetValue(null, myReadonlyToken);                                
+                            });
                     });
                 });
             }

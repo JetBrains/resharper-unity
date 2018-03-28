@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
@@ -15,7 +17,6 @@ using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using JetBrains.Rider.Unity.Editor.NonUnity;
-using JetBrains.Rider.Unity.Editor.UnitTesting;
 using UnityEditor.Callbacks;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -52,6 +53,11 @@ namespace JetBrains.Rider.Unity.Editor
         Init();
       }
     }
+
+    public delegate void MyEventHandler(UnityModelAndLifetime e);
+    [UsedImplicitly]
+    public static event MyEventHandler OnModelInitialization = delegate {};
+    //public static readonly List<Action<UnityModel,Lifetime>> ActionsOnModelInitialization = new List<Action<UnityModel,Lifetime>>();
 
     internal static bool CheckConnectedToBackendSync()
     {
@@ -133,7 +139,7 @@ namespace JetBrains.Rider.Unity.Editor
           var model = new UnityModel(connectionLifetime, protocol);
           AdviseUnityActions(model, connectionLifetime);
           AdviseUnityEditorState(model);
-          AdviseUnitTestLaunch(model, connectionLifetime);
+          OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           
           ourLogger.Verbose("UnityModel initialized.");
@@ -147,7 +153,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       ourOpenAssetHandler = new OnOpenAssetHandler(UnityModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
-      
+      AdditionalPluginsInstaller.InstallRemoveAdditionalPlugins();
       ourInitialized = true;
     }
 
@@ -169,15 +175,6 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
     
-    private static void AdviseUnitTestLaunch(UnityModel modelValue, Lifetime connectionLifetime)
-    {     
-      modelValue.UnitTestLaunch.Change.Advise(connectionLifetime, launch =>
-      {
-        var unityEditorTestLauncher = new UnityEditorTestLauncher(launch);
-        unityEditorTestLauncher.TryLaunchUnitTests();
-      });
-    }
-
     private static void AdviseRefresh(UnityModel model)
     {
       model.Refresh.Set((l, force) =>
@@ -270,7 +267,8 @@ namespace JetBrains.Rider.Unity.Editor
   ""version"": ""{Application.unityVersion}"",
   ""app_path"": ""{EditorApplication.applicationPath}"",
   ""app_contents_path"": ""{EditorApplication.applicationContentsPath}"",
-  ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}""
+  ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}"",
+  ""is_loaded_from_assets"": ""{IsLoadedFromAssets()}"",
 }}");
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
@@ -311,6 +309,25 @@ namespace JetBrains.Rider.Unity.Editor
       }
       
       return ourOpenAssetHandler.OnOpenedAsset(instanceID, line);
+    }
+
+    public static bool IsLoadedFromAssets()
+    {
+      var currentDir = Directory.GetCurrentDirectory();
+      var location = Assembly.GetExecutingAssembly().Location;
+      return location.StartsWith(currentDir, StringComparison.InvariantCultureIgnoreCase);
+    }
+  }
+
+  public struct UnityModelAndLifetime
+  {
+    public UnityModel Model;
+    public Lifetime Lifetime;
+
+    public UnityModelAndLifetime(UnityModel model, Lifetime lifetime)
+    {
+      Model = model;
+      Lifetime = lifetime;
     }
   }
 }

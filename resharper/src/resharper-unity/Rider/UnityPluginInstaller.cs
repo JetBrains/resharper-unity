@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Application.BuildScript.Application;
 using JetBrains.Application.Environment;
@@ -229,16 +230,11 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
             try
             {
-
-                //var assembly = Assembly.GetExecutingAssembly();
-                //var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
-                //var subplatformName = package.SubplatformName;
-                //FileSystemPath dir = myResolver.GetDeployedPackageDirectory(package);
-
-                var installDirectory = myApplicationPackagesLocallyInstalled
-                    .Single(a => a.Id == "JetBrains.plugin_com_intellij_resharper_unity").LocalInstallDirectory;
+                var assembly = Assembly.GetExecutingAssembly();
+                var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
+                var installDirectory = myResolver.GetDeployedPackageDirectory(package);
                 var editorPluginPath =
-                    installDirectory.Parent.Combine(@"EditorPlugin\JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll");
+                    installDirectory.Parent.Combine(@"EditorPlugin").Combine(UnityPluginDetector.PluginDllFile);
 
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try

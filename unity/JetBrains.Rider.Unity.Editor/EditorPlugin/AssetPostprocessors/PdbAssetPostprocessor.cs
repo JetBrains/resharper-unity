@@ -21,6 +21,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (!PluginEntryPoint.Enabled)
         return;
       
+      if (UnityUtils.ScriptingRuntime > 0)
+        return;
+      
       var toBeConverted = importedAssets.Where(a => 
           a.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&
           importedAssets.Any(a1 => a1 == Path.ChangeExtension(a, ".pdb")) &&
