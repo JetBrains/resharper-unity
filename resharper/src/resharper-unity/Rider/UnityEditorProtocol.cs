@@ -32,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
+        private readonly Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
 
         private readonly IProperty<UnityModel> myUnityModel;
 
@@ -39,13 +40,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger,
-            IScheduler dispatcher, IShellLocks locks, ISolution solution)
+            IScheduler dispatcher, IShellLocks locks, ISolution solution, Application.ActivityTrackingNew.UsageStatistics usageStatistics)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
+            myUsageStatistics = usageStatistics;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
             myUnityModel = new Property<UnityModel>(lifetime, "unityModelProperty", null).EnsureReadonly(myReadonlyToken).EnsureThisThread();
             
@@ -174,6 +176,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     SubscribeToOpenFile(model, solution);
                     model.Play.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => solution.SetCustomData("UNITY_Pause", b.ToString().ToLower()));
+                    
+                    TrackActivity(model, lf);
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
@@ -193,6 +197,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 myLogger.Error(ex);
             }
+        }
+
+        private void TrackActivity(UnityModel model, Lifetime lf)
+        {
+            model.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("Unity", version); });
+            model.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("Unity", runtime.ToString()); });
         }
 
         private void SubscribeToOpenFile([NotNull] UnityModel model, Solution solution)
