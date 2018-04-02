@@ -4,14 +4,16 @@ import com.jetbrains.rider.generator.nova.*
 import com.jetbrains.rider.generator.nova.PredefinedType.*
 import com.jetbrains.rider.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rider.generator.nova.kotlin.Kotlin11Generator
+
 import java.io.File
 
+@Suppress("unused")
 object EditorPluginModel: Root(
     CSharp50Generator(FlowTransform.AsIs, "JetBrains.Platform.Unity.EditorPluginModel", File("../resharper/src/resharper-unity/Rider")),
     CSharp50Generator(FlowTransform.Reversed, "JetBrains.Platform.Unity.EditorPluginModel", File("../unity/JetBrains.Rider.Unity.Editor/EditorPlugin/NonUnity")),
     Kotlin11Generator(FlowTransform.AsIs, "com.jetbrains.rider.plugins.unity.editorPlugin.model", File("src/main/kotlin/com/jetbrains/rider"))
 ){
-    var RdOpenFileArgs = structdef{
+    var RdOpenFileArgs = structdef {
         field("path", string)
         field("line", int)
         field("col", int)
@@ -32,10 +34,6 @@ object EditorPluginModel: Root(
     val RdLogEventMode = enum {
         +"Edit"
         +"Play"
-    }
-
-    val UnityLogModelInitialized = classdef {
-        sink("log", RdLogEvent)
     }
 
     val TestResult = structdef {
@@ -79,8 +77,9 @@ object EditorPluginModel: Root(
 
         property("applicationPath", string)
         property("applicationVersion", string)
+        property("scriptingRuntime", int)
 
-        property("logModelInitialized", UnityLogModelInitialized)
+        sink("log", RdLogEvent)
 
         callback("isBackendConnected", void, bool)
         call("getUnityEditorState", void, UnityEditorState)
