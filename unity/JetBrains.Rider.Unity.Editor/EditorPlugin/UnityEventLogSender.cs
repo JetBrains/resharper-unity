@@ -86,7 +86,7 @@ namespace JetBrains.Rider.Unity.Editor
       };
     }
 
-    private void ProcessQueue(UnityModel model, UnityEventCollector collector)
+    private void ProcessQueue(EditorPluginModel model, UnityEventCollector collector)
     {
       if (!collector.myDelayedLogEvents.Any())
         return;

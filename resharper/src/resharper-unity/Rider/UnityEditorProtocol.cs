@@ -36,6 +36,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
         public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
+        
+        private readonly IProperty<EditorPluginModel> myUnityModel;
+
+        [NotNull]
+        public IProperty<EditorPluginModel> UnityModel => myUnityModel;
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
@@ -47,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution = solution;
             myHost = host;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
-            UnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null).EnsureReadonly(myReadonlyToken).EnsureThisThread();
+            myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null).EnsureReadonly(myReadonlyToken).EnsureThisThread();
             
             if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath.Directory))
                 return;
@@ -79,9 +84,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // connect on start of Rider
             CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
         }
-
-        [NotNull]
-        public IProperty<EditorPluginModel> UnityModel { get; }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
@@ -159,7 +161,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
-                    solution.SetCustomData("UNITY_Play", "undef");
+                    myHost.SetModelData("UNITY_Play", "undef");
                 
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
                     var model = new EditorPluginModel(lf, protocol);
@@ -181,7 +183,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             myLocks.ExecuteOrQueueEx(myComponentLifetime, "clearModel", () =>
                             {
                                 myLogger.Info("Wire disconnected.");
-                                myHost.SetCustomData("UNITY_SessionInitialized", "false");
+                                myHost.SetModelData("UNITY_SessionInitialized", "false");
                                 myUnityModel.SetValue(null, myReadonlyToken);                                
                             });
                     });
@@ -221,7 +223,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             model.Log.Advise(lifetime, entry =>
             {
                 myLogger.Verbose(entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
-                myHost.SetCustomData("UNITY_LogEntry", JsonConvert.SerializeObject(entry));
+                myHost.SetModelData("UNITY_LogEntry", JsonConvert.SerializeObject(entry));
             });
         }
     }
