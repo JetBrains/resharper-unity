@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             private static bool IsAsset(ProjectItemChange change)
             {
                 var rootFolder = GetRootFolder(change.OldParentFolder);
-                return rootFolder != null && string.Compare(rootFolder.Name, "Assets", StringComparison.OrdinalIgnoreCase) == 0;
+                return rootFolder != null && string.Compare(rootFolder.Name, ProjectExtensions.AssetsFolder, StringComparison.OrdinalIgnoreCase) == 0;
             }
 
             private static IProjectFolder GetRootFolder(IProjectItem item)

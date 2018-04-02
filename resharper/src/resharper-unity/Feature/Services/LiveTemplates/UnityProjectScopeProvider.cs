@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
 {
@@ -26,55 +28,80 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
 
         public override IEnumerable<ITemplateScopePoint> ProvideScopePoints(TemplateAcceptanceContext context)
         {
-            var project = context.GetProject();
-            if (project == null)
+            if (!context.Solution.IsUnitySolution())
                 yield break;
 
-            if (!project.IsUnityProject())
+            var project = context.GetProject();
+            if (project != null && !project.IsUnityProject())
                 yield break;
 
             // We could check for C# here, like InRazorCSharpProject, but we only really support C# Unity projects
             // Are there any other types?
             yield return new InUnityCSharpProject();
 
-            var projectFolder = context.GetProjectFolder();
-            if (projectFolder != null)
+            var folders = GetFoldersFromProjectFolder(context) ?? GetFoldersFromPath(context);
+            if (folders == null || folders.IsEmpty())
+                yield break;
+
+            var rootFolder = folders[folders.Count - 1];
+            if (rootFolder.Equals(ProjectExtensions.AssetsFolder, StringComparison.OrdinalIgnoreCase))
             {
-                var folders = new List<string>();
-                while (projectFolder?.Path?.ShortName != null)
+                yield return new InUnityCSharpAssetsFolder();
+
+                var isFirstpass = IsFirstpass(folders);
+                var isEditor = folders.Any(f => f.Equals("Editor", StringComparison.OrdinalIgnoreCase));
+
+                if (isFirstpass)
                 {
-                    folders.Add(projectFolder.Path.ShortName);
-                    projectFolder = projectFolder.ParentFolder;
+                    yield return new InUnityCSharpFirstpassFolder();
+                    if (isEditor)
+                        yield return new InUnityCSharpFirstpassEditorFolder();
+                    if (!isEditor)
+                        yield return new InUnityCSharpFirstpassRuntimeFolder();
                 }
-
-                if (folders.Count > 0)
+                else
                 {
-                    var rootFolder = folders[folders.Count - 1];
-                    if (rootFolder.Equals("Assets", StringComparison.OrdinalIgnoreCase))
-                    {
-                        yield return new InUnityCSharpAssetsFolder();
-
-                        var isFirstpass = IsFirstpass(folders);
-                        var isEditor = folders.Any(f => f.Equals("Editor", StringComparison.OrdinalIgnoreCase));
-
-                        if (isFirstpass)
-                        {
-                            yield return new InUnityCSharpFirstpassFolder();
-                            if (isEditor)
-                                yield return new InUnityCSharpFirstpassEditorFolder();
-                            if (!isEditor)
-                                yield return new InUnityCSharpFirstpassRuntimeFolder();
-                        }
-                        else
-                        {
-                            if (isEditor)
-                                yield return new InUnityCSharpEditorFolder();
-                            if (!isEditor)
-                                yield return new InUnityCSharpRuntimeFolder();
-                        }
-                    }
+                    if (isEditor)
+                        yield return new InUnityCSharpEditorFolder();
+                    if (!isEditor)
+                        yield return new InUnityCSharpRuntimeFolder();
                 }
             }
+        }
+
+        [CanBeNull]
+        private List<string> GetFoldersFromProjectFolder(TemplateAcceptanceContext context)
+        {
+            var projectFolder = context.GetProjectFolder();
+            if (projectFolder == null)
+                return null;
+
+            var folders = new List<string>();
+            while (projectFolder?.Path?.ShortName != null)
+            {
+                folders.Add(projectFolder.Path.ShortName);
+                projectFolder = projectFolder.ParentFolder;
+            }
+            return folders;
+        }
+
+        [CanBeNull]
+        private List<string> GetFoldersFromPath(TemplateAcceptanceContext context)
+        {
+            if (context.Location == null)
+                return null;
+
+            var folders = new List<string>();
+            var currentPath = context.Location;
+            while (!currentPath.IsEmpty)
+            {
+                var folder = currentPath.Name;
+                folders.Add(folder);
+                if (folder == ProjectExtensions.AssetsFolder)
+                    break;
+                currentPath = currentPath.Parent;
+            }
+            return folders;
         }
 
         private bool IsFirstpass(List<string> folders)
