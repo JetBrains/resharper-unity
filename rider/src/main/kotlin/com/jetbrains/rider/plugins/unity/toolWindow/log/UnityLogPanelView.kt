@@ -40,15 +40,20 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
     private val eventList = UnityLogPanelEventList().apply {
         addListSelectionListener {
-            console.clear()
-            if (selectedIndex >= 0) {
-                console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
-                console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
-                console.scrollTo(0)
+            if (logModel.selectedItem != selectedValue && selectedValue != null) {
+                logModel.selectedItem = selectedValue
+
+                console.clear()
+                if (selectedIndex >= 0) {
+                    console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
+                    console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
+                    console.scrollTo(0)
+                }
             }
         }
+
         val eventList1 = this
-        addKeyListener(object: KeyAdapter() {
+        addKeyListener(object : KeyAdapter() {
             override fun keyPressed(e: KeyEvent?) {
                 if (e?.keyCode == KeyEvent.VK_ENTER) {
                     e.consume()
@@ -56,15 +61,21 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
                 }
             }
         })
-        object: DoubleClickListener() {
+        object : DoubleClickListener() {
             override fun onDoubleClick(event: MouseEvent?): Boolean {
                 getNavigatableForSelected(eventList1, project)?.navigate(true)
                 return true
             }
         }.installOn(this)
 
-        unityHost.play.whenTrue(logModel.lifetime) {
-            logModel.events.clear()
+        var prevVal: Boolean? = null
+
+        unityHost.play.advise(logModel.lifetime) {
+            if (it != null && it && prevVal == false) {
+                logModel.events.clear()
+                console.clear()
+            }
+            prevVal = it
         }
     }
 
@@ -87,7 +98,6 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         secondComponent = RiderUI.borderPanel {
             add(console.component, BorderLayout.CENTER)
             console.editor.settings.isCaretRowShown = true
-            console.editor.settings.isUseSoftWraps = true
             console.clear()
             console.allowHeavyFilters()
         }
@@ -104,7 +114,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
     }
 
     private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(logModel, mainSplitterToggleAction, console.createConsoleActions()
-        .filter {  it is ToggleUseSoftWrapsToolbarAction }.toList())
+        .filter { it is ToggleUseSoftWrapsToolbarAction }.toList())
 
     private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
 
@@ -118,16 +128,14 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
     // TODO: optimize
     private fun refreshList(newEvents: List<RdLogEvent>) {
         eventList.riderModel.clear()
-        for (event in newEvents)
-        {
+        for (event in newEvents) {
             eventList.riderModel.addElement(event)
-            if (eventList.itemsCount>1000)
-                eventList.riderModel.removeElementAt(0)
         }
 
-        if (eventList.isSelectionEmpty)
-            eventList.selectedIndex = eventList.itemsCount-1
-        eventList.ensureIndexIsVisible(eventList.itemsCount-1)
+        if (logModel.selectedItem != null)
+            eventList.setSelectedValue(logModel.selectedItem, true)
+        else
+            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
     }
 
     init {

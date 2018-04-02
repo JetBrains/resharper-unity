@@ -1,10 +1,8 @@
-package com.jetbrains.rider.plugins.unity.util.attach
+package com.jetbrains.rider.plugins.unity.run.attach
 
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
-import com.jetbrains.rider.run.configurations.remote.unity.UnityProcessUtil
-import com.jetbrains.rider.util.idea.getLogger
 import java.net.*
 import java.util.*
 import java.util.regex.Pattern
@@ -56,7 +54,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
             refreshUnityPlayersList()
         })
 
-        OSProcessUtil.getProcessList().filter { UnityProcessUtil.isUnityEditorProcess(it) }.map { processInfo ->
+        OSProcessUtil.getProcessList().filter { UnityRunUtil.isUnityEditorProcess(it) }.map { processInfo ->
             val port = convertPortToDebuggerPort(processInfo.pid)
             UnityPlayer("127.0.0.1", port, 0, port.toLong(), port.toLong(), 0, processInfo.executableName, true, port)
         }.forEach {
@@ -99,7 +97,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
                     unityPlayerDescriptorsHeartbeats.remove(playerDescriptor)
                     onPlayerRemoved(parseUnityPlayer(playerDescriptor))
                 } else
-                    unityPlayerDescriptorsHeartbeats.put(playerDescriptor, currentPlayerTimeout - 1)
+                    unityPlayerDescriptorsHeartbeats[playerDescriptor] = currentPlayerTimeout - 1
             }
 
             synchronized(socketsLock) {
@@ -115,7 +113,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
                         if (!unityPlayerDescriptorsHeartbeats.containsKey(descriptor)) {
                             onPlayerAdded(parseUnityPlayer(descriptor))
                         }
-                        unityPlayerDescriptorsHeartbeats.put(descriptor, defaultHeartbeat)
+                        unityPlayerDescriptorsHeartbeats[descriptor] = defaultHeartbeat
                     } catch (e: SocketTimeoutException) {
                         //wait timeout, go to the next port
                     }

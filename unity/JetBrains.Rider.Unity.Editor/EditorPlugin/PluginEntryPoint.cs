@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
@@ -15,7 +17,6 @@ using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using JetBrains.Rider.Unity.Editor.NonUnity;
-using JetBrains.Rider.Unity.Editor.UnitTesting;
 using UnityEditor.Callbacks;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -25,15 +26,14 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
+    public static readonly RProperty<UnityModel> UnityModel = new RProperty<UnityModel>();
+    private static readonly UnityEventCollector ourLogEventCollector;
 
     // This an entry point
     static PluginEntryPoint()
     {
-      ourModel = new RProperty<EditorPluginModel>();
-      
-      var logSender = new UnityEventLogSender(ourModel);
-      logSender.UnityLogRegisterCallBack();
-      
+      ourLogEventCollector = new UnityEventCollector();
+
       ourPluginSettings = new PluginSettings();
       ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
       var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
@@ -54,13 +54,18 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
+    public delegate void MyEventHandler(UnityModelAndLifetime e);
+    [UsedImplicitly]
+    public static event MyEventHandler OnModelInitialization = delegate {};
+    //public static readonly List<Action<UnityModel,Lifetime>> ActionsOnModelInitialization = new List<Action<UnityModel,Lifetime>>();
+
     internal static bool CheckConnectedToBackendSync()
     {
         var connected = false;
         try
         {
           // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = ourModel.Maybe.ValueOrDefault.IsBackendConnected.Sync(RdVoid.Instance,
+          connected = UnityModel.Maybe.ValueOrDefault.IsBackendConnected.Sync(RdVoid.Instance,
             new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
         }
         catch (Exception)
@@ -73,7 +78,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool CallRider(string args)
     {
-      return ourAssetHandler.CallRider(args);
+      return ourOpenAssetHandler.CallRider(args);
     }
     
     private static bool ourInitialized;
@@ -126,14 +131,21 @@ namespace JetBrains.Rider.Unity.Editor
         var identities = new Identities(IdKind.Server);
         
         MainThreadDispatcher.AssertThread();
-        
+
         riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
         {
-          var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
+          var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance,
+            riderProtocolController.Wire);
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-          var modelValue = CreateModel(protocol, connectionLifetime);
-          AdviseModel(connectionLifetime, modelValue);
-          ourModel.Value = modelValue;
+          var model = new UnityModel(connectionLifetime, protocol);
+          AdviseUnityActions(model, connectionLifetime);
+          AdviseUnityEditorState(model);
+          OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
+          AdviseRefresh(model);
+          
+          ourLogger.Verbose("UnityModel initialized.");
+          UnityModel.SetValue(model);
+          new UnityEventLogSender(ourLogEventCollector);
         });
       }
       catch (Exception ex)
@@ -141,12 +153,12 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Error("Init Rider Plugin " + ex);
       }
 
-      ourAssetHandler = new OnOpenAssetHandler(ourModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
-      
+      ourOpenAssetHandler = new OnOpenAssetHandler(UnityModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
+      AdditionalPluginsInstaller.InstallRemoveAdditionalPlugins();
       ourInitialized = true;
     }
 
-    private static void AdviseModel(Lifetime connectionLifetime, EditorPluginModel modelValue)
+    private static void AdviseModel(EditorPluginModel modelValue)
     {
       modelValue.GetUnityEditorState.Set(rdVoid =>
       {
@@ -161,48 +173,11 @@ namespace JetBrains.Rider.Unity.Editor
         }
         
         return UnityEditorState.Idle;
-      }); 
-      
-      modelValue.UnitTestLaunch.Change.Advise(connectionLifetime, launch =>
-      {
-        var unityEditorTestLauncher = new UnityEditorTestLauncher(launch);
-        unityEditorTestLauncher.TryLaunchUnitTests();
       });
     }
-
-    private static EditorPluginModel CreateModel(Protocol protocol, Lifetime lt)
+    
+    private static void AdviseRefresh(UnityModel model)
     {
-      var isPlayingAction = new Action(() =>
-      {
-        MainThreadDispatcher.Instance.Queue(() =>
-        {
-          var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-          ourModel?.Maybe.ValueOrDefault?.Play.SetValue(isPlaying);
-
-          var isPaused = EditorApplication.isPaused;
-          ourModel?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
-        });
-      });
-      var model = new EditorPluginModel(lt, protocol);
-      isPlayingAction(); // get Unity state
-      model.Play.Advise(lt, play =>
-      {
-        MainThreadDispatcher.Instance.Queue(() =>
-        {
-          var res = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-          if (res != play)
-            EditorApplication.isPlaying = play;
-        });
-      });
-
-      model.Pause.Advise(lt, pause =>
-      {
-        MainThreadDispatcher.Instance.Queue(() =>
-        {
-          EditorApplication.isPaused = pause;
-        });
-      });
-      model.LogModelInitialized.SetValue(new UnityLogModelInitialized());
       model.Refresh.Set((l, force) =>
       {
         var task = new RdTask<RdVoid>();
@@ -216,6 +191,42 @@ namespace JetBrains.Rider.Unity.Editor
         });
         return task;
       });
+    }
+
+    private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
+    {
+      var isPlayingAction = new Action(() =>
+      {
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          var isPlayOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode;
+          var isPlaying = isPlayOrWillChange && EditorApplication.isPlaying;
+          if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
+            model.Play.SetValue(isPlaying);  
+         
+          var isPaused = EditorApplication.isPaused;
+          UnityModel?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
+        });
+      });
+      isPlayingAction(); // get Unity state
+      model.Play.Advise(connectionLifetime, play =>
+      {
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          var res = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+          if (res != play)
+            EditorApplication.isPlaying = play;
+        });
+      });
+
+      model.Pause.Advise(connectionLifetime, pause =>
+      {
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          EditorApplication.isPaused = pause;
+        });
+      });
+      
       model.Step.Set((l, x) =>
       {
         var task = new RdTask<RdVoid>();
@@ -230,28 +241,18 @@ namespace JetBrains.Rider.Unity.Editor
       var isPlayingHandler = new EditorApplication.CallbackFunction(() => isPlayingAction());
 // left for compatibility with Unity <= 5.5
 #pragma warning disable 618
-      lt.AddBracket(() => { EditorApplication.playmodeStateChanged += isPlayingHandler; },
+      connectionLifetime.AddBracket(() => { EditorApplication.playmodeStateChanged += isPlayingHandler; },
         () => { EditorApplication.playmodeStateChanged -= isPlayingHandler; });
 #pragma warning restore 618
-      //isPlayingHandler();
-      
       // new api - not present in Unity 5.5
-      //lt.AddBracket(() => { EditorApplication.pauseStateChanged+= IsPauseStateChanged(model);},
-      //  () => { EditorApplication.pauseStateChanged -= IsPauseStateChanged(model); });
-      
-      ourLogger.Verbose("CreateModel finished.");
-
-      return model;
+      // private static Action<PauseState> IsPauseStateChanged(UnityModel model)
+      //    {
+      //      return state => model?.Pause.SetValue(state == PauseState.Paused);
+      //    }
     }
 
-    // new api - not present in Unity 5.5
-    // private static Action<PauseState> IsPauseStateChanged(UnityModel model)
-    //    {
-    //      return state => model?.Pause.SetValue(state == PauseState.Paused);
-    //    }
-
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
-    private static OnOpenAssetHandler ourAssetHandler;
+    private static OnOpenAssetHandler ourOpenAssetHandler;
 
     /// <summary>
     /// Creates and deletes Library/EditorInstance.json containing info about unity instance
@@ -267,7 +268,8 @@ namespace JetBrains.Rider.Unity.Editor
   ""version"": ""{Application.unityVersion}"",
   ""app_path"": ""{EditorApplication.applicationPath}"",
   ""app_contents_path"": ""{EditorApplication.applicationContentsPath}"",
-  ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}""
+  ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}"",
+  ""is_loaded_from_assets"": ""{IsLoadedFromAssets()}"",
 }}");
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
@@ -307,7 +309,26 @@ namespace JetBrains.Rider.Unity.Editor
         Init();
       }
       
-      return ourAssetHandler.OnOpenedAsset(instanceID, line);
+      return ourOpenAssetHandler.OnOpenedAsset(instanceID, line);
+    }
+
+    public static bool IsLoadedFromAssets()
+    {
+      var currentDir = Directory.GetCurrentDirectory();
+      var location = Assembly.GetExecutingAssembly().Location;
+      return location.StartsWith(currentDir, StringComparison.InvariantCultureIgnoreCase);
+    }
+  }
+
+  public struct UnityModelAndLifetime
+  {
+    public UnityModel Model;
+    public Lifetime Lifetime;
+
+    public UnityModelAndLifetime(UnityModel model, Lifetime lifetime)
+    {
+      Model = model;
+      Lifetime = lifetime;
     }
   }
 }

@@ -102,7 +102,11 @@ namespace JetBrains.Rider.Unity.Editor
     private static string RiderPathInternal
     {
       get { return EditorPrefs.GetString("Rider_RiderPath", null); }
-      set { EditorPrefs.SetString("Rider_RiderPath", value); }
+      set
+      {
+        EditorPrefs.SetString("Rider_RiderPath", value);
+        AdditionalPluginsInstaller.InstallRemoveAdditionalPlugins();
+      }
     }
 
     // The default "Open C# Project" menu item will use the external script editor to load the .sln
@@ -155,13 +159,31 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUILayout.BeginVertical();
       EditorGUI.BeginChangeCheck();
 
-      var alternatives = RiderPathLocator.GetAllFoundPaths(SystemInfoRiderPlugin.operatingSystemFamily);
+      var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
+      var paths = alternatives.Select(a => a.Path).ToArray();
       if (alternatives.Any())
       {
-        var index = Array.IndexOf(alternatives, RiderPathInternal);
-        var alts = alternatives.Select(s => s.Replace("/", ":"))
-          .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-        RiderPathInternal = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
+        var index = Array.IndexOf(paths, RiderPathInternal);
+        var alts = alternatives.Select(s =>
+          {
+            var presentation = s.BuildVersion;
+            if (s.IsToolbox)
+              presentation += " (JetBrains Toolbox)";
+            else
+            {
+              if (s.Path.Length>=15)
+                presentation += $" ({s.Path.Substring(0, 15)}...)";
+              else
+                presentation += $" ({s.Path})";
+            }
+              
+             
+            return presentation;
+          })
+          .ToArray();
+        RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
+        EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
+        
         if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))
         {
           EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;

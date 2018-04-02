@@ -43,6 +43,7 @@
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
     <projectModelViewProvider implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerViewProvider"/>
 
+    <xdebugger.localAttachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityAttachProvider"/>
   </extensions>
 
   <project-components>

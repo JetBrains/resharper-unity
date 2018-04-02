@@ -11,7 +11,7 @@ using UnityEditor;
 namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
   public class CsprojAssetPostprocessor : AssetPostprocessor
-  { 
+  {
     private static readonly ILog ourLogger = Log.GetLog<CsprojAssetPostprocessor>();
 
     public override int GetPostprocessOrder()
@@ -29,7 +29,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       var currentDirectory = Directory.GetCurrentDirectory();
       var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj")
         .Where(csprojFile => lines.Any(line => line.Contains("\"" + Path.GetFileName(csprojFile) + "\""))).ToArray();
-      
+
       foreach (var file in projectFiles)
       {
         UpgradeProjectFile(file);
@@ -49,19 +49,19 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         ourLogger.Verbose("Failed to Load {0}", projectFile);
         return;
       }
-      
+
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
-      
+      SetProjectFlavour(projectContentElement, xmlns);
+
       // Unity_5_6_OR_NEWER switched to nunit 3.5
       if (UnityUtils.UnityVersion >= new Version(5,6))
         ChangeNunitReference(projectContentElement, xmlns);
 
-      
       //#i f !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
       if (UnityUtils.UnityVersion < new Version(2017, 1))
       {
@@ -92,14 +92,14 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         .Elements(xmlns + "ItemGroup")
         .Elements(xmlns + "Reference")
         .FirstOrDefault(a => a.Attribute("Include") != null && a.Attribute("Include").Value == "nunit.framework");
-      
+
       if (el == null)
         return;
 
       var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
-      if (hintPath == null) 
+      if (hintPath == null)
         return;
-      
+
       var path = Path.GetFullPath("Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
       InstallFromResource(path, ".nunit.framework.dll");
       if (new FileInfo(path).Exists)
@@ -114,7 +114,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         ourLogger.Log(LoggingLevel.VERBOSE, $"Already exists {targetFileInfo}");
         return;
       }
-      
+
       var ass = Assembly.GetExecutingAssembly();
       ourLogger.Verbose("resources in {0}: {1}", ass.Location, ass.GetManifestResourceNames().Aggregate((a,b)=>a+", "+b));
 
@@ -133,7 +133,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
             {
               ourLogger.Verbose("Coping {0} => {1} ", resourceName, targetFileInfo);
               PdbAssetPostprocessor.CopyStream(resourceStream, fileStream);
-            }  
+            }
           }
         }
       }
@@ -157,26 +157,21 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       string configPath = null;
 
-      if (IsPlayerProjectFile(projectFile) || IsEditorProjectFile(projectFile))
+      //Prefer mcs.rsp if it exists
+      if (File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
       {
-        //Prefer mcs.rsp if it exists
-        if (File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
-        {
-          configPath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
-        }
-        else
-        {
-          if (IsPlayerProjectFile(projectFile))
-            configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
-          else if (IsEditorProjectFile(projectFile))
-            configPath = EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;          
-        }
+        configPath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+      }
+      else
+      {
+        if (IsPlayerProjectFile(projectFile))
+          configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+        else if (IsEditorProjectFile(projectFile))
+          configPath = EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
       }
 
-      if(!string.IsNullOrEmpty(configPath))
-        ApplyManualCompilingSettings(configPath
-          , projectContentElement
-          , xmlns);
+      if (!string.IsNullOrEmpty(configPath))
+        ApplyManualCompilingSettings(configPath, projectContentElement, xmlns);
     }
 
     private static void ApplyManualCompilingSettings(string configFilePath, XElement projectContentElement, XNamespace xmlns)
@@ -276,7 +271,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       if (!File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
         return;
-      
+
       var configFilePath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
 
       if (File.Exists(configFilePath))
@@ -307,17 +302,17 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
               var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
               if (!monoDir.Exists)
                 monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
-              
+
               var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
               if (newestApiDir != null)
               {
                 var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, referenceName));
                 if (dllPath.Exists)
-                  hintPath = dllPath.FullName;  
+                  hintPath = dllPath.FullName;
               }
             }
-            
-            ApplyCustomReference(referenceName, projectContentElement, xmlns, hintPath);  
+
+            ApplyCustomReference(referenceName, projectContentElement, xmlns, hintPath);
           }
         }
       }
@@ -339,8 +334,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
         var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
           .Elements(xmlns + "TargetFrameworkVersion")
-          .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
-        if (targetFrameworkVersion == null) 
+          .FirstOrDefault(); // Processing csproj files, which are not Unity-generated JetBrains/Unity3dRider#56
+        if (targetFrameworkVersion == null)
           return;
 
       if (UnityUtils.ScriptingRuntime > 0)
@@ -379,20 +374,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
     {
-      // Add LangVersion to the .csproj. Unity doesn't generate it (although VSTU does).
-      // Not strictly necessary, as the Unity plugin for Rider will work it out, but setting
-      // it makes Rider work if it's not installed.
-      var langVersion = projectElement.Elements(xmlns + "PropertyGroup").Elements(xmlns + "LangVersion")
-        .FirstOrDefault(); // Processing csproj files, which are not Unity-generated #56
-      if (langVersion != null)
-      {
-        langVersion.SetValue(GetLanguageLevel());
-      }
-      else
-      {
-        projectElement.AddFirst(new XElement(xmlns + "PropertyGroup",
-          new XElement(xmlns + "LangVersion", GetLanguageLevel())));
-      }
+      // Set the C# language level, so Rider doesn't have to guess (although it does a good job)
+      // VSTU sets this, and I think newer versions of Unity do too (should check which version)
+      SetOrUpdateProperty(projectElement, xmlns, "LangVersion", GetLanguageLevel());
     }
 
     private static string GetLanguageLevel()
@@ -403,14 +387,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (Directory.Exists(Path.GetFullPath("CSharp60Support")))
         return "6";
 
-      var apiCompatibilityLevel = 3;
-      // Unity 5.5 supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-//#i f !UNITY_5_6_OR_NEWER
-      //if ((int)PlayerSettings.apiCompatibilityLevel >= 3)
-//      #else
-//      if ((int) PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) >= 3)
-//#endif
-
+      var apiCompatibilityLevel = 0;
       try
       {
         //PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)
@@ -423,7 +400,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       {
         ourLogger.Verbose("Exception on evaluating PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)"+ ex);
       }
-      
+
       try
       {
         var property = typeof(PlayerSettings).GetProperty("apiCompatibilityLevel");
@@ -434,10 +411,45 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         ourLogger.Verbose("Exception on evaluating PlayerSettings.apiCompatibilityLevel");
       }
 
-      if (apiCompatibilityLevel >= 3)
+      // Unity 5.5+ supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
+      const int apiCompatibilityLevelNet46 = 3;
+      if (apiCompatibilityLevel >= apiCompatibilityLevelNet46)
         return "6";
 
       return "4";
+    }
+
+    private static void SetProjectFlavour(XElement projectElement, XNamespace xmlns)
+    {
+      // This is the VSTU project flavour GUID, followed by the C# project type
+      SetOrUpdateProperty(projectElement, xmlns, "ProjectTypeGuids",
+        "{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}");
+    }
+
+    private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, string content)
+    {
+      var element = root.Elements(xmlns + "PropertyGroup").Elements(xmlns + name).FirstOrDefault();
+      if (element != null)
+      {
+        if (element.Value != content)
+          element.SetValue(content);
+      }
+      else
+        AddProperty(root, xmlns, name, content);
+    }
+
+    // Adds a property to the first property group without a condition
+    private static void AddProperty(XElement root, XNamespace xmlns, string name, object content)
+    {
+      var propertyGroup = root.Elements(xmlns + "PropertyGroup")
+        .FirstOrDefault(e => !e.Attributes(xmlns + "Condition").Any());
+      if (propertyGroup == null)
+      {
+        propertyGroup = new XElement(xmlns + "PropertyGroup");
+        root.AddFirst(propertyGroup);
+      }
+
+      propertyGroup.Add(new XElement(xmlns + name, content));
     }
   }
 }

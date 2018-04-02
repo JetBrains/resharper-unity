@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.UnityReferenceDiscoverer
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.util.idea.tryGetComponent
 
@@ -11,13 +12,21 @@ class PlayInUnityAction() : ToggleAction("Play/Edit", "Change Play/Edit mode in 
 
     override fun isSelected(e: AnActionEvent):Boolean {
         val projectCustomDataHost = e.getHost() ?: return false
-        return projectCustomDataHost.play.value
+        val play = projectCustomDataHost.play.value
+        return play!=null && play
     }
     override fun setSelected(e: AnActionEvent?, value: Boolean) {
         val project = e?.project?: return
         UnityHost.CallBackendPlay(project, value)
     }
     override fun update(e: AnActionEvent) {
+        if (!e.isUnityProject()) {
+            e.presentation.isVisible = false
+            return
+        }
+
+        e.presentation.isVisible = true
+
         val projectCustomDataHost = e.getHost() ?: return
         e.presentation.isEnabled = projectCustomDataHost.sessionInitialized.value
         super.update(e)
@@ -35,8 +44,16 @@ class PauseInUnityAction() : ToggleAction("Pause/Resume", "Pause/Resume play in 
     }
 
     override fun update(e: AnActionEvent) {
+        if (!e.isUnityProject()) {
+            e.presentation.isVisible = false
+            return
+        }
+
+        e.presentation.isVisible = true
+
         val projectCustomDataHost = e.getHost() ?: return
-        e.presentation.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.sessionInitialized.value
+        val play = projectCustomDataHost.play.value;
+        e.presentation.isEnabled =  play!= null && play && projectCustomDataHost.sessionInitialized.value
         super.update(e)
     }
 }
@@ -48,8 +65,16 @@ class StepInUnityAction() : AnAction("Step", "Perform a single frame step.", Uni
     }
 
     override fun update(e: AnActionEvent) {
+        if (!e.isUnityProject()) {
+            e.presentation.isVisible = false
+            return
+        }
+
+        e.presentation.isVisible = true
+
         val projectCustomDataHost = e.getHost() ?: return
-        e.presentation.isEnabled = projectCustomDataHost.play.value && projectCustomDataHost.sessionInitialized.value
+        val play = projectCustomDataHost.play.value
+        e.presentation.isEnabled = play!=null && play && projectCustomDataHost.sessionInitialized.value
         super.update(e)
     }
 }
@@ -57,4 +82,10 @@ class StepInUnityAction() : AnAction("Step", "Perform a single frame step.", Uni
 fun AnActionEvent.getHost(): UnityHost? {
     val project = project?: return null
     return project.tryGetComponent()
+}
+
+fun AnActionEvent.isUnityProject(): Boolean {
+    val project = this.project ?: return false
+    val discoverer = project.tryGetComponent<UnityReferenceDiscoverer>() ?: return false
+    return discoverer.isUnityGeneratedProject
 }

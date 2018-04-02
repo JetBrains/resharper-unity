@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityEditorProtocol
     {
-        private readonly Lifetime myLifetime;
+        private readonly Lifetime myComponentLifetime;
         private readonly SequentialLifetimes mySessionLifetimes;
         private readonly ILogger myLogger;
         private readonly IScheduler myDispatcher;
@@ -35,12 +35,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityHost myHost;
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
-        public readonly ISignal<bool> Refresh = new DataFlow.Signal<bool>("Refresh");
+        public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution)
         {
-            myLifetime = lifetime;
+            myComponentLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
             myLocks = locks;
@@ -87,7 +87,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
             // connect on reload of server
-            myLocks.ExecuteOrQueue(myLifetime, "CreateProtocol",
+            if (!myComponentLifetime.IsTerminated)
+              myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
                 () => CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
         }
 
@@ -107,15 +108,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     case "UNITY_Refresh":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        Refresh.Fire(Convert.ToBoolean(e.NewValue));
+                        var force = Convert.ToBoolean(e.NewValue);
+                        Refresh.Fire(force);
+                        solution.CustomData.Data.Remove("UNITY_Refresh");
                         break;
                     
                     case "UNITY_Step":
-                        if (e.NewValue.ToLower() == true.ToString().ToLower())
-                        {
-                            myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                            model.Step.Start(RdVoid.Instance);
-                        }
+                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
+                        model.Step.Start(RdVoid.Instance);
+                        solution.CustomData.Data.Remove("UNITY_Step");
                         break;
                     
                     case "UNITY_Play":
@@ -158,6 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
+                    solution.SetCustomData("UNITY_Play", "undef");
                 
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
                     var model = new EditorPluginModel(lf, protocol);
@@ -170,16 +172,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.Play.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
 
-                    myLocks.ExecuteOrQueueEx(myLifetime, "setModel",
-                        () => { UnityModel.SetValue(model, myReadonlyToken); });
+                    if (!myComponentLifetime.IsTerminated)
+                        myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
+                    
                     lf.AddAction(() =>
                     {
-                        myLocks.ExecuteOrQueueEx(myLifetime, "clearModel", () =>
-                        {
-                            myLogger.Info("Wire disconnected.");
-                            myHost.SetModelData("UNITY_SessionInitialized", "false");
-                            UnityModel.SetValue(null, myReadonlyToken);
-                        });
+                        if (!myComponentLifetime.IsTerminated)
+                            myLocks.ExecuteOrQueueEx(myComponentLifetime, "clearModel", () =>
+                            {
+                                myLogger.Info("Wire disconnected.");
+                                myHost.SetCustomData("UNITY_SessionInitialized", "false");
+                                myUnityModel.SetValue(null, myReadonlyToken);                                
+                            });
                     });
                 });
             }
@@ -213,14 +217,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void SubscribeToLogs(Lifetime lifetime, EditorPluginModel model)
         {
-            model.LogModelInitialized.Advise(lifetime, modelInitialized =>
+
+            model.Log.Advise(lifetime, entry =>
             {
-                modelInitialized.Log.Advise(lifetime, entry =>
-                {
-                    myLogger.Verbose(entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine +
-                                     " " + entry.StackTrace);
-                    myHost.SetModelData("UNITY_LogEntry", JsonConvert.SerializeObject(entry));
-                });
+                myLogger.Verbose(entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
+                myHost.SetCustomData("UNITY_LogEntry", JsonConvert.SerializeObject(entry));
             });
         }
     }
