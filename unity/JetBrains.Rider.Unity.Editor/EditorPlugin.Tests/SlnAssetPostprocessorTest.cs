@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Net.NetworkInformation;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
-using NUnit.Framework;
+using Xunit;
 
 namespace JetBrains.Rider.Unity.Editor.Tests
 {
-  [TestFixture]
   public class SlnAssetPostprocessorTest
   {
-    [Test]
+    [Fact]
     public void TestFixRandomGuid()
     {
       var input =
@@ -17,10 +17,10 @@ namespace JetBrains.Rider.Unity.Editor.Tests
         "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"Shared\", \"Shared\", \"{8FCD7D66-2D91-456C-AE4E-E2F6F5B8BCAD}\"" +
         Environment.NewLine;
 
-      Assert.AreEqual(expected, SlnAssetPostprocessor.ProcessSlnText(input));
+      Assert.Equal(expected, SlnAssetPostprocessor.ProcessSlnText(input));
     }
 
-    [Test]
+    [Fact]
     public void TestFixesInvalidCSharpGuid()
     {
       // See https://youtrack.jetbrains.com/issue/RIDER-1261 (demo project shows type in C# guid: FA*A*04EC0-301F-11D3-BF4B-00C04F79EFBC)
@@ -30,16 +30,16 @@ namespace JetBrains.Rider.Unity.Editor.Tests
       var expected =
         "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"Shared\", \"Shared\", \"{8FCD7D66-2D91-456C-AE4E-E2F6F5B8BCAD}\"" +
         Environment.NewLine;
-
-      Assert.AreEqual(expected, SlnAssetPostprocessor.ProcessSlnText(input));
+      
+      Assert.Equal(expected, SlnAssetPostprocessor.ProcessSlnText(input));
     }
 
-    [Test]
+    [Fact]
     public void TestCorectGuidNotModified()
     {
       var input = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"BestHTTP\", \"BestHTTP.csproj\", \"{A311886C-D085-4914-A8E5-6DF7C92112D8}\""+Environment.NewLine;
       var expected = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"BestHTTP\", \"BestHTTP.csproj\", \"{A311886C-D085-4914-A8E5-6DF7C92112D8}\""+Environment.NewLine;
-      Assert.AreEqual(expected, SlnAssetPostprocessor.ProcessSlnText(input));
+      Assert.Equal(expected, SlnAssetPostprocessor.ProcessSlnText(input));
     }
   }
 }

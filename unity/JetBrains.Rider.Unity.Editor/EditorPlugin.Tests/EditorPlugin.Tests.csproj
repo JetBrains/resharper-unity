@@ -23,8 +23,7 @@
   <ItemGroup>
     <!-- Note that this is a newer version than the one that ships with Unity. This forces us to run tests with this
          standard version rather than Unity's custom version which has type resolver errors in the full framework -->
-    <PackageReference Include="NUnit" Version="3.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="xunit" Version="1.9.2" />
   </ItemGroup>
 </Project>

@@ -93,3 +93,4 @@ unity/Assets/CSharp vNext Support/*
 unity/Assets/Plugins/Editor/JetBrains/*
 unity/compilation.log
 unity/**/manifest.json
+unity/JetBrains.Rider.Unity.Editor/EditorPlugin.Tests/tsconfig.json
