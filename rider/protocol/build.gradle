@@ -15,5 +15,3 @@ repositories {
         dirs rdLibDirectory.absolutePath
     }
 }
-
-ext.kotlin_version = '1.2.10'
