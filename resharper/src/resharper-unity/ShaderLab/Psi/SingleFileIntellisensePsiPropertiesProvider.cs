@@ -3,6 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.ReSharper.Psi.PerformanceThreshold;
+using JetBrains.ReSharper.Resources.Shell;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
 {
@@ -22,14 +23,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
         public IPsiSourceFileProperties GetPsiProperties(IPsiSourceFileProperties prevProperties, IProject project,
             IProjectFile projectFile, IPsiSourceFile sourceFile)
         {
-            // R# already has a helper method to recognise the SFI project - IsVCXMiscProjectInVs2015
-            if (prevProperties != null && prevProperties.ShouldBuildPsi
-                                       && prevProperties.ProvidesCodeModel
-                                       && !(sourceFile is IExternalPsiSourceFile)
-                                       && project.IsVCXMiscProjectInVs2015()
-                                       && projectFile.LanguageType.Is<ShaderLabProjectFileType>())
+            using (ReadLockCookie.Create())
             {
-                return ExcludedProjectPsiSourceFilePropertiesProvider.ExcludedProjectPsiSourceFileProperties.Instance;
+                // R# already has a helper method to recognise the SFI project - IsVCXMiscProjectInVs2015
+                if (prevProperties != null && prevProperties.ShouldBuildPsi
+                                           && prevProperties.ProvidesCodeModel
+                                           && !(sourceFile is IExternalPsiSourceFile)
+                                           && project.IsVCXMiscProjectInVs2015()
+                                           && projectFile.LanguageType.Is<ShaderLabProjectFileType>())
+                {
+                    return ExcludedProjectPsiSourceFilePropertiesProvider.ExcludedProjectPsiSourceFileProperties
+                        .Instance;
+                }
             }
 
             return prevProperties;
