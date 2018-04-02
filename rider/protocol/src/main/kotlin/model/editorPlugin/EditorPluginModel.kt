@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.model.editorPlugin
+package model.editorPlugin
 
 import com.jetbrains.rider.generator.nova.*
 import com.jetbrains.rider.generator.nova.PredefinedType.*

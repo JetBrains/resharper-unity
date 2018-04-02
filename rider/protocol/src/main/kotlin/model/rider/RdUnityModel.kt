@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.model.rider
+package model.rider
 
 import com.jetbrains.rider.generator.nova.*
 import com.jetbrains.rider.model.nova.ide.*
