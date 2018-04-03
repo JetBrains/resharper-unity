@@ -70,6 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             var tcs = new TaskCompletionSource<bool>();
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
+            run.PutData(ourCompletionSourceKey, tcs);
 
             mySolution.Locks.ExecuteOrQueueEx(mySolution.GetLifetime(), "ExecuteRunUT", () =>
             {
