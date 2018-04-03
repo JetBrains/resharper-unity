@@ -4,7 +4,6 @@ using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.DataFlow.StandardPreconditions;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
@@ -21,9 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             void OnSolutionLoaded(UnityProjectsCollection solution);
         }
 
-        private readonly IProperty<bool> myIsUnityProject = new Property<bool>("IsUnityProject").EnsureReadonly(myToken);
-        public IProperty<bool> IsUnityProject => myIsUnityProject;
-
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
@@ -33,7 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly IViewableProjectsCollection myProjects;
         private readonly ICollection<IHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
-        private static readonly ReadonlyToken myToken = new ReadonlyToken("IsUnityProjectToken");
+
+        public readonly IProperty<bool> IsUnitySolution;
 
         public UnityReferencesTracker(
             Lifetime lifetime,
@@ -61,6 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             myChangeManager = changeManager;
             myProjects = projects;
 
+            IsUnitySolution = new Property<bool>(lifetime, "IsUnitySolution");
             scheduler.EnqueueTask(new SolutionLoadTask("Checking for Unity projects", SolutionLoadTaskKinds.Done, Register));
         }
 
@@ -81,6 +79,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 });
 
                 var unityProjects = new UnityProjectsCollection(unityProjectLifetimes, mySolution.SolutionFilePath);
+                if (unityProjects.UnityProjectLifetimes.Any())
+                {
+                    IsUnitySolution.SetValue(true);
+                }
+
                 foreach (var handler in myHandlers)
                 {
                     handler.OnSolutionLoaded(unityProjects);
@@ -104,7 +107,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 {
                     handler.OnReferenceAdded(project, projectLifetime);
                     if (project.IsUnityProject())
-                      myIsUnityProject.SetValue(true, myToken);
+                    {
+                        IsUnitySolution.SetValue(true);
+                    }
                 }
                 catch (Exception e)
                 {
