@@ -14,6 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
+    <Compile Remove="UnitTesting\**" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Platform.RdCore35">
@@ -22,5 +23,11 @@
     <Reference Include="JetBrains.Platform.RdFramework35">
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="UnitTesting\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="UnitTesting\**" />
   </ItemGroup>
 </Project>
