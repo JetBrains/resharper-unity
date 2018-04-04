@@ -22,6 +22,7 @@ task generateModel {
             classpath = rdGenClasspath
             systemProperty "model.out.src.cs.dir", "$csOutput"
             systemProperty "model.out.src.kt.dir", "$ktOutput"
+            errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
             args = [
                     "-v", // verbose
                     "--compiler-classpath=$compilerClasspath",
@@ -34,6 +35,7 @@ task generateModel {
         javaexec {
             main = "com.jetbrains.rider.generator.nova.MainKt"
             classpath = rdGenClasspath
+            errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
             args = [
                 "-v", // verbose
                 "--compiler-classpath=$compilerClasspath",
