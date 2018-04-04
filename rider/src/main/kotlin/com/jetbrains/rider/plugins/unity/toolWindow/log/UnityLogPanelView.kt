@@ -16,8 +16,8 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
-import com.jetbrains.rider.plugins.unity.RdLogEvent
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -32,7 +32,7 @@ import javax.swing.Icon
 import javax.swing.JMenuItem
 import javax.swing.JPopupMenu
 
-class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, projectCustomDataHost: ProjectCustomDataHost) {
+class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
         .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME, project))
@@ -70,7 +70,7 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
 
         var prevVal: Boolean? = null
 
-        projectCustomDataHost.play.advise(logModel.lifetime) {
+        unityHost.play.advise(logModel.lifetime) {
             if (it != null && it && prevVal == false) {
                 logModel.events.clear()
                 console.clear()

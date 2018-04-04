@@ -9,7 +9,7 @@ using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -26,7 +26,7 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
-    public static readonly RProperty<UnityModel> UnityModel = new RProperty<UnityModel>();
+    public static readonly RProperty<EditorPluginModel> UnityModel = new RProperty<EditorPluginModel>();
     private static readonly UnityEventCollector ourLogEventCollector;
 
     // This an entry point
@@ -136,9 +136,9 @@ namespace JetBrains.Rider.Unity.Editor
           var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance,
             riderProtocolController.Wire);
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
-          var model = new UnityModel(connectionLifetime, protocol);
+          var model = new EditorPluginModel(connectionLifetime, protocol);
           AdviseUnityActions(model, connectionLifetime);
-          AdviseUnityEditorState(model);
+          AdviseModel(model);
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           
@@ -157,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor
       ourInitialized = true;
     }
 
-    private static void AdviseUnityEditorState(UnityModel modelValue)
+    private static void AdviseModel(EditorPluginModel modelValue)
     {
       modelValue.GetUnityEditorState.Set(rdVoid =>
       {
@@ -175,7 +175,7 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
     
-    private static void AdviseRefresh(UnityModel model)
+    private static void AdviseRefresh(EditorPluginModel model)
     {
       model.Refresh.Set((l, force) =>
       {
@@ -192,7 +192,7 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static void AdviseUnityActions(UnityModel model, Lifetime connectionLifetime)
+    private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
     {
       var isPlayingAction = new Action(() =>
       {
@@ -321,10 +321,10 @@ namespace JetBrains.Rider.Unity.Editor
 
   public struct UnityModelAndLifetime
   {
-    public UnityModel Model;
+    public EditorPluginModel Model;
     public Lifetime Lifetime;
 
-    public UnityModelAndLifetime(UnityModel model, Lifetime lifetime)
+    public UnityModelAndLifetime(EditorPluginModel model, Lifetime lifetime)
     {
       Model = model;
       Lifetime = lifetime;

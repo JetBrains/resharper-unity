@@ -7,6 +7,7 @@ using JetBrains.DataFlow;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -30,19 +31,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
         public static Action ProcessDataContext(
             [NotNull] Lifetime lifetime,
             [NotNull, ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView,
-            SolutionModel solutionModel,
+            UnityHost host,
             UnityApi unityApi)
         {
-            var solution = solutionModel.TryGetCurrentSolution();
-            if (solution == null)
-                return null;
-
             var unityName = GetUnityName(psiDocumentRangeView, unityApi);
 
             // This is called only if the process finished while the context is still valid
             return () =>
             {
-                solution.CustomData.Data["UNITY_ExternalDocContext"] = unityName;
+                host.SetModelData("UNITY_ExternalDocContext", unityName);
             };
         }
 

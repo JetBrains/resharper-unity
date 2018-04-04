@@ -1,7 +1,22 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.2.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.31'
     id 'org.jetbrains.intellij' version '0.2.18'
+}
+
+ext.repoRoot = new File("..").canonicalFile
+ext.frontendSdkVersion = '2018.1-SNAPSHOT' // don't forget to update the dependency for rd libs (repositories -> flatDir -> dirs)
+ext.rdLibDirectory = new File(ext.repoRoot, "rider/build/riderRD-$ext.frontendSdkVersion/lib/rd").canonicalFile
+logger.lifecycle("frontendSdkVersion=$ext.frontendSdkVersion")
+
+ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+
+repositories{
+    flatDir {
+        dirs rdLibDirectory.absolutePath
+    }
 }
 
 dependencies {
@@ -40,5 +55,7 @@ version ext.version
 
 logger.lifecycle("version=$ext.version")
 
+apply from: 'protocol.gradle'
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
+apply from: 'shortcuts.gradle'

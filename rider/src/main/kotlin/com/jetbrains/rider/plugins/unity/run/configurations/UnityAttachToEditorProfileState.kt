@@ -6,6 +6,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
@@ -28,9 +29,9 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 logger.info("Pass value to backend, which will push Unity to enter play mode.")
                 lifetime.bracket(opening = {
                     // pass value to backend, which will push Unity to enter play mode.
-                    executionEnvironment.project.solution.customData.data["UNITY_Play"] = true.toString()
+                    executionEnvironment.project.solution.rdUnityModel.data["UNITY_Play"] = true.toString();
                 }, closing = {
-                    executionEnvironment.project.solution.customData.data["UNITY_Play"] = false.toString()
+                    executionEnvironment.project.solution.rdUnityModel.data["UNITY_Play"] = false.toString()
                 })
             }
         }

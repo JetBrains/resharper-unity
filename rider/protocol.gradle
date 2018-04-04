@@ -1,0 +1,48 @@
+task generateModel {
+    group = 'other'
+    description = 'Parses SDK version from Source parameter and updates .props file accordingly. Does nothing if the Source is not set.'
+
+    doLast {
+        assert rdLibDirectory.isDirectory()
+
+        def rdgenJar = new File(rdLibDirectory.absolutePath, "rd-gen.jar")
+        assert rdgenJar.isFile()
+
+        // TODO: spaces
+        def modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
+        def csOutput = new File(repoRoot, "resharper/src/resharper-unity/RdUnityProtocol")
+        def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol")
+        def packageName = "model"
+
+        def cpSeparator = isWindows ? ";" : ":"
+        def compilerClasspath = "$rdLibDirectory/rd-gen.jar$cpSeparator$rdLibDirectory/rider-model.jar"
+        def rdGenClasspath = files(compilerClasspath)
+
+        javaexec {
+            main = "com.jetbrains.rider.generator.nova.MainKt"
+            classpath = rdGenClasspath
+            systemProperty "model.out.src.cs.dir", "$csOutput"
+            systemProperty "model.out.src.kt.dir", "$ktOutput"
+            errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
+            args = [
+                    "-v", // verbose
+                    "--compiler-classpath=$compilerClasspath",
+                    "--source=${modelDir}/rider",
+                    "--packages=${packageName}.rider"
+            ]
+        }
+
+        // TODO: if placed in one dir with different packages there will be generator clash
+        javaexec {
+            main = "com.jetbrains.rider.generator.nova.MainKt"
+            classpath = rdGenClasspath
+            errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
+            args = [
+                "-v", // verbose
+                "--compiler-classpath=$compilerClasspath",
+                "--source=${modelDir}/editorPlugin",
+                "--packages=${packageName}.editorPlugin"
+            ]
+        }
+    }
+}
