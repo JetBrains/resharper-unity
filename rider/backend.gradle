@@ -74,7 +74,6 @@ ext.msbuild = new File("")
 ext.artifactDefs = []
 
 ext.backend = new BackendHelper("..", logger)
-ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
 task updateDirectoryBuildProps {
     group = backendGroup

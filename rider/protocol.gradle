@@ -14,7 +14,8 @@ task generateModel {
         def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol")
         def packageName = "model"
 
-        def compilerClasspath = "$rdLibDirectory/rd-gen.jar;$rdLibDirectory/rider-model.jar"
+        def cpSeparator = isWindows ? ";" : ":"
+        def compilerClasspath = "$rdLibDirectory/rd-gen.jar$cpSeparator$rdLibDirectory/rider-model.jar"
         def rdGenClasspath = files(compilerClasspath)
 
         javaexec {
