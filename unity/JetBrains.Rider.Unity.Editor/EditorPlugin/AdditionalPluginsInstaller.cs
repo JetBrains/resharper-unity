@@ -9,8 +9,9 @@ namespace JetBrains.Rider.Unity.Editor
   public static class AdditionalPluginsInstaller
   {
     private static readonly ILog ourLogger = Log.GetLog("AdditionalPluginsInstaller");
+    private const string BasicPluginName = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
     private const string FullPluginName = "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll";
-    private static readonly string ourTarget = Path.Combine(AssemblyDirectory, FullPluginName);
+    private static readonly string ourTarget = Path.Combine(AssemblyDirectory, BasicPluginName);
     
     public static void InstallRemoveAdditionalPlugins()
     {
@@ -32,27 +33,13 @@ namespace JetBrains.Rider.Unity.Editor
         if (!origin.Exists)
         {
           ourLogger.Verbose($"${origin} doesn't exist.");
-          if (File.Exists(ourTarget))
-          {
-            ourLogger.Verbose($"Removing ${ourTarget}.");
-            File.Delete(ourTarget);
-          }
           return;
         }
 
-        if (!File.Exists(ourTarget) ||
-            FileVersionInfo.GetVersionInfo(ourTarget) != FileVersionInfo.GetVersionInfo(origin.FullName))
+        if (File.Exists(ourTarget) && FileVersionInfo.GetVersionInfo(ourTarget) != FileVersionInfo.GetVersionInfo(origin.FullName))
         {
           ourLogger.Verbose($"Coping ${origin} -> ${ourTarget}.");
           origin.CopyTo(ourTarget, true);
-        }
-      }
-      else
-      {
-        if (File.Exists(ourTarget))
-        {
-          ourLogger.Verbose($"Removing ${ourTarget}.");
-          File.Delete(ourTarget);
         }
       }
     }
