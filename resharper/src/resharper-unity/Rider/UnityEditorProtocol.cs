@@ -32,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
+        private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
@@ -43,13 +44,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public IProperty<EditorPluginModel> UnityModel => myUnityModel;
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
-            IScheduler dispatcher, IShellLocks locks, ISolution solution)
+            IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
+            myPluginPathsProvider = pluginPathsProvider;
             myHost = host;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
             myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null).EnsureReadonly(myReadonlyToken).EnsureThisThread();
@@ -82,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             watcher.EnableRaisingEvents = true; // Begin watching.
 
             // connect on start of Rider
-            CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
+            CreateProtocol(protocolInstancePath);
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -91,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // connect on reload of server
             if (!myComponentLifetime.IsTerminated)
               myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
-                () => CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
+                () => CreateProtocol(protocolInstancePath));
         }
 
         private void AdviseModelData(Lifetime lifetime, Solution solution)
@@ -134,13 +136,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private void CreateProtocol(FileSystemPath protocolInstancePath, Solution solution)
+        private void CreateProtocol(FileSystemPath protocolInstancePath)
         {
             int port;
             try
             {
-                var protocolInstance =
-                    JsonConvert.DeserializeObject<ProtocolInstance>(protocolInstancePath.ReadAllText2().Text);
+                var protocolInstance = JsonConvert.DeserializeObject<ProtocolInstance>(protocolInstancePath.ReadAllText2().Text);
                 port = protocolInstance.port_id;
             }
             catch (Exception e)
@@ -173,6 +174,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     SubscribeToOpenFile(model);
                     model.Play.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
+                    
+                    model.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir().FullPath);
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });

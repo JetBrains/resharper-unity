@@ -88,5 +88,7 @@ object EditorPluginModel: Root(
         call("refresh", bool, void)
 
         property("unitTestLaunch", UnitTestLaunch)
+
+        property("fullPluginPath", string)
     }
 }
