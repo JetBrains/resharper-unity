@@ -181,8 +181,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.Play.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
                     
-                    if (myBoundSettingsStore.GetValue((UnitySettings s) => s.InstallUnity3DRiderPlugin))
-                      model.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir().Combine(PluginPathsProvider.FullPluginDllFile).FullPath);
+                    BindPluginPathToSettings(lf, model);
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
@@ -203,6 +202,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 myLogger.Error(ex);
             }
+        }
+
+        private void BindPluginPathToSettings(Lifetime lf, EditorPluginModel model)
+        {
+            var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
+            myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Change.Advise(lf,
+                val =>
+                {
+                    if (val.HasNew && val.New)
+                        model.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir()
+                            .Combine(PluginPathsProvider.FullPluginDllFile).FullPath);
+                    model.FullPluginPath.SetValue(string.Empty);
+                });
         }
 
         private void SubscribeToOpenFile([NotNull] EditorPluginModel model)
