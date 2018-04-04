@@ -9,11 +9,13 @@ namespace JetBrains.Rider.Unity.Editor
   public static class AdditionalPluginsInstaller
   {
     private static readonly ILog ourLogger = Log.GetLog("AdditionalPluginsInstaller");
-    private const string BasicPluginName = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
-    private static readonly string ourTarget = Path.Combine(AssemblyDirectory, BasicPluginName);
+    private static readonly string ourTarget = ExecutingAssemblyPath;
     
-    public static void InstallRemoveAdditionalPlugins(string fullPluginPath)
+    public static void UpdateSelf(string fullPluginPath)
     {
+      if (string.IsNullOrEmpty(fullPluginPath))
+        return;
+      
       if (!PluginEntryPoint.IsLoadedFromAssets())
       {
         ourLogger.Verbose($"Plugin was not loaded from Assets.");
@@ -30,10 +32,14 @@ namespace JetBrains.Rider.Unity.Editor
           return;
         }
 
+        ourLogger.Verbose($"ourTarget: {ourTarget}");
         if (File.Exists(ourTarget))
         {
-          if (FileVersionInfo.GetVersionInfo(ourTarget) != FileVersionInfo.GetVersionInfo(fullPluginFileInfo.FullName) ||
-            Assembly.GetExecutingAssembly().GetName().Name == Path.GetFileNameWithoutExtension(BasicPluginName))
+          var targetVersionInfo = FileVersionInfo.GetVersionInfo(ourTarget);
+          var originVersionInfo = FileVersionInfo.GetVersionInfo(fullPluginFileInfo.FullName);
+          ourLogger.Verbose($"{targetVersionInfo.FileVersion} {originVersionInfo.FileVersion} {targetVersionInfo.InternalName} {originVersionInfo.InternalName}");
+          if (targetVersionInfo.FileVersion != originVersionInfo.FileVersion ||
+            targetVersionInfo.InternalName != originVersionInfo.InternalName)
           {
             ourLogger.Verbose($"Coping ${fullPluginFileInfo} -> ${ourTarget}.");
             fullPluginFileInfo.CopyTo(ourTarget, true);
@@ -45,14 +51,14 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static string AssemblyDirectory
+    private static string ExecutingAssemblyPath
     {
       get
       {
         var codeBase = Assembly.GetExecutingAssembly().CodeBase;
         var uri = new UriBuilder(codeBase);
         var path = Uri.UnescapeDataString(uri.Path);
-        return Path.GetDirectoryName(path);
+        return path;
       }
     }
   }
