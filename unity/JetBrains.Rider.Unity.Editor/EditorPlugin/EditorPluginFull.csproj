@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
-    <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin</AssemblyName>
+    <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Full</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -17,7 +17,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../AssemblyCustomAttributes.Generated.cs" />
-    <Compile Remove="UnitTesting\**" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Platform.RdCore35">
@@ -30,10 +29,6 @@
   <ItemGroup>
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
     <EmbeddedResource Include="..\..\Library\resharper-unity-libs\nunit3.5.0\nunit.framework.dll" />
-    <EmbeddedResource Remove="UnitTesting\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="UnitTesting\**" />
   </ItemGroup>
   <Import Project="$(ProjectDir)ILRepack.targets" />
 </Project>

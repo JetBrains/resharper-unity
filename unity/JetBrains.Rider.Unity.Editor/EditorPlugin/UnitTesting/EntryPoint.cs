@@ -1,8 +1,7 @@
 ﻿using System;
-using JetBrains.Rider.Unity.Editor.Ge56.UnitTesting;
 using UnityEditor;
 
-namespace JetBrains.Rider.Unity.Editor.Ge56
+namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
 {
   [InitializeOnLoad]
   public static class EntryPoint
