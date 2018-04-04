@@ -222,7 +222,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
             try
             {
                 var editorPluginPathDir = myPluginPathsProvider.GetEditorPluginPathDir();
-                var editorPluginPath = editorPluginPathDir.Combine(UnityPluginDetector.BasicPluginDllFile);
+                var editorPluginPath = editorPluginPathDir.Combine(PluginPathsProvider.BasicPluginDllFile);
 
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
@@ -241,7 +241,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
                     backup.Value.DeleteFile();
                 }
 
-                installedPath = installation.PluginDirectory.Combine(UnityPluginDetector.BasicPluginDllFile);
+                installedPath = installation.PluginDirectory.Combine(PluginPathsProvider.BasicPluginDllFile);
                 return true;
             }
             catch (Exception e)

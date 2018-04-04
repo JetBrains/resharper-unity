@@ -17,9 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
         private static readonly string[] ourPluginCsFile = {"Unity3DRider.cs"};
 
-        public static readonly string BasicPluginDllFile = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
-        public static readonly string FullPluginDllFile = "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll";
-
         public static readonly InstallationInfo ShouldNotInstall = new InstallationInfo(false, FileSystemPath.Empty,
             EmptyArray<FileSystemPath>.Instance, ZeroVersion);
 
@@ -94,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             
             var pluginFiles = directory
                 .GetChildFiles("*.dll")
-                .Where(f => f.Name == BasicPluginDllFile)
+                .Where(f => f.Name == PluginPathsProvider.BasicPluginDllFile)
                 .ToList();
             
             pluginFiles.AddRange(oldPluginFiles);
@@ -133,7 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var pluginDir = parentDirs[0];
 
-            if (pluginFiles.Count == 1 && pluginFiles[0].Name == BasicPluginDllFile)
+            if (pluginFiles.Count == 1 && pluginFiles[0].Name == PluginPathsProvider.BasicPluginDllFile)
             {
                 var version = new Version(FileVersionInfo.GetVersionInfo(pluginFiles[0].FullPath).FileVersion);
                 return new InstallationInfo(version != ZeroVersion, pluginDir, pluginFiles, version);

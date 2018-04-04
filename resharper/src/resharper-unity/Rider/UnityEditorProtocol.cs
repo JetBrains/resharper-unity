@@ -175,7 +175,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.Play.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
                     
-                    model.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir().FullPath);
+                    model.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir().Combine(PluginPathsProvider.FullPluginDllFile).FullPath);
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
