@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             try
             {
-                var assetsDir = mySolution.SolutionFilePath.Directory.CombineWithShortName("Assets");
+                var assetsDir = mySolution.SolutionFilePath.Directory.CombineWithShortName(ProjectExtensions.AssetsFolder);
                 if (!assetsDir.IsAbsolute)
                 {
                     myLogger.Warn($"Computed assetsDir {assetsDir} is not absolute. Skipping installation.");
