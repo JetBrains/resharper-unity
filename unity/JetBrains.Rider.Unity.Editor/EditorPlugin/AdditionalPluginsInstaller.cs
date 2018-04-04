@@ -10,10 +10,9 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly ILog ourLogger = Log.GetLog("AdditionalPluginsInstaller");
     private const string BasicPluginName = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
-    private const string FullPluginName = "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll";
     private static readonly string ourTarget = Path.Combine(AssemblyDirectory, BasicPluginName);
     
-    public static void InstallRemoveAdditionalPlugins()
+    public static void InstallRemoveAdditionalPlugins(string fullPluginPath)
     {
       if (!PluginEntryPoint.IsLoadedFromAssets())
       {
@@ -24,22 +23,17 @@ namespace JetBrains.Rider.Unity.Editor
       ourLogger.Verbose($"UnityUtils.UnityVersion: {UnityUtils.UnityVersion}");
       if (UnityUtils.UnityVersion >= new Version(5, 6))
       {
-        string relPath = @"../../plugins/rider-unity/EditorPlugin";
-        if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
-          relPath = @"Contents/plugins/rider-unity/EditorPlugin";
-
-        var riderPath = EditorPrefsWrapper.ExternalScriptEditor;
-        var origin = new FileInfo(Path.Combine(Path.Combine(riderPath, relPath), FullPluginName));
-        if (!origin.Exists)
+        var fullPluginFileInfo = new FileInfo(fullPluginPath);
+        if (!fullPluginFileInfo.Exists)
         {
-          ourLogger.Verbose($"${origin} doesn't exist.");
+          ourLogger.Verbose($"Plugin {fullPluginPath} doesn't exist.");
           return;
         }
-
-        if (File.Exists(ourTarget) && FileVersionInfo.GetVersionInfo(ourTarget) != FileVersionInfo.GetVersionInfo(origin.FullName))
+        
+        if (File.Exists(ourTarget) && FileVersionInfo.GetVersionInfo(ourTarget) != FileVersionInfo.GetVersionInfo(fullPluginFileInfo.FullName))
         {
-          ourLogger.Verbose($"Coping ${origin} -> ${ourTarget}.");
-          origin.CopyTo(ourTarget, true);
+          ourLogger.Verbose($"Coping ${fullPluginFileInfo} -> ${ourTarget}.");
+          fullPluginFileInfo.CopyTo(ourTarget, true);
         }
       }
     }

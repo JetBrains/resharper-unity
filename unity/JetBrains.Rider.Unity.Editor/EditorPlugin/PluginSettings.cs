@@ -102,11 +102,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static string RiderPathInternal
     {
       get { return EditorPrefs.GetString("Rider_RiderPath", null); }
-      set
-      {
-        EditorPrefs.SetString("Rider_RiderPath", value);
-        AdditionalPluginsInstaller.InstallRemoveAdditionalPlugins();
-      }
+      set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
 
     // The default "Open C# Project" menu item will use the external script editor to load the .sln

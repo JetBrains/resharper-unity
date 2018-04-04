@@ -142,6 +142,8 @@ namespace JetBrains.Rider.Unity.Editor
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           
+          model.FullPluginPath.Advise(connectionLifetime, AdditionalPluginsInstaller.InstallRemoveAdditionalPlugins);
+          
           ourLogger.Verbose("UnityModel initialized.");
           UnityModel.SetValue(model);
           new UnityEventLogSender(ourLogEventCollector);
@@ -153,7 +155,6 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       ourOpenAssetHandler = new OnOpenAssetHandler(UnityModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
-      AdditionalPluginsInstaller.InstallRemoveAdditionalPlugins();
       ourInitialized = true;
     }
 
