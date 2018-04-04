@@ -14,10 +14,8 @@ task generateModel {
         def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol")
         def packageName = "model"
 
-        def kotlincLib = "C:/Users/ivan.pashchenko/Downloads/kotlin-plugin-1.2.30-eap-60-IJ2018.1-1/Kotlin/kotlinc/lib"
-
         def compilerClasspath = "$rdLibDirectory/rd-gen.jar;$rdLibDirectory/rider-model.jar"
-        def rdGenClasspath = files(compilerClasspath, "$kotlincLib/kotlin-compiler.jar")
+        def rdGenClasspath = files(compilerClasspath)
 
         javaexec {
             main = "com.jetbrains.rider.generator.nova.MainKt"
