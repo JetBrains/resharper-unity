@@ -9,9 +9,8 @@ namespace JetBrains.Rider.Unity.Editor
   public static class AdditionalPluginsInstaller
   {
     private static readonly ILog ourLogger = Log.GetLog("AdditionalPluginsInstaller");
-    private static string pluginName = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
-    private static string ge56PluginName = "JetBrains.Rider.Unity.Editor.Plugin.Ge56.dll";
-    private static string target = Path.Combine(AssemblyDirectory, ge56PluginName);
+    private const string FullPluginName = "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll";
+    private static readonly string ourTarget = Path.Combine(AssemblyDirectory, FullPluginName);
     
     public static void InstallRemoveAdditionalPlugins()
     {
@@ -29,31 +28,31 @@ namespace JetBrains.Rider.Unity.Editor
           relPath = @"Contents/plugins/rider-unity/EditorPlugin";
 
         var riderPath = EditorPrefsWrapper.ExternalScriptEditor;
-        var origin = new FileInfo(Path.Combine(Path.Combine(riderPath, relPath), ge56PluginName));
+        var origin = new FileInfo(Path.Combine(Path.Combine(riderPath, relPath), FullPluginName));
         if (!origin.Exists)
         {
           ourLogger.Verbose($"${origin} doesn't exist.");
-          if (File.Exists(target))
+          if (File.Exists(ourTarget))
           {
-            ourLogger.Verbose($"Removing ${target}.");
-            File.Delete(target);
+            ourLogger.Verbose($"Removing ${ourTarget}.");
+            File.Delete(ourTarget);
           }
           return;
         }
 
-        if (!File.Exists(target) ||
-            FileVersionInfo.GetVersionInfo(target) != FileVersionInfo.GetVersionInfo(origin.FullName))
+        if (!File.Exists(ourTarget) ||
+            FileVersionInfo.GetVersionInfo(ourTarget) != FileVersionInfo.GetVersionInfo(origin.FullName))
         {
-          ourLogger.Verbose($"Coping ${origin} -> ${target}.");
-          origin.CopyTo(target, true);
+          ourLogger.Verbose($"Coping ${origin} -> ${ourTarget}.");
+          origin.CopyTo(ourTarget, true);
         }
       }
       else
       {
-        if (File.Exists(target))
+        if (File.Exists(ourTarget))
         {
-          ourLogger.Verbose($"Removing ${target}.");
-          File.Delete(target);
+          ourLogger.Verbose($"Removing ${ourTarget}.");
+          File.Delete(ourTarget);
         }
       }
     }
