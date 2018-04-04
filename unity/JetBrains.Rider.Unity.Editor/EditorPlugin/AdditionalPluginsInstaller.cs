@@ -29,12 +29,19 @@ namespace JetBrains.Rider.Unity.Editor
           ourLogger.Verbose($"Plugin {fullPluginPath} doesn't exist.");
           return;
         }
-        
-        if (File.Exists(ourTarget) && FileVersionInfo.GetVersionInfo(ourTarget) != FileVersionInfo.GetVersionInfo(fullPluginFileInfo.FullName))
+
+        if (File.Exists(ourTarget))
         {
-          ourLogger.Verbose($"Coping ${fullPluginFileInfo} -> ${ourTarget}.");
-          fullPluginFileInfo.CopyTo(ourTarget, true);
+          if (FileVersionInfo.GetVersionInfo(ourTarget) != FileVersionInfo.GetVersionInfo(fullPluginFileInfo.FullName) ||
+            Assembly.GetExecutingAssembly().GetName().Name == Path.GetFileNameWithoutExtension(BasicPluginName))
+          {
+            ourLogger.Verbose($"Coping ${fullPluginFileInfo} -> ${ourTarget}.");
+            fullPluginFileInfo.CopyTo(ourTarget, true);
+            return;
+          }
         }
+        
+        ourLogger.Verbose($"Plugin {ourTarget} was not updated by {fullPluginPath}.");
       }
     }
 
