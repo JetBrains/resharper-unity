@@ -38,13 +38,19 @@ fileTree(new File(repoRoot, "rider/build")).visit {
     frontendSdkDirs << it
 }
 
-assert frontendSdkDirs.size() == 1
+if (frontendSdkDirs.size() > 0) {
+    assert frontendSdkDirs.size() == 1
 
-def frontendSdkSingleDir = frontendSdkDirs.first()
-def match = frontendSdkSingleDir.name =~ /riderRD-(.+)/
-assert match.matches()
+    def frontendSdkSingleDir = frontendSdkDirs.first()
+    def match = frontendSdkSingleDir.name =~ /riderRD-(.+)/
+    assert match.matches()
 
-ext.frontendSdkVersion = match[0][1]
+    ext.frontendSdkVersion = match[0][1]
+}
+else {
+    ext.frontendSdkVersion = "2018.1-SNAPSHOT"
+}
+
 ext.rdLibDirectory = new File(ext.repoRoot, "rider/build/riderRD-$ext.frontendSdkVersion/lib/rd").canonicalFile
 logger.lifecycle("frontendSdkVersion=$ext.frontendSdkVersion")
 
