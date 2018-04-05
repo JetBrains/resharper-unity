@@ -26,14 +26,14 @@ Write-Host "gradleArgs=$gradleArgs"
 
 Push-Location -Path rider
 if ($isUnix){
-  .\gradlew --scan "buildBackend" $gradleArgs
+  .\gradlew --info "buildBackend" $gradleArgs
   if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider backend plugin: exit code $LastExitCode" }
-  .\gradlew --scan "buildPlugin" $gradleArgs
+  .\gradlew --info "buildPlugin" $gradleArgs
 }
 else{
-  .\gradlew.bat --scan "buildBackend" $gradleArgs
+  .\gradlew.bat --info "buildBackend" $gradleArgs
   if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider backend plugin: exit code $LastExitCode" }
-  .\gradlew.bat --scan "buildPlugin" $gradleArgs
+  .\gradlew.bat --info "buildPlugin" $gradleArgs
 }
 
 if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
