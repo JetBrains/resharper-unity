@@ -32,10 +32,14 @@ intellij {
     downloadSources = false
 }
 
+logger.lifecycle("listing rider/build:")
 def frontendSdkDirs = []
 fileTree(new File(repoRoot, "rider/build")).visit {
-    if (it.isDirectory() && it.name.startsWith("riderRD"))
-    frontendSdkDirs << it
+    if (it.isDirectory()) {
+        if (it.name.startsWith("riderRD"))
+            frontendSdkDirs << it
+        logger.lifecycle("rider/build/$it.name")
+    }
 }
 
 if (frontendSdkDirs.size() > 0) {
