@@ -34,7 +34,7 @@ intellij {
 
 ext.kotlin_version = '1.2.10'
 ext.unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
-ext.unity_ge56_editorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Ge56.dll"
+ext.unity_full_editorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -95,7 +95,7 @@ prepareSandbox {
 
     doLast{
         assert file(unityeditorplugin_path).exists()
-        assert file(unity_ge56_editorplugin_path).exists()
+    assert file(unity_full_editorplugin_path).exists()
 
         dllFiles.forEach({ f ->
             def file = file("$f")
@@ -106,8 +106,7 @@ prepareSandbox {
     from(unityeditorplugin_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
-
-    from(unity_ge56_editorplugin_path, {
+    from(unity_full_editorplugin_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
 

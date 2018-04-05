@@ -75,13 +75,16 @@ namespace JetBrains.Rider.Unity.Editor
   
   public class UnityEventLogSender
   {
-    public UnityEventLogSender(UnityEventCollector collector)
+    private readonly Lifetime myConnectionLifetime;
+
+    public UnityEventLogSender(UnityEventCollector collector, Lifetime connectionLifetime)
     {
+      myConnectionLifetime = connectionLifetime;
       ProcessQueue(PluginEntryPoint.UnityModel.Maybe.Value, collector);
 
       collector.AddEvent +=(col, _) =>
       {
-        if (PluginEntryPoint.UnityModel.Maybe.HasValue)
+        if (PluginEntryPoint.UnityModel.Maybe.HasValue && !myConnectionLifetime.IsTerminated)
           ProcessQueue(PluginEntryPoint.UnityModel.Maybe.Value, (UnityEventCollector)col);
       };
     }
@@ -94,6 +97,9 @@ namespace JetBrains.Rider.Unity.Editor
       var head = collector.myDelayedLogEvents.First;
       while (head != null)
       {
+        if (myConnectionLifetime.IsTerminated)
+          return;
+        
         SendLogEvent(model, head.Value);
         head = head.Next;
       }
@@ -103,7 +109,8 @@ namespace JetBrains.Rider.Unity.Editor
     
     private void SendLogEvent(EditorPluginModel model, RdLogEvent logEvent)
     {
-      model.Log.Fire(logEvent);
+      if (!myConnectionLifetime.IsTerminated)
+        model.Log.Fire(logEvent);
     }
   }
 }

@@ -19,4 +19,13 @@
       <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="UnitTesting\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="UnitTesting\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="UnitTesting\**" />
+  </ItemGroup>
 </Project>

@@ -133,8 +133,7 @@ namespace JetBrains.Rider.Unity.Editor
 
         riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
         {
-          var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance,
-            riderProtocolController.Wire);
+          var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
           var model = new EditorPluginModel(connectionLifetime, protocol);
           AdviseUnityActions(model, connectionLifetime);
@@ -142,9 +141,11 @@ namespace JetBrains.Rider.Unity.Editor
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           
+          model.FullPluginPath.Advise(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
+          
           ourLogger.Verbose("UnityModel initialized.");
           UnityModel.SetValue(model);
-          new UnityEventLogSender(ourLogEventCollector);
+          new UnityEventLogSender(ourLogEventCollector, connectionLifetime);
         });
       }
       catch (Exception ex)
@@ -153,7 +154,6 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       ourOpenAssetHandler = new OnOpenAssetHandler(UnityModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
-      AdditionalPluginsInstaller.InstallRemoveAdditionalPlugins();
       ourInitialized = true;
     }
 

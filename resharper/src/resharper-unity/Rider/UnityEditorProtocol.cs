@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using JetBrains.Annotations;
+using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.DataFlow.StandardPreconditions;
@@ -13,7 +14,9 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl;
@@ -32,25 +35,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
+        private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
         public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
         
         private readonly IProperty<EditorPluginModel> myUnityModel;
+        private IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
         public IProperty<EditorPluginModel> UnityModel => myUnityModel;
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
-            IScheduler dispatcher, IShellLocks locks, ISolution solution)
+            IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
+            ISettingsStore settingsStore)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
+            myPluginPathsProvider = pluginPathsProvider;
             myHost = host;
+            myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
             myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null).EnsureReadonly(myReadonlyToken).EnsureThisThread();
             
@@ -82,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             watcher.EnableRaisingEvents = true; // Begin watching.
 
             // connect on start of Rider
-            CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution());
+            CreateProtocol(protocolInstancePath);
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -91,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // connect on reload of server
             if (!myComponentLifetime.IsTerminated)
               myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
-                () => CreateProtocol(protocolInstancePath, mySolution.GetProtocolSolution()));
+                () => CreateProtocol(protocolInstancePath));
         }
 
         private void AdviseModelData(Lifetime lifetime, Solution solution)
@@ -134,13 +142,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private void CreateProtocol(FileSystemPath protocolInstancePath, Solution solution)
+        private void CreateProtocol(FileSystemPath protocolInstancePath)
         {
             int port;
             try
             {
-                var protocolInstance =
-                    JsonConvert.DeserializeObject<ProtocolInstance>(protocolInstancePath.ReadAllText2().Text);
+                var protocolInstance = JsonConvert.DeserializeObject<ProtocolInstance>(protocolInstancePath.ReadAllText2().Text);
                 port = protocolInstance.port_id;
             }
             catch (Exception e)
@@ -173,6 +180,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     SubscribeToOpenFile(model);
                     model.Play.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
+                    
+                    BindPluginPathToSettings(lf, model);
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
@@ -193,6 +202,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 myLogger.Error(ex);
             }
+        }
+
+        private void BindPluginPathToSettings(Lifetime lf, EditorPluginModel model)
+        {
+            var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
+            myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Change.Advise(lf,
+                val =>
+                {
+                    if (val.HasNew && val.New)
+                        model.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir()
+                            .Combine(PluginPathsProvider.FullPluginDllFile).FullPath);
+                    model.FullPluginPath.SetValue(string.Empty);
+                });
         }
 
         private void SubscribeToOpenFile([NotNull] EditorPluginModel model)
