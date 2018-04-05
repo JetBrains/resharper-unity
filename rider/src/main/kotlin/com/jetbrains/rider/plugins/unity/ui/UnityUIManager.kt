@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.WindowManager
@@ -16,7 +17,7 @@ import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.util.reactive.Property
 import org.jdom.Element
 
-@State(name = "UnityProjectConfiguration", storages = [(Storage(value = "other.xml"))])
+@State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscoverer,
                      private val host : UnityHost,
                      solutionLifecycleHost: SolutionLifecycleHost,
@@ -40,7 +41,6 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
         }
     }
 
-
     override fun getState(): Element? {
         val element = Element("state")
         val value = isUnityUI.value
@@ -50,8 +50,6 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
 
     override fun loadState(element: Element) {
         val attributeValue = element.getAttributeValue(isUnityProjectAttribute, "") ?: return
-        if (!attributeValue.isEmpty()) {
-        }
         isUnityUI.value = attributeValue.toBoolean()
     }
 

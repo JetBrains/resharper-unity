@@ -24,25 +24,12 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
         const val StatusBarIconId = "UnityStatusIcon"
     }
 
-    private var icon : Icon = UnityIcons.Icons.AttachEditorDebugConfiguration
-    private var myTooltip : String = ""
+    private val icon = UnityIcons.Icons.EditorConnectionStatus
+    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Icons.EditorConnectionStatus)
     private var myStatusBar: StatusBar? = null
-    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Icons.AttachEditorDebugConfiguration)
 
     override fun ID(): String {
         return "UnityStatusIcon"
-    }
-
-    fun setActiveConnectionIcon() {
-        icon = ExecutionUtil.getLiveIndicator(icon)
-    }
-
-    fun setDisconnectedIcon() {
-        icon = UnityIcons.Icons.AttachEditorDebugConfiguration
-    }
-
-    fun setTooltip(text: String) {
-        myTooltip = text
     }
 
     override fun getPresentation(type: StatusBarWidget.PlatformType): StatusBarWidget.WidgetPresentation? {
@@ -59,9 +46,9 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
 
     override fun getTooltipText(): String? {
         if(host.sessionInitialized.value)
-            return "Rider and Unity Editor are connected with each other.\nTo enhance productivity some features will work through the Unity Editor"
+            return "Connected to Unity Editor"
         else
-            return "No launched Unity Editor found.\nWith Unity Editor being launch, Rider will perform important actions via the Unity Editor."
+            return "No Unity Editor connection\nLoad the project in the Unity Editor to enable advanced functionality"
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
@@ -71,13 +58,12 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
         }
     }
 
-    fun onClick(e: MouseEvent) {
-
+    private fun onClick(e: MouseEvent) {
     }
 
     override fun getIcon(): Icon {
         when (host.unityState.value) {
-            DISCONNECTED -> return UnityIcons.Icons.AttachEditorDebugConfiguration
+            DISCONNECTED -> return icon
             CONNECTED_IDLE -> return connectedIcon
             CONNECTED_PLAY -> return LayeredIcon(connectedIcon, AllIcons.General.Run)
             CONNECTED_REFRESH -> return LayeredIcon(connectedIcon, AnimatedIcon.Grey())

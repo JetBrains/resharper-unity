@@ -20,7 +20,7 @@ class UnityDebugConfigurationType : ConfigurationTypeBase("UNITY_DEBUG_RUN_CONFI
 
 class UnityDebugAndPlayConfigurationType : ConfigurationTypeBase("UNITY_ATTACH_RUN_CONFIGURATION",
     "Attach Unity and Play", "Attach to UnityEditor and Play",
-    UnityIcons.Icons.AttachEditorDebugConfiguration) {
+    UnityIcons.Icons.AttachAndPlayEditorDebugConfiguration) {
 
     val attachToEditorAndPlayFactory = UnityAttachToEditorAndPlayFactory(this)
 
