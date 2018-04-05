@@ -5,6 +5,8 @@ sourceSets {
     }
 }
 
+def dependenciesDir = new File("dependencies")
+
 intellij {
     type = 'RD'
 
@@ -19,9 +21,8 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "F:\\RiderSDK"
 
-    def dir = file('dependencies')
-    if (dir.exists()) {
-        localPath = dir.absolutePath
+    if (dependenciesDir .exists()) {
+        localPath = dependenciesDir.absolutePath
     } else {
         version = "2018.1-SNAPSHOT"
     }
@@ -32,13 +33,17 @@ intellij {
     downloadSources = false
 }
 
-logger.lifecycle("listing rider/build:")
 def frontendSdkDirs = []
-fileTree(new File(repoRoot, "rider/build")).visit {
-    if (it.isDirectory()) {
+def frontendSdkSearchPath = dependenciesDir.exists() && dependenciesDir.isDirectory() ? localPath : new File(repoRoot, "rider/build")
+logger.lifecycle("listing $frontendSdkSearchPath.path:")
+fileTree(frontendSdkSearchPath).visit {
+    if (it.isDirectory()){
         if (it.name.startsWith("riderRD"))
             frontendSdkDirs << it
-        logger.lifecycle("rider/build/$it.name")
+        logger.lifecycle("DIR:  $it.name")
+    }
+    else{
+        logger.lifecycle("FILE: $it.name")
     }
 }
 
@@ -84,7 +89,7 @@ dependencies {
 
 task generateModel {
     group = 'other'
-    description = 'Parses SDK version from Source parameter and updates .props file accordingly. Does nothing if the Source is not set.'
+    description = 'Generates protocol models.'
 
     doLast {
         assert rdLibDirectory.isDirectory()
