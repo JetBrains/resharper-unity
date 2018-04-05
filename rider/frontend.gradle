@@ -34,7 +34,7 @@ intellij {
 }
 
 def frontendSdkDirs = []
-def frontendSdkSearchPath = dependenciesDir.exists() && dependenciesDir.isDirectory() ? localPath : new File(repoRoot, "rider/build")
+def frontendSdkSearchPath = dependenciesDir.exists() && dependenciesDir.isDirectory() ? dependenciesDir : new File(repoRoot, "rider/build")
 logger.lifecycle("listing $frontendSdkSearchPath.path:")
 fileTree(frontendSdkSearchPath).visit {
     if (it.isDirectory()){
@@ -42,7 +42,7 @@ fileTree(frontendSdkSearchPath).visit {
             frontendSdkDirs << it
         logger.lifecycle("DIR:  $it.name")
     }
-    else{
+    else {
         logger.lifecycle("FILE: $it.name")
     }
 }
