@@ -35,8 +35,7 @@ class DefaultRunConfigurationGenerator(unityReferenceDiscoverer: UnityReferenceD
                         runManager.selectedConfiguration = runConfiguration
                     }
                 }
-                if (!runManager.allSettings.any { a->a.type == UnityDebugAndPlayConfigurationType::class.java})
-                {
+                if (!runManager.allSettings.any { a->a.type == UnityDebugAndPlayConfigurationType::class.java}) {
                     val configurationTypeDebugAndPlay = ConfigurationTypeUtil.findConfigurationType(UnityDebugAndPlayConfigurationType::class.java)
                     val runConfigurationDebugAndPlay = runManager.createRunConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationTypeDebugAndPlay.attachToEditorAndPlayFactory)
                     runManager.addConfiguration(runConfigurationDebugAndPlay, false)

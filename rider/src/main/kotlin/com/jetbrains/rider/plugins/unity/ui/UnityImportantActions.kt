@@ -1,14 +1,10 @@
 package com.jetbrains.rider.plugins.unity.ui
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.awt.RelativePoint
-import com.intellij.util.IconUtil
 import com.jetbrains.rider.plugins.unity.actions.isUnityProject
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import java.awt.event.MouseEvent
@@ -31,6 +27,6 @@ class UnityImportantActions : DefaultActionGroup(), DumbAware {
         }
 
         e.presentation.isVisible = true
-        e.presentation.icon = UnityIcons.Icons.AttachEditorDebugConfiguration
+        e.presentation.icon = UnityIcons.Icons.ImportantActions
     }
 }
