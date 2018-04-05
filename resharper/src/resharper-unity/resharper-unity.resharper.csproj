@@ -76,9 +76,6 @@
   </ItemGroup>
   <!-- Resources - Unity3dRider, api.xml, icons -->
   <ItemGroup>
-    <Compile Remove="Unity3dRider\**\*" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
     <EmbeddedResource Remove="Rider\UnitTesting\**" />
@@ -116,6 +113,9 @@
     <Compile Remove="**\Rider\**" />
     <EmbeddedResource Remove="**\Rider\**" />
     <None Remove="**\Rider\**" />
+      <Compile Remove="**\RdUnityProtocol\**" />
+      <EmbeddedResource Remove="**\RdUnityProtocol\**" />
+      <None Remove="**\RdUnityProtocol\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ShaderLab\Host\**" />

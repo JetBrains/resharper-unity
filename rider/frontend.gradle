@@ -23,7 +23,7 @@ intellij {
     if (dir.exists()) {
         localPath = dir.absolutePath
     } else {
-        version = '2018.1-SNAPSHOT'
+        version = frontendSdkVersion
     }
 
     // intellijRepo = "https://www.jetbrains.com/intellij-repository"
@@ -34,7 +34,7 @@ intellij {
 
 ext.kotlin_version = '1.2.10'
 ext.unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
-ext.unity_ge56_editorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Ge56.dll"
+ext.unity_full_editorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -50,6 +50,8 @@ repositories {
 }
 
 task prepareForBuild{
+    dependsOn generateModel
+
     group = "intellij"
     description = "Checks that backend is built and updates plugin.xml with IDEA and plugin versions."
     doLast {
@@ -91,20 +93,20 @@ def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 prepareSandbox {
     dependsOn prepareForBuild
 
-doLast{
-    assert file(unityeditorplugin_path).exists()
-    assert file(unity_ge56_editorplugin_path).exists()
+    doLast{
+        assert file(unityeditorplugin_path).exists()
+    assert file(unity_full_editorplugin_path).exists()
 
-    dllFiles.forEach({ f ->
-        def file = file("$f")
-        if (!file.exists()) throw new RuntimeException("File $file does not exist")
-    })
-}
+        dllFiles.forEach({ f ->
+            def file = file("$f")
+            if (!file.exists()) throw new RuntimeException("File $file does not exist")
+        })
+    }
 
     from(unityeditorplugin_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
-    from(unity_ge56_editorplugin_path, {
+    from(unity_full_editorplugin_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
 

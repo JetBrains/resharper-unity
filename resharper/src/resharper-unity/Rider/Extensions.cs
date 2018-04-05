@@ -4,9 +4,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     public static class Extensions
     {
-        public static void SetCustomData(this Solution solution, string key, string value)
+        public static void SetModelData(this UnityHost host, string key, string value)
         {
-            var data = solution.CustomData.Data;
+            var data = host.Model.Data;
             if (data.ContainsKey(key))
                 data[key] = value;
             else

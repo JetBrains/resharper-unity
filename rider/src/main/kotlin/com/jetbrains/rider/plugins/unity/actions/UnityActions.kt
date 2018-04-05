@@ -1,11 +1,10 @@
 package com.jetbrains.rider.plugins.unity.actions
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.UnityReferenceDiscoverer
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.util.idea.tryGetComponent
 
@@ -18,7 +17,7 @@ class PlayInUnityAction() : ToggleAction("Play/Edit", "Change Play/Edit mode in 
     }
     override fun setSelected(e: AnActionEvent?, value: Boolean) {
         val project = e?.project?: return
-        ProjectCustomDataHost.CallBackendPlay(project, value)
+        UnityHost.CallBackendPlay(project, value)
     }
     override fun update(e: AnActionEvent) {
         if (!e.isUnityProject()) {
@@ -41,7 +40,7 @@ class PauseInUnityAction() : ToggleAction("Pause/Resume", "Pause/Resume play in 
     }
     override fun setSelected(e: AnActionEvent?, value: Boolean) {
         val project = e?.project?: return
-        ProjectCustomDataHost.CallBackendPause(project, value)
+        UnityHost.CallBackendPause(project, value)
     }
 
     override fun update(e: AnActionEvent) {
@@ -62,7 +61,7 @@ class PauseInUnityAction() : ToggleAction("Pause/Resume", "Pause/Resume play in 
 class StepInUnityAction() : AnAction("Step", "Perform a single frame step.", UnityIcons.Actions.Step) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        ProjectCustomDataHost.CallBackendStep(project)
+        UnityHost.CallBackendStep(project)
     }
 
     override fun update(e: AnActionEvent) {
@@ -80,7 +79,7 @@ class StepInUnityAction() : AnAction("Step", "Perform a single frame step.", Uni
     }
 }
 
-fun AnActionEvent.getHost(): ProjectCustomDataHost? {
+fun AnActionEvent.getHost(): UnityHost? {
     val project = project?: return null
     return project.tryGetComponent()
 }

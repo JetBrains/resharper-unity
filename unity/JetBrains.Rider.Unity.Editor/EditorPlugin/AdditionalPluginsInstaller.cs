@@ -9,12 +9,13 @@ namespace JetBrains.Rider.Unity.Editor
   public static class AdditionalPluginsInstaller
   {
     private static readonly ILog ourLogger = Log.GetLog("AdditionalPluginsInstaller");
-    private static string pluginName = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
-    private static string ge56PluginName = "JetBrains.Rider.Unity.Editor.Plugin.Ge56.dll";
-    private static string target = Path.Combine(AssemblyDirectory, ge56PluginName);
+    private static readonly string ourTarget = ExecutingAssemblyPath;
     
-    public static void InstallRemoveAdditionalPlugins()
+    public static void UpdateSelf(string fullPluginPath)
     {
+      if (string.IsNullOrEmpty(fullPluginPath))
+        return;
+      
       if (!PluginEntryPoint.IsLoadedFromAssets())
       {
         ourLogger.Verbose($"Plugin was not loaded from Assets.");
@@ -24,48 +25,40 @@ namespace JetBrains.Rider.Unity.Editor
       ourLogger.Verbose($"UnityUtils.UnityVersion: {UnityUtils.UnityVersion}");
       if (UnityUtils.UnityVersion >= new Version(5, 6))
       {
-        string relPath = @"../../plugins/rider-unity/EditorPlugin";
-        if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
-          relPath = @"Contents/plugins/rider-unity/EditorPlugin";
-
-        var riderPath = EditorPrefsWrapper.ExternalScriptEditor;
-        var origin = new FileInfo(Path.Combine(Path.Combine(riderPath, relPath), ge56PluginName));
-        if (!origin.Exists)
+        var fullPluginFileInfo = new FileInfo(fullPluginPath);
+        if (!fullPluginFileInfo.Exists)
         {
-          ourLogger.Verbose($"${origin} doesn't exist.");
-          if (File.Exists(target))
-          {
-            ourLogger.Verbose($"Removing ${target}.");
-            File.Delete(target);
-          }
+          ourLogger.Verbose($"Plugin {fullPluginPath} doesn't exist.");
           return;
         }
 
-        if (!File.Exists(target) ||
-            FileVersionInfo.GetVersionInfo(target) != FileVersionInfo.GetVersionInfo(origin.FullName))
+        ourLogger.Verbose($"ourTarget: {ourTarget}");
+        if (File.Exists(ourTarget))
         {
-          ourLogger.Verbose($"Coping ${origin} -> ${target}.");
-          origin.CopyTo(target, true);
+          var targetVersionInfo = FileVersionInfo.GetVersionInfo(ourTarget);
+          var originVersionInfo = FileVersionInfo.GetVersionInfo(fullPluginFileInfo.FullName);
+          ourLogger.Verbose($"{targetVersionInfo.FileVersion} {originVersionInfo.FileVersion} {targetVersionInfo.InternalName} {originVersionInfo.InternalName}");
+          if (targetVersionInfo.FileVersion != originVersionInfo.FileVersion ||
+            targetVersionInfo.InternalName != originVersionInfo.InternalName)
+          {
+            ourLogger.Verbose($"Coping ${fullPluginFileInfo} -> ${ourTarget}.");
+            fullPluginFileInfo.CopyTo(ourTarget, true);
+            return;
+          }
         }
-      }
-      else
-      {
-        if (File.Exists(target))
-        {
-          ourLogger.Verbose($"Removing ${target}.");
-          File.Delete(target);
-        }
+        
+        ourLogger.Verbose($"Plugin {ourTarget} was not updated by {fullPluginPath}.");
       }
     }
 
-    private static string AssemblyDirectory
+    private static string ExecutingAssemblyPath
     {
       get
       {
         var codeBase = Assembly.GetExecutingAssembly().CodeBase;
         var uri = new UriBuilder(codeBase);
         var path = Uri.UnescapeDataString(uri.Path);
-        return Path.GetDirectoryName(path);
+        return path;
       }
     }
   }

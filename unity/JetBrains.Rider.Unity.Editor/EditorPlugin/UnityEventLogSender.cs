@@ -5,7 +5,7 @@ using System.Reflection;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor;
 using UnityEngine;
 
@@ -75,18 +75,21 @@ namespace JetBrains.Rider.Unity.Editor
   
   public class UnityEventLogSender
   {
-    public UnityEventLogSender(UnityEventCollector collector)
+    private readonly Lifetime myConnectionLifetime;
+
+    public UnityEventLogSender(UnityEventCollector collector, Lifetime connectionLifetime)
     {
+      myConnectionLifetime = connectionLifetime;
       ProcessQueue(PluginEntryPoint.UnityModel.Maybe.Value, collector);
 
       collector.AddEvent +=(col, _) =>
       {
-        if (PluginEntryPoint.UnityModel.Maybe.HasValue)
+        if (PluginEntryPoint.UnityModel.Maybe.HasValue && !myConnectionLifetime.IsTerminated)
           ProcessQueue(PluginEntryPoint.UnityModel.Maybe.Value, (UnityEventCollector)col);
       };
     }
 
-    private void ProcessQueue(UnityModel model, UnityEventCollector collector)
+    private void ProcessQueue(EditorPluginModel model, UnityEventCollector collector)
     {
       if (!collector.myDelayedLogEvents.Any())
         return;
@@ -94,6 +97,9 @@ namespace JetBrains.Rider.Unity.Editor
       var head = collector.myDelayedLogEvents.First;
       while (head != null)
       {
+        if (myConnectionLifetime.IsTerminated)
+          return;
+        
         SendLogEvent(model, head.Value);
         head = head.Next;
       }
@@ -101,9 +107,10 @@ namespace JetBrains.Rider.Unity.Editor
       collector.myDelayedLogEvents.Clear();
     }
     
-    private void SendLogEvent(UnityModel model, RdLogEvent logEvent)
+    private void SendLogEvent(EditorPluginModel model, RdLogEvent logEvent)
     {
-      model.Log.Fire(logEvent);
+      if (!myConnectionLifetime.IsTerminated)
+        model.Log.Fire(logEvent);
     }
   }
 }

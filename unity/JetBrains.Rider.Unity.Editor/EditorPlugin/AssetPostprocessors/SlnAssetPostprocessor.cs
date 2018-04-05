@@ -11,21 +11,21 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
   public class SlnAssetPostprocessor : AssetPostprocessor
   {
     private static readonly ILog ourLogger = Log.GetLog<SlnAssetPostprocessor>();
-    
+
     public override int GetPostprocessOrder()
     {
       return 10;
     }
-    
+
     public static void OnGeneratedCSProjectFiles()
     {
       if (!PluginEntryPoint.Enabled)
         return;
-     
+
       var slnFile = PluginEntryPoint.SlnFile;
       if (!File.Exists(slnFile))
         return;
-      
+
       ourLogger.Verbose("Post-processing {0}", slnFile);
       var slnAllText = File.ReadAllText(slnFile);
       var text = ProcessSlnText(slnAllText);
@@ -34,12 +34,15 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     public static string ProcessSlnText(string slnAllText)
     {
-      const string unityProjectGuid = @"Project(""{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1}"")";
-      if (!slnAllText.Contains(unityProjectGuid))
+      const string csharpProjectGuid = @"Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"")";
+      if (!slnAllText.Contains(csharpProjectGuid))
       {
-        var matchGuid = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)";
-        // Unity may put a random guid, unityProjectGuid will help VSTU recognize Rider-generated projects
-        slnAllText = Regex.Replace(slnAllText, matchGuid, unityProjectGuid);
+        const string matchGuid = @"Project\(\""\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}\""\)";
+        // Unity (possibly only 5.1) can insert an incorrect GUID, which prevents the project loading correctly
+        // Make sure we use the standard C# project system GUID
+        // See https://rider-support.jetbrains.com/hc/en-us/community/posts/207243685-Unity3D-support?page=1#community_comment_208602469
+        // And https://youtrack.jetbrains.com/issue/RIDER-1261 (demo project shows type in C# guid: FA*A*04EC0-301F-11D3-BF4B-00C04F79EFBC)
+        slnAllText = Regex.Replace(slnAllText, matchGuid, csharpProjectGuid);
       }
 
       var lines = slnAllText.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);

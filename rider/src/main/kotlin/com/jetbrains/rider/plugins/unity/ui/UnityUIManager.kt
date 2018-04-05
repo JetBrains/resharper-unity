@@ -3,12 +3,13 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.WindowManagerListener
 import com.jetbrains.rider.UnityReferenceDiscoverer
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
@@ -16,9 +17,9 @@ import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.util.reactive.Property
 import org.jdom.Element
 
-@State(name = "UnityProjectConfiguration", storages = [(Storage(value = "other.xml"))])
+@State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscoverer,
-                     private val projectCustomDataHost : ProjectCustomDataHost,
+                     private val host : UnityHost,
                      solutionLifecycleHost: SolutionLifecycleHost,
                      project: Project) : LifetimedProjectComponent(project), PersistentStateComponent<Element>, WindowManagerListener {
     companion object {
@@ -40,7 +41,6 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
         }
     }
 
-
     override fun getState(): Element? {
         val element = Element("state")
         val value = isUnityUI.value
@@ -50,8 +50,6 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
 
     override fun loadState(element: Element) {
         val attributeValue = element.getAttributeValue(isUnityProjectAttribute, "") ?: return
-        if (!attributeValue.isEmpty()) {
-        }
         isUnityUI.value = attributeValue.toBoolean()
     }
 
@@ -72,9 +70,8 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
             return
         }
 
-        val iconWidget = UnityStatusBarIcon(projectCustomDataHost)
-
-        projectCustomDataHost.unityState.advise(componentLifetime){
+        val iconWidget = UnityStatusBarIcon(host)
+        host.unityState.advise(componentLifetime){
             statusBar.updateWidget(iconWidget.ID())
         }
 
