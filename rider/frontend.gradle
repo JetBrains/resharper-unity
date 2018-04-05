@@ -33,35 +33,39 @@ intellij {
     downloadSources = false
 }
 
-def frontendSdkDirs = []
-def frontendSdkSearchPath = dependenciesDir.exists() && dependenciesDir.isDirectory() ? dependenciesDir : new File(repoRoot, "rider/build")
-logger.lifecycle("listing $frontendSdkSearchPath.path:")
-fileTree(frontendSdkSearchPath).visit {
-    if (it.isDirectory()){
-        if (it.name.startsWith("riderRD"))
-            frontendSdkDirs << it
-        logger.lifecycle("DIR:  $it.name")
-    }
-    else {
-        logger.lifecycle("FILE: $it.name")
-    }
-}
-
-if (frontendSdkDirs.size() > 0) {
-    assert frontendSdkDirs.size() == 1
-
-    def frontendSdkSingleDir = frontendSdkDirs.first()
-    def match = frontendSdkSingleDir.name =~ /riderRD-(.+)/
-    assert match.matches()
-
-    ext.frontendSdkVersion = match[0][1]
+def frontendSdkRoot = dependenciesDir
+// bundled build configuration on TC
+if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
+    logger.lifecycle("dependencies dir found, using as frontend SDK root")    
 }
 else {
-    ext.frontendSdkVersion = "2018.1-SNAPSHOT"
+    def frontendSdkVersion = "2018.1-SNAPSHOT"
+    // rider/build/riderRD-2018.1-SNAPSHOT
+    def frontendSdkDirs = []
+    def frontendSdkSearchPath = new File(repoRoot, "rider/build")
+    logger.lifecycle("listing $frontendSdkSearchPath.path:")
+    fileTree(frontendSdkSearchPath).visit {
+        if (it.isDirectory()){
+            if (it.name.startsWith("riderRD"))
+                frontendSdkDirs << it
+            // logger.lifecycle("DIR:  $it.name")
+        }
+    }
+
+    if (frontendSdkDirs.size() > 0) {
+        assert frontendSdkDirs.size() == 1
+
+        def frontendSdkSingleDir = frontendSdkDirs.first()
+        def match = frontendSdkSingleDir.name =~ /riderRD-(.+)/
+        assert match.matches()
+
+        frontendSdkVersion = match[0][1]
+    }
+
+    frontendSdkRoot = new File(frontendSdkSearchPath, "riderRD-$frontendSdkVersion")
 }
 
-ext.rdLibDirectory = new File(ext.repoRoot, "rider/build/riderRD-$ext.frontendSdkVersion/lib/rd").canonicalFile
-logger.lifecycle("frontendSdkVersion=$ext.frontendSdkVersion")
+ext.rdLibDirectory = new File(frontendSdkRoot, "lib/rd").canonicalFile
 
 ext.kotlin_version = '1.2.10'
 ext.unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
