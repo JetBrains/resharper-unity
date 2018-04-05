@@ -59,6 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLocks = locks;
             mySolution = solution;
             myPluginPathsProvider = pluginPathsProvider;
+            myUsageStatistics = usageStatistics;
             myHost = host;
             myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
