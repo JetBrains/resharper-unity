@@ -201,8 +201,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void TrackActivity(UnityModel model, Lifetime lf)
         {
-            model.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("Unity", version); });
-            model.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("Unity", runtime.ToString()); });
+            model.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("UnityVersion", version); });
+            model.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("UnityVersion", runtime.ToString()); });
         }
 
         private void SubscribeToOpenFile([NotNull] UnityModel model, Solution solution)
