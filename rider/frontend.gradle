@@ -48,7 +48,7 @@ else {
         if (it.isDirectory()){
             if (it.name.startsWith("riderRD"))
                 frontendSdkDirs << it
-            // logger.lifecycle("DIR:  $it.name")
+            logger.lifecycle("DIR:  $it.name")
         }
     }
 
