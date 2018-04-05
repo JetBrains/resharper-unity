@@ -7,23 +7,8 @@ plugins {
 }
 
 ext.repoRoot = new File("..").canonicalFile
-ext.frontendSdkVersion = '2018.1-SNAPSHOT' // don't forget to update the dependency for rd libs (repositories -> flatDir -> dirs)
-ext.rdLibDirectory = new File(ext.repoRoot, "rider/build/riderRD-$ext.frontendSdkVersion/lib/rd").canonicalFile
-logger.lifecycle("frontendSdkVersion=$ext.frontendSdkVersion")
-
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
-repositories{
-    flatDir {
-        dirs rdLibDirectory.absolutePath
-    }
-}
-
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
-}
-
-group 'com.jetbrains'
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
@@ -55,7 +40,6 @@ version ext.version
 
 logger.lifecycle("version=$ext.version")
 
-apply from: 'protocol.gradle'
-apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
+apply from: 'backend.gradle'
 apply from: 'shortcuts.gradle'
