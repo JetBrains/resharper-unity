@@ -225,10 +225,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 });
         }
         
-         private void TrackActivity(EditorPluginModel model, Lifetime lf)
+        private void TrackActivity(EditorPluginModel model, Lifetime lf)
         {
-            model.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("UnityVersion", version); });
-            model.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("UnityVersion", runtime.ToString()); });
+            if (!model.ApplicationVersion.HasValue())
+                model.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("UnityVersion", version); });
+            else
+                myUsageStatistics.TrackActivity("UnityVersion", model.ApplicationVersion.Value);
+            if (!model.ScriptingRuntime.HasValue())
+                model.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("UnityVersion", runtime.ToString()); });
+            else
+                myUsageStatistics.TrackActivity("UnityVersion", model.ScriptingRuntime.Value.ToString());
         }
 
         private void SubscribeToOpenFile([NotNull] EditorPluginModel model)
