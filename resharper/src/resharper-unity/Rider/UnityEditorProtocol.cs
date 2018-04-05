@@ -144,6 +144,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void CreateProtocol(FileSystemPath protocolInstancePath)
         {
+            if (!protocolInstancePath.ExistsFile)
+                return;
+            
             int port;
             try
             {
