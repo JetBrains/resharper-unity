@@ -9,6 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
     {
         [SettingsEntry(true, "If this option is enabled, Rider plugin will be automatically installed for Unity projects.")]
         public bool InstallUnity3DRiderPlugin;
+        
+        [SettingsEntry(true, "If this option is enabled, Rider plugin will be automatically call \"Refresh in Unity\".")]
+        public bool AllowAutomaticRefreshInUnity;
 
         [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of ShaderLab files.")]
         public bool EnableShaderLabParsing;

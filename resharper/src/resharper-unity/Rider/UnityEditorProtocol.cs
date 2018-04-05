@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
         
         private readonly IProperty<EditorPluginModel> myUnityModel;
-        private IContextBoundSettingsStoreLive myBoundSettingsStore;
+        private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
         public IProperty<EditorPluginModel> UnityModel => myUnityModel;
