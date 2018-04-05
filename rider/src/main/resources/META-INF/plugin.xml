@@ -11,7 +11,8 @@
   <extensions defaultExtensionNs="com.intellij">
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
-    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugAndPlayConfigurationType" />
+    <!--todo: restore in 2018.2-->
+    <!--<configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugAndPlayConfigurationType" />-->
     <applicationConfigurable groupId="language" instance="com.jetbrains.rider.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
 
     <!-- This has to be first, as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
