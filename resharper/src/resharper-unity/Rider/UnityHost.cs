@@ -1,4 +1,5 @@
-﻿using JetBrains.Application.Threading;
+﻿using System;
+using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.Rider.Model;
@@ -8,15 +9,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityHost
     {
-        public RdUnityModel Model { get; }
+        // TODO: this shouldn't be up in tests until we figure out how to test unity-editor requiring features
+        private readonly bool myIsInTests;
+
+        private readonly RdUnityModel myModel;
 
         public UnityHost(ISolution solution, IShellLocks locks)
         {
-            // TODO: this shouldn't be up in tests until we figure out how to test unity-editor requiring features
-            if (locks.Dispatcher.IsAsyncBehaviorProhibited)
+            myIsInTests = locks.Dispatcher.IsAsyncBehaviorProhibited;
+            if (myIsInTests)
                 return;
             
-            Model = solution.GetProtocolSolution().GetRdUnityModel();
+            myModel = solution.GetProtocolSolution().GetRdUnityModel();
+        }
+
+        public void PerformModelAction(Action<RdUnityModel> action)
+        {
+            if (myIsInTests)
+                return;
+            
+            action(myModel);
         }
     }
 }
