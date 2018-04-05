@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseModelData(Lifetime lifetime, Solution solution)
         {
-            myHost.Model.Data.Advise(lifetime, e =>
+            myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
             {
                 var model = UnityModel.Value;
                 if (e.NewValue == e.OldValue)
@@ -139,7 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         model.Pause.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
                 }
-            });
+            }));
         }
 
         private void CreateProtocol(FileSystemPath protocolInstancePath)
