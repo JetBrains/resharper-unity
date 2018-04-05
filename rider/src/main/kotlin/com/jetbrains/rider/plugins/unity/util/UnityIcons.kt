@@ -8,9 +8,20 @@ class UnityIcons {
             @JvmField
             val ShaderLabFile = IconLoader.getIcon("/Icons/Shader/Shader.png")
 
+            val UnityLogo = IconLoader.getIcon("/Icons/Logo/UnityLogo.png")
+
             // TODO: Proper icons!
             @JvmField
-            val AttachEditorDebugConfiguration = IconLoader.getIcon("/Icons/Logo/UnityLogo.png")
+            val AttachEditorDebugConfiguration = UnityLogo
+
+            @JvmField
+            val AttachAndPlayEditorDebugConfiguration = UnityLogo
+
+            @JvmField
+            val ImportantActions = UnityLogo
+
+            @JvmField
+            val EditorConnectionStatus = UnityLogo
         }
     }
 
