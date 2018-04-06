@@ -112,7 +112,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       var targetFileInfo = new FileInfo(fullPath);
       if (targetFileInfo.Exists)
       {
-        ourLogger.Log(LoggingLevel.VERBOSE, $"Already exists {targetFileInfo}");
+        ourLogger.Verbose($"Already exists {targetFileInfo}");
         return;
       }
 
@@ -353,8 +353,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
             targetFrameworkVersion.SetValue("v" + foundVersion);
           else if (new Version(foundVersion) == new Version(version))
             ourLogger.Verbose($"Found TargetFrameworkVersion {foundVersion} equals the one set-by-Unity itself {version}");
-          else if(PluginSettings.SelectedLoggingLevel >= LoggingLevel.INFO)
-            Debug.Log($"Rider may require \".NET Framework {version} Developer Pack\", which is not installed.");
+          else if (ourLogger.IsVersboseEnabled())
+          {
+            var message = $"Rider may require \".NET Framework {version} Developer Pack\", which is not installed.";
+            Debug.Log(message);
+            ourLogger.Verbose(message);
+          }
         }
       }
 
@@ -460,8 +464,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         var result = updater(element.Value);
         if (result != element.Value)
         {
-          if (ourLogger.IsVersboseEnabled())
-            Debug.Log($"Overridding existing project property {name}. Old value: {element.Value}, new value: {result}");
+          ourLogger.Verbose($"Overridding existing project property {name}. Old value: {element.Value}, new value: {result}");
 
           element.SetValue(result);
         }
@@ -473,8 +476,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // Adds a property to the first property group without a condition
     private static void AddProperty(XElement root, XNamespace xmlns, string name, object content)
     {
-      if (ourLogger.IsVersboseEnabled())
-        Debug.Log($"Adding project property {name}. Value: {content}");
+      ourLogger.Verbose($"Adding project property {name}. Value: {content}");
       
       var propertyGroup = root.Elements(xmlns + "PropertyGroup")
         .FirstOrDefault(e => !e.Attributes(xmlns + "Condition").Any());
