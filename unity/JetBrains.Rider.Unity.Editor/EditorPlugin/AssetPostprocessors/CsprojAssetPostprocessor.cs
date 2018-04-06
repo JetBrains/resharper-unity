@@ -480,7 +480,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         var result = updater(element.Value);
         if (result != element.Value)
         {
-          ourLogger.Verbose("Overridding existing project property {0}. Old value: {1}, new value: {2}", name, element.Value, result);
+          ourLogger.Verbose("Overriding existing project property {0}. Old value: {1}, new value: {2}", name, element.Value, result);
 
           element.SetValue(result);
         }
