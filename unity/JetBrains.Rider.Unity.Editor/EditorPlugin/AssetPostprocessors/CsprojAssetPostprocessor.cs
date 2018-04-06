@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
+using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
@@ -355,9 +355,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
                 var foundVersion = UnityUtils.ScriptingRuntime > 0
                   ? versionOrderedList.Last()
                   : versionOrderedList.First();
-                // roslyn compiler requires dotnet 4.7.1, which may not be present
-                var fvIsParsed = decimal.TryParse(foundVersion, NumberStyles.Number, CultureInfo.InvariantCulture, out var fv);
-                var vIsParsed = decimal.TryParse(version, NumberStyles.Number, CultureInfo.InvariantCulture, out var v);
+                // Unity may require dotnet 4.7.1, which may not be present
+                var fvIsParsed = VersionExtensions.TryParse(foundVersion, out var fv);
+                var vIsParsed = VersionExtensions.TryParse(version, out var v);
                 if (fvIsParsed && vIsParsed && fv > v)
                   version = foundVersion;
                 else if (foundVersion == version)
@@ -408,8 +408,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
         // Only use our version if it's not already set, or it's less than what we would set
         // Note that if existing is "default", we'll override it
-        var currentIsParsed = decimal.TryParse(existing, NumberStyles.Number, CultureInfo.InvariantCulture, out var currentLanguageLevel);
-        var expectedIsParsed = decimal.TryParse(expected,NumberStyles.Number, CultureInfo.InvariantCulture, out var expectedLanguageLevel);
+        var currentIsParsed = VersionExtensions.TryParse(existing, out var currentLanguageLevel);
+        var expectedIsParsed = VersionExtensions.TryParse(expected, out var expectedLanguageLevel);
         if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel
             || !currentIsParsed
             )

@@ -46,13 +46,13 @@ namespace JetBrains.Rider.Unity.Editor
       return availableVersions;
     }
 
-    private static bool InvokeIfValidVersion(string value, Action<string> action)
+    private static bool InvokeIfValidVersion(string input, Action<string> action)
     {
       try
       {
         // ReSharper disable once ObjectCreationAsStatement
-        new Version(value); // mono 2.6 doesn't support Version.TryParse
-        action(value);
+        new Version(input); // mono 2.6 doesn't support Version.TryParse
+        action(input);
         return true;
       }
       catch (ArgumentException)
