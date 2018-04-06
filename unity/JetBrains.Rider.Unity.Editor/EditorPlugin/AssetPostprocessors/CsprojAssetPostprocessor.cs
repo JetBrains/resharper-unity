@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
@@ -329,63 +330,103 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       projectContentElement.Add(itemGroup);
     }
 
-    // Set appropriate version
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
-        var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
-          .Elements(xmlns + "TargetFrameworkVersion")
-          .FirstOrDefault(); // Processing csproj files, which are not Unity-generated JetBrains/Unity3dRider#56
-        if (targetFrameworkVersion == null)
-          return;
+      SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", existing =>
+      {
+        var expected = GetTargetFrameworkVersion();
 
-      if (UnityUtils.ScriptingRuntime > 0)
+        try
         {
-          var version = PluginSettings.TargetFrameworkVersion;
-          if (!PluginSettings.OverrideTargetFrameworkVersion)
-          {
-            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
-            {
-              var versions = PluginSettings.GetInstalledNetFrameworks();
-              if (versions.Any())
-              {
-                version = versions.OrderBy(v => new Version(v)).Last();
-              }
-            }
-          }
-          targetFrameworkVersion.SetValue("v" + version);
+          var current = existing.Length > 0 ? new Version(existing.Substring(1)) : new Version();
+          return expected > current ? $"v{expected.ToString(2)}" : existing;
         }
-        else
+        catch (Exception e)
         {
-          var version = PluginSettings.TargetFrameworkVersionOldMono;
-          if (!PluginSettings.OverrideTargetFrameworkVersionOldMono)
-          {
-            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
-            {
-              var versions = PluginSettings.GetInstalledNetFrameworks();
-              if (versions.Any())
-              {
-                version = versions.OrderBy(v => new Version(v)).First();
-              }
-            }
-          }
-          targetFrameworkVersion.SetValue("v" + version);
+          ourLogger.Log(LoggingLevel.TRACE, $"Invalid existing TargetFrameworkVersion: {existing}", e);
         }
+
+        return $"v{expected.ToString(2)}";
+      });
+    }
+
+    private static Version GetTargetFrameworkVersion()
+    {
+      return UnityUtils.ScriptingRuntime > 0 ? GetNet40TargetFrameworkVersion() : GetNet20TargetFrameworkVersion();
+    }
+
+    private static Version GetNet40TargetFrameworkVersion()
+    {
+      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows &&
+          !PluginSettings.OverrideTargetFrameworkVersion)
+      {
+        var versions = PluginSettings.GetInstalledNetFrameworks().Select(v => new Version(v)).ToList();
+        versions.Sort();
+        if (versions.Count > 0)
+          return versions.Last();
+      }
+
+      return new Version(PluginSettings.TargetFrameworkVersion);
+    }
+
+    private static Version GetNet20TargetFrameworkVersion()
+    {
+      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows &&
+          !PluginSettings.OverrideTargetFrameworkVersionOldMono)
+      {
+        var versions = PluginSettings.GetInstalledNetFrameworks().Select(v => new Version(v)).ToList();
+        versions.Sort();
+        if (versions.Count > 0)
+          return versions.First();  // Don't know why this is first!?
+      }
+
+      return new Version(PluginSettings.TargetFrameworkVersionOldMono);
     }
 
     private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
     {
       // Set the C# language level, so Rider doesn't have to guess (although it does a good job)
       // VSTU sets this, and I think newer versions of Unity do too (should check which version)
-      SetOrUpdateProperty(projectElement, xmlns, "LangVersion", GetLanguageLevel());
+      SetOrUpdateProperty(projectElement, xmlns, "LangVersion", existing =>
+      {
+        var expected = GetExpectedLanguageLevel();
+        if (expected == CSharpLangaugeLevel.Latest || existing == "latest")
+          return "latest";
+
+        // Only use our version if it's not already set, or it's less than what we would set
+        // Note that if existing is "default", we'll override it
+        if (!float.TryParse(existing, out var currentLanguageLevel)
+          || (int)(currentLanguageLevel * 10) < (int)expected)
+        {
+          return $"{(int) expected / 10.0f:0.0}";
+        }
+
+        return existing;
+      });
     }
 
-    private static string GetLanguageLevel()
+    // ReSharper disable UnusedMember.Local
+    private enum CSharpLangaugeLevel
+    {
+      CSharp20 = 20,
+      CSharp30 = 30,
+      CSharp40 = 40,
+      CSharp50 = 50,
+      CSharp60 = 60,
+      CSharp70 = 70,
+      CSharp71 = 71,
+      CSharp72 = 72,
+      Latest
+    }
+    // ReSharper restore UnusedMember.Local
+
+    private static CSharpLangaugeLevel GetExpectedLanguageLevel()
     {
       // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
       if (Directory.Exists(Path.GetFullPath("CSharp70Support")))
-        return "latest";
+        return CSharpLangaugeLevel.Latest;  // "latest" - If we just return 7, that means 7.0. If we return 7.2, we might not have a 7.2 compiler
       if (Directory.Exists(Path.GetFullPath("CSharp60Support")))
-        return "6";
+        return CSharpLangaugeLevel.CSharp60;
 
       var apiCompatibilityLevel = 0;
       try
@@ -414,9 +455,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       // Unity 5.5+ supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
       const int apiCompatibilityLevelNet46 = 3;
       if (apiCompatibilityLevel >= apiCompatibilityLevelNet46)
-        return "6";
+        return CSharpLangaugeLevel.CSharp60;
 
-      return "4";
+      return CSharpLangaugeLevel.CSharp40;
     }
 
     private static void SetProjectFlavour(XElement projectElement, XNamespace xmlns)
@@ -428,19 +469,33 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, string content)
     {
+      SetOrUpdateProperty(root, xmlns, name, v => content);
+    }
+
+    private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, Func<string, string> updater)
+    {
       var element = root.Elements(xmlns + "PropertyGroup").Elements(xmlns + name).FirstOrDefault();
       if (element != null)
       {
-        if (element.Value != content)
-          element.SetValue(content);
+        var result = updater(element.Value);
+        if (result != element.Value)
+        {
+          if (ourLogger.IsVersboseEnabled())
+            Debug.Log($"Overridding existing project property {name}. Old value: {element.Value}, new value: {result}");
+
+          element.SetValue(result);
+        }
       }
       else
-        AddProperty(root, xmlns, name, content);
+        AddProperty(root, xmlns, name, updater(string.Empty));
     }
 
     // Adds a property to the first property group without a condition
     private static void AddProperty(XElement root, XNamespace xmlns, string name, object content)
     {
+      if (ourLogger.IsVersboseEnabled())
+        Debug.Log($"Adding project property {name}. Value: {content}");
+
       var propertyGroup = root.Elements(xmlns + "PropertyGroup")
         .FirstOrDefault(e => !e.Attributes(xmlns + "Condition").Any());
       if (propertyGroup == null)
