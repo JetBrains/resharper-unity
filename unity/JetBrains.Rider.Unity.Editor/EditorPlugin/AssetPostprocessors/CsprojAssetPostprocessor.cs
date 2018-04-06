@@ -351,8 +351,10 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           // roslyn compiler requires dotnet 4.7.1, which may not be present
           if (new Version(foundVersion) > new Version(version)) 
             targetFrameworkVersion.SetValue("v" + foundVersion);
-          else if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.INFO)
-            Debug.Log($"Please install \".NET Framework {version} Developer Pack\"");
+          else if (new Version(foundVersion) == new Version(version))
+            ourLogger.Verbose($"Found TargetFrameworkVersion {foundVersion} equals the one set-by-Unity itself {version}");
+          else if(PluginSettings.SelectedLoggingLevel >= LoggingLevel.INFO)
+            Debug.Log($"Rider may require \".NET Framework {version} Developer Pack\", which is not installed.");
         }
       }
 
