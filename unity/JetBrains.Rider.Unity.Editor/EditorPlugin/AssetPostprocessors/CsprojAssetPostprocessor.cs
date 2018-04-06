@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
+using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
@@ -331,50 +333,61 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // Set appropriate version
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
-      var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
-        .Elements(xmlns + "TargetFrameworkVersion")
-        .FirstOrDefault(); // Processing csproj files, which are not Unity-generated JetBrains/Unity3dRider#56
-      if (targetFrameworkVersion == null)
-        return;
-
-      // for windows try to use installed dotnet framework
-      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
-      {
-        var version = targetFrameworkVersion.Value.Substring(1);
-        var versions = PluginSettings.GetInstalledNetFrameworks();
-        if (versions.Any())
+      SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", s =>
         {
-          var versionOrderedList = versions.OrderBy(v => new Version(v));
-          var foundVersion = UnityUtils.ScriptingRuntime > 0 ? versionOrderedList.Last() : versionOrderedList.First();
-          // roslyn compiler requires dotnet 4.7.1, which may not be present
-          if (new Version(foundVersion) > new Version(version)) 
-            targetFrameworkVersion.SetValue("v" + foundVersion);
-          else if (new Version(foundVersion) == new Version(version))
-            ourLogger.Verbose("Found TargetFrameworkVersion {0} equals the one set-by-Unity itself {1}", foundVersion, version);
-          else if (ourLogger.IsVersboseEnabled())
+          string version = string.Empty;
+          try
           {
-            var message = $"Rider may require \".NET Framework {version} Developer Pack\", which is not installed.";
-            Debug.Log(message);
+            version = s.Substring(1);
+            // for windows try to use installed dotnet framework
+            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            {
+              var versions = PluginSettings.GetInstalledNetFrameworks();
+              if (versions.Any())
+              {
+                var versionOrderedList = versions.OrderBy(v1 => new Version(v1));
+                var foundVersion = UnityUtils.ScriptingRuntime > 0
+                  ? versionOrderedList.Last()
+                  : versionOrderedList.First();
+                // roslyn compiler requires dotnet 4.7.1, which may not be present
+                var fvIsParsed = decimal.TryParse(foundVersion, NumberStyles.Number, CultureInfo.InvariantCulture, out var fv);
+                var vIsParsed = decimal.TryParse(version, NumberStyles.Number, CultureInfo.InvariantCulture, out var v);
+                if (fvIsParsed && vIsParsed && fv > v)
+                  version = foundVersion;
+                else if (foundVersion == version)
+                  ourLogger.Verbose("Found TargetFrameworkVersion {0} equals the one set-by-Unity itself {1}",
+                    foundVersion, version);
+                else if (ourLogger.IsVersboseEnabled())
+                {
+                  var message = $"Rider may require \".NET Framework {version} Developer Pack\", which is not installed.";
+                  Debug.Log(message);
+                }
+              }
+            }
           }
-        }
-      }
+          catch (Exception e)
+          {
+            ourLogger.Log(LoggingLevel.WARN, "Fail to FixTargetFrameworkVersion", e);
+          }
 
-      if (UnityUtils.ScriptingRuntime > 0)
-      {
-        if (PluginSettings.OverrideTargetFrameworkVersion)
-        {
-          var version = PluginSettings.TargetFrameworkVersion;
-          targetFrameworkVersion.SetValue("v" + version);
+          if (UnityUtils.ScriptingRuntime > 0)
+          {
+            if (PluginSettings.OverrideTargetFrameworkVersion)
+            {
+              return "v" + PluginSettings.TargetFrameworkVersion;
+            }
+          }
+          else
+          {
+            if (PluginSettings.OverrideTargetFrameworkVersionOldMono)
+            {
+              return "v" + PluginSettings.TargetFrameworkVersionOldMono;;
+            }
+          }
+
+          return "v" + version;
         }
-      }
-      else
-      {
-        if (PluginSettings.OverrideTargetFrameworkVersionOldMono)
-        {
-          var version = PluginSettings.TargetFrameworkVersionOldMono;
-          targetFrameworkVersion.SetValue("v" + version);
-        }
-      }
+      );
     }
 
     private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
@@ -389,8 +402,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
         // Only use our version if it's not already set, or it's less than what we would set
         // Note that if existing is "default", we'll override it
-        var currentIsParsed = float.TryParse(existing, out var currentLanguageLevel);
-        var expectedIsParsed = float.TryParse(existing, out var expectedLanguageLevel);
+        var currentIsParsed = decimal.TryParse(existing, NumberStyles.Number, CultureInfo.InvariantCulture, out var currentLanguageLevel);
+        var expectedIsParsed = decimal.TryParse(expected,NumberStyles.Number, CultureInfo.InvariantCulture, out var expectedLanguageLevel);
         if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel
             || !currentIsParsed
             )
@@ -465,6 +478,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
           element.SetValue(result);
         }
+        else
+          ourLogger.Verbose("Property {0} already set. Old value: {1}, new value: {2}", name, element.Value, result);
       }
       else
         AddProperty(root, xmlns, name, updater(string.Empty));
