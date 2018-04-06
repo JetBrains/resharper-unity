@@ -173,8 +173,8 @@ namespace JetBrains.Rider.Unity.Editor
                 presentation += $" ({s.Path})";
             }
               
-             
-            return presentation;
+            // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
+            return presentation.Replace("/", ":");
           })
           .ToArray();
         RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
