@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
@@ -112,7 +111,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       var targetFileInfo = new FileInfo(fullPath);
       if (targetFileInfo.Exists)
       {
-        ourLogger.Verbose($"Already exists {targetFileInfo}");
+        ourLogger.Verbose("Already exists {0}", targetFileInfo);
         return;
       }
 
@@ -141,10 +140,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       catch (Exception e)
       {
         ourLogger.Verbose(e.ToString());
-        ourLogger.Warn($"{targetFileInfo} was not restored from resourse.");
+        ourLogger.Warn("{0} was not restored from resourse.", targetFileInfo);
       }
     }
-
 
     private static readonly string PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
@@ -352,12 +350,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           if (new Version(foundVersion) > new Version(version)) 
             targetFrameworkVersion.SetValue("v" + foundVersion);
           else if (new Version(foundVersion) == new Version(version))
-            ourLogger.Verbose($"Found TargetFrameworkVersion {foundVersion} equals the one set-by-Unity itself {version}");
+            ourLogger.Verbose("Found TargetFrameworkVersion {0} equals the one set-by-Unity itself {1}", foundVersion, version);
           else if (ourLogger.IsVersboseEnabled())
           {
             var message = $"Rider may require \".NET Framework {version} Developer Pack\", which is not installed.";
             Debug.Log(message);
-            ourLogger.Verbose(message);
           }
         }
       }
@@ -464,7 +461,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         var result = updater(element.Value);
         if (result != element.Value)
         {
-          ourLogger.Verbose($"Overridding existing project property {name}. Old value: {element.Value}, new value: {result}");
+          ourLogger.Verbose("Overridding existing project property {0}. Old value: {1}, new value: {2}", name, element.Value, result);
 
           element.SetValue(result);
         }
@@ -474,9 +471,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     }
 
     // Adds a property to the first property group without a condition
-    private static void AddProperty(XElement root, XNamespace xmlns, string name, object content)
+    private static void AddProperty(XElement root, XNamespace xmlns, string name, string content)
     {
-      ourLogger.Verbose($"Adding project property {name}. Value: {content}");
+      ourLogger.Verbose("Adding project property {0}. Value: {1}", name, content);
       
       var propertyGroup = root.Elements(xmlns + "PropertyGroup")
         .FirstOrDefault(e => !e.Attributes(xmlns + "Condition").Any());
