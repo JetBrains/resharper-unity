@@ -335,6 +335,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", s =>
         {
+          if (string.IsNullOrEmpty(s))
+          {
+            ourLogger.Verbose("TargetFrameworkVersion in csproj is null or empty.");
+            return string.Empty;
+          }
+          
           string version = string.Empty;
           try
           {
