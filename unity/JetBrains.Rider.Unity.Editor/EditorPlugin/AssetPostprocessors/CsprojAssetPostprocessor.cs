@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
@@ -332,44 +333,45 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // Set appropriate version
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
-        var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
-          .Elements(xmlns + "TargetFrameworkVersion")
-          .FirstOrDefault(); // Processing csproj files, which are not Unity-generated JetBrains/Unity3dRider#56
-        if (targetFrameworkVersion == null)
-          return;
+      var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
+        .Elements(xmlns + "TargetFrameworkVersion")
+        .FirstOrDefault(); // Processing csproj files, which are not Unity-generated JetBrains/Unity3dRider#56
+      if (targetFrameworkVersion == null)
+        return;
+
+      // for windows try to use installed dotnet framework
+      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+      {
+        var version = targetFrameworkVersion.Value.Substring(1);
+        var versions = PluginSettings.GetInstalledNetFrameworks();
+        if (versions.Any())
+        {
+          var versionOrderedList = versions.OrderBy(v => new Version(v));
+          var foundVersion = UnityUtils.ScriptingRuntime > 0 ? versionOrderedList.Last() : versionOrderedList.First();
+          // roslyn compiler requires dotnet 4.7.1, which may not be present
+          if (new Version(foundVersion) > new Version(version)) 
+            targetFrameworkVersion.SetValue("v" + foundVersion);
+          else if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.INFO)
+            Debug.Log($"Please install \".NET Framework {version} Developer Pack\"");
+        }
+      }
 
       if (UnityUtils.ScriptingRuntime > 0)
+      {
+        if (PluginSettings.OverrideTargetFrameworkVersion)
         {
           var version = PluginSettings.TargetFrameworkVersion;
-          if (!PluginSettings.OverrideTargetFrameworkVersion)
-          {
-            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
-            {
-              var versions = PluginSettings.GetInstalledNetFrameworks();
-              if (versions.Any())
-              {
-                version = versions.OrderBy(v => new Version(v)).Last();
-              }
-            }
-          }
           targetFrameworkVersion.SetValue("v" + version);
         }
-        else
+      }
+      else
+      {
+        if (PluginSettings.OverrideTargetFrameworkVersionOldMono)
         {
           var version = PluginSettings.TargetFrameworkVersionOldMono;
-          if (!PluginSettings.OverrideTargetFrameworkVersionOldMono)
-          {
-            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
-            {
-              var versions = PluginSettings.GetInstalledNetFrameworks();
-              if (versions.Any())
-              {
-                version = versions.OrderBy(v => new Version(v)).First();
-              }
-            }
-          }
           targetFrameworkVersion.SetValue("v" + version);
         }
+      }
     }
 
     private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
