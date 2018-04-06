@@ -378,10 +378,28 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       // Set the C# language level, so Rider doesn't have to guess (although it does a good job)
       // VSTU sets this, and I think newer versions of Unity do too (should check which version)
-      SetOrUpdateProperty(projectElement, xmlns, "LangVersion", GetLanguageLevel());
+      SetOrUpdateProperty(projectElement, xmlns, "LangVersion", existing =>
+      {
+        var expected = GetExpectedLanguageLevel();
+        if (expected == "latest" || existing == "latest")
+          return "latest";
+
+        // Only use our version if it's not already set, or it's less than what we would set
+        // Note that if existing is "default", we'll override it
+        var currentIsParsed = float.TryParse(existing, out var currentLanguageLevel);
+        var expectedIsParsed = float.TryParse(existing, out var expectedLanguageLevel);
+        if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel
+            || !currentIsParsed
+            )
+        {
+          return expected;
+        }
+
+        return existing;
+      });
     }
 
-    private static string GetLanguageLevel()
+    private static string GetExpectedLanguageLevel()
     {
       // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
       if (Directory.Exists(Path.GetFullPath("CSharp70Support")))
@@ -427,22 +445,35 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       SetOrUpdateProperty(projectElement, xmlns, "ProjectTypeGuids",
         "{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}");
     }
-
     private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, string content)
+    {
+      SetOrUpdateProperty(root, xmlns, name, v => content);
+    }
+
+    private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, Func<string, string> updater)
     {
       var element = root.Elements(xmlns + "PropertyGroup").Elements(xmlns + name).FirstOrDefault();
       if (element != null)
       {
-        if (element.Value != content)
-          element.SetValue(content);
+        var result = updater(element.Value);
+        if (result != element.Value)
+        {
+          if (ourLogger.IsVersboseEnabled())
+            Debug.Log($"Overridding existing project property {name}. Old value: {element.Value}, new value: {result}");
+
+          element.SetValue(result);
+        }
       }
       else
-        AddProperty(root, xmlns, name, content);
+        AddProperty(root, xmlns, name, updater(string.Empty));
     }
 
     // Adds a property to the first property group without a condition
     private static void AddProperty(XElement root, XNamespace xmlns, string name, object content)
     {
+      if (ourLogger.IsVersboseEnabled())
+        Debug.Log($"Adding project property {name}. Value: {content}");
+      
       var propertyGroup = root.Elements(xmlns + "PropertyGroup")
         .FirstOrDefault(e => !e.Attributes(xmlns + "Condition").Any());
       if (propertyGroup == null)
