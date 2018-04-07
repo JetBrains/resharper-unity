@@ -26,15 +26,23 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (!PluginEntryPoint.Enabled)
         return;
 
-      // get only csproj files, which are mentioned in sln
-      var lines = SlnAssetPostprocessor.GetCsprojLinesInSln();
-      var currentDirectory = Directory.GetCurrentDirectory();
-      var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj")
-        .Where(csprojFile => lines.Any(line => line.Contains("\"" + Path.GetFileName(csprojFile) + "\""))).ToArray();
-
-      foreach (var file in projectFiles)
+      try
       {
-        UpgradeProjectFile(file);
+        // get only csproj files, which are mentioned in sln
+        var lines = SlnAssetPostprocessor.GetCsprojLinesInSln();
+        var currentDirectory = Directory.GetCurrentDirectory();
+        var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj")
+          .Where(csprojFile => lines.Any(line => line.Contains("\"" + Path.GetFileName(csprojFile) + "\""))).ToArray();
+
+        foreach (var file in projectFiles)
+        {
+          UpgradeProjectFile(file);
+        }
+      }
+      catch (Exception e)
+      {
+        // unhandled exception kills editor
+        Debug.LogError(e);
       }
     }
 
