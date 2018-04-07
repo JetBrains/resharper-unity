@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
+using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
@@ -24,15 +26,23 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (!PluginEntryPoint.Enabled)
         return;
 
-      // get only csproj files, which are mentioned in sln
-      var lines = SlnAssetPostprocessor.GetCsprojLinesInSln();
-      var currentDirectory = Directory.GetCurrentDirectory();
-      var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj")
-        .Where(csprojFile => lines.Any(line => line.Contains("\"" + Path.GetFileName(csprojFile) + "\""))).ToArray();
-
-      foreach (var file in projectFiles)
+      try
       {
-        UpgradeProjectFile(file);
+        // get only csproj files, which are mentioned in sln
+        var lines = SlnAssetPostprocessor.GetCsprojLinesInSln();
+        var currentDirectory = Directory.GetCurrentDirectory();
+        var projectFiles = Directory.GetFiles(currentDirectory, "*.csproj")
+          .Where(csprojFile => lines.Any(line => line.Contains("\"" + Path.GetFileName(csprojFile) + "\""))).ToArray();
+
+        foreach (var file in projectFiles)
+        {
+          UpgradeProjectFile(file);
+        }
+      }
+      catch (Exception e)
+      {
+        // unhandled exception kills editor
+        Debug.LogError(e);
       }
     }
 
@@ -111,7 +121,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       var targetFileInfo = new FileInfo(fullPath);
       if (targetFileInfo.Exists)
       {
-        ourLogger.Log(LoggingLevel.VERBOSE, $"Already exists {targetFileInfo}");
+        ourLogger.Verbose("Already exists {0}", targetFileInfo);
         return;
       }
 
@@ -140,10 +150,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       catch (Exception e)
       {
         ourLogger.Verbose(e.ToString());
-        ourLogger.Warn($"{targetFileInfo} was not restored from resourse.");
+        ourLogger.Warn("{0} was not restored from resourse.", targetFileInfo);
       }
     }
-
 
     private static readonly string PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
@@ -332,54 +341,95 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // Set appropriate version
     private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
-        var targetFrameworkVersion = projectElement.Elements(xmlns + "PropertyGroup")
-          .Elements(xmlns + "TargetFrameworkVersion")
-          .FirstOrDefault(); // Processing csproj files, which are not Unity-generated JetBrains/Unity3dRider#56
-        if (targetFrameworkVersion == null)
-          return;
+      SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", s =>
+        {
+          if (string.IsNullOrEmpty(s))
+          {
+            ourLogger.Verbose("TargetFrameworkVersion in csproj is null or empty.");
+            return string.Empty;
+          }
+          
+          string version = string.Empty;
+          try
+          {
+            version = s.Substring(1);
+            // for windows try to use installed dotnet framework
+            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            {
+              var versions = PluginSettings.GetInstalledNetFrameworks();
+              if (versions.Any())
+              {
+                var versionOrderedList = versions.OrderBy(v1 => new Version(v1));
+                var foundVersion = UnityUtils.ScriptingRuntime > 0
+                  ? versionOrderedList.Last()
+                  : versionOrderedList.First();
+                // Unity may require dotnet 4.7.1, which may not be present
+                var fvIsParsed = VersionExtensions.TryParse(foundVersion, out var fv);
+                var vIsParsed = VersionExtensions.TryParse(version, out var v);
+                if (fvIsParsed && vIsParsed && fv > v)
+                  version = foundVersion;
+                else if (foundVersion == version)
+                  ourLogger.Verbose("Found TargetFrameworkVersion {0} equals the one set-by-Unity itself {1}",
+                    foundVersion, version);
+                else if (ourLogger.IsVersboseEnabled())
+                {
+                  var message = $"Rider may require \".NET Framework {version} Developer Pack\", which is not installed.";
+                  Debug.Log(message);
+                }
+              }
+            }
+          }
+          catch (Exception e)
+          {
+            ourLogger.Log(LoggingLevel.WARN, "Fail to FixTargetFrameworkVersion", e);
+          }
 
-      if (UnityUtils.ScriptingRuntime > 0)
-        {
-          var version = PluginSettings.TargetFrameworkVersion;
-          if (!PluginSettings.OverrideTargetFrameworkVersion)
+          if (UnityUtils.ScriptingRuntime > 0)
           {
-            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            if (PluginSettings.OverrideTargetFrameworkVersion)
             {
-              var versions = PluginSettings.GetInstalledNetFrameworks();
-              if (versions.Any())
-              {
-                version = versions.OrderBy(v => new Version(v)).Last();
-              }
+              return "v" + PluginSettings.TargetFrameworkVersion;
             }
           }
-          targetFrameworkVersion.SetValue("v" + version);
-        }
-        else
-        {
-          var version = PluginSettings.TargetFrameworkVersionOldMono;
-          if (!PluginSettings.OverrideTargetFrameworkVersionOldMono)
+          else
           {
-            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            if (PluginSettings.OverrideTargetFrameworkVersionOldMono)
             {
-              var versions = PluginSettings.GetInstalledNetFrameworks();
-              if (versions.Any())
-              {
-                version = versions.OrderBy(v => new Version(v)).First();
-              }
+              return "v" + PluginSettings.TargetFrameworkVersionOldMono;;
             }
           }
-          targetFrameworkVersion.SetValue("v" + version);
+
+          return "v" + version;
         }
+      );
     }
 
     private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
     {
       // Set the C# language level, so Rider doesn't have to guess (although it does a good job)
       // VSTU sets this, and I think newer versions of Unity do too (should check which version)
-      SetOrUpdateProperty(projectElement, xmlns, "LangVersion", GetLanguageLevel());
+      SetOrUpdateProperty(projectElement, xmlns, "LangVersion", existing =>
+      {
+        var expected = GetExpectedLanguageLevel();
+        if (expected == "latest" || existing == "latest")
+          return "latest";
+
+        // Only use our version if it's not already set, or it's less than what we would set
+        // Note that if existing is "default", we'll override it
+        var currentIsParsed = VersionExtensions.TryParse(existing, out var currentLanguageLevel);
+        var expectedIsParsed = VersionExtensions.TryParse(expected, out var expectedLanguageLevel);
+        if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel
+            || !currentIsParsed
+            )
+        {
+          return expected;
+        }
+
+        return existing;
+      });
     }
 
-    private static string GetLanguageLevel()
+    private static string GetExpectedLanguageLevel()
     {
       // https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration/src
       if (Directory.Exists(Path.GetFullPath("CSharp70Support")))
@@ -425,22 +475,35 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       SetOrUpdateProperty(projectElement, xmlns, "ProjectTypeGuids",
         "{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}");
     }
-
     private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, string content)
+    {
+      SetOrUpdateProperty(root, xmlns, name, v => content);
+    }
+
+    private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, Func<string, string> updater)
     {
       var element = root.Elements(xmlns + "PropertyGroup").Elements(xmlns + name).FirstOrDefault();
       if (element != null)
       {
-        if (element.Value != content)
-          element.SetValue(content);
+        var result = updater(element.Value);
+        if (result != element.Value)
+        {
+          ourLogger.Verbose("Overriding existing project property {0}. Old value: {1}, new value: {2}", name, element.Value, result);
+
+          element.SetValue(result);
+        }
+        else
+          ourLogger.Verbose("Property {0} already set. Old value: {1}, new value: {2}", name, element.Value, result);
       }
       else
-        AddProperty(root, xmlns, name, content);
+        AddProperty(root, xmlns, name, updater(string.Empty));
     }
 
     // Adds a property to the first property group without a condition
-    private static void AddProperty(XElement root, XNamespace xmlns, string name, object content)
+    private static void AddProperty(XElement root, XNamespace xmlns, string name, string content)
     {
+      ourLogger.Verbose("Adding project property {0}. Value: {1}", name, content);
+      
       var propertyGroup = root.Elements(xmlns + "PropertyGroup")
         .FirstOrDefault(e => !e.Attributes(xmlns + "Condition").Any());
       if (propertyGroup == null)

@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Util.Logging;
 using UnityEditor;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
@@ -22,14 +23,22 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (!PluginEntryPoint.Enabled)
         return;
 
-      var slnFile = PluginEntryPoint.SlnFile;
-      if (!File.Exists(slnFile))
-        return;
+      try
+      {
+        var slnFile = PluginEntryPoint.SlnFile;
+        if (!File.Exists(slnFile))
+          return;
 
-      ourLogger.Verbose("Post-processing {0}", slnFile);
-      var slnAllText = File.ReadAllText(slnFile);
-      var text = ProcessSlnText(slnAllText);
-      File.WriteAllText(slnFile, text);
+        ourLogger.Verbose("Post-processing {0}", slnFile);
+        var slnAllText = File.ReadAllText(slnFile);
+        var text = ProcessSlnText(slnAllText);
+        File.WriteAllText(slnFile, text);
+      }
+      catch (Exception e)
+      {
+        // unhandled exception kills editor
+        Debug.LogError(e);
+      }
     }
 
     public static string ProcessSlnText(string slnAllText)

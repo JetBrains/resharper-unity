@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Util.Logging;
 using UnityEditor;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
@@ -20,22 +21,27 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       if (!PluginEntryPoint.Enabled)
         return;
-      
-      if (UnityUtils.ScriptingRuntime > 0)
-        return;
-      
-      var toBeConverted = importedAssets.Where(a => 
-          a.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&
-          importedAssets.Any(a1 => a1 == Path.ChangeExtension(a, ".pdb")) &&
-          importedAssets.All(b => b != Path.ChangeExtension(a, ".dll.mdb")))
-        .ToArray();
-      foreach (var asset in toBeConverted)
+
+      try
       {
-        var pdb = Path.ChangeExtension(asset, ".pdb");
-        if (!IsPortablePdb(pdb))
-          ConvertSymbolsForAssembly(asset);
-        else
-          ourLogger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
+        var toBeConverted = importedAssets.Where(a => 
+            a.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&
+            importedAssets.Any(a1 => a1 == Path.ChangeExtension(a, ".pdb")) &&
+            importedAssets.All(b => b != Path.ChangeExtension(a, ".dll.mdb")))
+          .ToArray();
+        foreach (var asset in toBeConverted)
+        {
+          var pdb = Path.ChangeExtension(asset, ".pdb");
+          if (!IsPortablePdb(pdb))
+            ConvertSymbolsForAssembly(asset);
+          else
+            ourLogger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
+        }
+      }
+      catch (Exception e)
+      {
+        // unhandled exception kills editor
+        Debug.LogError(e);
       }
     }
 

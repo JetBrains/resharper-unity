@@ -46,13 +46,13 @@ namespace JetBrains.Rider.Unity.Editor
       return availableVersions;
     }
 
-    private static bool InvokeIfValidVersion(string value, Action<string> action)
+    private static bool InvokeIfValidVersion(string input, Action<string> action)
     {
       try
       {
         // ReSharper disable once ObjectCreationAsStatement
-        new Version(value); // mono 2.6 doesn't support Version.TryParse
-        action(value);
+        new Version(input); // mono 2.6 doesn't support Version.TryParse
+        action(input);
         return true;
       }
       catch (ArgumentException)
@@ -173,8 +173,8 @@ namespace JetBrains.Rider.Unity.Editor
                 presentation += $" ({s.Path})";
             }
               
-             
-            return presentation;
+            // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
+            return presentation.Replace("/", ":");
           })
           .ToArray();
         RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
