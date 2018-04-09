@@ -16,6 +16,4 @@ class UnityToolWindowContext(private val toolWindow: ToolWindow,
     val isActive get() = toolWindow.isActive
 
     fun addEvent(event: RdLogEvent) = logModel.events.addEvent(event)
-
-    fun clear() = logModel.events.clear()
 }

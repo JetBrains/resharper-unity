@@ -65,6 +65,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
 
         fun clear() {
             synchronized(lock) { allEvents.clear() }
+            selectedItem = null
             onChanged.fire()
         }
 
@@ -72,8 +73,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
             synchronized(lock) {
                 if (allEvents.count()>1000)
                 {
-                    allEvents.clear()
-                    selectedItem = null
+                    clear()
                 }
                 allEvents.add(event)
             }

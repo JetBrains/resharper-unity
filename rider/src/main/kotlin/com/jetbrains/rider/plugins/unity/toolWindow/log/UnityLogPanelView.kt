@@ -40,7 +40,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
     private val eventList = UnityLogPanelEventList().apply {
         addListSelectionListener {
-            if (logModel.selectedItem != selectedValue && selectedValue != null) {
+            if (selectedValue != null) {
                 logModel.selectedItem = selectedValue
 
                 console.clear()
@@ -132,9 +132,10 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
             eventList.riderModel.addElement(event)
         }
 
-        if (logModel.selectedItem != null)
+        console.clear()
+        if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
-        else
+        } else
             eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
     }
 
