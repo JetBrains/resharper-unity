@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml.Linq;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
@@ -68,10 +67,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       SetLangVersion(projectContentElement, xmlns);
       SetProjectFlavour(projectContentElement, xmlns);
 
-      // Unity_5_6_OR_NEWER switched to nunit 3.5
-      if (UnityUtils.UnityVersion >= new Version(5,6))
-        ChangeNunitReference(projectContentElement, xmlns);
-
       //#i f !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
       if (UnityUtils.UnityVersion < new Version(2017, 1))
       {
@@ -93,64 +88,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (el != null)
       {
         el.Attribute("Include").Value = "System.Xml";
-      }
-    }
-
-    private static void ChangeNunitReference(XElement projectContentElement, XNamespace xmlns)
-    {
-      var el = projectContentElement
-        .Elements(xmlns + "ItemGroup")
-        .Elements(xmlns + "Reference")
-        .FirstOrDefault(a => a.Attribute("Include") != null && a.Attribute("Include").Value == "nunit.framework");
-
-      if (el == null)
-        return;
-
-      var hintPath = el.Elements(xmlns + "HintPath").FirstOrDefault();
-      if (hintPath == null)
-        return;
-
-      var path = Path.GetFullPath("Library/resharper-unity-libs/nunit3.5.0/nunit.framework.dll");
-      InstallFromResource(path, ".nunit.framework.dll");
-      if (new FileInfo(path).Exists)
-        hintPath.Value = path;
-    }
-
-    private static void InstallFromResource(string fullPath, string namespacePath)
-    {
-      var targetFileInfo = new FileInfo(fullPath);
-      if (targetFileInfo.Exists)
-      {
-        ourLogger.Verbose("Already exists {0}", targetFileInfo);
-        return;
-      }
-
-      var ass = Assembly.GetExecutingAssembly();
-      ourLogger.Verbose("resources in {0}: {1}", ass.Location, ass.GetManifestResourceNames().Aggregate((a,b)=>a+", "+b));
-
-      var resourceName = typeof(PluginEntryPoint).Namespace + namespacePath;
-
-      try
-      {
-        using (var resourceStream = ass.GetManifestResourceStream(resourceName))
-        {
-          if (resourceStream == null)
-            ourLogger.Error("Plugin file not found in manifest resources. " + resourceName);
-          else
-          {
-            targetFileInfo.Directory.Create();
-            using (var fileStream = new FileStream(targetFileInfo.FullName, FileMode.Create))
-            {
-              ourLogger.Verbose("Coping {0} => {1} ", resourceName, targetFileInfo);
-              PdbAssetPostprocessor.CopyStream(resourceStream, fileStream);
-            }
-          }
-        }
-      }
-      catch (Exception e)
-      {
-        ourLogger.Verbose(e.ToString());
-        ourLogger.Warn("{0} was not restored from resourse.", targetFileInfo);
       }
     }
 
