@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using JetBrains.Util.Logging;
+using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -42,7 +43,10 @@ namespace JetBrains.Rider.Unity.Editor
             targetVersionInfo.InternalName != originVersionInfo.InternalName)
           {
             ourLogger.Verbose($"Coping ${fullPluginFileInfo} -> ${ourTarget}.");
+            File.Delete(ourTarget);
+            File.Delete(ourTarget+".meta");
             fullPluginFileInfo.CopyTo(ourTarget, true);
+            AssetDatabase.Refresh();
             return;
           }
         }
