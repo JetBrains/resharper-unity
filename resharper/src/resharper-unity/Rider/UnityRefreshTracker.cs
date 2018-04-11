@@ -105,9 +105,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (protocolController.UnityModel.Value == null)
                     return;
                 
-                var isPlay = protocolController.UnityModel.Value.Play.HasTrueValue();
-                if (isPlay) return;
-                
                 groupingEvent.FireIncoming();
             });
 
@@ -122,10 +119,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var hasChange = changes.Any(HasAnyFileChangeRec);
                 if (!hasChange)
-                    return;
-                
-                var isPlay = protocolController.UnityModel.Value?.Play.HasTrueValue();
-                if (isPlay == null || (bool)isPlay) 
                     return;
 
                 groupingEvent.FireIncoming();
