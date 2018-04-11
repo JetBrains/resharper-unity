@@ -100,15 +100,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private bool TryFindInSolution(ISolution solution, out InstallationInfo result)
         {
             result = ShouldNotInstall;
-            var location = solution.GetAllAssemblies()
+            var locationDll = solution.GetAllAssemblies()
                 .Select(assembly => assembly.GetLocation())
                 .FirstOrDefault(t => t.Name == PluginPathsProvider.BasicPluginDllFile);
             
-            if (location == null)
+            if (locationDll == null)
                 return false;
             
-            var list = new List<FileSystemPath> {location};
-            result = ExistingInstallation(list);
+            var pluginFiles = solution.GetAllProjects().SelectMany(p=>p.
+                GetAllProjectFiles(f =>
+                {
+                    var location = f.Location;
+                    if (location == null) return false;
+
+                    var fileName = location.Name;
+                    return ourPluginCsFile.Contains(fileName);
+                }))
+                .Select(f => f.Location)
+                .ToList();
+
+            pluginFiles.Add(locationDll);
+            result = ExistingInstallation(pluginFiles);
             return true;
         }
 
