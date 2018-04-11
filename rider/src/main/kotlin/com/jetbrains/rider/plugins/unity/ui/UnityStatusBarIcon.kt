@@ -24,7 +24,7 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
         const val StatusBarIconId = "UnityStatusIcon"
     }
 
-    private val icon = UnityIcons.Icons.EditorConnectionStatus
+    private val icon = UnityIcons.Status.UnityStatus
     private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Icons.EditorConnectionStatus)
     private var myStatusBar: StatusBar? = null
 
@@ -65,8 +65,8 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
         when (host.unityState.value) {
             DISCONNECTED -> return icon
             CONNECTED_IDLE -> return connectedIcon
-            CONNECTED_PLAY -> return LayeredIcon(connectedIcon, AllIcons.General.Run)
-            CONNECTED_REFRESH -> return LayeredIcon(connectedIcon, AnimatedIcon.Grey())
+            CONNECTED_PLAY -> return LayeredIcon(connectedIcon, UnityIcons.Status.UnityStatusPlay)
+            CONNECTED_REFRESH -> return LayeredIcon(connectedIcon, UnityIcons.Status.UnityStatusProgress)
         }
 
         return UnityIcons.Icons.AttachEditorDebugConfiguration
