@@ -70,18 +70,6 @@ namespace JetBrains.Rider.Unity.Editor
 
     internal static RiderInfo[] GetAllFoundInfos(OperatingSystemFamilyRider operatingSystemFamily)
     {
-      // fix separators
-      return GetAllRiderPaths(operatingSystemFamily).Select(a => new RiderInfo(a.BuildVersion, new FileInfo(a.Path).FullName, a.IsToolbox)).ToArray();
-    }
-    
-    internal static string[] GetAllFoundPaths(OperatingSystemFamilyRider operatingSystemFamily)
-    {
-      // fix separators
-      return GetAllFoundInfos(operatingSystemFamily).Select(a=>a.Path).ToArray();
-    }
-
-    private static RiderInfo[] GetAllRiderPaths(OperatingSystemFamilyRider operatingSystemFamily)
-    {
       switch (operatingSystemFamily)
       {
         case OperatingSystemFamilyRider.Windows:
@@ -98,6 +86,11 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
       return new RiderInfo[0];
+    }
+    
+    internal static string[] GetAllFoundPaths(OperatingSystemFamilyRider operatingSystemFamily)
+    {
+      return GetAllFoundInfos(operatingSystemFamily).Select(a=>a.Path).ToArray();
     }
 
     private static RiderInfo[] CollectAllRiderPathsLinux()
@@ -276,15 +269,30 @@ namespace JetBrains.Rider.Unity.Editor
 
     public struct RiderInfo
     {
-      public bool IsToolbox;
+      public string Presentation;
       public string BuildVersion;
       public string Path;
 
       public RiderInfo(string buildVersion, string path, bool isToolbox)
       {
         BuildVersion = buildVersion;
-        Path = path;
-        this.IsToolbox = isToolbox;
+        Path = new FileInfo(path).FullName; // normalize separators
+
+        var presentation = "Rider";
+        if (buildVersion.Length >= 3)
+          presentation += " " + buildVersion.Substring(3);
+        if (isToolbox)
+          presentation += " (JetBrains Toolbox)";
+        else
+        {
+          if (path.Length>=18)
+            presentation += $" ({path.Substring(0, 15)}...)";
+          else
+            presentation += $" ({path})";
+        }
+              
+        // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
+        Presentation = presentation.Replace("/", ":");
       }
     }
   }

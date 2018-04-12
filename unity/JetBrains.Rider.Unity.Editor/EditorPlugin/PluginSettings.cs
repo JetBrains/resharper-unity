@@ -160,23 +160,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (alternatives.Any())
       {
         var index = Array.IndexOf(paths, RiderPathInternal);
-        var alts = alternatives.Select(s =>
-          {
-            var presentation = s.BuildVersion;
-            if (s.IsToolbox)
-              presentation += " (JetBrains Toolbox)";
-            else
-            {
-              if (s.Path.Length>=15)
-                presentation += $" ({s.Path.Substring(0, 15)}...)";
-              else
-                presentation += $" ({s.Path})";
-            }
-              
-            // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-            return presentation.Replace("/", ":");
-          })
-          .ToArray();
+        var alts = alternatives.Select(s => s.Presentation).ToArray();
         RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
         EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
         
