@@ -242,6 +242,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           foreach (var referenceName in referenceList)
           {
             string hintPath = null;
+            
+            var name = referenceName;
+            if (name.Substring(name.Length - 4) != ".dll")
+              name += ".dll"; // RIDER-15093
+            
             if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
             {
               var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
@@ -252,13 +257,13 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
               var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
               if (newestApiDir != null)
               {
-                var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, referenceName));
+                var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, name));
                 if (dllPath.Exists)
                   hintPath = dllPath.FullName;
               }
             }
 
-            ApplyCustomReference(referenceName, projectContentElement, xmlns, hintPath);
+            ApplyCustomReference(name, projectContentElement, xmlns, hintPath);
           }
         }
       }
