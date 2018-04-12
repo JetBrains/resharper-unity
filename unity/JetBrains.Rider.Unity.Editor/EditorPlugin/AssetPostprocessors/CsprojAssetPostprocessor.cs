@@ -308,7 +308,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
                 // Unity may require dotnet 4.7.1, which may not be present
                 var fvIsParsed = VersionExtensions.TryParse(foundVersion, out var fv);
                 var vIsParsed = VersionExtensions.TryParse(version, out var v);
-                if (fvIsParsed && vIsParsed && fv > v)
+                if (fvIsParsed && vIsParsed && (UnityUtils.ScriptingRuntime == 0 || UnityUtils.ScriptingRuntime > 0 && fv > v))
                   version = foundVersion;
                 else if (foundVersion == version)
                   ourLogger.Verbose("Found TargetFrameworkVersion {0} equals the one set-by-Unity itself {1}",
