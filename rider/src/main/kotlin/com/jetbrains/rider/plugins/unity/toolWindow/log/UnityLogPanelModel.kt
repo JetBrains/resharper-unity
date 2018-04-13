@@ -1,9 +1,6 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
-import com.jetbrains.rider.plugins.unity.RdLogEvent
-import com.jetbrains.rider.plugins.unity.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.RdLogEventType
-import com.jetbrains.rider.settings.RiderUnitySettings
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.fire
@@ -68,11 +65,18 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
 
         fun clear() {
             synchronized(lock) { allEvents.clear() }
+            selectedItem = null
             onChanged.fire()
         }
 
         fun addEvent(event: RdLogEvent) {
-            synchronized(lock) { allEvents.add(event) }
+            synchronized(lock) {
+                if (allEvents.count()>1000)
+                {
+                    clear()
+                }
+                allEvents.add(event)
+            }
             onChanged.fire()
         }
 
@@ -93,6 +97,8 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
     val onChanged = Signal<List<RdLogEvent>>()
 
     fun fire() = onChanged.fire(getVisibleEvents())
+
+    var selectedItem : RdLogEvent? = null
 
     init {
         typeFilters.onChanged.advise(lifetime) { fire() }

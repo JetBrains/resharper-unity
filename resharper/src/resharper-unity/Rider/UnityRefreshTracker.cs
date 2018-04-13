@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
 using JetBrains.Threading;
 
@@ -20,8 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
         private readonly UnityEditorProtocol myPluginProtocolController;
+        private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
-        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityEditorProtocol pluginProtocolController)
+        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityEditorProtocol pluginProtocolController, ISettingsStore settingsStore)
         {
             myLocks = locks;
             myLifetime = lifetime;
@@ -31,6 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
                         
+            myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
+            
             myPluginProtocolController.Refresh.Advise(lifetime, Refresh);
         }
 
@@ -43,6 +49,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             
             if (myPluginProtocolController.UnityModel.Value == null)
+                return;
+            
+            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && !force)
                 return;
 
             IsRefreshing = true;
@@ -96,9 +105,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (protocolController.UnityModel.Value == null)
                     return;
                 
-                var isPlay = protocolController.UnityModel.Value.Play.HasTrueValue();
-                if (isPlay) return;
-                
                 groupingEvent.FireIncoming();
             });
 
@@ -113,10 +119,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var hasChange = changes.Any(HasAnyFileChangeRec);
                 if (!hasChange)
-                    return;
-                
-                var isPlay = protocolController.UnityModel.Value?.Play.HasTrueValue();
-                if (isPlay == null || (bool)isPlay) 
                     return;
 
                 groupingEvent.FireIncoming();

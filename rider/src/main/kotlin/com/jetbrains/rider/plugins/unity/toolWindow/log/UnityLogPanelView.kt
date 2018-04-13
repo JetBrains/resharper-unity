@@ -16,8 +16,8 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
-import com.jetbrains.rider.plugins.unity.RdLogEvent
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -32,7 +32,7 @@ import javax.swing.Icon
 import javax.swing.JMenuItem
 import javax.swing.JPopupMenu
 
-class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, projectCustomDataHost: ProjectCustomDataHost) {
+class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
         .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME, project))
@@ -40,15 +40,20 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
 
     private val eventList = UnityLogPanelEventList().apply {
         addListSelectionListener {
-            console.clear()
-            if (selectedIndex >= 0) {
-                console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
-                console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
-                console.scrollTo(0)
+            if (selectedValue != null) {
+                logModel.selectedItem = selectedValue
+
+                console.clear()
+                if (selectedIndex >= 0) {
+                    console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
+                    console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
+                    console.scrollTo(0)
+                }
             }
         }
+
         val eventList1 = this
-        addKeyListener(object: KeyAdapter() {
+        addKeyListener(object : KeyAdapter() {
             override fun keyPressed(e: KeyEvent?) {
                 if (e?.keyCode == KeyEvent.VK_ENTER) {
                     e.consume()
@@ -56,15 +61,21 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
                 }
             }
         })
-        object: DoubleClickListener() {
+        object : DoubleClickListener() {
             override fun onDoubleClick(event: MouseEvent?): Boolean {
                 getNavigatableForSelected(eventList1, project)?.navigate(true)
                 return true
             }
         }.installOn(this)
 
-        projectCustomDataHost.play.whenTrue(logModel.lifetime) {
-            logModel.events.clear()
+        var prevVal: Boolean? = null
+
+        unityHost.play.advise(logModel.lifetime) {
+            if (it != null && it && prevVal == false) {
+                logModel.events.clear()
+                console.clear()
+            }
+            prevVal = it
         }
     }
 
@@ -87,7 +98,6 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
         secondComponent = RiderUI.borderPanel {
             add(console.component, BorderLayout.CENTER)
             console.editor.settings.isCaretRowShown = true
-            console.editor.settings.isUseSoftWraps = true
             console.clear()
             console.allowHeavyFilters()
         }
@@ -104,7 +114,7 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
     }
 
     private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(logModel, mainSplitterToggleAction, console.createConsoleActions()
-        .filter {  it is ToggleUseSoftWrapsToolbarAction }.toList())
+        .filter { it is ToggleUseSoftWrapsToolbarAction }.toList())
 
     private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
 
@@ -118,16 +128,15 @@ class UnityLogPanelView(project: Project, val logModel: UnityLogPanelModel, proj
     // TODO: optimize
     private fun refreshList(newEvents: List<RdLogEvent>) {
         eventList.riderModel.clear()
-        for (event in newEvents)
-        {
+        for (event in newEvents) {
             eventList.riderModel.addElement(event)
-            if (eventList.itemsCount>1000)
-                eventList.riderModel.removeElementAt(0)
         }
 
-        if (eventList.isSelectionEmpty)
-            eventList.selectedIndex = eventList.itemsCount-1
-        eventList.ensureIndexIsVisible(eventList.itemsCount-1)
+        console.clear()
+        if (logModel.selectedItem != null) {
+            eventList.setSelectedValue(logModel.selectedItem, true)
+        } else
+            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
     }
 
     init {

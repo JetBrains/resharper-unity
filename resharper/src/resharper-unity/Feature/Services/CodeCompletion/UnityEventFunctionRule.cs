@@ -121,7 +121,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             return true;
         }
 
-        private ILookupItem CombineLookupItems(CodeCompletionContext basicContext, TextLookupRanges completionRanges, List<ILookupItem> displayItems, ILookupItem sampleMatchItem)
+        private ILookupItem CombineLookupItems(CodeCompletionContext basicContext, TextLookupRanges completionRanges,
+            List<ILookupItem> displayItems, ILookupItem sampleMatchItem)
         {
             // Use a combined lookup item list to add "private " to the start of the display text.
             // We could probably get the same effect with a customised ILookupItemPresentation.
@@ -158,6 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             return withMatcher;
         }
 
+        [ContractAnnotation("=> false, classDeclaration: null; => true, classDeclaration: notnull")]
         private bool CheckPosition(CSharpCodeCompletionContext context, out IClassLikeDeclaration classDeclaration,
             out bool hasVisibilityModifier, out bool hasReturnType)
         {
@@ -179,7 +181,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             hasVisibilityModifier = HasExisitingVisibilityModifier(typeUsage);
             classDeclaration = GetClassDeclaration(context.NodeInFile);
 
-            return true;
+            return classDeclaration != null;
         }
 
         private static bool ShouldComplete(ITreeNode nodeInFile, ICSharpIdentifier identifier)
@@ -233,8 +235,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             var fieldDeclaration = identifier.GetContainingNode<IFieldDeclaration>();
             if (fieldDeclaration?.LBracket != null)
             {
-                if (!fieldDeclaration.FixedBufferSizeExpression.IsConstantValue())
+                if (fieldDeclaration.FixedBufferSizeExpression == null
+                    || !fieldDeclaration.FixedBufferSizeExpression.IsConstantValue())
+                {
                     return identifier == fieldDeclaration.NameIdentifier;
+                }
             }
 
             return false;
@@ -271,6 +276,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                     modifiersList.HasModifier(CSharpTokenType.PRIVATE_KEYWORD));
         }
 
+        [CanBeNull]
         private static IClassLikeDeclaration GetClassDeclaration(ITreeNode completionNode)
         {
             return completionNode.GetContainingNode<IClassLikeDeclaration>();

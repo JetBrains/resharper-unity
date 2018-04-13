@@ -1,14 +1,14 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.2.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.31'
     id 'org.jetbrains.intellij' version '0.2.18'
 }
 
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
-}
+ext.repoRoot = new File("..").canonicalFile
+ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
-group 'com.jetbrains'
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
@@ -35,10 +35,11 @@ if (!ext.has("RiderOnly") || ext.RiderOnly ==~ "(?i)False")
 if (!ext.has("SkipNuGetRestore"))
     ext.SkipNuGetRestore = false
 
-ext.version = "2.1.3.$BuildCounter"
+ext.version = "2018.1.0.$BuildCounter"
 version ext.version
 
 logger.lifecycle("version=$ext.version")
 
-apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
+apply from: 'backend.gradle'
+apply from: 'shortcuts.gradle'

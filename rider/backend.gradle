@@ -74,7 +74,6 @@ ext.msbuild = new File("")
 ext.artifactDefs = []
 
 ext.backend = new BackendHelper("..", logger)
-ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
 task updateDirectoryBuildProps {
     group = backendGroup
@@ -154,7 +153,7 @@ task restorePackages {
 
         backend.ReportProgress("Restoring packages")
         //def restoreArguments = Source == null ? ["restore", projectOrSolution, "--force"] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", "https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json", "--source", Source, projectOrSolution, "--force"]
-        def restoreArguments = Source == null ? ["restore", projectOrSolution] : ["restore", "--source", "https://api.nuget.org/v3/index.json", "--source", "https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json", "--source", Source, projectOrSolution]
+        def restoreArguments = Source == null ? ["restore", "--verbosity", "normal", projectOrSolution] : ["restore", "--verbosity", "normal", "--source", "https://api.nuget.org/v3/index.json", "--source", "https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json", "--source", Source, projectOrSolution]
         exec {
             executable = "dotnet"
             args = restoreArguments
@@ -215,7 +214,7 @@ task detectMSBuild {
 }
 
 task buildUnity3dRider {
-    dependsOn detectMSBuild, restorePackages
+    dependsOn detectMSBuild, restorePackages, generateModel
     group = backendGroup
     description = 'Build EditorPlugin. Runs MSBuild and creates binaries.'
 
@@ -225,7 +224,7 @@ task buildUnity3dRider {
         def outputPath = new File(unityRoot, "Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Repacked.dll")
         if (outputPath.isFile() && outputPath.exists())
         {
-            logger.lifecycle("deleting $outputhPath")
+            logger.lifecycle("deleting $outputPath")
             assert outputPath.delete()
         }
 
@@ -249,10 +248,10 @@ task buildUnity3dRider {
     }
 }
 
-task runMSBuild {
+task buildBackend {
     dependsOn restorePackages, updatePackagingPropsVersion, detectMSBuild, buildUnity3dRider
     group = backendGroup
-    description = 'Runs MSBuild and creates binaries.'
+    description = 'Build .NET part of the plugin.'
 
     doLast {
         backend.ReportProgress("Building Configuration=$BuildConfiguration")
@@ -264,6 +263,8 @@ task runMSBuild {
             executable = msbuild.path
             args = [ projectOrSolution.path, "/p:Configuration=$BuildConfiguration"]
         }
+
+        backend.ServiceMessage("buildNumber", "$version")
     }
 }
 
@@ -318,7 +319,7 @@ task prepareNuspec() {
 }
 
 task packArtifacts {
-    dependsOn runMSBuild, prepareNuspec
+    dependsOn buildBackend, prepareNuspec
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
@@ -363,14 +364,5 @@ task packArtifacts {
             assert resultingNupkgs.length > 0 : "$outputDir has no .nupkg files"
             backend.ServiceMessage("publishArtifacts", "$outputDir\\*.nupkg")
         }
-    }
-}
-
-task buildBackend {
-    dependsOn packArtifacts
-    group = backendGroup
-    description = 'Builds .NET part of the plugin.'
-    doLast {
-        backend.ServiceMessage("buildNumber", "$version")
     }
 }

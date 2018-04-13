@@ -2,10 +2,9 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.intellij.openapi.project.DumbAwareAction
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
-import com.jetbrains.rider.plugins.unity.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.RdLogEventType
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.plugins.unity.actions.*
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.ui.RiderAction

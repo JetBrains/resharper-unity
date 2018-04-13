@@ -7,11 +7,11 @@ import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.LayeredIcon
 import com.intellij.util.Consumer
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost.Companion.CONNECTED_IDLE
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost.Companion.CONNECTED_PLAY
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost.Companion.CONNECTED_REFRESH
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost.Companion.DISCONNECTED
+import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_IDLE
+import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_PLAY
+import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_REFRESH
+import com.jetbrains.rider.plugins.unity.UnityHost.Companion.DISCONNECTED
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import java.awt.event.MouseEvent
 import javax.swing.Icon
@@ -19,30 +19,17 @@ import javax.swing.Icon
 /**
  * @author Kirill.Skrygan
  */
-class UnityStatusBarIcon(private val projectCustomDataHost: ProjectCustomDataHost): StatusBarWidget, StatusBarWidget.IconPresentation {
+class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBarWidget.IconPresentation {
     companion object {
         const val StatusBarIconId = "UnityStatusIcon"
     }
 
-    private var icon : Icon = UnityIcons.Icons.AttachEditorDebugConfiguration
-    private var myTooltip : String = ""
+    private val icon = UnityIcons.Status.UnityStatus
+    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Icons.EditorConnectionStatus)
     private var myStatusBar: StatusBar? = null
-    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Icons.AttachEditorDebugConfiguration)
 
     override fun ID(): String {
         return "UnityStatusIcon"
-    }
-
-    fun setActiveConnectionIcon() {
-        icon = ExecutionUtil.getLiveIndicator(icon)
-    }
-
-    fun setDisconnectedIcon() {
-        icon = UnityIcons.Icons.AttachEditorDebugConfiguration
-    }
-
-    fun setTooltip(text: String) {
-        myTooltip = text
     }
 
     override fun getPresentation(type: StatusBarWidget.PlatformType): StatusBarWidget.WidgetPresentation? {
@@ -58,10 +45,10 @@ class UnityStatusBarIcon(private val projectCustomDataHost: ProjectCustomDataHos
     }
 
     override fun getTooltipText(): String? {
-        if(projectCustomDataHost.sessionInitialized.value)
-            return "Rider and Unity Editor are connected with each other.\nTo enhance productivity some features will work through the Unity Editor"
+        if(host.sessionInitialized.value)
+            return "Connected to Unity Editor"
         else
-            return "No launched Unity Editor found.\nWith Unity Editor being launch, Rider will perform important actions via the Unity Editor."
+            return "No Unity Editor connection\nLoad the project in the Unity Editor to enable advanced functionality"
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
@@ -71,16 +58,15 @@ class UnityStatusBarIcon(private val projectCustomDataHost: ProjectCustomDataHos
         }
     }
 
-    fun onClick(e: MouseEvent) {
-
+    private fun onClick(e: MouseEvent) {
     }
 
     override fun getIcon(): Icon {
-        when (projectCustomDataHost.unityState.value) {
-            DISCONNECTED -> return UnityIcons.Icons.AttachEditorDebugConfiguration
+        when (host.unityState.value) {
+            DISCONNECTED -> return icon
             CONNECTED_IDLE -> return connectedIcon
-            CONNECTED_PLAY -> return LayeredIcon(connectedIcon, AllIcons.General.Run)
-            CONNECTED_REFRESH -> return LayeredIcon(connectedIcon, AnimatedIcon.Grey())
+            CONNECTED_PLAY -> return LayeredIcon(connectedIcon, UnityIcons.Status.UnityStatusPlay)
+            CONNECTED_REFRESH -> return LayeredIcon(connectedIcon, UnityIcons.Status.UnityStatusProgress)
         }
 
         return UnityIcons.Icons.AttachEditorDebugConfiguration

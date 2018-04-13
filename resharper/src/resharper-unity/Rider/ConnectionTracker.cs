@@ -2,9 +2,8 @@
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features;
 using JetBrains.Util;
 using ILogger = JetBrains.Util.ILogger;
 
@@ -15,9 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private UnityEditorState myLastCheckResult = UnityEditorState.Disconnected;
         
-        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityEditorProtocol unityEditorProtocolController, IShellLocks locks, ISolution solution)
+        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol unityEditorProtocolController, IShellLocks locks)
         {
-            // this shouldn't be up in tests until we figure out how to test unity-editor requiring features
+            // TODO: this shouldn't be up in tests until we figure out how to test unity-editor requiring features
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)
                 return;
             
@@ -39,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
 
                 logger.Trace($"Sending connection state. State: {myLastCheckResult}");
-                solution.GetProtocolSolution().SetCustomData("UNITY_EditorState", Wrap(myLastCheckResult));
+                host.SetModelData("UNITY_EditorState", Wrap(myLastCheckResult));
             });
         }
 

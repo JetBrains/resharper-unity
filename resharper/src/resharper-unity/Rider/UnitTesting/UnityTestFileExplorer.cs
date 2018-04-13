@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
-using JetBrains.ReSharper.Psi.Impl.Reflection2;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.AttributeChecker;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {

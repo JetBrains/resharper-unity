@@ -46,13 +46,13 @@ namespace JetBrains.Rider.Unity.Editor
       return availableVersions;
     }
 
-    private static bool InvokeIfValidVersion(string value, Action<string> action)
+    private static bool InvokeIfValidVersion(string input, Action<string> action)
     {
       try
       {
         // ReSharper disable once ObjectCreationAsStatement
-        new Version(value); // mono 2.6 doesn't support Version.TryParse
-        action(value);
+        new Version(input); // mono 2.6 doesn't support Version.TryParse
+        action(input);
         return true;
       }
       catch (ArgumentException)
@@ -155,13 +155,15 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUILayout.BeginVertical();
       EditorGUI.BeginChangeCheck();
 
-      var alternatives = RiderPathLocator.GetAllFoundPaths(SystemInfoRiderPlugin.operatingSystemFamily);
+      var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
+      var paths = alternatives.Select(a => a.Path).ToArray();
       if (alternatives.Any())
       {
-        var index = Array.IndexOf(alternatives, RiderPathInternal);
-        var alts = alternatives.Select(s => s.Replace("/", ":"))
-          .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-        RiderPathInternal = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
+        var index = Array.IndexOf(paths, RiderPathInternal);
+        var alts = alternatives.Select(s => s.Presentation).ToArray();
+        RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
+        EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
+        
         if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))
         {
           EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
