@@ -1,6 +1,6 @@
 [![official JetBrains project](http://jb.gg/badges/official-plastic.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 
-# Unity3dRider
+# JetBrains.Rider.Unity.Editor.Plugin
 
 Rider support for Unity:
 * Debugging of Unity instances.
@@ -39,7 +39,7 @@ but if it fails, you may need to point it once:
 
 **Install the plugin into your project**
 
-You don't need to manually copy Unity3dRider to your solution. After opening your solution in Rider the ReSharper Unity plugin will automatically copy Unity3dRider.cs into `Assets/Plugins/Editor/JetBrains`. Next time you focus Unity window the solution will recompile and initialize Unity3dRider. You can move Unity3dRider.cs into different directory, given that it's still inside `Assets` — it will be detected and updated accordingly by the ReSharper Unity plugin.
+You don't need to manually copy the plugin to your solution. After opening your solution in Rider the ReSharper Unity plugin will automatically copy JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll into `Assets/Plugins/Editor/JetBrains`. Next time you focus Unity window the solution will recompile and initialize it. You can move the dll into different directory, given that it's still inside `Assets` — it will be detected and updated accordingly by the ReSharper Unity plugin.
 
 ## Roadmap
 
