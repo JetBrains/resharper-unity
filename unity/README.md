@@ -1,6 +1,6 @@
 [![official JetBrains project](http://jb.gg/badges/official-plastic.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 
-# JetBrains.Rider.Unity.Editor.Plugin
+# Unity Editor plugin
 
 Rider support for Unity:
 * Debugging of Unity instances.
