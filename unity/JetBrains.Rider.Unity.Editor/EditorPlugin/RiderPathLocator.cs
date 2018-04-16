@@ -278,21 +278,11 @@ namespace JetBrains.Rider.Unity.Editor
         BuildVersion = buildVersion;
         Path = new FileInfo(path).FullName; // normalize separators
 
-        var presentation = "Rider";
-        if (buildVersion.Length >= 3)
-          presentation += " " + buildVersion.Substring(3);
+        var presentation = "Rider " + buildVersion.Substring(3);
         if (isToolbox)
           presentation += " (JetBrains Toolbox)";
-        else
-        {
-          if (path.Length>=18)
-            presentation += $" ({path.Substring(0, 15)}...)";
-          else
-            presentation += $" ({path})";
-        }
-              
-        // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-        Presentation = presentation.Replace("/", ":");
+
+        Presentation = presentation;
       }
     }
   }
