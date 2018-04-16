@@ -62,6 +62,7 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
         const val CONNECTED_REFRESH = "ConnectedRefresh"
 
         private fun CallBackend(project: Project, key : String, value:String) {
+            project.solution.rdUnityModel.data.remove(key) // Step Action requires this
             project.solution.rdUnityModel.data[key] = value
         }
     }
