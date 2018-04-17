@@ -139,8 +139,9 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static string GetBuildNumber(string path)
     {
-      if (File.Exists(path))
-        return File.ReadAllText(path);
+      var file = new FileInfo(path);
+      if (file.Exists)
+        return File.ReadAllText(file.FullName);
       return string.Empty;
     }
 
@@ -278,7 +279,11 @@ namespace JetBrains.Rider.Unity.Editor
         BuildVersion = buildVersion;
         Path = new FileInfo(path).FullName; // normalize separators
 
-        var presentation = "Rider " + buildVersion.Substring(3);
+        var version = string.Empty;
+        if (buildVersion.Length > 3)
+          version = buildVersion.Substring(3);
+
+        var presentation = "Rider " + version;
         if (isToolbox)
           presentation += " (JetBrains Toolbox)";
 
