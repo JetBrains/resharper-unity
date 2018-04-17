@@ -16,13 +16,12 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import com.jetbrains.rider.unitTesting.panels.RiderUnitTestSessionPanel
-import com.jetbrains.rider.util.reactive.whenTrue
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.KeyAdapter
@@ -47,7 +46,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
                 console.clear()
                 if (selectedIndex >= 0) {
-                    val date = Date((selectedValue.time - 621355968000000000L) / 10000)
+                    val date = getDateFromTicks(selectedValue.time)
                     var format = SimpleDateFormat("[HH:mm:ss:SSS] ")
                     format.timeZone = TimeZone.getDefault()
                     console.print(format.format(date), ConsoleViewContentType.NORMAL_OUTPUT)
@@ -83,6 +82,13 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
             }
             prevVal = it
         }
+    }
+
+    private fun UnityLogPanelEventList.getDateFromTicks(ticks:Long): Date {
+        val ticksAtEpoch = 621355968000000000L
+        val ticksPerMilisecond = 10000
+        val date = Date((ticks - ticksAtEpoch) / ticksPerMilisecond)
+        return date
     }
 
     val mainSplitterOrientation = RiderUnitySettings.BooleanViewProperty("mainSplitterOrientation")
