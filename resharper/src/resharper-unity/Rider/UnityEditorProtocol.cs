@@ -35,6 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
+        private readonly Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
 
@@ -44,12 +45,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IProperty<EditorPluginModel> myUnityModel;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
+
         [NotNull]
         public IProperty<EditorPluginModel> UnityModel => myUnityModel;
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
-            ISettingsStore settingsStore)
+            ISettingsStore settingsStore, Application.ActivityTrackingNew.UsageStatistics usageStatistics)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
@@ -57,6 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLocks = locks;
             mySolution = solution;
             myPluginPathsProvider = pluginPathsProvider;
+            myUsageStatistics = usageStatistics;
             myHost = host;
             myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
@@ -185,6 +188,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
                     
                     BindPluginPathToSettings(lf, model);
+                    
+                    TrackActivity(model, lf);
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
@@ -218,6 +223,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             .Combine(PluginPathsProvider.FullPluginDllFile).FullPath);
                     model.FullPluginPath.SetValue(string.Empty);
                 });
+        }
+        
+        private void TrackActivity(EditorPluginModel model, Lifetime lf)
+        {
+            if (!model.ApplicationVersion.HasValue())
+                model.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("UnityVersion", version); });
+            else
+                myUsageStatistics.TrackActivity("UnityVersion", model.ApplicationVersion.Value);
+            if (!model.ScriptingRuntime.HasValue())
+                model.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("UnityVersion", runtime.ToString()); });
+            else
+                myUsageStatistics.TrackActivity("UnityVersion", model.ScriptingRuntime.Value.ToString());
         }
 
         private void SubscribeToOpenFile([NotNull] EditorPluginModel model)

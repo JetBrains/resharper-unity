@@ -142,6 +142,8 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseRefresh(model);
           
           model.FullPluginPath.Advise(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
+          model.ApplicationVersion.SetValue(UnityUtils.UnityVersion.ToString());
+          model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
           
           ourLogger.Verbose("UnityModel initialized.");
           UnityModel.SetValue(model);
