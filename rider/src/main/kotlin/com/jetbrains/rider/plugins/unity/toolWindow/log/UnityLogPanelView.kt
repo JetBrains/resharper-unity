@@ -28,6 +28,8 @@ import java.awt.Component
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.swing.Icon
 import javax.swing.JMenuItem
 import javax.swing.JPopupMenu
@@ -40,11 +42,15 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
     private val eventList = UnityLogPanelEventList().apply {
         addListSelectionListener {
-            if (selectedValue != null) {
+            if (selectedValue != null && logModel.selectedItem != selectedValue) {
                 logModel.selectedItem = selectedValue
 
                 console.clear()
                 if (selectedIndex >= 0) {
+                    val date = Date((selectedValue.time - 621355968000000000L) / 10000)
+                    var format = SimpleDateFormat("[HH:mm:ss:SSS] ")
+                    format.timeZone = TimeZone.getDefault()
+                    console.print(format.format(date), ConsoleViewContentType.NORMAL_OUTPUT)
                     console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
                     console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
                     console.scrollTo(0)
@@ -61,6 +67,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
                 }
             }
         })
+
         object : DoubleClickListener() {
             override fun onDoubleClick(event: MouseEvent?): Boolean {
                 getNavigatableForSelected(eventList1, project)?.navigate(true)
@@ -73,7 +80,6 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         unityHost.play.advise(logModel.lifetime) {
             if (it != null && it && prevVal == false) {
                 logModel.events.clear()
-                console.clear()
             }
             prevVal = it
         }
@@ -132,7 +138,6 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
             eventList.riderModel.addElement(event)
         }
 
-        console.clear()
         if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
         } else
@@ -148,6 +153,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         }
 
         logModel.onChanged.advise(logModel.lifetime) { refreshList(it) }
+        logModel.onCleared.advise(logModel.lifetime) { console.clear() }
         logModel.fire()
     }
 }
