@@ -70,21 +70,29 @@ namespace JetBrains.Rider.Unity.Editor
 
     internal static RiderInfo[] GetAllFoundInfos(OperatingSystemFamilyRider operatingSystemFamily)
     {
-      switch (operatingSystemFamily)
+      try
       {
-        case OperatingSystemFamilyRider.Windows:
+        switch (operatingSystemFamily)
         {
-          return CollectRiderInfosWindows();
-        }
-        case OperatingSystemFamilyRider.MacOSX:
-        {
-          return CollectRiderInfosMac();
-        }
-        case OperatingSystemFamilyRider.Linux:
-        {
-          return CollectAllRiderPathsLinux();
+          case OperatingSystemFamilyRider.Windows:
+          {
+            return CollectRiderInfosWindows();
+          }
+          case OperatingSystemFamilyRider.MacOSX:
+          {
+            return CollectRiderInfosMac();
+          }
+          case OperatingSystemFamilyRider.Linux:
+          {
+            return CollectAllRiderPathsLinux();
+          }
         }
       }
+      catch (Exception e)
+      {
+        Debug.LogException(e);
+      }
+      
       return new RiderInfo[0];
     }
     
@@ -190,21 +198,29 @@ namespace JetBrains.Rider.Unity.Editor
     [UsedImplicitly]
     public static RiderInfo[] GetAllRiderPaths()
     {
-      switch (SystemInfo.operatingSystemFamily)
+      try
       {
-        case OperatingSystemFamily.Windows:
+        switch (SystemInfo.operatingSystemFamily)
         {
-          return CollectRiderInfosWindows();
-        }
-        case OperatingSystemFamily.MacOSX:
-        {
-          return CollectRiderInfosMac();
-        }
-        case OperatingSystemFamily.Linux:
-        {
-          return CollectAllRiderPathsLinux();
+          case OperatingSystemFamily.Windows:
+          {
+            return CollectRiderInfosWindows();
+          }
+          case OperatingSystemFamily.MacOSX:
+          {
+            return CollectRiderInfosMac();
+          }
+          case OperatingSystemFamily.Linux:
+          {
+            return CollectAllRiderPathsLinux();
+          }
         }
       }
+      catch (Exception e)
+      {
+        Debug.LogException(e);
+      }
+      
       return new RiderInfo[0];
     }
 #endif 
