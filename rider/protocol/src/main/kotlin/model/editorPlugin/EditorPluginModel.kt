@@ -19,6 +19,7 @@ object EditorPluginModel: Root(
         field("col", int)
     }
     val RdLogEvent = structdef {
+        field("time", long)
         field("type", RdLogEventType)
         field("mode", RdLogEventMode)
         field("message", string)

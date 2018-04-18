@@ -67,6 +67,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
             synchronized(lock) { allEvents.clear() }
             selectedItem = null
             onChanged.fire()
+            onCleared.fire()
         }
 
         fun addEvent(event: RdLogEvent) {
@@ -95,6 +96,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
     val events = Events()
 
     val onChanged = Signal<List<RdLogEvent>>()
+    val onCleared = Signal.Void()
 
     fun fire() = onChanged.fire(getVisibleEvents())
 

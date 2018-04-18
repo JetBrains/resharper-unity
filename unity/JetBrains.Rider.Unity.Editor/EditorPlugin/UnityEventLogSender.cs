@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor;
 using UnityEngine;
@@ -56,7 +54,7 @@ namespace JetBrains.Rider.Unity.Editor
           break;
       }
       var eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;
-      var evt = new RdLogEvent(eventType, eventMode, message, stackTrace);
+      var evt = new RdLogEvent(DateTime.UtcNow.Ticks, eventType, eventMode, message, stackTrace);
       myDelayedLogEvents.AddLast(evt);
       if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
         myDelayedLogEvents.RemoveFirst(); // limit max size

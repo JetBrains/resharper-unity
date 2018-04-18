@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.framework.FrameworkMarshallers.DateTime
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.projectView.solution
@@ -10,6 +11,8 @@ import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
 import org.codehaus.jettison.json.JSONObject
+import java.time.LocalDateTime
+import java.util.*
 
 class UnityHost(project: Project) : LifetimedProjectComponent(project) {
 
@@ -46,7 +49,8 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
                 val jsonObj = JSONObject(newVal)
                 val type = RdLogEventType.values().get(jsonObj.getInt("Type"))
                 val mode = RdLogEventMode.values().get(jsonObj.getInt("Mode"))
-                logSignal.fire(RdLogEvent(type, mode, jsonObj.getString("Message"), jsonObj.getString("StackTrace")))
+                var ticks = jsonObj.getLong("Time")
+                logSignal.fire(RdLogEvent(ticks, type, mode, jsonObj.getString("Message"), jsonObj.getString("StackTrace")))
             }
         }
     }
