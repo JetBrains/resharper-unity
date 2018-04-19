@@ -11,7 +11,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
   // ReSharper disable once UnusedMember.Global
   public class RiderProtocolController
   {
-    public SocketWire.Server Wire;
+    public readonly SocketWire.Server Wire;
 
     public RiderProtocolController(IScheduler mainThreadScheduler, Lifetime lifetime)
     {
