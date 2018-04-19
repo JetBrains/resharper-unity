@@ -91,7 +91,19 @@ namespace JetBrains.Rider.Unity.Editor
     {
       get { return EditorPrefs.GetString("Rider_TargetFrameworkVersionOldMono", TargetFrameworkVersionOldMonoDefault); }
       private set { InvokeIfValidVersion(value, val => { EditorPrefs.SetString("Rider_TargetFrameworkVersionOldMono", val); }); }
-    } 
+    }
+    
+    public static bool OverrideLangVersion
+    {
+      get { return EditorPrefs.GetBool("Rider_OverrideLangVersion", false); }
+      private set { EditorPrefs.SetBool("Rider_OverrideLangVersion", value);; }
+    }
+
+    public static string LangVersion
+    {
+      get { return EditorPrefs.GetString("Rider_LangVersion", "4"); }
+      private set { EditorPrefs.SetString("Rider_LangVersion", value); }
+    }
     
     public static bool RiderInitializedOnce
     {
@@ -218,6 +230,19 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUI.EndChangeCheck();
 
       EditorGUI.BeginChangeCheck();
+      
+      OverrideLangVersion = EditorGUILayout.Toggle(new GUIContent("Override LangVersion"), OverrideLangVersion);
+      if (OverrideLangVersion)
+      {
+        var helpLangVersion = @"Avoid overriding, unless there is no particular need.";
+
+        LangVersion =
+          EditorGUILayout.TextField(
+            new GUIContent("LangVersion:",
+              helpLangVersion), LangVersion);
+        EditorGUILayout.HelpBox(helpLangVersion, MessageType.None);
+      }
+
 
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
