@@ -8,7 +8,6 @@ using JetBrains.Util.Logging;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
-using UnityEngine.TestTools;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 
@@ -24,8 +23,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     private const string MTestfinishedevent = "m_TestFinishedEvent";
     private const string MEditmoderunner = "m_EditModeRunner";
     private const string TestNames = "testNames";
+    private const string TestNames56 = "names";
     private const string EditModeLauncher = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
     private const string TestRunnerFilter = "UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter";
+    private const string TestPlatform = "UnityEngine.TestTools.TestPlatform";
 
     private const string TestInEditorTestAssemblyProvider =
       "UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider";
@@ -57,7 +58,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         var launcherType = testEditorAssembly.GetType(EditModeLauncher);
         var filterType = testEngineAssembly.GetType(TestRunnerFilter);
         var assemblyProviderType = testEditorAssembly.GetType(TestInEditorTestAssemblyProvider);
-        if (launcherType == null || filterType == null || assemblyProviderType == null)
+        if (launcherType == null || filterType == null || assemblyProviderType == null && UnityUtils.UnityVersion >= new Version(2018, 1))
         {
 
           ourLogger.Verbose("Could not find launcherType or filterType or assemmblyProvider via reflection");
@@ -67,6 +68,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
         var filter = Activator.CreateInstance(filterType);
         var fieldInfo = filter.GetType().GetField(TestNames, BindingFlags.Instance | BindingFlags.Public);
+        fieldInfo = fieldInfo??filter.GetType().GetField(TestNames56, BindingFlags.Instance | BindingFlags.Public);
         if (fieldInfo == null)
         {
           ourLogger.Verbose("Could not find testNames field via reflection");
@@ -76,9 +78,16 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         object launcher;
         if (UnityUtils.UnityVersion >= new Version(2018, 1))
         {
+          Type enumType = testEngineAssembly.GetType(TestPlatform);
+          if (enumType == null)
+          {
+            ourLogger.Verbose("Could not find TestPlatform field via reflection");
+            return;
+          }
+          
           var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
             BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-            new[] {(object) TestPlatform.EditMode}, null);
+            new[] {Enum.ToObject(enumType, 2)}, null); // TestPlatform.EditMode
           ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
 
           var testNameStrings = (object) myLaunch.TestNames.ToArray();
