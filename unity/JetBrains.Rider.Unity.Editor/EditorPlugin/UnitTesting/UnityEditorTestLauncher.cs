@@ -2,18 +2,17 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using JetBrains.Annotations;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
-using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 using UnityEngine.TestTools;
+using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 
-namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
   public class UnityEditorTestLauncher
   {
