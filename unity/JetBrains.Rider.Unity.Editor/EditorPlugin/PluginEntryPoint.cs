@@ -105,8 +105,13 @@ namespace JetBrains.Rider.Unity.Editor
 
       InitializeEditorInstanceJson();
 
-      // for the case when files were changed and user just alt+tab to unity to make update, we want to fire
-      CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
+      // https://github.com/JetBrains/resharper-unity/issues/527#issuecomment-383326065
+      // process csproj files once per Unity process 
+      if (EditorPrefs.GetInt("Rider_UnityProcessId", Process.GetCurrentProcess().Id) != Process.GetCurrentProcess().Id)
+      {
+        CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
+        EditorPrefs.SetInt("Rider_UnityProcessId", Process.GetCurrentProcess().Id);
+      }
 
       Log.DefaultFactory = new RiderLoggerFactory();
 
