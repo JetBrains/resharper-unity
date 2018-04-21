@@ -107,7 +107,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       // https://github.com/JetBrains/resharper-unity/issues/527#issuecomment-383326065
       // process csproj files once per Unity process 
-      if (EditorPrefs.GetInt("Rider_UnityProcessId", Process.GetCurrentProcess().Id) != Process.GetCurrentProcess().Id)
+      if (EditorPrefs.GetInt("Rider_UnityProcessId", 0) != Process.GetCurrentProcess().Id)
       {
         CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
         EditorPrefs.SetInt("Rider_UnityProcessId", Process.GetCurrentProcess().Id);
