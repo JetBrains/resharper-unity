@@ -26,6 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
         private readonly RdNotificationsModel myNotifications;
         private readonly PluginPathsProvider myPluginPathsProvider;
+        private readonly UnityVersionDetector myUnityVersionDetector;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         private readonly ProcessingQueue myQueue;
@@ -38,7 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnityPluginDetector detector,
             RdNotificationsModel notifications,
             ISettingsStore settingsStore,
-            PluginPathsProvider pluginPathsProvider)
+            PluginPathsProvider pluginPathsProvider,
+            UnityVersionDetector unityVersionDetector)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
@@ -49,6 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDetector = detector;
             myNotifications = notifications;
             myPluginPathsProvider = pluginPathsProvider;
+            myUnityVersionDetector = unityVersionDetector;
 
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
@@ -221,11 +224,21 @@ Please switch back to Unity to make plugin file appear in the solution.";
             {
                 var editorPluginPathDir = myPluginPathsProvider.GetEditorPluginPathDir();
                 var editorPluginPath = editorPluginPathDir.Combine(PluginPathsProvider.BasicPluginDllFile);
+                var editorFullPluginPath = editorPluginPathDir.Combine(PluginPathsProvider.FullPluginDllFile);
 
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
                 {
-                    editorPluginPath.CopyFile(targetPath, true);
+                    if (myUnityVersionDetector.GetUnityVersion() < new Version("5.6"))
+                    {
+                        myLogger.Verbose($"Coping {editorPluginPath} -> {targetPath}");
+                        editorPluginPath.CopyFile(targetPath, true);
+                    }
+                    else
+                    {
+                        myLogger.Verbose($"Coping {editorFullPluginPath} -> {targetPath}");
+                        editorFullPluginPath.CopyFile(targetPath, true);
+                    }
                 }
                 catch (Exception e)
                 {
