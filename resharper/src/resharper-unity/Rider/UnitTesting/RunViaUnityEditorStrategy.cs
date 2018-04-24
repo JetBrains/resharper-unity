@@ -161,7 +161,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var result = new JetHashSet<string>();
             foreach (var unitTestElement in unitTestElements)
             {
-                if (unitTestElement is NUnitTestElement)
+                if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement)
                 {
                     var unityName = string.Format(unitTestElement.Id); 
                     elementToIdMap[unityName] = unitTestElement;
