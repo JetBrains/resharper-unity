@@ -27,7 +27,7 @@ However, Unity does not currently support Rider. This plugin adds that support:
 
 **Set Rider as the default External Script Editor**
 
-For MAC and Windows plugin will try to find Rider executable automatically and add it to known editors list, 
+Plugin will try to find Rider executable automatically and add it to known editors list, 
 but if it fails, you may need to point it once:
 
 1. Open Unity.
