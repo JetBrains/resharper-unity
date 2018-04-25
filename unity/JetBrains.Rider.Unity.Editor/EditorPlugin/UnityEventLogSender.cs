@@ -13,10 +13,13 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private readonly int myDelayedLogEventsMaxSize = 1000;
     public readonly LinkedList<RdLogEvent> myDelayedLogEvents = new LinkedList<RdLogEvent>();
+    private readonly object myLock = new object();
 
     public UnityEventCollector()
     {
-      var eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
+      var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public); // Unity 2017.x+
+      if (eventInfo == null)
+        eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
       var domainLifetime = Lifetimes.Define();
       
       if (eventInfo != null)
@@ -53,11 +56,20 @@ namespace JetBrains.Rider.Unity.Editor
           eventType = RdLogEventType.Message;
           break;
       }
-      var eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;
+
+      RdLogEventMode eventMode = RdLogEventMode.Edit;
+      MainThreadDispatcher.Instance.Queue(() =>
+      {
+        eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;  
+      });
+      
       var evt = new RdLogEvent(DateTime.UtcNow.Ticks, eventType, eventMode, message, stackTrace);
-      myDelayedLogEvents.AddLast(evt);
-      if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
-        myDelayedLogEvents.RemoveFirst(); // limit max size
+      lock (myLock)
+      {
+        myDelayedLogEvents.AddLast(evt);
+        if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
+          myDelayedLogEvents.RemoveFirst(); // limit max size
+      }
 
       OnAddEvent(new EventArgs());
     }
