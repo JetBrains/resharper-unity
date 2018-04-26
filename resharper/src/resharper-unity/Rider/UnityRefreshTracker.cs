@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Application.changes;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework.Util;
+using JetBrains.DocumentModel.Transactions;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
@@ -89,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityEditorProtocol protocolController)
+        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, UnityEditorProtocol protocolController, DocumentTransactionManager documentTransactionManager, IShellLocks locks)
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -107,42 +105,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 
                 groupingEvent.FireIncoming();
             });
-
-            changeManager.Changed2.Advise(lifetime, args =>
-            {
-                var changes = args.ChangeMap.GetChanges<ProjectModelChange>();
-                if (changes == null)
-                    return;
-                
-                if (refresher.IsRefreshing) 
-                    return;
-
-                var hasChange = changes.Any(HasAnyFileChangeRec);
-                if (!hasChange)
-                    return;
-
-                groupingEvent.FireIncoming();
-            });
-        }
-
-        private bool HasAnyFileChangeRec(ProjectModelChange change)
-        {
-            var file = change.ProjectModelElement as IProjectFile;
-
-            if (file != null && (change.IsAdded || change.IsRemoved || change.IsMovedIn || change.IsMovedOut))
-            {
-                // Log something
-                return true;
-            }
-
-            foreach (var childChange in change.GetChildren())
-            {
-                if (HasAnyFileChangeRec(childChange))
+            
+            documentTransactionManager.AfterTransactionCommit.Advise(lifetime,
+                () =>
                 {
-                    return true;
-                }
-            }
-            return false;
+                    locks.ExecuteWithReadLock(() =>
+                    {
+                        if (documentTransactionManager.CurrentTransaction?.ParentTransaction == null)
+                            groupingEvent.FireIncoming();
+                    });
+                });
         }
     }
 }
