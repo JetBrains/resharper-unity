@@ -32,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         [NotNull]
         public InstallationInfo GetInstallationInfo(FileSystemPath previousInstallationDir)
         {
+            myLogger.Verbose("GetInstallationInfo.");
             try
             {
                 var assetsDir = mySolution.SolutionFilePath.Directory.CombineWithShortName(ProjectExtensions.AssetsFolder);
