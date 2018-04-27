@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEngine;
