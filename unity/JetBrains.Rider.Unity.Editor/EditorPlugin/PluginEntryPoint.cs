@@ -17,6 +17,7 @@ using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor.Callbacks;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -27,7 +28,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
     public static readonly RProperty<EditorPluginModel> UnityModel = new RProperty<EditorPluginModel>();
-    private static readonly UnityEventCollector ourLogEventCollector;
+    private static readonly UnityEventCollector ourLogEventCollector; 
 
     // This an entry point
     static PluginEntryPoint()
@@ -105,12 +106,11 @@ namespace JetBrains.Rider.Unity.Editor
 
       InitializeEditorInstanceJson();
 
-      // https://github.com/JetBrains/resharper-unity/issues/527#issuecomment-383326065
-      // process csproj files once per Unity process 
-      if (EditorPrefs.GetInt("Rider_UnityProcessId", 0) != Process.GetCurrentProcess().Id)
+      // process csproj files once per Unity process
+      if (RiderScriptableSingleton.Instance.CsprojProcessedOnce)
       {
         CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
-        EditorPrefs.SetInt("Rider_UnityProcessId", Process.GetCurrentProcess().Id);
+        RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
       }
 
       Log.DefaultFactory = new RiderLoggerFactory();
