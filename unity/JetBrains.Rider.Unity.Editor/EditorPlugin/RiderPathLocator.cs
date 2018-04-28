@@ -112,14 +112,7 @@ namespace JetBrains.Rider.Unity.Editor
       var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
       var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
         .Select(a=>new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true)).ToArray();
-      if (paths.Any())
-        return paths;
-      return Directory.GetDirectories(toolboxRiderRootPath)
-        .SelectMany(Directory.GetDirectories)
-        .Select(b => Path.Combine(b, "bin/rider.sh"))
-        .Where(File.Exists)
-        .Select(a=>new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true))
-        .ToArray();
+      return paths;
     }
 
     private static RiderInfo[] CollectRiderInfosMac()
