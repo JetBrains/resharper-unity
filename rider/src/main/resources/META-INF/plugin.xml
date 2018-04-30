@@ -48,6 +48,11 @@
   </extensions>
 
   <project-components>
+    <component>
+      <interface-class>com.jetbrains.rider.unitTesting.RiderUnitTestUIService</interface-class>
+      <implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUnitTestUIService</implementation-class>
+      <option name="overrides" value="true"/>
+    </component>
     <component><implementation-class>com.jetbrains.rider.UnityReferenceDiscoverer</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
