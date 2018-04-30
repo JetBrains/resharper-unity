@@ -18,18 +18,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.ProjectModel
             Assert.NotNull(projectFileTypes.GetFileType(CgProjectFileType.Name));
         }
 
-        [Test]
-        public void ProjectFileTypeFromExtensionCginc()
+        [TestCase(CgProjectFileType.CG_EXTENSION)]
+        [TestCase(CgProjectFileType.COMPUTE_EXTENSION)]
+        [TestCase(CgProjectFileType.HLSL_EXTENSION)]
+        [TestCase(CgProjectFileType.GLSL_EXTENSION)]
+        [TestCase(CgProjectFileType.HLSLINC_EXTENSION)]
+        [TestCase(CgProjectFileType.GLSLINC_EXTENSION)]
+        public void ProjectFileTypeFromExtensionCginc(string extension)
         {
             var projectFileExtensions = Shell.Instance.GetComponent<IProjectFileExtensions>();
-            Assert.AreSame(CgProjectFileType.Instance, projectFileExtensions.GetFileType(CgProjectFileType.CG_EXTENSION));
-        }
-        
-        [Test]
-        public void ProjectFileTypeFromExtensionCompute()
-        {
-            var projectFileExtensions = Shell.Instance.GetComponent<IProjectFileExtensions>();
-            Assert.AreSame(CgProjectFileType.Instance, projectFileExtensions.GetFileType(CgProjectFileType.COMPUTE_EXTENSION));
+            Assert.AreSame(CgProjectFileType.Instance, projectFileExtensions.GetFileType(extension));
         }
     }
 }
