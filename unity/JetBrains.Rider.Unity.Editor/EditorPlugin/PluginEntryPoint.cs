@@ -107,8 +107,9 @@ namespace JetBrains.Rider.Unity.Editor
       InitializeEditorInstanceJson();
 
       // process csproj files once per Unity process
-      if (RiderScriptableSingleton.Instance.CsprojProcessedOnce)
+      if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
       {
+        ourLogger.Verbose("Call OnGeneratedCSProjectFiles once per Unity process.");
         CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
         RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
       }
