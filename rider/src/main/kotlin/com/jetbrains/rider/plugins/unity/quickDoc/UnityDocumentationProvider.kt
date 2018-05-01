@@ -72,8 +72,8 @@ class UnityDocumentationProvider : DocumentationProvider {
                 // %PROGRAMFILES% differs if we're a 32 or 64 bit process
                 // %PROGRAMFILES(X86)% only exists if we're 64 bit, and is always in the form `C:\Program Files (x86)`
                 // %PROGRAMFILESW6432% is always in the form `C:\Program Files`
-                val envvar = System.getenv("ProgramW6432") ?: System.getenv("ProgramFiles")
-                Paths.get(envvar).resolve("/Unity/Editor/Data/Documentation/en")
+                val programFiles = System.getenv("ProgramW6432") ?: System.getenv("ProgramFiles")
+                Paths.get(programFiles).resolve("/Unity/Editor/Data/Documentation/en")
             }
             SystemInfo.isMac -> Paths.get("/Applications/Unity/Unity.app/Contents/Documentation/en")
             SystemInfo.isLinux -> {
@@ -100,22 +100,29 @@ class UnityDocumentationProvider : DocumentationProvider {
     private fun findUnityHubDocumentationRoot(): Path? {
         return when {
             SystemInfo.isWindows -> {
-                null
+                val programFiles = System.getenv("ProgramW6432") ?: System.getenv("ProgramFiles")
+                val hubRoot = Paths.get(programFiles).resolve("/Unity/Hub/Editor")
+                if (hubRoot == null || !hubRoot.exists() || !hubRoot.isDirectory())
+                    return null
+                hubRoot.resolve(getLatestVersion(hubRoot)).resolve("Editor/Data/Documentation/en")
             }
             SystemInfo.isMac -> {
-                val hubRoot = Paths.get("/Applications/Unity/Hub/Editor/")
-                if (!hubRoot.exists() || !hubRoot.isDirectory())
+                val hubRoot = Paths.get("/Applications/Unity/Hub/Editor")
+                if (hubRoot == null || !hubRoot.exists() || !hubRoot.isDirectory())
                     return null
-
-                var version = "0.0"
-                for (file in hubRoot.toFile().listFiles()) {
-                    if (file.isDirectory) {
-                        version = VersionComparatorUtil.max(version, file.name)
-                    }
-                }
-                hubRoot.resolve(version).resolve("Documentation/en")
+                hubRoot.resolve(getLatestVersion(hubRoot)).resolve("Documentation/en")
             }
             else -> null    // Unity Hub is currently only for Windows and Mac
         }
+    }
+
+    private fun getLatestVersion(hubRoot: Path): String {
+        var version = "0.0"
+        for (file in hubRoot.toFile().listFiles()) {
+            if (file.isDirectory) {
+                version = VersionComparatorUtil.max(version, file.name)
+            }
+        }
+        return version
     }
 }
