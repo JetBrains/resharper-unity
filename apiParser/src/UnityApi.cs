@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using JetBrains.Annotations;
+using JetBrains.Util;
 
 namespace ApiParser
 {
@@ -35,6 +39,14 @@ namespace ApiParser
                 xmlWriter.WriteAttributeString("minimumVersion", myMinimumVersion.ToString(2));
             if (myMaximumVersion < defaults.myMaximumVersion)
                 xmlWriter.WriteAttributeString("maximumVersion", myMaximumVersion.ToString(2));
+        }
+
+        protected void ImportVersionRange(XElement element, HasVersionRange defaults)
+        {
+            var attr = element.Attribute("minimumVersion");
+            myMinimumVersion = attr != null ? Version.Parse(attr.Value) : defaults.myMinimumVersion;
+            attr = element.Attribute("maximumVersion");
+            myMaximumVersion = attr != null ? Version.Parse(attr.Value) : defaults.myMaximumVersion;
         }
     }
 
@@ -72,6 +84,19 @@ namespace ApiParser
             foreach (var type in myTypes.OrderBy(t => t.Name))
                 type.ExportTo(xmlWriter, this);
             xmlWriter.WriteEndElement();
+        }
+
+        public static UnityApi ImportFrom(FileSystemPath apiXml)
+        {
+            var doc = XDocument.Load(apiXml.FullPath);
+            var apiNode = doc.FirstNode as XElement;
+            if (apiNode?.Name != "api")
+                throw new InvalidDataException("Cannot find root api node");
+            var api = new UnityApi();
+            api.ImportVersionRange(apiNode, null);
+            foreach (var typeElement in apiNode.Descendants("type"))
+                api.myTypes.Add(UnityApiType.ImportFrom(typeElement, api));
+            return api;
         }
 
         // TODO: Should this include a version?
@@ -136,8 +161,20 @@ namespace ApiParser
             return myEventFunctions.Where(f => f.Name == name);
         }
 
+        public void TrimDuplicates()
+        {
+            var distinct = myEventFunctions.Distinct(f => f.ToString()).ToList();
+            myEventFunctions.Clear();
+            myEventFunctions.AddRange(distinct);
+        }
+
         public void ExportTo(XmlTextWriter xmlWriter, HasVersionRange defaultVersions)
         {
+            // We can get duplicates when merging fixes. E.g. We read a fixed version from an existing api.xml
+            // then read in a broken version from the actual documentation, and fix that broken one up, and there's
+            // a duplicate
+            TrimDuplicates();
+
             xmlWriter.WriteStartElement("type");
             xmlWriter.WriteAttributeString("kind", Kind);
             xmlWriter.WriteAttributeString("name", Name);
@@ -154,6 +191,20 @@ namespace ApiParser
             if (string.IsNullOrEmpty(Namespace))
                 return Name;
             return Namespace + "." + Name;
+        }
+
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+        public static UnityApiType ImportFrom(XElement element, HasVersionRange apiVersions)
+        {
+            var ns = element.Attribute("ns").Value;
+            var name = element.Attribute("name").Value;
+            var kind = element.Attribute("kind").Value;
+            var path = element.Attribute("path").Value;
+            var type = new UnityApiType(ns, name, kind, path, new Version(0, 0));
+            type.ImportVersionRange(element, apiVersions);
+            foreach (var message in element.Descendants("message"))
+                type.myEventFunctions.Add(UnityApiEventFunction.ImportFrom(message, type));
+            return type;
         }
     }
 
@@ -237,13 +288,12 @@ namespace ApiParser
 
         public void UpdateParameter(string name, UnityApiParameter newParameter)
         {
-            var parameter = GetParameter(name);
+            var parameter = myParameters.SingleOrDefault(p => p.Name == name);
+            if (parameter == null)
+                parameter = myParameters.SingleOrDefault(p => p.Name == newParameter.Name);
+            if (parameter == null)
+                throw new InvalidOperationException($"Cannot update parameter {name}");
             parameter.Update(newParameter, Name);
-        }
-
-        private UnityApiParameter GetParameter(string name)
-        {
-            return myParameters.Single(p => p.Name == name);
         }
 
         public void ExportTo(XmlTextWriter xmlWriter, HasVersionRange defaultVersions)
@@ -267,7 +317,7 @@ namespace ApiParser
 
         private void WriteParameters(XmlTextWriter xmlWriter)
         {
-            if (!myParameters.Any())
+            if (!Enumerable.Any(myParameters))
                 return;
 
             xmlWriter.WriteStartElement("parameters");
@@ -291,6 +341,29 @@ namespace ApiParser
         {
             var parameters = string.Join(", ", myParameters.Select(p => p.ToString()));
             return $"{myReturnType} {Name}({parameters})";
+        }
+
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+        public static UnityApiEventFunction ImportFrom(XElement message, HasVersionRange versions)
+        {
+            var name = message.Attribute("name").Value;
+            var isStatic = bool.Parse(message.Attribute("static").Value);
+            var coroutineAttribute = message.Attribute("coroutine");
+            var isCoroutine = coroutineAttribute != null && bool.Parse(coroutineAttribute.Value);
+            var description = message.Attribute("description")?.Value;
+            var path = message.Attribute("path")?.Value;
+            var undocumentedAttribute = message.Attribute("undocumented");
+            var isUndocumented = undocumentedAttribute != null && bool.Parse(undocumentedAttribute.Value);
+            var returns = message.Descendants("returns").First();
+            var type = returns.Attribute("type").Value;
+            var isArray = bool.Parse(returns.Attribute("array").Value);
+            var returnType = new ApiType(type + (isArray ? "[]" : string.Empty));
+            var function = new UnityApiEventFunction(name, isStatic, isCoroutine, returnType, new Version(int.MaxValue, 0), description,
+                path, isUndocumented);
+            function.ImportVersionRange(message, versions);
+            foreach (var parameter in message.Descendants("parameter"))
+                function.myParameters.Add(UnityApiParameter.ImportFrom(parameter));
+            return function;
         }
     }
 
@@ -331,6 +404,24 @@ namespace ApiParser
             if (!string.IsNullOrEmpty(myDescription))
                 xmlWriter.WriteAttributeString("description", myDescription);
             xmlWriter.WriteEndElement();
+        }
+
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+        public static UnityApiParameter ImportFrom(XElement parameter)
+        {
+            var typeName = parameter.Attribute("type").Value;
+            var isArray = bool.Parse(parameter.Attribute("array").Value);
+            var byRefAttribute = parameter.Attribute("byRef");
+            var isByRef = byRefAttribute != null && bool.Parse(byRefAttribute.Value);
+            var name = parameter.Attribute("name").Value;
+            var justification = parameter.Attribute("justification")?.Value;
+            var isOptional = justification != null && bool.Parse(parameter.Attribute("optional").Value);
+            var description = parameter.Attribute("description")?.Value;
+            var apiType = new ApiType(typeName + (isArray ? "[]" : string.Empty) + (isByRef ? "&" : string.Empty));
+            var p = new UnityApiParameter(name, apiType, description);
+            if (isOptional)
+                p.SetOptional(justification);
+            return p;
         }
 
         public void Update(UnityApiParameter newParameter, string functionName)

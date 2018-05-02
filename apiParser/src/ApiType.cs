@@ -26,7 +26,7 @@ namespace ApiParser
                 IsArray = true;
             }
 
-            FullName = TypeResolver.ResolveFullName(name, namespaceHint);
+            FullName = name.Contains(".") ? name : TypeResolver.ResolveFullName(name, namespaceHint);
         }
 
         public string FullName { get; }

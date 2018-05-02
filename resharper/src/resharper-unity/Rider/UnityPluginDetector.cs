@@ -32,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         [NotNull]
         public InstallationInfo GetInstallationInfo(FileSystemPath previousInstallationDir)
         {
+            myLogger.Verbose("GetInstallationInfo.");
             try
             {
                 var assetsDir = mySolution.SolutionFilePath.Directory.CombineWithShortName(ProjectExtensions.AssetsFolder);
@@ -104,14 +105,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 .Select(assembly => assembly.GetLocation())
                 .FirstOrDefault(t => t.Name == PluginPathsProvider.BasicPluginDllFile);
             
-            if (locationDll == null)
+            if (locationDll == null || !locationDll.ExistsFile)
                 return false;
             
             var pluginFiles = solution.GetAllProjects().SelectMany(p=>p.
                 GetAllProjectFiles(f =>
                 {
                     var location = f.Location;
-                    if (location == null) return false;
+                    if (location == null || !location.ExistsFile) return false;
 
                     var fileName = location.Name;
                     return ourPluginCsFile.Contains(fileName);
@@ -175,8 +176,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             if (pluginFiles.Count == 1 && pluginFiles[0].Name == PluginPathsProvider.BasicPluginDllFile)
             {
-                var version = new Version(FileVersionInfo.GetVersionInfo(pluginFiles[0].FullPath).FileVersion);
-                return new InstallationInfo(version != ZeroVersion, pluginDir, pluginFiles, version);
+                try
+                {
+                    // https://github.com/JetBrains/resharper-unity/issues/541
+                    var version = new Version(FileVersionInfo.GetVersionInfo(pluginFiles[0].FullPath).FileVersion);
+                    return new InstallationInfo(version != ZeroVersion, pluginDir, pluginFiles, version);
+                }
+                catch (Exception e)
+                {
+                    myLogger.Error("Failed to do GetVersionInfo.", e);
+                    return new InstallationInfo(true, pluginDir, pluginFiles, ZeroVersion);
+                }
             }
 
             // update from Unity3dRider.cs to dll
