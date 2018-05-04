@@ -5,8 +5,9 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-ext.backend = new BackendHelper("..")
+def backend = new BackendHelper(ext.repoRoot)
+
+// Used to provide a package version to both msbuild and dotnet restore
 ext.extraMSBuildArgs = []
 
 class BackendHelper {
@@ -18,8 +19,8 @@ class BackendHelper {
     File unityPluginSingleProject   // For "rider only" configuration
     File riderTestsProject  // For "rider only" configuration
 
-    BackendHelper(String repoRoot) {
-        repositoryRoot = new File(repoRoot).canonicalFile
+    BackendHelper(File repoRoot) {
+        repositoryRoot = repoRoot
         assert repositoryRoot.isDirectory()
 
         backendRoot = new File(repositoryRoot, 'resharper')
@@ -73,7 +74,7 @@ class MSBuildTask extends DefaultTask {
     def findMSBuildPathWindows() {
         def stdout = new ByteArrayOutputStream()
         project.exec {
-            executable = project.file(new File(project.backend.repositoryRoot, 'tools/vswhere.exe'))
+            executable = project.file(new File(backend.repositoryRoot, 'tools/vswhere.exe'))
             args = [ "-latest", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-property", "installationPath" ]
             standardOutput = stdout
         }

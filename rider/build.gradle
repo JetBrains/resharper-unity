@@ -3,7 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.2.31'
-    id 'org.jetbrains.intellij' version '0.2.18'
+    id 'org.jetbrains.intellij' version '0.3.1'
 }
 
 ext.repoRoot = new File("..").canonicalFile
