@@ -235,7 +235,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       ourLogger.Verbose($"TestStarted : {test.FullName}");
       var id = GetIdFromNUnitTest(test);
 
-      myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running, test.Parent.Id));
+      myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running, GetIdFromNUnitTest(test.Parent)));
     }
 
     private void TestFinished(ITestResult testResult)
@@ -250,7 +250,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       var output = ExtractOutput(testResult);
       myLaunch.TestResult.Fire(new TestResult(id, output,
         (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
-        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed, test.Parent.Id));
+        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed, GetIdFromNUnitTest(test.Parent)));
     }
 
     private static string ExtractOutput(ITestResult testResult)
@@ -285,7 +285,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     {
       var testMethod = test as TestMethod;
       if (testMethod == null)
-        throw new ArgumentException("Could not get id from NUnit test {0}", test.FullName);
+      {
+        ourLogger.Warn("Failed to GetIdFromNUnitTest: " + test.FullName);
+        return test.FullName;
+      }
 
       var methodName = testMethod.Name;
       var className = testMethod.ClassName;

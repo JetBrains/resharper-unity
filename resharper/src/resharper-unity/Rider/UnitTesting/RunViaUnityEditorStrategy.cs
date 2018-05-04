@@ -13,6 +13,7 @@ using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Util;
 using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
@@ -28,16 +29,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ISolution mySolution;
         private readonly IUnitTestResultManager myUnitTestResultManager;
         private readonly UnityEditorProtocol myUnityEditorProtocol;
+        private readonly NUnitTestProvider myUnitTestProvider;
+        private readonly IUnitTestElementIdFactory myIDFactory;
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
 
         public RunViaUnityEditorStrategy(ISolution solution,
-            IUnitTestResultManager unitTestResultManager, UnityEditorProtocol unityEditorProtocol)
+            IUnitTestResultManager unitTestResultManager, 
+            UnityEditorProtocol unityEditorProtocol,
+            NUnitTestProvider unitTestProvider, 
+            IUnitTestElementIdFactory idFactory)
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
             myUnityEditorProtocol = unityEditorProtocol;
+            myUnitTestProvider = unitTestProvider;
+            myIDFactory = idFactory;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
         }
 
@@ -107,7 +115,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 var unitTestElement = GetElementById(result.TestId);
                 if (unitTestElement == null)
                 {
-                    return;
+                    // add dynamic tests
+                    var parent = GetElementById(result.ParentId) as NUnitTestElement;
+                    if (parent == null)
+                        return;
+
+                    var project = parent.Id.Project;
+                    var targetFrameworkId = parent.Id.TargetFrameworkId;
+                    
+                    
+                    var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
+                    var dynamicTest = new NUnitDynamicRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
+                    //var set = new HashSet<IUnitTestElement> {dynamicTest};
+                    //myElementManager.AddElements(set);
+                    firstRun.AddDynamicElement(dynamicTest);
+                    
+                    // todo: not sure, if it is needed
+                    myElements.Add(myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId), dynamicTest);
                 }
                 
                 switch (result.Status)
