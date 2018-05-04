@@ -123,15 +123,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var project = parent.Id.Project;
                     var targetFrameworkId = parent.Id.TargetFrameworkId;
                     
-                    
                     var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
-                    var dynamicTest = new NUnitDynamicRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
-                    //var set = new HashSet<IUnitTestElement> {dynamicTest};
-                    //myElementManager.AddElements(set);
-                    firstRun.AddDynamicElement(dynamicTest);
-                    
-                    // todo: not sure, if it is needed
-                    myElements.Add(myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId), dynamicTest);
+                    unitTestElement = new NUnitDynamicRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
+                    firstRun.AddDynamicElement(unitTestElement);
+                    myElements.Add(myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId), unitTestElement);
                 }
                 
                 switch (result.Status)
