@@ -13,17 +13,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnitySettingsSynchronizer : UnityReferencesTracker.IHandler
     {
         private readonly Lifetime myLifetime;
+        private readonly UnityHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundStore;
-        private readonly SolutionModel mySolutionModel;
 
         public UnitySettingsSynchronizer(
             Lifetime lifetime,
             ISolution solution,
-            SolutionModel solutionModel,
+            UnityHost host,
             ISettingsStore settingsStore)
         {
             myLifetime = lifetime;
-            mySolutionModel = solutionModel;
+            myHost = host;
             myBoundStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
         }
 
@@ -38,12 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (pcea.HasNew)
                 {
-                    if (mySolutionModel.HasCurrentSolution()) // in tests we don't have one
-                    {
-                        mySolutionModel.GetCurrentSolution()
-                            .CustomData
-                            .Data["UNITY_SETTINGS_EnableShaderLabHippieCompletion"] = pcea.New.ToString();
-                    }
+                    myHost.SetModelData("UNITY_SETTINGS_EnableShaderLabHippieCompletion", pcea.New.ToString());
                 }
             });
         }

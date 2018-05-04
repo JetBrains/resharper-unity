@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.Util;
 using JetBrains.Util.Reflection;
@@ -11,6 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public static class ProjectExtensions
     {
+        public const string AssetsFolder = "Assets";
+
         private static readonly AssemblyNameInfo ourUnityEngineReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine", null);
         private static readonly AssemblyNameInfo ourUnityEditorReferenceName = AssemblyNameInfoFactory.Create2("UnityEditor", null);
 
@@ -28,20 +32,27 @@ namespace JetBrains.ReSharper.Plugins.Unity
             ourUnityEditorReferenceName, ourUnityEngineReferenceName, ourUnityEngineCoreModuleReferenceName, ourUnityEngineSharedInternalsModuleReferenceName
         };
 
+        public static bool IsUnitySolution([NotNull] this ISolution solution)
+        {
+            var tracker = solution.GetComponent<UnityReferencesTracker>();
+            return tracker.IsUnitySolution.Value;
+        }
+
         public static bool IsUnityProject([CanBeNull] this IProject project)
         {
             // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
             return project != null && (project.HasFlavour<UnityProjectFlavor>() || ReferencesUnity(project));
         }
 
-        public static bool IsProjectCompiledByUnity([CanBeNull] this IProject project)
+        public static bool IsUnityGeneratedProject([CanBeNull] this IProject project)
         {
-            return project != null && project.HasSubItems("Assets") && IsUnityProject(project);
+            return project != null && project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
 
+        [Obsolete("Assets folder can be found in other solutions. Use IsUnitySolution instead.")]
         public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionDir)
         {
-            var assetsDir = solutionDir.CombineWithShortName("Assets");
+            var assetsDir = solutionDir.CombineWithShortName(AssetsFolder);
             return assetsDir.IsAbsolute && assetsDir.ExistsDirectory;
         }
 

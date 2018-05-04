@@ -23,11 +23,11 @@ Write-Host "gradleArgs=$gradleArgs"
 
 Push-Location -Path rider
 if ($isUnix){
-  .\gradlew "buildPlugin" $gradleArgs
+  .\gradlew --info --stacktace "buildPlugin" $gradleArgs
 }
 else{
-  .\gradlew.bat "buildPlugin" $gradleArgs
+  .\gradlew.bat --info --stacktrace "buildPlugin" $gradleArgs
 }
 
-if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider front end plugin: exit code $LastExitCode" }
+if ($LastExitCode -ne 0) { throw "Exec: Unable to build plugin: exit code $LastExitCode" }
 Pop-Location

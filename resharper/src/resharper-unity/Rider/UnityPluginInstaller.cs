@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Application.BuildScript.Application;
-using JetBrains.Application.Environment;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
@@ -27,10 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityPluginDetector myDetector;
         private readonly ILogger myLogger;
         private readonly RdNotificationsModel myNotifications;
-        private readonly ApplicationPackages myApplicationPackages;
-        private readonly ApplicationPackagesLocallyInstalled myApplicationPackagesLocallyInstalled;
-        private readonly IEnumerable<ApplicationPackageArtifact> myPackages;
-        private readonly IDeployedPackagesExpandLocationResolver myResolver;
+        private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         private readonly ProcessingQueue myQueue;
@@ -43,9 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnityPluginDetector detector,
             RdNotificationsModel notifications,
             ISettingsStore settingsStore,
-            ApplicationPackages applicationPackages,
-            ApplicationPackagesLocallyInstalled applicationPackagesLocallyInstalled,
-            IEnumerable<ApplicationPackageArtifact> packages, IDeployedPackagesExpandLocationResolver resolver)
+            PluginPathsProvider pluginPathsProvider)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
@@ -55,10 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myShellLocks = shellLocks;
             myDetector = detector;
             myNotifications = notifications;
-            myApplicationPackages = applicationPackages;
-            myApplicationPackagesLocallyInstalled = applicationPackagesLocallyInstalled;
-            myPackages = packages;
-            myResolver = resolver;
+            myPluginPathsProvider = pluginPathsProvider;
 
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
@@ -229,16 +219,8 @@ Please switch back to Unity to make plugin file appear in the solution.";
 
             try
             {
-
-                //var assembly = Assembly.GetExecutingAssembly();
-                //var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
-                //var subplatformName = package.SubplatformName;
-                //FileSystemPath dir = myResolver.GetDeployedPackageDirectory(package);
-
-                var installDirectory = myApplicationPackagesLocallyInstalled
-                    .Single(a => a.Id == "JetBrains.plugin_com_intellij_resharper_unity").LocalInstallDirectory;
-                var editorPluginPath =
-                    installDirectory.Parent.Combine(@"EditorPlugin\JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll");
+                var editorPluginPathDir = myPluginPathsProvider.GetEditorPluginPathDir();
+                var editorPluginPath = editorPluginPathDir.Combine(PluginPathsProvider.BasicPluginDllFile);
 
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
@@ -257,7 +239,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
                     backup.Value.DeleteFile();
                 }
 
-                installedPath = installation.PluginDirectory.Combine(UnityPluginDetector.PluginDllFile);
+                installedPath = installation.PluginDirectory.Combine(PluginPathsProvider.BasicPluginDllFile);
                 return true;
             }
             catch (Exception e)

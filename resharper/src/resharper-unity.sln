@@ -3,14 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1BA095E3-8422-414C-B65D-1BEEE34AEB81}"
-	ProjectSection(SolutionItems) = preProject
-		resharper-unity\annotations\UnityEditor.EditorTestsRunner.xml = resharper-unity\annotations\UnityEditor.EditorTestsRunner.xml
-		resharper-unity\annotations\UnityEditor.xml = resharper-unity\annotations\UnityEditor.xml
-		resharper-unity\annotations\UnityEngine.Networking.xml = resharper-unity\annotations\UnityEngine.Networking.xml
-		resharper-unity\annotations\UnityEngine.xml = resharper-unity\annotations\UnityEngine.xml
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity.resharper", "resharper-unity\resharper-unity.resharper.csproj", "{DF42F23E-46F3-4798-8B16-024619FA5E46}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.resharper", "..\test\src\tests.resharper.csproj", "{849CDA2E-35FC-49A8-A755-C3216B72BAB9}"
@@ -22,6 +14,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin", "..\..\unity\JetBrains.Rider.Unity.Editor\EditorPlugin\EditorPlugin.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.Tests", "..\..\unity\JetBrains.Rider.Unity.Editor\EditorPlugin.Tests\EditorPlugin.Tests.csproj", "{0E4211DB-DA60-416B-A13C-14D45410F768}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnityEditor", "UnityEditor", "{27FAB5DF-2272-44E7-9BCE-41508F24C07B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReSharper", "ReSharper", "{9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginFull", "..\..\unity\JetBrains.Rider.Unity.Editor\EditorPlugin\EditorPluginFull.csproj", "{51B82B3C-294F-4751-8754-223C660172E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,8 +51,21 @@ Global
 		{0E4211DB-DA60-416B-A13C-14D45410F768}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E4211DB-DA60-416B-A13C-14D45410F768}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E4211DB-DA60-416B-A13C-14D45410F768}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51B82B3C-294F-4751-8754-223C660172E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51B82B3C-294F-4751-8754-223C660172E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51B82B3C-294F-4751-8754-223C660172E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51B82B3C-294F-4751-8754-223C660172E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{67CFB019-CE94-4251-8C3A-4DC70E4E4A52} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
+		{0E4211DB-DA60-416B-A13C-14D45410F768} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
+		{DF42F23E-46F3-4798-8B16-024619FA5E46} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{849CDA2E-35FC-49A8-A755-C3216B72BAB9} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{31338488-0C08-43C2-884F-A38485E2FA2F} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{51B82B3C-294F-4751-8754-223C660172E4} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
 	EndGlobalSection
 EndGlobal

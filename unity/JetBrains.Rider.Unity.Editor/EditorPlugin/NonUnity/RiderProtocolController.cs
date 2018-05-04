@@ -11,7 +11,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
   // ReSharper disable once UnusedMember.Global
   public class RiderProtocolController
   {
-    public SocketWire.Server Wire;
+    public readonly SocketWire.Server Wire;
 
     public RiderProtocolController(IScheduler mainThreadScheduler, Lifetime lifetime)
     {
@@ -23,8 +23,6 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
 
         Wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer", true);
         logger.Log(LoggingLevel.VERBOSE, $"Created SocketWire with port = {Wire.Port}");
-
-        Wire.Connected.Advise(lifetime, wireConnected => { logger.Verbose("Wire.Connected {0}", wireConnected); });
         InitializeProtocolJson(Wire.Port, logger);
       }
       catch (Exception ex)

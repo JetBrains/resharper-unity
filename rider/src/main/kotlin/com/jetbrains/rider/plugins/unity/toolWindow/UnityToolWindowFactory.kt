@@ -7,7 +7,7 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.status.StatusBarUtil
 import com.intellij.ui.content.ContentManagerAdapter
 import com.intellij.ui.content.ContentManagerEvent
-import com.jetbrains.rider.plugins.unity.ProjectCustomDataHost
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
@@ -15,7 +15,7 @@ import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 
 class UnityToolWindowFactory(project: Project,
                              private val toolWindowManager: ToolWindowManager,
-                             private val projectCustomDataHost: ProjectCustomDataHost)
+                             private val host: UnityHost)
     : LifetimedProjectComponent(project) {
 
     companion object {
@@ -42,12 +42,12 @@ class UnityToolWindowFactory(project: Project,
             }
         })
         toolWindow.title = ""
-        toolWindow.icon = UnityIcons.Logo
+        toolWindow.icon = UnityIcons.Toolwindows.ToolWindowUnityLog
         // Required for hiding window without content
         ContentManagerWatcher(toolWindow, contentManager)
 
         val logModel = UnityLogPanelModel(componentLifetime, project)
-        val logView = UnityLogPanelView(project, logModel, projectCustomDataHost)
+        val logView = UnityLogPanelView(project, logModel, host)
         val toolWindowContent = contentManager.factory.createContent(null, "Log", true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel

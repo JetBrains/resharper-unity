@@ -51,7 +51,7 @@ class MSBuildTask extends DefaultTask {
     def build() {
         project.ci.Progress("Building $buildFile ($project.BuildConfiguration)")
 
-        def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:minimal', '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
+        def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:normal', '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
         arguments.addAll(project.extraMSBuildArgs)
         project.exec {
             executable = findMSBuildPath()
@@ -125,7 +125,8 @@ class RestorePackagesTask extends DefaultTask {
     def restore() {
         project.ci.Progress("Restoring packages for $packagesFile")
 
-        def restoreArguments = [ 'restore' ]
+        // TODO: Map verbosity to gradle logging verbosity
+        def restoreArguments = [ 'restore', '--verbosity', 'normal' ]
         if (project.PackageSource != null) {
             restoreArguments << '--source' << 'https://api.nuget.org/v3/index.json'
             restoreArguments << '--source' << 'https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json'

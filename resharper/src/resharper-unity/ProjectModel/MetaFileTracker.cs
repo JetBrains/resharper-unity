@@ -5,6 +5,7 @@ using JetBrains.Application.Progress;
 using JetBrains.DataFlow;
 using JetBrains.DocumentManagers.Transactions;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
@@ -19,12 +20,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ILogger myLogger;
         private IProjectItem myLastAddedItem;
 
-        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger)
+        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger, ISolutionLoadTasksScheduler solutionLoadTasksScheduler)
         {
             mySolution = solution;
             myLogger = logger;
-            changeManager.RegisterChangeProvider(lifetime, this);
-            changeManager.AddDependency(lifetime, this, solution);
+            
+            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("AdviseForChanges", SolutionLoadTaskKinds.AfterDone,
+                () =>
+                {
+                    changeManager.RegisterChangeProvider(lifetime, this);
+                    changeManager.AddDependency(lifetime, this, solution);        
+                }));
         }
 
         public object Execute(IChangeMap changeMap)
@@ -131,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             private static bool IsAsset(ProjectItemChange change)
             {
                 var rootFolder = GetRootFolder(change.OldParentFolder);
-                return rootFolder != null && string.Compare(rootFolder.Name, "Assets", StringComparison.OrdinalIgnoreCase) == 0;
+                return rootFolder != null && string.Compare(rootFolder.Name, ProjectExtensions.AssetsFolder, StringComparison.OrdinalIgnoreCase) == 0;
             }
 
             private static IProjectFolder GetRootFolder(IProjectItem item)

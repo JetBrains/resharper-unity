@@ -1,17 +1,16 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.jetbrains.rider.icons.ReSharperCommonIcons
-import com.jetbrains.rider.plugins.unity.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.RdLogEventType
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 
 object UnityLogPanelIcons {
-    val Error = ReSharperCommonIcons.Error
+    val Error = UnityIcons.Ide.Error
     val Warning = ReSharperCommonIcons.Warning
-    val Message = ReSharperCommonIcons.MessageInfo
+    val Message = UnityIcons.Ide.Info
 
-    val Edit = ReSharperCommonIcons.Edit
-    val Play = UnityIcons.Logo
+    val Edit = UnityIcons.Unity.UnityEdit
+    val Play = UnityIcons.Unity.UnityPlay
 }
 
 fun RdLogEventType.getIcon() = when (this) {

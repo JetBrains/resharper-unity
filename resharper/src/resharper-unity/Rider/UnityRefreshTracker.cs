@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Application.changes;
+using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.DocumentModel.Transactions;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.ProjectsHost.Impl;
+using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
 using JetBrains.Threading;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -23,30 +20,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
-        private readonly UnityPluginProtocolController myPluginProtocolController;
+        private readonly UnityEditorProtocol myPluginProtocolController;
+        private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
-        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityPluginProtocolController pluginProtocolController)
+        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityEditorProtocol pluginProtocolController, ISettingsStore settingsStore)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
             myPluginProtocolController = pluginProtocolController;
             
-            if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
                         
-            myPluginProtocolController.Refresh.Advise(lifetime, model => { Refresh(); });
+            myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
+            
+            myPluginProtocolController.Refresh.Advise(lifetime, Refresh);
         }
 
         public bool IsRefreshing { get; private set; }
 
-        public void Refresh()
+        public void Refresh(bool force)
         {
             myLocks.AssertMainThread();
-            if (IsRefreshing) return;
+            if (IsRefreshing)
+                return;
+            
+            if (myPluginProtocolController.UnityModel.Value == null)
+                return;
+            
+            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && !force)
+                return;
 
             IsRefreshing = true;
-            var result = myPluginProtocolController.UnityModel?.Refresh.Start(RdVoid.Instance)?.Result;
+            var result = myPluginProtocolController.UnityModel.Value.Refresh.Start(force)?.Result;
 
             if (result == null)
             {
@@ -80,64 +87,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, ChangeManager changeManager, UnityPluginProtocolController protocolController, 
-            ILogger logger)
+        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, UnityEditorProtocol protocolController, DocumentTransactionManager documentTransactionManager, IShellLocks locks)
         {
-            if (solution.GetData<Solution>(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
             
             var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
-                Rgc.Invariant, refresher.Refresh);
+                Rgc.Invariant, ()=>refresher.Refresh(false));
 
             var protocolSolution = solution.GetProtocolSolution();
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
             {
                 if (refresher.IsRefreshing) return;
-                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
-                if (isPlay==null || (bool)isPlay) return;
+
+                if (protocolController.UnityModel.Value == null)
+                    return;
                 
                 groupingEvent.FireIncoming();
             });
-
-            changeManager.Changed2.Advise(lifetime, args =>
-            {
-                var changes = args.ChangeMap.GetChanges<ProjectModelChange>();
-                if (changes == null)
-                    return;
-                
-                if (refresher.IsRefreshing) 
-                    return;
-
-                var hasChange = changes.Any(HasAnyFileChangeRec);
-                if (!hasChange)
-                    return;
-                
-                var isPlay = protocolController.UnityModel?.Play.HasTrueValue();
-                if (isPlay==null || (bool)isPlay) 
-                    return;
-
-                groupingEvent.FireIncoming();
-            });
-        }
-
-        private bool HasAnyFileChangeRec(ProjectModelChange change)
-        {
-            var file = change.ProjectModelElement as IProjectFile;
-
-            if (file != null && (change.IsAdded || change.IsRemoved || change.IsMovedIn || change.IsMovedOut))
-            {
-                // Log something
-                return true;
-            }
-
-            foreach (var childChange in change.GetChildren())
-            {
-                if (HasAnyFileChangeRec(childChange))
+            
+            documentTransactionManager.AfterTransactionCommit.Advise(lifetime,
+                () =>
                 {
-                    return true;
-                }
-            }
-            return false;
+                    locks.ExecuteWithReadLock(() =>
+                    {
+                        if (documentTransactionManager.CurrentTransaction?.ParentTransaction == null)
+                            groupingEvent.FireIncoming();
+                    });
+                });
         }
     }
 }

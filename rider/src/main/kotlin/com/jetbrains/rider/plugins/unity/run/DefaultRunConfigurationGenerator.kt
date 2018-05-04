@@ -14,32 +14,28 @@ class DefaultRunConfigurationGenerator(unityReferenceDiscoverer: UnityReferenceD
 
     init {
         unityReferenceDiscoverer.addUnityReferenceListener(object: UnityReferenceListener {
-            override fun HasUnityReference() {
-                // Replace the "Default" run configuration that Rider creates. If there is more than one
-                // run configuration, the user has explicitly modified them. Don't create the Attach
-                // config, but do make sure there's something selected.
-
-                if (runManager.allSettings.size == 1 && runManager.allSettings[0].name == "Default") {
-                    runManager.removeConfiguration(runManager.allSettings[0])
+            override fun hasUnityReference() {
+                // Add Attach Unity Editor configuration, if it doesn't exist
+                if (!runManager.allSettings.any { a->a.type == UnityDebugConfigurationType::class.java})
+                {
                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDebugConfigurationType::class.java)
                     val runConfiguration = runManager.createRunConfiguration(ATTACH_CONFIGURATION_NAME, configurationType.attachToEditorFactory)
                     // Not shared, as that requires the entire team to have the plugin installed
-                    // We'll create it if it doesn't exist, anyway
                     runManager.addConfiguration(runConfiguration, false)
-                    runManager.selectedConfiguration = runConfiguration
-
                 }
-                else if (runManager.selectedConfiguration == null) {
+                // make Attach Unity Editor configuration selected if nothing is selected
+                if (runManager.selectedConfiguration == null) {
                     val runConfiguration = runManager.findConfigurationByName(ATTACH_CONFIGURATION_NAME)
                     if (runConfiguration != null) {
                         runManager.selectedConfiguration = runConfiguration
                     }
                 }
-                if (!runManager.allSettings.any { a->a.type == UnityDebugAndPlayConfigurationType::class.java})
-                {
-                    val configurationTypeDebugAndPlay = ConfigurationTypeUtil.findConfigurationType(UnityDebugAndPlayConfigurationType::class.java)
-                    val runConfigurationDebugAndPlay = runManager.createRunConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationTypeDebugAndPlay.attachToEditorAndPlayFactory)
-                    runManager.addConfiguration(runConfigurationDebugAndPlay, false)
+
+                if (!runManager.allSettings.any { a->a.type == UnityDebugAndPlayConfigurationType::class.java}) {
+                    // todo:restore in 2018.2
+                    // val configurationTypeDebugAndPlay = ConfigurationTypeUtil.findConfigurationType(UnityDebugAndPlayConfigurationType::class.java)
+                    // val runConfigurationDebugAndPlay = runManager.createRunConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationTypeDebugAndPlay.attachToEditorAndPlayFactory)
+                    //runManager.addConfiguration(runConfigurationDebugAndPlay, false)
                 }
             }
         })

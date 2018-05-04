@@ -3,6 +3,7 @@
 # User-specific stuff:
 **/.idea/**/workspace.xml
 **/.idea/**/tasks.xml
+**/.idea/**/codeStyleConfig.xml
 **/.idea/shelf/*
 **/.idea/dictionaries
 
@@ -40,6 +41,7 @@ resharper/src/.idea/**/*.iml
 
 # ContentModel.xml is also auto-generated
 resharper/src/.idea/**/contentModel.xml
+resharper/src/.idea/**/other.xml
 
 resharper/src/.vs/
 
@@ -49,7 +51,7 @@ apiParser/.idea/**/contentModel.xml
 
 # New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
 # Would be nice to download them somewhere outside of the source tree.
-Packages/*
+**/Packages/*
 *.nupkg
 
 *.suo
@@ -64,6 +66,9 @@ resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp
 
+rider/src/**/*.generated.kt
+unity/**/*.generated.cs
+
 # Backup & report files from converting an old project file to a newer Visual Studio version
 _UpgradeReport_Files/
 Backup*/
@@ -74,9 +79,19 @@ Desktop.ini
 .DS_Store
 rider/out/*
 rider/.idea/uiDesigner.xml
+**/.rdgen
+
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove
 resharper/src/resharper-unity/Unity3dRider/Packages/manifest.json
 resharper/test/Unity3dRiderCompileTest/.idea/*
 resharper/test/Unity3dRiderCompileTest/packages/*
+
 unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
+unity/CSharp70Support/*
+unity/Assets/CSharp vNext Support/*
+unity/Assets/Plugins/Editor/JetBrains/*
+unity/compilation.log
+unity/**/manifest.json
+unity/JetBrains.Rider.Unity.Editor/EditorPlugin.Tests/tsconfig.json
+unity/Assets/*

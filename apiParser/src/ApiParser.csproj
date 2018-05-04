@@ -16,5 +16,6 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.2.2" />
     <PackageReference Include="HtmlAgilityPack" Version="1.4.9.5" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
 </Project>

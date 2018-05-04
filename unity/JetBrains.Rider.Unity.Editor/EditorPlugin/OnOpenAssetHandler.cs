@@ -2,8 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.Model;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util.Logging;
@@ -14,19 +15,19 @@ namespace JetBrains.Rider.Unity.Editor
   internal class OnOpenAssetHandler
   {
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
-    private readonly RProperty<UnityModel> myModel;
+    private readonly RProperty<EditorPluginModel> myModel;
     private readonly RiderPathLocator myRiderPathLocator;
     private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
 
-    public OnOpenAssetHandler(RProperty<UnityModel> model, RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
+    public OnOpenAssetHandler(RProperty<EditorPluginModel> model, RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
     {
       myModel = model;
       myRiderPathLocator = riderPathLocator;
       myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
     }
-
+    
     public bool OnOpenedAsset(int instanceID, int line)
     {
       // determine asset that has been double clicked in the project view
@@ -44,10 +45,17 @@ namespace JetBrains.Rider.Unity.Editor
             )))
         return false;
 
-      var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
-      myLogger.Verbose("ModifiedSource: {0} EditorApplication.isPlaying: {1} EditorPrefsWrapper.AutoRefresh: {2}", modifiedSource, EditorApplication.isPlaying, EditorPrefsWrapper.AutoRefresh);
+      return OnOpenedAsset(assetFilePath, line);
+    }
 
-      if (modifiedSource && !EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh)
+    [UsedImplicitly] // https://github.com/JetBrains/resharper-unity/issues/475
+    public bool OnOpenedAsset(string assetFilePath, int line)
+    {
+      var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
+      myLogger.Verbose("ModifiedSource: {0} EditorApplication.isPlaying: {1} EditorPrefsWrapper.AutoRefresh: {2}",
+        modifiedSource, EditorApplication.isPlaying, EditorPrefsWrapper.AutoRefresh);
+
+      if (modifiedSource && !EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || !File.Exists(PluginEntryPoint.SlnFile))
       {
         UnityUtils.SyncSolution(); // added to handle opening file, which was just recently created.
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
@@ -56,7 +64,7 @@ namespace JetBrains.Rider.Unity.Editor
       var model = myModel.Maybe.ValueOrDefault;
       if (model != null)
       {
-        if (PluginEntryPoint.IsProtocolConnected())
+        if (PluginEntryPoint.CheckConnectedToBackendSync())
         {
           const int column = 0;
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
@@ -76,7 +84,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     public bool CallRider(string args)
     {
-      var defaultApp = myRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor, RiderPathLocator.GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider));
+      var paths = RiderPathLocator.GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider);
+      var defaultApp = myRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor, paths);
       if (string.IsNullOrEmpty(defaultApp))
       {
         return false;

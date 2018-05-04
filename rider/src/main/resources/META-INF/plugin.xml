@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2.1.3.9999</version>
+  <version>2018.1.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
   <idea-version since-build="173.3389" until-build="173.3389.*" />
@@ -10,7 +10,9 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
-    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugAndPlayConfigurationType" />
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
+    <!--todo: restore in 2018.2-->
+    <!--<configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugAndPlayConfigurationType" />-->
     <applicationConfigurable groupId="language" instance="com.jetbrains.rider.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
 
     <!-- This has to be first, as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
@@ -42,24 +44,59 @@
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
     <projectModelViewProvider implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerViewProvider"/>
 
+    <xdebugger.localAttachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityAttachProvider"/>
   </extensions>
 
   <project-components>
+    <component>
+      <interface-class>com.jetbrains.rider.unitTesting.RiderUnitTestUIService</interface-class>
+      <implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUnitTestUIService</implementation-class>
+      <option name="overrides" value="true"/>
+    </component>
     <component><implementation-class>com.jetbrains.rider.UnityReferenceDiscoverer</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.RiderUnitySettings</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.ProjectCustomDataHost</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.UnityHost</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.SaveAllTracker</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory</implementation-class></component>
   </project-components>
 
   <actions>
+
+    <group id="UnityToolbarActions">
+      <separator/>
+      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
+        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
+      </group>
+
+      <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />
+      <action id="TriggerPlayInUnity" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"/>
+      <action id="TriggerPauseInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"  />
+      <action id="TriggerStepInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" />
+      <separator/>
+
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
+    </group>
+
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>
+
+    <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties...">
+      <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
+    </action>
+
+    <group id="UnityLogPanelViewToolbar" text="Unity log panel">
+      <action id="RefreshInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Refresh" description="Starts refresh in Unity" />
+      <action id="PlayInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction" text="Play/Edit" description="Change Play/Edit mode in Unity" />
+      <action id="PauseInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction" text="Pause/Resume" description="Pause/Resume play in Unity" />
+      <action id="StepInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" text="Step" description="Perform a single frame step in Unity" />
+    </group>
   </actions>
 
   <description><![CDATA[

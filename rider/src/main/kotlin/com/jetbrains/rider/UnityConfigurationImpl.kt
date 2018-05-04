@@ -12,18 +12,18 @@ class UnityConfigurationImpl(private val project: Project, unityReferenceDiscove
 
     init {
         val excludePaths = ignoredDirectories
-            .map { f -> GetChildAsFile(f) }
+            .map { f -> getChildAsFile(f) }
             .filter { f -> f != null }
             .map { f -> f!! }
             .toHashSet()
         unityReferenceDiscoverer.addUnityReferenceListener(object : UnityReferenceListener {
-            override fun HasUnityReference() {
+            override fun hasUnityReference() {
                 excludes.updateExcludes(this, excludePaths)
             }
         })
     }
 
-    private fun GetChildAsFile(directoryName: String) : File?
+    private fun getChildAsFile(directoryName: String) : File?
     {
         val libraryFolder = project.baseDir.findChild(directoryName)
         val path = libraryFolder?.canonicalPath ?: return null

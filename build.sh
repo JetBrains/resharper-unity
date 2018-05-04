@@ -3,4 +3,4 @@ set -e
 set -o pipefail
 
 pushd rider
-./gradlew buildPlugin
+./gradlew --info --stacktrace buildPlugin

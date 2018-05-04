@@ -5,6 +5,8 @@ sourceSets {
     }
 }
 
+def dependenciesDir = new File("dependencies")
+
 intellij {
     pluginName 'rider-unity'
     type 'RD'
@@ -20,16 +22,49 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "F:\\RiderSDK"
 
-    def dir = file('dependencies')
-    if (dir.exists()) {
-        localPath = dir.absolutePath
+    if (dependenciesDir .exists()) {
+        localPath = dependenciesDir.absolutePath
     } else {
-        version = '2018.1-SNAPSHOT'
+        version = "2018.1-SNAPSHOT"
     }
 
     // Sources aren't available for Rider
     downloadSources = false
 }
+
+def frontendSdkRoot = dependenciesDir
+// bundled build configuration on TC
+if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
+    logger.lifecycle("dependencies dir found, using as frontend SDK root")    
+}
+else {
+    def frontendSdkVersion = "2018.1-SNAPSHOT"
+    // rider/build/riderRD-2018.1-SNAPSHOT
+    def frontendSdkDirs = []
+    def frontendSdkSearchPath = new File(repoRoot, "rider/build")
+    //logger.lifecycle("listing $frontendSdkSearchPath.path:")
+    //fileTree(frontendSdkSearchPath).visit {
+        //if (it.isDirectory()){
+            //if (it.name.startsWith("riderRD"))
+                //frontendSdkDirs << it
+            //logger.lifecycle("DIR:  $it.name")
+        //}
+    //}
+
+    if (frontendSdkDirs.size() > 0) {
+        assert frontendSdkDirs.size() == 1
+
+        def frontendSdkSingleDir = frontendSdkDirs.first()
+        def match = frontendSdkSingleDir.name =~ /riderRD-(.+)/
+        assert match.matches()
+
+        frontendSdkVersion = match[0][1]
+    }
+
+    frontendSdkRoot = new File(frontendSdkSearchPath, "riderRD-$frontendSdkVersion")
+}
+
+ext.rdLibDirectory = new File(frontendSdkRoot, "lib/rd").canonicalFile
 
 ext.kotlin_version = '1.2.10'
 
@@ -44,6 +79,62 @@ compileKotlin {
 
 repositories {
     mavenCentral()
+    flatDir {
+        dirs rdLibDirectory.absolutePath
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
+}
+
+task generateModel {
+    group = 'other'
+    description = 'Generates protocol models.'
+
+    doLast {
+        assert rdLibDirectory.isDirectory()
+
+        def rdgenJar = new File(rdLibDirectory.absolutePath, "rd-gen.jar")
+        assert rdgenJar.isFile()
+
+        // TODO: spaces
+        def modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
+        def csOutput = new File(repoRoot, "resharper/src/resharper-unity/RdUnityProtocol")
+        def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol")
+        def packageName = "model"
+
+        def cpSeparator = isWindows ? ";" : ":"
+        def compilerClasspath = "$rdLibDirectory/rd-gen.jar$cpSeparator$rdLibDirectory/rider-model.jar"
+        def rdGenClasspath = files(compilerClasspath)
+
+        javaexec {
+            main = "com.jetbrains.rider.generator.nova.MainKt"
+            classpath = rdGenClasspath
+            systemProperty "model.out.src.cs.dir", "$csOutput"
+            systemProperty "model.out.src.kt.dir", "$ktOutput"
+            errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
+            args = [
+                "-v", // verbose
+                "--compiler-classpath=$compilerClasspath",
+                "--source=${modelDir}/rider",
+                "--packages=${packageName}.rider"
+            ]
+        }
+
+        // TODO: if placed in one dir with different packages there will be generator clash
+        javaexec {
+            main = "com.jetbrains.rider.generator.nova.MainKt"
+            classpath = rdGenClasspath
+            errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
+            args = [
+                "-v", // verbose
+                "--compiler-classpath=$compilerClasspath",
+                "--source=${modelDir}/editorPlugin",
+                "--packages=${packageName}.editorPlugin"
+            ]
+        }
+    }
 }
 
 
@@ -76,6 +167,7 @@ task publishCiBuildData {
 }
 
 buildPlugin.finalizedBy publishCiBuildData
+buildPlugin.dependsOn generateModel
 
 
 // If we're building `runIde`, only build Rider bits. We only know this once the task graph
@@ -95,6 +187,7 @@ def annotationsFrom = '../resharper/src/resharper-unity/annotations'
 def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 
 def unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
+def unityeditorplugin_full_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
 
 prepareSandbox {
     // Already depends on the standard Java build/jar task
@@ -124,6 +217,10 @@ prepareSandbox {
     }
 
     from(unityeditorplugin_path, {
+        into "$intellij.pluginName/EditorPlugin"
+    })
+
+    from(unityeditorplugin_full_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
 

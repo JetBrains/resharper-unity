@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using JetBrains.Util;
-using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,9 +14,7 @@ namespace JetBrains.Rider.Unity.Editor
   } 
   
   public class PluginSettings : IPluginSettings
-  {
-    private static ILog ourLogger = Log.GetLog<PluginSettings>();
-    
+  {   
     private static LoggingLevel ourSelectedLoggingLevel = (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 4);
     
     internal static LoggingLevel SelectedLoggingLevel
@@ -29,34 +26,12 @@ namespace JetBrains.Rider.Unity.Editor
         ourSelectedLoggingLevel = value;
       }
     }
-    
-    private static string GetTargetFrameworkVersionDefault(string defaultValue)
+
+    public static string[] GetInstalledNetFrameworks()
     {
       if (SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
-        return defaultValue;
-
-      var availableVersions = GetInstalledNetFrameworks();
-      if (availableVersions.Any() && !availableVersions.Contains(defaultValue))
-      {
-        return availableVersions.OrderBy(a => new Version(a)).Last();
-      }
-
-      return defaultValue;
-    }
-    
-    public static void WarnOnAvailbaleNewerNetFramework(string version)
-    {
-      if (SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows) 
-        return;
+        throw new InvalidOperationException("GetTargetFrameworkVersionWindowsMono2 is designed for Windows only");
       
-      var availableVersions = GetInstalledNetFrameworks();
-      var betterPossibleFramework = availableVersions.LastOrDefault(a => new Version(a) > new Version(version));
-      if (betterPossibleFramework!=null)
-        ourLogger.Warn($"Consider updating TargetFrameworkVersion to {betterPossibleFramework} in Unity preferences -> Rider.");
-    }
-
-    private static string[] GetInstalledNetFrameworks()
-    {
       var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
       if (!dir.Exists)
         return new string[0];
@@ -65,18 +40,19 @@ namespace JetBrains.Rider.Unity.Editor
         .GetDirectories("v*")
         .Select(a => a.Name.Substring(1))
         .Where(v => InvokeIfValidVersion(v, s => { }))
+        .Where(v=>new Version(v) >= new Version("3.5"))
         .ToArray();
 
       return availableVersions;
     }
 
-    private static bool InvokeIfValidVersion(string value, Action<string> action)
+    private static bool InvokeIfValidVersion(string input, Action<string> action)
     {
       try
       {
         // ReSharper disable once ObjectCreationAsStatement
-        new Version(value); // mono 2.6 doesn't support Version.TryParse
-        action(value);
+        new Version(input); // mono 2.6 doesn't support Version.TryParse
+        action(input);
         return true;
       }
       catch (ArgumentException)
@@ -88,18 +64,46 @@ namespace JetBrains.Rider.Unity.Editor
 
       return false;
     }
+    
+    public static bool OverrideTargetFrameworkVersion
+    {
+      get { return EditorPrefs.GetBool("Rider_OverrideTargetFrameworkVersion", false); }
+      private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersion", value);; }
+    }
+
+    private static string TargetFrameworkVersionDefault = "4.6";
 
     public static string TargetFrameworkVersion
     {
-      get { return EditorPrefs.GetString("Rider_TargetFrameworkVersion", GetTargetFrameworkVersionDefault("4.6")); }
+      get { return EditorPrefs.GetString("Rider_TargetFrameworkVersion", TargetFrameworkVersionDefault); }
       private set { InvokeIfValidVersion(value, val => { EditorPrefs.SetString("Rider_TargetFrameworkVersion", val); }); }
     }
+    
+    public static bool OverrideTargetFrameworkVersionOldMono
+    {
+      get { return EditorPrefs.GetBool("Rider_OverrideTargetFrameworkVersionOldMono", false); }
+      private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersionOldMono", value);; }
+    }
+
+    private static string TargetFrameworkVersionOldMonoDefault = "3.5";
 
     public static string TargetFrameworkVersionOldMono
     {
-      get { return EditorPrefs.GetString("Rider_TargetFrameworkVersionOldMono", GetTargetFrameworkVersionDefault("3.5")); }
+      get { return EditorPrefs.GetString("Rider_TargetFrameworkVersionOldMono", TargetFrameworkVersionOldMonoDefault); }
       private set { InvokeIfValidVersion(value, val => { EditorPrefs.SetString("Rider_TargetFrameworkVersionOldMono", val); }); }
-    } 
+    }
+    
+    public static bool OverrideLangVersion
+    {
+      get { return EditorPrefs.GetBool("Rider_OverrideLangVersion", false); }
+      private set { EditorPrefs.SetBool("Rider_OverrideLangVersion", value);; }
+    }
+
+    public static string LangVersion
+    {
+      get { return EditorPrefs.GetString("Rider_LangVersion", "4"); }
+      private set { EditorPrefs.SetString("Rider_LangVersion", value); }
+    }
     
     public static bool RiderInitializedOnce
     {
@@ -132,7 +136,7 @@ namespace JetBrains.Rider.Unity.Editor
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     private static bool ValidateMenuOpenProject()
     {
-      return PluginEntryPoint.Enabled && !PluginEntryPoint.IsProtocolConnected();
+      return PluginEntryPoint.Enabled && !PluginEntryPoint.CheckConnectedToBackendSync();
     }
     
     /// <summary>
@@ -163,13 +167,15 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUILayout.BeginVertical();
       EditorGUI.BeginChangeCheck();
 
-      var alternatives = RiderPathLocator.GetAllFoundPaths(SystemInfoRiderPlugin.operatingSystemFamily);
+      var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
+      var paths = alternatives.Select(a => a.Path).ToArray();
       if (alternatives.Any())
       {
-        var index = Array.IndexOf(alternatives, RiderPathInternal);
-        var alts = alternatives.Select(s => s.Replace("/", ":"))
-          .ToArray(); // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-        RiderPathInternal = alternatives[EditorGUILayout.Popup("Rider executable:", index == -1 ? 0 : index, alts)];
+        var index = Array.IndexOf(paths, RiderPathInternal);
+        var alts = alternatives.Select(s => s.Presentation).ToArray();
+        RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
+        EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
+        
         if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))
         {
           EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
@@ -183,28 +189,60 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       GUILayout.BeginVertical();
-      var status = "TargetFrameworkVersion for Runtime";
-      EditorGUILayout.TextArea(status, EditorStyles.boldLabel);
-      var help = @"TargetFramework >= 4.6 is recommended.";
-      TargetFrameworkVersion =
-        EditorGUILayout.TextField(
-          new GUIContent("NET 4.6",
-            help), TargetFrameworkVersion);
-      EditorGUILayout.HelpBox(help, MessageType.None);
-      var helpOldMono = @"TargetFramework = 3.5 is recommended.
+
+      if (UnityUtils.ScriptingRuntime > 0)
+      {
+        OverrideTargetFrameworkVersion = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion"), OverrideTargetFrameworkVersion);
+        if (OverrideTargetFrameworkVersion)
+        {
+          var help = @"TargetFramework >= 4.6 is recommended.";
+            TargetFrameworkVersion =
+              EditorGUILayout.TextField(
+                new GUIContent("For Active profile NET 4.6",
+                  help), TargetFrameworkVersion);
+            EditorGUILayout.HelpBox(help, MessageType.None);  
+        }
+      }
+      else
+      {
+        OverrideTargetFrameworkVersionOldMono = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion"), OverrideTargetFrameworkVersionOldMono);
+        if (OverrideTargetFrameworkVersionOldMono)
+        {
+          var helpOldMono = @"TargetFramework = 3.5 is recommended.
  - With 4.5 Rider may show ambiguous references in UniRx.";
 
-      TargetFrameworkVersionOldMono =
-        EditorGUILayout.TextField(
-          new GUIContent("NET 3.5",
-            helpOldMono), TargetFrameworkVersionOldMono);
-      EditorGUILayout.HelpBox(helpOldMono, MessageType.None);
+          TargetFrameworkVersionOldMono =
+            EditorGUILayout.TextField(
+              new GUIContent("For Active profile NET 3.5:",
+                helpOldMono), TargetFrameworkVersionOldMono);
+          EditorGUILayout.HelpBox(helpOldMono, MessageType.None);
+        }
+      }
+      
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+      {
+        var detectedDotnetText = GetInstalledNetFrameworks().OrderBy(v => new Version(v)).Aggregate((a, b) => a+"; "+b);
+        EditorGUILayout.HelpBox($"Installed dotnet versions: {detectedDotnetText}", MessageType.None);
+      }
 
       GUILayout.EndVertical();
 
       EditorGUI.EndChangeCheck();
 
       EditorGUI.BeginChangeCheck();
+      
+      OverrideLangVersion = EditorGUILayout.Toggle(new GUIContent("Override LangVersion"), OverrideLangVersion);
+      if (OverrideLangVersion)
+      {
+        var helpLangVersion = @"Avoid overriding, unless there is no particular need.";
+
+        LangVersion =
+          EditorGUILayout.TextField(
+            new GUIContent("LangVersion:",
+              helpLangVersion), LangVersion);
+        EditorGUILayout.HelpBox(helpLangVersion, MessageType.None);
+      }
+
 
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
@@ -251,7 +289,7 @@ namespace JetBrains.Rider.Unity.Editor
       set { RiderPathInternal = value; }
     }
 
-    private static class SystemInfoRiderPlugin
+    internal static class SystemInfoRiderPlugin
     {
       // Do not rename. Expicitly disabled for consistency/compatibility with future Unity API
       // ReSharper disable once InconsistentNaming
