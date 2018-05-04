@@ -7,7 +7,10 @@ import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.model.RdAssemblyReferenceDescriptor
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
 import com.jetbrains.rider.model.projectModelView
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
+import com.jetbrains.rider.util.idea.getComponent
+import com.jetbrains.rider.util.reactive.Property
 
 class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
     private val myProjectModelView = project.solution.projectModelView
@@ -49,4 +52,19 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
             return assetsFolder != null
         }
     }
+}
+
+fun Project.isUnityProject(): Boolean {
+    val component = this.getComponent<UnityReferenceDiscoverer>()
+    return component.isUnityProject
+}
+
+fun Project.isConnectedToEditor(): Boolean {
+    val component = this.getComponent<UnityHost>()
+    return component.sessionInitialized.value
+}
+
+fun Project.isConnectedToEditorLive(): Property<Boolean> {
+    val component = this.getComponent<UnityHost>()
+    return component.sessionInitialized
 }
