@@ -119,8 +119,13 @@ namespace JetBrains.Rider.Unity.Editor
     
     private void SendLogEvent(EditorPluginModel model, RdLogEvent logEvent)
     {
-      if (!myConnectionLifetime.IsTerminated)
-        model.Log.Fire(logEvent);
+      MainThreadDispatcher.Instance.Queue(() =>
+      {
+        if (!myConnectionLifetime.IsTerminated)
+        {
+          model.Log.Fire(logEvent);
+        }
+      });      
     }
   }
 }
