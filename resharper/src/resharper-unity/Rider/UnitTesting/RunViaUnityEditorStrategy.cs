@@ -30,13 +30,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnityEditorProtocol myUnityEditorProtocol;
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
-        
+        private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
+
         public RunViaUnityEditorStrategy(ISolution solution,
             IUnitTestResultManager unitTestResultManager, UnityEditorProtocol unityEditorProtocol)
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
             myUnityEditorProtocol = unityEditorProtocol;
+            myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
         }
 
         public bool RequiresProjectBuild(IProject project)
@@ -94,18 +96,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             mySolution.Locks.AssertMainThread();
             
-            var elementToIdMap = new Dictionary<string, IUnitTestElement>();
             var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
-            var allNames = InitElementsMap(unitTestElements, elementToIdMap);
+            var allNames = InitElementsMap(unitTestElements);
             var emptyList = new List<string>();
 
             var launch = new UnitTestLaunch(allNames, emptyList, emptyList);
 
             launch.TestResult.Advise(connectionLifetime, result =>
             {
-                var unitTestElement = GetElementById(result.TestId, elementToIdMap);
+                var unitTestElement = GetElementById(result.TestId);
                 if (unitTestElement == null)
+                {
                     return;
+                }
                 
                 switch (result.Status)
                 {
@@ -155,8 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return result.ToList();
         }
 
-        private List<string> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements,
-            Dictionary<string, IUnitTestElement> elementToIdMap)
+        private List<string> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
         {
             var result = new JetHashSet<string>();
             foreach (var unitTestElement in unitTestElements)
@@ -164,14 +166,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement)
                 {
                     var unityName = string.Format(unitTestElement.Id); 
-                    elementToIdMap[unityName] = unitTestElement;
+                    myElements[unitTestElement.Id] = unitTestElement;
                     result.Add(unityName);
                 }
 
                 if (unitTestElement is UnityTestElement)
                 {
                     var unityName = string.Format(unitTestElement.Id); 
-                    elementToIdMap[unityName] = unitTestElement;
+                    myElements[unitTestElement.Id] = unitTestElement;
                     result.Add(unityName);
                 }
             }
@@ -180,10 +182,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         }
 
         [CanBeNull]
-        private IUnitTestElement GetElementById(string resultTestId,
-            Dictionary<string, IUnitTestElement> elementToIdMap)
+        private IUnitTestElement GetElementById(string resultTestId)
         {
-            var unitTestElement = elementToIdMap.TryGetValue(resultTestId);
+            var unitTestElement = myElements.Where(a=>string.Format(a.Key.Id) == resultTestId).Select(b=>b.Value).SingleOrDefault();
             return unitTestElement;
         }
 
