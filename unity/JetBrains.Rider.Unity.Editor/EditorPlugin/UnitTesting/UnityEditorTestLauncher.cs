@@ -235,7 +235,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       ourLogger.Verbose($"TestStarted : {test.FullName}");
       var id = GetIdFromNUnitTest(test);
 
-      myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running));
+      myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running, test.Parent.Id));
     }
 
     private void TestFinished(ITestResult testResult)
@@ -250,7 +250,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       var output = ExtractOutput(testResult);
       myLaunch.TestResult.Fire(new TestResult(id, output,
         (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
-        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed));
+        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed, test.Parent.Id));
     }
 
     private static string ExtractOutput(ITestResult testResult)
