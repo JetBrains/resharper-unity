@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.Transactions;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -115,16 +117,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
             
             documentTransactionManager.AfterTransactionCommit.Advise(lifetime,
-                () =>
+                args =>
                 {
-                    locks.ExecuteWithReadLock(() =>
+                    if (args.Succeded && args.Changes.Any())
                     {
-                        if (documentTransactionManager.CurrentTransaction?.ParentTransaction == null)
+                        locks.ExecuteWithReadLock(() =>
                         {
-                            myLogger.Verbose("documentTransactionManager.AfterTransactionCommit");
-                            groupingEvent.FireIncoming();
-                        }
-                    });
+                            if (documentTransactionManager.CurrentTransaction?.ParentTransaction == null)
+                            {
+                                myLogger.Verbose("documentTransactionManager.AfterTransactionCommit");
+                                groupingEvent.FireIncoming();
+                            }
+                        });    
+                    }
                 });
         }
     }
