@@ -251,7 +251,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       if (!(test is TestMethod))
         return;
 
-      ourLogger.Verbose($"TestStarted : {test.FullName}");
+      ourLogger.Verbose("TestStarted : {0}", test.FullName);
       var id = GetIdFromNUnitTest(test);
 
       myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running, GetIdFromNUnitTest(test.Parent)));
@@ -305,7 +305,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       var testMethod = test as TestMethod;
       if (testMethod == null)
       {
-        ourLogger.Warn("Failed to GetIdFromNUnitTest: " + test.FullName);
+        ourLogger.Verbose("{0} is not a TestMethod ", test.FullName);
         return test.FullName;
       }
 
