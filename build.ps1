@@ -23,7 +23,7 @@ Write-Host "gradleArgs=$gradleArgs"
 
 Push-Location -Path rider
 if ($isUnix){
-  .\gradlew --info --stacktace "buildPlugin" $gradleArgs
+  .\gradlew --info --stacktrace "buildPlugin" $gradleArgs
 }
 else{
   .\gradlew.bat --info --stacktrace "buildPlugin" $gradleArgs
