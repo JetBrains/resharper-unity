@@ -113,6 +113,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             launch.TestResult.Advise(connectionLifetime, result =>
             {
                 var unitTestElement = GetElementById(result.TestId);
+                if (unitTestElement == null) //https://youtrack.jetbrains.com/issue/RIDER-15849
+                {
+                    var name = result.ParentId.Substring(result.ParentId.LastIndexOf(".", StringComparison.Ordinal) + 1);
+                    var brakets = result.TestId.Substring(result.ParentId.Length);
+                    var newID = result.ParentId+"."+name+brakets;
+                    unitTestElement = GetElementById(newID);
+                }
                 if (unitTestElement == null)
                 {
                     // add dynamic tests
