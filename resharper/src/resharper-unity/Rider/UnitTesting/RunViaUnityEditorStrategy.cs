@@ -191,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement || unitTestElement is UnityTestElement)
                 {
-                    var unityName = string.Format(unitTestElement.Id); 
+                    var unityName = unitTestElement.Id; 
                     myElements[unitTestElement.Id] = unitTestElement;
                     result.Add(unityName);
                 }
@@ -203,7 +203,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         [CanBeNull]
         private IUnitTestElement GetElementById(string resultTestId)
         {
-            var unitTestElement = myElements.Where(a=>string.Format(a.Key.Id) == resultTestId).Select(b=>b.Value).SingleOrDefault();
+            var unitTestElement = myElements.Where(a=>a.Key.Id == resultTestId).Select(b=>b.Value).SingleOrDefault();
             return unitTestElement;
         }
 
