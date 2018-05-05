@@ -94,6 +94,9 @@ class MSBuildTask extends DefaultTask {
             standardOutput = stdout
         }
 
+        def output = stdout.toString()
+        project.ci.Progress("Result of which: $output")
+
         return project.file(stdout.toString().trim())
     }
 }
