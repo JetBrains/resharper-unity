@@ -57,6 +57,7 @@ class MSBuildTask extends DefaultTask {
         project.exec {
             executable = findMSBuildPath()
             args = arguments
+            standardOutput = System.out
         }
     }
 
@@ -138,6 +139,7 @@ class RestorePackagesTask extends DefaultTask {
         project.exec {
             executable = 'dotnet'
             args = restoreArguments
+            standardOutput = System.out
         }
     }
 }

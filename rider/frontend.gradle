@@ -88,26 +88,44 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib"
 }
 
+// TODO: Add an msbuild task for this, too?
+// Because we sometimes skip building the C# solutions (calling runIde from the C# IDE), we might
+// get into the situation where we rebuild the protocol for .kt, but not .cs
+// Maybe we should have an msbuild task to run rdgen if the input model .kt is newer than the output
+// .cs. Or make sure we don't skip the msbuild tasks if this task runs
 task generateModel {
     group = 'other'
     description = 'Generates protocol models.'
 
+    def rdgenJar = new File(rdLibDirectory.absolutePath, "rd-gen.jar")
+
     doLast {
         assert rdLibDirectory.isDirectory()
-
-        def rdgenJar = new File(rdLibDirectory.absolutePath, "rd-gen.jar")
         assert rdgenJar.isFile()
 
-        // TODO: spaces
+        // If we specify these as outputs of the task, gradle will create them for us, but we then
+        // need to also specify inputs. RdGen does up to date checks for us, but we could skip that
+        // altogether if we hard code them in the task. Downside is that we'd need to keep the list
+        // of inputs/outputs up to date manually, instead of leaving it to rdgen
+        mkdir 'build/rdgen/rider'
+        mkdir 'build/rdgen/editorPlugin'
+
+        // TODO: spaces (what does this mean?)
         def modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
-        def csOutput = new File(repoRoot, "resharper/src/resharper-unity/RdUnityProtocol")
-        def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/RdUnityProtocol")
         def packageName = "model"
 
         def cpSeparator = isWindows ? ";" : ":"
         def compilerClasspath = "$rdLibDirectory/rd-gen.jar$cpSeparator$rdLibDirectory/rider-model.jar"
         def rdGenClasspath = files(compilerClasspath)
 
+        // Protocol between backend and frontend
+        // Direction isn't important for this model, so we don't specify it in the model. Which means
+        // we have to specify output directories here
+        // Inputs: rider/protocol/src/main/kotlin/model/rider/RdUnityModel.kt
+        // Outputs: resharper/src/resharper-unity/Rider/RdUnityProtocol/RdUnityModel.Generated.cs
+        //          rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol/RdUnityModel.Generated.kt
+        def csOutput = new File(repoRoot, "resharper/src/resharper-unity/Rider/RdUnityProtocol")
+        def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
         javaexec {
             main = "com.jetbrains.rider.generator.nova.MainKt"
             classpath = rdGenClasspath
@@ -115,7 +133,8 @@ task generateModel {
             systemProperty "model.out.src.kt.dir", "$ktOutput"
             errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
             args = [
-                "-v", // verbose
+                "--verbose",
+                "--hash-folder=build/rdgen/rider",
                 "--compiler-classpath=$compilerClasspath",
                 "--source=${modelDir}/rider",
                 "--packages=${packageName}.rider"
@@ -123,12 +142,20 @@ task generateModel {
         }
 
         // TODO: if placed in one dir with different packages there will be generator clash
+
+        // Protocol between Unity plugin (host), frontend and backend
+        // Direction is specified in the model, along with output folders
+        // Inputs: rider/protocol/src/main/kotlin/model/editorPlugin/EditorPluginModel.kt
+        // Outputs: resharper/src/resharper-unity/Rider/RdEditorProtocol/EditorPluginModel.Generated.cs (backend to Unity)
+        //          unity/JetBrains.Rider.Unity.Editor/EditorPlugin/NonUnity/RdEditorProtocol/EditorPluginModel.Generated.cs (Unity listener)
+        //          rider/src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol/EditorPluginModel.Generated.kt (frontend to Unity)
         javaexec {
             main = "com.jetbrains.rider.generator.nova.MainKt"
             classpath = rdGenClasspath
             errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
             args = [
-                "-v", // verbose
+                "--verbose",
+                "--hash-folder=build/rdgen/editorPlugin",
                 "--compiler-classpath=$compilerClasspath",
                 "--source=${modelDir}/editorPlugin",
                 "--packages=${packageName}.editorPlugin"
