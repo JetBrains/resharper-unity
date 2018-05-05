@@ -292,7 +292,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         stringBuilder.AppendLine("Stacktrace: ");
         stringBuilder.AppendLine(testResult.StackTrace);
       }
-
+      
       var result = stringBuilder.ToString();
       if (result.Length > 0)
         return result;
@@ -309,10 +309,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         return test.FullName;
       }
 
-      var methodName = testMethod.Name;
-      var className = testMethod.ClassName;
-
-      return string.Format("{0}.{1}", className, methodName);
+      return test.FullName;
     }
   }
 }
