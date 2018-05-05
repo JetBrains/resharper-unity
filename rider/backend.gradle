@@ -5,7 +5,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-def backend = new BackendHelper(ext.repoRoot)
+ext.backend = new BackendHelper(ext.repoRoot)
 
 // Used to provide a package version to both msbuild and dotnet restore
 ext.extraMSBuildArgs = []
@@ -75,7 +75,7 @@ class MSBuildTask extends DefaultTask {
     def findMSBuildPathWindows() {
         def stdout = new ByteArrayOutputStream()
         project.exec {
-            executable = project.file(new File(backend.repositoryRoot, 'tools/vswhere.exe'))
+            executable = project.file(new File(project.backend.repositoryRoot, 'tools/vswhere.exe'))
             args = [ "-latest", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-property", "installationPath" ]
             standardOutput = stdout
         }
@@ -93,9 +93,6 @@ class MSBuildTask extends DefaultTask {
             args = [ 'msbuild' ]
             standardOutput = stdout
         }
-
-        def output = stdout.toString()
-        project.ci.Progress("Result of which: $output")
 
         return project.file(stdout.toString().trim())
     }
