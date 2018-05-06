@@ -32,6 +32,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settingsStore,
                 settingsOptimization, settingsCache, cachingService, dotNetCoreSdkResolver, nUnitOutOfProcessUnitTestRunStrategy)
         {
+            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
+                return;
+            
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
 
             myUnityEditorProtocol = unityEditorProtocol;
