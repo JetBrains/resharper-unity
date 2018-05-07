@@ -13,7 +13,6 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private readonly int myDelayedLogEventsMaxSize = 1000;
     public readonly LinkedList<RdLogEvent> myDelayedLogEvents = new LinkedList<RdLogEvent>();
-    private readonly object myLock = new object();
 
     public UnityEventCollector()
     {
@@ -57,21 +56,18 @@ namespace JetBrains.Rider.Unity.Editor
           break;
       }
 
-      RdLogEventMode eventMode = RdLogEventMode.Edit;
+      var ticks = DateTime.UtcNow.Ticks;
       MainThreadDispatcher.Instance.Queue(() =>
       {
-        eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;  
-      });
-      
-      var evt = new RdLogEvent(DateTime.UtcNow.Ticks, eventType, eventMode, message, stackTrace);
-      lock (myLock)
-      {
+        var eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;
+
+        var evt = new RdLogEvent(ticks, eventType, eventMode, message, stackTrace);
         myDelayedLogEvents.AddLast(evt);
         if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
           myDelayedLogEvents.RemoveFirst(); // limit max size
-      }
 
-      OnAddEvent(new EventArgs());
+        OnAddEvent(new EventArgs());
+      });
     }
 
     public event EventHandler AddEvent;
@@ -119,8 +115,13 @@ namespace JetBrains.Rider.Unity.Editor
     
     private void SendLogEvent(EditorPluginModel model, RdLogEvent logEvent)
     {
-      if (!myConnectionLifetime.IsTerminated)
-        model.Log.Fire(logEvent);
+      MainThreadDispatcher.Instance.Queue(() =>
+      {
+        if (!myConnectionLifetime.IsTerminated)
+        {
+          model.Log.Fire(logEvent);
+        }
+      });      
     }
   }
 }

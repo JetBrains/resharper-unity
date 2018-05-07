@@ -13,6 +13,7 @@ using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Util;
 using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
@@ -28,15 +29,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ISolution mySolution;
         private readonly IUnitTestResultManager myUnitTestResultManager;
         private readonly UnityEditorProtocol myUnityEditorProtocol;
+        private readonly NUnitTestProvider myUnitTestProvider;
+        private readonly IUnitTestElementIdFactory myIDFactory;
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
-        
+        private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
+
         public RunViaUnityEditorStrategy(ISolution solution,
-            IUnitTestResultManager unitTestResultManager, UnityEditorProtocol unityEditorProtocol)
+            IUnitTestResultManager unitTestResultManager, 
+            UnityEditorProtocol unityEditorProtocol,
+            NUnitTestProvider unitTestProvider, 
+            IUnitTestElementIdFactory idFactory)
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
             myUnityEditorProtocol = unityEditorProtocol;
+            myUnitTestProvider = unitTestProvider;
+            myIDFactory = idFactory;
+            myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
         }
 
         public bool RequiresProjectBuild(IProject project)
@@ -94,18 +104,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             mySolution.Locks.AssertMainThread();
             
-            var elementToIdMap = new Dictionary<string, IUnitTestElement>();
             var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
-            var allNames = InitElementsMap(unitTestElements, elementToIdMap);
+            var allNames = InitElementsMap(unitTestElements);
             var emptyList = new List<string>();
 
             var launch = new UnitTestLaunch(allNames, emptyList, emptyList);
 
             launch.TestResult.Advise(connectionLifetime, result =>
             {
-                var unitTestElement = GetElementById(result.TestId, elementToIdMap);
+                var unitTestElement = GetElementById(result.TestId);
+                if (unitTestElement == null) //https://youtrack.jetbrains.com/issue/RIDER-15849
+                {
+                    var name = result.ParentId.Substring(result.ParentId.LastIndexOf(".", StringComparison.Ordinal) + 1);
+                    var brakets = result.TestId.Substring(result.ParentId.Length);
+                    var newID = result.ParentId+"."+name+brakets;
+                    unitTestElement = GetElementById(newID);
+                }
                 if (unitTestElement == null)
-                    return;
+                {
+                    // add dynamic tests
+                    var parent = GetElementById(result.ParentId) as NUnitTestElement;
+                    if (parent == null)
+                        return;
+
+                    var project = parent.Id.Project;
+                    var targetFrameworkId = parent.Id.TargetFrameworkId;
+                    
+                    var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
+                    unitTestElement = new NUnitDynamicRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
+                    firstRun.AddDynamicElement(unitTestElement);
+                    myElements.Add(myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId), unitTestElement);
+                }
                 
                 switch (result.Status)
                 {
@@ -155,23 +184,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return result.ToList();
         }
 
-        private List<string> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements,
-            Dictionary<string, IUnitTestElement> elementToIdMap)
+        private List<string> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
         {
             var result = new JetHashSet<string>();
             foreach (var unitTestElement in unitTestElements)
             {
-                if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement)
+                if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement || unitTestElement is UnityTestElement)
                 {
-                    var unityName = string.Format(unitTestElement.Id); 
-                    elementToIdMap[unityName] = unitTestElement;
-                    result.Add(unityName);
-                }
-
-                if (unitTestElement is UnityTestElement)
-                {
-                    var unityName = string.Format(unitTestElement.Id); 
-                    elementToIdMap[unityName] = unitTestElement;
+                    var unityName = unitTestElement.Id; 
+                    myElements[unitTestElement.Id] = unitTestElement;
                     result.Add(unityName);
                 }
             }
@@ -180,10 +201,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         }
 
         [CanBeNull]
-        private IUnitTestElement GetElementById(string resultTestId,
-            Dictionary<string, IUnitTestElement> elementToIdMap)
+        private IUnitTestElement GetElementById(string resultTestId)
         {
-            var unitTestElement = elementToIdMap.TryGetValue(resultTestId);
+            var unitTestElement = myElements.Where(a=>a.Key.Id == resultTestId).Select(b=>b.Value).SingleOrDefault();
             return unitTestElement;
         }
 

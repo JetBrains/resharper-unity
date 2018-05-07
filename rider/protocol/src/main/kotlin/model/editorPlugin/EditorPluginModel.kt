@@ -47,6 +47,7 @@ object EditorPluginModel: Root(
             +"Passed"
             +"Failed"
         })
+        field("parentId", string)
     }
 
     val RunResult = structdef {

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.Transactions;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -11,6 +13,7 @@ using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
 using JetBrains.Threading;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -23,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityEditorProtocol myPluginProtocolController;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
-        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, UnityEditorProtocol pluginProtocolController, ISettingsStore settingsStore)
+        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, 
+            UnityEditorProtocol pluginProtocolController, ISettingsStore settingsStore)
         {
             myLocks = locks;
             myLifetime = lifetime;
@@ -87,8 +91,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, UnityEditorProtocol protocolController, DocumentTransactionManager documentTransactionManager, IShellLocks locks)
+        private readonly ILogger myLogger;
+
+        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, 
+            UnityEditorProtocol protocolController, DocumentTransactionManager documentTransactionManager, IShellLocks locks,
+            ILogger logger)
         {
+            myLogger = logger;
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
             
@@ -103,17 +112,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (protocolController.UnityModel.Value == null)
                     return;
                 
+                myLogger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
                 groupingEvent.FireIncoming();
             });
             
             documentTransactionManager.AfterTransactionCommit.Advise(lifetime,
-                () =>
+                args =>
                 {
-                    locks.ExecuteWithReadLock(() =>
+                    if (args.Succeded && args.Changes!=null && args.Changes.Any())
                     {
-                        if (documentTransactionManager.CurrentTransaction?.ParentTransaction == null)
-                            groupingEvent.FireIncoming();
-                    });
+                        locks.ExecuteWithReadLock(() =>
+                        {
+                            if (documentTransactionManager.CurrentTransaction?.ParentTransaction == null)
+                            {
+                                myLogger.Verbose("documentTransactionManager.AfterTransactionCommit");
+                                groupingEvent.FireIncoming();
+                            }
+                        });    
+                    }
                 });
         }
     }
