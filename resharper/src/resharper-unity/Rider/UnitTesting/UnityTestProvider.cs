@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.Util;
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {

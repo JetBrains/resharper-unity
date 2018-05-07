@@ -7,6 +7,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.Util;
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using JetBrains.Util.Reflection;
 
 namespace JetBrains.ReSharper.Plugins.Unity

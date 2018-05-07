@@ -16,6 +16,7 @@ using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Util;
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
