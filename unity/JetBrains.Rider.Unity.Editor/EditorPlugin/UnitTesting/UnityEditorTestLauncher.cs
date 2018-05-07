@@ -251,10 +251,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       if (!(test is TestMethod))
         return;
 
-      ourLogger.Verbose($"TestStarted : {test.FullName}");
+      ourLogger.Verbose("TestStarted : {0}", test.FullName);
       var id = GetIdFromNUnitTest(test);
 
-      myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running));
+      myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running, GetIdFromNUnitTest(test.Parent)));
     }
 
     private void TestFinished(ITestResult testResult)
@@ -263,13 +263,13 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       if (!(test is TestMethod))
         return;
 
-      ourLogger.Verbose($"TestFinished : {test.FullName}");
+      ourLogger.Verbose("TestFinished : {0}", test.FullName);
       var id = GetIdFromNUnitTest(test);
 
       var output = ExtractOutput(testResult);
       myLaunch.TestResult.Fire(new TestResult(id, output,
         (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
-        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed));
+        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed, GetIdFromNUnitTest(test.Parent)));
     }
 
     private static string ExtractOutput(ITestResult testResult)
@@ -292,7 +292,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         stringBuilder.AppendLine("Stacktrace: ");
         stringBuilder.AppendLine(testResult.StackTrace);
       }
-
+      
       var result = stringBuilder.ToString();
       if (result.Length > 0)
         return result;
@@ -304,12 +304,12 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     {
       var testMethod = test as TestMethod;
       if (testMethod == null)
-        throw new ArgumentException("Could not get id from NUnit test {0}", test.FullName);
+      {
+        ourLogger.Verbose("{0} is not a TestMethod ", test.FullName);
+        return test.FullName;
+      }
 
-      var methodName = testMethod.Name;
-      var className = testMethod.ClassName;
-
-      return string.Format("{0}.{1}", className, methodName);
+      return test.FullName;
     }
   }
 }
