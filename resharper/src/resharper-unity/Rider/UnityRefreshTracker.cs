@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             documentTransactionManager.AfterTransactionCommit.Advise(lifetime,
                 args =>
                 {
-                    if (args.Succeded && args.Changes.Any())
+                    if (args.Succeded && args.Changes!=null && args.Changes.Any())
                     {
                         locks.ExecuteWithReadLock(() =>
                         {
