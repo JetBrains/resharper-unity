@@ -24,8 +24,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <RiderSDKVersion Condition=" '$(RiderSDKVersion)' == '' ">2018.1-SNAPSHOT*</RiderSDKVersion>
-    <ReSharperSDKVersion>2018.1-SNAPSHOT*</ReSharperSDKVersion>    
+    <RiderSDKVersion Condition=" '$(RiderSDKVersion)' == '' ">2018.2-SNAPSHOT*</RiderSDKVersion>
+    <ReSharperSDKVersion>2018.2-SNAPSHOT*</ReSharperSDKVersion>    
   </PropertyGroup>  
 
   <Import Project="..\Packaging.props" />

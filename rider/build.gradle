@@ -45,7 +45,7 @@ if (!ext.has('dotNetUpToDate') || ext.dotNetUpToDate ==~ "(?i)False")
 
 ext.shouldBuildRiderOnly = false
 
-version "2018.1.0.$BuildCounter"
+version "2018.2.0.$BuildCounter"
 
 logger.lifecycle("version=$version")
 logger.lifecycle("Configuration=$BuildConfiguration")

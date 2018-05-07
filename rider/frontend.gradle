@@ -25,7 +25,7 @@ intellij {
     if (dependenciesDir .exists()) {
         localPath = dependenciesDir.absolutePath
     } else {
-        version = "2018.1-SNAPSHOT"
+        version = "2018.2-SNAPSHOT"
     }
 
     // Sources aren't available for Rider
@@ -38,8 +38,8 @@ if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
     logger.lifecycle("dependencies dir found, using as frontend SDK root")    
 }
 else {
-    def frontendSdkVersion = "2018.1-SNAPSHOT"
-    // rider/build/riderRD-2018.1-SNAPSHOT
+    def frontendSdkVersion = "2018.2-SNAPSHOT"
+    // rider/build/riderRD-2018.2-SNAPSHOT
     def frontendSdkDirs = []
     def frontendSdkSearchPath = new File(repoRoot, "rider/build")
     //logger.lifecycle("listing $frontendSdkSearchPath.path:")
