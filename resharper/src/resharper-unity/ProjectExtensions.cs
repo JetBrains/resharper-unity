@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static bool ReferencesAssembly(IProject project, TargetFrameworkId targetFrameworkId, AssemblyNameInfo name)
         {            
             return ReferencedAssembliesService.IsProjectReferencingAssemblyByName(project,
-                targetFrameworkId, name, out var _);
+                targetFrameworkId, name, out _);
         }
     }
 }

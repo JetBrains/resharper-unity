@@ -59,14 +59,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return String.CompareOrdinal(x.ShortName, y.ShortName);
         }
 
-        public string ID
-        {
-            get { return "UnityTest"; }
-        }
+        public string ID => "UnityTest";
 
-        public string Name
-        {
-            get { return "UnityTest"; }
-        }
+        public string Name => "UnityTest";
     }
 }
