@@ -6,7 +6,10 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Elements;
 using JetBrains.Util;
+
+#if RIDER
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {

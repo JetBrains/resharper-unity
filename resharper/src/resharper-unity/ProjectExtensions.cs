@@ -7,7 +7,10 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.Util;
+
+#if RIDER
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
+#endif
 using JetBrains.Util.Reflection;
 
 namespace JetBrains.ReSharper.Plugins.Unity
