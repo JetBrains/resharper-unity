@@ -15,7 +15,6 @@ import com.jetbrains.rider.util.reactive.Property
 class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
     private val myProjectModelView = project.solution.projectModelView
     private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
-    var isUnityProject = false
     var isUnityGeneratedProject = false
 
     init {
@@ -37,7 +36,6 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
         if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
             myEventDispatcher.multicaster.hasUnityReference()
-            isUnityProject = true
             isUnityGeneratedProject = hasAssetsFolder(project)
         }
     }
@@ -52,11 +50,6 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
             return assetsFolder != null
         }
     }
-}
-
-fun Project.isUnityProject(): Boolean {
-    val component = this.getComponent<UnityReferenceDiscoverer>()
-    return component.isUnityProject
 }
 
 fun Project.isUnityGeneratedProject(): Boolean {
