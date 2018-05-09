@@ -59,6 +59,11 @@ fun Project.isUnityProject(): Boolean {
     return component.isUnityProject
 }
 
+fun Project.isUnityGeneratedProject(): Boolean {
+    val component = this.getComponent<UnityReferenceDiscoverer>()
+    return component.isUnityGeneratedProject
+}
+
 fun Project.isConnectedToEditor(): Boolean {
     val component = this.getComponent<UnityHost>()
     return component.sessionInitialized.value
