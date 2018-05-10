@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.run.attach
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.PortField
 import com.intellij.ui.ScrollPaneFactory
@@ -103,16 +104,19 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 parent = peerPanel) {
             val hostAddress = hostField.text
             val port = portField.number
-            if (!hostAddress.isNullOrBlank() && port > 0) {
-                val player = UnityPlayer(hostAddress, port, 0, port.toLong(), port.toLong(), 0, hostAddress, true, port)
-                synchronized(listModelLock) {
-                    listModel.addElement(player)
-                    list.selectedIndex = listModel.size() - 1
-                    return@dialog true
-                }
-            }
+            val validationResult = mutableListOf<ValidationInfo>()
 
-            return@dialog false
+            if (hostAddress.isNullOrBlank()) validationResult.add(ValidationInfo("Host address must not be empty."))
+            if (port <= 0) validationResult.add(ValidationInfo("Port number must be positive."))
+
+            if (validationResult.count() > 0) return@dialog validationResult
+
+            val player = UnityPlayer(hostAddress, port, 0, port.toLong(), port.toLong(), 0, hostAddress, true, port)
+            synchronized(listModelLock) {
+                listModel.addElement(player)
+                list.selectedIndex = listModel.size() - 1
+                return@dialog emptyList<ValidationInfo>()
+            }
         }
         dialog.showAndGet()
     }
