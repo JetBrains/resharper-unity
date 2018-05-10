@@ -128,7 +128,4 @@
   <ItemGroup>
     <Folder Include="Rider" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="resharper-unity.rider.csproj" />
-  </ItemGroup>
 </Project>
