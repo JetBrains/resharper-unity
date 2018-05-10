@@ -184,21 +184,29 @@ def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 prepareSandbox {
     dependsOn prepareForBuild
 
+    def editorPluginDllFiles = [
+        unityeditorplugin_path,
+        unity_full_editorplugin_path
+        ]
+
     doLast {
-        delete(unityeditorplugin_path) // having both full and basic dll in the Assets folder prevents fast testing
+        editorPluginDllFiles.forEach({ f ->
+            def file = file("$f")
+            assert file.exists()
+        })
 
         dllFiles.forEach({ f ->
             def file = file("$f")
-            if (!file.exists()) throw new RuntimeException("File $file does not exist")
+            assert file.exists()
         })
     }
 
-    from(unityeditorplugin_path, {
-        into "$intellij.pluginName/EditorPlugin"
-    })
-
-    from(unity_full_editorplugin_path, {
-        into "$intellij.pluginName/EditorPlugin"
+    editorPluginDllFiles.forEach({ f ->
+        def file = file("$f")
+        logger.warn("prepareSandbox: " +
+            file.toString() + " -> " +
+            "$destinationDir/$intellij.pluginName/EditorPlugin")
+        from(file, { into "$intellij.pluginName/EditorPlugin" })
     })
 
     dllFiles.forEach({ f ->
