@@ -176,6 +176,18 @@ task findLocalRiderSDKVersion {
     }
 }
 
+task prepareNuGetConfigWithPathToRiderSDK {
+    def riderSdkPath = file(new File(repoRoot.canonicalPath, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk"))
+    ci.Progress("Preparing NuGet config with frontend SDK path: $riderSdkPath")
+    new File("$repoRoot/resharper/src/NuGet.Config").text = """<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <add key="local-rider-sdk" value="$riderSdkPath" />
+  </packageSources>
+</configuration>
+"""
+}
+
 task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
     group backendGroup
     description 'Restores packages for Unity Editor plugin'
@@ -186,7 +198,7 @@ task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
 task restoreReSharperHostPluginPackages(type: RestorePackagesTask) {
     group backendGroup
     description 'Restores packages for backend plugin'
-    dependsOn findLocalRiderSDKVersion
+    dependsOn findLocalRiderSDKVersion, prepareNuGetConfigWithPathToRiderSDK
     packagesFile backend.resharperHostPluginSolution
 }
 
