@@ -185,7 +185,7 @@ prepareSandbox {
     dependsOn prepareForBuild
 
     doLast {
-        delete(unityeditorplugin_path)
+        delete(unityeditorplugin_path) // having both full and basic dll in the Assets folder prevents fast testing
 
         dllFiles.forEach({ f ->
             def file = file("$f")
