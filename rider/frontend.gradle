@@ -187,7 +187,6 @@ prepareSandbox {
     doLast {
         assert file(unityeditorplugin_path).exists()
         assert file(unity_full_editorplugin_path).exists()
-        delete(unityeditorplugin_path)
 
         dllFiles.forEach({ f ->
             def file = file("$f")
@@ -214,7 +213,6 @@ prepareSandbox {
     from(annotationsFrom, { into "$intellij.pluginName/dotnet/$annotationsTo" })
     into("$intellij.pluginName/projectTemplates") {
         from 'projectTemplates'
-
     }
 }
 
