@@ -137,6 +137,14 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
+    private fun addToList(newEvent: RdLogEvent) {
+        eventList.riderModel.addElement(newEvent)
+        // on big amount of logs it causes frontend hangs
+//        if (logModel.selectedItem == null) {
+//            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
+//        }
+    }
+
     // TODO: optimize
     private fun refreshList(newEvents: List<RdLogEvent>) {
         eventList.riderModel.clear()
@@ -146,8 +154,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
         if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
-        } else
-            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
+        }
     }
 
     init {
@@ -158,6 +165,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
             mainSplitter.updateUI()
         }
 
+        logModel.onAdded.advise(logModel.lifetime) { addToList(it) }
         logModel.onChanged.advise(logModel.lifetime) { refreshList(it) }
         logModel.onCleared.advise(logModel.lifetime) { console.clear() }
         logModel.fire()
