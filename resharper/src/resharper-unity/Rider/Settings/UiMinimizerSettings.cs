@@ -14,6 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Settings
     {
         public UiMinimizerSettings(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore)
         {
+            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
+                return;
+            
             var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
             var hideDatabaseSetting = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.HideDataBaseToolWindow);
             var hideSolutionConfiguration = boundStore.GetValueProperty(lifetime,(UnitySettings s) => s.HideSolutionConfiguration);
