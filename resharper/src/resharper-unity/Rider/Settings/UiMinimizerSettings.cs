@@ -18,11 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Settings
                 return;
             
             var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
-            var hideDatabaseSetting = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.HideDataBaseToolWindow);
             var hideSolutionConfiguration = boundStore.GetValueProperty(lifetime,(UnitySettings s) => s.HideSolutionConfiguration);
             var rdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
 
-            BindRdPropertyToProperty(lifetime, rdUnityModel.HideDataBaseToolWindow, hideDatabaseSetting);
             BindRdPropertyToProperty(lifetime, rdUnityModel.HideSolutionConfiguration, hideSolutionConfiguration);
         }
 

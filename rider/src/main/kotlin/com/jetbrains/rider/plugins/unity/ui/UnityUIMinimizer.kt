@@ -17,7 +17,7 @@ import com.jetbrains.rider.util.reactive.whenTrue
 class UnityUIMinimizer : StartupActivity {
     companion object {
 
-        fun ensureMinimizedUI(lifetime: Lifetime, project: Project) {
+        fun ensureMinimizedUI(project: Project) {
             application.assertIsDispatchThread()
             if(project.isDisposed)
                 return
@@ -28,14 +28,7 @@ class UnityUIMinimizer : StartupActivity {
                 toolWindowManager.getToolWindow("NuGet") ?: return@doWhenFocusSettlesDown
                 toolWindowManager.unregisterToolWindow("NuGet")
 
-                project.solution.rdUnityModel.hideDataBaseToolWindow.advise(lifetime) {
-                    if (it)
-                        toolWindowManager.unregisterToolWindow("Database")
-                    else
-                        toolWindowManager.registerToolWindow("Database", true, ToolWindowAnchor.RIGHT)
-                }
-
-                project.solution.rdUnityModel.hideSolutionConfiguration.advise(lifetime) {
+                project.solution.rdUnityModel.hideSolutionConfiguration.advise(project.lifetime) {
                     if (it)
                         ActiveConfigurationAndPlatformAction.hiddenForProjects.add(project)
                     else
@@ -50,7 +43,7 @@ class UnityUIMinimizer : StartupActivity {
 
         unityUiManager.isUnityUI.whenTrue(project.lifetime, {
             application.invokeLater {
-                ensureMinimizedUI(project.lifetime, project)
+                ensureMinimizedUI(project)
             }
         })
     }

@@ -14,7 +14,6 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
     init {
         map("data", string, string)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
-        property("hideDataBaseToolWindow", bool)
         property("hideSolutionConfiguration", bool)
     }
 
