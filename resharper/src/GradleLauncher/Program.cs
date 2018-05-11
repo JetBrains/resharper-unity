@@ -21,29 +21,55 @@ namespace GradleLauncher
             args2.RemoveAt(0);
             var arguments = args2.ToArray();
 
-            if (Environment.OSVersion.Platform == PlatformID.Win32Windows)
+            if (IsWindows())
                 ExecuteBatchFile("gradlew.bat", arguments);
             else
                 ExecuteShellScript("./gradlew", arguments);
         }
 
-        static void ExecuteBatchFile(string command, string[] args)
+        private static bool IsWindows()
         {
-            var commandline = $"/c {command} {args.FormatArgs()}";
-            ExecuteScriptProcessor("cmd.exe", commandline);
+            var platform = Environment.OSVersion.Platform;
+            return platform == PlatformID.Win32Windows || platform == PlatformID.Win32NT;
+        }
 
+        private static void ExecuteBatchFile(string batchFile, string[] args)
+        {
+            var commandline = args.FormatArgs();
+
+            Console.WriteLine($"Starting {batchFile} {commandline}");
+
+            var processStartInfo = new ProcessStartInfo(batchFile, commandline)
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true
+            };
+
+            using (var process = Process.Start(processStartInfo))
+            {
+                if (process == null)
+                    throw new InvalidOperationException("Woah, process is null!");
+
+                process.OutputDataReceived += (sender, e) =>
+                    Console.WriteLine(e.Data);
+                process.BeginOutputReadLine();
+
+                process.ErrorDataReceived += (sender, e) =>
+                    Console.Error.WriteLine(e.Data);
+                process.BeginErrorReadLine();
+
+                process.WaitForExit();
+            }
         }
 
         static void ExecuteShellScript(string command, string[] args)
         {
             var commandline = $"-c \"{command} {string.Join(" ", args)}\"";
-            ExecuteScriptProcessor("sh", commandline);
-        }
 
-        static void ExecuteScriptProcessor(string processor, string commandline)
-        {
-            Console.WriteLine($"Starting {processor} {commandline}");
-            var processInfo = new ProcessStartInfo(processor, commandline)
+            Console.WriteLine($"Starting sh {commandline}");
+            var processInfo = new ProcessStartInfo("sh", commandline)
             {
                 CreateNoWindow = true,
                 UseShellExecute = false

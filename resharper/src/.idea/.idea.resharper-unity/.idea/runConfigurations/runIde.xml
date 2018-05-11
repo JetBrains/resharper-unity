@@ -11,7 +11,7 @@
     <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
     <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
     <option name="PROJECT_KIND" value="Console" />
-    <option name="PROJECT_TFM" value=".NETFramework,Version=v4.5" />
+    <option name="PROJECT_TFM" value=".NETFramework,Version=v4.5.2" />
     <method />
   </configuration>
 </component>
