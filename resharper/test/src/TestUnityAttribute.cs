@@ -45,9 +45,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             return TargetFrameworkId.Create(FrameworkIdentifier.NetFramework, new Version(4, 0));
         }
 
+        public override IEnumerable<PackageDependency> GetPackages(TargetFrameworkId targetFrameworkId)
+        {
+            foreach (var package in GetPackagesCommon())
+                yield return package;
+            foreach (var package in base.GetPackages(targetFrameworkId))
+                yield return package;
+        }
+
 #else
 
         public override IEnumerable<PackageDependency> GetPackages(PlatformID platformID)
+        {
+            foreach (var package in GetPackagesCommon())
+                yield return package;
+            foreach (var package in base.GetPackages(platformID))
+                yield return package;
+        }
+
+#endif
+
+        private IEnumerable<PackageDependency> GetPackagesCommon()
         {
             // There isn't an official nuget for Unity, sadly, so add this feed to test/data/nuget.config
             // <add key="unity-testlibs" value="https://myget.org/F/resharper-unity/api/v2/" />
@@ -59,11 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                     throw new InvalidOperationException("Network libs not available for Unity 5.4");
                 yield return ParsePackageDependency($"resharper-unity.testlibs.networking/{version}");
             }
-            foreach (var package in base.GetPackages(platformID))
-                yield return package;
         }
-
-#endif
 
         public Guid[] GetProjectTypeGuids()
         {
