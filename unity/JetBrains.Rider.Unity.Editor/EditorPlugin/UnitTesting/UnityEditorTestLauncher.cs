@@ -54,20 +54,18 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             "Could not find UnityEditor.TestRunner or UnityEngine.TestRunner assemblies in current AppDomain");
           return;
         }
+        
+        string testEditorAssemblyProperties =  testEditorAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b);
+        string testEngineAssemblyProperties = testEngineAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b);
 
         var launcherType = testEditorAssembly.GetType(EditModeLauncher);
+        if (launcherType == null)
+          throw new NullReferenceException($"Could not find {EditModeLauncher} among {testEditorAssemblyProperties}");
+        
         var filterType = testEngineAssembly.GetType(TestRunnerFilter);
-        var assemblyProviderType = testEditorAssembly.GetType(TestInEditorTestAssemblyProvider);
-        if (launcherType == null || filterType == null || assemblyProviderType == null && UnityUtils.UnityVersion < new Version(2018, 2) && UnityUtils.UnityVersion >= new Version(2018, 1))
-        {
-
-          ourLogger.Verbose("Could not find testEditorAssembly {0} and testEngineAssembly {1} properties via reflection", 
-            testEditorAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b), 
-            testEngineAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b));
-          throw new ArgumentException();
-          return;
-        }
-
+        if (filterType==null)
+          throw new NullReferenceException($"Could not find {TestRunnerFilter} among {testEngineAssemblyProperties}");
+        
         var filter = Activator.CreateInstance(filterType);
         var fieldInfo = filter.GetType().GetField(TestNames, BindingFlags.Instance | BindingFlags.Public);
         fieldInfo = fieldInfo??filter.GetType().GetField(TestNames56, BindingFlags.Instance | BindingFlags.Public);
@@ -78,29 +76,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         }
 
         object launcher;
-        if (UnityUtils.UnityVersion.Build == 2018 && UnityUtils.UnityVersion.Major == 1)
-        {
-          Type enumType = testEngineAssembly.GetType(TestPlatform);
-          if (enumType == null)
-          {
-            ourLogger.Verbose("Could not find TestPlatform field via reflection");
-            return;
-          }
-          
-          var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
-            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-            new[] {Enum.ToObject(enumType, 2)}, null); // TestPlatform.EditMode
-          ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
-
-          var testNameStrings = (object) myLaunch.TestNames.ToArray();
-          fieldInfo.SetValue(filter, testNameStrings);
-
-          launcher = Activator.CreateInstance(launcherType,
-            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-            null, new[] {filter, assemblyProvider},
-            null);
-        }
-        else if (UnityUtils.UnityVersion>=new Version(2018,2))
+        if (UnityUtils.UnityVersion >= new Version(2018,1))
         {
           Type enumType = testEngineAssembly.GetType(TestPlatform);
           if (enumType == null)
@@ -111,11 +87,27 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           
           var testNameStrings = (object) myLaunch.TestNames.ToArray();
           fieldInfo.SetValue(filter, testNameStrings);
-
-          launcher = Activator.CreateInstance(launcherType,
-            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-            null, new[] {filter, Enum.ToObject(enumType, 2)},
-            null);
+          
+          var assemblyProviderType = testEditorAssembly.GetType(TestInEditorTestAssemblyProvider);
+          if (assemblyProviderType != null)
+          {
+            var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
+              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
+              new[] {Enum.ToObject(enumType, 2)}, null); // TestPlatform.EditMode
+            ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
+            launcher = Activator.CreateInstance(launcherType,
+              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+              null, new[] {filter, assemblyProvider},
+              null);
+            
+          }
+          else
+          {
+            launcher = Activator.CreateInstance(launcherType,
+              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+              null, new[] {filter, Enum.ToObject(enumType, 2)},
+              null);
+          }
         }
         else
         {
