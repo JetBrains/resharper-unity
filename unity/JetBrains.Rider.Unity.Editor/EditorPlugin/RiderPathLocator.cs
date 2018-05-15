@@ -111,8 +111,31 @@ namespace JetBrains.Rider.Unity.Editor
       //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
       var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
       var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
-        .Select(a=>new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true)).ToArray();
-      return paths;
+        .Select(a=>new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true)).ToList();
+      
+      
+      // /home/ivan/.local/share/applications/jetbrains-rider.desktop
+      var shortcut = new FileInfo("/home/ivan/.local/share/applications/jetbrains-rider.desktop");
+      
+      if (shortcut.Exists)
+      {
+        var lines = File.ReadAllLines(shortcut.FullName);
+        foreach (var line in lines)
+        {
+          if (line.StartsWith("Exec=\""))
+          {
+            var path = line.Split('"').Where((item, index)=>index==1).SingleOrDefault();
+            if (!string.IsNullOrEmpty(path))
+            {
+              var buildTxtPath = Path.Combine(path, pathToBuildTxt);
+              var buildNumber = GetBuildNumber(buildTxtPath);
+              paths.Add(new RiderInfo(buildNumber, path, false));
+            }
+          }
+        }
+      }
+
+      return paths.ToArray();
     }
 
     private static RiderInfo[] CollectRiderInfosMac()
@@ -134,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor
           .Select(a => new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true));
         results.AddRange(paths);
       }
-
+      
       return results.ToArray();
     }
 
