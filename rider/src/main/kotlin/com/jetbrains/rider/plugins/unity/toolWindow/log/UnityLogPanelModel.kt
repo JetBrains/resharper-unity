@@ -80,17 +80,23 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
                 }
                 allEvents.add(event)
             }
-
-            onAdded.fire(event)
+            
+            if (isVisibleEvent(event))
+                onAdded.fire(event)
         }
 
         val onChanged = Signal.Void()
     }
 
+    private fun isVisibleEvent(event: RdLogEvent):Boolean
+    {
+        return typeFilters.getShouldBeShown(event.type) && modeFilters.getShouldBeShown(event.mode);
+    }
+
     private fun getVisibleEvents(): List<RdLogEvent> {
         synchronized(lock) {
             return events.allEvents
-                .filter { typeFilters.getShouldBeShown(it.type) && modeFilters.getShouldBeShown(it.mode) }
+                .filter { isVisibleEvent(it) }
         }
     }
 

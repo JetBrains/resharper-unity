@@ -84,7 +84,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         }
     }
 
-    private fun UnityLogPanelEventList.getDateFromTicks(ticks:Long): Date {
+    private fun getDateFromTicks(ticks: Long): Date {
         val ticksAtEpoch = 621355968000000000L
         val ticksPerMilisecond = 10000
         val date = Date((ticks - ticksAtEpoch) / ticksPerMilisecond)
