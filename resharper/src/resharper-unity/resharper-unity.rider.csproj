@@ -83,6 +83,15 @@
     <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
       <DependentUpon>ShaderLabErrors.xml</DependentUpon>
     </Compile>
+    <!-- AsmDef/JSON "language" -->
+    <ErrorsGen Include="Json\Daemon\Errors\AsmDefErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.Json.Daemon.Errors</Namespace>
+      <OutputFile>Json\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="Json\Daemon\Errors\AsmDefErrors.generated.cs">
+      <DependentUpon>AsmDefErrors.xml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <!-- Resources - api.xml, icons -->
   <ItemGroup>

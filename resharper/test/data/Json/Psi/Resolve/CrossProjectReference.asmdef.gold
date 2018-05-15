@@ -1,0 +1,7 @@
+﻿{
+  "name": "FirstProject",
+  "references": [ "|SecondProject|(0)" ]
+}
+
+------------------------------------------------
+0: result=OK declaredElem=SecondProject

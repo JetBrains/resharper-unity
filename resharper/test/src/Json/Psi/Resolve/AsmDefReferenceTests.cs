@@ -3,37 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel.Update;
-using JetBrains.ReSharper.Daemon.JavaScript.Stages;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
-using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
+using JetBrains.ReSharper.Plugins.Unity.Json.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using NUnit.Framework;
 using PlatformID = JetBrains.Application.platforms.PlatformID;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Psi.Resolve
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefDuplicateItemsProblemAnalyzerTests : HighlightingTestBase
+    public class AsmDefReferenceTests : ReferenceTestBase
     {
-        protected override PsiLanguageType CompilerIdsLanguage => JsonLanguage.Instance;
+        protected override string RelativeTestDataPath => @"Json\Psi\Resolve";
+        protected override bool AcceptReference(IReference reference) => reference is AsmDefNameReference;
 
-        protected override string RelativeTestDataPath => @"Json\Daemon\Stages\Analysis\";
+        [Test] public void TestUnresolvedReference01() { DoNamedTest2(); }
+        [Test] public void TestUnresolvedReference02() { DoNamedTest2("UnresolvedReference02_SecondProject.asmdef"); }
+        [Test] public void TestCrossProjectReference() { DoNamedTest2("CrossProjectReference_SecondProject.asmdef");}
+        [Test] public void TestCorrectJsonReferences() { DoNamedTest2(); }
 
-        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
-        {
-            return highlighting is JsonValidationFailedWarning;
-        }
-
-        // TODO: ReSharper will run element problem analyzers twice for JSON files
-        // Which means we get multiple highlights. Not a huge deal in practice, but if this
-        // test suddenly starts to fail, that might be why. See RSRP-467138
-        [Test] public void Test01() { DoNamedTest("Test01_SecondProject.asmdef"); }
-
-        // If we don't have valid (but duplicated references), the invalid reference error trumps the duplicate item warning
 #if RESHARPER
         protected override TestSolutionConfiguration CreateSolutionConfiguration(PlatformID platformID,
             ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
@@ -62,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.Daemon
             descriptors.Add(mainDescriptorPair.First, mainDescriptorPair.Second);
 
             var referencedProjectFileSet = fileSet.Where(filename => filename.Contains("_SecondProject")).ToList();
-            if (Enumerable.Any(referencedProjectFileSet))
+            if (referencedProjectFileSet.Any())
             {
                 var secondAbsoluteFileSet =
                     referencedProjectFileSet.Select(path => TestDataPath2.Combine(path)).ToList();

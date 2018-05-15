@@ -1,0 +1,7 @@
+﻿{
+  "name": "FirstProject",
+  "references": [ "|UnresolvedReference|(0)" ]
+}
+
+------------------------------------------------
+0: result=ASMDEF_UNRESOLVED_REFERENCED_PROJECT_ERROR declaredElem=null

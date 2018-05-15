@@ -42,6 +42,14 @@
 
     <!-- asmdef support -->
     <fileTypeFactory implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileTypeFactory"/>
+    <!-- TODO: Write our own version of these that only do anything for .asmdef files
+         Don't enable general ReSharper features for all JSON files -->
+    <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterActionHandler" />
+    <lang.documentationProvider language="JSON" implementationClass="com.jetbrains.rider.quickDoc.RiderDocumentationProvider"/>
+    <backend.markup.adapterFactory language="JSON" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
+    <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
+    <codeInsight.parameterInfo language="JSON" implementationClass="com.jetbrains.rider.parameterInfo.RiderParameterInfoHandler"/>
+    <completion.contributor language="JSON" implementationClass="com.jetbrains.rider.completion.ReSharperCompletionContributor" />
 
     <!-- Unity Explorer -->
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>

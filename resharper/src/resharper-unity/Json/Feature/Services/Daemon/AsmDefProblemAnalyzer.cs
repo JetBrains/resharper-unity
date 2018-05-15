@@ -1,5 +1,4 @@
-﻿using System;
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
+﻿using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
@@ -22,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Daemon
             if (!element.Language.Is<JsonLanguage>())
                 return;
 
-            if (!data.SourceFile.Name.EndsWith(".asmdef", StringComparison.InvariantCultureIgnoreCase))
+            if (!data.SourceFile.IsAsmDef())
                 return;
 
             Analyze(element, data, consumer);

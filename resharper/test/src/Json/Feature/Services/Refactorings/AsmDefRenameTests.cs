@@ -1,39 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.DocumentManagers;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Update;
-using JetBrains.ReSharper.Daemon.JavaScript.Stages;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
-using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
+using JetBrains.ReSharper.Plugins.Unity.Tests.Framework;
 using JetBrains.ReSharper.TestFramework;
+using JetBrains.TextControl;
 using JetBrains.Util;
+using Microsoft.Build.Evaluation;
 using NUnit.Framework;
 using PlatformID = JetBrains.Application.platforms.PlatformID;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.Refactorings
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefDuplicateItemsProblemAnalyzerTests : HighlightingTestBase
+    public class AsmDefRenameTests : RenameTestBase
     {
-        protected override PsiLanguageType CompilerIdsLanguage => JsonLanguage.Instance;
+        protected override string RelativeTestDataPath => @"Json\Refactorings\Rename";
 
-        protected override string RelativeTestDataPath => @"Json\Daemon\Stages\Analysis\";
+        [Test] public void TestSingleFile() { DoNamedTest2(); }
+        [Test] public void TestCrossFileRename() { DoNamedTest2("CrossFileRename_SecondProject.asmdef"); }
+        [Test] public void TestRenameFile() { DoNamedTest2(); }
 
-        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
+        protected override void AdditionalTestChecks(ITextControl textControl, IProject project)
         {
-            return highlighting is JsonValidationFailedWarning;
+            var solution = project.GetSolution();
+            foreach (var topLevelProject in solution.GetTopLevelProjects())
+            {
+                if (topLevelProject.IsProjectFromUserView() && !Equals(topLevelProject, project))
+                {
+                    foreach (var projectFile in topLevelProject.GetSubItems().OfType<IProjectFile>())
+                    {
+                        ExecuteWithGold(projectFile, writer =>
+                        {
+                            var document = projectFile.GetDocument();
+                            writer.Write(document.GetText());
+                        });
+                    }
+
+                    // TODO: Should really recurse into child folders, but not used by these tests
+                }
+            }
         }
 
-        // TODO: ReSharper will run element problem analyzers twice for JSON files
-        // Which means we get multiple highlights. Not a huge deal in practice, but if this
-        // test suddenly starts to fail, that might be why. See RSRP-467138
-        [Test] public void Test01() { DoNamedTest("Test01_SecondProject.asmdef"); }
-
-        // If we don't have valid (but duplicated references), the invalid reference error trumps the duplicate item warning
 #if RESHARPER
         protected override TestSolutionConfiguration CreateSolutionConfiguration(PlatformID platformID,
             ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,

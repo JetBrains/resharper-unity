@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Errors language="C#">
+  
+  <StaticSeverityGroups>
+    <Group name="AsmDef Errors" key="AsmDefErrors" />
+  </StaticSeverityGroups>
+
+  <Error name="UnresolvedProjectReference" staticGroup="AsmDefErrors">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Unknown project reference '{0}'">
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
+  </Error>
+</Errors>
