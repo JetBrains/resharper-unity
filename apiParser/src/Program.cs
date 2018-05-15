@@ -4,44 +4,65 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
+using JetBrains.Util;
 
 namespace ApiParser
 {
     public static class Program
     {
+        // TODO: Stop hard coding this...
+        private const string LatestVersion = "2018.1.0f1";
+
         private static readonly string ScriptReferenceRelativePath = @"Documentation" + Path.DirectorySeparatorChar + "en" + Path.DirectorySeparatorChar + "ScriptReference";
 
-        private static readonly IList<Tuple<string, Version>> Docs = new List<Tuple<string, Version>>
+        private static readonly List<(string, Version)> Docs = new List<(string, Version)>
         {
             // These folders need to live in the runtime folder
             // Can't redistribute, sorry. See README.md
-            Tuple.Create("Documentation-5.0.4f1", new Version(5, 0)),
-            Tuple.Create("Documentation-5.1.5f1", new Version(5, 1)),
-            Tuple.Create("Documentation-5.2.5f1", new Version(5, 2)),
-            Tuple.Create("Documentation-5.3.8f2", new Version(5, 3)),
-            Tuple.Create("Documentation-5.4.6f3", new Version(5, 4)),
-            Tuple.Create("Documentation-5.5.5f1", new Version(5, 5)),
-            Tuple.Create("Documentation-5.6.3f1", new Version(5, 6)),
-            Tuple.Create("Documentation-2017.1.2f1", new Version(2017, 1)),
-            Tuple.Create("Documentation-2017.2.0f2", new Version(2017, 2)),
-            Tuple.Create("Documentation-2017.3.1f1", new Version(2017, 3)),
-            Tuple.Create("Documentation-2018.1.0b9", new Version(2018, 1))
+            ("Documentation-5.0.4f1", new Version(5, 0)),
+            ("Documentation-5.1.5f1", new Version(5, 1)),
+            ("Documentation-5.2.5f1", new Version(5, 2)),
+            ("Documentation-5.3.8f2", new Version(5, 3)),
+            ("Documentation-5.4.6f3", new Version(5, 4)),
+            ("Documentation-5.5.5f1", new Version(5, 5)),
+            ("Documentation-5.6.3f1", new Version(5, 6)),
+            ("Documentation-2017.1.2f1", new Version(2017, 1)),
+            ("Documentation-2017.2.0f2", new Version(2017, 2)),
+            ("Documentation-2017.3.1f1", new Version(2017, 3)),
+            ("Documentation-2018.1.0f1", new Version(2018, 1))
         };
 
         public static void Main(string[] args)
         {
-            if (args.Length != 1)
+            if (args.Length != 1 && args.Length != 2)
             {
                 Console.WriteLine("Usage: ApiParser.exe docsFolder");
+                Console.WriteLine("       ApiParser.exe apiXmlPath docRoot");
                 Console.WriteLine();
                 Console.WriteLine("  docsFolder - folder that contains all versions of Unity docs");
+                Console.WriteLine("  apiXmlPath - location of api.xml to read and merge into");
+                Console.WriteLine("  docRoot - folder that contains latest docs, to merge into existing api.xml");
                 return;
             }
 
             var stopwatch = Stopwatch.StartNew();
 
-            Directory.SetCurrentDirectory(args[0]);
+            var docs = Docs;
+            var apiXml = FileSystemPath.Empty;
+
+            if (args.Length == 1)
+                Directory.SetCurrentDirectory(args[0]);
+            else
+            {
+                apiXml = FileSystemPath.Parse(args[0]);
+                if (!apiXml.ExistsFile)
+                    throw new InvalidOperationException("api.xml path does not exist");
+                var docRoot = GetDocumentationRoot(LatestVersion);
+                var parseableVersion = Regex.Match(LatestVersion, @"^(\d+\.\d+)").Groups[1].Value;
+                docs = new List<(string, Version)> {(docRoot.FullPath, Version.Parse(parseableVersion))};
+            }
 
             var progPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             var managedPath = Path.Combine(progPath, "Unity", "Editor", "Data", "Managed");
@@ -49,8 +70,7 @@ namespace ApiParser
             {
                 // TODO: Find the latest version rather than hardcode it
                 // TODO: Handle this in Windows, too
-                //managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", "2018.1.0b9", "Unity.app", "Contents", "Managed");
-                managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", "2017.3.1f1", "Unity.app", "Contents", "Managed");
+                managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", LatestVersion, "Unity.app", "Contents", "Managed");
             }
 
             // Add assemblies to the type resolver so we can get the fully qualified names of types
@@ -60,6 +80,8 @@ namespace ApiParser
             Console.WriteLine();
 
             var unityApi = new UnityApi();
+            if (apiXml.ExistsFile)
+                unityApi = UnityApi.ImportFrom(apiXml);
             var parser = new ApiParser(unityApi, ScriptReferenceRelativePath);
 
             parser.Progress += (s, e) =>
@@ -69,7 +91,7 @@ namespace ApiParser
                 Console.SetCursorPosition(0, cursorTop);
             };
 
-            foreach (var doc in Docs)
+            foreach (var doc in docs)
             {
                 Console.WriteLine(doc.Item1);
                 parser.ParseFolder(doc.Item1, doc.Item2);
@@ -92,6 +114,14 @@ namespace ApiParser
 
             // Console.WriteLine( "Press <Enter> key to continue..." );
             // Console.ReadLine();
+        }
+
+        private static FileSystemPath GetDocumentationRoot(string latestVersion)
+        {
+            var programFiles = FileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            var docRoot = programFiles / "Unity" / "Hub" / "Editor" / latestVersion;
+            var windowsRoot = docRoot / "Editor" / "Data";
+            return windowsRoot.ExistsDirectory ? windowsRoot : docRoot;
         }
 
         private static void AddUndocumentedCoroutines(UnityApi unityApi)

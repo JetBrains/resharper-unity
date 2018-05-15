@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Host.Features.Syntax
             return highlighting.GetType().Name == "ReSharperSyntaxHighlighting";
         }
 
+        [Ignore("Host features are not available to tests")]
         [Test] public void TestSyntaxHighlighting() { DoNamedTest2(); }
     }
 }

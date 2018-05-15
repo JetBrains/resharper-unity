@@ -70,21 +70,29 @@ namespace JetBrains.Rider.Unity.Editor
 
     internal static RiderInfo[] GetAllFoundInfos(OperatingSystemFamilyRider operatingSystemFamily)
     {
-      switch (operatingSystemFamily)
+      try
       {
-        case OperatingSystemFamilyRider.Windows:
+        switch (operatingSystemFamily)
         {
-          return CollectRiderInfosWindows();
-        }
-        case OperatingSystemFamilyRider.MacOSX:
-        {
-          return CollectRiderInfosMac();
-        }
-        case OperatingSystemFamilyRider.Linux:
-        {
-          return CollectAllRiderPathsLinux();
+          case OperatingSystemFamilyRider.Windows:
+          {
+            return CollectRiderInfosWindows();
+          }
+          case OperatingSystemFamilyRider.MacOSX:
+          {
+            return CollectRiderInfosMac();
+          }
+          case OperatingSystemFamilyRider.Linux:
+          {
+            return CollectAllRiderPathsLinux();
+          }
         }
       }
+      catch (Exception e)
+      {
+        Debug.LogException(e);
+      }
+      
       return new RiderInfo[0];
     }
     
@@ -104,14 +112,7 @@ namespace JetBrains.Rider.Unity.Editor
       var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
       var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
         .Select(a=>new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true)).ToArray();
-      if (paths.Any())
-        return paths;
-      return Directory.GetDirectories(toolboxRiderRootPath)
-        .SelectMany(Directory.GetDirectories)
-        .Select(b => Path.Combine(b, "bin/rider.sh"))
-        .Where(File.Exists)
-        .Select(a=>new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true))
-        .ToArray();
+      return paths;
     }
 
     private static RiderInfo[] CollectRiderInfosMac()
@@ -139,8 +140,9 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static string GetBuildNumber(string path)
     {
-      if (File.Exists(path))
-        return File.ReadAllText(path);
+      var file = new FileInfo(path);
+      if (file.Exists)
+        return File.ReadAllText(file.FullName);
       return string.Empty;
     }
 
@@ -189,21 +191,29 @@ namespace JetBrains.Rider.Unity.Editor
     [UsedImplicitly]
     public static RiderInfo[] GetAllRiderPaths()
     {
-      switch (SystemInfo.operatingSystemFamily)
+      try
       {
-        case OperatingSystemFamily.Windows:
+        switch (SystemInfo.operatingSystemFamily)
         {
-          return CollectRiderInfosWindows();
-        }
-        case OperatingSystemFamily.MacOSX:
-        {
-          return CollectRiderInfosMac();
-        }
-        case OperatingSystemFamily.Linux:
-        {
-          return CollectAllRiderPathsLinux();
+          case OperatingSystemFamily.Windows:
+          {
+            return CollectRiderInfosWindows();
+          }
+          case OperatingSystemFamily.MacOSX:
+          {
+            return CollectRiderInfosMac();
+          }
+          case OperatingSystemFamily.Linux:
+          {
+            return CollectAllRiderPathsLinux();
+          }
         }
       }
+      catch (Exception e)
+      {
+        Debug.LogException(e);
+      }
+      
       return new RiderInfo[0];
     }
 #endif 
@@ -278,21 +288,15 @@ namespace JetBrains.Rider.Unity.Editor
         BuildVersion = buildVersion;
         Path = new FileInfo(path).FullName; // normalize separators
 
-        var presentation = "Rider";
-        if (buildVersion.Length >= 3)
-          presentation += " " + buildVersion.Substring(3);
+        var version = string.Empty;
+        if (buildVersion.Length > 3)
+          version = buildVersion.Substring(3);
+
+        var presentation = "Rider " + version;
         if (isToolbox)
           presentation += " (JetBrains Toolbox)";
-        else
-        {
-          if (path.Length>=18)
-            presentation += $" ({path.Substring(0, 15)}...)";
-          else
-            presentation += $" ({path})";
-        }
-              
-        // hack around https://fogbugz.unity3d.com/default.asp?940857_tirhinhe3144t4vn
-        Presentation = presentation.Replace("/", ":");
+
+        Presentation = presentation;
       }
     }
   }

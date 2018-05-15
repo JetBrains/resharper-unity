@@ -1,1 +1,0 @@
-[assembly: global::System.Reflection.AssemblyVersionAttribute("2018.1.0.9999")]

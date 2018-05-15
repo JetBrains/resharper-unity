@@ -7,6 +7,10 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.Util;
+
+#if RIDER
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
+#endif
 using JetBrains.Util.Reflection;
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -14,6 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public static class ProjectExtensions
     {
         public const string AssetsFolder = "Assets";
+        public const string ProjectSettingsFolder = "ProjectSettings";
+        public const string LibraryFolder = "Library";
 
         private static readonly AssemblyNameInfo ourUnityEngineReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine", null);
         private static readonly AssemblyNameInfo ourUnityEditorReferenceName = AssemblyNameInfoFactory.Create2("UnityEditor", null);
@@ -52,8 +58,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [Obsolete("Assets folder can be found in other solutions. Use IsUnitySolution instead.")]
         public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionDir)
         {
-            var assetsDir = solutionDir.CombineWithShortName(AssetsFolder);
-            return assetsDir.IsAbsolute && assetsDir.ExistsDirectory;
+            var assetsFolder = solutionDir.CombineWithShortName(AssetsFolder);
+            var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectSettingsFolder);
+            var libraryFolder = solutionDir.CombineWithShortName(LibraryFolder);
+            return assetsFolder.IsAbsolute && assetsFolder.ExistsDirectory 
+                   && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
+                   && libraryFolder.IsAbsolute && libraryFolder.ExistsDirectory;
         }
 
         private static bool ReferencesUnity(IProject project)
@@ -68,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static bool ReferencesAssembly(IProject project, TargetFrameworkId targetFrameworkId, AssemblyNameInfo name)
         {            
             return ReferencedAssembliesService.IsProjectReferencingAssemblyByName(project,
-                targetFrameworkId, name, out var _);
+                targetFrameworkId, name, out _);
         }
     }
 }

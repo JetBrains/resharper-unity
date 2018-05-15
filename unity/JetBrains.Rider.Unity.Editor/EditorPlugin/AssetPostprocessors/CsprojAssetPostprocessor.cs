@@ -352,6 +352,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       // VSTU sets this, and I think newer versions of Unity do too (should check which version)
       SetOrUpdateProperty(projectElement, xmlns, "LangVersion", existing =>
       {
+        if (PluginSettings.OverrideLangVersion)
+        {
+          return PluginSettings.LangVersion;
+        }
+        
         var expected = GetExpectedLanguageLevel();
         if (expected == "latest" || existing == "latest")
           return "latest";

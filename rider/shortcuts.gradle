@@ -1,7 +1,0 @@
-def shortcutsGroup = "shortcuts"
-
-task buildAllAndRun {
-    group = shortcutsGroup
-    dependsOn buildBackend
-    dependsOn runIde
-}

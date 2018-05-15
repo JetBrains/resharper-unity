@@ -8,7 +8,9 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
 // ReSharper disable UnassignedField.Global
-// ReSharper disable InconsistentNaming
+
+// Field is never assigned to, and will always have its default value null
+#pragma warning disable 649
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
 {

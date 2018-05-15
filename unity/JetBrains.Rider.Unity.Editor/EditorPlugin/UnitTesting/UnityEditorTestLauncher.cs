@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using JetBrains.Annotations;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -10,10 +9,9 @@ using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
-using UnityEngine.TestTools;
 
 
-namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
   public class UnityEditorTestLauncher
   {
@@ -25,8 +23,10 @@ namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
     private const string MTestfinishedevent = "m_TestFinishedEvent";
     private const string MEditmoderunner = "m_EditModeRunner";
     private const string TestNames = "testNames";
+    private const string TestNames56 = "names";
     private const string EditModeLauncher = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
     private const string TestRunnerFilter = "UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter";
+    private const string TestPlatform = "UnityEngine.TestTools.TestPlatform";
 
     private const string TestInEditorTestAssemblyProvider =
       "UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider";
@@ -58,16 +58,19 @@ namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
         var launcherType = testEditorAssembly.GetType(EditModeLauncher);
         var filterType = testEngineAssembly.GetType(TestRunnerFilter);
         var assemblyProviderType = testEditorAssembly.GetType(TestInEditorTestAssemblyProvider);
-        if (launcherType == null || filterType == null || assemblyProviderType == null)
+        if (launcherType == null || filterType == null || assemblyProviderType == null && UnityUtils.UnityVersion < new Version(2018, 2) && UnityUtils.UnityVersion >= new Version(2018, 1))
         {
 
-          ourLogger.Verbose("Could not find launcherType or filterType or assemmblyProvider via reflection");
+          ourLogger.Verbose("Could not find testEditorAssembly {0} and testEngineAssembly {1} properties via reflection", 
+            testEditorAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b), 
+            testEngineAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b));
           throw new ArgumentException();
           return;
         }
 
         var filter = Activator.CreateInstance(filterType);
         var fieldInfo = filter.GetType().GetField(TestNames, BindingFlags.Instance | BindingFlags.Public);
+        fieldInfo = fieldInfo??filter.GetType().GetField(TestNames56, BindingFlags.Instance | BindingFlags.Public);
         if (fieldInfo == null)
         {
           ourLogger.Verbose("Could not find testNames field via reflection");
@@ -75,11 +78,18 @@ namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
         }
 
         object launcher;
-        if (UnityUtils.UnityVersion >= new Version(2018, 1))
+        if (UnityUtils.UnityVersion.Build == 2018 && UnityUtils.UnityVersion.Major == 1)
         {
+          Type enumType = testEngineAssembly.GetType(TestPlatform);
+          if (enumType == null)
+          {
+            ourLogger.Verbose("Could not find TestPlatform field via reflection");
+            return;
+          }
+          
           var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
             BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-            new[] {(object) TestPlatform.EditMode}, null);
+            new[] {Enum.ToObject(enumType, 2)}, null); // TestPlatform.EditMode
           ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
 
           var testNameStrings = (object) myLaunch.TestNames.ToArray();
@@ -88,6 +98,23 @@ namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
           launcher = Activator.CreateInstance(launcherType,
             BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
             null, new[] {filter, assemblyProvider},
+            null);
+        }
+        else if (UnityUtils.UnityVersion>=new Version(2018,2))
+        {
+          Type enumType = testEngineAssembly.GetType(TestPlatform);
+          if (enumType == null)
+          {
+            ourLogger.Verbose("Could not find TestPlatform field via reflection");
+            return;
+          }
+          
+          var testNameStrings = (object) myLaunch.TestNames.ToArray();
+          fieldInfo.SetValue(filter, testNameStrings);
+
+          launcher = Activator.CreateInstance(launcherType,
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+            null, new[] {filter, Enum.ToObject(enumType, 2)},
             null);
         }
         else
@@ -224,10 +251,10 @@ namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
       if (!(test is TestMethod))
         return;
 
-      ourLogger.Verbose($"TestStarted : {test.FullName}");
+      ourLogger.Verbose("TestStarted : {0}", test.FullName);
       var id = GetIdFromNUnitTest(test);
 
-      myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running));
+      myLaunch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running, GetIdFromNUnitTest(test.Parent)));
     }
 
     private void TestFinished(ITestResult testResult)
@@ -236,13 +263,13 @@ namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
       if (!(test is TestMethod))
         return;
 
-      ourLogger.Verbose($"TestFinished : {test.FullName}");
+      ourLogger.Verbose("TestFinished : {0}", test.FullName);
       var id = GetIdFromNUnitTest(test);
 
       var output = ExtractOutput(testResult);
       myLaunch.TestResult.Fire(new TestResult(id, output,
         (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
-        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed));
+        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed, GetIdFromNUnitTest(test.Parent)));
     }
 
     private static string ExtractOutput(ITestResult testResult)
@@ -265,7 +292,7 @@ namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
         stringBuilder.AppendLine("Stacktrace: ");
         stringBuilder.AppendLine(testResult.StackTrace);
       }
-
+      
       var result = stringBuilder.ToString();
       if (result.Length > 0)
         return result;
@@ -277,12 +304,12 @@ namespace JetBrains.Rider.Unity.Editor.Ge56.UnitTesting
     {
       var testMethod = test as TestMethod;
       if (testMethod == null)
-        throw new ArgumentException("Could not get id from NUnit test {0}", test.FullName);
+      {
+        ourLogger.Verbose("{0} is not a TestMethod ", test.FullName);
+        return test.FullName;
+      }
 
-      var methodName = testMethod.Name;
-      var className = testMethod.ClassName;
-
-      return string.Format("{0}.{1}", className, methodName);
+      return test.FullName;
     }
   }
 }

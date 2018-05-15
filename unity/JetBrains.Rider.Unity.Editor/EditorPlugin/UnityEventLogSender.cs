@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor;
 using UnityEngine;
@@ -18,7 +16,9 @@ namespace JetBrains.Rider.Unity.Editor
 
     public UnityEventCollector()
     {
-      var eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
+      var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public); // Unity 2017.x+
+      if (eventInfo == null)
+        eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
       var domainLifetime = Lifetimes.Define();
       
       if (eventInfo != null)
@@ -55,13 +55,19 @@ namespace JetBrains.Rider.Unity.Editor
           eventType = RdLogEventType.Message;
           break;
       }
-      var eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;
-      var evt = new RdLogEvent(eventType, eventMode, message, stackTrace);
-      myDelayedLogEvents.AddLast(evt);
-      if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
-        myDelayedLogEvents.RemoveFirst(); // limit max size
 
-      OnAddEvent(new EventArgs());
+      var ticks = DateTime.UtcNow.Ticks;
+      MainThreadDispatcher.Instance.Queue(() =>
+      {
+        var eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;
+
+        var evt = new RdLogEvent(ticks, eventType, eventMode, message, stackTrace);
+        myDelayedLogEvents.AddLast(evt);
+        if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
+          myDelayedLogEvents.RemoveFirst(); // limit max size
+
+        OnAddEvent(new EventArgs());
+      });
     }
 
     public event EventHandler AddEvent;
@@ -109,8 +115,13 @@ namespace JetBrains.Rider.Unity.Editor
     
     private void SendLogEvent(EditorPluginModel model, RdLogEvent logEvent)
     {
-      if (!myConnectionLifetime.IsTerminated)
-        model.Log.Fire(logEvent);
+      MainThreadDispatcher.Instance.Queue(() =>
+      {
+        if (!myConnectionLifetime.IsTerminated)
+        {
+          model.Log.Fire(logEvent);
+        }
+      });      
     }
   }
 }

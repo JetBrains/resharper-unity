@@ -16,18 +16,19 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import com.jetbrains.rider.unitTesting.panels.RiderUnitTestSessionPanel
-import com.jetbrains.rider.util.reactive.whenTrue
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.swing.Icon
 import javax.swing.JMenuItem
 import javax.swing.JPopupMenu
@@ -40,11 +41,15 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
     private val eventList = UnityLogPanelEventList().apply {
         addListSelectionListener {
-            if (selectedValue != null) {
+            if (selectedValue != null && logModel.selectedItem != selectedValue) {
                 logModel.selectedItem = selectedValue
 
                 console.clear()
                 if (selectedIndex >= 0) {
+                    val date = getDateFromTicks(selectedValue.time)
+                    var format = SimpleDateFormat("[HH:mm:ss:SSS] ")
+                    format.timeZone = TimeZone.getDefault()
+                    console.print(format.format(date), ConsoleViewContentType.NORMAL_OUTPUT)
                     console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
                     console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
                     console.scrollTo(0)
@@ -61,6 +66,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
                 }
             }
         })
+
         object : DoubleClickListener() {
             override fun onDoubleClick(event: MouseEvent?): Boolean {
                 getNavigatableForSelected(eventList1, project)?.navigate(true)
@@ -73,10 +79,16 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         unityHost.play.advise(logModel.lifetime) {
             if (it != null && it && prevVal == false) {
                 logModel.events.clear()
-                console.clear()
             }
             prevVal = it
         }
+    }
+
+    private fun UnityLogPanelEventList.getDateFromTicks(ticks:Long): Date {
+        val ticksAtEpoch = 621355968000000000L
+        val ticksPerMilisecond = 10000
+        val date = Date((ticks - ticksAtEpoch) / ticksPerMilisecond)
+        return date
     }
 
     val mainSplitterOrientation = RiderUnitySettings.BooleanViewProperty("mainSplitterOrientation")
@@ -132,7 +144,6 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
             eventList.riderModel.addElement(event)
         }
 
-        console.clear()
         if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
         } else
@@ -148,6 +159,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         }
 
         logModel.onChanged.advise(logModel.lifetime) { refreshList(it) }
+        logModel.onCleared.advise(logModel.lifetime) { console.clear() }
         logModel.fire()
     }
 }

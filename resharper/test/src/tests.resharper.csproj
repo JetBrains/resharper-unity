@@ -18,11 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ShaderLab\Host\**" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Remove="ShaderLab\Host\**" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="ShaderLab\Host\**" />
   </ItemGroup>
 </Project>
