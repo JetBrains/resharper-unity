@@ -52,14 +52,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [Obsolete("Assets folder can be found in other solutions. Use IsUnitySolution instead.")]
-        public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionDir)
+        public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionFilePath)
         {
+            var solutionDir = solutionFilePath.Directory;
             var assetsFolder = solutionDir.CombineWithShortName(AssetsFolder);
             var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectSettingsFolder);
             var libraryFolder = solutionDir.CombineWithShortName(LibraryFolder);
             return assetsFolder.IsAbsolute && assetsFolder.ExistsDirectory 
                    && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
-                   && libraryFolder.IsAbsolute && libraryFolder.ExistsDirectory;
+                   && libraryFolder.IsAbsolute && libraryFolder.ExistsDirectory
+                   && solutionFilePath.NameWithoutExtension == solutionDir.Name;
         }
 
         private static bool ReferencesUnity(IProject project)

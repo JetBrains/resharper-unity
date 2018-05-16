@@ -65,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySessionLifetimes = new SequentialLifetimes(lifetime);
             myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null).EnsureReadonly(myReadonlyToken).EnsureThisThread();
             
-            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath.Directory))
+            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath))
                 return;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)

@@ -80,7 +80,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
                 }
                 allEvents.add(event)
             }
-            
+
             if (isVisibleEvent(event))
                 onAdded.fire(event)
         }
