@@ -13,18 +13,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RELEASE;NET452;RIDER</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup>
-    <!-- Write to the same location as resharper.
-         Not ideal, but required, as the ParserGen targets uses Assembly.LoadFrom
-         on PsiGen.exe, which ends up reusing the resharper version in memory rather
-         than loading the requested one. If we change the task to use Assembly.LoadFile
-         instead, we load the correct PsiGen.exe, but then NVelocity uses Assembly.Load
-         and gets the wrong PsiGen.exe and gets the wrong templates.
-         Furthermore, the GenerateParserGen_AddToItemGroups target has the same problem
-         with the RemoveItemsInFolderTaskStub. We can override that target directly
-         as a workaround. See below -->
-    <ParserGenOutputBase>$(MSBuildThisFileDirectory)\_Generated</ParserGenOutputBase>
-  </PropertyGroup>
   <ItemGroup>
     <!-- C# -->
     <ErrorsGen Include="Daemon\Errors\CSharpErrors.xml">
@@ -83,11 +71,14 @@
     <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
       <DependentUpon>ShaderLabErrors.xml</DependentUpon>
     </Compile>
+    <Compile Remove="_Generated\**" />
+    <None Remove="_Generated\**" />
   </ItemGroup>
   <!-- Resources - api.xml, icons -->
   <ItemGroup>
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
+    <EmbeddedResource Remove="_Generated\**" />
   </ItemGroup>
   <ItemGroup>
     <LiveTemplate Include="Templates\**\*.md">
@@ -117,27 +108,4 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <!-- The original version of this can fail if resharper is compiled first - the wrong
-       PsiGen.exe is resolved from Assembly.LoadFrom. I don't think we really need to
-       do anything here other than record the newly written files for clean - the new
-       .csproj files will automatically update the Compile folder -->
-  <Target Name="GenerateParserGen_AddToItemGroups">
-    <!-- Stage 1: collect the generated files, ParserGenOutputSrc item group. -->
-    <ItemGroup>
-      <!-- Clean prev run results (if more than one parsergen in this project). -->
-      <ParserGenOutputSrc Remove="%(ParserGenOutputSrc.Identity)" />
-      <!-- Re-query for the files generated during the run. -->
-      <ParserGenOutputSrc Include="$(ParserGenOutputBase)/Parsing/%(PsiLanguageNames.Identity)/**/*">
-        <AutoGen>True</AutoGen>
-      </ParserGenOutputSrc>
-      <ParserGenOutputSrc Include="$(ParserGenOutputBase)/Psi/%(PsiLanguageNames.Identity)/**/*">
-        <AutoGen>True</AutoGen>
-      </ParserGenOutputSrc>
-      <ParserGenOutputSrc Include="$(ParserGenOutputBase)/Psi/Test/%(PsiLanguageNames.Identity)/**/*">
-        <AutoGen>True</AutoGen>
-      </ParserGenOutputSrc>
-      <!-- Support incremental clean for our files. -->
-      <FileWrites Include="%(ParserGenOutputSrc.FullPath)" />
-    </ItemGroup>
-  </Target>
 </Project>
