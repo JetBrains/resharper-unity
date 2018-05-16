@@ -17,6 +17,14 @@ Description |
 [Standard Surface Shader](File/StandardSurfaceShader.md) |
 [Unlit Shader](File/UnlitShader.md) |
 
+
+### Live Templates
+
+Shortcut | Description
+---------|------------
+[sfield](Live/SerialisedField.md) | Unity serialized field
+[sprop](Live/PropertyWithSerialisedBackingField.md) | Unity property with serialized backing field
+
 <a name="unity"></a>
 ## Category: unity
 
@@ -30,4 +38,12 @@ Description |
 [Play Mode Test](File/PlayModeTest.md) |
 [Standard Surface Shader](File/StandardSurfaceShader.md) |
 [Unlit Shader](File/UnlitShader.md) |
+
+
+### Live Templates
+
+Shortcut | Description
+---------|------------
+[sfield](Live/SerialisedField.md) | Unity serialized field
+[sprop](Live/PropertyWithSerialisedBackingField.md) | Unity property with serialized backing field
 
