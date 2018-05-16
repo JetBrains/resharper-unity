@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity.ui
 
-import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
@@ -15,16 +14,12 @@ import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.util.reactive.Property
-import org.jdom.Element
 
 @State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscoverer,
                      private val host : UnityHost,
                      solutionLifecycleHost: SolutionLifecycleHost,
-                     project: Project) : LifetimedProjectComponent(project), PersistentStateComponent<Element>, WindowManagerListener {
-    companion object {
-        const val isUnityProjectAttribute = "isUnityUI"
-    }
+                     project: Project) : LifetimedProjectComponent(project), WindowManagerListener {
 
     private var frameLifetime: LifetimeDefinition? = null
     val isUnityUI: Property<Boolean> = Property(false)
@@ -39,18 +34,6 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
                 isUnityUI.value = true
             }
         }
-    }
-
-    override fun getState(): Element? {
-        val element = Element("state")
-        val value = isUnityUI.value
-        element.setAttribute(isUnityProjectAttribute, value.toString())
-        return element
-    }
-
-    override fun loadState(element: Element) {
-        val attributeValue = element.getAttributeValue(isUnityProjectAttribute, "") ?: return
-        isUnityUI.value = attributeValue.toBoolean()
     }
 
     override fun frameCreated(frame: IdeFrame) {

@@ -7,6 +7,7 @@ import com.jetbrains.rider.model.RdProjectModelItemDescriptor
 import com.jetbrains.rider.model.Solution
 import com.jetbrains.rider.model.projectModelView
 import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.projectView.path
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.application
@@ -43,7 +44,7 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     }
 
     private fun isUnityGeneratedSolutionName(solution: Solution): Boolean {
-        return File(solution.location()).nameWithoutExtension == File(File(solution.location()).parent).name
+        return File(solution.path).nameWithoutExtension == File(File(solution.path).parent).name
     }
 
     fun addUnityReferenceListener(listener: UnityReferenceListener) {

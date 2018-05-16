@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.IdeFocusManager
-import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
 import com.jetbrains.rider.build.actions.ActiveConfigurationAndPlatformAction
 import com.jetbrains.rider.model.rdUnityModel
@@ -11,7 +10,6 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.lifetime
 import com.jetbrains.rider.util.idea.tryGetComponent
-import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.whenTrue
 
 class UnityUIMinimizer : StartupActivity {
