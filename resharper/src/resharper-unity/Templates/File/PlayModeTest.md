@@ -4,6 +4,7 @@ image: UnityCSharp
 type: File
 reformat: True
 shortenReferences: True
+categories: unity
 customProperties: Extension=cs, FileName=PlayModeTest, ValidateFileName=True
 scopes: InUnityCSharpAssetsFolder
 parameterOrder: HEADER, (CLASS), (NAMESPACE)

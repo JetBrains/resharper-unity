@@ -4,6 +4,7 @@ image: UnityCSharp
 type: File
 reformat: True
 shortenReferences: True
+categories: unity
 customProperties: Extension=cs, FileName=EditModeTest, ValidateFileName=True
 scopes: InUnityCSharpEditorFolder;InUnityCSharpFirstpassEditorFolder
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
