@@ -12,6 +12,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         
         [SettingsEntry(true, "If this option is enabled, Rider will automatically notify the Unity editor to refresh assets.")]
         public bool AllowAutomaticRefreshInUnity;
+        
+        [SettingsEntry(true, "If this option is enabled, Solution Configuration is hidden in Unity generated projects.")]
+        public bool HideSolutionConfiguration;
 
         [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of ShaderLab files.")]
         public bool EnableShaderLabParsing;

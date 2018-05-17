@@ -12,7 +12,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.isConnectedToEditor
 import com.jetbrains.rider.isConnectedToEditorLive
-import com.jetbrains.rider.isUnityProject
+import com.jetbrains.rider.isUnityGeneratedProject
 import com.jetbrains.rider.model.UnitTestLaunchPreference
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
@@ -49,7 +49,7 @@ public class UnityUnitTestUIService(project: Project, val propertiesComponent: P
     }
 
     override fun customizeTopToolBarActionGroup(actionGroup: DefaultActionGroup) {
-        if (project.isUnityProject()) {
+        if (project.isUnityGeneratedProject()) {
             actionGroup.addSeparator()
             actionGroup.add(switchUnitTestLauncherComboBox)
 

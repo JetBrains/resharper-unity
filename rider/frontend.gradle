@@ -236,6 +236,7 @@ prepareSandbox {
 
     doLast {
         assert file(unityeditorplugin_path).exists()
+        assert file(unity_full_editorplugin_path).exists()
 
         dllFiles.forEach({ f ->
             def file = file("$f")

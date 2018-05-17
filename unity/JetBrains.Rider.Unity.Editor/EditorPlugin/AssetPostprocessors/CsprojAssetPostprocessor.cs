@@ -63,6 +63,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       FixTargetFrameworkVersion(projectContentElement, xmlns);
+      FixUnityEngineReference(projectContentElement, xmlns); // shouldn't be needed in Unity 2018.2
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
       SetProjectFlavour(projectContentElement, xmlns);
@@ -72,8 +73,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       {
         SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
       }
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", xmlns, projectContentElement);
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", xmlns, projectContentElement);
+      SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
+      SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
 
       ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
       doc.Save(projectFile);
@@ -188,22 +189,66 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return Path.GetFileName(projectFile) == UNITY_EDITOR_PROJECT_NAME;
     }
 
-    private static void SetXCodeDllReference(string name, XNamespace xmlns, XElement projectContentElement)
+    private static void SetXCodeDllReference(string name, XElement projectContentElement, XNamespace xmlns)
     {
       var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-
+      if (string.IsNullOrEmpty(unityAppBaseFolder))
+      {
+        ourLogger.Verbose("SetXCodeDllReference. unityAppBaseFolder IsNullOrEmpty");
+        return;
+      }
+      
       var xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("Data/PlaybackEngines/iOSSupport", name));
       if (!File.Exists(xcodeDllPath))
         xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("PlaybackEngines/iOSSupport", name));
 
-      if (File.Exists(xcodeDllPath))
+      if (!File.Exists(xcodeDllPath)) 
+        return;
+      
+      var itemGroup = new XElement(xmlns + "ItemGroup");
+      var reference = new XElement(xmlns + "Reference");
+      reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(xcodeDllPath)));
+      reference.Add(new XElement(xmlns + "HintPath", xcodeDllPath));
+      itemGroup.Add(reference);
+      projectContentElement.Add(itemGroup);
+    }
+    
+    private static void FixUnityEngineReference(XElement projectContentElement, XNamespace xmlns)
+    {
+      var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+      if (string.IsNullOrEmpty(unityAppBaseFolder))
+      {
+        ourLogger.Verbose("FixUnityEngineReference. unityAppBaseFolder IsNullOrEmpty");
+        return;
+      }
+
+      var el = projectContentElement
+        .Elements(xmlns+"ItemGroup")
+        .Elements(xmlns+"Reference")
+        .FirstOrDefault(a => a.Attribute("Include") !=null && a.Attribute("Include").Value=="UnityEngine");
+      var hintPath = el?.Elements(xmlns + "HintPath").FirstOrDefault();
+      if (hintPath == null)
+        return;
+      var oldUnityEngineDllFileInfo = new FileInfo(hintPath.Value);
+      var unityEngineDir = new DirectoryInfo(Path.Combine(oldUnityEngineDllFileInfo.Directory.FullName, "UnityEngine"));
+      if (!unityEngineDir.Exists)
+        return;
+           
+      var newDllPath = Path.Combine(unityEngineDir.FullName, "UnityEngine.dll");
+      if (!File.Exists(newDllPath)) 
+        return;
+      
+      hintPath.SetValue(newDllPath);
+
+      var files = unityEngineDir.GetFiles("*.dll");
+      foreach (var file in files)
       {
         var itemGroup = new XElement(xmlns + "ItemGroup");
         var reference = new XElement(xmlns + "Reference");
-        reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(xcodeDllPath)));
-        reference.Add(new XElement(xmlns + "HintPath", xcodeDllPath));
+        reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(file.Name)));
+        reference.Add(new XElement(xmlns + "HintPath", file.FullName));
         itemGroup.Add(reference);
-        projectContentElement.Add(itemGroup);
+        projectContentElement.Add(itemGroup);  
       }
     }
 

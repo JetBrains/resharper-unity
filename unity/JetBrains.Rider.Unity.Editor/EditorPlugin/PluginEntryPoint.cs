@@ -276,7 +276,7 @@ namespace JetBrains.Rider.Unity.Editor
   ""app_path"": ""{EditorApplication.applicationPath}"",
   ""app_contents_path"": ""{EditorApplication.applicationContentsPath}"",
   ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}"",
-  ""is_loaded_from_assets"": ""{IsLoadedFromAssets()}"",
+  ""is_loaded_from_assets"": ""{IsLoadedFromAssets()}""
 }}");
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
