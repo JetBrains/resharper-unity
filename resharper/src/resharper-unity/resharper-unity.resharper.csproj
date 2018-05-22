@@ -118,4 +118,7 @@
     <EmbeddedResource Remove="ShaderLab\Host\**" />
     <None Remove="ShaderLab\Host\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="RdUnityProtocol" />
+  </ItemGroup>
 </Project>

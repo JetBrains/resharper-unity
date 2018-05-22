@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
         private readonly RdNotificationsModel myNotifications;
         private readonly PluginPathsProvider myPluginPathsProvider;
-        private readonly UnityVersionDetector myUnityVersionDetector;
+        private readonly UnityVersion myUnityVersion;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         private readonly ProcessingQueue myQueue;
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             RdNotificationsModel notifications,
             ISettingsStore settingsStore,
             PluginPathsProvider pluginPathsProvider,
-            UnityVersionDetector unityVersionDetector)
+            UnityVersion unityVersion)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDetector = detector;
             myNotifications = notifications;
             myPluginPathsProvider = pluginPathsProvider;
-            myUnityVersionDetector = unityVersionDetector;
+            myUnityVersion = unityVersion;
 
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
@@ -229,7 +229,8 @@ Please switch back to Unity to make plugin file appear in the solution.";
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
                 {
-                    if (myUnityVersionDetector.GetUnityVersion() < new Version("5.6"))
+                    var unityVersion = myUnityVersion.GetActualVersion(mySolution);
+                    if (unityVersion < new Version(5,6))
                     {
                         myLogger.Verbose($"Coping {editorPluginPath} -> {targetPath}");
                         editorPluginPath.CopyFile(targetPath, true);
