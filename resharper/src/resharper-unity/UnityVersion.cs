@@ -6,6 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -31,9 +32,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             var version = myUnityProjectFileCache.GetUnityVersion(project);
             return version ?? GetActualVersion(project.GetSolution());
+
         }
 
-        public Version GetActualVersion(ISolution solution)
+        private Version GetActualVersion(ISolution solution)
         {
             if (myCachedUnityVersion!=null)
               return myCachedUnityVersion;  
@@ -69,20 +71,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         myCachedUnityVersion);
                 }
             }
-            if (myCachedUnityVersion != null)
-                return myCachedUnityVersion;
-            
+ 
             myCachedUnityVersion = GetVersionByProjectVersionFile(solution);
-            if (myCachedUnityVersion != null)
-                return myCachedUnityVersion;
-            
             // If all else fails, default to 5.4. No reason for that version, other
             // than it was the first supported version :)
-            return new Version(5, 4);
+            return myCachedUnityVersion ?? new Version(5, 4);
         }
 
-        private Version GetVersionByProjectVersionFile(ISolution solution)
+        public Version GetVersionByProjectVersionFile(ISolution solution)
         {
+            if (myCachedUnityVersion != null)
+                return myCachedUnityVersion;
+            
             var projectSettingsFolder = solution.SolutionFilePath.Directory.CombineWithShortName(ProjectExtensions.ProjectSettingsFolder);
             var projectVersionFile = projectSettingsFolder.Combine("ProjectVersion.txt");
             myFileSystemTracker.AdviseFileChanges(myLifetime, projectVersionFile,

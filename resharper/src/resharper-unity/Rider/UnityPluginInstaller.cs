@@ -229,7 +229,7 @@ Please switch back to Unity to make plugin file appear in the solution.";
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
                 {
-                    var unityVersion = myUnityVersion.GetActualVersion(mySolution);
+                    var unityVersion = myUnityVersion.GetVersionByProjectVersionFile(mySolution);
                     if (unityVersion < new Version(5,6))
                     {
                         myLogger.Verbose($"Coping {editorPluginPath} -> {targetPath}");
