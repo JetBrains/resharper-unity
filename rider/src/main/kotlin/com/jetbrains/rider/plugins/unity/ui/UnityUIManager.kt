@@ -14,6 +14,7 @@ import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.util.reactive.Property
+import com.jetbrains.rider.util.reactive.whenTrue
 
 @State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscoverer,
@@ -23,6 +24,7 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
 
     private var frameLifetime: LifetimeDefinition? = null
     val isUnityUI: Property<Boolean> = Property(false)
+    private var widgetInstalled = false;
 
     init {
         WindowManager.getInstance().addListener(this)
@@ -39,12 +41,15 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
     override fun frameCreated(frame: IdeFrame) {
         frameLifetime?.terminate()
 
-        if(!isUnityUI.value)
-            return
-
-        frameLifetime = Lifetime.create(componentLifetime)
-        val frameLifetime = frameLifetime?.lifetime ?: error("frameLifetime was terminated from non-ui thread")
-        installWidget(frame, frameLifetime)
+        isUnityUI.whenTrue(componentLifetime, {
+            if (!widgetInstalled)
+            {
+                frameLifetime = Lifetime.create(componentLifetime)
+                val frameLifetime = frameLifetime?.lifetime ?: error("frameLifetime was terminated from non-ui thread")
+                installWidget(frame, frameLifetime)
+                widgetInstalled = true;
+            }
+        })
     }
 
     private fun installWidget(frame: IdeFrame, lifetime: Lifetime) {
