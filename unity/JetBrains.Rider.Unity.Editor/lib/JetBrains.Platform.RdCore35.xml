@@ -19,6 +19,22 @@
         <member name="M:JetBrains.Util.EmptyArray.GetInstance``1">
             <summary>Synonym for <see cref="F:JetBrains.Util.EmptyArray`1.Instance"/></summary>
         </member>
+        <member name="M:JetBrains.Util.src.dataStructures.BlockingPriorityQueue`1.ExtractOrBlock">
+            <summary>
+            Returns first element from queue or waits until it appears. In case of lifetime termination throws PCE.
+            </summary>
+            <returns>First element in queue</returns>
+        </member>
+        <member name="M:JetBrains.Util.src.dataStructures.BlockingPriorityQueue`1.Enqueue(`0)">
+            <summary>
+            Enqueues an item and returns the total number of items in the queue right after enqueueing, in a thread-safe-consistent manner.
+            </summary>
+        </member>
+        <member name="M:JetBrains.Util.src.dataStructures.BlockingPriorityQueue`1.ToArray">
+            <summary>
+            Copies data to an array, thread-safely.
+            </summary>
+        </member>
         <member name="F:JetBrains.Util.MethodImplAdvancedOptions.AggressiveInlining">
             <summary>
             Corresponds to <code>MethodImplOptions.AggressiveInlining</code> value in 4.5 framework. This value is just swallowed in lower frameworks
