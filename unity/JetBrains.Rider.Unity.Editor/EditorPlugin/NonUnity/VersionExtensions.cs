@@ -8,6 +8,9 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     {
       try
       {
+        if (!input.Contains("."))
+          input += ".0"; // new Version fails if case of single digit
+        
         version = new Version(input);
         return true;
       }
