@@ -7,7 +7,9 @@ using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using JetBrains.Util;
 using NUnit.Framework;
+#if !RIDER
 using PlatformID = JetBrains.Application.platforms.PlatformID;
+#endif
 
 #if RIDER
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
