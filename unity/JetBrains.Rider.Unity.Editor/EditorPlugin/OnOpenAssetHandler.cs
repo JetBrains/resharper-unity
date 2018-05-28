@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
@@ -138,7 +137,7 @@ namespace JetBrains.Rider.Unity.Editor
           return;
         
         if (process.Id>0)
-          UnityEngine.Debug.Log(User32Dll.AllowSetForegroundWindow(process.Id));
+          User32Dll.AllowSetForegroundWindow(process.Id);
         
         // Collect top level windows
         var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
