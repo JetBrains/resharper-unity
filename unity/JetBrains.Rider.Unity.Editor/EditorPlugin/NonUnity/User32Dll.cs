@@ -46,6 +46,9 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
       ExactSpelling = true)]
     public static extern int SetForegroundWindow(IntPtr hWnd);
+    
+    [DllImport("user32.dll")]
+    public static extern bool AllowSetForegroundWindow(int dwProcessId);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
       ExactSpelling = true)]
