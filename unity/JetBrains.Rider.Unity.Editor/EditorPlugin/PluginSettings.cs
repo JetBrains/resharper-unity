@@ -234,12 +234,15 @@ namespace JetBrains.Rider.Unity.Editor
       OverrideLangVersion = EditorGUILayout.Toggle(new GUIContent("Override LangVersion"), OverrideLangVersion);
       if (OverrideLangVersion)
       {
+        var workaroundUrl = "https://gist.github.com/van800/875ce55eaf88d65b105d010d7b38a8d4";
+        var workaroundText = "Use this <color=#0000FF>workaround</color> if overriding doesn't work.";
         var helpLangVersion = @"Avoid overriding, unless there is no particular need.";
 
         LangVersion =
           EditorGUILayout.TextField(
             new GUIContent("LangVersion:",
               helpLangVersion), LangVersion);
+        LinkButton(caption: workaroundText, url: workaroundUrl);
         EditorGUILayout.HelpBox(helpLangVersion, MessageType.None);
       }
 
@@ -254,7 +257,8 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUI.EndChangeCheck();
 
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
-      LinkButton(caption: githubRepo, url: githubRepo);
+      var caption = $"<color=#0000FF>{githubRepo}</color>";
+      LinkButton(caption: caption, url: githubRepo);
 
       // left for testing purposes
 /*      if (GUILayout.Button("reset RiderInitializedOnce = false"))
@@ -269,7 +273,6 @@ namespace JetBrains.Rider.Unity.Editor
     {
       var style = GUI.skin.label;
       style.richText = true;
-      caption = $"<color=#0000FF>{caption}</color>";
 
       var bClicked = GUILayout.Button(caption, style);
 

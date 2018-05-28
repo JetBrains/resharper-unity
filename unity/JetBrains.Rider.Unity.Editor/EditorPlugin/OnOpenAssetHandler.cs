@@ -1,7 +1,9 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
@@ -37,15 +39,25 @@ namespace JetBrains.Rider.Unity.Editor
       if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader" ||
             (selected.GetType().ToString() == "UnityEngine.TextAsset" &&
-//#if UNITY_5 || UNITY_5_5_OR_NEWER
-//          EditorSettings.projectGenerationUserExtensions.Contains(Path.GetExtension(assetFilePath).Substring(1))
-//#else
-             EditorSettings.externalVersionControl.Contains(Path.GetExtension(assetFilePath).Substring(1))
-//#endif
+             GetExtensionStrings().Contains(Path.GetExtension(assetFilePath).Substring(1))
             )))
         return false;
 
       return OnOpenedAsset(assetFilePath, line);
+    }
+
+    private static string[] GetExtensionStrings()
+    {
+      var propertyInfo = typeof(EditorSettings)
+        .GetProperty("projectGenerationUserExtensions", BindingFlags.Public | BindingFlags.Static);
+      var extensionStrings = new[] {"ts", "bjs", "javascript", "json", "html", "shader", "template"};
+      if (propertyInfo != null)
+      {
+        var value = propertyInfo.GetValue(null, null);
+        extensionStrings = (string[]) value;
+      }
+
+      return extensionStrings;
     }
 
     [UsedImplicitly] // https://github.com/JetBrains/resharper-unity/issues/475
@@ -68,11 +80,13 @@ namespace JetBrains.Rider.Unity.Editor
         {
           const int column = 0;
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
-          model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, column));
           if (model.RiderProcessId.HasValue())
             ActivateWindow(model.RiderProcessId.Value);
           else
             ActivateWindow();
+          
+          model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, column));
+          
           // todo: maybe fallback to CallRider, if returns false
           return true;
         }
@@ -108,7 +122,7 @@ namespace JetBrains.Rider.Unity.Editor
       proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
       proc.Start();
 
-      ActivateWindow();
+      ActivateWindow(proc.Id);
       return true;
     }
 
@@ -123,6 +137,9 @@ namespace JetBrains.Rider.Unity.Editor
         if (process == null)
           return;
         
+        if (process.Id>0)
+          UnityEngine.Debug.Log(User32Dll.AllowSetForegroundWindow(process.Id));
+        
         // Collect top level windows
         var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
         // Get process main window title
@@ -133,6 +150,7 @@ namespace JetBrains.Rider.Unity.Editor
           //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
           User32Dll.SetForegroundWindow(windowHandle);
         }
+
       }
       catch (Exception e)
       {

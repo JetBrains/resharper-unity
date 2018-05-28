@@ -179,7 +179,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
                     var model = new EditorPluginModel(lf, protocol);
                     model.IsBackendConnected.Set(rdVoid => true);
-                    model.RiderProcessId.SetValue(Process.GetCurrentProcess().Id);
+                    var frontendProcess = Process.GetCurrentProcess().GetParent();
+                    if (frontendProcess != null)
+                    {
+                        model.RiderProcessId.SetValue(frontendProcess.Id);
+                    }
                     myHost.SetModelData("UNITY_SessionInitialized", "true");
 
                     SubscribeToLogs(lf, model);
