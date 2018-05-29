@@ -92,5 +92,8 @@ object EditorPluginModel: Root(
         property("unitTestLaunch", UnitTestLaunch)
 
         property("fullPluginPath", string)
+
+        call("openEditorConsole", void, void)
+        call("openPlayerConsole", void, void)
     }
 }

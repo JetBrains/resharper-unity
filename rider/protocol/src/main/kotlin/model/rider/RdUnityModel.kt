@@ -15,6 +15,8 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         map("data", string, string)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
         property("hideSolutionConfiguration", bool)
+        call("openEditorConsole", void, void)
+        call("openPlayerConsole", void, void)
     }
 
 }
