@@ -28,6 +28,8 @@ intellij {
         version = "2018.2-SNAPSHOT"
     }
 
+    localPath = "build\\riderRD-2018.2-SNAPSHOT"
+
     // Sources aren't available for Rider
     downloadSources = false
 }
