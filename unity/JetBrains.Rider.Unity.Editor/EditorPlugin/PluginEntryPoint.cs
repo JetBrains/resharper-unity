@@ -148,6 +148,7 @@ namespace JetBrains.Rider.Unity.Editor
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           AdviseLogActions(model);
+          InitEditorLogPath(model);
           
           model.FullPluginPath.Advise(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
           model.ApplicationVersion.SetValue(UnityUtils.UnityVersion.ToString());
@@ -260,8 +261,59 @@ namespace JetBrains.Rider.Unity.Editor
       //    }
     }
 
-    private static void AdviseLogActions(EditorPluginModel model)
+    private static void InitEditorLogPath(EditorPluginModel editorPluginModel)
     {
+      // https://docs.unity3d.com/Manual/LogFiles.html
+      //PlayerSettings.productName;
+      //PlayerSettings.companyName;
+      //~/Library/Logs/Unity/Editor.log
+      //C:\Users\username\AppData\Local\Unity\Editor\Editor.log
+      //~/.config/unity3d/Editor.log
+
+      string editorLogpath = string.Empty;
+      string playerLogPath = string.Empty;
+
+      switch (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily)
+      {
+        case OperatingSystemFamilyRider.Windows:
+        {
+          var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+          editorLogpath = Path.Combine(localAppData, @"Unity\Editor\Editor.log");
+          var userProfile = Environment.GetEnvironmentVariable("USERPROFILE");
+          if (!string.IsNullOrEmpty(userProfile))
+            playerLogPath = Path.Combine(
+              Path.Combine(Path.Combine(Path.Combine(userProfile, @"AppData\LocalLow"), PlayerSettings.companyName),
+                PlayerSettings.productName),"output_log.txt");
+          break;
+        }
+        case OperatingSystemFamilyRider.MacOSX:
+        {
+          var home = Environment.GetEnvironmentVariable("HOME");
+          if (!string.IsNullOrEmpty(home))
+          {
+            editorLogpath = Path.Combine(home, "Library/Logs/Unity/Editor.log");
+            playerLogPath = Path.Combine(home, "Library/Logs/Unity/Player.log");
+          }
+          break;
+        }
+        case OperatingSystemFamilyRider.Linux:
+        {
+          var home = Environment.GetEnvironmentVariable("HOME");
+          if (!string.IsNullOrEmpty(home))
+          {
+            editorLogpath = Path.Combine(home, ".config/unity3d/Editor.log");
+            playerLogPath = Path.Combine(home, $".config/unity3d/{PlayerSettings.companyName}/{PlayerSettings.productName}/Player.log");
+          }
+          break;
+        }
+      }
+
+      editorPluginModel.EditorLogPath.SetValue(editorLogpath);
+      editorPluginModel.PlayerLogPath.SetValue(playerLogPath);
+    }
+
+    private static void AdviseLogActions(EditorPluginModel model)
+    {    
       model.OpenEditorConsole.Set(lifetime =>
       {
         InternalEditorUtility.OpenEditorConsole();

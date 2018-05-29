@@ -11,7 +11,9 @@ import com.intellij.ui.content.ContentManagerAdapter
 import com.intellij.ui.content.ContentManagerEvent
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorConsoleLogViewAction
+import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerConsoleLogViewAction
+import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
@@ -42,6 +44,8 @@ class UnityToolWindowFactory(project: Project,
 
         if (toolWindow is ToolWindowEx) {
             toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
+                add(RiderUnityOpenEditorLogAction())
+                add(RiderUnityOpenPlayerLogAction())
                 add(RiderUnityOpenEditorConsoleLogViewAction())
                 add(RiderUnityOpenPlayerConsoleLogViewAction())
             })

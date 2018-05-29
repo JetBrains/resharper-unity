@@ -93,6 +93,9 @@ object EditorPluginModel: Root(
 
         property("fullPluginPath", string)
 
+        property("editorLogPath", string)
+        property("playerLogPath", string)
+
         call("openEditorConsole", void, void)
         call("openPlayerConsole", void, void)
     }

@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 UnityModel.Value?.OpenPlayerConsole.Start(RdVoid.Instance);
                 return RdVoid.Instance;
             });
-
+            
             // todo: consider non-Unity Solution with Unity-generated projects
             var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
 
@@ -204,6 +204,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     SubscribeToOpenFile(model);
                     model.Play.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
+                    
+                    model.EditorLogPath.Advise(lifetime, s => myHost.PerformModelAction(a=>a.EditorLogPath.SetValue(s)));
+                    model.PlayerLogPath.Advise(lifetime, s => myHost.PerformModelAction(a=>a.PlayerLogPath.SetValue(s)));
                     
                     BindPluginPathToSettings(lf, model);
                     
