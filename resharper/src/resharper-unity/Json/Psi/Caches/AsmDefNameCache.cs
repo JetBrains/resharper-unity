@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Json.Psi.DeclaredElements;
@@ -31,6 +32,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Psi.Caches
 #if DEBUG
             ClearOnLoad = true;
 #endif
+        }
+
+        [CanBeNull]
+        public AsmDefNameDeclaredElement GetNameDeclaredElement(IPsiSourceFile sourceFile)
+        {
+            if (myDeclaredElements.TryGetValue(sourceFile, out var declaredElement))
+                return declaredElement;
+            return null;
         }
 
         // Returns a symbol table for all items. Used to resolve references and provide completion

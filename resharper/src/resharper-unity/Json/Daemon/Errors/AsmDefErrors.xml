@@ -13,4 +13,11 @@
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
   </Error>
+  
+  <Error name="ReferencingSelf" staticGroup="AsmDefErrors">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Cannot reference self" />
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
+  </Error>
 </Errors>
