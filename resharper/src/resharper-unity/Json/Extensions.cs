@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -13,7 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json
             return sourceFile.GetExtensionWithDot().Equals(".asmdef", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static bool IsNameStringLiteralValue(this ITreeNode node)
+        [ContractAnnotation("node:null => false")]
+        public static bool IsNameStringLiteralValue([CanBeNull] this ITreeNode node)
         {
             if (node is IJavaScriptLiteralExpression literal && literal.IsStringLiteral())
             {
@@ -28,7 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json
             return false;
         }
 
-        public static bool IsReferencesStringLiteralValue(this ITreeNode node)
+        [ContractAnnotation("node:null => false")]
+        public static bool IsReferencesStringLiteralValue([CanBeNull] this ITreeNode node)
         {
             if (node is IJavaScriptLiteralExpression literal && literal.IsStringLiteral())
             {

@@ -1,0 +1,8 @@
+{
+  "name": "Tes{caret:FromName}t01",
+  "references": [
+    "Test01"
+  ],
+  "Test01": "nope",
+  "IgnoreMe": "Test01"
+}

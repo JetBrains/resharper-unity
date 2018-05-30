@@ -1,0 +1,12 @@
+﻿{
+  "name": "|Test01|(0:FromName)",
+  "references": [
+    "|Test01|(1:FromName)"
+  ],
+  "Test01": "nope",
+  "IgnoreMe": "Test01"
+}
+
+---------------------------------------------------------
+(0:FromName): ReSharper Usage of element under cursor
+(1:FromName): ReSharper Usage of element under cursor

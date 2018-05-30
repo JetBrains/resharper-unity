@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using NUnit.Framework;
+using PlatformID = JetBrains.Application.platforms.PlatformID;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.CodeCompletion
 {
