@@ -18,9 +18,5 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         property("editorLogPath", string)
         property("playerLogPath", string)
-
-        call("openEditorConsole", void, void)
-        call("openPlayerConsole", void, void)
     }
-
 }

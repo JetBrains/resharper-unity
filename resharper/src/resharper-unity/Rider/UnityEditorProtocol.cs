@@ -75,18 +75,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var solFolder = mySolution.SolutionFilePath.Directory;
             AdviseModelData(lifetime, mySolution.GetProtocolSolution());
-            var rdModel = mySolution.GetProtocolSolution().GetRdUnityModel();
-
-            rdModel.OpenEditorConsole.Set(l =>
-            {
-                UnityModel.Value?.OpenEditorConsole.Start(RdVoid.Instance);
-                return RdVoid.Instance;
-            });
-            rdModel.OpenPlayerConsole.Set(l =>
-            {
-                UnityModel.Value?.OpenPlayerConsole.Start(RdVoid.Instance);
-                return RdVoid.Instance;
-            });
             
             // todo: consider non-Unity Solution with Unity-generated projects
             var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");

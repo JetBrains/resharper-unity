@@ -42,20 +42,3 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction("Open Unity Player
         }
     }
 }
-
-
-class RiderUnityOpenEditorConsoleLogViewAction : RiderUnityLogViewAction("Open Unity Editor Log (via Unity)", "", UnityIcons.Unity.UnityEdit) {
-
-    override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project ?: return
-        project.solution.rdUnityModel.openEditorConsole.start(Unit)
-    }
-}
-
-class RiderUnityOpenPlayerConsoleLogViewAction : RiderUnityLogViewAction("Open Unity Play Log (via Unity)", "", UnityIcons.Unity.UnityPlay) {
-
-    override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project ?: return
-        project.solution.rdUnityModel.openPlayerConsole.start(Unit)
-    }
-}

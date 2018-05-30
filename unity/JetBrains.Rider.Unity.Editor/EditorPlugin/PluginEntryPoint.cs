@@ -19,7 +19,6 @@ using Debug = UnityEngine.Debug;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor.Callbacks;
-using UnityEditorInternal;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -147,7 +146,6 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseModel(model);
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
-          AdviseLogActions(model);
           InitEditorLogPath(model);
           
           model.FullPluginPath.Advise(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
@@ -310,20 +308,6 @@ namespace JetBrains.Rider.Unity.Editor
 
       editorPluginModel.EditorLogPath.SetValue(editorLogpath);
       editorPluginModel.PlayerLogPath.SetValue(playerLogPath);
-    }
-
-    private static void AdviseLogActions(EditorPluginModel model)
-    {    
-      model.OpenEditorConsole.Set(lifetime =>
-      {
-        InternalEditorUtility.OpenEditorConsole();
-        return RdVoid.Instance;
-      });
-      model.OpenPlayerConsole.Set(lifetime =>
-      {
-        InternalEditorUtility.OpenPlayerConsole();
-        return RdVoid.Instance;
-      });
     }
 
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
