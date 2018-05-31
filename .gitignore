@@ -75,6 +75,7 @@ rider/**/out/*
 **/*.generated.dotSettings
 **/*.generated.cs
 **/*.generated.kt
+**/*.generated.xaml
 
 resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
