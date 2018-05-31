@@ -22,4 +22,7 @@
   <PropertyGroup>
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
+
+  <!-- Import version number -->
+  <Import Project="..\..\Packaging.props" />
 </Project>

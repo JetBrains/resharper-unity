@@ -7,6 +7,10 @@ using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.Util;
 
+#if RIDER
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
+#endif
+
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
     [UnitTestProvider]
@@ -58,14 +62,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return String.CompareOrdinal(x.ShortName, y.ShortName);
         }
 
-        public string ID
-        {
-            get { return "UnityTest"; }
-        }
+        public string ID => "UnityTest";
 
-        public string Name
-        {
-            get { return "UnityTest"; }
-        }
+        public string Name => "UnityTest";
     }
 }

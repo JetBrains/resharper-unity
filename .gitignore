@@ -14,8 +14,9 @@
 **/.idea/**/dataSources.local.xml
 **/.idea/**/sqlDataSources.xml
 **/.idea/**/dynamic.xml
+**/.idea/**/uiDesigner.xml
 
-# Rider code
+# Rider code (IntelliJ excludes)
 
 # Gradle:
 # NOTE: gradle.xml is often also ignored here. This is only required if the gradle.xml
@@ -30,56 +31,58 @@ rider/.idea/**/modules.xml
 rider/.idea/**/modules/*.iml
 rider/.idea/**/compiler.xml
 
-# Gradle output
-rider/build/
 
-# ReSharper code
-resharper/build/
+# C# solutions (Rider excludes)
 
-# Rider auto-generates .iml files. We don't need to track them, unlike most IntelliJ projects
+# Rider creates nested .idea folders, one for each solution, so we don't get clashes if there are multiple
+# solutions in the same folder. This is the reason for the .idea/**/whatever pattern
+# Rider auto-generates a lot of the files in the .idea folder:
+# .name (from the .sln file)
+# modules.xml and .iml files
+# contentModel.xml
+# (indexLayout.xml should be committed if you add existing folder)
+resharper/src/.idea/**/.name
+resharper/src/.idea/**/modules.xml
 resharper/src/.idea/**/*.iml
-
-# ContentModel.xml is also auto-generated
 resharper/src/.idea/**/contentModel.xml
-resharper/src/.idea/**/other.xml
 
-resharper/src/.vs/
-
-apiParser/.idea/**/*.iml
+apiParser/.idea/**/.name
 apiParser/.idea/**/modules.xml
+apiParser/.idea/**/*.iml
 apiParser/.idea/**/contentModel.xml
 
-# New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
-# Would be nice to download them somewhere outside of the source tree.
-**/Packages/*
-*.nupkg
 
+# Gradle output
+
+rider/build/
+resharper/build/
+
+
+# IntelliJ build output (shouldn't really see these if we're using gradle projects)
+rider/**/out/*
+
+
+# Traditional C# excludes
+**/.vs/
+**/Packages/*
 *.suo
 *.user
 [Bb]in
 [Oo]bj
 
-resharper/src/resharper-unity/_Generated/
-resharper/src/resharper-unity/templates/**/*.generated.dotSettings
-resharper/src/**/*.generated.cs
+
+# Generated files
+**/*.generated.dotSettings
+**/*.generated.cs
+**/*.generated.kt
+
 resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp
 
-rider/src/**/*.generated.kt
-unity/**/*.generated.cs
 
-# Backup & report files from converting an old project file to a newer Visual Studio version
-_UpgradeReport_Files/
-Backup*/
-UpgradeLog*.XML
-
-Thumbs.db
-Desktop.ini
-.DS_Store
-rider/out/*
-rider/.idea/uiDesigner.xml
-**/.rdgen
+resharper/src/resharper-unity/_Generated/
+resharper/src/NuGet.Config
 
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove
@@ -95,3 +98,13 @@ unity/compilation.log
 unity/**/manifest.json
 unity/JetBrains.Rider.Unity.Editor/EditorPlugin.Tests/tsconfig.json
 unity/Assets/*
+
+
+# Backup & report files from converting an old project file to a newer Visual Studio version
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+
+Thumbs.db
+Desktop.ini
+.DS_Store

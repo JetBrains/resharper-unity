@@ -7,6 +7,10 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.Util;
+
+#if RIDER
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
+#endif
 using JetBrains.Util.Reflection;
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -76,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static bool ReferencesAssembly(IProject project, TargetFrameworkId targetFrameworkId, AssemblyNameInfo name)
         {            
             return ReferencedAssembliesService.IsProjectReferencingAssemblyByName(project,
-                targetFrameworkId, name, out var _);
+                targetFrameworkId, name, out _);
         }
     }
 }

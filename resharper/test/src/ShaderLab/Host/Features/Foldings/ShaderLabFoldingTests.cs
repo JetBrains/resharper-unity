@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Host.Features.Foldin
             return highlighting.GetType().Name == "CodeFoldingHighlighting";
         }
 
+        [Ignore("Host features are not available to tests")]
         [Test] public void TestFoldings() { DoNamedTest2(); }
     }
 }

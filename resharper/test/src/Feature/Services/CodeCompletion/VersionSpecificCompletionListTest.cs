@@ -7,7 +7,13 @@ using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using JetBrains.Util;
 using NUnit.Framework;
+#if !RIDER
 using PlatformID = JetBrains.Application.platforms.PlatformID;
+#endif
+
+#if RIDER
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletion
 {
@@ -17,9 +23,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
         protected override string RelativeTestDataPath => @"codeCompletion\List";
         protected override bool CheckAutomaticCompletionDefault() => true;
 
-        protected override Pair<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>> CreateProjectDescriptor(PlatformID platformID, string projectName, string outputAssemblyName, ICollection<FileSystemPath> absoluteFileSet, ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> libraries, Guid projectGuid)
+#if RIDER
+        protected override Pair<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>> CreateProjectDescriptor(string projectName, string outputAssemblyName, ICollection<FileSystemPath> absoluteFileSet,
+            ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> libraries, Guid projectGuid)
+#else
+                protected override Pair<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>> CreateProjectDescriptor(PlatformID platformID, string projectName, string outputAssemblyName, ICollection<FileSystemPath> absoluteFileSet, ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> libraries, Guid projectGuid)
+#endif
         {
+#if RIDER
+            var projectDescriptor = base.CreateProjectDescriptor(projectName, outputAssemblyName, absoluteFileSet, libraries, projectGuid);
+#else
             var projectDescriptor = base.CreateProjectDescriptor(platformID, projectName, outputAssemblyName, absoluteFileSet, libraries, projectGuid);
+#endif
             var activeConfigurations = projectDescriptor.First.ProjectProperties.ActiveConfigurations;
             var projectConfiguration = (CSharpProjectConfiguration)activeConfigurations.GetOrCreateConfiguration(TargetFrameworkId.Default);
             var testUnityAttributes = GetClassAttributes<TestUnityAttribute>().Single();
