@@ -110,7 +110,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
 
     fun fire() = onChanged.fire(getVisibleEvents())
 
-    var selectedItem : RdLogEvent? = null
+    var selectedItem : LogPanelItem? = null
 
     init {
         typeFilters.onChanged.advise(lifetime) { fire() }

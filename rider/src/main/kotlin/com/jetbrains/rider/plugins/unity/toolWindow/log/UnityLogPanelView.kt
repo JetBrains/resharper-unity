@@ -18,6 +18,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -138,7 +139,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
     private fun addToList(newEvent: RdLogEvent) {
-        eventList.riderModel.addElement(newEvent)
+        eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1)) // todo:fix
         // on big amount of logs it causes frontend hangs
 //        if (logModel.selectedItem == null) {
 //            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
@@ -146,7 +147,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
     }
 
     // TODO: optimize
-    private fun refreshList(newEvents: List<RdLogEvent>) {
+    private fun refreshList(newEvents: List<LogPanelItem>) {
         eventList.riderModel.clear()
         for (event in newEvents) {
             eventList.riderModel.addElement(event)
@@ -166,7 +167,13 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         }
 
         logModel.onAdded.advise(logModel.lifetime) { addToList(it) }
-        logModel.onChanged.advise(logModel.lifetime) { refreshList(it) }
+        logModel.onChanged.advise(logModel.lifetime) { refreshList(it.map { logEvent -> object {
+            var message = logEvent.message
+            var stackTrace = logEvent.stackTrace
+            var mode  = logEvent.mode
+            var type =logEvent.type
+        } }.groupingBy { it }.eachCount()
+            .map { t-> LogPanelItem(0, t.key.type, t.key.mode, t.key.message, t.key.stackTrace, t.value) }) }
         logModel.onCleared.advise(logModel.lifetime) { console.clear() }
         logModel.fire()
     }

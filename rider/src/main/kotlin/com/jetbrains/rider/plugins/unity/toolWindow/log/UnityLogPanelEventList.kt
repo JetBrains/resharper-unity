@@ -11,15 +11,16 @@ import com.intellij.pom.Navigatable
 import com.intellij.ui.TreeUIHelper
 import com.intellij.ui.components.JBList
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
+import com.jetbrains.rider.util.first
 import com.jetbrains.rider.util.idea.toVirtualFile
 import java.awt.datatransfer.StringSelection
 import java.io.File
 import javax.swing.DefaultListModel
 import javax.swing.ListSelectionModel
 
-class UnityLogPanelEventList : JBList<RdLogEvent>(emptyList()), DataProvider, CopyProvider {
-    val riderModel: DefaultListModel<RdLogEvent>
-        get() = model as DefaultListModel<RdLogEvent>
+class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, CopyProvider {
+    val riderModel: DefaultListModel<LogPanelItem>
+        get() = model as DefaultListModel<LogPanelItem>
 
     init {
         cellRenderer = UnityLogPanelEventRenderer()
@@ -71,15 +72,14 @@ class UnityLogPanelEventList : JBList<RdLogEvent>(emptyList()), DataProvider, Co
     override fun isCopyEnabled(dataContext: DataContext) = !isSelectionEmpty
     override fun isCopyVisible(dataContext: DataContext) = !isSelectionEmpty
 
-    private fun RdLogEvent.getStackTraceForCopy() = stackTrace
+    private fun LogPanelItem.getStackTraceForCopy() = stackTrace
         .split('\r', '\n')
         .filter { it.isNotEmpty() }
         .joinToString("\n") { "    " + it }
 
-    private fun RdLogEvent.getTextForCopy(): String {
+    private fun LogPanelItem.getTextForCopy(): String {
         val header = "[$type $mode] $message"
         return if (stackTrace.isBlank()) header else header + "\n" + getStackTraceForCopy()
     }
-
 
 }
