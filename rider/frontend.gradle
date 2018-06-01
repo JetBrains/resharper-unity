@@ -28,6 +28,9 @@ intellij {
         version = "2018.2-SNAPSHOT"
     }
 
+    // please do not remove this line. Contact Ivan.Shakhov instead.
+    // intellijRepo = "https://www.jetbrains.com/intellij-repository"
+
     // Sources aren't available for Rider
     downloadSources = false
 }
