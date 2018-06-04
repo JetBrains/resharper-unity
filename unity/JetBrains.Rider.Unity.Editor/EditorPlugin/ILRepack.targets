@@ -5,7 +5,7 @@
     <ILRepackInputAssemblies Include="../lib/*.dll" />
   </ItemGroup>
   <PropertyGroup>
-    <ILRepackOutputAssembly>../../Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll</ILRepackOutputAssembly>
+    <ILRepackOutputAssembly>../../$(AssemblyName)/Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll</ILRepackOutputAssembly>
   </PropertyGroup>
   <Target Name="RiderILRepack" AfterTargets="Build" Inputs="@(ILRepackInputAssemblies)" Outputs="$(ILRepackOutputAssembly)">
     <ItemGroup>
