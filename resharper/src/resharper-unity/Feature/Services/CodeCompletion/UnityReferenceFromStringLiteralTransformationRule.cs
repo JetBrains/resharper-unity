@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
 {
     // Removes everything apart from name from completion items for event functions in string literals
     [Language(typeof(CSharpLanguage))]
-    public class UnityRefereneceFromStringLiteralTransformationRule : ItemsProviderOfSpecificContext<CSharpCodeCompletionContext>
+    public class UnityReferenceFromStringLiteralTransformationRule : ItemsProviderOfSpecificContext<CSharpCodeCompletionContext>
     {
         protected override bool IsAvailable(CSharpCodeCompletionContext context)
         {
