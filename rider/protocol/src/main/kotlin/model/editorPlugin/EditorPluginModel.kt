@@ -92,5 +92,8 @@ object EditorPluginModel: Root(
         property("unitTestLaunch", UnitTestLaunch)
 
         property("fullPluginPath", string)
+
+        property("editorLogPath", string)
+        property("playerLogPath", string)
     }
 }

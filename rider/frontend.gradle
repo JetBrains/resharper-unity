@@ -69,8 +69,6 @@ else {
 
 ext.rdLibDirectory = new File(frontendSdkRoot, "lib/rd").canonicalFile
 
-ext.kotlin_version = '1.2.10'
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -88,7 +86,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib"
 }
 
 // TODO: Add an msbuild task for this, too?
@@ -209,8 +207,8 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 
 def dllFiles = [
-    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net452/JetBrains.ReSharper.Plugins.Unity.dll",
-    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net452/JetBrains.ReSharper.Plugins.Unity.pdb",
+    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
+    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
 ]
 
 def annotationsFrom = '../resharper/src/resharper-unity/annotations'
