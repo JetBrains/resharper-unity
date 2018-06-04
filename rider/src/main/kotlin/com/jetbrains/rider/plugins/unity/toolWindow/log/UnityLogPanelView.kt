@@ -167,15 +167,17 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
         logModel.onAdded.advise(logModel.lifetime) { addToList(it) }
         logModel.onChanged.advise(logModel.lifetime) {
-            refreshList(it.groupingBy
-            {
-                logEvent -> object {
-                var message = logEvent.message
-                var stackTrace = logEvent.stackTrace
-                var mode = logEvent.mode
-                var type = logEvent.type }
-            }.eachCount()
-            .map { t-> LogPanelItem(0, t.key.type, t.key.mode, t.key.message, t.key.stackTrace, t.value) }) }
+            var list = it
+                .groupingBy()
+                {
+                    Triple(Pair(it.message, it.mode), it.type, it.stackTrace)
+                }
+                .eachCount()
+                .map { t->
+                    LogPanelItem(0, t.key.second, t.key.first.second, t.key.first.first, t.key.third, t.value)
+                }
+            refreshList(list)
+        }
 
         logModel.onCleared.advise(logModel.lifetime) { console.clear() }
         logModel.fire()
