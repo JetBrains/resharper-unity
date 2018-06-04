@@ -16,6 +16,7 @@ ProjectSettings/*
 obj/*
 Temp/*
 **/packages/*
+build/*
 
 Assets/Plugins/Editor/JetBrains/Unity3DRider.cs
 Assets/Plugins/Editor/JetBrains/*.pdb

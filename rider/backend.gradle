@@ -27,8 +27,8 @@ class BackendHelper {
         assert backendRoot.isDirectory()
 
         unityRoot = new File(repositoryRoot, 'unity')
-        unityPluginSolution = new File(unityRoot, 'JetBrains.Rider.Unity.Editor/JetBrains.Rider.Unity.Editor.sln')
-        unityPluginSingleProject = new File(unityRoot, 'JetBrains.Rider.Unity.Editor/EditorPlugin/EditorPlugin.csproj')
+        unityPluginSolution = new File(unityRoot, 'JetBrains.Rider.Unity.Editor.sln')
+        unityPluginSingleProject = new File(unityRoot, 'EditorPlugin/EditorPlugin.csproj')
 
         resharperHostPluginSolution = new File(backendRoot, 'src/resharper-unity.sln')
         assert resharperHostPluginSolution.isFile()
