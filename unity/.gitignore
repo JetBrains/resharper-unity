@@ -6,8 +6,8 @@ _ReSharper.Caches*
 *.suo
 *.meta
 
-!JetBrains.Rider.Unity.Editor/**/*.sln
-!JetBrains.Rider.Unity.Editor/**/*.csproj
+!*.sln
+!*.csproj
 
 Library/*
 !Library/resharper-unity-libs/**/*
