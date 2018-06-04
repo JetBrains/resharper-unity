@@ -9,18 +9,6 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
-    [Flags]
-    public enum EventFunctionMatch
-    {
-        NoMatch = 1,
-        MatchingName = 2,
-        MatchingStaticModifier = 4,
-        MatchingSignature = 8,
-        MatchingReturnType = 16,
-        MatchingTypeParameters = 32,
-        ExactMatch = MatchingName | MatchingStaticModifier | MatchingSignature | MatchingReturnType | MatchingTypeParameters
-    }
-
     [SolutionComponent]
     public class UnityApi
     {
@@ -106,9 +94,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetUnityEventFunction(method, out var _);
         }
 
-        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, out EventFunctionMatch match)
+        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, out MethodSignatureMatch match)
         {
-            match = EventFunctionMatch.NoMatch;
+            match = MethodSignatureMatch.NoMatch;
 
             var projectPsiModule = method.Module as IProjectPsiModule;
             var containingType = method.GetContainingType();
@@ -120,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     foreach (var function in type.GetEventFunctions(unityVersion))
                     {
                         match = function.Match(method);
-                        if (function.Match(method) != EventFunctionMatch.NoMatch)
+                        if (function.Match(method) != MethodSignatureMatch.NoMatch)
                             return function;
                     }
                 }

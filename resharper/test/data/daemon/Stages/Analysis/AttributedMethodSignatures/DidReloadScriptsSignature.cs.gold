@@ -27,6 +27,12 @@ public class TestClass
     private static void WrongTypeParameters|<T1, T2>|(3)()
     {
     }
+
+    [DidReloadScripts]
+    private int |AllWrong|(4)(int value)
+    {
+        return 0;
+    }
 }
 
 ---------------------------------------------------------
@@ -34,3 +40,4 @@ public class TestClass
 (1): ReSharper Warning: Incorrect return type. Expected 'void'
 (2): ReSharper Warning: Incorrect method parameters. Expected '()'
 (3): ReSharper Warning: Incorrect type parameters
+(4): ReSharper Warning: Incorrect method signature. Expected 'static void AllWrong()'

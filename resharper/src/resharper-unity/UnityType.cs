@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             foreach (var function in myEventFunctions)
             {
-                if (function.SupportsVersion(normalisedUnityVersion) && function.Match(method) != EventFunctionMatch.NoMatch)
+                if (function.SupportsVersion(normalisedUnityVersion) && function.Match(method) != MethodSignatureMatch.NoMatch)
                     return true;
             }
             return false;
