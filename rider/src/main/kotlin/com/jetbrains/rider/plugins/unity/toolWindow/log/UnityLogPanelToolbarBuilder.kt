@@ -35,6 +35,32 @@ object UnityLogPanelToolbarBuilder {
             override fun setSelected(e: AnActionEvent?, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
         }
 
+        fun Collapseall() = object : ToggleAction("Collapse similar items", "", AllIcons.Actions.Collapseall) {
+            override fun isSelected(e: AnActionEvent?) = false
+            override fun setSelected(e: AnActionEvent?, value: Boolean) {
+                model.mergeSimilarItems.set(value)
+            }
+
+            override fun update(e: AnActionEvent) {
+                if (model.mergeSimilarItems.value)
+                    e.presentation.isVisible = false
+                else
+                    e.presentation.isVisible = true
+            }
+        }
+        fun Expandall() = object : ToggleAction("Show similar items", "", AllIcons.Actions.Expandall) {
+            override fun isSelected(e: AnActionEvent?) = false
+            override fun setSelected(e: AnActionEvent?, value: Boolean) {
+                model.mergeSimilarItems.set(!value)
+            }
+            override fun update(e: AnActionEvent) {
+                if (model.mergeSimilarItems.value)
+                    e.presentation.isVisible = true
+                else
+                    e.presentation.isVisible = false
+            }
+        }
+
         val actionGroup = DefaultActionGroup().apply {
             addSeparator("Mode filters")
             add(createMode(RdLogEventMode.Edit))
@@ -44,6 +70,8 @@ object UnityLogPanelToolbarBuilder {
             add(createType(RdLogEventType.Warning))
             add(createType(RdLogEventType.Message))
             addSeparator("Other")
+            add(Collapseall())
+            add(Expandall())
             add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
             addAll(consoleActionsList)
             add(mainSplitterToggleAction)

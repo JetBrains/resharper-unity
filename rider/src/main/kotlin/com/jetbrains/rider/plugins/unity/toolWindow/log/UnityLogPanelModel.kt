@@ -4,6 +4,7 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.util.lifetime.Lifetime
+import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.fire
 
@@ -103,6 +104,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
     val typeFilters = TypeFilters()
     val modeFilters = ModeFilters()
     val events = Events()
+    var mergeSimilarItems = Property<Boolean>(false)
 
     val onAdded = Signal<RdLogEvent>()
     val onChanged = Signal<List<RdLogEvent>>()
@@ -116,5 +118,6 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
         typeFilters.onChanged.advise(lifetime) { fire() }
         modeFilters.onChanged.advise(lifetime) { fire() }
         events.onChanged.advise(lifetime) { fire() }
+        mergeSimilarItems.advise(lifetime) { fire() }
     }
 }

@@ -81,5 +81,4 @@ class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, 
         val header = "[$type $mode] $message"
         return if (stackTrace.isBlank()) header else header + "\n" + getStackTraceForCopy()
     }
-
 }
