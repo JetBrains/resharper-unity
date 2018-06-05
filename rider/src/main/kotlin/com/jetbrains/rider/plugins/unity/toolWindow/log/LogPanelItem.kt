@@ -9,8 +9,3 @@ data class LogPanelItem(val time : Long,
                    val message : String,
                    val stackTrace : String,
                    val count: Int)
-{
-
-
-
-}
