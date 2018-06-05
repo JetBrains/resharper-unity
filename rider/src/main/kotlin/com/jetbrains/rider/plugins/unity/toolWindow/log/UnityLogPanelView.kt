@@ -142,21 +142,19 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
     private fun addToList(newEvent: RdLogEvent) {
         if (logModel.mergeSimilarItems.value)
         {
-            var existing = eventList.riderModel.elements().toList().filter { it.message == newEvent.message && it.stackTrace==newEvent.stackTrace &&
-                it.mode == newEvent.mode && it.type ==newEvent.type}.singleOrNull()
+            var existing = eventList.riderModel.elements().toList()
+                .filter { it.message == newEvent.message && it.stackTrace==newEvent.stackTrace &&
+                    it.mode == newEvent.mode && it.type ==newEvent.type}.singleOrNull()
             if (existing == null)
-            {
-                var element = LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1)
-                eventList.riderModel.addElement(element)
-            }
+                eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1))
             else
             {
                 var index = eventList.riderModel.indexOf(existing)
                 eventList.riderModel.setElementAt(LogPanelItem(existing.time, existing.type, existing.mode, existing.message, existing.stackTrace, existing.count+1), index)
             }
         }
-        eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1))
-
+        else
+            eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1))
         // on big amount of logs it causes frontend hangs
 //        if (logModel.selectedItem == null) {
 //            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
