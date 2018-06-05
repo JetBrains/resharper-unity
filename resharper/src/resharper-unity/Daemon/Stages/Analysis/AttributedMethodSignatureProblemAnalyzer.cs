@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
@@ -17,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             typeof(InvalidTypeParametersWarning),
             typeof(InvalidParametersWarning)
         })]
-    public class AttributedMethodSignatureProblemAnalyzer : UnityElementProblemAnalyzer<IAttribute>
+    public class AttributedMethodSignatureProblemAnalyzer : MethodSignatureProblemAnalyzerBase<IAttribute>
     {
         private static readonly Dictionary<IClrTypeName, Func<PredefinedType, MethodSignature>> ourAttributeLookups =
             new Dictionary<IClrTypeName, Func<PredefinedType, MethodSignature>>
@@ -56,14 +55,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
                 var methodSignature = func(predefinedType);
 
-                if (!methodSignature.HasMatchingStaticModifier(methodDeclaration))
-                    consumer.AddHighlighting(new InvalidStaticModifierWarning(methodDeclaration, methodSignature));
-                if (!methodSignature.HasMatchingReturnType(methodDeclaration))
-                    consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, methodSignature));
-                if (!methodSignature.HasMatchingTypeParameters(methodDeclaration))
-                    consumer.AddHighlighting(new InvalidTypeParametersWarning(methodDeclaration, methodSignature));
-                if (!methodSignature.HasMatchingParameters(methodDeclaration))
-                    consumer.AddHighlighting(new InvalidParametersWarning(methodDeclaration, methodSignature));
+                var match = methodSignature.Match(methodDeclaration);
+                AddMethodSignatureInspections(consumer, methodDeclaration, methodSignature, match);
             }
         }
 

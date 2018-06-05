@@ -1,0 +1,10 @@
+﻿using UnityEditor;
+
+public class Foo
+{
+    [InitializeOnLoadMethod]
+    public static void On{caret}Load()
+    {
+        return 42;
+    }
+}

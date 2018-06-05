@@ -1,0 +1,19 @@
+﻿|using UnityEditor;|(0)
+
+public class Foo : UnityEditor.AssetModificationProcessor
+{
+    public int |OnStatusUpdated|(1)(int value)
+    {
+        return 42;
+    }
+}
+
+------------------------------------------------
+0: Using directive is not required by the code and can be safely removed
+QUICKFIXES:
+Remove unused directives in file
+--Remove unused directives in project
+--Remove unused directives in solution
+1: Incorrect method signature. Expected 'static void OnStatusUpdated()'
+QUICKFIXES:
+Change signature to 'static void OnStatusUpdated()'
