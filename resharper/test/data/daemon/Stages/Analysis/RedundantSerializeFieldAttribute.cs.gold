@@ -7,6 +7,7 @@ public class |Test|(0) : MonoBehaviour
     [SerializeField] private int |NotRedundant2|(2);
     [|SerializeField|(3)] [NonSerialized] public int Redundant1;
     [|SerializeField|(4)] [NonSerialized] private int Redundant1;
+    [|SerializeField|(5)] private readonly int ReadonlyFieldsAreNotSerialized;
 }
 
 ---------------------------------------------------------
@@ -15,3 +16,4 @@ public class |Test|(0) : MonoBehaviour
 (2): Unity Gutter Icon: This field is initialised by Unity
 (3): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (4): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(5): ReSharper Dead Code: Redundant 'SerializeField' attribute

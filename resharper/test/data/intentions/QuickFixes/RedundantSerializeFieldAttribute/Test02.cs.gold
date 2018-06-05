@@ -1,0 +1,7 @@
+﻿using System;
+using UnityEngine;
+
+public class Test
+{
+ {caret} public readonly int Value1, Value2, Value3;
+}
