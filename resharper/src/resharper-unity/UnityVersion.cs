@@ -1,8 +1,13 @@
 using System;
+using System.Linq;
+using JetBrains.Application.FileSystemTracker;
+using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
+using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -10,35 +15,48 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class UnityVersion
     {
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
+        private readonly ILogger myLog;
+        private readonly Lifetime myLifetime;
+        private readonly IFileSystemTracker myFileSystemTracker;
+        private Version myCachedUnityVersion;
 
-        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache)
+        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, ILogger log, Lifetime lifetime, IFileSystemTracker fileSystemTracker)
         {
             myUnityProjectFileCache = unityProjectFileCache;
+            myLog = log;
+            myLifetime = lifetime;
+            myFileSystemTracker = fileSystemTracker;
         }
 
         public Version GetActualVersion(IProject project)
         {
             var version = myUnityProjectFileCache.GetUnityVersion(project);
             return version ?? GetActualVersion(project.GetSolution());
+
         }
 
         private Version GetActualVersion(ISolution solution)
         {
+            if (myCachedUnityVersion!=null)
+              return myCachedUnityVersion;  
+            
             foreach (var project in solution.GetTopLevelProjects())
             {
                 if (project.IsUnityProject())
                 {
                     var version = myUnityProjectFileCache.GetUnityVersion(project);
                     if (version != null)
+                    {
+                        myCachedUnityVersion = version;
                         return version;
+                    }
                 }
             }
-
+            
             // Tests don't create a .csproj we can parse, so pull the version out
             // of the project defines directly (we can't do this normally because
             // Unity doesn't write defines for Release configuration, so we can't
             // rely on this)
-            Version unityVersion = null;
             foreach (var project in solution.GetTopLevelProjects())
             {
                 foreach (var configuration in project.ProjectProperties.GetActiveConfigurations<IManagedProjectConfiguration>())
@@ -49,14 +67,63 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     if (string.IsNullOrEmpty(defineConstants))
                         configuration.PropertiesCollection.TryGetValue("DefineConstants", out defineConstants);
 
-                    unityVersion = UnityProjectFileCacheProvider.GetVersionFromDefines(defineConstants ?? string.Empty,
-                        unityVersion);
+                    myCachedUnityVersion = UnityProjectFileCacheProvider.GetVersionFromDefines(defineConstants ?? string.Empty,
+                        myCachedUnityVersion);
                 }
             }
-
+ 
+            myCachedUnityVersion = GetVersionByProjectVersionFile(solution);
             // If all else fails, default to 5.4. No reason for that version, other
             // than it was the first supported version :)
-            return unityVersion ?? new Version(5, 4);
+            return myCachedUnityVersion ?? new Version(5, 4);
         }
+
+        public Version GetVersionByProjectVersionFile(ISolution solution)
+        {
+            if (myCachedUnityVersion != null)
+                return myCachedUnityVersion;
+            
+            var projectSettingsFolder = solution.SolutionFilePath.Directory.CombineWithShortName(ProjectExtensions.ProjectSettingsFolder);
+            var projectVersionFile = projectSettingsFolder.Combine("ProjectVersion.txt");
+            myFileSystemTracker.AdviseFileChanges(myLifetime, projectVersionFile,
+                delta => { myCachedUnityVersion = GetVersionByProjectVersionFileInternal(projectVersionFile); });
+            
+            myCachedUnityVersion = GetVersionByProjectVersionFileInternal(projectVersionFile);
+            return myCachedUnityVersion;
+        }
+
+        private Version GetVersionByProjectVersionFileInternal(FileSystemPath projectVersionFile)
+        {
+            if (!projectVersionFile.ExistsFile)
+                return null;
+            string line;
+
+            try
+            {
+                var unityVersionString = string.Empty;
+                projectVersionFile.ReadTextStream(s =>
+                {
+                    while ((line = s.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("m_EditorVersion:"))
+                            unityVersionString = line.Substring("m_EditorVersion:".Length).Trim();
+                    }
+                });
+
+                if (string.IsNullOrEmpty(unityVersionString))
+                    return null;
+
+                var shortUnityVersionString = unityVersionString.Split(".".ToCharArray()).Take(2)
+                    .Aggregate((a, b) => a + "." + b);
+                return new Version(shortUnityVersionString);
+            }
+            catch (Exception e)
+            {
+                myLog.Error($"Failed to parse UnityVersion from {projectVersionFile}", e);
+            }
+
+            return null;
+        }
+
     }
 }

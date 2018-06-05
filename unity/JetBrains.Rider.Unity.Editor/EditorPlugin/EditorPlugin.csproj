@@ -4,7 +4,6 @@
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>UNITY_2017_3</DefineConstants>
@@ -29,6 +28,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NonUnity\RdEditorProtocol" />
   </ItemGroup>
   <!-- The ILRepack.targets file is automatically imported if it exists
        AND we are in Release. But we require it for Debug builds, too,
