@@ -67,6 +67,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       FixSystemXml(projectContentElement, xmlns);
       SetLangVersion(projectContentElement, xmlns);
       SetProjectFlavour(projectContentElement, xmlns);
+      SetRoslynAnalyzers(projectContentElement, xmlns);
 
       //#i f !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
       if (UnityUtils.UnityVersion < new Version(2017, 1))
@@ -78,6 +79,26 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
       doc.Save(projectFile);
+    }
+
+    // add everything from RoslyAnalyzers folder to csproj
+    //<ItemGroup><Analyzer Include="RoslynAnalyzers\UnityEngineAnalyzer.1.0.0.0\analyzers\dotnet\cs\UnityEngineAnalyzer.dll" /></ItemGroup>
+    private static void SetRoslynAnalyzers(XElement projectContentElement, XNamespace xmlns)
+    {
+      var currentDirectory = Directory.GetCurrentDirectory();
+      var roslynAnalysersBaseDir = new DirectoryInfo(Path.Combine(currentDirectory, "RoslynAnalyzers"));
+      if (!roslynAnalysersBaseDir.Exists)
+        return;
+      var dllFilesRelPaths = roslynAnalysersBaseDir.GetFiles("*.dll", SearchOption.AllDirectories)
+        .Select(x => x.FullName.Substring(currentDirectory.Length+1));
+      var itemGroup = new XElement(xmlns + "ItemGroup");
+      foreach (var dllFile in dllFilesRelPaths)
+      {
+        var reference = new XElement(xmlns + "Analyzer");
+        reference.Add(new XAttribute("Include", dllFile));
+        itemGroup.Add(reference);
+      }
+      projectContentElement.Add(itemGroup);
     }
 
     private static void FixSystemXml(XElement projectContentElement, XNamespace xmlns)
