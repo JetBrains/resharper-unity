@@ -172,6 +172,7 @@
   <Warning name="IncorrectSignature" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
+    <Parameter type="MethodSignatureMatch" name="methodSignatureMatch" isValid="skip" />
     <Message value="Incorrect method signature. Expected '{0}'">
       <Argument>ExpectedMethodSignature.FormatSignature(MethodDeclaration.DeclaredName)</Argument>
     </Message>

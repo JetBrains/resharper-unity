@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             // If the value is not a power of two, that means more than one flag has been set
             if (((int) match & ((int) match - 1)) != 0)
             {
-                consumer.AddHighlighting(new IncorrectSignatureWarning(methodDeclaration, expectedMethodSignature));
+                consumer.AddHighlighting(new IncorrectSignatureWarning(methodDeclaration, expectedMethodSignature, match));
             }
             else
             {

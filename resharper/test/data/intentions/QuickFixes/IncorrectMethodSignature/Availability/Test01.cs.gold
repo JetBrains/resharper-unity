@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public static int |Start|(0)(int value)
+    {
+        return 42;
+    }
+}
+
+------------------------------------------------
+0: Incorrect method signature. Expected 'void Start()'
+QUICKFIXES:
+Change signature to 'void Start()'
