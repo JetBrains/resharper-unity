@@ -111,19 +111,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
                 if (myExistingAttribute != null)
                     CSharpSharedImplUtil.RemoveAttribute(fieldDeclaration, myExistingAttribute);
                 else
-                    AddAttribute(fieldDeclaration);
+                {
+                    AttributeUtil.AddAttribute(fieldDeclaration, KnownTypes.HideInInspector, myModule,
+                        myElementFactory);
+                }
 
                 return null;
-            }
-
-            private void AddAttribute(IFieldDeclaration fieldDeclaration)
-            {
-                var attributeTypeElement = TypeFactory.CreateTypeByCLRName(KnownTypes.HideInInspector, myModule).GetTypeElement();
-                if (attributeTypeElement != null)
-                {
-                    var attribute = myElementFactory.CreateAttribute(attributeTypeElement);
-                    CSharpSharedImplUtil.AddAttributeAfter(fieldDeclaration, attribute, null);
-                }
             }
 
             public override string Text
