@@ -15,7 +15,7 @@ Remove unused directives in file
 1: Redundant 'SerializeField' attribute
 QUICKFIXES:
 Remove redundant attribute
-Remove readonly modifier
+Make all fields non-readonly
 --Make 'Value1' non-readonly
 --Make 'Value2' non-readonly
 --Make 'Value3' non-readonly

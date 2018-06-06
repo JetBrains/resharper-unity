@@ -15,7 +15,7 @@ Remove unused directives in file
 1: Redundant 'SerializeField' attribute
 QUICKFIXES:
 Remove redundant attribute
-Remove readonly modifier
+Make field non-readonly
 2: Readonly field 'Value' is never assigned
 QUICKFIXES:
 Initialize field from constructor

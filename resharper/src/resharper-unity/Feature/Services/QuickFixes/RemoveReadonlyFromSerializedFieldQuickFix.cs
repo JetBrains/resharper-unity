@@ -79,7 +79,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
                 return null;
             }
 
-            public override string Text => "Remove readonly modifier";
+            public override string Text => myFieldDeclarations.Declarators.Count > 1
+                ? "Make all fields non-readonly"
+                : "Make field non-readonly";
         }
 
         private class RemoveOneReadonly : BulbActionBase
