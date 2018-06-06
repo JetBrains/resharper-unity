@@ -72,3 +72,11 @@ public class TypeParameters : MonoBehaviour
     {
     }
 }
+
+public class AllWrong : AssetPostprocessor
+{
+    public int OnGeneratedCSProjectFiles<T1, T2>(int value)
+    {
+        return 42;
+    }
+}

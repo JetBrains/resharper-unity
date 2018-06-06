@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
 
                 case IMethod method:
                     var function = unityApi.GetUnityEventFunction(method, out var match);
-                    if (function != null && match == EventFunctionMatch.ExactMatch)
+                    if (function != null && match == MethodSignatureMatch.ExactMatch)
                     {
                         foreach (var parameter in function.Parameters)
                         {

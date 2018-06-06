@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
+import com.intellij.ide.SelectInContext
 import com.intellij.ide.projectView.ProjectView
-import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -9,21 +9,20 @@ import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
-import com.intellij.ui.stripe.ErrorStripe
 import com.jetbrains.rider.UnityReferenceDiscoverer
+import com.jetbrains.rider.icons.ReSharperSolutionAnalysisIcons
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
-import com.jetbrains.rider.projectView.ProjectModelDataKeys
-import com.jetbrains.rider.projectView.fileSystem.FileSystemNodeBase
-import com.jetbrains.rider.projectView.fileSystem.FileSystemViewPaneBase
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
-import com.jetbrains.rider.projectView.nodes.VirtualProjectModelNode
+import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
+import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
 import org.jdom.Element
 
-class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
+class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplorerRootNode(project)) {
 
     companion object {
         const val ID = "UnityExplorer"
-        const val Title = "Unity Explorer"
+        const val Title = "Unity"
+        const val Weight = 1
         const val ShowHiddenItemsOption = "show-hidden-items"
         val Icon = UnityIcons.Toolwindows.ToolWindowUnityLog
 
@@ -31,6 +30,13 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
         val IgnoredExtensions = hashSetOf("meta", "tmp")
 
         val SELECTED_REFERENCE_KEY: DataKey<UnityExplorerNode.ReferenceItem> = DataKey.create("selectedReference")
+
+        fun getInstance(project: Project): UnityExplorer {
+            return tryGetInstance(project)!!
+        }
+        fun tryGetInstance(project: Project): UnityExplorer? {
+            return ProjectView.getInstance(project).getProjectViewPaneById(ID) as? UnityExplorer
+        }
     }
 
     var myShowHiddenItems = false
@@ -39,24 +45,15 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
         return UnityReferenceDiscoverer.hasAssetsFolder(project)
     }
 
-    override fun createRootNode(): FileSystemNodeBase {
-        val assetsFolder = project.baseDir?.findChild("Assets")!!
-        return UnityExplorerNode.Root(project, assetsFolder, this)
-    }
-
-    override fun getData(selected: MutableList<AbstractTreeNode<Any>>, dataId: String?): Any? {
+    override fun getData(dataId: String?): Any? {
         return when {
-            ProjectModelDataKeys.PROJECT_MODEL_NODES.`is`(dataId) -> getProjectModelNodes(selected).toTypedArray()
-            SELECTED_REFERENCE_KEY.`is`(dataId) -> selected.filterIsInstance<UnityExplorerNode.ReferenceItem>().singleOrNull()
-            else -> null
+            SELECTED_REFERENCE_KEY.`is`(dataId) -> getSelectedNodes().filterIsInstance<UnityExplorerNode.ReferenceItem>().singleOrNull()
+            else -> super.getData(dataId)
         }
     }
 
-    private fun getProjectModelNodes(selected: MutableList<AbstractTreeNode<Any>>): List<IProjectModelNode> {
-        return selected.filterIsInstance<UnityExplorerNode>().map {
-            if (it.nodes.any()) return@map it.nodes.filter { it.isValid() }
-            return arrayListOf<IProjectModelNode>(VirtualProjectModelNode(it.project!!, it.virtualFile, null))
-        }.flatMap { it.asIterable() }
+    override fun getSelectedProjectModelNodes(): Array<IProjectModelNode> {
+        return getSelectedNodes().filterIsInstance<UnityExplorerNode>().flatMap { it.nodes.asIterable() }.toTypedArray()
     }
 
     override fun writeExternal(element: Element) {
@@ -73,27 +70,35 @@ class UnityExplorer(project: Project) : FileSystemViewPaneBase(project) {
     override fun getTitle() = Title
     override fun getIcon() = Icon
     override fun getId() = ID
-    override fun getWeight() = -1
-    override fun createSelectInTarget() = UnityExplorerSelectInTarget(project)
+    override fun getWeight() = Weight
 
-    override fun supportsSortByType() = false
-    override fun supportsFoldersAlwaysOnTop() = false
-
-    override fun addToolbarActions(actionGroup: DefaultActionGroup?) {
-        actionGroup?.addAction(ShowHiddenItemsAction())?.setAsSecondary(true)
-    }
-
-    override fun getStripe(data: Any?, expanded: Boolean): ErrorStripe? {
-        if (expanded) {
-            val node = data as? UnityExplorerNode
-            if (node != null && !node.hasProblemFileBeneath()) {
-                return null
-            }
+    override fun createSelectInTarget() =  object : SolutionViewSelectInTargetBase(project) {
+        override fun selectIn(context: SelectInContext?, requestFocus: Boolean) {
+            context?.let { select(it, null, requestFocus) }
         }
-        return super.getStripe(data, expanded)
+        override fun toString() = Title
+        override fun getMinorViewId() = ID
+        override fun getWeight() = Weight.toFloat()
     }
 
-    private inner class ShowHiddenItemsAction : ToggleAction("Show Hidden Items"), DumbAware {
+    override fun addPrimaryToolbarActions(actionGroup: DefaultActionGroup) {
+        actionGroup.addAction(ShowHiddenItemsAction())
+        actionGroup.addSeparator()
+        super.addPrimaryToolbarActions(actionGroup)
+    }
+
+//    override fun getStripe(data: Any?, expanded: Boolean): ErrorStripe? {
+//        if (expanded) {
+//            val node = data as? UnityExplorerNode
+//            if (node != null && !node.hasProblemFileBeneath()) {
+//                return null
+//            }
+//        }
+//        return super.getStripe(data, expanded)
+//    }
+
+    private inner class ShowHiddenItemsAction
+        : ToggleAction("Show Hidden Files", null, ReSharperSolutionAnalysisIcons.UnignoreErrors), DumbAware {
 
         override fun isSelected(event: AnActionEvent): Boolean {
             return myShowHiddenItems

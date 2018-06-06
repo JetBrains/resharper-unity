@@ -27,4 +27,10 @@ public class TestClass
     private static void WrongTypeParameters<T1, T2>()
     {
     }
+
+    [DidReloadScripts]
+    private int AllWrong(int value)
+    {
+        return 0;
+    }
 }

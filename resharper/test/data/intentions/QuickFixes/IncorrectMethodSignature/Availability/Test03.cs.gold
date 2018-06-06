@@ -1,0 +1,11 @@
+﻿public class Foo : UnityEditor.AssetPostprocessor
+{
+    public static void |OnAssignMaterialModel|(0)(UnityEngine.Material material, UnityEngine.Renderer renderer, int value)
+    {
+    }
+}
+
+------------------------------------------------
+0: Incorrect method signature. Expected 'Material OnAssignMaterialModel(Material, Renderer)'
+QUICKFIXES:
+Change signature to 'Material OnAssignMaterialModel(Material, Renderer)'

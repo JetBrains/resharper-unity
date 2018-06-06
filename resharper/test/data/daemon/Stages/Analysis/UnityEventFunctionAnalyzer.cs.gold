@@ -73,6 +73,14 @@ public class |TypeParameters|(23) : MonoBehaviour
     }
 }
 
+public class |AllWrong|(26) : AssetPostprocessor
+{
+    public int ||OnGeneratedCSProjectFiles|(27)|(28)<T1, T2>(int value)
+    {
+        return 42;
+    }
+}
+
 ---------------------------------------------------------
 (0): Unity Gutter Icon: Unity scripting component
 (1): Unity Gutter Icon: Unity event function
@@ -122,3 +130,6 @@ Callback for setting up animation IK (inverse kinematics).
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
 (25): ReSharper Warning: Incorrect type parameters
+(26): Unity Gutter Icon: Unity scripting component
+(27): ReSharper Warning: Incorrect method signature. Expected 'static void OnGeneratedCSProjectFiles()'
+(28): Unity Gutter Icon: Unity event function

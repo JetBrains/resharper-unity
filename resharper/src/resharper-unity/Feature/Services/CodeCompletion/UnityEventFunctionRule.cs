@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             var items = new List<ILookupItem>();
             foreach (var function in functions)
             {
-                if (typeElement.Methods.Any(m => function.Match(m) != EventFunctionMatch.NoMatch))
+                if (typeElement.Methods.Any(m => function.Match(m) != MethodSignatureMatch.NoMatch))
                     continue;
 
                 items.Clear();
