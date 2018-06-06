@@ -72,6 +72,7 @@
       <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
         <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
         <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
+        <action class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" id="SwitchUIModeAction" />
       </group>
 
       <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />

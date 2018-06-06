@@ -13,6 +13,6 @@ import com.jetbrains.rider.solutionAnalysis.actions.ToggleSWEAAction
 class UnityImportantActionsGroup : ActionGroup() {
 
     override fun getChildren(e: AnActionEvent?): Array<out AnAction> {
-        return arrayOf(/*SwitchUIMode(), */UnityPluginShowSettingsAction())
+        return arrayOf(SwitchUIMode(), UnityPluginShowSettingsAction())
     }
 }
