@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <RiderSDKVersion Condition=" '$(RiderSDKVersion)' == '' ">182-SNAPSHOT*</RiderSDKVersion>
+    <RiderSDKVersion Condition=" '$(RiderSDKVersion)' == '' ">2018.2.0-*</RiderSDKVersion>
     <ReSharperSDKVersion>2018.1-SNAPSHOT*</ReSharperSDKVersion>
   </PropertyGroup>  
 
