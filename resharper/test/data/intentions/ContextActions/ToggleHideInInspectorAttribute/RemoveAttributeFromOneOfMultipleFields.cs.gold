@@ -1,0 +1,8 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+  [HideInInspector] [SerializeField] private int myValue;
+  [SerializeField] private int my{caret}Value2;
+  [HideInInspector] [SerializeField] private int myValue3;
+}
