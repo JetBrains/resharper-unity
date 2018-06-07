@@ -8,7 +8,6 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -19,9 +18,9 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Toggle 'HideInInspector' attribute on field",
+        Name = "Toggle 'HideInInspector' attribute on fields",
         Description =
-            "Adds or removes the 'HideInInspector' attribute on a Unity serialized field, removing the field from the Inspector window")]
+            "Adds or removes the 'HideInInspector' attribute on a Unity serialized field, removing the field from the Inspector window.")]
     public class ToggleHideInInspectorAttributeAction : IContextAction
     {
         [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
@@ -36,9 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
-            if (!myDataProvider.Project.IsUnityProject())
-                return EmptyList<IntentionAction>.Enumerable;
-
             var fieldDeclaration = myDataProvider.GetSelectedElement<IFieldDeclaration>();
             var multipleFieldDeclaration = MultipleFieldDeclarationNavigator.GetByDeclarator(fieldDeclaration);
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
@@ -46,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
             if (!unityApi.IsUnityField(fieldDeclaration?.DeclaredElement) || multipleFieldDeclaration == null)
                 return EmptyList<IntentionAction>.Enumerable;
 
-            var existingAttribute = GetExistingAttribute(fieldDeclaration);
+            var existingAttribute = AttributeUtil.GetAttribute(fieldDeclaration, KnownTypes.HideInInspector);
 
             if (multipleFieldDeclaration.Declarators.Count == 1)
             {
@@ -73,22 +69,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
             return unityApi.IsUnityField(fieldDeclaration?.DeclaredElement);
         }
 
-        [CanBeNull]
-        private static IAttribute GetExistingAttribute(IAttributesOwnerDeclaration attributesOwnerDeclaration)
-        {
-            foreach (var attribute in attributesOwnerDeclaration.AttributesEnumerable)
-            {
-                if (attribute.TypeReference?.Resolve().DeclaredElement is ITypeElement element)
-                {
-                    var attributeName = element.GetClrName();
-                    if (Equals(attributeName, KnownTypes.HideInInspector))
-                        return attribute;
-                }
-            }
-
-            return null;
-        }
-
         private class ToggleHideInInspectorAll : BulbActionBase
         {
             private readonly IMultipleFieldDeclaration myMultipleFieldDeclaration;
@@ -112,8 +92,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
                     CSharpSharedImplUtil.RemoveAttribute(fieldDeclaration, myExistingAttribute);
                 else
                 {
-                    AttributeUtil.AddAttribute(fieldDeclaration, KnownTypes.HideInInspector, myModule,
-                        myElementFactory);
+                    AttributeUtil.AddAttributeToSingleDeclaration(fieldDeclaration, KnownTypes.HideInInspector,
+                        myModule, myElementFactory);
                 }
 
                 return null;
@@ -151,12 +131,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
                 myExistingAttribute = existingAttribute;
             }
 
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution,
+                IProgressIndicator progress)
             {
                 if (myExistingAttribute != null)
                     myFieldDeclaration.RemoveAttribute(myExistingAttribute);
                 else
-                    AttributeUtil.AddAttribute(myFieldDeclaration, KnownTypes.HideInInspector, myPsiModule, myElementFactory);
+                {
+                    AttributeUtil.AddAttributeToSingleDeclaration(myFieldDeclaration, KnownTypes.HideInInspector,
+                        myPsiModule, myElementFactory);
+                }
+
                 return null;
             }
 
