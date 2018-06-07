@@ -16,6 +16,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private MainThreadDispatcher()
     {
+      ourUIThread = Thread.CurrentThread;
       EditorApplication.update += DispatchTasks;
     }
 
@@ -30,6 +31,12 @@ namespace JetBrains.Rider.Unity.Editor
     /// <param name="action">Action  being requested</param>
     public void Queue(Action action)
     {
+      if (Thread.CurrentThread == ourUIThread)
+      {
+        action();
+        return;
+      }
+      
       lock (myTaskQueue)
       {
         myTaskQueue.Enqueue(action);
@@ -41,11 +48,6 @@ namespace JetBrains.Rider.Unity.Editor
     /// </summary>
     private void DispatchTasks()
     {
-//        File.AppendAllText(logPath, DateTime.Now.ToString(global::JetBrains.Util.Logging.Log.DefaultDateFormat) + "DispatchTasks"+Environment.NewLine);
-      //RiderPlugin.Log(LoggingLevel.INFO, "DispatchTasks");
-
-      ourUIThread = Thread.CurrentThread;
-      
       if (myTaskQueue.Count == 0)
         return;
       while (true)

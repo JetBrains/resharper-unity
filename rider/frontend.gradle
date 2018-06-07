@@ -28,6 +28,9 @@ intellij {
         version = "2018.2-SNAPSHOT"
     }
 
+    // please do not remove this line. Contact Ivan.Shakhov instead.
+    // intellijRepo = "https://www.jetbrains.com/intellij-repository"
+
     // Sources aren't available for Rider
     downloadSources = false
 }
@@ -145,7 +148,7 @@ task generateModel {
         // Direction is specified in the model, along with output folders
         // Inputs: rider/protocol/src/main/kotlin/model/editorPlugin/EditorPluginModel.kt
         // Outputs: resharper/src/resharper-unity/Rider/RdEditorProtocol/EditorPluginModel.Generated.cs (backend to Unity)
-        //          unity/JetBrains.Rider.Unity.Editor/EditorPlugin/NonUnity/RdEditorProtocol/EditorPluginModel.Generated.cs (Unity listener)
+        //          unity/EditorPlugin/NonUnity/RdEditorProtocol/EditorPluginModel.Generated.cs (Unity listener)
         //          rider/src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol/EditorPluginModel.Generated.kt (frontend to Unity)
         javaexec {
             main = "com.jetbrains.rider.generator.nova.MainKt"
@@ -211,8 +214,8 @@ def dllFiles = [
 def annotationsFrom = '../resharper/src/resharper-unity/annotations'
 def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 
-def unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
-def unityeditorplugin_full_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
+def unityeditorplugin_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
+def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Full/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
 
 prepareSandbox {
     // Already depends on the standard Java build/jar task
