@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ui
 
+import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
@@ -15,15 +16,22 @@ import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.whenTrue
+import org.jdom.Element
 
-@State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
+@State(name = "UnityProjectConfiguration", storages = [(Storage(value = "other.xml"))])
 class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscoverer,
                      private val host : UnityHost,
                      solutionLifecycleHost: SolutionLifecycleHost,
-                     project: Project) : LifetimedProjectComponent(project), WindowManagerListener {
+                     project: Project) : LifetimedProjectComponent(project), WindowManagerListener, PersistentStateComponent<Element> {
+
+    companion object {
+        const val hasUnityWidgetsAttribute = "isUnityUI"
+        const val hasMinimizedUiAttribute = "hasMinimizedUI"
+    }
 
     private var frameLifetime: LifetimeDefinition? = null
-    val isUnityUI: Property<Boolean> = Property(false)
+    val hasUnityWidgets: Property<Boolean> = Property(false)
+    val hasMinimizedUi: Property<Boolean> = Property(true)
     private var widgetInstalled = false;
 
     init {
@@ -33,15 +41,36 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
         }
         solutionLifecycleHost.isBackendLoaded.advise(componentLifetime) {
             if (it && unityReferenceDiscoverer.isUnityGeneratedProject) {
-                isUnityUI.value = true
+                hasUnityWidgets.value = true
             }
+        }
+    }
+
+    override fun getState(): Element? {
+        val element = Element("state")
+        val hasUnityWidgets = hasUnityWidgets.value
+        element.setAttribute(hasUnityWidgetsAttribute, hasUnityWidgets.toString())
+        val hasMinimizedUi = hasMinimizedUi.value
+        element.setAttribute(hasMinimizedUiAttribute, hasMinimizedUi.toString())
+        return element
+    }
+
+    override fun loadState(element: Element) {
+        val isUnityProjectAttributeValue = element.getAttributeValue(hasUnityWidgetsAttribute, "") ?: return
+        if (!isUnityProjectAttributeValue.isEmpty()) {
+            hasUnityWidgets.value = isUnityProjectAttributeValue.toBoolean()
+        }
+
+        val attributeValue = element.getAttributeValue(hasMinimizedUiAttribute, "") ?: return
+        if (!attributeValue.isEmpty()) {
+            hasMinimizedUi.value = attributeValue.toBoolean()
         }
     }
 
     override fun frameCreated(frame: IdeFrame) {
         frameLifetime?.terminate()
 
-        isUnityUI.whenTrue(componentLifetime, {
+        hasUnityWidgets.whenTrue(componentLifetime, {
             if (!widgetInstalled)
             {
                 frameLifetime = Lifetime.create(componentLifetime)
