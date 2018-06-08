@@ -54,9 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetUnityEventFunction(method) != null;
         }
 
-        public bool IsUnityField([NotNull] IField field)
+        public bool IsUnityField([CanBeNull] IField field)
         {
-            if (field.IsStatic || field.IsConstant || field.IsReadonly)
+            if (field == null || field.IsStatic || field.IsConstant || field.IsReadonly)
                 return false;
 
             var containingType = field.GetContainingType();
