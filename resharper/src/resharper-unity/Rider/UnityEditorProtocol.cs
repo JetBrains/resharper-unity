@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null)
                 .EnsureReadonly(myReadonlyToken).EnsureThisThread();
 
-            if (!ProjectExtensions.IsSolutionGeneratedByUnity(solution.SolutionFilePath))
+            if (!ProjectExtensions.IsAbleToEstablishProtocolConnectionWithUnity(solution.SolutionFilePath))
                 return;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
