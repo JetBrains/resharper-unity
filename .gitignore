@@ -91,15 +91,7 @@ resharper/src/resharper-unity/Unity3dRider/Packages/manifest.json
 resharper/test/Unity3dRiderCompileTest/.idea/*
 resharper/test/Unity3dRiderCompileTest/packages/*
 
-unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
-unity/CSharp70Support/*
-unity/Assets/CSharp vNext Support/*
-unity/Assets/Plugins/Editor/JetBrains/*
-unity/compilation.log
-unity/**/manifest.json
-unity/JetBrains.Rider.Unity.Editor/EditorPlugin.Tests/tsconfig.json
-unity/Assets/*
-
+unity/build/**
 
 # Backup & report files from converting an old project file to a newer Visual Studio version
 _UpgradeReport_Files/
