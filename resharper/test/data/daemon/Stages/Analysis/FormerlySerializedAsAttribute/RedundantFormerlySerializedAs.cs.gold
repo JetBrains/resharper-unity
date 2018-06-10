@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test01
+{
+    [|FormerlySerializedAs("myValue")|(0)] private int myValue2;
+}
+
+public class |Test02|(1) : MonoBehaviour
+{
+    [|FormerlySerializedAs("myValue")|(2), FormerlySerializedAs("foo")] public int |myValue|(3);
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
+(1): Unity Gutter Icon: Unity scripting component
+(2): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
+(3): Unity Gutter Icon: This field is initialised by Unity
