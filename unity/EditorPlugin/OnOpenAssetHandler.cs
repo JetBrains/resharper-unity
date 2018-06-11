@@ -21,9 +21,9 @@ namespace JetBrains.Rider.Unity.Editor
     private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
 
-    public OnOpenAssetHandler(RProperty<EditorPluginModel> model, RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
+    public OnOpenAssetHandler(RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
     {
-      myModel = model;
+      myModel = PluginEntryPoint.UnityModels.FirstOrDefault();
       myRiderPathLocator = riderPathLocator;
       myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
@@ -75,7 +75,7 @@ namespace JetBrains.Rider.Unity.Editor
       var model = myModel.Maybe.ValueOrDefault;
       if (model != null)
       {
-        if (PluginEntryPoint.CheckConnectedToBackendSync())
+        if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
           const int column = 0;
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);

@@ -86,12 +86,18 @@ namespace JetBrains.Rider.Unity.Editor
     public UnityEventLogSender(UnityEventCollector collector, Lifetime connectionLifetime)
     {
       myConnectionLifetime = connectionLifetime;
-      ProcessQueue(PluginEntryPoint.UnityModel.Maybe.Value, collector);
+      PluginEntryPoint.UnityModels.ForEach(a =>
+      {
+        ProcessQueue(a.Maybe.Value, collector);  
+      });
 
       collector.AddEvent +=(col, _) =>
       {
-        if (PluginEntryPoint.UnityModel.Maybe.HasValue && !myConnectionLifetime.IsTerminated)
-          ProcessQueue(PluginEntryPoint.UnityModel.Maybe.Value, (UnityEventCollector)col);
+        PluginEntryPoint.UnityModels.ForEach(a =>
+        {
+          if (a.Maybe.HasValue && !myConnectionLifetime.IsTerminated)
+            ProcessQueue(a.Maybe.Value, (UnityEventCollector)col);  
+        });
       };
     }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using JetBrains.Util;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -136,7 +137,8 @@ namespace JetBrains.Rider.Unity.Editor
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     private static bool ValidateMenuOpenProject()
     {
-      return PluginEntryPoint.Enabled && !PluginEntryPoint.CheckConnectedToBackendSync();
+      var model = PluginEntryPoint.UnityModels?.FirstOrDefault()?.Value;
+      return PluginEntryPoint.Enabled && !PluginEntryPoint.CheckConnectedToBackendSync(model);
     }
     
     /// <summary>
