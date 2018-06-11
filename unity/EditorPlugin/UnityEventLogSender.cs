@@ -12,7 +12,7 @@ namespace JetBrains.Rider.Unity.Editor
   public class UnityEventCollector
   {
     private readonly int myDelayedLogEventsMaxSize = 1000;
-    public readonly LinkedList<RdLogEvent> myDelayedLogEvents = new LinkedList<RdLogEvent>();
+    public readonly LinkedList<RdLogEvent> DelayedLogEvents = new LinkedList<RdLogEvent>();
 
     public UnityEventCollector()
     {
@@ -62,9 +62,9 @@ namespace JetBrains.Rider.Unity.Editor
         var eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;
 
         var evt = new RdLogEvent(ticks, eventType, eventMode, message, stackTrace);
-        myDelayedLogEvents.AddLast(evt);
-        if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
-          myDelayedLogEvents.RemoveFirst(); // limit max size
+        DelayedLogEvents.AddLast(evt);
+        if (DelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
+          DelayedLogEvents.RemoveFirst(); // limit max size
 
         OnAddEvent(new EventArgs());
       });
@@ -97,10 +97,10 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ProcessQueue(EditorPluginModel model, UnityEventCollector collector)
     {
-      if (!collector.myDelayedLogEvents.Any())
+      if (!collector.DelayedLogEvents.Any())
         return;
 
-      var head = collector.myDelayedLogEvents.First;
+      var head = collector.DelayedLogEvents.First;
       while (head != null)
       {
         if (myConnectionLifetime.IsTerminated)
@@ -110,7 +110,7 @@ namespace JetBrains.Rider.Unity.Editor
         head = head.Next;
       }
 
-      collector.myDelayedLogEvents.Clear();
+      collector.DelayedLogEvents.Clear();
     }
     
     private void SendLogEvent(EditorPluginModel model, RdLogEvent logEvent)
