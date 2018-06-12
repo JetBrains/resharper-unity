@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         maven { url 'https://repo.labs.intellij.net/rd-snapshots-maven' }
+        maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
         mavenCentral()
     }
 }
