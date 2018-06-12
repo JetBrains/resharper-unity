@@ -88,10 +88,6 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib"
-}
-
 apply plugin: 'com.jetbrains.rdgen'
 
 ext.modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
