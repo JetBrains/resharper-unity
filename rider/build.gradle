@@ -4,7 +4,12 @@ buildscript {
     ext.rd_version = '0.1.18'
 
     repositories {
-        maven { url 'https://repo.labs.intellij.net/rd-snapshots-maven' }
+        if (System.env['TEAMCITY_VERSION'] != null) {
+            maven { url 'https://repo.labs.intellij.net/rd-snapshots-maven' }
+        }
+        else {
+            maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
+        }
         mavenCentral()
     }
 
