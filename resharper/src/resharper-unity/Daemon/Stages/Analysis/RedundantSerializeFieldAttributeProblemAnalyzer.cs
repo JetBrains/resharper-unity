@@ -26,8 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             var fieldDeclarations = FieldDeclarationNavigator.GetByAttribute(attribute);
             foreach (var fieldDeclaration in fieldDeclarations)
             {
-                if (fieldDeclaration.DeclaredElement.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS,
-                    false))
+                if (fieldDeclaration.DeclaredElement?.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS,
+                    false) == true || fieldDeclaration.IsReadonly)
                 {
                     consumer.AddHighlighting(new RedundantSerializeFieldAttributeWarning(attribute));
                     return;

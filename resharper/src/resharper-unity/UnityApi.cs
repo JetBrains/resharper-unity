@@ -26,9 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type)
+        public IEnumerable<UnityType> GetBaseUnityTypes([CanBeNull] ITypeElement type)
         {
-            if (type.Module is IProjectPsiModule projectPsiModule)
+            if (type?.Module is IProjectPsiModule projectPsiModule)
             {
                 var unityVersion = myUnityVersion.GetActualVersion(projectPsiModule.Project);
                 return GetBaseUnityTypes(type, unityVersion);
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(types, type, unityVersion);
         }
 
-        public bool IsUnityType([NotNull] ITypeElement type)
+        public bool IsUnityType([CanBeNull] ITypeElement type)
         {
             return GetBaseUnityTypes(type).Any();
         }
@@ -54,9 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetUnityEventFunction(method) != null;
         }
 
-        public bool IsUnityField([NotNull] IField field)
+        public bool IsUnityField([CanBeNull] IField field)
         {
-            if (field.IsStatic || field.IsConstant || field.IsReadonly)
+            if (field == null || field.IsStatic || field.IsConstant || field.IsReadonly)
                 return false;
 
             var containingType = field.GetContainingType();
