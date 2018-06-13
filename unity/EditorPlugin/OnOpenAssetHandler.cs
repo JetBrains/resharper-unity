@@ -16,14 +16,12 @@ namespace JetBrains.Rider.Unity.Editor
   internal class OnOpenAssetHandler
   {
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
-    private readonly RProperty<EditorPluginModel> myModel;
     private readonly RiderPathLocator myRiderPathLocator;
     private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
 
     public OnOpenAssetHandler(RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
     {
-      myModel = PluginEntryPoint.UnityModels.FirstOrDefault();
       myRiderPathLocator = riderPathLocator;
       myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
@@ -72,9 +70,10 @@ namespace JetBrains.Rider.Unity.Editor
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
       }
 
-      var model = myModel.Maybe.ValueOrDefault;
-      if (model != null)
+      var models = PluginEntryPoint.UnityModels.Where(a=>!a.Value.IsTerminated).ToArray();
+      if (models.Any())
       {
+        var model = models.First().Key;
         if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
           const int column = 0;

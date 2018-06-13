@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
@@ -95,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             watcher.EnableRaisingEvents = true; // Begin watching.
 
             // connect on start of Rider
-            CreateProtocol(protocolInstancePath);
+            CreateProtocols(protocolInstancePath);
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -104,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // connect on reload of server
             if (!myComponentLifetime.IsTerminated)
               myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
-                () => CreateProtocol(protocolInstancePath));
+                () => CreateProtocols(protocolInstancePath));
         }
 
         private void AdviseModelData(Lifetime lifetime, Solution solution)
@@ -147,16 +149,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }));
         }
 
-        private void CreateProtocol(FileSystemPath protocolInstancePath)
+        private void CreateProtocols(FileSystemPath protocolInstancePath)
         {
             if (!protocolInstancePath.ExistsFile)
                 return;
-            
-            int port;
+
+            List<ProtocolInstance> protocolInstanceList;
             try
             {
-                var protocolInstance = JsonConvert.DeserializeObject<ProtocolInstance>(protocolInstancePath.ReadAllText2().Text);
-                port = protocolInstance.port_id;
+                protocolInstanceList = ProtocolInstance.FromJson(protocolInstancePath.ReadAllText2().Text);
             }
             catch (Exception e)
             {
@@ -164,21 +165,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
 
-            myLogger.Info($"UNITY_Port {port}.");
+            var protocolInstance = protocolInstanceList?.SingleOrDefault(a => a.SolutionName == mySolution.SolutionFilePath.NameWithoutExtension);
+            if (protocolInstance == null)
+                return;
+            
+            myLogger.Info($"UNITY_Port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
 
             try
             {
                 var lifetime = mySessionLifetimes.Next();
                 myLogger.Info("Create protocol...");
 
-                myLogger.Info("Creating SocketWire with port = {0}", port);
-                var wire = new SocketWire.Client(lifetime, myDispatcher, port, "UnityClient");
+                myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
+                var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
                     myHost.SetModelData("UNITY_Play", "undef");
-                
-                    var protocol = new Protocol("UnityEditorPlugin", new Serializers(), new Identities(IdKind.Client), myDispatcher, wire);
+
+                    var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
+                        new Identities(IdKind.Client), myDispatcher, wire);
                     var model = new EditorPluginModel(lf, protocol);
                     model.IsBackendConnected.Set(rdVoid => true);
                     var frontendProcess = Process.GetCurrentProcess().GetParent();
@@ -186,23 +192,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         model.RiderProcessId.SetValue(frontendProcess.Id);
                     }
+
                     myHost.SetModelData("UNITY_SessionInitialized", "true");
 
                     SubscribeToLogs(lf, model);
                     SubscribeToOpenFile(model);
                     model.Play.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Play", b.ToString().ToLower()));
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
-                    
-                    model.EditorLogPath.Advise(lifetime, s => myHost.PerformModelAction(a=>a.EditorLogPath.SetValue(s)));
-                    model.PlayerLogPath.Advise(lifetime, s => myHost.PerformModelAction(a=>a.PlayerLogPath.SetValue(s)));
-                    
+
+                    model.EditorLogPath.Advise(lifetime,
+                        s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
+                    model.PlayerLogPath.Advise(lifetime,
+                        s => myHost.PerformModelAction(a => a.PlayerLogPath.SetValue(s)));
+
                     BindPluginPathToSettings(lf, model);
-                    
+
                     TrackActivity(model, lf);
 
                     if (!myComponentLifetime.IsTerminated)
-                        myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel", () => { myUnityModel.SetValue(model, myReadonlyToken); });
-                    
+                        myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel",
+                            () => { myUnityModel.SetValue(model, myReadonlyToken); });
+
                     lf.AddAction(() =>
                     {
                         if (!myComponentLifetime.IsTerminated)
@@ -210,7 +220,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             {
                                 myLogger.Info("Wire disconnected.");
                                 myHost.SetModelData("UNITY_SessionInitialized", "false");
-                                myUnityModel.SetValue(null, myReadonlyToken);                                
+                                myUnityModel.SetValue(null, myReadonlyToken);
                             });
                     });
                 });
@@ -281,8 +291,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     // ReSharper disable once ClassNeverInstantiated.Global
     class ProtocolInstance
     {
-        // ReSharper disable once InconsistentNaming
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public int port_id { get; set; }
+        public readonly int Port;
+        public readonly string SolutionName;
+
+        public ProtocolInstance(int port, string solutionName)
+        {
+            Port = port;
+            SolutionName = solutionName;
+        }
+
+        public static List<ProtocolInstance> FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<List<ProtocolInstance>>(json);
+        }
     }
 }

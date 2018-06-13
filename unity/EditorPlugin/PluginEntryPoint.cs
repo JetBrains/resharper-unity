@@ -28,9 +28,8 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
-    //public static readonly RProperty<EditorPluginModel> UnityModel = new RProperty<EditorPluginModel>();
-    public static readonly List<RProperty<EditorPluginModel>> UnityModels = new List<RProperty<EditorPluginModel>>();
-    private static readonly UnityEventCollector ourLogEventCollector; 
+    public static readonly List<KeyValuePair<EditorPluginModel, Lifetime>> UnityModels = new List<KeyValuePair<EditorPluginModel, Lifetime>>();
+    private static readonly UnityEventCollector ourLogEventCollector;
 
     // This an entry point
     static PluginEntryPoint()
@@ -130,9 +129,8 @@ namespace JetBrains.Rider.Unity.Editor
 
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
         Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
-
      
-      var list = new List<Connection>();
+      var list = new List<ProtocolInstance>();
       CreateProtocolAndAdvise(lifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
       
       // list all sln files in CurrentDirectory, except main one and create server protocol for each of them
@@ -149,7 +147,7 @@ namespace JetBrains.Rider.Unity.Editor
       ourOpenAssetHandler = new OnOpenAssetHandler(ourRiderPathLocator, ourPluginSettings, SlnFile);
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
       var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
-      File.WriteAllText(protocolInstanceJsonPath, Connection.ToJson(list));
+      File.WriteAllText(protocolInstanceJsonPath, ProtocolInstance.ToJson(list));
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
@@ -160,12 +158,12 @@ namespace JetBrains.Rider.Unity.Editor
       ourInitialized = true;
     }
 
-    private static void CreateProtocolAndAdvise(Lifetime lifetime, List<Connection> list, string solutionFileName)
+    private static void CreateProtocolAndAdvise(Lifetime lifetime, List<ProtocolInstance> list, string solutionFileName)
     {
       try
       {
         var riderProtocolController = new RiderProtocolController(MainThreadDispatcher.Instance, lifetime);
-        list.Add(new Connection(riderProtocolController.Wire.Port, solutionFileName));
+        list.Add(new ProtocolInstance(riderProtocolController.Wire.Port, solutionFileName));
 
         var serializers = new Serializers();
         var identities = new Identities(IdKind.Server);
@@ -188,17 +186,14 @@ namespace JetBrains.Rider.Unity.Editor
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           ourLogger.Verbose("UnityModel initialized.");
-          var property = new RProperty<EditorPluginModel>();
-          property.SetValue(model);
-          UnityModels.Add(property);
-          new UnityEventLogSender(ourLogEventCollector, connectionLifetime);
+          UnityModels.Add(new KeyValuePair<EditorPluginModel, Lifetime>(model, connectionLifetime));
+          new UnityEventLogSender(ourLogEventCollector);
         });
       }
       catch (Exception ex)
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
-      
     }
 
     private static void AdviseEditorState(EditorPluginModel modelValue)

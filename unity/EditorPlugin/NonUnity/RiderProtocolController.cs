@@ -33,18 +33,18 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
   }
   
   [Serializable]
-  class Connection
+  class ProtocolInstance
   {
     public int Port;
     public string SolutionName;
 
-    public Connection(int port, string solutionName)
+    public ProtocolInstance(int port, string solutionName)
     {
       Port = port;
       SolutionName = solutionName;
     }
 
-    public static string ToJson(List<Connection> connections)
+    public static string ToJson(List<ProtocolInstance> connections)
     {
         return JsonConvert.SerializeObject(connections);
     }

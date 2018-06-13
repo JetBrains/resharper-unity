@@ -87,5 +87,5 @@ fun AnActionEvent.getHost(): UnityHost? {
 fun AnActionEvent.isUnityProject(): Boolean {
     val project = this.project ?: return false
     val discoverer = project.tryGetComponent<UnityReferenceDiscoverer>() ?: return false
-    return discoverer.isUnityGeneratedProject
+    return discoverer.isUnityProject
 }

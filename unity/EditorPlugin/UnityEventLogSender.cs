@@ -70,38 +70,40 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    public event EventHandler AddEvent;
+    private event EventHandler _addEvent;
+    public event EventHandler AddEvent
+    {
+      add => _addEvent += value;
+      remove => _addEvent -= value;
+    }
+    
+    public void Dispose()
+    {
+      _addEvent = null;
+    }
 
     private void OnAddEvent(EventArgs e)
     {
-      var handler = AddEvent;
-      handler?.Invoke(this, e);
+      _addEvent?.Invoke(this, e);
     }
   }
   
   public class UnityEventLogSender
   {
-    private readonly Lifetime myConnectionLifetime;
-
-    public UnityEventLogSender(UnityEventCollector collector, Lifetime connectionLifetime)
+    public UnityEventLogSender(UnityEventCollector collector)
     {
-      myConnectionLifetime = connectionLifetime;
-      PluginEntryPoint.UnityModels.ForEach(a =>
-      {
-        ProcessQueue(a.Maybe.Value, collector);  
-      });
+      ProcessQueue(PluginEntryPoint.UnityModels.Where(a=>!a.Value.IsTerminated).ToArray(), collector);
+      collector.DelayedLogEvents.Clear();
 
-      collector.AddEvent +=(col, _) =>
+      collector.Dispose();
+      collector.AddEvent += (col, _) =>
       {
-        PluginEntryPoint.UnityModels.ForEach(a =>
-        {
-          if (a.Maybe.HasValue && !myConnectionLifetime.IsTerminated)
-            ProcessQueue(a.Maybe.Value, (UnityEventCollector)col);  
-        });
+        var models = PluginEntryPoint.UnityModels.Where(a=>!a.Value.IsTerminated).ToArray();
+        ProcessQueue(models, (UnityEventCollector)col);
       };
     }
 
-    private void ProcessQueue(EditorPluginModel model, UnityEventCollector collector)
+    private void ProcessQueue(KeyValuePair<EditorPluginModel, Lifetime>[] models, UnityEventCollector collector)
     {
       if (!collector.DelayedLogEvents.Any())
         return;
@@ -109,23 +111,22 @@ namespace JetBrains.Rider.Unity.Editor
       var head = collector.DelayedLogEvents.First;
       while (head != null)
       {
-        if (myConnectionLifetime.IsTerminated)
-          return;
-        
-        SendLogEvent(model, head.Value);
+        SendLogEvent(models, head.Value);
         head = head.Next;
       }
-
       collector.DelayedLogEvents.Clear();
     }
     
-    private void SendLogEvent(EditorPluginModel model, RdLogEvent logEvent)
+    private void SendLogEvent(KeyValuePair<EditorPluginModel, Lifetime>[] models, RdLogEvent logEvent)
     {
       MainThreadDispatcher.Instance.Queue(() =>
       {
-        if (!myConnectionLifetime.IsTerminated)
+        foreach (var model in models)
         {
-          model.Log.Fire(logEvent);
+          if (!model.Value.IsTerminated)
+          {
+            model.Key.Log.Fire(logEvent);
+          }
         }
       });      
     }
