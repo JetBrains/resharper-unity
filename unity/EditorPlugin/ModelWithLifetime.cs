@@ -5,8 +5,8 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public class ModelWithLifetime
   {
-    public EditorPluginModel Model;
-    public Lifetime Lifetime;
+    public readonly EditorPluginModel Model;
+    public readonly Lifetime Lifetime;
     public ModelWithLifetime(EditorPluginModel model, Lifetime lifetime)
     {
       Model = model;
