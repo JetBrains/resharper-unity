@@ -251,9 +251,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             else
                 myUsageStatistics.TrackActivity("UnityVersion", model.ApplicationVersion.Value);
             if (!model.ScriptingRuntime.HasValue())
-                model.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("UnityVersion", runtime.ToString()); });
+                model.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
             else
-                myUsageStatistics.TrackActivity("UnityVersion", model.ScriptingRuntime.Value.ToString());
+                myUsageStatistics.TrackActivity("ScriptingRuntime", model.ScriptingRuntime.Value.ToString());
         }
 
         private void SubscribeToOpenFile([NotNull] EditorPluginModel model)
