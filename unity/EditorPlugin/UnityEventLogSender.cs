@@ -12,7 +12,7 @@ namespace JetBrains.Rider.Unity.Editor
   public class UnityEventCollector
   {
     private readonly int myDelayedLogEventsMaxSize = 1000;
-    public readonly LinkedList<RdLogEvent> myDelayedLogEvents = new LinkedList<RdLogEvent>();
+    public readonly LinkedList<RdLogEvent> DelayedLogEvents = new LinkedList<RdLogEvent>();
 
     public UnityEventCollector()
     {
@@ -62,64 +62,71 @@ namespace JetBrains.Rider.Unity.Editor
         var eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;
 
         var evt = new RdLogEvent(ticks, eventType, eventMode, message, stackTrace);
-        myDelayedLogEvents.AddLast(evt);
-        if (myDelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
-          myDelayedLogEvents.RemoveFirst(); // limit max size
+        DelayedLogEvents.AddLast(evt);
+        if (DelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
+          DelayedLogEvents.RemoveFirst(); // limit max size
 
         OnAddEvent(new EventArgs());
       });
     }
 
-    public event EventHandler AddEvent;
+    private event EventHandler _addEvent;
+    public event EventHandler AddEvent
+    {
+      add => _addEvent += value;
+      remove => _addEvent -= value;
+    }
+    
+    public void Dispose()
+    {
+      _addEvent = null;
+    }
 
     private void OnAddEvent(EventArgs e)
     {
-      var handler = AddEvent;
-      handler?.Invoke(this, e);
+      _addEvent?.Invoke(this, e);
     }
   }
   
   public class UnityEventLogSender
   {
-    private readonly Lifetime myConnectionLifetime;
-
-    public UnityEventLogSender(UnityEventCollector collector, Lifetime connectionLifetime)
+    public UnityEventLogSender(UnityEventCollector collector)
     {
-      myConnectionLifetime = connectionLifetime;
-      ProcessQueue(PluginEntryPoint.UnityModel.Maybe.Value, collector);
+      ProcessQueue(PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray(), collector);
+      collector.DelayedLogEvents.Clear();
 
-      collector.AddEvent +=(col, _) =>
+      collector.Dispose();
+      collector.AddEvent += (col, _) =>
       {
-        if (PluginEntryPoint.UnityModel.Maybe.HasValue && !myConnectionLifetime.IsTerminated)
-          ProcessQueue(PluginEntryPoint.UnityModel.Maybe.Value, (UnityEventCollector)col);
+        var modelWithLifetimeArray = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
+        ProcessQueue(modelWithLifetimeArray, (UnityEventCollector)col);
       };
     }
 
-    private void ProcessQueue(EditorPluginModel model, UnityEventCollector collector)
+    private void ProcessQueue(ModelWithLifetime[] modelWithLifetimeArray, UnityEventCollector collector)
     {
-      if (!collector.myDelayedLogEvents.Any())
+      if (!collector.DelayedLogEvents.Any())
         return;
 
-      var head = collector.myDelayedLogEvents.First;
+      var head = collector.DelayedLogEvents.First;
       while (head != null)
       {
-        if (myConnectionLifetime.IsTerminated)
-          return;
-        
-        SendLogEvent(model, head.Value);
+        SendLogEvent(modelWithLifetimeArray, head.Value);
         head = head.Next;
       }
-
-      collector.myDelayedLogEvents.Clear();
+      collector.DelayedLogEvents.Clear();
     }
     
-    private void SendLogEvent(EditorPluginModel model, RdLogEvent logEvent)
+    private void SendLogEvent(ModelWithLifetime[] modelWithLifetimeArray, RdLogEvent logEvent)
     {
       MainThreadDispatcher.Instance.Queue(() =>
       {
-        if (!myConnectionLifetime.IsTerminated)
+        foreach (var modelWithLifetime in modelWithLifetimeArray)
         {
-          model.Log.Fire(logEvent);
+          if (!modelWithLifetime.Lifetime.IsTerminated)
+          {
+            modelWithLifetime.Model.Log.Fire(logEvent);
+          }
         }
       });      
     }

@@ -16,14 +16,12 @@ namespace JetBrains.Rider.Unity.Editor
   internal class OnOpenAssetHandler
   {
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
-    private readonly RProperty<EditorPluginModel> myModel;
     private readonly RiderPathLocator myRiderPathLocator;
     private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
 
-    public OnOpenAssetHandler(RProperty<EditorPluginModel> model, RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
+    public OnOpenAssetHandler(RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
     {
-      myModel = model;
       myRiderPathLocator = riderPathLocator;
       myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
@@ -33,8 +31,12 @@ namespace JetBrains.Rider.Unity.Editor
     {
       // determine asset that has been double clicked in the project view
       var selected = EditorUtility.InstanceIDToObject(instanceID);
+      var assetPath = AssetDatabase.GetAssetPath(selected);
 
-      var assetFilePath = Path.GetFullPath(AssetDatabase.GetAssetPath(selected));
+      if (string.IsNullOrEmpty(assetPath)) // RIDER-16784
+        return false;
+
+      var assetFilePath = Path.GetFullPath(assetPath);
       if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader" ||
             (selected.GetType().ToString() == "UnityEngine.TextAsset" &&
@@ -72,10 +74,11 @@ namespace JetBrains.Rider.Unity.Editor
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
       }
 
-      var model = myModel.Maybe.ValueOrDefault;
-      if (model != null)
+      var models = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
+      if (models.Any())
       {
-        if (PluginEntryPoint.CheckConnectedToBackendSync())
+        var model = models.First().Model;
+        if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
           const int column = 0;
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);

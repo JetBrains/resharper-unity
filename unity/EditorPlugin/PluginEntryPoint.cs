@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -27,8 +28,8 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
-    public static readonly RProperty<EditorPluginModel> UnityModel = new RProperty<EditorPluginModel>();
-    private static readonly UnityEventCollector ourLogEventCollector; 
+    public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
+    private static readonly UnityEventCollector ourLogEventCollector;
 
     // This an entry point
     static PluginEntryPoint()
@@ -58,23 +59,24 @@ namespace JetBrains.Rider.Unity.Editor
     public delegate void MyEventHandler(UnityModelAndLifetime e);
     [UsedImplicitly]
     public static event MyEventHandler OnModelInitialization = delegate {};
-    //public static readonly List<Action<UnityModel,Lifetime>> ActionsOnModelInitialization = new List<Action<UnityModel,Lifetime>>();
 
-    internal static bool CheckConnectedToBackendSync()
+    internal static bool CheckConnectedToBackendSync(EditorPluginModel model)
     {
-        var connected = false;
-        try
-        {
-          // HostConnected also means that in Rider and in Unity the same solution is opened
-          connected = UnityModel.Maybe.ValueOrDefault.IsBackendConnected.Sync(RdVoid.Instance,
-            new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
-        }
-        catch (Exception)
-        {
-          ourLogger.Verbose("Rider Protocol not connected.");
-        }
+      if (model == null)
+        return false;
+      var connected = false;
+      try
+      {
+        // HostConnected also means that in Rider and in Unity the same solution is opened
+        connected = model.IsBackendConnected.Sync(RdVoid.Instance,
+          new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
+      }
+      catch (Exception)
+      {
+        ourLogger.Verbose("Rider Protocol not connected.");
+      }
 
-        return connected;
+      return connected;
     }
 
     public static bool CallRider(string args)
@@ -127,14 +129,45 @@ namespace JetBrains.Rider.Unity.Editor
 
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
         Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+     
+      var list = new List<ProtocolInstance>();
+      CreateProtocolAndAdvise(lifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
+      
+      // list all sln files in CurrentDirectory, except main one and create server protocol for each of them
+      var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
+      var solutionFiles = currentDir.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
+      foreach (var solutionFile in solutionFiles)
+      {
+        if (Path.GetFileNameWithoutExtension(solutionFile.FullName) != currentDir.Name)
+        {
+          CreateProtocolAndAdvise(lifetime, list, Path.GetFileNameWithoutExtension(solutionFile.FullName));
+        }
+      }
+      
+      ourOpenAssetHandler = new OnOpenAssetHandler(ourRiderPathLocator, ourPluginSettings, SlnFile);
+      ourLogger.Verbose("Writing Library/ProtocolInstance.json");
+      var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
+      File.WriteAllText(protocolInstanceJsonPath, ProtocolInstance.ToJson(list));
 
+      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      {
+        ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
+        File.Delete(protocolInstanceJsonPath);
+      };
+      
+      ourInitialized = true;
+    }
+
+    private static void CreateProtocolAndAdvise(Lifetime lifetime, List<ProtocolInstance> list, string solutionFileName)
+    {
       try
       {
         var riderProtocolController = new RiderProtocolController(MainThreadDispatcher.Instance, lifetime);
+        list.Add(new ProtocolInstance(riderProtocolController.Wire.Port, solutionFileName));
 
         var serializers = new Serializers();
         var identities = new Identities(IdKind.Server);
-        
+
         MainThreadDispatcher.AssertThread();
 
         riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
@@ -143,30 +176,27 @@ namespace JetBrains.Rider.Unity.Editor
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
           var model = new EditorPluginModel(connectionLifetime, protocol);
           AdviseUnityActions(model, connectionLifetime);
-          AdviseModel(model);
+          AdviseEditorState(model);
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           InitEditorLogPath(model);
-          
+
           model.FullPluginPath.Advise(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
           model.ApplicationVersion.SetValue(UnityUtils.UnityVersion.ToString());
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
-          
+
           ourLogger.Verbose("UnityModel initialized.");
-          UnityModel.SetValue(model);
-          new UnityEventLogSender(ourLogEventCollector, connectionLifetime);
+          UnityModels.Add(new ModelWithLifetime(model, connectionLifetime));
+          new UnityEventLogSender(ourLogEventCollector);
         });
       }
       catch (Exception ex)
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
-
-      ourOpenAssetHandler = new OnOpenAssetHandler(UnityModel, ourRiderPathLocator, ourPluginSettings, SlnFile);
-      ourInitialized = true;
     }
 
-    private static void AdviseModel(EditorPluginModel modelValue)
+    private static void AdviseEditorState(EditorPluginModel modelValue)
     {
       modelValue.GetUnityEditorState.Set(rdVoid =>
       {
@@ -213,7 +243,7 @@ namespace JetBrains.Rider.Unity.Editor
             model.Play.SetValue(isPlaying);  
          
           var isPaused = EditorApplication.isPaused;
-          UnityModel?.Maybe.ValueOrDefault?.Pause.SetValue(isPaused);
+          model.Pause.SetValue(isPaused);
         });
       });
       isPlayingAction(); // get Unity state

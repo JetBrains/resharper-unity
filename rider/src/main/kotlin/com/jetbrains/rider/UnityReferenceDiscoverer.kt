@@ -19,6 +19,7 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     private val myProjectModelView = project.solution.projectModelView
     private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
     var isUnityGeneratedProject = false
+    var isUnityProject = false
 
     init {
         application.invokeLater {
@@ -39,6 +40,7 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
         if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
             myEventDispatcher.multicaster.hasUnityReference()
+            isUnityProject = hasAssetsFolder(project)
             isUnityGeneratedProject = hasAssetsFolder(project) && isUnityGeneratedSolutionName(project.solution)
         }
     }

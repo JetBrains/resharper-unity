@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
+using Newtonsoft.Json;
 
 namespace JetBrains.Rider.Unity.Editor.NonUnity
 {
@@ -12,38 +14,39 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
   public class RiderProtocolController
   {
     public readonly SocketWire.Server Wire;
+    private static readonly ILog ourLogger = Log.GetLog<RiderProtocolController>();
 
     public RiderProtocolController(IScheduler mainThreadScheduler, Lifetime lifetime)
     {
-      var logger = Log.GetLog<RiderProtocolController>();
-
       try
       {
-        logger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
+        ourLogger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
 
         Wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer", true);
-        logger.Log(LoggingLevel.VERBOSE, $"Created SocketWire with port = {Wire.Port}");
-        InitializeProtocolJson(Wire.Port, logger);
+        ourLogger.Log(LoggingLevel.VERBOSE, $"Created SocketWire with port = {Wire.Port}");
       }
       catch (Exception ex)
       {
-        logger.Error("RiderProtocolController.ctor. " + ex);
+        ourLogger.Error("RiderProtocolController.ctor. " + ex);
       }
     }
+  }
+  
+  [Serializable]
+  class ProtocolInstance
+  {
+    public int Port;
+    public string SolutionName;
 
-    private static void InitializeProtocolJson(int port, ILog logger)
+    public ProtocolInstance(int port, string solutionName)
     {
-      logger.Verbose("Writing Library/ProtocolInstance.json");
+      Port = port;
+      SolutionName = solutionName;
+    }
 
-      var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
-
-      File.WriteAllText(protocolInstanceJsonPath, $@"{{""port_id"":{port}}}");
-
-      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
-      {
-        logger.Verbose("Deleting Library/ProtocolInstance.json");
-        File.Delete(protocolInstanceJsonPath);
-      };
+    public static string ToJson(List<ProtocolInstance> connections)
+    {
+        return JsonConvert.SerializeObject(connections);
     }
   }
 }
