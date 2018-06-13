@@ -92,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
                     CSharpSharedImplUtil.RemoveAttribute(fieldDeclaration, myExistingAttribute);
                 else
                 {
-                    AttributeUtil.AddAttributeToSingleDeclaration(fieldDeclaration, KnownTypes.HideInInspector,
+                    AttributeUtil.AddAttributeToAllDeclarations(fieldDeclaration, KnownTypes.HideInInspector,
                         myModule, myElementFactory);
                 }
 

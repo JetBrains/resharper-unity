@@ -1,0 +1,7 @@
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test : MonoBehaviour
+{
+ {caret} public int Value;
+}
