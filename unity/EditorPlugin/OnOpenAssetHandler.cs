@@ -74,10 +74,10 @@ namespace JetBrains.Rider.Unity.Editor
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
       }
 
-      var models = PluginEntryPoint.UnityModels.Where(a=>!a.Value.IsTerminated).ToArray();
+      var models = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
       if (models.Any())
       {
-        var model = models.First().Key;
+        var model = models.First().Model;
         if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
           const int column = 0;

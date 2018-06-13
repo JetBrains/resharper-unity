@@ -28,7 +28,7 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
-    public static readonly List<KeyValuePair<EditorPluginModel, Lifetime>> UnityModels = new List<KeyValuePair<EditorPluginModel, Lifetime>>();
+    public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
     private static readonly UnityEventCollector ourLogEventCollector;
 
     // This an entry point
@@ -186,7 +186,7 @@ namespace JetBrains.Rider.Unity.Editor
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           ourLogger.Verbose("UnityModel initialized.");
-          UnityModels.Add(new KeyValuePair<EditorPluginModel, Lifetime>(model, connectionLifetime));
+          UnityModels.Add(new ModelWithLifetime(model, connectionLifetime));
           new UnityEventLogSender(ourLogEventCollector);
         });
       }

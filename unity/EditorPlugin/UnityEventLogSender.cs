@@ -92,18 +92,18 @@ namespace JetBrains.Rider.Unity.Editor
   {
     public UnityEventLogSender(UnityEventCollector collector)
     {
-      ProcessQueue(PluginEntryPoint.UnityModels.Where(a=>!a.Value.IsTerminated).ToArray(), collector);
+      ProcessQueue(PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray(), collector);
       collector.DelayedLogEvents.Clear();
 
       collector.Dispose();
       collector.AddEvent += (col, _) =>
       {
-        var models = PluginEntryPoint.UnityModels.Where(a=>!a.Value.IsTerminated).ToArray();
-        ProcessQueue(models, (UnityEventCollector)col);
+        var modelWithLifetimeArray = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
+        ProcessQueue(modelWithLifetimeArray, (UnityEventCollector)col);
       };
     }
 
-    private void ProcessQueue(KeyValuePair<EditorPluginModel, Lifetime>[] models, UnityEventCollector collector)
+    private void ProcessQueue(ModelWithLifetime[] modelWithLifetimeArray, UnityEventCollector collector)
     {
       if (!collector.DelayedLogEvents.Any())
         return;
@@ -111,21 +111,21 @@ namespace JetBrains.Rider.Unity.Editor
       var head = collector.DelayedLogEvents.First;
       while (head != null)
       {
-        SendLogEvent(models, head.Value);
+        SendLogEvent(modelWithLifetimeArray, head.Value);
         head = head.Next;
       }
       collector.DelayedLogEvents.Clear();
     }
     
-    private void SendLogEvent(KeyValuePair<EditorPluginModel, Lifetime>[] models, RdLogEvent logEvent)
+    private void SendLogEvent(ModelWithLifetime[] modelWithLifetimeArray, RdLogEvent logEvent)
     {
       MainThreadDispatcher.Instance.Queue(() =>
       {
-        foreach (var model in models)
+        foreach (var modelWithLifetime in modelWithLifetimeArray)
         {
-          if (!model.Value.IsTerminated)
+          if (!modelWithLifetime.Lifetime.IsTerminated)
           {
-            model.Key.Log.Fire(logEvent);
+            modelWithLifetime.Model.Log.Fire(logEvent);
           }
         }
       });      
