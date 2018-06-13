@@ -67,6 +67,11 @@
         <Title>Incorrect method signature</Title>
         <Description>Method does not match expected signature.</Description>
       </Tag>
+      
+      <Tag externalName="PossibleMisapplicationOfAttributeToMultipleFieldsWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Possible mis-application of attribute to multiple fields</Title>
+        <Description>Applying an attribute to a single declaration containing multiple fields will apply the attribute to each field. The highlighted attribute (e.g. 'FormerlySerializedAs') is intended to be applied only to a single field. Prefer an explicit application to a single field in a single declaration.</Description>
+      </Tag>
 
       <Tag externalName="RedundantAttributeOnTargetWarning.HIGHLIGHTING_ID"
            default="WARNING">
@@ -80,7 +85,13 @@
         <Title>Redundant Unity event function</Title>
         <Description>Empty Unity event functions are still called from native code, which affects performance.</Description>
       </Tag>
-      
+
+      <Tag externalName="RedundantFormerlySerializedAsAttributeWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Redundant 'FormerlySerializedAs' attribute</Title>
+        <Description>The 'FormerlySerializedAs' attribute is only valid on Unity serialized field. It is also redundant if the name argument matches the current name of the field.</Description>
+      </Tag>
+
       <Tag externalName="RedundantInitializeOnLoadAttributeWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Redundant 'InitializeOnLoad' attribute</Title>
@@ -227,6 +238,13 @@
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
   
+  <Warning name="PossibleMisapplicationOfAttributeToMultipleFields" configurableSeverity="Unity.PossibleMisapplicationOfAttributeToMultipleFields">
+    <Parameter type="IAttribute" name="attribute" />
+    <Message value="Possible mis-application of 'FormerlySerializedAs' attribute to multiple fields" />
+    <Range>Attribute.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
   <Warning name="RedundantAttributeOnTarget" configurableSeverity="Unity.RedundantAttributeOnTarget">
     <Parameter type="IAttribute" name="attribute" />
     <Parameter type="ITypeElement" name="attributeType"/>
@@ -248,7 +266,14 @@
     <Range>MethodDeclaration.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
-  
+
+  <Warning name="RedundantFormerlySerializedAsAttribute" configurableSeverity="Unity.RedundantFormerlySerializedAsAttribute">
+    <Parameter type="IAttribute" name="attribute" />
+    <Message value="Redundant 'FormerlySerializedAs' attribute" />
+    <Range>Attribute.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
+  </Warning>
+
   <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute">
     <Parameter type="IAttribute" name="attribute" />
     <Message value="'InitializeOnLoad' attribute is redundant when static constructor is missing" />

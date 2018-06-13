@@ -21,7 +21,7 @@ public class A : MonoBehaviour
     [NonSerialized, |SerializeField|(11)] public string |ExplicitlyUnusedField2|(12);
     [NonSerialized, |SerializeField|(13)] private string |myExplicitlyUnusedField3|(14);
     public static string |UnusedStaticField|(15);
-    [SerializeField] private static string |ourUnusedPrivateStaticField|(16);
+    [|SerializeField|(16)] private static string |ourUnusedPrivateStaticField|(17);
 
     public void OnDestroy()
     {
@@ -46,5 +46,6 @@ public class A : MonoBehaviour
 (13): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (14): ReSharper Warning [CS0169]: Field 'myExplicitlyUnusedField3' is never used
 (15): ReSharper Dead Code: Field 'UnusedStaticField' is never used
-(16): ReSharper Warning [CS0169]: Field 'ourUnusedPrivateStaticField' is never used
+(16): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(17): ReSharper Warning [CS0169]: Field 'ourUnusedPrivateStaticField' is never used
 

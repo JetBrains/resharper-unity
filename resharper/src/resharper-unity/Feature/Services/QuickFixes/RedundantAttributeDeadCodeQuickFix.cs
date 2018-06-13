@@ -38,6 +38,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
             myAttribute = highlighting.Attribute;
         }
 
+        public RedundantAttributeDeadCodeQuickFix(RedundantFormerlySerializedAsAttributeWarning highlighting)
+        {
+            myAttribute = highlighting.Attribute;
+        }
+
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
             return new RemoveAttribute(myAttribute).ToQuickFixIntentions();
