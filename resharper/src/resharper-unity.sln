@@ -11,15 +11,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity.rider", "re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.rider", "..\test\src\tests.rider.csproj", "{31338488-0C08-43C2-884F-A38485E2FA2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin", "..\..\unity\JetBrains.Rider.Unity.Editor\EditorPlugin\EditorPlugin.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin", "..\..\unity\EditorPlugin\EditorPlugin.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.Tests", "..\..\unity\JetBrains.Rider.Unity.Editor\EditorPlugin.Tests\EditorPlugin.Tests.csproj", "{0E4211DB-DA60-416B-A13C-14D45410F768}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.Tests", "..\..\unity\EditorPlugin.Tests\EditorPlugin.Tests.csproj", "{0E4211DB-DA60-416B-A13C-14D45410F768}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnityEditor", "UnityEditor", "{27FAB5DF-2272-44E7-9BCE-41508F24C07B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReSharper", "ReSharper", "{9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginFull", "..\..\unity\JetBrains.Rider.Unity.Editor\EditorPlugin\EditorPluginFull.csproj", "{51B82B3C-294F-4751-8754-223C660172E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginFull", "..\..\unity\EditorPlugin\EditorPluginFull.csproj", "{51B82B3C-294F-4751-8754-223C660172E4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zzGradleLauncher", "zzGradleLauncher", "{6A0FE4B5-F856-4881-8B5D-D4F8990CC26A}"
 EndProject

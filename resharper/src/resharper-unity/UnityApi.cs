@@ -26,9 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type)
+        public IEnumerable<UnityType> GetBaseUnityTypes([CanBeNull] ITypeElement type)
         {
-            if (type.Module is IProjectPsiModule projectPsiModule)
+            if (type?.Module is IProjectPsiModule projectPsiModule)
             {
                 var unityVersion = myUnityVersion.GetActualVersion(projectPsiModule.Project);
                 return GetBaseUnityTypes(type, unityVersion);
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(types, type, unityVersion);
         }
 
-        public bool IsUnityType([NotNull] ITypeElement type)
+        public bool IsUnityType([CanBeNull] ITypeElement type)
         {
             return GetBaseUnityTypes(type).Any();
         }

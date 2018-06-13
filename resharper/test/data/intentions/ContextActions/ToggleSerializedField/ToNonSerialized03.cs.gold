@@ -1,0 +1,7 @@
+﻿using UnityEngine;
+using JetBrains.Annotations;
+
+public class Foo : MonoBehaviour
+{
+    [NotNull] private int my{caret}Value;
+}

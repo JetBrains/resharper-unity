@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
-import com.jetbrains.rider.plugins.unity.UnityHost
 import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
 import com.jetbrains.rider.plugins.unity.actions.*
@@ -35,6 +34,13 @@ object UnityLogPanelToolbarBuilder {
             override fun setSelected(e: AnActionEvent?, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
         }
 
+        fun collapseall() = object : ToggleAction("Collapse similar items", "", AllIcons.Actions.Collapseall) {
+            override fun isSelected(e: AnActionEvent?) = model.mergeSimilarItems.value
+            override fun setSelected(e: AnActionEvent?, value: Boolean) {
+                model.mergeSimilarItems.set(value)
+            }
+        }
+
         val actionGroup = DefaultActionGroup().apply {
             addSeparator("Mode filters")
             add(createMode(RdLogEventMode.Edit))
@@ -44,6 +50,7 @@ object UnityLogPanelToolbarBuilder {
             add(createType(RdLogEventType.Warning))
             add(createType(RdLogEventType.Message))
             addSeparator("Other")
+            add(collapseall())
             add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
             addAll(consoleActionsList)
             add(mainSplitterToggleAction)

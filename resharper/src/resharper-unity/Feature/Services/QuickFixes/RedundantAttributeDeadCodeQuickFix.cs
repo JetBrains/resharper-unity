@@ -28,6 +28,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
             myAttribute = highlighting.Attribute;
         }
 
+        public RedundantAttributeDeadCodeQuickFix(RedundantHideInInspectorAttributeWarning highlighting)
+        {
+            myAttribute = highlighting.Attribute;
+        }
+
         public RedundantAttributeDeadCodeQuickFix(RedundantAttributeOnTargetWarning highlighting)
         {
             myAttribute = highlighting.Attribute;
