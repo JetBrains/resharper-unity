@@ -31,7 +31,7 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
 
     private var frameLifetime: LifetimeDefinition? = null
     val hasUnityWidgets: Property<Boolean> = Property(false)
-    val hasMinimizedUi: Property<Boolean> = Property(true)
+    val hasMinimizedUi: Property<Boolean> = Property(false)
     private var widgetInstalled = false;
 
     init {
