@@ -23,6 +23,9 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
 
     init {
         application.invokeLater {
+
+            calcIsUnityProject()
+
             myProjectModelView.items.advise(componentLifetime) { item ->
                 val itemData = item.newValueOpt
                 if (itemData == null) {
@@ -40,9 +43,13 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
         if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
             myEventDispatcher.multicaster.hasUnityReference()
-            isUnityProject = hasAssetsFolder(project)
-            isUnityGeneratedProject = hasAssetsFolder(project) && isUnityGeneratedSolutionName(project.solution)
+            calcIsUnityProject()
         }
+    }
+
+    private fun calcIsUnityProject() {
+        isUnityProject = hasAssetsFolder(project)
+        isUnityGeneratedProject = hasAssetsFolder(project) && isUnityGeneratedSolutionName(project.solution)
     }
 
     private fun isUnityGeneratedSolutionName(solution: Solution): Boolean {

@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.WindowManager
@@ -30,9 +29,9 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
     }
 
     private var frameLifetime: LifetimeDefinition? = null
-    val hasUnityWidgets: Property<Boolean> = Property(false)
-    val hasMinimizedUi: Property<Boolean> = Property(false)
-    private var widgetInstalled = false;
+    private val hasUnityWidgets: Property<Boolean> = Property(false)
+    val hasMinimizedUi: Property<Boolean?> = Property(null) //null means undefined, default value
+    private var widgetInstalled = false
 
     init {
         WindowManager.getInstance().addListener(this)
@@ -42,6 +41,8 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
         solutionLifecycleHost.isBackendLoaded.advise(componentLifetime) {
             if (it && unityReferenceDiscoverer.isUnityProject) {
                 hasUnityWidgets.value = true
+                if(hasMinimizedUi.value == null)
+                    hasMinimizedUi.set(true)
             }
         }
     }
@@ -70,7 +71,7 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
     override fun frameCreated(frame: IdeFrame) {
         frameLifetime?.terminate()
 
-        hasUnityWidgets.whenTrue(componentLifetime, {
+        hasUnityWidgets.whenTrue(componentLifetime) {
             if (!widgetInstalled)
             {
                 frameLifetime = Lifetime.create(componentLifetime)
@@ -78,7 +79,7 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
                 installWidget(frame, frameLifetime)
                 widgetInstalled = true;
             }
-        })
+        }
     }
 
     private fun installWidget(frame: IdeFrame, lifetime: Lifetime) {
