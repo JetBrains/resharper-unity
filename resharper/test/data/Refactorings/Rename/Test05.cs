@@ -1,0 +1,9 @@
+using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test : MonoBehaviour
+{
+    // Make sure the rename doesn't also rename the string literal of the old value
+    [FormerlySerializedAs("Value1")]
+    public int Val{caret}ue1;
+}

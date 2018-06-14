@@ -1,0 +1,30 @@
+﻿|using System;|(0)
+using UnityEngine;
+
+public class Test
+{
+    [|SerializeField|(1)] public readonly int |Value1|(2), |Value2|(3), |Value3|(4);
+}
+
+------------------------------------------------
+0: Using directive is not required by the code and can be safely removed
+QUICKFIXES:
+Remove unused directives in file
+--Remove unused directives in project
+--Remove unused directives in solution
+1: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Remove redundant attribute
+Make all fields non-readonly
+--Make 'Value1' non-readonly
+--Make 'Value2' non-readonly
+--Make 'Value3' non-readonly
+2: Readonly field 'Value1' is never assigned
+QUICKFIXES:
+Initialize field from constructor
+3: Readonly field 'Value2' is never assigned
+QUICKFIXES:
+Initialize field from constructor
+4: Readonly field 'Value3' is never assigned
+QUICKFIXES:
+Initialize field from constructor

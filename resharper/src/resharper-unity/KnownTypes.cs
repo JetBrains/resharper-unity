@@ -26,6 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName SyncVarAttribute =
             new ClrTypeName("UnityEngine.Networking.SyncVarAttribute");
 
+        // UnityEngine.Serialization
+        public static readonly IClrTypeName FormerlySerializedAsAttribute =
+            new ClrTypeName("UnityEngine.Serialization.FormerlySerializedAsAttribute");
+
         // UnityEditor
         public static readonly IClrTypeName CanEditMultipleObjects = new ClrTypeName("UnityEditor.CanEditMultipleObjects");
         public static readonly IClrTypeName CustomEditor = new ClrTypeName("UnityEditor.CustomEditor");
