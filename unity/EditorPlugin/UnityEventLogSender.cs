@@ -103,9 +103,6 @@ namespace JetBrains.Rider.Unity.Editor
       if (!collector.DelayedLogEvents.Any())
         return;
 
-      if (PluginEntryPoint.UnityModels.Any(a => !a.Lifetime.IsTerminated))
-        return;
-
       var head = collector.DelayedLogEvents.First;
       while (head != null)
       {
