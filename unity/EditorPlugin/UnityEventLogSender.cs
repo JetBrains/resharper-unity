@@ -88,36 +88,38 @@ namespace JetBrains.Rider.Unity.Editor
   {
     public UnityEventLogSender(UnityEventCollector collector)
     {
-      ProcessQueue(PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray(), collector);
+      ProcessQueue(collector);
       collector.DelayedLogEvents.Clear();
 
       collector.ClearEvent();
       collector.AddEvent += (col, _) =>
       {
-        var modelWithLifetimeArray = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
-        ProcessQueue(modelWithLifetimeArray, (UnityEventCollector)col);
+        ProcessQueue((UnityEventCollector)col);
       };
     }
 
-    private void ProcessQueue(ModelWithLifetime[] modelWithLifetimeArray, UnityEventCollector collector)
+    private void ProcessQueue(UnityEventCollector collector)
     {
       if (!collector.DelayedLogEvents.Any())
+        return;
+
+      if (PluginEntryPoint.UnityModels.Any(a => !a.Lifetime.IsTerminated))
         return;
 
       var head = collector.DelayedLogEvents.First;
       while (head != null)
       {
-        SendLogEvent(modelWithLifetimeArray, head.Value);
+        SendLogEvent(head.Value);
         head = head.Next;
       }
       collector.DelayedLogEvents.Clear();
     }
     
-    private void SendLogEvent(ModelWithLifetime[] modelWithLifetimeArray, RdLogEvent logEvent)
+    private void SendLogEvent(RdLogEvent logEvent)
     {
       MainThreadDispatcher.Instance.Queue(() =>
       {
-        foreach (var modelWithLifetime in modelWithLifetimeArray)
+        foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
         {
           if (!modelWithLifetime.Lifetime.IsTerminated)
           {
