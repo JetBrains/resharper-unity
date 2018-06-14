@@ -186,7 +186,9 @@ namespace JetBrains.Rider.Unity.Editor
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           ourLogger.Verbose("UnityModel initialized.");
-          UnityModels.Add(new ModelWithLifetime(model, connectionLifetime));
+          var pair = new ModelWithLifetime(model, connectionLifetime);
+          connectionLifetime.AddAction(() => { UnityModels.Remove(pair); });
+          UnityModels.Add(pair);
           new UnityEventLogSender(ourLogEventCollector);
         });
       }

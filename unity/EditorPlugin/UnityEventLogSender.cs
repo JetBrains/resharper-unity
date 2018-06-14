@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using JetBrains.DataFlow;
@@ -70,21 +71,16 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private event EventHandler _addEvent;
-    public event EventHandler AddEvent
+    public event EventHandler AddEvent;
+
+    public void ClearEvent()
     {
-      add => _addEvent += value;
-      remove => _addEvent -= value;
-    }
-    
-    public void Dispose()
-    {
-      _addEvent = null;
+      AddEvent = null;
     }
 
     private void OnAddEvent(EventArgs e)
     {
-      _addEvent?.Invoke(this, e);
+      AddEvent?.Invoke(this, e);
     }
   }
   
@@ -95,7 +91,7 @@ namespace JetBrains.Rider.Unity.Editor
       ProcessQueue(PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray(), collector);
       collector.DelayedLogEvents.Clear();
 
-      collector.Dispose();
+      collector.ClearEvent();
       collector.AddEvent += (col, _) =>
       {
         var modelWithLifetimeArray = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
