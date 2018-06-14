@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.WindowManager
@@ -11,36 +12,34 @@ import com.jetbrains.rider.UnityReferenceDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
+import com.jetbrains.rider.util.idea.lifetime
+import com.jetbrains.rider.util.idea.tryGetComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.whenTrue
 import org.jdom.Element
 
-@State(name = "UnityProjectConfiguration", storages = [(Storage(value = "other.xml"))])
+@State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscoverer,
                      private val host : UnityHost,
                      solutionLifecycleHost: SolutionLifecycleHost,
                      project: Project) : LifetimedProjectComponent(project), WindowManagerListener, PersistentStateComponent<Element> {
 
     companion object {
-        const val hasUnityWidgetsAttribute = "isUnityUI"
         const val hasMinimizedUiAttribute = "hasMinimizedUI"
     }
 
     private var frameLifetime: LifetimeDefinition? = null
-    private val hasUnityWidgets: Property<Boolean> = Property(false)
     val hasMinimizedUi: Property<Boolean?> = Property(null) //null means undefined, default value
-    private var widgetInstalled = false
 
     init {
         WindowManager.getInstance().addListener(this)
         componentLifetime.add {
             WindowManager.getInstance().removeListener(this)
         }
-        solutionLifecycleHost.isBackendLoaded.advise(componentLifetime) {
-            if (it && unityReferenceDiscoverer.isUnityProject) {
-                hasUnityWidgets.value = true
+        solutionLifecycleHost.isBackendLoaded.whenTrue(componentLifetime) {
+            if (unityReferenceDiscoverer.isUnityGeneratedProject) {
                 if(hasMinimizedUi.value == null)
                     hasMinimizedUi.set(true)
             }
@@ -49,19 +48,12 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
 
     override fun getState(): Element? {
         val element = Element("state")
-        val hasUnityWidgets = hasUnityWidgets.value
-        element.setAttribute(hasUnityWidgetsAttribute, hasUnityWidgets.toString())
         val hasMinimizedUi = hasMinimizedUi.value
         element.setAttribute(hasMinimizedUiAttribute, hasMinimizedUi.toString())
         return element
     }
 
     override fun loadState(element: Element) {
-        val isUnityProjectAttributeValue = element.getAttributeValue(hasUnityWidgetsAttribute, "") ?: return
-        if (!isUnityProjectAttributeValue.isEmpty()) {
-            hasUnityWidgets.value = isUnityProjectAttributeValue.toBoolean()
-        }
-
         val attributeValue = element.getAttributeValue(hasMinimizedUiAttribute, "") ?: return
         if (!attributeValue.isEmpty()) {
             hasMinimizedUi.value = attributeValue.toBoolean()
@@ -69,16 +61,14 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
     }
 
     override fun frameCreated(frame: IdeFrame) {
-        frameLifetime?.terminate()
+        val unityReferenceDiscoverer = project.tryGetComponent<UnityReferenceDiscoverer>() ?: return
 
-        hasUnityWidgets.whenTrue(componentLifetime) {
-            if (!widgetInstalled)
-            {
-                frameLifetime = Lifetime.create(componentLifetime)
-                val frameLifetime = frameLifetime?.lifetime ?: error("frameLifetime was terminated from non-ui thread")
-                installWidget(frame, frameLifetime)
-                widgetInstalled = true;
-            }
+        if (frame.project == project && unityReferenceDiscoverer.isUnityProject) {
+            frameLifetime?.terminate()
+
+            frameLifetime = Lifetime.create(project.lifetime)
+            val frameLifetime = frameLifetime?.lifetime ?: error("frameLifetime was terminated from non-ui thread")
+            installWidget(frame, frameLifetime)
         }
     }
 
@@ -94,13 +84,15 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
         }
 
         statusBar.addWidget(iconWidget, "after " + "ReadOnlyAttribute")
+
         lifetime.add {
+            if (frame.project != project) return@add
             statusBar.removeWidget(iconWidget.ID())
         }
     }
 
-    override fun beforeFrameReleased(frame: IdeFrame?) {
-        if(frame?.project != project) return
+    override fun beforeFrameReleased(frame: IdeFrame) {
+        if (frame.project != project) return
         frameLifetime?.terminate()
         frameLifetime = null
     }

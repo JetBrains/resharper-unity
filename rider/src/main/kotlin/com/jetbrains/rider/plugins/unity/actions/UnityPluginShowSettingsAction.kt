@@ -16,7 +16,7 @@ class UnityPluginShowSettingsAction : DumbAwareAction("Unity Plugin Settings..."
     }
 }
 
-class ShowUnityLogInRiderAction : DumbAwareAction("Show Unity Editor Log") {
+class ShowUnityLogInRiderAction : DumbAwareAction("Show Unity Log Window") {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project?: return
         e.getHost() ?: return
