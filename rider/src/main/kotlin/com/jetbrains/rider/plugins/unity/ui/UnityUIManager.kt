@@ -63,7 +63,7 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
     override fun frameCreated(frame: IdeFrame) {
         val unityReferenceDiscoverer = project.tryGetComponent<UnityReferenceDiscoverer>() ?: return
 
-        if (frame.project == project && unityReferenceDiscoverer.isUnityProject) {
+        if (frame.project == project && unityReferenceDiscoverer.isUnityNearGeneratedProject) {
             frameLifetime?.terminate()
 
             frameLifetime = Lifetime.create(project.lifetime)

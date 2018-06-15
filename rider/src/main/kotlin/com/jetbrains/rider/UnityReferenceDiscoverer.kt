@@ -2,27 +2,49 @@ package com.jetbrains.rider
 
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
+import com.jetbrains.rider.model.RdAssemblyReferenceDescriptor
+import com.jetbrains.rider.model.RdProjectModelItemDescriptor
 import com.jetbrains.rider.model.Solution
 import com.jetbrains.rider.model.projectModelView
 import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.plugins.unity.ui.UnityUIManager
 import com.jetbrains.rider.projectView.path
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
-import com.jetbrains.rider.util.idea.tryGetComponent
 import com.jetbrains.rider.util.reactive.Property
 import java.io.File
 
 class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
+    private val myProjectModelView = project.solution.projectModelView
     private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
     var isUnityGeneratedProject = false
-    var isUnityProject = false
+    var isUnityNearGeneratedProject = false
+    var hasReferenceToUnityProject = false
 
     init {
-        isUnityProject = hasUnityFolders(project) && generatedSolutionFileExistsNear(project.solution)
         isUnityGeneratedProject = hasAssetsFolder(project) && isUnityGeneratedSolutionName(project.solution)
+        isUnityNearGeneratedProject = hasUnityFolders(project) && generatedSolutionFileExistsNear(project.solution)
+
+        application.invokeLater {
+            myProjectModelView.items.advise(componentLifetime) { item ->
+                val itemData = item.newValueOpt
+                if (itemData == null) {
+                    // Item removed. Don't care about this. It's a weird scenario if someone
+                    // removes a Unity project
+                } else {
+                    // Item added or updated
+                    itemAddedOrUpdated(itemData.descriptor)
+                }
+            }
+        }
+    }
+
+    private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
+        if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
+            myEventDispatcher.multicaster.hasUnityReference()
+            hasReferenceToUnityProject = true
+        }
     }
 
     private fun generatedSolutionFileExistsNear(solution: Solution): Boolean {
