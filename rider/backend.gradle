@@ -131,7 +131,6 @@ class RestorePackagesTask extends DefaultTask {
         def restoreArguments = [ 'restore', '--verbosity', 'normal' ]
         if (project.PackageSource != null) {
             restoreArguments << '--source' << 'https://api.nuget.org/v3/index.json'
-            restoreArguments << '--source' << 'https://www.myget.org/F/jetbrains-rider-sdk-snapshots/api/v3/index.json'
             restoreArguments << '--source' << project.PackageSource
         }
         restoreArguments.addAll project.extraMSBuildArgs
