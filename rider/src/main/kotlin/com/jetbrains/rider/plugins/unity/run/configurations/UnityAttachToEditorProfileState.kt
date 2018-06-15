@@ -29,9 +29,9 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 logger.info("Pass value to backend, which will push Unity to enter play mode.")
                 lifetime.bracket(opening = {
                     // pass value to backend, which will push Unity to enter play mode.
-                    executionEnvironment.project.solution.rdUnityModel.data["UNITY_Play"] = true.toString();
+                    executionEnvironment.project.solution.rdUnityModel.play.set(true)
                 }, closing = {
-                    executionEnvironment.project.solution.rdUnityModel.data["UNITY_Play"] = false.toString()
+                    executionEnvironment.project.solution.rdUnityModel.play.set(false)
                 })
             }
         }

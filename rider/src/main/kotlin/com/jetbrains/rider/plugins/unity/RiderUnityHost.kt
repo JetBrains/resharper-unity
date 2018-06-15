@@ -27,17 +27,13 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
     val model = project.solution.rdUnityModel
 
     init {
+        model.play.advise(componentLifetime) { play.set(it) }
         model.data.advise(componentLifetime) { item ->
             val newVal = item.newValueOpt
             if (item.key == "UNITY_ActivateRider" && newVal == "true") {
                 logger.info(item.key+" "+ newVal)
                 ProjectUtil.focusProjectWindow(project, true)
                 model.data["UNITY_ActivateRider"] = "false";
-            }else if (item.key == "UNITY_Play" && newVal != null) {
-                if (newVal != "undef")
-                    play.set(newVal.toBoolean())
-                else
-                    play.set(null)
             } else if (item.key == "UNITY_EditorState" && newVal != null) {
                 unityState.set(newVal.toString())
             } else if (item.key == "UNITY_Pause" && newVal!=null) {
@@ -56,7 +52,7 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
     }
     companion object {
         fun CallBackendRefresh(project: Project, force:Boolean) { CallBackend(project, "UNITY_Refresh", force.toString().toLowerCase()) }
-        fun CallBackendPlay(project: Project, value:Boolean) { CallBackend(project, "UNITY_Play", value.toString().toLowerCase()) }
+        fun CallBackendPlay(project: Project, value:Boolean) { project.solution.rdUnityModel.play.set(value) }
         fun CallBackendPause(project: Project, value:Boolean) { CallBackend(project, "UNITY_Pause", value.toString().toLowerCase()) }
         fun CallBackendStep(project: Project) { CallBackend(project, "UNITY_Step", "true") }
 
