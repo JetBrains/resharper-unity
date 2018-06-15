@@ -111,6 +111,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseModelData(Lifetime lifetime, Solution solution)
         {
+            myHost.PerformModelAction(m => m.Play.Advise(lifetime, e =>
+            {
+                var model = UnityModel.Value;
+                if (UnityModel.Value == null) return;
+                if (model.Play.Value == e) return;
+                
+                myLogger.Info($"Play = {e} came from frontend.");
+                model.Play.SetValue(e);
+
+            }));
+            
             myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
             {
                 var model = UnityModel.Value;
@@ -136,11 +147,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         solution.CustomData.Data.Remove("UNITY_Step");
                         break;
                     
-                    case "UNITY_Play":
-                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        model.Play.SetValue(Convert.ToBoolean(e.NewValue));
-                        break;
-
                     case "UNITY_Pause":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         model.Pause.SetValue(Convert.ToBoolean(e.NewValue));
@@ -181,7 +187,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
-                    myHost.SetModelData("UNITY_Play", "undef");
 
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
                         new Identities(IdKind.Client), myDispatcher, wire);
@@ -197,7 +202,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     SubscribeToLogs(lf, model);
                     SubscribeToOpenFile(model);
-                    model.Play.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Play", b.ToString().ToLower()));
+                    model.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(a=>a.Play.SetValue(b)));
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
 
                     model.EditorLogPath.Advise(lifetime,

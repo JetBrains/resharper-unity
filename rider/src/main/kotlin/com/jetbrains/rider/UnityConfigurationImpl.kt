@@ -16,11 +16,9 @@ class UnityConfigurationImpl(private val project: Project, unityReferenceDiscove
             .filter { f -> f != null }
             .map { f -> f!! }
             .toHashSet()
-        unityReferenceDiscoverer.addUnityReferenceListener(object : UnityReferenceListener {
-            override fun hasUnityReference() {
-                excludes.updateExcludes(this, excludePaths)
-            }
-        })
+        if (unityReferenceDiscoverer.isUnityNearGeneratedProject) {
+            excludes.updateExcludes(this, excludePaths)
+        }
     }
 
     private fun getChildAsFile(directoryName: String) : File?

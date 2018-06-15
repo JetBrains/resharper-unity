@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using JetBrains.DataFlow;
@@ -70,21 +71,16 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private event EventHandler _addEvent;
-    public event EventHandler AddEvent
+    public event EventHandler AddEvent;
+
+    public void ClearEvent()
     {
-      add => _addEvent += value;
-      remove => _addEvent -= value;
-    }
-    
-    public void Dispose()
-    {
-      _addEvent = null;
+      AddEvent = null;
     }
 
     private void OnAddEvent(EventArgs e)
     {
-      _addEvent?.Invoke(this, e);
+      AddEvent?.Invoke(this, e);
     }
   }
   
@@ -92,18 +88,17 @@ namespace JetBrains.Rider.Unity.Editor
   {
     public UnityEventLogSender(UnityEventCollector collector)
     {
-      ProcessQueue(PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray(), collector);
+      ProcessQueue(collector);
       collector.DelayedLogEvents.Clear();
 
-      collector.Dispose();
+      collector.ClearEvent();
       collector.AddEvent += (col, _) =>
       {
-        var modelWithLifetimeArray = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
-        ProcessQueue(modelWithLifetimeArray, (UnityEventCollector)col);
+        ProcessQueue((UnityEventCollector)col);
       };
     }
 
-    private void ProcessQueue(ModelWithLifetime[] modelWithLifetimeArray, UnityEventCollector collector)
+    private void ProcessQueue(UnityEventCollector collector)
     {
       if (!collector.DelayedLogEvents.Any())
         return;
@@ -111,17 +106,17 @@ namespace JetBrains.Rider.Unity.Editor
       var head = collector.DelayedLogEvents.First;
       while (head != null)
       {
-        SendLogEvent(modelWithLifetimeArray, head.Value);
+        SendLogEvent(head.Value);
         head = head.Next;
       }
       collector.DelayedLogEvents.Clear();
     }
     
-    private void SendLogEvent(ModelWithLifetime[] modelWithLifetimeArray, RdLogEvent logEvent)
+    private void SendLogEvent(RdLogEvent logEvent)
     {
       MainThreadDispatcher.Instance.Queue(() =>
       {
-        foreach (var modelWithLifetime in modelWithLifetimeArray)
+        foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
         {
           if (!modelWithLifetime.Lifetime.IsTerminated)
           {

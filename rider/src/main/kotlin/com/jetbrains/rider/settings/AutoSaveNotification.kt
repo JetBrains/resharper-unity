@@ -11,11 +11,7 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurableGroup
 import com.intellij.openapi.options.newEditor.SettingsDialogFactory
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.settings.RiderShowSettingsUtilImpl
-import com.jetbrains.rider.settings.SettingsViewModelHost
 import com.jetbrains.rider.UnityReferenceDiscoverer
-import com.jetbrains.rider.UnityReferenceListener
-import com.jetbrains.rider.util.idea.getLogger
 import javax.swing.event.HyperlinkEvent
 
 class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, project: Project, unityReferenceDiscoverer: UnityReferenceDiscoverer) : AbstractProjectComponent(project){
@@ -28,11 +24,9 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
     }
 
     init {
-        unityReferenceDiscoverer.addUnityReferenceListener(object : UnityReferenceListener {
-            override fun hasUnityReference() {
-                showNotificationIfNeeded()
-            }
-        })
+        if (unityReferenceDiscoverer.isUnityGeneratedProject) {
+            showNotificationIfNeeded()
+        }
     }
 
     private fun showNotificationIfNeeded(){

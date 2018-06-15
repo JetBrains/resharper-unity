@@ -54,12 +54,10 @@ class UnityUIMinimizer : StartupActivity {
         val unityUiManager = project.tryGetComponent<UnityUIManager>() ?: return
         val unityReferenceDiscoverer = project.tryGetComponent<UnityReferenceDiscoverer>() ?: return
 
-        if(unityUiManager.hasMinimizedUi.hasTrueValue() && unityReferenceDiscoverer.isUnityGeneratedProject) {
-            application.invokeLater {
+        application.invokeLater {
+            if (unityUiManager.hasMinimizedUi.hasTrueValue() && unityReferenceDiscoverer.isUnityGeneratedProject) {
                 ensureMinimizedUI(project)
             }
         }
     }
 }
-
-

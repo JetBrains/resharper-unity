@@ -20,10 +20,10 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     {
       try
       {
-        ourLogger.Log(LoggingLevel.VERBOSE, "Start ControllerTask...");
+        ourLogger.Verbose("Start ControllerTask...");
 
         Wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer", true);
-        ourLogger.Log(LoggingLevel.VERBOSE, $"Created SocketWire with port = {Wire.Port}");
+        ourLogger.Verbose($"Created SocketWire with port = {Wire.Port}");
       }
       catch (Exception ex)
       {
