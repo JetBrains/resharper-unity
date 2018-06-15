@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Resources.Shell
         static WriteLockCookie()
         {
             var type = typeof(ReadLockCookie).Assembly.GetType("JetBrains.ReSharper.Resources.Shell.WriteLockCookie");
-            var methodInfo = type.GetMethod("Create", new Type[] { });
+            var methodInfo = type.GetMethod("Create", new Type[] {typeof(bool)});
             if (methodInfo != null)
                 ourOriginalCreate = BuildWriteLookCookieCreateMethodOriginal(methodInfo);
             else
