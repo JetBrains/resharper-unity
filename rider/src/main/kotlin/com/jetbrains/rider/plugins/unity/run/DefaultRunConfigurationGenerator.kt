@@ -32,10 +32,9 @@ class DefaultRunConfigurationGenerator(unityReferenceDiscoverer: UnityReferenceD
                 }
 
                 if (!runManager.allSettings.any { a->a.type == UnityDebugAndPlayConfigurationType::class.java}) {
-                    // todo:restore in 2018.2
-                    // val configurationTypeDebugAndPlay = ConfigurationTypeUtil.findConfigurationType(UnityDebugAndPlayConfigurationType::class.java)
-                    // val runConfigurationDebugAndPlay = runManager.createRunConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationTypeDebugAndPlay.attachToEditorAndPlayFactory)
-                    //runManager.addConfiguration(runConfigurationDebugAndPlay, false)
+                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDebugAndPlayConfigurationType::class.java)
+                     val runConfiguration = runManager.createRunConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationType.attachToEditorAndPlayFactory)
+                    runManager.addConfiguration(runConfiguration, false)
                 }
             }
         })

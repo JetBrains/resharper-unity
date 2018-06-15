@@ -26,13 +26,16 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
 
         if (remoteConfiguration.play) {
             debugAttached.adviseOnce(lifetime) {
-                logger.info("Pass value to backend, which will push Unity to enter play mode.")
-                lifetime.bracket(opening = {
-                    // pass value to backend, which will push Unity to enter play mode.
-                    executionEnvironment.project.solution.rdUnityModel.play.set(true)
-                }, closing = {
-                    executionEnvironment.project.solution.rdUnityModel.play.set(false)
-                })
+                if (it)
+                {
+                    logger.info("Pass value to backend, which will push Unity to enter play mode.")
+                    lifetime.bracket(opening = {
+                        // pass value to backend, which will push Unity to enter play mode.
+                        executionEnvironment.project.solution.rdUnityModel.play.set(true)
+                    }, closing = {
+                        executionEnvironment.project.solution.rdUnityModel.play.set(false)
+                    })
+                }
             }
         }
 
@@ -40,6 +43,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
     }
 
     override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
+        debugAttached.fire(true)
         return UnityDebuggerOutputListener(project)
     }
 }
