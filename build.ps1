@@ -31,7 +31,7 @@ if ($isUnix){
   .\gradlew --info --stacktrace "buildPlugin" $gradleArgs
 }
 else{
-  .\gradlew.bat --info --stacktrace "buildBackend" $gradleArgs
+  .\gradlew.bat --info --stacktrace "packArtifacts" $gradleArgs
   if ($LastExitCode -ne 0) { throw "Exec: Unable to build Rider backend plugin: exit code $LastExitCode" }
   .\gradlew.bat --info --stacktrace "buildPlugin" $gradleArgs
 }
