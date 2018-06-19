@@ -174,7 +174,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var pluginDir = parentDirs[0];
 
-            if (pluginFiles.Count == 1 && pluginFiles[0].Name == PluginPathsProvider.BasicPluginDllFile)
+            if (pluginFiles.Count == 1 && pluginFiles[0].Name == PluginPathsProvider.BasicPluginDllFile && pluginFiles[0].ExistsFile)
             {
                 try
                 {
