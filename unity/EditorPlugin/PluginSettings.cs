@@ -136,8 +136,12 @@ namespace JetBrains.Rider.Unity.Editor
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     private static bool ValidateMenuOpenProject()
     {
-      var model = PluginEntryPoint.UnityModels.First(a => !a.Lifetime.IsTerminated).Model;
-      return PluginEntryPoint.Enabled && !PluginEntryPoint.CheckConnectedToBackendSync(model);
+      if (!PluginEntryPoint.Enabled)
+        return false;
+      var model = PluginEntryPoint.UnityModels.FirstOrDefault(a => !a.Lifetime.IsTerminated).Model;
+      if (model == null)
+        return true;
+      return false;
     }
     
     /// <summary>
