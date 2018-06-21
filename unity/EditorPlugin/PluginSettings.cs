@@ -11,12 +11,12 @@ namespace JetBrains.Rider.Unity.Editor
   {
     OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
     string RiderPath { get; set; }
-  } 
-  
+  }
+
   public class PluginSettings : IPluginSettings
-  {   
+  {
     private static LoggingLevel ourSelectedLoggingLevel = (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 4);
-    
+
     internal static LoggingLevel SelectedLoggingLevel
     {
       get => ourSelectedLoggingLevel;
@@ -31,7 +31,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
         throw new InvalidOperationException("GetTargetFrameworkVersionWindowsMono2 is designed for Windows only");
-      
+
       var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
       if (!dir.Exists)
         return new string[0];
@@ -64,7 +64,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       return false;
     }
-    
+
     public static bool OverrideTargetFrameworkVersion
     {
       get { return EditorPrefs.GetBool("Rider_OverrideTargetFrameworkVersion", false); }
@@ -78,7 +78,7 @@ namespace JetBrains.Rider.Unity.Editor
       get { return EditorPrefs.GetString("Rider_TargetFrameworkVersion", TargetFrameworkVersionDefault); }
       private set { InvokeIfValidVersion(value, val => { EditorPrefs.SetString("Rider_TargetFrameworkVersion", val); }); }
     }
-    
+
     public static bool OverrideTargetFrameworkVersionOldMono
     {
       get { return EditorPrefs.GetBool("Rider_OverrideTargetFrameworkVersionOldMono", false); }
@@ -92,7 +92,7 @@ namespace JetBrains.Rider.Unity.Editor
       get { return EditorPrefs.GetString("Rider_TargetFrameworkVersionOldMono", TargetFrameworkVersionOldMonoDefault); }
       private set { InvokeIfValidVersion(value, val => { EditorPrefs.SetString("Rider_TargetFrameworkVersionOldMono", val); }); }
     }
-    
+
     public static bool OverrideLangVersion
     {
       get { return EditorPrefs.GetBool("Rider_OverrideLangVersion", false); }
@@ -104,7 +104,7 @@ namespace JetBrains.Rider.Unity.Editor
       get { return EditorPrefs.GetString("Rider_LangVersion", "4"); }
       private set { EditorPrefs.SetString("Rider_LangVersion", value); }
     }
-    
+
     public static bool RiderInitializedOnce
     {
       get { return EditorPrefs.GetBool("RiderInitializedOnce", false); }
@@ -143,7 +143,7 @@ namespace JetBrains.Rider.Unity.Editor
         return true;
       return false;
     }
-    
+
     /// <summary>
     /// Forces regeneration of .csproj / .sln files.
     /// </summary>
@@ -180,7 +180,7 @@ namespace JetBrains.Rider.Unity.Editor
         var alts = alternatives.Select(s => s.Presentation).ToArray();
         RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
         EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
-        
+
         if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))
         {
           EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
@@ -205,7 +205,7 @@ namespace JetBrains.Rider.Unity.Editor
               EditorGUILayout.TextField(
                 new GUIContent("For Active profile NET 4.6",
                   help), TargetFrameworkVersion);
-            EditorGUILayout.HelpBox(help, MessageType.None);  
+            EditorGUILayout.HelpBox(help, MessageType.None);
         }
       }
       else
@@ -223,7 +223,7 @@ namespace JetBrains.Rider.Unity.Editor
           EditorGUILayout.HelpBox(helpOldMono, MessageType.None);
         }
       }
-      
+
       if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
       {
         var detectedDotnetText = GetInstalledNetFrameworks().OrderBy(v => new Version(v)).Aggregate((a, b) => a+"; "+b);
@@ -235,7 +235,7 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUI.EndChangeCheck();
 
       EditorGUI.BeginChangeCheck();
-      
+
       OverrideLangVersion = EditorGUILayout.Toggle(new GUIContent("Override LangVersion"), OverrideLangVersion);
       if (OverrideLangVersion)
       {
@@ -299,23 +299,26 @@ namespace JetBrains.Rider.Unity.Editor
 
     internal static class SystemInfoRiderPlugin
     {
+      // This call on Linux is extremely slow, so cache it
+      private static readonly string ourOperatingSystem = SystemInfo.operatingSystem;
+
       // Do not rename. Expicitly disabled for consistency/compatibility with future Unity API
       // ReSharper disable once InconsistentNaming
       public static OperatingSystemFamilyRider operatingSystemFamily
       {
         get
         {
-          if (SystemInfo.operatingSystem.StartsWith("Mac", StringComparison.InvariantCultureIgnoreCase))
+          if (ourOperatingSystem.StartsWith("Mac", StringComparison.InvariantCultureIgnoreCase))
           {
             return OperatingSystemFamilyRider.MacOSX;
           }
 
-          if (SystemInfo.operatingSystem.StartsWith("Win", StringComparison.InvariantCultureIgnoreCase))
+          if (ourOperatingSystem.StartsWith("Win", StringComparison.InvariantCultureIgnoreCase))
           {
             return OperatingSystemFamilyRider.Windows;
           }
 
-          if (SystemInfo.operatingSystem.StartsWith("Lin", StringComparison.InvariantCultureIgnoreCase))
+          if (ourOperatingSystem.StartsWith("Lin", StringComparison.InvariantCultureIgnoreCase))
           {
             return OperatingSystemFamilyRider.Linux;
           }
