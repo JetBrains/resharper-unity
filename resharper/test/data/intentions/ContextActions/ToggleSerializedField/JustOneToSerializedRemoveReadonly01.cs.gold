@@ -1,0 +1,8 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+  public readonly int myValue;
+  public int my{caret}Value2;
+  public readonly int myValue3;
+}

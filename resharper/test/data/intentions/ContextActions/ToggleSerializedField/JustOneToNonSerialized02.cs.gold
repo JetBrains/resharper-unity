@@ -1,0 +1,9 @@
+﻿using UnityEngine;
+using JetBrains.Annotations;
+
+public class Foo : MonoBehaviour
+{
+  [SerializeField] private int myValue;
+  private int my{caret}Value2;
+  [SerializeField] private int myValue3;
+}

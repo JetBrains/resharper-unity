@@ -1,0 +1,10 @@
+﻿// ${RUN:2}
+using System;
+using UnityEngine;
+
+public class Test
+{
+  [SerializeField] public readonly int Value1;
+  [Serialize{caret}Field] public int Value2;
+  [SerializeField] public readonly int Value3;
+}

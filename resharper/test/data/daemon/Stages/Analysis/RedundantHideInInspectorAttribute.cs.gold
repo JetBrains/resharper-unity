@@ -1,0 +1,26 @@
+﻿using System;
+using UnityEngine;
+
+public class |Test|(0) : MonoBehaviour
+{
+    [|HideInInspector|(1)] private int Redundant1;
+    [|HideInInspector|(2)] [NonSerialized] private int NotRedundant2;
+    [|HideInInspector|(3)] [|SerializeField|(4)] private static int Redundant3;
+}
+
+public class Boring
+{
+    [|HideInInspector|(5)] public int Redundant1;
+    [|HideInInspector|(6)] private int Redundant2;
+    [|HideInInspector|(7)] private static int Redundant3;
+}
+
+---------------------------------------------------------
+(0): Unity Gutter Icon: Unity scripting component
+(1): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(2): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(3): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(4): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(5): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(6): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(7): ReSharper Dead Code: Redundant 'HideInInspector' attribute

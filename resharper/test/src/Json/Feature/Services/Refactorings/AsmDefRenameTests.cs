@@ -11,7 +11,9 @@ using JetBrains.TextControl;
 using JetBrains.Util;
 using Microsoft.Build.Evaluation;
 using NUnit.Framework;
+#if RESHARPER
 using PlatformID = JetBrains.Application.platforms.PlatformID;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.Refactorings
 {

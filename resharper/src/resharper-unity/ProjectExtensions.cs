@@ -54,16 +54,29 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             return project != null && project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
-
-        [Obsolete("Assets folder can be found in other solutions. Use IsUnitySolution instead.")]
-        public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionDir)
+        
+        [Obsolete("Unused. Refer to #581")]
+        public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionFilePath)
         {
+            var solutionDir = solutionFilePath.Directory;
             var assetsFolder = solutionDir.CombineWithShortName(AssetsFolder);
             var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectSettingsFolder);
             var libraryFolder = solutionDir.CombineWithShortName(LibraryFolder);
             return assetsFolder.IsAbsolute && assetsFolder.ExistsDirectory 
                    && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
-                   && libraryFolder.IsAbsolute && libraryFolder.ExistsDirectory;
+                   && libraryFolder.IsAbsolute && libraryFolder.ExistsDirectory
+                   && solutionFilePath.NameWithoutExtension == solutionDir.Name;
+        }
+        
+        public static bool IsAbleToEstablishProtocolConnectionWithUnity(FileSystemPath solutionFilePath)
+        {
+            var solutionDir = solutionFilePath.Directory;
+            var assetsFolder = solutionDir.CombineWithShortName(AssetsFolder);
+            var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectSettingsFolder);
+            var libraryFolder = solutionDir.CombineWithShortName(LibraryFolder);
+            return assetsFolder.IsAbsolute && assetsFolder.ExistsDirectory
+                                           && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
+                                           && libraryFolder.IsAbsolute && libraryFolder.ExistsDirectory;
         }
 
         private static bool ReferencesUnity(IProject project)

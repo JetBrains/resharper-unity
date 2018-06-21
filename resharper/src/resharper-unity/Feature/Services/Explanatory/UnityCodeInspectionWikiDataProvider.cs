@@ -21,6 +21,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Explanatory
                     IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/MonoBehaviors-must-be-instantiated-with-GameObject.AddComponent-instead-of-new"
                 },
+                // "Possible mis-application of 'FormerlySerializedAs' attribute to multiple fields"
+                {
+                    PossibleMisapplicationOfAttributeToMultipleFieldsWarning.HIGHLIGHTING_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Possible-mis-application-of-FormerlySerializedAs-attribute-to-multiple-fields"
+                },
                 // "Possible unintended bypass of lifetime check of underlying Unity engine object"
                 {
                     UnityObjectNullCoalescingWarning.HIGHLIGHTING_ID,
@@ -31,12 +36,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Explanatory
                     UnityObjectNullPropagationWarning.HIGHLIGHTING_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/Possible-unintended-bypass-of-lifetime-check-of-underlying-Unity-engine-object"
                 },
-                // "Redundant InitializeOnLoad attribute"
+                // "Redundant 'FormerlySerializedAs' attribute"
+                {
+                    RedundantFormerlySerializedAsAttributeWarning.HIGHLIGHTING_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Redundant-FormerlySerializedAs-attribute"
+                },
+                // "Redundant 'InitializeOnLoad' attribute"
                 {
                     RedundantInitializeOnLoadAttributeWarning.HIGHLIGHTING_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/Redundant-InitializeOnLoad-attribute"
                 },
-                // "Redundant SerializeField attribute"
+                // "Redundant 'SerializeField' attribute"
                 {
                     RedundantSerializeFieldAttributeWarning.HIGHLIGHTING_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/Redundant-SerializeField-attribute"

@@ -3,66 +3,61 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.IdeFocusManager
-import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.openapi.wm.impl.ToolWindowImpl
+import com.jetbrains.rider.UnityReferenceDiscoverer
 import com.jetbrains.rider.build.actions.ActiveConfigurationAndPlatformAction
 import com.jetbrains.rider.util.idea.application
-import com.jetbrains.rider.util.idea.lifetime
 import com.jetbrains.rider.util.idea.tryGetComponent
-import com.jetbrains.rider.util.reactive.whenTrue
 
 class UnityUIMinimizer : StartupActivity {
     companion object {
-        val minimizedUIs = hashSetOf<Project>()
-
         fun ensureMinimizedUI(project: Project) {
             application.assertIsDispatchThread()
-            if(project.isDisposed)
+            if (project.isDisposed)
                 return
 
+            val unityUiManager = project.tryGetComponent<UnityUIManager>() ?: return
+            unityUiManager.hasMinimizedUi.value = true
+
             IdeFocusManager.getInstance(project).doWhenFocusSettlesDown {
-                try {
-                    val toolWindowManager = ToolWindowManager.getInstance(project)
+                val toolWindowManager = ToolWindowManager.getInstance(project)
 
-                    toolWindowManager.getToolWindow("NuGet") ?: return@doWhenFocusSettlesDown
-                    toolWindowManager.unregisterToolWindow("NuGet")
-                    toolWindowManager.unregisterToolWindow("Database")
+                val nuget = toolWindowManager.getToolWindow("NuGet") as? ToolWindowImpl
+                    ?: return@doWhenFocusSettlesDown
+                nuget.removeStripeButton()
 
-                    ActiveConfigurationAndPlatformAction.hiddenForProjects.add(project)
-                } finally {
-                    minimizedUIs.add(project)
-                }
+                ActiveConfigurationAndPlatformAction.hiddenForProjects.add(project)
             }
-
         }
 
         fun recoverFullUI(project: Project) {
             application.assertIsDispatchThread()
-            if(project.isDisposed)
+            if (project.isDisposed)
                 return
 
+            val unityUiManager = project.tryGetComponent<UnityUIManager>() ?: return
+            unityUiManager.hasMinimizedUi.value = false
+
             IdeFocusManager.getInstance(project).doWhenFocusSettlesDown {
-                try {
-                    val toolWindowManager = ToolWindowManager.getInstance(project)
-                    toolWindowManager.registerToolWindow("NuGet", true, ToolWindowAnchor.BOTTOM)
-                    toolWindowManager.registerToolWindow("Database", true, ToolWindowAnchor.RIGHT)
+                val toolWindowManager = ToolWindowManager.getInstance(project)
+                val toolWindow = toolWindowManager.getToolWindow("NuGet") as? ToolWindowImpl
+                    ?: return@doWhenFocusSettlesDown
+                toolWindow.showStripeButton()
 
-                    ActiveConfigurationAndPlatformAction.hiddenForProjects.remove(project)
-
-                } finally {
-                    minimizedUIs.remove(project)
-                }
+                ActiveConfigurationAndPlatformAction.hiddenForProjects.remove(project)
             }
         }
     }
 
     override fun runActivity(project: Project) {
         val unityUiManager = project.tryGetComponent<UnityUIManager>() ?: return
+        val unityReferenceDiscoverer = project.tryGetComponent<UnityReferenceDiscoverer>() ?: return
 
-        unityUiManager.isUnityUI.whenTrue(project.lifetime, {
-            application.invokeLater {
+        application.invokeLater {
+            if (unityUiManager.hasMinimizedUi.hasTrueValue() && unityReferenceDiscoverer.isUnityGeneratedProject) {
                 ensureMinimizedUI(project)
             }
-        })
+        }
     }
 }

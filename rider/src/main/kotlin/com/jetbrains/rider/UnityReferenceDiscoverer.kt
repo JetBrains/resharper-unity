@@ -2,31 +2,37 @@ package com.jetbrains.rider
 
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
-import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.model.RdAssemblyReferenceDescriptor
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
+import com.jetbrains.rider.model.Solution
 import com.jetbrains.rider.model.projectModelView
 import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.projectView.path
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
+import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
 import com.jetbrains.rider.util.reactive.Property
+import java.io.File
 
 class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
     private val myProjectModelView = project.solution.projectModelView
     private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
-    var isUnityProject = false
     var isUnityGeneratedProject = false
+    var isUnityNearGeneratedProject = false
+    var hasReferenceToUnityProject = false
 
     init {
+        isUnityGeneratedProject = hasAssetsFolder(project) && isUnityGeneratedSolutionName(project.solution)
+        isUnityNearGeneratedProject = hasUnityFolders(project) && generatedSolutionFileExistsNear(project.solution)
+
         application.invokeLater {
             myProjectModelView.items.advise(componentLifetime) { item ->
                 val itemData = item.newValueOpt
                 if (itemData == null) {
                     // Item removed. Don't care about this. It's a weird scenario if someone
                     // removes a Unity project
-                }
-                else {
+                } else {
                     // Item added or updated
                     itemAddedOrUpdated(itemData.descriptor)
                 }
@@ -37,9 +43,19 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
         if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
             myEventDispatcher.multicaster.hasUnityReference()
-            isUnityProject = true
-            isUnityGeneratedProject = hasAssetsFolder(project)
+            hasReferenceToUnityProject = true
         }
+    }
+
+    private fun generatedSolutionFileExistsNear(solution: Solution): Boolean {
+        var dirPath = File(solution.path).toPath().parent
+        var expectedGeneratedSolutionName = dirPath.toFile().name+".sln"
+        var expectedGneratedSolutionFile = dirPath!!.resolve(expectedGeneratedSolutionName).toFile()
+        return expectedGneratedSolutionFile.exists()
+    }
+
+    private fun isUnityGeneratedSolutionName(solution: Solution): Boolean {
+        return File(solution.path).nameWithoutExtension == File(File(solution.path).parent).name
     }
 
     fun addUnityReferenceListener(listener: UnityReferenceListener) {
@@ -47,16 +63,27 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     }
 
     companion object {
+        fun hasUnityFolders (project:Project):Boolean {
+            return hasAssetsFolder(project) && hasLibraryFolder(project) && hasProjectSettingsFolder(project);
+        }
         fun hasAssetsFolder (project:Project):Boolean {
             val assetsFolder = project.baseDir?.findChild("Assets")
+            return assetsFolder != null
+        }
+        fun hasLibraryFolder (project:Project):Boolean {
+            val assetsFolder = project.baseDir?.findChild("Library")
+            return assetsFolder != null
+        }
+        fun hasProjectSettingsFolder (project:Project):Boolean {
+            val assetsFolder = project.baseDir?.findChild("ProjectSettings")
             return assetsFolder != null
         }
     }
 }
 
-fun Project.isUnityProject(): Boolean {
+fun Project.isUnityGeneratedProject(): Boolean {
     val component = this.getComponent<UnityReferenceDiscoverer>()
-    return component.isUnityProject
+    return component.isUnityGeneratedProject
 }
 
 fun Project.isConnectedToEditor(): Boolean {

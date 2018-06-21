@@ -1,10 +1,33 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
+buildscript {
+    ext.rd_version = '0.1.18'
+
+    repositories {
+        if (System.env['TEAMCITY_VERSION'] != null) {
+            maven { url 'https://repo.labs.intellij.net/rd-snapshots-maven' }
+        }
+        else {
+            maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
+        }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.jetbrains.rd:rd-gen:${rd_version}"
+    }
+}
+
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.2.31'
-    id 'org.jetbrains.intellij' version '0.3.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.41'
+    id 'org.jetbrains.intellij' version '0.3.2'
 }
+
+
+apply plugin: 'com.jetbrains.rdgen'
+
+ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
 
 ext.repoRoot = new File("..").canonicalFile
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)

@@ -1,0 +1,15 @@
+﻿using UnityEditor;
+
+public class Foo
+{
+    [InitializeOnLoadMethod]
+    public int |OnLoad|(0)(int value)
+    {
+        return 42;
+    }
+}
+
+------------------------------------------------
+0: Incorrect method signature. Expected 'static void OnLoad()'
+QUICKFIXES:
+Change signature to 'static void OnLoad()'

@@ -174,7 +174,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var pluginDir = parentDirs[0];
 
-            if (pluginFiles.Count == 1 && pluginFiles[0].Name == PluginPathsProvider.BasicPluginDllFile)
+            if (pluginFiles.Count == 1 && pluginFiles[0].Name == PluginPathsProvider.BasicPluginDllFile && pluginFiles[0].ExistsFile)
             {
                 try
                 {
@@ -182,9 +182,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     var version = new Version(FileVersionInfo.GetVersionInfo(pluginFiles[0].FullPath).FileVersion);
                     return new InstallationInfo(version != ZeroVersion, pluginDir, pluginFiles, version);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    myLogger.Error("Failed to do GetVersionInfo.", e);
+                    // file may be in Solution-csproj, but doesn't exist on disk
                     return new InstallationInfo(true, pluginDir, pluginFiles, ZeroVersion);
                 }
             }

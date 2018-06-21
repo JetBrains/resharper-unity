@@ -18,6 +18,8 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -84,7 +86,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         }
     }
 
-    private fun UnityLogPanelEventList.getDateFromTicks(ticks:Long): Date {
+    private fun getDateFromTicks(ticks: Long): Date {
         val ticksAtEpoch = 621355968000000000L
         val ticksPerMilisecond = 10000
         val date = Date((ticks - ticksAtEpoch) / ticksPerMilisecond)
@@ -137,8 +139,30 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
+    private fun addToList(newEvent: RdLogEvent) {
+        if (logModel.mergeSimilarItems.value)
+        {
+            var existing = eventList.riderModel.elements().toList()
+                .filter { it.message == newEvent.message && it.stackTrace==newEvent.stackTrace &&
+                    it.mode == newEvent.mode && it.type ==newEvent.type}.singleOrNull()
+            if (existing == null)
+                eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1))
+            else
+            {
+                var index = eventList.riderModel.indexOf(existing)
+                eventList.riderModel.setElementAt(LogPanelItem(existing.time, existing.type, existing.mode, existing.message, existing.stackTrace, existing.count+1), index)
+            }
+        }
+        else
+            eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1))
+        // on big amount of logs it causes frontend hangs
+//        if (logModel.selectedItem == null) {
+//            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
+//        }
+    }
+
     // TODO: optimize
-    private fun refreshList(newEvents: List<RdLogEvent>) {
+    private fun refreshList(newEvents: List<LogPanelItem>) {
         eventList.riderModel.clear()
         for (event in newEvents) {
             eventList.riderModel.addElement(event)
@@ -146,8 +170,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
         if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
-        } else
-            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
+        }
     }
 
     init {
@@ -158,7 +181,29 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
             mainSplitter.updateUI()
         }
 
-        logModel.onChanged.advise(logModel.lifetime) { refreshList(it) }
+        logModel.onAdded.advise(logModel.lifetime) { addToList(it) }
+        logModel.onChanged.advise(logModel.lifetime) {
+            data class LogItem(
+                val type: RdLogEventType,
+                val mode: RdLogEventMode,
+                val message: String,
+                val stackTrace: String)
+
+            if (logModel.mergeSimilarItems.value)
+            {
+                var list = it
+                    .groupBy() { LogItem(it.type, it.mode, it.message, it.stackTrace) }
+                    .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
+                    .values.toList()
+                refreshList(list)
+            }
+            else
+            {
+                var list = it.map { LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace,1) }
+                refreshList(list)
+            }
+        }
+
         logModel.onCleared.advise(logModel.lifetime) { console.clear() }
         logModel.fire()
     }

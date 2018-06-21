@@ -5,7 +5,10 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.TestFramework;
 using NuGet;
+
+#if !RIDER
 using PlatformID = JetBrains.Application.platforms.PlatformID;
+#endif
 
 #if RIDER
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
@@ -87,10 +90,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             };
         }
 
+#if !RIDER
         public PlatformID GetPlatformID()
         {
             return PlatformID.CreateFromName(".NETFrameWork", new Version(4, 0));
         }
+#endif
 
         public string Extension => CSharpProjectFileType.CS_EXTENSION;
 

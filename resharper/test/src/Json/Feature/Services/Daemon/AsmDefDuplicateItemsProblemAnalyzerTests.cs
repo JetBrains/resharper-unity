@@ -11,7 +11,9 @@ using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using NUnit.Framework;
+#if RESHARPER
 using PlatformID = JetBrains.Application.platforms.PlatformID;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.Daemon
 {

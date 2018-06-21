@@ -11,8 +11,8 @@
   <extensions defaultExtensionNs="com.intellij">
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
-    <!--todo: restore in 2018.2-->
-    <!--<configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugAndPlayConfigurationType" />-->
+
+    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugAndPlayConfigurationType" />
     <applicationConfigurable groupId="language" instance="com.jetbrains.rider.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
 
     <!-- This has to be first, as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
@@ -53,7 +53,7 @@
 
     <!-- Unity Explorer -->
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
-    <projectModelViewProvider implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerViewProvider"/>
+    <projectModelViewUpdater implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerUpdater"/>
 
     <xdebugger.localAttachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityAttachProvider"/>
   </extensions>
@@ -83,6 +83,7 @@
       <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
         <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
         <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
+        <action class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" id="SwitchUIModeAction" />
       </group>
 
       <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />

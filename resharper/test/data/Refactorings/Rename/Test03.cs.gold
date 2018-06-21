@@ -1,0 +1,9 @@
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test : MonoBehaviour
+{
+  public int Value1;
+  [FormerlySerializedAs("Value2")] public int zzz;
+  public int Value3;
+}

@@ -1,3 +1,9 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
 sourceSets {
     test {
         java.srcDir 'testSrc'
@@ -28,7 +34,8 @@ intellij {
         version = "2018.2-SNAPSHOT"
     }
 
-    localPath = "build\\riderRD-2018.2-SNAPSHOT"
+    // please do not remove this line. Contact Ivan.Shakhov instead.
+    // intellijRepo = "https://www.jetbrains.com/intellij-repository"
 
     // Sources aren't available for Rider
     downloadSources = false
@@ -68,8 +75,6 @@ else {
 
 ext.rdLibDirectory = new File(frontendSdkRoot, "lib/rd").canonicalFile
 
-ext.kotlin_version = '1.2.10'
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -81,90 +86,63 @@ compileKotlin {
 
 repositories {
     mavenCentral()
-    flatDir {
-        dirs rdLibDirectory.absolutePath
-    }
 }
 
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
-}
+apply plugin: 'com.jetbrains.rdgen'
+
+ext.modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
 
 // TODO: Add an msbuild task for this, too?
 // Because we sometimes skip building the C# solutions (calling runIde from the C# IDE), we might
 // get into the situation where we rebuild the protocol for .kt, but not .cs
 // Maybe we should have an msbuild task to run rdgen if the input model .kt is newer than the output
 // .cs. Or make sure we don't skip the msbuild tasks if this task runs
+
+task generateRiderModel(type: RdGen) {
+    def csOutput = new File(repoRoot, "resharper/src/resharper-unity/Rider/RdUnityProtocol")
+    def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
+
+    params {
+        verbose = true
+        classpath "$rdLibDirectory/rider-model.jar"
+        sources "$modelDir/rider"
+        hashFolder = 'build/rdgen/rider'
+        packages = "model.rider"
+
+        generator {
+            language = "kotlin"
+            transform = "asis"
+            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
+            namespace = "com.jetbrains.rider.model"
+            directory = "$ktOutput"
+        }
+
+        generator {
+            language = "csharp"
+            transform = "reversed"
+            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
+            namespace = "JetBrains.Rider.Model"
+            directory = "$csOutput"
+        }
+
+    }
+}
+
+task generateEditorPluginModel(type: RdGen) {
+    params {
+        verbose = true
+        classpath "$rdLibDirectory/rider-model.jar"
+        hashFolder = "build/rdgen/editorPlugin"
+        sources "$modelDir/editorPlugin"
+        packages = "model.editorPlugin"
+    }
+}
+
 task generateModel {
     group = 'other'
     description = 'Generates protocol models.'
-
-    def rdgenJar = new File(rdLibDirectory.absolutePath, "rd-gen.jar")
-
-    doLast {
-        assert rdLibDirectory.isDirectory()
-        assert rdgenJar.isFile()
-
-        // If we specify these as outputs of the task, gradle will create them for us, but we then
-        // need to also specify inputs. RdGen does up to date checks for us, but we could skip that
-        // altogether if we hard code them in the task. Downside is that we'd need to keep the list
-        // of inputs/outputs up to date manually, instead of leaving it to rdgen
-        mkdir 'build/rdgen/rider'
-        mkdir 'build/rdgen/editorPlugin'
-
-        // TODO: spaces (what does this mean?)
-        def modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
-        def packageName = "model"
-
-        def cpSeparator = isWindows ? ";" : ":"
-        def compilerClasspath = "$rdLibDirectory/rd-gen.jar$cpSeparator$rdLibDirectory/rider-model.jar"
-        def rdGenClasspath = files(compilerClasspath)
-
-        // Protocol between backend and frontend
-        // Direction isn't important for this model, so we don't specify it in the model. Which means
-        // we have to specify output directories here
-        // Inputs: rider/protocol/src/main/kotlin/model/rider/RdUnityModel.kt
-        // Outputs: resharper/src/resharper-unity/Rider/RdUnityProtocol/RdUnityModel.Generated.cs
-        //          rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol/RdUnityModel.Generated.kt
-        def csOutput = new File(repoRoot, "resharper/src/resharper-unity/Rider/RdUnityProtocol")
-        def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
-        javaexec {
-            main = "com.jetbrains.rider.generator.nova.MainKt"
-            classpath = rdGenClasspath
-            systemProperty "model.out.src.cs.dir", "$csOutput"
-            systemProperty "model.out.src.kt.dir", "$ktOutput"
-            errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
-            args = [
-                "--verbose",
-                "--hash-folder=build/rdgen/rider",
-                "--compiler-classpath=$compilerClasspath",
-                "--source=${modelDir}/rider",
-                "--packages=${packageName}.rider"
-            ]
-        }
-
-        // TODO: if placed in one dir with different packages there will be generator clash
-
-        // Protocol between Unity plugin (host), frontend and backend
-        // Direction is specified in the model, along with output folders
-        // Inputs: rider/protocol/src/main/kotlin/model/editorPlugin/EditorPluginModel.kt
-        // Outputs: resharper/src/resharper-unity/Rider/RdEditorProtocol/EditorPluginModel.Generated.cs (backend to Unity)
-        //          unity/JetBrains.Rider.Unity.Editor/EditorPlugin/NonUnity/RdEditorProtocol/EditorPluginModel.Generated.cs (Unity listener)
-        //          rider/src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol/EditorPluginModel.Generated.kt (frontend to Unity)
-        javaexec {
-            main = "com.jetbrains.rider.generator.nova.MainKt"
-            classpath = rdGenClasspath
-            errorOutput = System.out // kotlin throws warnings in stderr which causes appveyor build to fail
-            args = [
-                "--verbose",
-                "--hash-folder=build/rdgen/editorPlugin",
-                "--compiler-classpath=$compilerClasspath",
-                "--source=${modelDir}/editorPlugin",
-                "--packages=${packageName}.editorPlugin"
-            ]
-        }
-    }
 }
+generateModel.dependsOn(generateRiderModel, generateEditorPluginModel)
 
 
 // When running in CI, we call `gradle buildPlugin`
@@ -208,15 +186,15 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 
 def dllFiles = [
-    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net452/JetBrains.ReSharper.Plugins.Unity.dll",
-    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net452/JetBrains.ReSharper.Plugins.Unity.pdb",
+    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
+    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
 ]
 
 def annotationsFrom = '../resharper/src/resharper-unity/annotations'
 def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 
-def unityeditorplugin_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
-def unityeditorplugin_full_path = "$projectDir/../unity/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
+def unityeditorplugin_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
+def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Full/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
 
 prepareSandbox {
     // Already depends on the standard Java build/jar task
@@ -238,6 +216,7 @@ prepareSandbox {
 
     doLast {
         assert file(unityeditorplugin_path).exists()
+        assert file(unityeditorplugin_full_path).exists()
 
         dllFiles.forEach({ f ->
             def file = file("$f")

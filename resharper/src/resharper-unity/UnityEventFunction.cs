@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
-using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -14,8 +13,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public class UnityEventFunction
     {
-        private static readonly IClrTypeName EnumeratorType = new ClrTypeName("System.Collections.IEnumerator");
-
         private readonly Version myMinimumVersion;
         private readonly Version myMaximumVersion;
 
@@ -80,58 +77,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return declaration;
         }
 
-        public EventFunctionMatch Match([NotNull] IMethod method)
-        {
-            if (method.ShortName != Name) return EventFunctionMatch.NoMatch;
-
-            var match = EventFunctionMatch.MatchingName;
-            if (method.IsStatic == IsStatic)
-                match |= EventFunctionMatch.MatchingStaticModifier;
-
-            var matchingSignature = false;
-            if (method.Parameters.Count == Parameters.Length)
-            {
-                matchingSignature = true;
-                for (var i = 0; i < Parameters.Length && matchingSignature; i++)
-                {
-                    if (!DoTypesMatch(method.Parameters[i].Type, Parameters[i].ClrTypeName,
-                        Parameters[i].IsArray))
-                    {
-                        matchingSignature = false;
-                    }
-                }
-            }
-            else
-            {
-                // TODO: This doesn't really handle optional parameters very well
-                // It's fine for the current usage (a single parameter, either there or not)
-                // but won't work for anything more interesting. Perhaps optional parameters
-                // should be modeled as overloads?
-                var optionalParameters = 0;
-                foreach (var parameter in Parameters)
-                {
-                    if (parameter.IsOptional)
-                        optionalParameters++;
-                }
-                if (method.Parameters.Count + optionalParameters == Parameters.Length)
-                    matchingSignature = true;
-            }
-
-            if (matchingSignature)
-                match |= EventFunctionMatch.MatchingSignature;
-
-            if (DoTypesMatch(method.ReturnType, ReturnType, ReturnTypeIsArray)
-                || (Coroutine && DoTypesMatch(method.ReturnType, EnumeratorType, false)))
-            {
-                match |= EventFunctionMatch.MatchingReturnType;
-            }
-
-            if (method.TypeParameters.Count == 0)
-                match |= EventFunctionMatch.MatchingTypeParameters;
-
-            return match;
-        }
-
         [CanBeNull]
         public UnityEventFunctionParameter GetParameter(string name)
         {
@@ -141,26 +86,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public bool SupportsVersion(Version unityVersion)
         {
             return myMinimumVersion <= unityVersion && unityVersion <= myMaximumVersion;
-        }
-
-        private static bool DoTypesMatch(IType type, IClrTypeName expectedTypeName, bool isArray)
-        {
-            IDeclaredType declaredType;
-
-            var arrayType = type as IArrayType;
-            if (arrayType != null)
-            {
-                if (!isArray) return false;
-
-                // TODO: Does this handle multi-dimensional arrays? Do we care?
-                declaredType = arrayType.GetScalarType();
-            }
-            else
-            {
-                declaredType = (IDeclaredType) type;
-            }
-
-            return declaredType != null && Equals(declaredType.GetClrName(), expectedTypeName);
         }
     }
 }
