@@ -2,6 +2,7 @@
 using System.Linq;
 using JetBrains.Application;
 using JetBrains.Application.Progress;
+using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Feature.Services.Util;
@@ -9,6 +10,10 @@ using JetBrains.ReSharper.Plugins.Unity.Json.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.Services;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Refactorings.Rename;
+using JetBrains.Util;
 using JetBrains.Util.Special;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Refactorings
@@ -34,17 +39,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Refactorings
             if (originalTreeNode == null)
                 return;
 
+            var originalRange = originalTreeNode.GetDocumentRange();
             var factory = JavaScriptElementFactory.GetInstance(originalTreeNode);
             var literalExpression = factory.CreateExpression("\"$0\"", NewName);
             var newExpression = originalTreeNode.ReplaceBy(literalExpression);
 
+            RemoveFromTextualOccurrences(executer, originalRange);
+
             var references = executer.Workflow.GetElementReferences(declaredElement);
-            if (!references.Any())
+            if (!Enumerable.Any(references))
                 return;
 
             pi.Start(references.Count);
 
-            // Create a new declared element (other implementations don't appear to cache this)
+            // Create a new declared element (other implementations don't appear to cache this, either)
             var element = new AsmDefNameDeclaredElement(declaredElement.GetJsServices(), NewName,
                 declaredElement.SourceFile, newExpression.GetTreeStartOffset().Offset);
 
@@ -55,14 +63,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Refactorings
                 {
                     InterruptableActivityCookie.CheckAndThrow(pi);
 
+                    var referenceRange = sortedReference.GetDocumentRange();
+
                     if (sortedReference.IsValid())
                         sortedReference.BindTo(element);
+
+                    RemoveFromTextualOccurrences(executer, referenceRange);
+
                     pi.Advance();
                 }
             }
 
             element.GetPsiServices().Caches.Update();
             myNewPointer = element.CreateElementPointer();
+        }
+
+        private static void RemoveFromTextualOccurrences(IRenameRefactoring executer, DocumentRange handledRange)
+        {
+            if (!(executer.Workflow is RenameWorkflow workflow))
+                return;
+
+            foreach (var occurrence in workflow.DataModel.ActualOccurrences ?? EmptyList<TextOccurrenceRenameMarker>.InstanceList)
+            {
+                if (!occurrence.Included)
+                    continue;
+
+                var occurrenceRange = occurrence.Marker.DocumentRange;
+                if (handledRange.Contains(occurrenceRange))
+                {
+                    occurrence.Included = false;
+                    break;
+                }
+            }
         }
 
         public override IDeclaredElement NewDeclaredElement
