@@ -5,6 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.JavaScript.Stages;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
+using JetBrains.ReSharper.Plugins.Unity.Json.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.JavaScript.Tree;
 using JetBrains.TextControl;
@@ -13,16 +14,21 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class AsmDefRemoveDuplicateItemQuickFix : QuickFixBase
+    public class AsmDefRemoveInvalidArrayItemQuickFix : QuickFixBase
     {
-        private readonly bool myIsDuplicateValueWarning;
+        private readonly bool myIsValid = true;
         [CanBeNull] private readonly IJavaScriptLiteralExpression myLiteral;
 
-        public AsmDefRemoveDuplicateItemQuickFix(JsonValidationFailedWarning warning)
+        public AsmDefRemoveInvalidArrayItemQuickFix(JsonValidationFailedWarning warning)
         {
             myLiteral = warning.Brace as IJavaScriptLiteralExpression;
-            myIsDuplicateValueWarning = warning.AssertionResult.Description ==
+            myIsValid = warning.AssertionResult.Description ==
                                         AsmDefDuplicateItemsProblemAnalyzer.AsmDefDuplicateItemDescription;
+        }
+
+        public AsmDefRemoveInvalidArrayItemQuickFix(ReferencingSelfError error)
+        {
+            myLiteral = error.Reference.GetTreeNode() as IJavaScriptLiteralExpression;
         }
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
@@ -36,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.QuickFixes
 
         public override bool IsAvailable(IUserDataHolder cache)
         {
-            return myIsDuplicateValueWarning && ValidUtils.Valid(myLiteral);
+            return myIsValid && ValidUtils.Valid(myLiteral);
         }
     }
 }

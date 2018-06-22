@@ -1,0 +1,11 @@
+﻿{
+  "name": "Thing",
+  "references": [ "|Unresolved|(0)", "|Thing|(1)" ]
+}
+
+------------------------------------------------
+0: Unknown project reference 'Unresolved'
+NO QUICKFIXES
+1: Cannot reference self
+QUICKFIXES:
+Remove invalid value

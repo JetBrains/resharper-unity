@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Intentions.QuickFixes
 
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefDuplicateItemsQuickFixTests : QuickFixTestBase<AsmDefRemoveDuplicateItemQuickFix>
+    public class AsmDefDuplicateItemsQuickFixTests : QuickFixTestBase<AsmDefRemoveInvalidArrayItemQuickFix>
     {
         protected override string RelativeTestDataPath => @"Json\Intentions\QuickFixes\DuplicateItems";
 
