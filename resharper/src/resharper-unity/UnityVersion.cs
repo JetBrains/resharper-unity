@@ -34,11 +34,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
             }
 
-            // Tests don't create a .csproj we can parse, so pull the version out
-            // of the project defines directly (we can't do this normally because
-            // Unity doesn't write defines for Release configuration, so we can't
-            // rely on this)
-            Version unityVersion = null;
+            return GetVersionForTests(solution);
+        }
+
+        private static Version GetVersionForTests(ISolution solution)
+        {
+            // The project file data provider/cache doesn't work in tests, because there is no .csproj file we can parse.
+            // Instead, pull the version directly from the project defines in the project model. We can't rely on this
+            // as our main strategy because Unity doesn't write defines for Release configuration (another reason we for
+            // us to hide the project configuration selector)
+            var unityVersion = new Version(0, 0);
             foreach (var project in solution.GetTopLevelProjects())
             {
                 foreach (var configuration in project.ProjectProperties.GetActiveConfigurations<IManagedProjectConfiguration>())
@@ -54,9 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
             }
 
-            // If all else fails, default to 5.4. No reason for that version, other
-            // than it was the first supported version :)
-            return unityVersion ?? new Version(5, 4);
+            return unityVersion;
         }
     }
 }

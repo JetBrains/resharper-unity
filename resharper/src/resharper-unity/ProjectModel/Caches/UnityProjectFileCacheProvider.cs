@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
+using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
@@ -112,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             return new UnityProjectDataCache(unityVersion, explicitLangVersion);
         }
 
-        public static Version GetVersionFromDefines(string defines, Version unityVersion)
+        public static Version GetVersionFromDefines(string defines, [NotNull] Version unityVersion)
         {
             foreach (var constant in defines.Split(ourSymbolSeparator, StringSplitOptions.RemoveEmptyEntries))
             {
