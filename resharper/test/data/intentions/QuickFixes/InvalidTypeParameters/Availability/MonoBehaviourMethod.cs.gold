@@ -20,5 +20,5 @@ QUICKFIXES:
 Remove redundant type parameter T2
 3: Return type is 'void'
 QUICKFIXES:
-To void return (remove value)
 Change type of method 'Start' to 'int'
+To void return (remove value)
