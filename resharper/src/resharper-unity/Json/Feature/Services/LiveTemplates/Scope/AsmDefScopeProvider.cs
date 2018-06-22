@@ -6,15 +6,14 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
+namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.LiveTemplates.Scope
 {
-    // ReSharper doesn't have a scope provider for "all PSI files", or for JSON files
-    // (either matching .json, with a separate extension, or identified as JSON via
-    // something like JSON schema's catalog.json). Without this, JSON files don't get
-    // given a scope, and so don't match with expected scopes in macros.
-    // As far as I can tell, we don't need to return a specific InJsonFile, or InAsmDefFile
-    // unless we want to enable adding Live Templates that are specific to asmdef files
-    // (but then we could use a file mask of "*.asmdef" in that template)
+    // ReSharper doesn't have a scope provider for JSON files, whether they are .json or identified as JSON some other
+    // way, such as JSON schema's catalog.json, or ReSharper JSON PSI registration. Without this, JSON files don't get
+    // any scope, and so don't match any expected scopes in macros and don't get macro expansion in live templates.
+    // This scope provider simply returns InAnyLanguageFile for asmdef files, meaning any macros that say they work in
+    // any file will also work in asmdef files. If we really wanted to, we could add an InJsonFile or InAsmDefFile scope
+    // but if we really needed a scope to work in the template, we could use a file mask scope of `*.asmdef`
     // See RSRP-467094
     [ShellComponent]
     public class AsmDefScopeProvider : ScopeProvider

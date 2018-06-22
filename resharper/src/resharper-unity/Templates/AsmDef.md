@@ -4,7 +4,7 @@ image: UnityAsmDef
 type: File
 reformat: True
 customProperties: Extension=asmdef, FileName=Assembly, ValidateFileName=True
-scopes: InUnityCSharpAssetsFolder
+scopes: InUnityCSharpAssetsFolder;InProjectWithUnityVersion(version=2017.3)
 parameterOrder: (NAME)
 NAME-expression: getAlphaNumericFileNameWithoutExtension()
 ---
