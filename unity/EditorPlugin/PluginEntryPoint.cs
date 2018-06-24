@@ -56,6 +56,11 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
+    public delegate void PlayModeStateChangedDelegate(PlayModeState previousState, PlayModeState newState);
+    
+    [UsedImplicitly]
+    public static event PlayModeStateChangedDelegate PlayModeStateChanged = delegate(PlayModeState previousState, PlayModeState newState) {  };
+    
     public delegate void MyEventHandler(UnityModelAndLifetime e);
     [UsedImplicitly]
     public static event MyEventHandler OnModelInitialization = delegate {};
@@ -85,6 +90,8 @@ namespace JetBrains.Rider.Unity.Editor
     }
     
     private static bool ourInitialized;
+
+    private static bool ourLockedAssemblies;
     
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     
@@ -153,6 +160,26 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
+      };
+
+      PlayModeStateChanged += (state, newState) =>
+      {
+        if (PluginSettings.PreventAssemblyReloadDuringPlay)
+        {
+          if (newState == PlayModeState.Playing)
+          {
+            EditorApplication.LockReloadAssemblies();
+            ourLockedAssemblies = true;
+          }
+          else if (newState == PlayModeState.Stopped || newState == PlayModeState.Paused)
+          {
+            if (ourLockedAssemblies)
+            {
+              ourLockedAssemblies = false;
+              EditorApplication.UnlockReloadAssemblies();
+            }
+          }
+        }
       };
       
       ourInitialized = true;
@@ -233,8 +260,20 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
+    public enum PlayModeState
+    {
+      Stopped,
+      Playing,
+      Paused
+    }
+    
+    private static PlayModeState ourCurrentState = PlayModeState.Stopped;
+    
     private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
     {
+      if (EditorApplication.isPaused) 
+        ourCurrentState = PlayModeState.Paused;
+      
       var isPlayingAction = new Action(() =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
@@ -246,6 +285,38 @@ namespace JetBrains.Rider.Unity.Editor
          
           var isPaused = EditorApplication.isPaused;
           model.Pause.SetValue(isPaused);
+          
+          var changedState = PlayModeState.Stopped;
+          switch (ourCurrentState)
+          {
+            case PlayModeState.Stopped:
+              if (EditorApplication.isPlayingOrWillChangePlaymode)
+                changedState = PlayModeState.Playing;
+              else if (EditorApplication.isPaused)
+                changedState = PlayModeState.Paused;
+              break;
+            case PlayModeState.Playing:
+              if (EditorApplication.isPaused)
+                changedState = PlayModeState.Paused;
+              else if (EditorApplication.isPlaying)
+                changedState = PlayModeState.Playing;
+              else
+                changedState = PlayModeState.Stopped;
+
+              break;
+            case PlayModeState.Paused:
+              if (EditorApplication.isPlayingOrWillChangePlaymode && !EditorApplication.isPaused)
+                changedState = PlayModeState.Playing;
+              else if (EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPaused)
+                changedState = PlayModeState.Paused;
+              break;
+          }
+
+          if (ourCurrentState != changedState)
+          {
+            PlayModeStateChanged.Invoke(ourCurrentState, changedState);
+            ourCurrentState = changedState;
+          }
         });
       });
       isPlayingAction(); // get Unity state

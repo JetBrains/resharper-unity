@@ -70,6 +70,12 @@ namespace JetBrains.Rider.Unity.Editor
       get { return EditorPrefs.GetBool("Rider_OverrideTargetFrameworkVersion", false); }
       private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersion", value);; }
     }
+    
+    public static bool PreventAssemblyReloadDuringPlay
+    {
+      get { return EditorPrefs.GetBool("Rider_PreventAssemblyReloadDuringPlay", false); }
+      private set { EditorPrefs.SetBool("Rider_PreventAssemblyReloadDuringPlay", value);; }
+    }
 
     private static string TargetFrameworkVersionDefault = "4.6";
 
@@ -259,6 +265,9 @@ namespace JetBrains.Rider.Unity.Editor
           SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
+      var preventAssemblyReloadDuringPlayMsg = "Prevents assembly reloading during playmode";
+      PreventAssemblyReloadDuringPlay = EditorGUILayout.Toggle(preventAssemblyReloadDuringPlayMsg, PreventAssemblyReloadDuringPlay);
+      
       EditorGUI.EndChangeCheck();
 
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
