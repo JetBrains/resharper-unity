@@ -164,7 +164,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       PlayModeStateChanged += (state, newState) =>
       {
-        if (PluginSettings.PreventAssemblyReloadDuringPlay)
+        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.Delayed)
         {
           if (newState == PlayModeState.Playing)
           {
@@ -360,6 +360,17 @@ namespace JetBrains.Rider.Unity.Editor
       //    {
       //      return state => model?.Pause.SetValue(state == PauseState.Paused);
       //    }
+
+      EditorApplication.update += () =>
+      {
+        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.StopOnReload)
+        {
+          if (EditorApplication.isPlaying && EditorApplication.isCompiling)
+          {
+            EditorApplication.isPlaying = false;
+          }
+        }
+      };
     }
 
     private static void InitEditorLogPath(EditorPluginModel editorPluginModel)

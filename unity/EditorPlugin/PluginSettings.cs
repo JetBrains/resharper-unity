@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using JetBrains.Util;
 using UnityEditor;
 using UnityEngine;
@@ -11,6 +12,13 @@ namespace JetBrains.Rider.Unity.Editor
   {
     OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
     string RiderPath { get; set; }
+  }
+
+  public enum AssemblyReloadSettings
+  {
+    Immediate = 0,
+    Delayed = 1,
+    StopOnReload = 2
   }
 
   public class PluginSettings : IPluginSettings
@@ -71,10 +79,10 @@ namespace JetBrains.Rider.Unity.Editor
       private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersion", value);; }
     }
     
-    public static bool PreventAssemblyReloadDuringPlay
+    public static AssemblyReloadSettings AssemblyReloadSettings
     {
-      get { return EditorPrefs.GetBool("Rider_PreventAssemblyReloadDuringPlay", false); }
-      private set { EditorPrefs.SetBool("Rider_PreventAssemblyReloadDuringPlay", value);; }
+      get { return (AssemblyReloadSettings) EditorPrefs.GetInt("Rider_AssemblyReloadSettings", (int) AssemblyReloadSettings.Immediate); }
+      private set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
     }
 
     private static string TargetFrameworkVersionDefault = "4.6";
@@ -265,11 +273,20 @@ namespace JetBrains.Rider.Unity.Editor
           SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
-      var preventAssemblyReloadDuringPlayMsg = "Prevents assembly reloading during playmode";
-      PreventAssemblyReloadDuringPlay = EditorGUILayout.Toggle(preventAssemblyReloadDuringPlayMsg, PreventAssemblyReloadDuringPlay);
       
       EditorGUI.EndChangeCheck();
+      
+      EditorGUI.BeginChangeCheck();
+      AssemblyReloadSettings= (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Assembly reload settings", AssemblyReloadSettings);
 
+      if (EditorGUI.EndChangeCheck())
+      {
+        if (AssemblyReloadSettings== AssemblyReloadSettings.Delayed && EditorApplication.isPlaying)
+        {
+          EditorApplication.LockReloadAssemblies();
+        }
+      }
+      
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
       var caption = $"<color=#0000FF>{githubRepo}</color>";
       LinkButton(caption: caption, url: githubRepo);
