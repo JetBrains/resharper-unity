@@ -56,6 +56,11 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
+    public delegate void PlayModeStateChangedDelegate(PlayModeState previousState, PlayModeState newState);
+    
+    [UsedImplicitly]
+    public static event PlayModeStateChangedDelegate PlayModeStateChanged = delegate(PlayModeState previousState, PlayModeState newState) {  };
+    
     public delegate void MyEventHandler(UnityModelAndLifetime e);
     [UsedImplicitly]
     public static event MyEventHandler OnModelInitialization = delegate {};
@@ -85,6 +90,8 @@ namespace JetBrains.Rider.Unity.Editor
     }
     
     private static bool ourInitialized;
+
+    private static bool ourLockedAssemblies;
     
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     
@@ -154,8 +161,81 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
       };
-      
+
+      SetupAssemblyReloadEvents();
+
       ourInitialized = true;
+    }
+
+    private static void SetupAssemblyReloadEvents()
+    {
+#pragma warning disable 618
+      EditorApplication.playmodeStateChanged += () =>
+      {
+        var changedState = PlayModeState.Stopped;
+        switch (ourCurrentState)
+        {
+          case PlayModeState.Stopped:
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+              changedState = PlayModeState.Playing;
+            else if (EditorApplication.isPaused)
+              changedState = PlayModeState.Paused;
+            break;
+          case PlayModeState.Playing:
+            if (EditorApplication.isPaused)
+              changedState = PlayModeState.Paused;
+            else if (EditorApplication.isPlaying)
+              changedState = PlayModeState.Playing;
+            else
+              changedState = PlayModeState.Stopped;
+
+            break;
+          case PlayModeState.Paused:
+            if (EditorApplication.isPlayingOrWillChangePlaymode && !EditorApplication.isPaused)
+              changedState = PlayModeState.Playing;
+            else if (EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPaused)
+              changedState = PlayModeState.Paused;
+            break;
+        }
+
+        if (ourCurrentState != changedState)
+        {
+          PlayModeStateChanged.Invoke(ourCurrentState, changedState);
+          ourCurrentState = changedState;
+        }
+      };
+#pragma warning restore 618
+
+      PlayModeStateChanged += (state, newState) =>
+      {
+        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.CompileOnStop)
+        {
+          if (newState == PlayModeState.Playing)
+          {
+            EditorApplication.LockReloadAssemblies();
+            ourLockedAssemblies = true;
+          }
+          else if (newState == PlayModeState.Stopped || newState == PlayModeState.Paused)
+          {
+            if (ourLockedAssemblies)
+            {
+              ourLockedAssemblies = false;
+              EditorApplication.UnlockReloadAssemblies();
+            }
+          }
+        }
+      };
+      
+      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      {
+        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.StopOnReload)
+        {
+          if (EditorApplication.isPlaying)
+          {
+            EditorApplication.isPlaying = false;
+          }
+        }
+      };
     }
 
     private static void CreateProtocolAndAdvise(Lifetime lifetime, List<ProtocolInstance> list, string solutionFileName)
@@ -233,8 +313,20 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
+    public enum PlayModeState
+    {
+      Stopped,
+      Playing,
+      Paused
+    }
+    
+    private static PlayModeState ourCurrentState = PlayModeState.Stopped;
+    
     private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
     {
+      if (EditorApplication.isPaused) 
+        ourCurrentState = PlayModeState.Paused;
+      
       var isPlayingAction = new Action(() =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
