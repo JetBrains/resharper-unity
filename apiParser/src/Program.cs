@@ -241,12 +241,12 @@ namespace ApiParser
                 eventFunction.AddParameter("pathName", ApiType.String);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
-                // From GitHub :)
+                // From GitHub. Love the optimism in this one :)
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L96
                 var description =
-                    "This is documented, and a 'safeguard' for when Visual Studio gets a new release that "
-                    + "is incompatible with ours, so that users can postprocess our csproj to fix it (or just completely replace them). "
-                    + "Hopefully we'll never need this.";
+                    "This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that "
+                    + "is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or "
+                    + "just completely replace them). Hopefully we'll never need this.";
                 eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles",
                     true, false, ApiType.Void, apiVersion, description, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);

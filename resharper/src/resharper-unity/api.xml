@@ -144,7 +144,7 @@
       </parameters>
       <returns type="System.String" array="False" />
     </message>
-    <message name="OnGeneratedCSProjectFiles" static="True" undocumented="True" description="This is documented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with ours, so that users can postprocess our csproj to fix it (or just completely replace them). Hopefully we'll never need this.">
+    <message name="OnGeneratedCSProjectFiles" static="True" undocumented="True" description="This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnGeneratedSlnSolution" static="True" minimumVersion="2017.4" undocumented="True" description="This callback is used by C# code editors to modify the .sln file">
