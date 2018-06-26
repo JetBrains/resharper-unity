@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -12,12 +14,7 @@ namespace ApiParser
 {
     public static class Program
     {
-        // TODO: Stop hard coding this...
-        private const string LatestVersion = "2018.1.0f1";
-
-        private static readonly string ScriptReferenceRelativePath = @"Documentation" + Path.DirectorySeparatorChar + "en" + Path.DirectorySeparatorChar + "ScriptReference";
-
-        private static readonly List<(string, Version)> Docs = new List<(string, Version)>
+        private static readonly List<(string, Version)> DocVersions = new List<(string, Version)>
         {
             // These folders need to live in the runtime folder
             // Can't redistribute, sorry. See README.md
@@ -31,7 +28,8 @@ namespace ApiParser
             ("Documentation-2017.1.2f1", new Version(2017, 1)),
             ("Documentation-2017.2.0f2", new Version(2017, 2)),
             ("Documentation-2017.3.1f1", new Version(2017, 3)),
-            ("Documentation-2018.1.0f1", new Version(2018, 1))
+            ("Documentation-2017.4.6f1", new Version(2017, 4)),
+            ("Documentation-2018.1.6f1", new Version(2018, 1))
         };
 
         public static void Main(string[] args)
@@ -39,42 +37,48 @@ namespace ApiParser
             if (args.Length != 1 && args.Length != 2)
             {
                 Console.WriteLine("Usage: ApiParser.exe docsFolder");
-                Console.WriteLine("       ApiParser.exe apiXmlPath docRoot");
+                Console.WriteLine("       ApiParser.exe apiXmlPath version");
                 Console.WriteLine();
                 Console.WriteLine("  docsFolder - folder that contains all versions of Unity docs");
                 Console.WriteLine("  apiXmlPath - location of api.xml to read and merge into");
-                Console.WriteLine("  docRoot - folder that contains latest docs, to merge into existing api.xml");
+                Console.WriteLine("  version - version of Unity to read docs from. Must be installed in standard Unity Hub location");
+                Console.WriteLine();
+                Console.WriteLine("Note that the output file is written to the current directory");
                 return;
             }
 
             var stopwatch = Stopwatch.StartNew();
 
-            var docs = Docs;
+            var docVersions = DocVersions;
+            var latestVersion = Regex.Match(docVersions.Last().Item1, @"Documentation-(.*)$").Groups[1].Value;
             var apiXml = FileSystemPath.Empty;
 
             if (args.Length == 1)
                 Directory.SetCurrentDirectory(args[0]);
             else
             {
-                apiXml = FileSystemPath.Parse(args[0]);
+                apiXml = FileSystemPath.ParseRelativelyTo(args[0], FileSystemPath.Parse(Directory.GetCurrentDirectory()));
                 if (!apiXml.ExistsFile)
                     throw new InvalidOperationException("api.xml path does not exist");
-                var docRoot = GetDocumentationRoot(LatestVersion);
-                var parseableVersion = Regex.Match(LatestVersion, @"^(\d+\.\d+)").Groups[1].Value;
-                docs = new List<(string, Version)> {(docRoot.FullPath, Version.Parse(parseableVersion))};
+                latestVersion = args[1];
+                var docRoot = GetDocumentationRoot(latestVersion);
+                if (!docRoot.ExistsDirectory)
+                    throw new InvalidOperationException($"Cannot find locally installed docs: {docRoot}");
+                var parseableVersion = Regex.Match(latestVersion, @"^(\d+\.\d+)").Groups[1].Value;
+                docVersions = new List<(string, Version)> {(docRoot.FullPath, Version.Parse(parseableVersion))};
             }
 
             var progPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             var managedPath = Path.Combine(progPath, "Unity", "Editor", "Data", "Managed");
             if (!Directory.Exists(managedPath))
             {
-                // TODO: Find the latest version rather than hardcode it
                 // TODO: Handle this in Windows, too
-                managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", LatestVersion, "Unity.app", "Contents", "Managed");
+                managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Unity.app", "Contents", "Managed");
             }
 
             // Add assemblies to the type resolver so we can get the fully qualified names of types
             // The Unity docs only give us the short names
+            TypeResolver.AddAssembly(typeof(IEnumerator).Assembly);
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(managedPath, @"UnityEngine.dll")));
             TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(managedPath, @"UnityEditor.dll")));
             Console.WriteLine();
@@ -82,7 +86,7 @@ namespace ApiParser
             var unityApi = new UnityApi();
             if (apiXml.ExistsFile)
                 unityApi = UnityApi.ImportFrom(apiXml);
-            var parser = new ApiParser(unityApi, ScriptReferenceRelativePath);
+            var parser = new ApiParser(unityApi);
 
             parser.Progress += (s, e) =>
             {
@@ -91,16 +95,15 @@ namespace ApiParser
                 Console.SetCursorPosition(0, cursorTop);
             };
 
-            foreach (var doc in docs)
+            foreach (var (name, version) in docVersions)
             {
-                Console.WriteLine(doc.Item1);
-                parser.ParseFolder(doc.Item1, doc.Item2);
+                Console.WriteLine(name);
+                parser.ParseFolder(name, version);
 
-                // These are valid for all versions
-                AddUndocumentedApis(unityApi, doc.Item2);
+                AddUndocumentedApis(unityApi, version);
             }
 
-            // THese modify existing functions
+            // These modify existing functions
             AddUndocumentedOptionalParameters(unityApi);
             AddUndocumentedCoroutines(unityApi);
             FixDataFromIncorrectDocs(unityApi);
@@ -237,14 +240,46 @@ namespace ApiParser
                 eventFunction.AddParameter("pathName", ApiType.String);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
+                // From GitHub :)
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L96
+                var description =
+                    "This is documented, and a 'safeguard' for when Visual Studio gets a new release that "
+                    + "is incompatible with ours, so that users can postprocess our csproj to fix it (or just completely replace them). "
+                    + "Hopefully we'll never need this.";
                 eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles",
-                    true, false, ApiType.Void, apiVersion, undocumented: true);
+                    true, false, ApiType.Void, apiVersion, description, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // Technically, return type is optional
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L138
+                description = "This callback is used by UnityVS to take over project generation from Unity";
                 eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles",
-                    true, false, ApiType.Bool, apiVersion, undocumented: true);
+                    true, false, ApiType.Bool, apiVersion, description, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
+
+                // These two were added in 2017.4, as verified on GitHub
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.3/Editor/Mono/AssetPostprocessor.cs
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.4/Editor/Mono/AssetPostprocessor.cs
+                if (apiVersion >= new Version(2017, 4))
+                {
+                    // Technically, return type is optional
+                    // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L123
+                    description = "This callback is used by C# code editors to modify the .csproj files.";
+                    eventFunction = new UnityApiEventFunction("OnGeneratedCSProject",
+                        true, false, ApiType.String, apiVersion, description, undocumented: true);
+                    eventFunction.AddParameter("path", ApiType.String);
+                    eventFunction.AddParameter("content", ApiType.String);
+                    type.MergeEventFunction(eventFunction, apiVersion);
+
+                    // Technically, return type is optional
+                    // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L108
+                    description = "This callback is used by C# code editors to modify the .sln file";
+                    eventFunction = new UnityApiEventFunction("OnGeneratedSlnSolution",
+                        true, false, ApiType.String, apiVersion, description, undocumented: true);
+                    eventFunction.AddParameter("path", ApiType.String);
+                    eventFunction.AddParameter("content", ApiType.String);
+                    type.MergeEventFunction(eventFunction, apiVersion);
+                }
             }
 
             // From AssetModificationProcessorInternal

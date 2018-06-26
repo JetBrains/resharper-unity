@@ -15,16 +15,17 @@ namespace ApiParser
         private Version myMinimumVersion = new Version(int.MaxValue, 0);
         private Version myMaximumVersion = new Version(0, 0);
 
-        protected bool UpdateSupportedVersion(Version apiVersion)
+        protected void UpdateSupportedVersion(Version apiVersion)
         {
             if (apiVersion < myMinimumVersion)
                 myMinimumVersion = apiVersion;
             if (apiVersion > myMaximumVersion)
-            {
                 myMaximumVersion = apiVersion;
-                return true;
-            }
-            return false;
+        }
+
+        protected bool IsSupportedVersion(Version apiVersion)
+        {
+            return myMinimumVersion <= apiVersion && apiVersion <= myMaximumVersion;
         }
 
         protected void ExportVersionRange(XmlTextWriter xmlWriter)
@@ -225,6 +226,8 @@ namespace ApiParser
             myIsStatic = isStatic;
             myIsCoroutine = isCoroutine;
             myDescription = description;
+            if (myDescription?.StartsWith(":ref::") == true) // Yes, really. MonoBehaviour.OnCollisionStay in 2018.1
+                myDescription = myDescription.Substring(6);
             myDocPath = docPath;
             myUndocumented = undocumented;
             myReturnType = returnType;
@@ -239,14 +242,16 @@ namespace ApiParser
 
         public UnityApiParameter AddParameter(string name, ApiType type, string description = null)
         {
-            var parmaeter = new UnityApiParameter(name, type, description);
-            myParameters.Add(parmaeter);
-            return parmaeter;
+            var parameter = new UnityApiParameter(name, type, description);
+            myParameters.Add(parameter);
+            return parameter;
         }
 
         public void Update(UnityApiEventFunction function, Version apiVersion)
         {
-            if (UpdateSupportedVersion(apiVersion))
+            UpdateSupportedVersion(apiVersion);
+
+            if (IsSupportedVersion(apiVersion))
             {
                 myIsStatic = function.myIsStatic;
 
