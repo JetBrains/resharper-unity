@@ -16,8 +16,6 @@ class LogSmartSearchField() : SearchTextField(false) { //val viewModel: RiderNuG
 
         RiderUI.overrideKeyStroke(textEditor, "shift ENTER", { transferFocusBackward() })
         RiderUI.overrideKeyStroke(textEditor, "ENTER", { goToList() })
-        //RiderNuGetPrereleaseHelper.overrideKeyStroke(viewModel, textEditor)
-        //viewModel.focusSearchBox.advise(viewModel.lifetime) { application.invokeLater { requestFocus() } }
     }
 
     /**
