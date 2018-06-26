@@ -11,6 +11,8 @@ import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
@@ -24,6 +26,8 @@ import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import com.jetbrains.rider.unitTesting.panels.RiderUnitTestSessionPanel
+import com.jetbrains.rider.util.idea.application
+import net.miginfocom.swing.MigLayout
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.KeyAdapter
@@ -33,7 +37,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.swing.Icon
 import javax.swing.JMenuItem
+import javax.swing.JPanel
 import javax.swing.JPopupMenu
+import javax.swing.event.DocumentEvent
 
 class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
@@ -106,9 +112,37 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         }
     }
 
+    val searchTextField = LogSmartSearchField().apply {
+        focusGained = {
+            eventList.clearSelection()
+            logModel.selectedItem = null
+        }
+        goToList = {
+            if (eventList.model.size>0) {
+                eventList.selectedIndex = 0
+                IdeFocusManager.getInstance(project).requestFocus(eventList, false)
+                true
+            } else
+                false
+        }
+
+        addDocumentListener(object : DocumentAdapter() {
+            override fun textChanged(e: DocumentEvent?) {
+                application.invokeLater {
+                    logModel.textFilter.setPattern(text)
+                }
+            }
+        })
+    }
+
+    private val listPanel = RiderUI.boxPanel {
+        add(JBScrollPane(eventList))
+        add(searchTextField, "growx, pushx")
+    }
+
     private val mainSplitter = JBSplitter().apply {
         proportion = 1f / 2
-        firstComponent = JBScrollPane(eventList)
+        firstComponent = listPanel
         secondComponent = RiderUI.borderPanel {
             add(console.component, BorderLayout.CENTER)
             console.editor.settings.isCaretRowShown = true
