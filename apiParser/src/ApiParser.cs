@@ -102,6 +102,7 @@ namespace ApiParser
             var document = ApiNode.LoadContent(content);
             var section = document?.SelectOne(@"//div.content/div.section");
             var header = section?.SelectOne(@"div.mb20.clear");
+            var removed = header?.SelectOne(@"div[@class='message message-error mb20']");
             var name = header?.SelectOne(@"h1.heading.inherit"); // Type or type member name
             var ns = header?.SelectOne(@"p");   // "class in {ns}"/"struct in {ns}"/"Namespace: {ns}"
 
@@ -131,6 +132,12 @@ namespace ApiParser
                     Console.WriteLine("Missing namespace: {0}", name.Text);
                     return;
                 }
+            }
+
+            if (removed != null && removed.Text.StartsWith("Removed"))
+            {
+                Console.WriteLine($"{nsName}.{name.Text} no longer available in {apiVersion}: {removed.Text}");
+                return;
             }
 
             var unityApiType = myApi.AddType(nsName, name.Text, clsType, filename, apiVersion);
@@ -183,7 +190,7 @@ namespace ApiParser
                 // OnTriggerEnter2D instead. Similar problems for these other methods
                 if (tuple == null)
                 {
-                    var fullName = "MonoBehaviour." + messageName;
+                    var fullName = $"{className}.{messageName}";
                     switch (fullName)
                     {
                         case "MonoBehaviour.OnCollisionEnter2D":
@@ -192,8 +199,13 @@ namespace ApiParser
                         case "MonoBehaviour.Start":
                         case "MonoBehaviour.OnDestroy":
                             Console.WriteLine(
-                                $"WARNING: Unable to parse example for {className}.{messageName}. Example incorrect in docs");
+                                $"WARNING: Unable to parse example for {fullName}. Example incorrect in docs");
                             break;
+
+//                        case "Network.OnDisconnectedFromServer":
+//                            Bug in 2018.2 documentation
+//                            Console.WriteLine($"WARNING: Missing example for {fullName}");
+//                            break;
 
                         default:
                             foreach (var example in examples)

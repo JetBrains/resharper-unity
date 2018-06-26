@@ -1,4 +1,4 @@
-﻿<api minimumVersion="5.0" maximumVersion="2018.1">
+﻿<api minimumVersion="5.0" maximumVersion="2018.2">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="IsOpenForEdit" static="True" description="This is called by Unity when inspecting an asset to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
       <parameters>
@@ -7,9 +7,9 @@
       </parameters>
       <returns type="System.Boolean" array="False" />
     </message>
-    <message name="OnWillCreateAsset" static="True" description="This is called by Unity when it is about to create an asset not imported by the user, eg. &quot;.meta&quot; files." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillCreateAsset.html">
+    <message name="OnWillCreateAsset" static="True" description="Unity calls this method when it is about to create an Asset you haven't imported (for example, .meta files)." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillCreateAsset.html">
       <parameters>
-        <parameter type="System.String" array="False" name="assetPath" />
+        <parameter type="System.String" array="False" name="assetName" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -20,10 +20,10 @@
       </parameters>
       <returns type="UnityEditor.AssetDeleteResult" array="False" />
     </message>
-    <message name="OnWillMoveAsset" static="True" description="This is called by Unity when it is about to move an asset on disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillMoveAsset.html">
+    <message name="OnWillMoveAsset" static="True" description="Unity calls this method when it is about to move an Asset on disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillMoveAsset.html">
       <parameters>
-        <parameter type="System.String" array="False" name="fromPath" />
-        <parameter type="System.String" array="False" name="toPath" />
+        <parameter type="System.String" array="False" name="sourcePath" />
+        <parameter type="System.String" array="False" name="destinationPath" />
       </parameters>
       <returns type="UnityEditor.AssetMoveResult" array="False" />
     </message>
@@ -318,14 +318,14 @@
     </message>
   </type>
   <type kind="class" name="Joint2D" ns="UnityEngine" minimumVersion="5.3" path="Documentation/en/ScriptReference/Joint2D.html">
-    <message name="OnJointBreak2D" static="False" minimumVersion="5.3" description="Called when a Joint2D attached to the same game object breaks." path="Documentation/en/ScriptReference/Joint2D.OnJointBreak2D.html">
+    <message name="OnJointBreak2D" static="False" description="Called when a Joint2D attached to the same game object breaks." path="Documentation/en/ScriptReference/Joint2D.OnJointBreak2D.html">
       <parameters>
         <parameter type="UnityEngine.Joint2D" array="False" name="brokenJoint" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  <type kind="class" name="MasterServer" ns="UnityEngine" path="Documentation/en/ScriptReference/MasterServer.html">
+  <type kind="class" name="MasterServer" ns="UnityEngine" maximumVersion="2018.1" path="Documentation/en/ScriptReference/MasterServer.html">
     <message name="OnFailedToConnectToMasterServer" static="False" description="Called on clients or servers when there is a problem connecting to the master server." path="Documentation/en/ScriptReference/MasterServer.OnFailedToConnectToMasterServer.html">
       <parameters>
         <parameter type="UnityEngine.NetworkConnectionError" array="False" name="info" />
@@ -647,7 +647,7 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  <type kind="class" name="Network" ns="UnityEngine" path="Documentation/en/ScriptReference/Network.html">
+  <type kind="class" name="Network" ns="UnityEngine" maximumVersion="2018.1" path="Documentation/en/ScriptReference/Network.html">
     <message name="OnConnectedToServer" static="False" description="Called on the client when you have successfully connected to a server." path="Documentation/en/ScriptReference/Network.OnConnectedToServer.html">
       <returns type="System.Void" array="False" />
     </message>
@@ -693,28 +693,28 @@
     </message>
   </type>
   <type kind="class" name="Playable" ns="UnityEngine.Experimental.Director" minimumVersion="5.2" maximumVersion="5.6" path="Documentation/en/ScriptReference/Experimental.Director.Playable.html">
-    <message name="OnSetPlayState" static="False" minimumVersion="5.2" maximumVersion="5.3" description="Callback called when the PlayState has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
+    <message name="OnSetPlayState" static="False" maximumVersion="5.3" description="Callback called when the PlayState has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnSetPlayState" static="False" minimumVersion="5.4" maximumVersion="5.6" description="Callback called when the PlayState has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
+    <message name="OnSetPlayState" static="False" minimumVersion="5.4" description="Callback called when the PlayState has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
       <parameters>
         <parameter type="UnityEngine.Experimental.Director.PlayState" array="False" name="newState" description="New PlayState" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnSetTime" static="False" minimumVersion="5.2" maximumVersion="5.3" description="Callback called when the current time has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
+    <message name="OnSetTime" static="False" maximumVersion="5.3" description="Callback called when the current time has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnSetTime" static="False" minimumVersion="5.4" maximumVersion="5.6" description="Callback called when the current time has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
+    <message name="OnSetTime" static="False" minimumVersion="5.4" description="Callback called when the current time has changed" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
       <parameters>
         <parameter type="System.Single" array="False" name="localTime" description="New local time" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="PrepareFrame" static="False" minimumVersion="5.2" maximumVersion="5.3" description="Prepares the Playable tree for the next frame. PrepareFrame is called before the tree is evaluated." path="Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
+    <message name="PrepareFrame" static="False" maximumVersion="5.3" description="Prepares the Playable tree for the next frame. PrepareFrame is called before the tree is evaluated." path="Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="PrepareFrame" static="False" minimumVersion="5.4" maximumVersion="5.6" description="Prepares the Playable tree for the next frame. PrepareFrame is called before the tree is evaluated." path="Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
+    <message name="PrepareFrame" static="False" minimumVersion="5.4" description="Prepares the Playable tree for the next frame. PrepareFrame is called before the tree is evaluated." path="Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
       <parameters>
         <parameter type="UnityEngine.Experimental.Director.FrameData" array="False" name="info" description="Data for the current frame." />
       </parameters>

@@ -200,13 +200,6 @@ namespace ApiParser
                     function.UpdateParameter("arg2", newParameter);
                 }
 
-                foreach (var function in type.FindEventFunctions("OnWillCreateAsset"))
-                {
-                    function.SetIsStatic();
-                    var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
-                    function.UpdateParameter("arg", newParameter);
-                }
-
                 foreach (var function in type.FindEventFunctions("OnWillDeleteAsset"))
                 {
                     function.SetIsStatic();
@@ -221,11 +214,19 @@ namespace ApiParser
                 {
                     function.SetIsStatic();
                     function.SetReturnType(new ApiType("UnityEditor.AssetMoveResult"));
-                    var newParameter = new UnityApiParameter("fromPath", ApiType.String, string.Empty);
+                    var newParameter = new UnityApiParameter("sourcePath", ApiType.String, string.Empty);
                     function.UpdateParameter("arg1", newParameter);
-                    newParameter = new UnityApiParameter("toPath", ApiType.String, string.Empty);
+                    newParameter = new UnityApiParameter("destinationPath", ApiType.String, string.Empty);
                     function.UpdateParameter("arg2", newParameter);
                 }
+            }
+
+            type = unityApi.FindType("AssetPostprocessor");
+            if (type != null)
+            {
+                // 2018.2 removes a UnityScript example which gave us the return type
+                foreach (var function in type.FindEventFunctions("OnAssignMaterialModel"))
+                    function.SetReturnType(new ApiType("UnityEngine.Material"));
             }
         }
 

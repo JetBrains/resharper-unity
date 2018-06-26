@@ -12,42 +12,42 @@ namespace ApiParser
 {
     public abstract class HasVersionRange
     {
-        private Version myMinimumVersion = new Version(int.MaxValue, 0);
-        private Version myMaximumVersion = new Version(0, 0);
+        public Version MinimumVersion { get; private set; } = new Version(int.MaxValue, 0);
+        public Version MaximumVersion { get; private set; } = new Version(0, 0);
 
-        protected void UpdateSupportedVersion(Version apiVersion)
+        public void UpdateSupportedVersion(Version apiVersion)
         {
-            if (apiVersion < myMinimumVersion)
-                myMinimumVersion = apiVersion;
-            if (apiVersion > myMaximumVersion)
-                myMaximumVersion = apiVersion;
+            if (apiVersion < MinimumVersion)
+                MinimumVersion = apiVersion;
+            if (apiVersion > MaximumVersion)
+                MaximumVersion = apiVersion;
         }
 
         protected bool IsSupportedVersion(Version apiVersion)
         {
-            return myMinimumVersion <= apiVersion && apiVersion <= myMaximumVersion;
+            return MinimumVersion <= apiVersion && apiVersion <= MaximumVersion;
         }
 
         protected void ExportVersionRange(XmlTextWriter xmlWriter)
         {
-            xmlWriter.WriteAttributeString("minimumVersion", myMinimumVersion.ToString(2));
-            xmlWriter.WriteAttributeString("maximumVersion", myMaximumVersion.ToString(2));
+            xmlWriter.WriteAttributeString("minimumVersion", MinimumVersion.ToString(2));
+            xmlWriter.WriteAttributeString("maximumVersion", MaximumVersion.ToString(2));
         }
 
         protected void ExportVersionRange(XmlTextWriter xmlWriter, HasVersionRange defaults)
         {
-            if (myMinimumVersion > defaults.myMinimumVersion)
-                xmlWriter.WriteAttributeString("minimumVersion", myMinimumVersion.ToString(2));
-            if (myMaximumVersion < defaults.myMaximumVersion)
-                xmlWriter.WriteAttributeString("maximumVersion", myMaximumVersion.ToString(2));
+            if (MinimumVersion > defaults.MinimumVersion)
+                xmlWriter.WriteAttributeString("minimumVersion", MinimumVersion.ToString(2));
+            if (MaximumVersion < defaults.MaximumVersion)
+                xmlWriter.WriteAttributeString("maximumVersion", MaximumVersion.ToString(2));
         }
 
         protected void ImportVersionRange(XElement element, HasVersionRange defaults)
         {
             var attr = element.Attribute("minimumVersion");
-            myMinimumVersion = attr != null ? Version.Parse(attr.Value) : defaults.myMinimumVersion;
+            MinimumVersion = attr != null ? Version.Parse(attr.Value) : defaults.MinimumVersion;
             attr = element.Attribute("maximumVersion");
-            myMaximumVersion = attr != null ? Version.Parse(attr.Value) : defaults.myMaximumVersion;
+            MaximumVersion = attr != null ? Version.Parse(attr.Value) : defaults.MaximumVersion;
         }
     }
 
@@ -83,7 +83,11 @@ namespace ApiParser
             xmlWriter.WriteStartElement("api");
             ExportVersionRange(xmlWriter);
             foreach (var type in myTypes.OrderBy(t => t.Name))
+            {
+                if (type.Name == "MasterServer")
+                    Console.WriteLine();
                 type.ExportTo(xmlWriter, this);
+            }
             xmlWriter.WriteEndElement();
         }
 
@@ -162,11 +166,30 @@ namespace ApiParser
             return myEventFunctions.Where(f => f.Name == name);
         }
 
-        public void TrimDuplicates()
+        private void TrimDuplicates()
         {
-            var distinct = myEventFunctions.Distinct(f => f.ToString()).ToList();
+            var distinctFunctions = new List<UnityApiEventFunction>();
+            var groupedFunctions = myEventFunctions.GroupBy(f => f.ToString());
+            foreach (var group in groupedFunctions)
+            {
+                var minVersion = new Version(int.MaxValue, int.MaxValue);
+                var maxVersion = new Version(0, 0);
+
+                foreach (var function in group)
+                {
+                    if (function.MinimumVersion < minVersion)
+                        minVersion = function.MinimumVersion;
+                    if (function.MaximumVersion > maxVersion)
+                        maxVersion = function.MaximumVersion;
+                }
+
+                var distinctFunction = group.First();
+                distinctFunction.UpdateSupportedVersion(minVersion);
+                distinctFunction.UpdateSupportedVersion(maxVersion);
+                distinctFunctions.Add(distinctFunction);
+            }
             myEventFunctions.Clear();
-            myEventFunctions.AddRange(distinct);
+            myEventFunctions.AddRange(distinctFunctions);
         }
 
         public void ExportTo(XmlTextWriter xmlWriter, HasVersionRange defaultVersions)
@@ -183,7 +206,7 @@ namespace ApiParser
             ExportVersionRange(xmlWriter, defaultVersions);
             xmlWriter.WriteAttributeString("path", myDocPath.Replace(@"\", "/"));
             foreach (var eventFunction in myEventFunctions.OrderBy(f => f.OrderingString))
-                eventFunction.ExportTo(xmlWriter, defaultVersions);
+                eventFunction.ExportTo(xmlWriter, this);
             xmlWriter.WriteEndElement();
         }
 
@@ -296,6 +319,8 @@ namespace ApiParser
             var parameter = myParameters.SingleOrDefault(p => p.Name == name);
             if (parameter == null)
                 parameter = myParameters.SingleOrDefault(p => p.Name == newParameter.Name);
+            if (parameter?.IsEquivalent(newParameter) == true)
+                return;
             if (parameter == null)
                 throw new InvalidOperationException($"Cannot update parameter {name}");
             parameter.Update(newParameter, Name);
@@ -344,7 +369,7 @@ namespace ApiParser
 
         public override string ToString()
         {
-            var parameters = string.Join(", ", myParameters.Select(p => p.ToString()));
+            var parameters = string.Join(", ", myParameters.Select(p => p.Type.ToString()));
             return $"{myReturnType} {Name}({parameters})";
         }
 
@@ -374,19 +399,19 @@ namespace ApiParser
 
     public class UnityApiParameter
     {
-        private ApiType myType;
         private string myDescription;
         private string myJustification;
 
         public UnityApiParameter(string name, ApiType type, string description)
         {
             Name = name;
-            myType = type;
+            Type = type;
             myDescription = description;
             myJustification = string.Empty;
         }
 
         public string Name { get; private set; }
+        public ApiType Type { get; private set; }
 
         public void SetOptional(string justification)
         {
@@ -396,10 +421,10 @@ namespace ApiParser
         public void ExportTo(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("parameter");
-            xmlWriter.WriteAttributeString("type", myType.FullName);
-            xmlWriter.WriteAttributeString("array", myType.IsArray.ToString());
-            if (myType.IsByRef)
-                xmlWriter.WriteAttributeString("byRef", myType.IsByRef.ToString());
+            xmlWriter.WriteAttributeString("type", Type.FullName);
+            xmlWriter.WriteAttributeString("array", Type.IsArray.ToString());
+            if (Type.IsByRef)
+                xmlWriter.WriteAttributeString("byRef", Type.IsByRef.ToString());
             xmlWriter.WriteAttributeString("name", Name);
             if (!string.IsNullOrEmpty(myJustification))
             {
@@ -429,9 +454,18 @@ namespace ApiParser
             return p;
         }
 
+        public bool IsEquivalent(UnityApiParameter other)
+        {
+            if (myDescription != other.myDescription && !string.IsNullOrEmpty(other.myDescription))
+                return false;
+            return Equals(Type, other.Type);
+        }
+
         public void Update(UnityApiParameter newParameter, string functionName)
         {
-            if (Name != newParameter.Name && !string.IsNullOrEmpty(newParameter.Name))
+            // E.g. 2018.2 removed a UnityScript example for AssetProcessor.OnPostprocessSprites, so newer docs don't
+            // have the proper parameter name. If the old one does, keep it.
+            if (Name != newParameter.Name && !string.IsNullOrEmpty(newParameter.Name) && !newParameter.Name.StartsWith("arg"))
             {
                 Name = newParameter.Name;
             }
@@ -441,20 +475,16 @@ namespace ApiParser
                 myDescription = newParameter.myDescription;
             }
 
-            if (myType.FullName != newParameter.myType.FullName)
-                throw new InvalidOperationException($"Parameter type differences for parameter {Name}! {myType.FullName} {newParameter.myType.FullName}");
+            if (Type.FullName != newParameter.Type.FullName)
+                throw new InvalidOperationException($"Parameter type differences for parameter {Name}! {Type.FullName} {newParameter.Type.FullName}");
 
-            if (myType.IsArray != newParameter.myType.IsArray || myType.IsByRef != newParameter.myType.IsByRef)
+            if (Type.IsArray != newParameter.Type.IsArray || Type.IsByRef != newParameter.Type.IsByRef)
             {
-                Console.WriteLine("WARNING: Parameter `{2}` of function `{3}` type changed: was {0} now {1}", myType, newParameter.myType, Name, functionName);
-                myType = newParameter.myType;
+                Console.WriteLine("WARNING: Parameter `{2}` of function `{3}` type changed: was {0} now {1}", Type, newParameter.Type, Name, functionName);
+                Type = newParameter.Type;
             }
         }
 
-        public override string ToString()
-        {
-            // Don't include name, that's not important
-            return $"{myType}";
-        }
+        public override string ToString() => $"{Name}: {Type}";
     }
 }
