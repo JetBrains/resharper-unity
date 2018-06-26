@@ -17,7 +17,7 @@ namespace JetBrains.Rider.Unity.Editor
   public enum AssemblyReloadSettings
   {
     Immediate = 0,
-    Delayed = 1,
+    CompileOnStop = 1,
     StopOnReload = 2
   }
 
@@ -281,7 +281,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       if (EditorGUI.EndChangeCheck())
       {
-        if (AssemblyReloadSettings== AssemblyReloadSettings.Delayed && EditorApplication.isPlaying)
+        if (AssemblyReloadSettings== AssemblyReloadSettings.CompileOnStop && EditorApplication.isPlaying)
         {
           EditorApplication.LockReloadAssemblies();
         }
