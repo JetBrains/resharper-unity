@@ -39,6 +39,8 @@ namespace JetBrains.Rider.Unity.Editor
       var assetFilePath = Path.GetFullPath(assetPath);
       if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
             selected.GetType().ToString() == "UnityEngine.Shader" ||
+            selected.GetType().ToString() == "UnityEngine.Experimental.UIElements.VisualTreeAsset" ||
+            selected.GetType().ToString() == "UnityEngine.StyleSheets.StyleSheet" ||
             (selected.GetType().ToString() == "UnityEngine.TextAsset" &&
              GetExtensionStrings().Contains(Path.GetExtension(assetFilePath).Substring(1))
             )))
@@ -49,9 +51,9 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static string[] GetExtensionStrings()
     {
+      var extensionStrings = new[] {"ts", "bjs", "javascript", "json", "html", "shader", "template", "compute", "cginc", "hlsl", "glslinc"};
       var propertyInfo = typeof(EditorSettings)
         .GetProperty("projectGenerationUserExtensions", BindingFlags.Public | BindingFlags.Static);
-      var extensionStrings = new[] {"ts", "bjs", "javascript", "json", "html", "shader", "template"};
       if (propertyInfo != null)
       {
         var value = propertyInfo.GetValue(null, null);
