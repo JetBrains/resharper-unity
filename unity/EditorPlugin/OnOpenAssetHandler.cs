@@ -51,7 +51,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static string[] GetExtensionStrings()
     {
-      var extensionStrings = new[] {"ts", "bjs", "javascript", "json", "html", "shader", "template", "compute", "cginc", "hlsl", "glslinc"};
+      var extensionStrings = new[] {"ts", "bjs", "javascript", "json", "html", "shader"};
       var propertyInfo = typeof(EditorSettings)
         .GetProperty("projectGenerationUserExtensions", BindingFlags.Public | BindingFlags.Static);
       if (propertyInfo != null)
@@ -59,6 +59,12 @@ namespace JetBrains.Rider.Unity.Editor
         var value = propertyInfo.GetValue(null, null);
         extensionStrings = (string[]) value;
       }
+      
+      // https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/VisualStudioIntegration/SolutionSynchronizer.cs#L50
+      var builtinSupportedExtensions = new[] {"template", "compute", "cginc", "hlsl", "glslinc"}; // todo: get it via reflection
+      var list = extensionStrings.ToList();
+      list.AddRange(builtinSupportedExtensions);
+      extensionStrings = list.ToArray();
 
       return extensionStrings;
     }
