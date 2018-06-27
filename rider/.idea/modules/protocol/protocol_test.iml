@@ -30,7 +30,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="protocol_main" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.2.31" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.2.41" level="project" />
     <orderEntry type="library" name="Gradle: :rd-gen:" level="project" />
     <orderEntry type="library" name="Gradle: :rider-model:" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
