@@ -20,9 +20,27 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return 10;
     }
 
+    // This method is new for 2017.4. It allows multiple processors to modify the contents of the generated .csproj in
+    // memory, and Unity will only write to disk if it's different to the existing file. It's safe for pre-2017.4 as it
+    // simply won't get called
+    public static string OnGeneratedCSProject(string path, string contents)
+    {
+      ourLogger.Verbose("Post-processing {0} (in memory)", path);
+      var doc = XDocument.Parse(contents);
+      if (UpgradeProjectFile(path, doc))
+      {
+        ourLogger.Verbose("Post-processed with changes {0} (in memory)", path);
+        return doc.ToString();
+      }
+
+      ourLogger.Verbose("Post-processed with NO changes {0}", path);
+      return contents;
+    }
+
+    // This method is for pre-2017.4, and is called after the file has been written to disk
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!PluginEntryPoint.Enabled)
+      if (!PluginEntryPoint.Enabled || UnityUtils.UnityVersion >= new Version(2017, 4))
         return;
 
       try
@@ -59,6 +77,21 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         return;
       }
 
+      if (UpgradeProjectFile(projectFile, doc))
+      {
+        ourLogger.Verbose("Post-processed with changes {0}ss", projectFile);
+        doc.Save(projectFile);
+        return;
+      }
+
+      ourLogger.Verbose("Post-processed with NO changes {0}", projectFile);
+    }
+
+    private static bool UpgradeProjectFile(string projectFile, XDocument doc)
+    {
+      var changed = false;
+      doc.Changed += (sender, args) => changed = true;
+
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
@@ -68,16 +101,18 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       SetLangVersion(projectContentElement, xmlns);
       SetProjectFlavour(projectContentElement, xmlns);
 
-      //#i f !UNITY_2017_1_OR_NEWER // Unity 2017.1 and later has this features by itself
+      // Unity 2017.1 and later has this features by itself
       if (UnityUtils.UnityVersion < new Version(2017, 1))
       {
         SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
       }
+
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
 
       ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
-      doc.Save(projectFile);
+
+      return changed;
     }
 
     private static void FixSystemXml(XElement projectContentElement, XNamespace xmlns)
@@ -197,14 +232,14 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         ourLogger.Verbose("SetXCodeDllReference. unityAppBaseFolder IsNullOrEmpty");
         return;
       }
-      
+
       var xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("Data/PlaybackEngines/iOSSupport", name));
       if (!File.Exists(xcodeDllPath))
         xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("PlaybackEngines/iOSSupport", name));
 
-      if (!File.Exists(xcodeDllPath)) 
+      if (!File.Exists(xcodeDllPath))
         return;
-      
+
       var itemGroup = new XElement(xmlns + "ItemGroup");
       var reference = new XElement(xmlns + "Reference");
       reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(xcodeDllPath)));
@@ -212,7 +247,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       itemGroup.Add(reference);
       projectContentElement.Add(itemGroup);
     }
-    
+
     private static void FixUnityEngineReference(XElement projectContentElement, XNamespace xmlns)
     {
       var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
@@ -233,11 +268,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       var unityEngineDir = new DirectoryInfo(Path.Combine(oldUnityEngineDllFileInfo.Directory.FullName, "UnityEngine"));
       if (!unityEngineDir.Exists)
         return;
-           
+
       var newDllPath = Path.Combine(unityEngineDir.FullName, "UnityEngine.dll");
-      if (!File.Exists(newDllPath)) 
+      if (!File.Exists(newDllPath))
         return;
-      
+
       hintPath.SetValue(newDllPath);
 
       var files = unityEngineDir.GetFiles("*.dll");
@@ -248,7 +283,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(file.Name)));
         reference.Add(new XElement(xmlns + "HintPath", file.FullName));
         itemGroup.Add(reference);
-        projectContentElement.Add(itemGroup);  
+        projectContentElement.Add(itemGroup);
       }
     }
 
@@ -287,11 +322,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           foreach (var referenceName in referenceList)
           {
             string hintPath = null;
-            
+
             var name = referenceName;
             if (name.Substring(name.Length - 4) != ".dll")
               name += ".dll"; // RIDER-15093
-            
+
             if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
             {
               var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
@@ -335,7 +370,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
             ourLogger.Verbose("TargetFrameworkVersion in csproj is null or empty.");
             return string.Empty;
           }
-          
+
           string version = string.Empty;
           try
           {
@@ -401,7 +436,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         {
           return PluginSettings.LangVersion;
         }
-        
+
         var expected = GetExpectedLanguageLevel();
         if (expected == "latest" || existing == "latest")
           return "latest";
@@ -467,6 +502,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       SetOrUpdateProperty(projectElement, xmlns, "ProjectTypeGuids",
         "{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}");
     }
+
     private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, string content)
     {
       SetOrUpdateProperty(root, xmlns, name, v => content);
@@ -495,7 +531,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static void AddProperty(XElement root, XNamespace xmlns, string name, string content)
     {
       ourLogger.Verbose("Adding project property {0}. Value: {1}", name, content);
-      
+
       var propertyGroup = root.Elements(xmlns + "PropertyGroup")
         .FirstOrDefault(e => !e.Attributes(xmlns + "Condition").Any());
       if (propertyGroup == null)
