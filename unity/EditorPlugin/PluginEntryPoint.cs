@@ -162,9 +162,19 @@ namespace JetBrains.Rider.Unity.Editor
         File.Delete(protocolInstanceJsonPath);
       };
 
+      ourSavedState = GetEditorState();
       SetupAssemblyReloadEvents();
 
       ourInitialized = true;
+    }
+
+    private static PlayModeState GetEditorState()
+    {
+      if (EditorApplication.isPaused)
+        return PlayModeState.Paused;
+      if (EditorApplication.isPlaying)
+        return PlayModeState.Playing;
+      return PlayModeState.Stopped;
     }
 
     private static void SetupAssemblyReloadEvents()
@@ -172,36 +182,11 @@ namespace JetBrains.Rider.Unity.Editor
 #pragma warning disable 618
       EditorApplication.playmodeStateChanged += () =>
       {
-        var changedState = PlayModeState.Stopped;
-        switch (ourCurrentState)
+        var changedState = GetEditorState();
+        if (ourSavedState != changedState)
         {
-          case PlayModeState.Stopped:
-            if (EditorApplication.isPlayingOrWillChangePlaymode)
-              changedState = PlayModeState.Playing;
-            else if (EditorApplication.isPaused)
-              changedState = PlayModeState.Paused;
-            break;
-          case PlayModeState.Playing:
-            if (EditorApplication.isPaused)
-              changedState = PlayModeState.Paused;
-            else if (EditorApplication.isPlaying)
-              changedState = PlayModeState.Playing;
-            else
-              changedState = PlayModeState.Stopped;
-
-            break;
-          case PlayModeState.Paused:
-            if (EditorApplication.isPlayingOrWillChangePlaymode && !EditorApplication.isPaused)
-              changedState = PlayModeState.Playing;
-            else if (EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPaused)
-              changedState = PlayModeState.Paused;
-            break;
-        }
-
-        if (ourCurrentState != changedState)
-        {
-          PlayModeStateChanged.Invoke(ourCurrentState, changedState);
-          ourCurrentState = changedState;
+          PlayModeStateChanged.Invoke(ourSavedState, changedState);
+          ourSavedState = changedState;
         }
       };
 #pragma warning restore 618
@@ -320,13 +305,10 @@ namespace JetBrains.Rider.Unity.Editor
       Paused
     }
     
-    private static PlayModeState ourCurrentState = PlayModeState.Stopped;
+    private static PlayModeState ourSavedState = PlayModeState.Stopped;
     
     private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
     {
-      if (EditorApplication.isPaused) 
-        ourCurrentState = PlayModeState.Paused;
-      
       var isPlayingAction = new Action(() =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
