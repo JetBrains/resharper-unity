@@ -175,13 +175,29 @@ task findLocalRiderSDKVersion {
     }
 }
 
+task unzipReSharperSdk(type: Sync){
+    group backendGroup
+    def extractDir = "${buildDir}/ReSharperSdk"
+    
+    dependsOn configurations.reSharper
+    from { 
+        configurations.reSharper.collect { zipTree(it) }
+    }
+
+    into extractDir    
+}
+
 task prepareNuGetConfigWithPathToRiderSDK {
+    dependsOn unzipReSharperSdk
+
     def riderSdkPath = file(new File(repoRoot.canonicalPath, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk"))
     ci.Progress("Preparing NuGet config with frontend SDK path: $riderSdkPath")
+    def resharperSdkPath = file(new File(buildDir, "ReSharperSdk"))
     new File("$repoRoot/resharper/src/NuGet.Config").text = """<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
     <add key="local-rider-sdk" value="$riderSdkPath" />
+    <add key="local-resharper-sdk" value="$resharperSdkPath" />
   </packageSources>
 </configuration>
 """

@@ -24,6 +24,14 @@ plugins {
     id 'org.jetbrains.intellij' version '0.3.2'
 }
 
+configurations {
+    reSharper
+}
+
+dependencies {
+    reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "LATEST-TRUNK-SNAPSHOT", ext: "zip"
+}
+
 
 apply plugin: 'com.jetbrains.rdgen'
 
