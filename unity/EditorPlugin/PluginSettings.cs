@@ -80,7 +80,12 @@ namespace JetBrains.Rider.Unity.Editor
     
     public static AssemblyReloadSettings AssemblyReloadSettings
     {
-      get { return (AssemblyReloadSettings) EditorPrefs.GetInt("Rider_AssemblyReloadSettings", (int) AssemblyReloadSettings.RecompileAndContinuePlaying); }
+      get
+      {
+        if (UnityUtils.UnityVersion >= new Version(2018, 2))
+          return AssemblyReloadSettings.RecompileAndContinuePlaying;
+        return (AssemblyReloadSettings) EditorPrefs.GetInt("Rider_AssemblyReloadSettings", (int) AssemblyReloadSettings.RecompileAndContinuePlaying);
+      }
       private set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
     }
 
@@ -274,16 +279,19 @@ namespace JetBrains.Rider.Unity.Editor
 
       
       EditorGUI.EndChangeCheck();
-      
-      EditorGUI.BeginChangeCheck();
-      AssemblyReloadSettings= (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes While Playing", AssemblyReloadSettings);
 
-      if (EditorGUI.EndChangeCheck())
+      if (UnityUtils.UnityVersion < new Version(2018, 2))
       {
-        if (AssemblyReloadSettings== AssemblyReloadSettings.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
+        EditorGUI.BeginChangeCheck();
+        AssemblyReloadSettings= (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes While Playing", AssemblyReloadSettings);
+
+        if (EditorGUI.EndChangeCheck())
         {
-          EditorApplication.LockReloadAssemblies();
-        }
+          if (AssemblyReloadSettings== AssemblyReloadSettings.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
+          {
+            EditorApplication.LockReloadAssemblies();
+          }
+        }  
       }
       
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
