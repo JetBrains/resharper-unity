@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Daemon.CSharp.Errors;
+﻿using JetBrains.Application.Settings;
+using JetBrains.ReSharper.Daemon.CSharp.Errors;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -11,12 +12,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.CodeAnnotations
     {
         protected override string RelativeTestDataPath => @"psi\CodeAnnotations";
 
-        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
+        // IteratorMethodResultIsIgnoredWarning very similar warning, given if an iterator
+        // result isn't used. We'll override it. Hopefully.
+#if RIDER
+        
+        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
+            IContextBoundSettingsStore settingsStore)
         {
-            // IteratorMethodResultIsIgnoredWarning very similar warning, given if an iterator
-            // result isn't used. We'll override it. Hopefully.
             return highlighting is MustUseReturnValueWarning || highlighting is IteratorMethodResultIsIgnoredWarning;
         }
+
+#else
+
+        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
+        {
+            return highlighting is MustUseReturnValueWarning || highlighting is IteratorMethodResultIsIgnoredWarning;
+        }
+
+#endif
 
         [Test] public void TestUnusedCoroutineReturnValue() { DoNamedTest2(); }
     }

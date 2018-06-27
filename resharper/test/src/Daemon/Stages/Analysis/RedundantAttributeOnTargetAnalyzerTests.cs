@@ -1,20 +1,12 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
-using JetBrains.ReSharper.Psi;
+﻿using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class RedundantAttributeOnTargetAnalyzerTests : CSharpHighlightingTestBase
+    public class RedundantAttributeOnTargetAnalyzerTests : CSharpHighlightingTestBase<IUnityHighlighting>
     {
         protected override string RelativeTestDataPath => @"daemon\Stages\Analysis\RedundantAttributeOnTarget";
-
-        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
-        {
-            return highlighting is IUnityHighlighting;
-        }
 
         [Test] public void TestAddComponentMenu() { DoNamedTest2(); }
         [Test] public void TestExecuteInEditMode() { DoNamedTest2(); }
