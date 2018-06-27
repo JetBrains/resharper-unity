@@ -25,6 +25,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // simply won't get called
     public static string OnGeneratedCSProject(string path, string contents)
     {
+      if (!PluginEntryPoint.Enabled)
+        return contents;
+
       ourLogger.Verbose("Post-processing {0} (in memory)", path);
       var doc = XDocument.Parse(contents);
       if (UpgradeProjectFile(path, doc))
