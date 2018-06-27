@@ -177,6 +177,8 @@ task findLocalRiderSDKVersion {
 
 task unzipReSharperSdk(type: Sync){
     group backendGroup
+    onlyIf { project.shouldBuildRiderOnly }
+
     def extractDir = "${buildDir}/ReSharperSdk"
     
     dependsOn configurations.reSharper
