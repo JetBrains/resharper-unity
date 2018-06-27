@@ -14,22 +14,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.CodeAnnotations
 
         // IteratorMethodResultIsIgnoredWarning very similar warning, given if an iterator
         // result isn't used. We'll override it. Hopefully.
-#if RIDER
-        
+
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {
             return highlighting is MustUseReturnValueWarning || highlighting is IteratorMethodResultIsIgnoredWarning;
         }
-
-#else
-
-        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
-        {
-            return highlighting is MustUseReturnValueWarning || highlighting is IteratorMethodResultIsIgnoredWarning;
-        }
-
-#endif
 
         [Test] public void TestUnusedCoroutineReturnValue() { DoNamedTest2(); }
     }

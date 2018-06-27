@@ -6,13 +6,9 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.TestFramework;
 using NuGet;
 
-#if !RIDER
-using PlatformID = JetBrains.Application.platforms.PlatformID;
-#endif
 
-#if RIDER
+
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
-#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
@@ -41,8 +37,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
 
         public bool IncludeNetworking { get; set; }
 
-#if RIDER
-
         public TargetFrameworkId GetTargetFrameworkId()
         {
             return TargetFrameworkId.Create(FrameworkIdentifier.NetFramework, new Version(4, 0));
@@ -55,19 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             foreach (var package in base.GetPackages(targetFrameworkId))
                 yield return package;
         }
-
-#else
-
-        public override IEnumerable<PackageDependency> GetPackages(PlatformID platformID)
-        {
-            foreach (var package in GetPackagesCommon())
-                yield return package;
-            foreach (var package in base.GetPackages(platformID))
-                yield return package;
-        }
-
-#endif
-
+        
         private IEnumerable<PackageDependency> GetPackagesCommon()
         {
             // There isn't an official nuget for Unity, sadly, so add this feed to test/data/nuget.config
@@ -89,13 +71,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                 UnityProjectFlavor.UnityProjectFlavorGuid
             };
         }
-
-#if !RIDER
-        public PlatformID GetPlatformID()
-        {
-            return PlatformID.CreateFromName(".NETFrameWork", new Version(4, 0));
-        }
-#endif
 
         public string Extension => CSharpProjectFileType.CS_EXTENSION;
 

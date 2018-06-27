@@ -58,11 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         
         private void HighlightInFile(Action<ICgFile, IHighlightingConsumer> fileHighlighter, Action<DaemonStageResult> committer)
         {
-#if RIDER
             var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile, DaemonProcess.ContextBoundSettingsStore);
-#else
-            var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile);
-#endif
             fileHighlighter(myFile, consumer);
             committer(new DaemonStageResult(consumer.Highlightings));
         }

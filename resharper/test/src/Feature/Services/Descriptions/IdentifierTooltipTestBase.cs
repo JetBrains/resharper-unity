@@ -44,11 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
                     Assertion.AssertNotNull(highlightingInfo, "Highlighting not found");
                     var markupModel = Solution.GetComponent<IDocumentMarkupManager>().GetMarkupModel(document);
                     var highlighterTooltipProvider = DaemonUtil.GetHighlighterTooltipProvider(highlightingInfo.Highlighting, Solution);
-#if RIDER
                     var attributeId = HighlightingSettingsManager.Instance.GetAttributeId(highlightingInfo.Highlighting, psiSourceFile, Solution, psiSourceFile.GetSettingsStore(Solution)).NotNull();
-#else
-                    var attributeId = HighlightingSettingsManager.Instance.GetAttributeId(highlightingInfo.Highlighting, psiSourceFile, Solution).NotNull();
-#endif
                     var highlighter = markupModel.AddHighlighter("test", highlightingInfo.Range.TextRange, AreaType.EXACT_RANGE, 0, attributeId, new ErrorStripeAttributes(), highlighterTooltipProvider);
                     ExecuteWithGold(writer => writer.WriteLine(highlighter.ToolTip));
                 }
@@ -72,11 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
                 var instance = HighlightingSettingsManager.Instance;
                 foreach (var highlightingInfo in context.HighlightingsToAdd)
                 {
-#if RIDER
                     var severity = instance.GetSeverity(highlightingInfo.Highlighting, SourceFile, Solution, ContextBoundSettingsStore);
-#else
-                    var severity = instance.GetSeverity(highlightingInfo.Highlighting, SourceFile, Solution);
-#endif
                     if (highlightingInfo.Range.Contains(myCaretRange) && severity == Severity.INFO)
                     {
                         if (highlightingInfo.Highlighting is CSharpIdentifierHighlighting)
