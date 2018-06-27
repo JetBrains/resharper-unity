@@ -7,6 +7,8 @@
 
 ## What should I know before I get started?
 
+Please sign the CLA before sending the PR: https://www.jetbrains.com/agreements/cla/.
+
 This plugin has same architecture as Rider itself. Out-of-process ReSharper serves as backend, IntelliJ IDEA serves as frontend. Unity Editor Plugin passes data and requests between Rider backend and Unity.
 Communication between all three is defined in 2 models:
  - rider/protocol/src/main/kotlin/model/editorPlugin 
