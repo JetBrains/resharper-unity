@@ -56,14 +56,9 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    public delegate void PlayModeStateChangedDelegate(PlayModeState previousState, PlayModeState newState);
-    
+    public delegate void OnModelInitializationHandler(UnityModelAndLifetime e);
     [UsedImplicitly]
-    public static event PlayModeStateChangedDelegate PlayModeStateChanged = delegate(PlayModeState previousState, PlayModeState newState) {  };
-    
-    public delegate void MyEventHandler(UnityModelAndLifetime e);
-    [UsedImplicitly]
-    public static event MyEventHandler OnModelInitialization = delegate {};
+    public static event OnModelInitializationHandler OnModelInitialization = delegate {};
 
     internal static bool CheckConnectedToBackendSync(EditorPluginModel model)
     {
@@ -90,8 +85,6 @@ namespace JetBrains.Rider.Unity.Editor
     }
     
     private static bool ourInitialized;
-
-    private static bool ourLockedAssemblies;
     
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     
@@ -181,33 +174,23 @@ namespace JetBrains.Rider.Unity.Editor
     {
 #pragma warning disable 618
       EditorApplication.playmodeStateChanged += () =>
-      {
-        var changedState = GetEditorState();
-        if (ourSavedState != changedState)
-        {
-          PlayModeStateChanged.Invoke(ourSavedState, changedState);
-          ourSavedState = changedState;
-        }
-      };
 #pragma warning restore 618
-
-      PlayModeStateChanged += (state, newState) =>
       {
-        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
+        var newState = GetEditorState();
+        if (ourSavedState != newState)
         {
-          if (newState == PlayModeState.Playing)
+          if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
           {
-            EditorApplication.LockReloadAssemblies();
-            ourLockedAssemblies = true;
-          }
-          else if (newState == PlayModeState.Stopped || newState == PlayModeState.Paused)
-          {
-            if (ourLockedAssemblies)
+            if (newState == PlayModeState.Playing)
             {
-              ourLockedAssemblies = false;
+              EditorApplication.LockReloadAssemblies();
+            }
+            else if (newState == PlayModeState.Stopped)
+            {
               EditorApplication.UnlockReloadAssemblies();
             }
-          }
+          }  
+          ourSavedState = newState;
         }
       };
       
