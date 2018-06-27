@@ -287,9 +287,13 @@ namespace JetBrains.Rider.Unity.Editor
 
         if (EditorGUI.EndChangeCheck())
         {
-          if (AssemblyReloadSettings== AssemblyReloadSettings.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
+          if (AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
           {
             EditorApplication.LockReloadAssemblies();
+          }
+          else
+          {
+            EditorApplication.UnlockReloadAssemblies();
           }
         }  
       }
