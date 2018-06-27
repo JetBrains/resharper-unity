@@ -208,7 +208,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       PlayModeStateChanged += (state, newState) =>
       {
-        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.CompileOnStop)
+        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
         {
           if (newState == PlayModeState.Playing)
           {
@@ -228,7 +228,7 @@ namespace JetBrains.Rider.Unity.Editor
       
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
-        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.StopOnReload)
+        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.StopPlayingAndRecompile)
         {
           if (EditorApplication.isPlaying)
           {

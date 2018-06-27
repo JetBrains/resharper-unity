@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using JetBrains.Util;
 using UnityEditor;
 using UnityEngine;
@@ -16,9 +15,9 @@ namespace JetBrains.Rider.Unity.Editor
 
   public enum AssemblyReloadSettings
   {
-    Immediate = 0,
-    CompileOnStop = 1,
-    StopOnReload = 2
+    RecompileAndContinuePlaying = 0,
+    RecompileAfterFinishedPlaying = 1,
+    StopPlayingAndRecompile = 2
   }
 
   public class PluginSettings : IPluginSettings
@@ -81,7 +80,7 @@ namespace JetBrains.Rider.Unity.Editor
     
     public static AssemblyReloadSettings AssemblyReloadSettings
     {
-      get { return (AssemblyReloadSettings) EditorPrefs.GetInt("Rider_AssemblyReloadSettings", (int) AssemblyReloadSettings.Immediate); }
+      get { return (AssemblyReloadSettings) EditorPrefs.GetInt("Rider_AssemblyReloadSettings", (int) AssemblyReloadSettings.RecompileAndContinuePlaying); }
       private set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
     }
 
@@ -277,11 +276,11 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUI.EndChangeCheck();
       
       EditorGUI.BeginChangeCheck();
-      AssemblyReloadSettings= (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Assembly reload settings", AssemblyReloadSettings);
+      AssemblyReloadSettings= (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes While Playing", AssemblyReloadSettings);
 
       if (EditorGUI.EndChangeCheck())
       {
-        if (AssemblyReloadSettings== AssemblyReloadSettings.CompileOnStop && EditorApplication.isPlaying)
+        if (AssemblyReloadSettings== AssemblyReloadSettings.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
         {
           EditorApplication.LockReloadAssemblies();
         }
