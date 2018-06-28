@@ -10,7 +10,7 @@ buildscript {
         else {
             maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
         }
-        mavenCentral()
+        maven { url "https://cache-redirector.jetbrains.com/maven-central" }        
     }
 
     dependencies {
@@ -28,6 +28,10 @@ configurations {
     reSharper
 }
 
+repositories {
+    maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
+}
+
 dependencies {
     reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "LATEST-TRUNK-SNAPSHOT", ext: "zip"
 }
@@ -42,7 +46,8 @@ ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
 
 wrapper {
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = '4.7'
+    distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
 if (System.env['TEAMCITY_VERSION'] != null) {
