@@ -137,11 +137,11 @@ class RestorePackagesTask extends DefaultTask {
         project.ci.Progress("Restoring packages for $packagesFile")
 
         // TODO: Map verbosity to gradle logging verbosity
-        def restoreArguments = [ 'restore', '--verbosity', 'normal' ]
-        if (project.PackageSource != null) {
-            restoreArguments << '--source' << 'https://api.nuget.org/v3/index.json'
-            restoreArguments << '--source' << project.PackageSource
-        }
+        def restoreArguments = [ 'restore', '--verbosity', 'normal' ]        
+        restoreArguments << '--source' << 'https://api.nuget.org/v3/index.json'
+        restoreArguments << '--source' << project.backend.riderSdkPath
+        restoreArguments << '--source' << project.backend.reSharperSdkPath
+
         restoreArguments.addAll project.extraMSBuildArgs
         restoreArguments << packagesFile
         project.exec {
@@ -161,6 +161,7 @@ class GenerateBuildPropsTask extends DefaultTask {
     def generate() {
         project.ci.Progress("Generating Build.props for $packageName")
         def packageVersion = parsePackageVersion()
+        logger.lifecycle("$msBuildParameter=$packageVersion")
 
         new File("$project.repoRoot/resharper/$packageName" + ".generated.props").text = """<Project>
   <PropertyGroup>
@@ -198,14 +199,14 @@ task unzipReSharperSdk(type: Sync){
     group backendGroup
     onlyIf { !project.shouldBuildRiderOnly }
 
-    def extractDir = "${buildDir}/ReSharperSdk"
+    ci.Progress("Unzipping ReSharper SDK to $backend.reSharperSdkPath")
     
     dependsOn configurations.reSharper
     from { 
         configurations.reSharper.collect { zipTree(it) }
     }
 
-    into extractDir    
+    into backend.reSharperSdkPath    
 }
 
 task prepareRiderBuildProps(type: GenerateBuildPropsTask) {
@@ -227,8 +228,8 @@ task prepareReSharperBuildProps(type: GenerateBuildPropsTask) {
 
 task prepareNuGetConfig {
     dependsOn unzipReSharperSdk
-    ci.Progress("Preparing NuGet.Config")    
-    new File("$repoRoot/resharper/NuGet.Config").text = """<?xml version="1.0" encoding="utf-8"?>
+    ci.Progress("Preparing NuGet.Config")
+    def nugetConfigText = """<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
     <add key="local-rider-sdk" value="$backend.riderSdkPath" />
@@ -236,6 +237,8 @@ task prepareNuGetConfig {
   </packageSources>
 </configuration>
 """
+    logger.lifecycle(nugetConfigText)
+    new File("$repoRoot/resharper/NuGet.Config").text = nugetConfigText
 }
 
 task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
