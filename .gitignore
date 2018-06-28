@@ -76,6 +76,7 @@ rider/**/out/*
 **/*.generated.cs
 **/*.generated.kt
 **/*.generated.xaml
+**/*.generated.props
 
 resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
