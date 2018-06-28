@@ -39,7 +39,12 @@ namespace JetBrains.Rider.Unity.Editor
       if (SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
         throw new InvalidOperationException("GetTargetFrameworkVersionWindowsMono2 is designed for Windows only");
 
-      var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
+      var programFiles86 = Environment.GetEnvironmentVariable("PROGRAMFILES(X86)") ??
+                           Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+      var referenceAssembliesPath = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework";
+      if (!string.IsNullOrEmpty(programFiles86))
+        referenceAssembliesPath = Path.Combine(programFiles86, @"Reference Assemblies\Microsoft\Framework\.NETFramework");
+      var dir = new DirectoryInfo(referenceAssembliesPath);
       if (!dir.Exists)
         return new string[0];
 
