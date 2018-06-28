@@ -1,6 +1,4 @@
 ﻿using System;
-using JetBrains.Application.Progress;
-using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -20,13 +18,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         {
             DaemonProcess = daemonProcess;
             myFile = file;
-        }
-
-        protected void HighlightInFile(Action<ICgFile, IHighlightingConsumer> fileHighlighter, Action<DaemonStageResult> commiter)
-        {
-            var consumer = new FilteringHighlightingConsumer(myFile.GetSourceFile(), myFile);
-            fileHighlighter(myFile, consumer);
-            commiter(new DaemonStageResult(consumer.Highlightings));
         }
         
         public virtual bool InteriorShouldBeProcessed(ITreeNode element, IHighlightingConsumer context)
@@ -64,5 +55,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         {
             HighlightInFile((file, consumer) => file.ProcessDescendants(this, consumer), committer);
         }
+        
+        private void HighlightInFile(Action<ICgFile, IHighlightingConsumer> fileHighlighter, Action<DaemonStageResult> committer)
+        {
+            var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile, DaemonProcess.ContextBoundSettingsStore);
+            fileHighlighter(myFile, consumer);
+            committer(new DaemonStageResult(consumer.Highlightings));
+        }
+
     }
 }

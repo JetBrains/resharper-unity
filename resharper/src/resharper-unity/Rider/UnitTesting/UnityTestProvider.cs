@@ -3,13 +3,9 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.UnitTestFramework;
-using JetBrains.Util;
-
-#if RIDER
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
-#endif
+
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {

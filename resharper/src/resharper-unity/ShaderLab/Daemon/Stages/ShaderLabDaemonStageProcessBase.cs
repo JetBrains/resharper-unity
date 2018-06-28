@@ -14,6 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         private readonly IContextBoundSettingsStore mySettingsStore;
         private readonly IShaderLabFile myFile;
         private IDocument myDocument;
+        
+        public IDaemonProcess DaemonProcess { get; }
 
         protected ShaderLabDaemonStageProcessBase(IDaemonProcess process, IContextBoundSettingsStore settingsStore, IShaderLabFile file)
         {
@@ -50,14 +52,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         public virtual void Execute(Action<DaemonStageResult> committer)
         {
             HighlightInFile((file, consumer) => file.ProcessDescendants(this, consumer), committer);
-        }
+        }        
 
-        public IDaemonProcess DaemonProcess { get; }
-
-        protected void HighlightInFile(Action<IShaderLabFile, IHighlightingConsumer> fileHighlighter,
+        private void HighlightInFile(Action<IShaderLabFile, IHighlightingConsumer> fileHighlighter,
             Action<DaemonStageResult> commiter)
         {
-            var consumer = new FilteringHighlightingConsumer(myFile.GetSourceFile(), myFile);
+
+            var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile, DaemonProcess.ContextBoundSettingsStore);
             fileHighlighter(myFile, consumer);
             commiter(new DaemonStageResult(consumer.Highlightings));
         }

@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -9,15 +10,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Host.Features.Syntax
 {
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
-    public class ShaderLabSyntaxHighlightingTests : ShaderLabHighlightingTestBase
+    public class ShaderLabSyntaxHighlightingTests : ShaderLabHighlightingTestBase<ReSharperSyntaxHighlighting>
     {
         protected override string RelativeTestDataPath => @"ShaderLab\SyntaxHighlighting";
-
-        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
-        {
-            // TODO: highlighting is ReSharperSyntaxHighlighting
-            return highlighting.GetType().Name == "ReSharperSyntaxHighlighting";
-        }
 
         [Ignore("Host features are not available to tests")]
         [Test] public void TestSyntaxHighlighting() { DoNamedTest2(); }
