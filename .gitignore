@@ -83,7 +83,7 @@ resharper/test/data/**/*.tmp
 
 
 resharper/src/resharper-unity/_Generated/
-resharper/src/NuGet.Config
+resharper/NuGet.Config
 
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
 resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove

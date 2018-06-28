@@ -195,7 +195,7 @@ task prepareNuGetConfigWithPathToRiderSDK {
     def riderSdkPath = file(new File(repoRoot.canonicalPath, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk"))
     ci.Progress("Preparing NuGet config with frontend SDK path: $riderSdkPath")
     def resharperSdkPath = file(new File(buildDir, "ReSharperSdk"))
-    new File("$repoRoot/resharper/src/NuGet.Config").text = """<?xml version="1.0" encoding="utf-8"?>
+    new File("$repoRoot/resharper/NuGet.Config").text = """<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
     <add key="local-rider-sdk" value="$riderSdkPath" />
