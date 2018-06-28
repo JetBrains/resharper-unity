@@ -5,7 +5,7 @@ buildscript {
 
     repositories {
         maven { url "https://cache-redirector.jetbrains.com/myget.org.rd-snapshots.maven" }
-        maven { url "https://cache-redirector.jetbrains.com/maven-central" }        
+        maven { url "https://cache-redirector.jetbrains.com/maven-central" }
     }
 
     dependencies {
@@ -25,6 +25,7 @@ configurations {
 
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
+    maven { url "https://cache-redirector.jetbrains.com/maven-central" }
 }
 
 dependencies {
