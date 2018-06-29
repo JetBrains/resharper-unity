@@ -13,9 +13,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RESHARPER</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup>
-    <ParserGenOutputBase>$(MSBuildThisFileDirectory)_Generated\\</ParserGenOutputBase>
-  </PropertyGroup>
   <ItemGroup>
     <!-- C# -->
     <ErrorsGen Include="Daemon\Errors\CSharpErrors.xml">
