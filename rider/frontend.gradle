@@ -1,9 +1,3 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
-
 sourceSets {
     test {
         java.srcDir 'testSrc'
@@ -33,9 +27,8 @@ intellij {
     } else {
         version = "2018.2-SNAPSHOT"
     }
-
-    // please do not remove this line. Contact Ivan.Shakhov instead.
-    // intellijRepo = "https://www.jetbrains.com/intellij-repository"
+    
+    intellijRepo = "https://cache-redirector.jetbrains.com/intellij-repository"
 
     // Sources aren't available for Rider
     downloadSources = false
@@ -82,10 +75,6 @@ compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-}
-
-repositories {
-    mavenCentral()
 }
 
 apply plugin: 'com.jetbrains.rdgen'
@@ -142,6 +131,7 @@ task generateModel {
     group = 'other'
     description = 'Generates protocol models.'
 }
+
 generateModel.dependsOn(generateRiderModel, generateEditorPluginModel)
 
 
@@ -181,9 +171,9 @@ buildPlugin.dependsOn generateModel
 // has been evaluated. It's now too late to change inputs/outputs or dependencies. An alternative
 // approach would be to set the appropriate tasks `enabled` flag
 gradle.taskGraph.whenReady { taskGraph ->
-    project.shouldBuildRiderOnly = taskGraph.hasTask(runIde) && !taskGraph.hasTask(buildPlugin)
+    project.shouldBuildRiderOnly = (taskGraph.hasTask(runIde) && !taskGraph.hasTask(buildPlugin)) || (taskGraph.hasTask(buildRiderOnlyPlugin) && !taskGraph.hasTask(buildFullReSharperPlugin))
+    logger.lifecycle("project.shouldBuildRiderOnly=$project.shouldBuildRiderOnly")
 }
-
 
 def dllFiles = [
     "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",

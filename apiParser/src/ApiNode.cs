@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
+using JetBrains.Util;
 
 namespace ApiParser
 {
@@ -65,10 +66,10 @@ namespace ApiParser
         }
 
         [NotNull]
-        private IEnumerable<ApiNode> SelectMany([NotNull] string xpath)
+        public ApiNode[] SelectMany([NotNull] string xpath)
         {
             var nodes = node.SelectNodes(XPath.Resolve(xpath));
-            return nodes?.Select(Wrap) ?? new ApiNode[ 0 ];
+            return nodes?.Select(Wrap).ToArray() ?? EmptyArray<ApiNode>.Instance;
         }
 
         [CanBeNull]

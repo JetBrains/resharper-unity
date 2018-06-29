@@ -53,7 +53,8 @@ namespace ApiParser
         public static string ResolveFullName([NotNull] string name, string namespaceHint)
         {
             var candidates = FullNames[name];
-            if (!candidates.Any()) throw new ApplicationException($"Unknown type '{name}'.");
+            if (!candidates.Any())
+                throw new ApplicationException($"Unknown type '{name}'.");
 
             if (candidates.Count > 1)
             {

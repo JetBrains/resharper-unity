@@ -19,13 +19,14 @@ namespace ApiParser
         // I don't know why we match without brackets
         private static readonly Regex CaptureArgumentsRegex = new Regex(@"^(?:[\w.]+)?\.(?:\w+)(?:\((?<args>.*)\)|(?<args>.*))$", RegexOptions.Compiled);
 
-        private readonly UnityApi myApi;
-        private readonly string myScriptReferenceRelativePath;
+        private static readonly string ScriptReferenceRelativePath1 = @"Documentation" + Path.DirectorySeparatorChar + "en" + Path.DirectorySeparatorChar + "ScriptReference";
+        private static readonly string ScriptReferenceRelativePath2 = @"Documentation" + Path.DirectorySeparatorChar + "ScriptReference";    // 2018.1.6f1
 
-        public ApiParser(UnityApi api, string scriptReferenceRelativePath)
+        private readonly UnityApi myApi;
+
+        public ApiParser(UnityApi api)
         {
             myApi = api;
-            myScriptReferenceRelativePath = scriptReferenceRelativePath;
         }
 
         public event EventHandler<ProgressEventArgs> Progress;
@@ -42,7 +43,11 @@ namespace ApiParser
             {
                 Directory.SetCurrentDirectory(path);
 
-                var files = Directory.EnumerateFiles(myScriptReferenceRelativePath, @"*.html").Reverse().ToArray();
+                var scriptReferenceRelativePath = Directory.Exists(ScriptReferenceRelativePath1)
+                    ? ScriptReferenceRelativePath1
+                    : ScriptReferenceRelativePath2;
+
+                var files = Directory.EnumerateFiles(scriptReferenceRelativePath, @"*.html").Reverse().ToArray();
                 var processed = new HashSet<string>();
 
                 for (var i = 0; i < files.Length; ++i)
@@ -60,18 +65,20 @@ namespace ApiParser
             Console.WriteLine();
         }
 
-        [CanBeNull]
-        private static ApiNode PickExample([NotNull] ApiNode details, [NotNull] string type)
+        private static ApiNode[] PickExample([NotNull] ApiNode details, [NotNull] string type)
         {
-            var example = details.SelectOne($@"div.subsection/pre.codeExample{type}");
-            return example == null || example.Text.StartsWith("no example available") ? null : example;
+            return details.SelectMany($@"div.subsection/pre.codeExample{type}");
         }
 
-        [CanBeNull]
-        private static ApiNode PickExample([NotNull] ApiNode details)
+        private static ApiNode[] PickExample([NotNull] ApiNode details)
         {
             // Favour C#, it's the most strongly typed
-            return PickExample(details, "CS") ?? PickExample(details, "JS") ?? PickExample(details, "Raw");
+            var examples = PickExample(details, "CS");
+            if (examples.IsEmpty())
+                examples = PickExample(details, "JS");
+            if (examples.IsEmpty())
+                examples = PickExample(details, "Raw");
+            return examples;
         }
 
         private void OnProgress([NotNull] ProgressEventArgs e)
@@ -95,6 +102,7 @@ namespace ApiParser
             var document = ApiNode.LoadContent(content);
             var section = document?.SelectOne(@"//div.content/div.section");
             var header = section?.SelectOne(@"div.mb20.clear");
+            var removed = header?.SelectOne(@"div[@class='message message-error mb20']");
             var name = header?.SelectOne(@"h1.heading.inherit"); // Type or type member name
             var ns = header?.SelectOne(@"p");   // "class in {ns}"/"struct in {ns}"/"Namespace: {ns}"
 
@@ -126,18 +134,24 @@ namespace ApiParser
                 }
             }
 
+            if (removed != null && removed.Text.StartsWith("Removed"))
+            {
+                Console.WriteLine($"{nsName}.{name.Text} no longer available in {apiVersion}: {removed.Text}");
+                return;
+            }
+
             var unityApiType = myApi.AddType(nsName, name.Text, clsType, filename, apiVersion);
 
             foreach (var message in messages)
             {
-                var eventFunction = ParseMessage(message, apiVersion, nsName, processed);
+                var eventFunction = ParseMessage(name.Text, message, apiVersion, nsName, processed);
                 unityApiType.MergeEventFunction(eventFunction, apiVersion);
             }
         }
 
         [CanBeNull]
-        private UnityApiEventFunction ParseMessage(ApiNode message, Version apiVersion, string hintNamespace,
-            HashSet<string> processed)
+        private UnityApiEventFunction ParseMessage(string className, ApiNode message, Version apiVersion,
+            string hintNamespace, HashSet<string> processed)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
@@ -146,7 +160,10 @@ namespace ApiParser
             var detailsPath = link[@"href"];
             if (string.IsNullOrWhiteSpace(detailsPath)) return null;
 
-            var path = Path.Combine(myScriptReferenceRelativePath, detailsPath);
+            var scriptReferenceRelativePath = Directory.Exists(ScriptReferenceRelativePath1)
+                ? ScriptReferenceRelativePath1
+                : ScriptReferenceRelativePath2;
+            var path = Path.Combine(scriptReferenceRelativePath, detailsPath);
             processed.Add(path);
             if (!File.Exists(path)) return null;
 
@@ -164,24 +181,60 @@ namespace ApiParser
             var argumentNames = EmptyArray<string>.Instance;
             var isStaticFromExample = false;
 
-            var example = PickExample(details);
-            if (example != null)
+            var examples = PickExample(details);
+            if (examples.Length > 0)
             {
-                var tuple = ParseDetailsFromExample(messageName, example, hintNamespace);
+                var tuple = ParseDetailsFromExample(messageName, examples, hintNamespace);
+
+                // As of 2017.4, the docs for MonoBehaviour.OnCollisionEnter2D don't include a valid example. It demonstrates
+                // OnTriggerEnter2D instead. Similar problems for these other methods
                 if (tuple == null)
                 {
-                    Console.WriteLine(example.Text);
-                    Console.WriteLine();
-                    throw new InvalidOperationException($"Failed to parse example for {messageName}");
+                    var fullName = $"{className}.{messageName}";
+                    switch (fullName)
+                    {
+                        case "MonoBehaviour.OnCollisionEnter2D":
+                        case "MonoBehaviour.OnCollisionExit2D":
+                        case "MonoBehaviour.OnCollisionStay2D":
+                        case "MonoBehaviour.Start":
+                        case "MonoBehaviour.OnDestroy":
+                            Console.WriteLine(
+                                $"WARNING: Unable to parse example for {fullName}. Example incorrect in docs");
+                            break;
+
+//                        case "Network.OnDisconnectedFromServer":
+//                            Bug in 2018.2 documentation
+//                            Console.WriteLine($"WARNING: Missing example for {fullName}");
+//                            break;
+
+                        default:
+                            foreach (var example in examples)
+                            {
+                                Console.WriteLine(example.Text);
+                                Console.WriteLine();
+                            }
+
+                            throw new InvalidOperationException($"Failed to parse example for {className}.{messageName}");
+                    }
                 }
-                returnType = tuple.Item1;
-                argumentNames = tuple.Item2;
-                isStaticFromExample = tuple.Item3;
+
+                if (tuple != null)
+                {
+                    returnType = tuple.Item1;
+                    argumentNames = tuple.Item2;
+                    isStaticFromExample = tuple.Item3;
+                }
             }
 
-            var docPath = Path.Combine(myScriptReferenceRelativePath, detailsPath);
-            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null || isStaticFromExample, isCoroutine,
-                returnType, apiVersion, desc.Text, docPath);
+            if (Equals(returnType, ApiType.IEnumerator))
+            {
+                returnType = ApiType.Void;
+                isCoroutine = true;
+            }
+
+            var docPath = Path.Combine(scriptReferenceRelativePath, detailsPath);
+            var eventFunction = new UnityApiEventFunction(messageName, staticNode != null || isStaticFromExample,
+                isCoroutine, returnType, apiVersion, desc.Text, docPath);
 
             ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames);
 
@@ -239,6 +292,20 @@ namespace ApiParser
         private static readonly Regex ParameterNameRegex = new Regex(@"^.*?\W(\w+)$", RegexOptions.Compiled);
 
         // Gets return type and argument names from example
+        [CanBeNull]
+        private static Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, ApiNode[] examples,
+            string owningMessageNamespace)
+        {
+            foreach (var example in examples)
+            {
+                var result = ParseDetailsFromExample(messageName, example, owningMessageNamespace);
+                if (result != null)
+                    return result;
+            }
+
+            return null;
+        }
+
         private static Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, ApiNode example, string owningMessageNamespace)
         {
             // Grr. This took far too long to figure out...
@@ -259,10 +326,11 @@ namespace ApiParser
             if (m.Success)
             {
                 var returnTypeName = m.Groups["returnType"].Value;
-                if (returnTypeName == "function")    // JS without an explicit return type
+                if (returnTypeName == "function") // JS without an explicit return type
                     returnTypeName = "void";
                 var returnType = new ApiType(returnTypeName, owningMessageNamespace);
-                var parameters = m.Groups["parameters"].Value.Split(new []{','}, StringSplitOptions.RemoveEmptyEntries);
+                var parameters = m.Groups["parameters"].Value
+                    .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
                 var isStatic = m.Groups["static"].Success;
 
                 var arguments = new string[parameters.Length];

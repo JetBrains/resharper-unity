@@ -56,9 +56,9 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    public delegate void MyEventHandler(UnityModelAndLifetime e);
+    public delegate void OnModelInitializationHandler(UnityModelAndLifetime e);
     [UsedImplicitly]
-    public static event MyEventHandler OnModelInitialization = delegate {};
+    public static event OnModelInitializationHandler OnModelInitialization = delegate {};
 
     internal static bool CheckConnectedToBackendSync(EditorPluginModel model)
     {
@@ -154,8 +154,56 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
       };
-      
+
+      ourSavedState = GetEditorState();
+      SetupAssemblyReloadEvents();
+
       ourInitialized = true;
+    }
+
+    private static PlayModeState GetEditorState()
+    {
+      if (EditorApplication.isPaused)
+        return PlayModeState.Paused;
+      if (EditorApplication.isPlaying)
+        return PlayModeState.Playing;
+      return PlayModeState.Stopped;
+    }
+
+    private static void SetupAssemblyReloadEvents()
+    {
+#pragma warning disable 618
+      EditorApplication.playmodeStateChanged += () =>
+#pragma warning restore 618
+      {
+        var newState = GetEditorState();
+        if (ourSavedState != newState)
+        {
+          if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
+          {
+            if (newState == PlayModeState.Playing)
+            {
+              EditorApplication.LockReloadAssemblies();
+            }
+            else if (newState == PlayModeState.Stopped)
+            {
+              EditorApplication.UnlockReloadAssemblies();
+            }
+          }  
+          ourSavedState = newState;
+        }
+      };
+      
+      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      {
+        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.StopPlayingAndRecompile)
+        {
+          if (EditorApplication.isPlaying)
+          {
+            EditorApplication.isPlaying = false;
+          }
+        }
+      };
     }
 
     private static void CreateProtocolAndAdvise(Lifetime lifetime, List<ProtocolInstance> list, string solutionFileName)
@@ -233,6 +281,15 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
+    public enum PlayModeState
+    {
+      Stopped,
+      Playing,
+      Paused
+    }
+    
+    private static PlayModeState ourSavedState = PlayModeState.Stopped;
+    
     private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
     {
       var isPlayingAction = new Action(() =>

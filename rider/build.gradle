@@ -4,13 +4,8 @@ buildscript {
     ext.rd_version = '0.1.18'
 
     repositories {
-        if (System.env['TEAMCITY_VERSION'] != null) {
-            maven { url 'https://repo.labs.intellij.net/rd-snapshots-maven' }
-        }
-        else {
-            maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
-        }
-        mavenCentral()
+        maven { url "https://cache-redirector.jetbrains.com/myget.org.rd-snapshots.maven" }
+        maven { url "https://cache-redirector.jetbrains.com/maven-central" }
     }
 
     dependencies {
@@ -24,6 +19,19 @@ plugins {
     id 'org.jetbrains.intellij' version '0.3.2'
 }
 
+configurations {
+    reSharper
+}
+
+repositories {
+    maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
+    maven { url "https://cache-redirector.jetbrains.com/maven-central" }
+}
+
+dependencies {
+    reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "LATEST-TRUNK-SNAPSHOT", ext: "zip"
+}
+
 
 apply plugin: 'com.jetbrains.rdgen'
 
@@ -34,7 +42,8 @@ ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 
 
 wrapper {
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = '4.7'
+    distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
 if (System.env['TEAMCITY_VERSION'] != null) {
@@ -53,7 +62,10 @@ if (System.env['TEAMCITY_VERSION'] != null) {
 // Renaming to be more meaningful, but would also require updating build.ps1
 // and also the build configuration settings in TeamCity
 if (!ext.has("Source"))
-    ext.Source = new File(ext.repoRoot, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")    
+    ext.Source = new File(ext.repoRoot, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
+else
+    ext.Source = new File(ext.Source)
+
 ext.PackageSource = ext.Source
 
 if (!ext.has("BuildCounter"))

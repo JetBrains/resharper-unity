@@ -10,10 +10,8 @@ using JetBrains.ReSharper.Psi.Impl.Reflection2.ExternalAnnotations;
 using JetBrains.ReSharper.Psi.Impl.Special;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
-
-#if RIDER
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
-#endif
+
 
 namespace JetBrains.ReSharper.Plugins.Unity.Psi.CodeAnnotations
 {

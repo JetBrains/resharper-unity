@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Refactorings.Rename
 
             var attributesRange = attributeSectionList.GetDocumentRange();
 
-            foreach (var occurrence in workflow.DataModel.ActualOccurrences)
+            foreach (var occurrence in workflow.DataModel.ActualOccurrences ?? EmptyList<TextOccurrenceRenameMarker>.InstanceList)
             {
                 if (!occurrence.Included)
                     continue;

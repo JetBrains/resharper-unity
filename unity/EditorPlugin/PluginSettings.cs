@@ -13,6 +13,13 @@ namespace JetBrains.Rider.Unity.Editor
     string RiderPath { get; set; }
   }
 
+  public enum AssemblyReloadSettings
+  {
+    RecompileAndContinuePlaying = 0,
+    RecompileAfterFinishedPlaying = 1,
+    StopPlayingAndRecompile = 2
+  }
+
   public class PluginSettings : IPluginSettings
   {
     private static LoggingLevel ourSelectedLoggingLevel = (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 4);
@@ -32,7 +39,12 @@ namespace JetBrains.Rider.Unity.Editor
       if (SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
         throw new InvalidOperationException("GetTargetFrameworkVersionWindowsMono2 is designed for Windows only");
 
-      var dir = new DirectoryInfo(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework");
+      var programFiles86 = Environment.GetEnvironmentVariable("PROGRAMFILES(X86)") ??
+                           Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+      var referenceAssembliesPath = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework";
+      if (!string.IsNullOrEmpty(programFiles86))
+        referenceAssembliesPath = Path.Combine(programFiles86, @"Reference Assemblies\Microsoft\Framework\.NETFramework");
+      var dir = new DirectoryInfo(referenceAssembliesPath);
       if (!dir.Exists)
         return new string[0];
 
@@ -69,6 +81,17 @@ namespace JetBrains.Rider.Unity.Editor
     {
       get { return EditorPrefs.GetBool("Rider_OverrideTargetFrameworkVersion", false); }
       private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersion", value);; }
+    }
+    
+    public static AssemblyReloadSettings AssemblyReloadSettings
+    {
+      get
+      {
+        if (UnityUtils.UnityVersion >= new Version(2018, 2))
+          return AssemblyReloadSettings.RecompileAndContinuePlaying;
+        return (AssemblyReloadSettings) EditorPrefs.GetInt("Rider_AssemblyReloadSettings", (int) AssemblyReloadSettings.RecompileAndContinuePlaying);
+      }
+      private set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
     }
 
     private static string TargetFrameworkVersionDefault = "4.6";
@@ -259,8 +282,27 @@ namespace JetBrains.Rider.Unity.Editor
           SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
+      
       EditorGUI.EndChangeCheck();
 
+      if (UnityUtils.UnityVersion < new Version(2018, 2))
+      {
+        EditorGUI.BeginChangeCheck();
+        AssemblyReloadSettings= (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes While Playing", AssemblyReloadSettings);
+
+        if (EditorGUI.EndChangeCheck())
+        {
+          if (AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
+          {
+            EditorApplication.LockReloadAssemblies();
+          }
+          else
+          {
+            EditorApplication.UnlockReloadAssemblies();
+          }
+        }  
+      }
+      
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
       var caption = $"<color=#0000FF>{githubRepo}</color>";
       LinkButton(caption: caption, url: githubRepo);
