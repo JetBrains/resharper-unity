@@ -42,11 +42,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\unity\JetBrains.Rider.Unity.Editor\EditorPlugin\EditorPlugin.csproj">
+    <ProjectReference Include="..\..\..\unity\EditorPlugin\EditorPlugin.csproj">
       <Project>{67cfb019-ce94-4251-8c3a-4dc70e4e4a52}</Project>
       <Name>EditorPlugin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\unity\JetBrains.Rider.Unity.Editor\EditorPlugin\EditorPluginFull.csproj">
+    <ProjectReference Include="..\..\..\unity\EditorPlugin\EditorPluginFull.csproj">
       <Project>{51b82b3c-294f-4751-8754-223c660172e4}</Project>
       <Name>EditorPluginFull</Name>
     </ProjectReference>
