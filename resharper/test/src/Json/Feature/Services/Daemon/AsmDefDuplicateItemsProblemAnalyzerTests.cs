@@ -15,10 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.Daemon
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefDuplicateItemsProblemAnalyzerTests : HighlightingTestBase<JsonValidationFailedWarning>
+    public class AsmDefDuplicateItemsProblemAnalyzerTests : JsonHighlightingTestBase<JsonValidationFailedWarning>
     {
-        protected override PsiLanguageType CompilerIdsLanguage => JsonLanguage.Instance;
-
         protected override string RelativeTestDataPath => @"Json\Daemon\Stages\Analysis\";
 
         // TODO: ReSharper will run element problem analyzers twice for JSON files

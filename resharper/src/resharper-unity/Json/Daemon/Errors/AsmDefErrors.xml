@@ -1,9 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Errors language="C#">
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
+        baseClass="CSharpUnityHighlightingBase">
+  
+  <Usings>
+    JetBrains.ReSharper.Psi.JavaScript.Tree;
+    JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+    JetBrains.ReSharper.Plugins.Unity.Json.Daemon.Errors;
+  </Usings>
   
   <StaticSeverityGroups>
     <Group name="AsmDef Errors" key="AsmDefErrors" />
   </StaticSeverityGroups>
+  
+  <SeverityConfiguration>
+    <Group name="UnityHighlightingGroupIds.Unity">
+      <Tag externalName="MismatchedAsmDefFilenameWarning.HIGHLIGHTING_ID"
+           default="SUGGESTION">
+        <Title>File name should match the name of the assembly</Title>
+        <Description>To avoid confusion, the name of the assembly definition file should match the name of the assembly being defined.</Description>
+      </Tag>
+    </Group>
+  </SeverityConfiguration>
 
   <Error name="UnresolvedProjectReference" staticGroup="AsmDefErrors">
     <Parameter type="IReference" name="reference" />
@@ -20,4 +37,11 @@
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
+  
+  <Warning name="MismatchedAsmDefFilename" configurableSeverity="MISMATCHED_ASMDEF_FILENAME">
+    <Parameter type="IJavaScriptLiteralExpression" name="literalExpression" />
+    <Message value="File name should match the name of the assembly" />
+    <Range>LiteralExpression.GetHighlightingRange()</Range>
+    <Behavour attributeID="SUGGESTION" overlapResolvePolicy="WARNING" />
+  </Warning>
 </Errors>
