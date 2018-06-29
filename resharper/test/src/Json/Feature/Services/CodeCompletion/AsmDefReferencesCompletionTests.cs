@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using NUnit.Framework;
-#if RESHARPER
-using PlatformID = JetBrains.Application.platforms.PlatformID;
-#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.CodeCompletion
 {
@@ -39,15 +34,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.CodeComp
 
     public abstract class TwoProjectCodeCompletionTestBase : CodeCompletionTestBase
     {
-#if RESHARPER
-        protected override TestSolutionConfiguration CreateSolutionConfiguration(PlatformID platformID,
-            ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
-            IEnumerable<string> fileSet)
-#else
         protected override TestSolutionConfiguration CreateSolutionConfiguration(
             ICollection<KeyValuePair<Util.Dotnet.TargetFrameworkIds.TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
             IEnumerable<string> fileSet)
-#endif
         {
             if (fileSet == null)
                 throw new ArgumentNullException(nameof(fileSet));
@@ -58,11 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.CodeComp
             var descriptors =
                 new Dictionary<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>>();
 
-            var mainDescriptorPair = CreateProjectDescriptor(
-#if RESHARPER
-                platformID,
-#endif
-                ProjectName, ProjectName, mainAbsoluteFileSet,
+            var mainDescriptorPair = CreateProjectDescriptor(ProjectName, ProjectName, mainAbsoluteFileSet,
                 referencedLibraries, ProjectGuid);
             descriptors.Add(mainDescriptorPair.First, mainDescriptorPair.Second);
 
@@ -72,11 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.CodeComp
                 var secondAbsoluteFileSet =
                     referencedProjectFileSet.Select(path => TestDataPath2.Combine(path)).ToList();
                 var secondProjectName = "Second_" + ProjectName;
-                var secondDescriptorPair = CreateProjectDescriptor(
-#if RESHARPER
-                    platformID,
-#endif
-                    secondProjectName, secondProjectName,
+                var secondDescriptorPair = CreateProjectDescriptor(secondProjectName, secondProjectName,
                     secondAbsoluteFileSet, referencedLibraries, SecondProjectGuid);
                 descriptors.Add(secondDescriptorPair.First, secondDescriptorPair.Second);
             }
