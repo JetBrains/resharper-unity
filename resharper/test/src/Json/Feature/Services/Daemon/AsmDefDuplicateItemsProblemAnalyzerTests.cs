@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.Daemon
     [TestFileExtension(".asmdef")]
     public class AsmDefDuplicateItemsProblemAnalyzerTests : JsonHighlightingTestBase<JsonValidationFailedWarning>
     {
-        protected override string RelativeTestDataPath => @"Json\Daemon\Stages\Analysis\";
+        protected override string RelativeTestDataPath => @"Json\Daemon\Stages\Analysis\DuplicateItems";
 
         // TODO: ReSharper will run element problem analyzers twice for JSON files
         // Which means we get multiple highlights. Not a huge deal in practice, but if this
