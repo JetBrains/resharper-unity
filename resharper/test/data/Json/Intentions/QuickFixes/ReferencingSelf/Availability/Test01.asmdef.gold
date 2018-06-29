@@ -1,6 +1,6 @@
 ﻿{
-  "name": "Thing",
-  "references": [ "|Unresolved|(0)", "|Thing|(1)" ]
+  "name": "Test01",
+  "references": [ "|Unresolved|(0)", "|Test01|(1)" ]
 }
 
 ------------------------------------------------

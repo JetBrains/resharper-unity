@@ -1,4 +1,4 @@
 {
-  "name": "Thing",
-  "references": [ "Unresolved", "Thi{caret}ng" ]
+  "name": "Test01",
+  "references": [ "Unresolved", "Test{caret}01" ]
 }
