@@ -71,7 +71,7 @@ The ReSharper plugin is installed via the _ReSharper &rarr; Extension Manager_. 
 * Event functions that can be coroutines are called out in tooltips.
 * Context Action on methods that can be coroutines to convert method signature to/from coroutine.
 * Warnings for unused coroutine return values.
-* Code completion, find usages and rename support for string literals in `MonoBehaviour.Invoke`, `IsInvoking`, `InvokeRepeating` and `CancelInvoke`. Also supports `StartCoroutine` and `StopCoroutine`.
+* Code completion, find usages and rename support for string literals in `MonoBehaviour.Invoke`, `IsInvoking`, `InvokeRepeating` and `CancelInvoke`. Also supports `StartCoroutine` and `StopCoroutine` and understands overloads here.
 
   <img src="docs/invoke_completion.png" width="209">
 
