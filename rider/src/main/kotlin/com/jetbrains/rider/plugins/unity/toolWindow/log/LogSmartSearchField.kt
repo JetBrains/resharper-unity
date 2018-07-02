@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent
 
 class LogSmartSearchField() : SearchTextField(false) { //val viewModel: RiderNuGetFacade
     init {
+        // TODO: consult aakinshin or grann when this inevitably breaks
         RiderUI.setHeight(this, 25)
         minimumSize = Dimension(JBUI.scale(100), minimumSize.height)
 
