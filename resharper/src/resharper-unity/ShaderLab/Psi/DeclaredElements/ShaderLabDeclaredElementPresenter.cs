@@ -2,6 +2,7 @@
 using System.Text;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.UI.RichText;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
@@ -11,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
     {
         public static ShaderLabDeclaredElementPresenter Instance => PsiShared.GetComponent<ShaderLabDeclaredElementPresenter>();
 
-        public string Format(DeclaredElementPresenterStyle style, IDeclaredElement element, ISubstitution substitution,
+        public RichText Format(DeclaredElementPresenterStyle style, IDeclaredElement element, ISubstitution substitution,
             out DeclaredElementPresenterMarking marking)
         {
             marking = new DeclaredElementPresenterMarking();
