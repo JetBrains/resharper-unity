@@ -1,14 +1,15 @@
 package com.jetbrains.rider.plugins.unity.util
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
+import com.jetbrains.rider.icons.ReSharperPsiJavaScriptIcons
 
 class UnityIcons {
     class Icons {
         companion object {
             @JvmField
             val ShaderLabFile = IconLoader.getIcon("/Icons/Shader/Shader.png")
+            val AsmDefFileType = ReSharperPsiJavaScriptIcons.Json
 
             val UnityLogo = IconLoader.getIcon("/Icons/Logo/UnityLogo.png")
 
@@ -110,7 +111,7 @@ class UnityIcons {
     class Ide {
         companion object {
             @JvmField
-            val Settings = IconLoader.getIcon("/Icons/ide/warning.svg")
+            val Warning = IconLoader.getIcon("/Icons/ide/warning.svg")
             @JvmField
             val Info = IconLoader.getIcon("/Icons/ide/info.svg")
             @JvmField
