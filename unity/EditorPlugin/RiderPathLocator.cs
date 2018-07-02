@@ -115,7 +115,7 @@ namespace JetBrains.Rider.Unity.Editor
       
       
       // /home/ivan/.local/share/applications/jetbrains-rider.desktop
-      var shortcut = new FileInfo("/home/ivan/.local/share/applications/jetbrains-rider.desktop");
+      var shortcut = new FileInfo(Path.Combine(home, @".local/share/applications/jetbrains-rider.desktop"));
       
       if (shortcut.Exists)
       {
