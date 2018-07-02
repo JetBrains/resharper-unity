@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.SyntaxHighli
     {
         public override SyntaxHighlightingProcessor CreateProcessor()
         {
-            return new ShaderLabSyntaxHighlightingProcess();
+            return new ShaderLabSyntaxHighlightingProcessor();
         }
     }
 }

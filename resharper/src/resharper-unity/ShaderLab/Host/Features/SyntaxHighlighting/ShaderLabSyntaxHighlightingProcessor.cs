@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.Parsing;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.SyntaxHighlighting
 {
-    internal class ShaderLabSyntaxHighlightingProcess : SyntaxHighlightingProcessor
+    internal class ShaderLabSyntaxHighlightingProcessor : SyntaxHighlightingProcessor
     {
         protected override string GetAttributeId(TokenNodeType tokenType)
         {
@@ -14,6 +14,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.SyntaxHighli
                 return ShaderLabHighlightingAttributeIds.INJECTED_LANGUAGE_FRAGMENT;
 
             return base.GetAttributeId(tokenType);
+        }
+
+        protected override bool IsLineComment(TokenNodeType tokenType)
+        {
+            return tokenType == ShaderLabTokenType.END_OF_LINE_COMMENT;
         }
 
         protected override bool IsBlockComment(TokenNodeType tokenType)
@@ -28,7 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.SyntaxHighli
 
         protected override bool IsKeyword(TokenNodeType tokenType)
         {
-            return tokenType == ShaderLabTokenType.PP_ERROR
+            return base.IsKeyword(tokenType) ||
+                   tokenType == ShaderLabTokenType.PP_ERROR
                    || tokenType == ShaderLabTokenType.PP_WARNING
                    || tokenType == ShaderLabTokenType.PP_LINE
                    || tokenType == ShaderLabTokenType.CG_INCLUDE
