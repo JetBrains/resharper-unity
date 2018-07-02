@@ -2,12 +2,12 @@
 using JetBrains.TextControl.DocumentMarkup;
 
 [assembly: RegisterHighlighterGroup(
-    CgHighligherGroup.ID, "Cg/HLSL", HighlighterGroupPriority.LANGUAGE_SETTINGS,
+    CgHighlighterGroup.ID, "Cg/HLSL", HighlighterGroupPriority.LANGUAGE_SETTINGS,
     RiderNamesProviderType = typeof(CgHighlighterNamesProvider))]
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
 {
-    public static class CgHighligherGroup
+    public static class CgHighlighterGroup
     {
         public const string ID = "ReSharper Cg Highlighters";
     }
