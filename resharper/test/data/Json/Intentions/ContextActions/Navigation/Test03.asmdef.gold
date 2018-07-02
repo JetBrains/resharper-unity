@@ -21,7 +21,7 @@ Occurrences provided for OccurrenceUtil:
 Occurrence's dump:
 TO: [O] "references": [ "|Ref1|" ] RANGE: (39,43) @ Ref2.asmdef
 Menu Item presentation: 
-Text: Ref2.asmdef|      |"references": [ "|Ref1|" ]| (3)
+Text: Ref2.asmdef      |"references": [ "|Ref1|" ]| (3)
 Shortcut text: in <TestProject>
 Style: Enabled
 Mnemonic: 
@@ -39,7 +39,7 @@ Occurrence's navigation result. Opened file: Ref2.asmdef
 Occurrence's dump:
 TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test03.asmdef
 Menu Item presentation: 
-Text: Test03.asmdef|      |"references": [ "|Ref1|" ]| (3)
+Text: Test03.asmdef      |"references": [ "|Ref1|" ]| (3)
 Shortcut text: in <TestProject>
 Style: Enabled
 Mnemonic: 
