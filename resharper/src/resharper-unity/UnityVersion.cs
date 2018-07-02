@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
@@ -16,13 +17,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myUnityProjectFileCache = unityProjectFileCache;
         }
 
-        public Version GetActualVersion(IProject project)
+        [NotNull]
+        public Version GetActualVersion([CanBeNull] IProject project)
         {
+            // Project might be null for e.g. decompiled files
+            if (project == null)
+                return new Version(0, 0);
             var version = myUnityProjectFileCache.GetUnityVersion(project);
             return version ?? GetActualVersion(project.GetSolution());
         }
 
-        private Version GetActualVersion(ISolution solution)
+        [NotNull]
+        private Version GetActualVersion([NotNull] ISolution solution)
         {
             foreach (var project in solution.GetTopLevelProjects())
             {

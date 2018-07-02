@@ -46,7 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             return data != null && data.LangVersionExplicitlySpecified;
         }
 
-        public Version GetUnityVersion(IProject project)
+        [CanBeNull]
+        public Version GetUnityVersion([NotNull] IProject project)
         {
             var data = myCache.GetData(this, project);
             return data?.UnityVersion;
