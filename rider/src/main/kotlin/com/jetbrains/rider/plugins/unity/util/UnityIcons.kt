@@ -31,7 +31,7 @@ class UnityIcons {
             val Cg = ShaderLab
 
             @JvmField
-            val AsmDefFileType = ReSharperPsiJavaScriptIcons.Json
+            val AsmDef = ReSharperPsiJavaScriptIcons.Json
         }
     }
 

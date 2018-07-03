@@ -6,6 +6,6 @@ import com.jetbrains.rider.plugins.unity.util.UnityIcons
 object AsmDefFileType : RiderLanguageFileTypeBase(AsmDefLanguage) {
     override fun getDefaultExtension() = "asmdef"
     override fun getDescription() = "Assembly Definition File (Unity)"
-    override fun getIcon() = UnityIcons.Icons.AsmDefFileType
+    override fun getIcon() = UnityIcons.FileTypes.AsmDef
     override fun getName() = "AsmDef"
 }
