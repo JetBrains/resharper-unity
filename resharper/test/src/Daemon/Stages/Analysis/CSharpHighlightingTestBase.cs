@@ -6,11 +6,11 @@ using JetBrains.ReSharper.Psi;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
 {
     public class CSharpHighlightingTestBase<T> : CSharpHighlightingTestBase
-    { 
+    {
         protected sealed override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {
             return highlighting is T;
-        }        
+        }
     }
 }
