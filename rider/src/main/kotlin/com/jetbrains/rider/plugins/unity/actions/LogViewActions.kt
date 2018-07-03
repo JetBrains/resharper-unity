@@ -9,11 +9,11 @@ import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.solution
 import java.io.File
 
-class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction("Open Unity Editor Log", "", UnityIcons.Unity.UnityEdit) {
+class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction("Open Unity Editor Log", "", UnityIcons.Actions.OpenEditorLog) {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        var f = project.solution.rdUnityModel.editorLogPath.valueOrNull
+        val f = project.solution.rdUnityModel.editorLogPath.valueOrNull
         if (f!=null)
         {
             val vf = VfsUtil.findFileByIoFile(File(f), true)
@@ -26,11 +26,11 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction("Open Unity Editor
     }
 }
 
-class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction("Open Unity Player Log", "", UnityIcons.Unity.UnityEdit) {
+class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction("Open Unity Player Log", "", UnityIcons.Actions.OpenPlayerLog) {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        var f = project.solution.rdUnityModel.playerLogPath.valueOrNull
+        val f = project.solution.rdUnityModel.playerLogPath.valueOrNull
         if (f!=null)
         {
             val vf = VfsUtil.findFileByIoFile(File(f), true)

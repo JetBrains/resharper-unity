@@ -6,7 +6,7 @@ import com.jetbrains.rider.plugins.unity.util.UnityIcons
 object CgFileType : RiderLanguageFileTypeBase(CgLanguage) {
     override fun getDefaultExtension() = "cginc"
     override fun getDescription() = "Cg file"
-    override fun getIcon() = UnityIcons.Icons.ShaderLabFile
+    override fun getIcon() = UnityIcons.FileTypes.Cg
     override fun getName() = "Cg"
 }
 

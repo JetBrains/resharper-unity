@@ -29,9 +29,8 @@ repositories {
 }
 
 dependencies {
-    reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "LATEST-TRUNK-SNAPSHOT", ext: "zip"
+    reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "2018.2-SNAPSHOT", ext: "zip"
 }
-
 
 apply plugin: 'com.jetbrains.rdgen'
 

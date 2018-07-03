@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
@@ -23,11 +22,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         }
 
         protected abstract IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, IShaderLabFile file);
-
-        public ErrorStripeRequest NeedsErrorStripe(IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
-        {
-            throw new InvalidOperationException("This API is obsolete");
-        }
 
         protected virtual bool IsSupported(IPsiSourceFile sourceFile)
         {
