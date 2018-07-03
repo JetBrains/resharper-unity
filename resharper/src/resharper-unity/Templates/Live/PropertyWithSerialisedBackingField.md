@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InCSharpTypeMember(minimumLanguageVersion=2.0)
+scopes: InCSharpTypeMember(minimumLanguageVersion=2.0);MustBeInUnityType
 parameterOrder: type#1, propertyName, fieldName
 propertyName-expression: suggestVariableName()
 fieldName-expression: decapitalize(propertyName)
