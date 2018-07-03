@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
 {
-    // TODO: I don't know when this gets used
+    // Finds the nodes that can contain text. Used in a rename operation when "search in text and comments" is enabled
     public class ShaderLabTextOccurrenceSearcher : TextOccurrenceSearcherBase<ShaderLabLanguage>, IDomainSpecificSearcher
     {
         public ShaderLabTextOccurrenceSearcher(IEnumerable<IDeclaredElement> elements)
@@ -22,7 +22,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
 
         protected override Predicate<ITreeNode> Predicate
         {
-            get { return node => true; }
+            get
+            {
+                // Allow finding text in comments and string literals. The only string literals in a ShaderLab file are
+                // Shader/fallback names, display name for properties, tag name/values. We might want to revisit this
+                // later, when some of those names have references on them, but this is good enough for now.
+                return node => node is ICommentNode || node.GetTokenType()?.IsStringLiteral == true;
+            }
         }
     }
 }
