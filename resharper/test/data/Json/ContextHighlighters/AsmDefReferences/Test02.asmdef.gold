@@ -1,0 +1,10 @@
+﻿{
+  "name": "|Test01|(0:FromRef)",
+  "references": [
+    "|Test01|(1:FromRef)"
+  ]
+}
+
+---------------------------------------------------------
+(0:FromRef): ReSharper Usage of element under cursor
+(1:FromRef): ReSharper Usage of element under cursor

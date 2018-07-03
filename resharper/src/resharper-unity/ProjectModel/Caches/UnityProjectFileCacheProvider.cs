@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
+using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
@@ -15,8 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
     [SolutionComponent]
     public class UnityProjectFileCacheProvider : IProjectFileDataProvider<UnityProjectDataCache>
     {
-        private static readonly char[] SymbolSeparator = { ';', ',' };
-        private static readonly Regex VersionRegex = new Regex(@"UNITY_(?<major>\d+)_(?<minor>\d+)");
+        private static readonly char[] ourSymbolSeparator = { ';', ',' };
+        private static readonly Regex ourVersionRegex = new Regex(@"UNITY_(?<major>\d+)_(?<minor>\d+)");
 
         private readonly ISolution mySolution;
         private readonly IProjectFileDataCache myCache;
@@ -33,7 +34,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
 
         public void RegisterDataChangedCallback(Lifetime lifetime, FileSystemPath projectLocation, Action action)
         {
-            myCallbacks.Add(lifetime, projectLocation, action);
+            // Make sure we have a valid project file location to key off. This will be empty for e.g. solution folders,
+            // Misc project and most importantly, tests
+            if (!projectLocation.IsEmpty)
+                myCallbacks.Add(lifetime, projectLocation, action);
         }
 
         public bool IsLangVersionExplicitlySpecified(IProject project)
@@ -42,7 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             return data != null && data.LangVersionExplicitlySpecified;
         }
 
-        public Version GetUnityVersion(IProject project)
+        [CanBeNull]
+        public Version GetUnityVersion([NotNull] IProject project)
         {
             var data = myCache.GetData(this, project);
             return data?.UnityVersion;
@@ -84,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                 return UnityProjectDataCache.Empty;
 
             var explicitLangVersion = false;
-            Version unityVersion = null;
+            var unityVersion = new Version(0, 0);
 
             foreach (XmlNode propertyGroup in documentElement.GetElementsByTagName("PropertyGroup"))
             {
@@ -106,23 +111,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                     unityVersion = GetVersionFromDefines(defines.InnerText, unityVersion);
             }
 
-            if (unityVersion == null)
-                unityVersion = new Version(0, 0);
-
             return new UnityProjectDataCache(unityVersion, explicitLangVersion);
         }
 
-        public static Version GetVersionFromDefines(string defines, Version unityVersion)
+        public static Version GetVersionFromDefines(string defines, [NotNull] Version unityVersion)
         {
-            foreach (var constant in defines.Split(SymbolSeparator, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var constant in defines.Split(ourSymbolSeparator, StringSplitOptions.RemoveEmptyEntries))
             {
                 var name = constant.Trim();
-                var match = VersionRegex.Match(name);
+                var match = ourVersionRegex.Match(name);
                 if (match.Success)
                 {
                     var major = int.Parse(match.Groups["major"].Value);
                     var minor = int.Parse(match.Groups["minor"].Value);
-                    unityVersion = new Version(major, minor);
+
+                    // TODO: Perhaps we should also capture maintenance version
+                    // If we do, we need to update API range checks, because those are only major/minor, and the actual
+                    // version (e.g. 2018.1.1) would be larger than the API version (2018.1)
+
+                    var newVersion = new Version(major, minor);
+                    if (newVersion > unityVersion)
+                        unityVersion = newVersion;
                 }
             }
             return unityVersion;
@@ -130,8 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
 
         public Action OnDataChanged(FileSystemPath projectFileLocation, UnityProjectDataCache oldData, UnityProjectDataCache newData)
         {
-            Action action;
-            myCallbacks.TryGetValue(projectFileLocation, out action);
+            myCallbacks.TryGetValue(projectFileLocation, out var action);
             return action;
         }
     }

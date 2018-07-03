@@ -1,0 +1,4 @@
+{
+  "name": "Ref2",
+  "references": [ "Ref1" ]
+}

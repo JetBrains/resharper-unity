@@ -1,0 +1,6 @@
+{
+  "name": "Test01",
+  "references": [
+    "{caret}"
+  ]
+}

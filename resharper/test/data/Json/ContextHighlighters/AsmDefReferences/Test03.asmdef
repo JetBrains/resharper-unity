@@ -1,0 +1,6 @@
+{
+  "name": "Te{caret:NameOnly}st01",
+  "references": [
+    "Tes{caret:Unresolved}t02"
+  ]
+}

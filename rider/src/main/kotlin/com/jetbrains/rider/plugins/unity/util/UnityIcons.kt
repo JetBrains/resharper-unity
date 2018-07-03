@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
+import com.jetbrains.rider.icons.ReSharperPsiJavaScriptIcons
 
 class UnityIcons {
     class Icons {
@@ -28,6 +29,9 @@ class UnityIcons {
 
             @JvmField
             val Cg = ShaderLab
+
+            @JvmField
+            val AsmDef = ReSharperPsiJavaScriptIcons.Json
         }
     }
 

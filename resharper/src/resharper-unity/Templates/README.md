@@ -6,6 +6,7 @@
 
 Description |
 ------------|
+[Assembly Definition File](AsmDef.md) |
 [Behaviour C# Script](MonoBehaviour.md) |
 [Edit Mode Test](EditModeTest.md) |
 [Image Effect Shader](ImageEffectShader.md) |

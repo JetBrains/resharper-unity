@@ -1,0 +1,13 @@
+﻿{
+  "name": "thisAsm",
+  "references": [ "|unresolvedAsm|(0)" ],
+  "something": {
+    "name": "unresolvedAsm"
+  },
+  "whatever": {
+    "references": [ "thisAsm" ]
+  }
+}
+
+------------------------------------------------
+0: result=ASMDEF_UNRESOLVED_REFERENCED_PROJECT_ERROR declaredElem=null

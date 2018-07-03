@@ -1,0 +1,7 @@
+{
+    "options": [
+        "${RENAME_FILE:true}",
+        "${NEW_NAME:RenameFile_renamed}"
+    ],
+    "name": "Rename{caret}File"
+}
