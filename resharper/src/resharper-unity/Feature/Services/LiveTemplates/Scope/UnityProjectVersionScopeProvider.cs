@@ -11,7 +11,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope
 {
     [ShellComponent]
-    public class UnityProjectVersionProvider : IScopeProvider
+    public class UnityProjectVersionScopeProvider : IScopeProvider
     {
         public IEnumerable<ITemplateScopePoint> ProvideScopePoints(TemplateAcceptanceContext context)
         {
@@ -24,29 +24,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope
 
             var version = context.Solution.GetComponent<UnityVersion>().GetActualVersion(project);
             if (version.Major != 0)
-                yield return new InProjectWithUnityVersion(version);
+                yield return new MustBeInProjectWithUnityVersion(version);
         }
 
         public ITemplateScopePoint ReadFromXml(XmlElement scopeElement)
         {
-            return scopeElement.GetAttribute(TemplateScopePoint.AttrType) != InProjectWithUnityVersion.TypeName
+            return scopeElement.GetAttribute(TemplateScopePoint.AttrType) != MustBeInProjectWithUnityVersion.TypeName
                 ? null
-                : new InProjectWithUnityVersion(Version.Parse(scopeElement.GetAttribute(InProjectWithUnityVersion.VersionProperty)));
+                : new MustBeInProjectWithUnityVersion(Version.Parse(scopeElement.GetAttribute(MustBeInProjectWithUnityVersion.VersionProperty)));
         }
 
         public ITemplateScopePoint CreateScope(Guid scopeGuid, string typeName,
             IEnumerable<Pair<string, string>> customProperties)
         {
-            if (typeName != InProjectWithUnityVersion.TypeName)
+            if (typeName != MustBeInProjectWithUnityVersion.TypeName)
                 return null;
 
-            var versionString = customProperties.Where(p => p.First == InProjectWithUnityVersion.VersionProperty).Select(p => p.Second)
+            var versionString = customProperties.Where(p => p.First == MustBeInProjectWithUnityVersion.VersionProperty).Select(p => p.Second)
                 .FirstOrDefault();
             if (versionString == null)
                 return null;
 
             var version = Version.Parse(versionString);
-            return new InProjectWithUnityVersion(version) {UID = scopeGuid};
+            return new MustBeInProjectWithUnityVersion(version) {UID = scopeGuid};
         }
     }
 }

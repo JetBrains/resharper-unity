@@ -4,6 +4,7 @@ image: UnityCSharp
 type: File
 reformat: True
 shortenReferences: True
+categories: unity
 customProperties: Extension=cs, FileName=MonoBehaviour, ValidateFileName=True
 scopes: InUnityCSharpProject
 parameterOrder: HEADER, (CLASS), (NAMESPACE)

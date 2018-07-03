@@ -1,22 +1,26 @@
 ---
-guid: 0bcdbc13-d26e-4512-9750-fb930f532e88
+guid: 7b7fa2c7-0ee5-4d4f-bb1f-ddbeacdbfc94
 image: UnityCSharp
 type: File
 reformat: True
 shortenReferences: True
-customProperties: Extension=cs, FileName=PlayModeTest, ValidateFileName=True
-scopes: InUnityCSharpAssetsFolder
+categories: unity
+customProperties: Extension=cs, FileName=EditModeTest, ValidateFileName=True
+scopes: InUnityCSharpEditorFolder;InUnityCSharpFirstpassEditorFolder
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
 NAMESPACE-expression: fileDefaultNamespace()
 ---
 
-# Play Mode Test
+# Edit Mode Test
 
 ```
-$HEADER$namespace $NAMESPACE$ {
+$HEADER$using UnityEditor;
+
+namespace $NAMESPACE$ {
   public class $CLASS$ {
+  
     [NUnit.Framework.Test]
     public void $CLASS$SimplePasses() {
       // Use the Assert class to test conditions.
@@ -34,3 +38,4 @@ $HEADER$namespace $NAMESPACE$ {
   }
 }
 ```
+

@@ -4,6 +4,7 @@ image: UnityShaderLab
 type: File
 reformat: True
 shortenReferences: True
+categories: unity
 customProperties: Extension=shader, FileName=NewSurfaceShader, ValidateFileName=True
 scopes: InUnityCSharpAssetsFolder
 parameterOrder: (NAME)
