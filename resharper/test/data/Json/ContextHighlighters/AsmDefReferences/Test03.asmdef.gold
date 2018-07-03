@@ -1,0 +1,9 @@
+﻿{
+  "name": "|Test01|(0:NameOnly)",
+  "references": [
+    "Test02"
+  ]
+}
+
+---------------------------------------------------------
+(0:NameOnly): ReSharper Usage of element under cursor

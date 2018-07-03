@@ -1,12 +1,16 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.util.lifetime.Lifetime
+import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.fire
 
 class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
     private val lock = Object()
+    private val maxItemsCount = 10000
 
     inner class TypeFilters {
         private var showErrors = true
@@ -60,6 +64,21 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
         val onChanged = Signal.Void()
     }
 
+    inner class TextFilter {
+        private var searchTerm = ""
+
+        fun getShouldBeShown(text: String):Boolean {
+            return text.contains(searchTerm)
+        }
+
+        fun setPattern(value: String) {
+            synchronized(lock) { searchTerm = value }
+            onChanged.fire()
+        }
+
+        val onChanged = Signal.Void()
+    }
+
     inner class Events {
         val allEvents = ArrayList<RdLogEvent>()
 
@@ -72,39 +91,51 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
 
         fun addEvent(event: RdLogEvent) {
             synchronized(lock) {
-                if (allEvents.count()>1000)
+                if (allEvents.count() > maxItemsCount)
                 {
                     clear()
                 }
                 allEvents.add(event)
             }
-            onChanged.fire()
+
+            if (isVisibleEvent(event))
+                onAdded.fire(event)
         }
 
         val onChanged = Signal.Void()
     }
 
+    private fun isVisibleEvent(event: RdLogEvent):Boolean
+    {
+        return typeFilters.getShouldBeShown(event.type) && modeFilters.getShouldBeShown(event.mode) && textFilter.getShouldBeShown(event.message);
+    }
+
     private fun getVisibleEvents(): List<RdLogEvent> {
         synchronized(lock) {
             return events.allEvents
-                .filter { typeFilters.getShouldBeShown(it.type) && modeFilters.getShouldBeShown(it.mode) }
+                .filter { isVisibleEvent(it) }
         }
     }
 
     val typeFilters = TypeFilters()
     val modeFilters = ModeFilters()
+    val textFilter = TextFilter()
     val events = Events()
+    var mergeSimilarItems = Property<Boolean>(false)
 
+    val onAdded = Signal<RdLogEvent>()
     val onChanged = Signal<List<RdLogEvent>>()
     val onCleared = Signal.Void()
 
     fun fire() = onChanged.fire(getVisibleEvents())
 
-    var selectedItem : RdLogEvent? = null
+    var selectedItem : LogPanelItem? = null
 
     init {
         typeFilters.onChanged.advise(lifetime) { fire() }
         modeFilters.onChanged.advise(lifetime) { fire() }
+        textFilter.onChanged.advise(lifetime) { fire() }
         events.onChanged.advise(lifetime) { fire() }
+        mergeSimilarItems.advise(lifetime) { fire() }
     }
 }

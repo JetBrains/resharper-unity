@@ -73,6 +73,14 @@ public class |TypeParameters|(23) : MonoBehaviour
     }
 }
 
+public class |AllWrong|(26) : AssetPostprocessor
+{
+    public int ||OnGeneratedCSProjectFiles|(27)|(28)<T1, T2>(int value)
+    {
+        return 42;
+    }
+}
+
 ---------------------------------------------------------
 (0): Unity Gutter Icon: Unity scripting component
 (1): Unity Gutter Icon: Unity event function
@@ -112,8 +120,12 @@ Callback for setting up animation IK (inverse kinematics).
 (16): Unity Gutter Icon: Unity scripting component
 (17): ReSharper Warning: Missing static modifier
 (18): Unity Gutter Icon: Unity event function
+
+This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
 (19): ReSharper Warning: Missing static modifier
 (20): Unity Gutter Icon: Unity event function
+
+This callback is used by UnityVS to take over project generation from Unity
 (21): ReSharper Warning: Incorrect static modifier
 (22): Unity Gutter Icon: Unity event function
 (23): Unity Gutter Icon: Unity scripting component
@@ -122,3 +134,8 @@ Callback for setting up animation IK (inverse kinematics).
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
 (25): ReSharper Warning: Incorrect type parameters
+(26): Unity Gutter Icon: Unity scripting component
+(27): ReSharper Warning: Incorrect method signature. Expected 'static void OnGeneratedCSProjectFiles()'
+(28): Unity Gutter Icon: Unity event function
+
+This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.

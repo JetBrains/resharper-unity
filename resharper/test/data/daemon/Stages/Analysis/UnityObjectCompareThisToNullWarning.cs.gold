@@ -1,0 +1,46 @@
+﻿using System;
+using UnityEngine;
+
+public class MyMonoBehaviour : MonoBehaviour
+{
+    public void CompareToNullWithCustomEqualityOperator()
+    {
+        if (this == null)
+        {
+            Console.WriteLine();
+        }
+    }
+
+    public void CompareToNullWithCustomInequalityOperator()
+    {
+        if (this != null)
+        {
+            Console.WriteLine();
+        }
+    }
+}
+
+public class PlainOldClass
+{
+    public void CompareToNullWithStandardEqualityOperator()
+    {
+        if (|this == null|(0))
+        |{
+            |Console.WriteLine();|(2)
+        }|(1)
+    }
+
+    public void CompareToNullWithStandardInequalityOperator()
+    {
+        if (|this != null|(3))
+        {
+            Console.WriteLine();
+        }
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Expression is always false
+(1): ReSharper Dead Code: Code is heuristically unreachable
+(2):<overlapped> ReSharper Dead Code: Code is heuristically unreachable
+(3): ReSharper Warning: Expression is always true

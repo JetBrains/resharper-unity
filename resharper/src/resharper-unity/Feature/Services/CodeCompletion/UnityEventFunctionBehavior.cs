@@ -99,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
                 configureContext: context =>
                 {
                     var inputElements = from e in context.ProvidedElements.Cast<GeneratorDeclaredElement<IMethod>>()
-                        where myEventFunction.Match(e.DeclaredElement) != EventFunctionMatch.NoMatch
+                        where myEventFunction.Match(e.DeclaredElement) != MethodSignatureMatch.NoMatch
                         select e;
 
                     context.InputElements.Clear();

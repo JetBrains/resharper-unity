@@ -9,13 +9,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\InvalidTypeParameters\Availability";
 
+        [Ignore]
         [Test] public void MonoBehaviourMethod() { DoNamedTest(); }
         [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
         [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 
     [TestUnity]
-    public class InvalidTypeParametersFixTests : CSharpQuickFixTestBase<InvalidTypeParametersFix>
+    public class InvalidTypeParametersFixTests : CSharpQuickFixTestBase<IncorrectMethodSignatureQuickFix>
     {
         protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\InvalidTypeParameters";
 

@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.Annotations;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
@@ -26,8 +27,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             var fieldDeclarations = FieldDeclarationNavigator.GetByAttribute(attribute);
             foreach (var fieldDeclaration in fieldDeclarations)
             {
-                if (fieldDeclaration.DeclaredElement.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS,
-                    false))
+                if (!(fieldDeclaration.DeclaredElement is IField field))
+                    continue;
+
+                if (!Api.IsUnityField(field))
                 {
                     consumer.AddHighlighting(new RedundantSerializeFieldAttributeWarning(attribute));
                     return;

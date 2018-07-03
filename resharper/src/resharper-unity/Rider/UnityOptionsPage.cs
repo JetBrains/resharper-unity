@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin, "Install or update Rider plugin automatically");
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh Assets in Unity");
-
+            
             Header("ShaderLab");
 
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion, "Enable simple word-based completion in ShaderLab files");

@@ -23,10 +23,7 @@
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <RiderSDKVersion Condition=" '$(RiderSDKVersion)' == '' ">2018.2-SNAPSHOT*</RiderSDKVersion>
-    <ReSharperSDKVersion>2018.1-SNAPSHOT*</ReSharperSDKVersion>
-  </PropertyGroup>  
-
   <Import Project="..\Packaging.props" />
+  <Import Project="JetBrains.Rider.SDK.generated.props" />
+  <Import Project="JetBrains.ReSharper.SDK.generated.props" />
 </Project>

@@ -5,7 +5,7 @@ using UnityEditor;
 [assembly: HideInInspector]
 
 [HideInInspector]
-public class Foo
+public class Foo : MonoBehaviour
 {
     [HideInInspector]
     public Foo()

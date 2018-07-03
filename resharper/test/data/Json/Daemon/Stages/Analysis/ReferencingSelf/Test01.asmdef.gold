@@ -1,0 +1,9 @@
+﻿{
+  "name": "Test01",
+  "references": [
+    "|Test01|(0)"
+  ]
+}
+
+---------------------------------------------------------
+(0): ReSharper Underlined Error Highlighting: Cannot reference self

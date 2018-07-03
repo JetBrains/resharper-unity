@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
 
             var unityVersion = myUnityVersion.GetActualVersion(context.Project);
             var eventFunctions = myUnityApi.GetEventFunctions(typeElement, unityVersion)
-                .Where(f => typeElement.Methods.All(m => f.Match(m) == EventFunctionMatch.NoMatch)).ToArray();
+                .Where(f => typeElement.Methods.All(m => f.Match(m) == MethodSignatureMatch.NoMatch)).ToArray();
 
             var classDeclaration = context.ClassDeclaration;
             var factory = CSharpElementFactory.GetInstance(classDeclaration);

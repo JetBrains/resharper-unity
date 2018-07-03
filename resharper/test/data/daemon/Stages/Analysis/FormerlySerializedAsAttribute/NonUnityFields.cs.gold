@@ -1,0 +1,17 @@
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test01
+{
+    [|FormerlySerializedAs("foo")|(0)] private int myNotUnityType;
+}
+
+public class |Test02|(1) : MonoBehaviour
+{
+    [|FormerlySerializedAs("foo")|(2)] private int myNotSerialized;
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
+(1): Unity Gutter Icon: Unity scripting component
+(2): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute

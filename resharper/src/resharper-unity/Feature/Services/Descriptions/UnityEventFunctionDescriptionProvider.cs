@@ -21,10 +21,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
         public RichTextBlock GetElementDescription(IDeclaredElement element, DeclaredElementDescriptionStyle style,
             PsiLanguageType language, IPsiModule module = null)
         {
-            var method = element as IMethod;
-            if (method != null && (method.GetContainingType()?.IsFromUnityProject() ?? false))
+            UnityEventFunction eventFunction;
+
+            if (element is IMethod method && (method.GetContainingType()?.IsFromUnityProject() ?? false))
             {
-                var eventFunction = myUnityApi.GetUnityEventFunction(method);
+                eventFunction = myUnityApi.GetUnityEventFunction(method);
                 if (eventFunction?.Description != null)
                 {
                     var richTextBlock = new RichTextBlock(eventFunction.Description);
@@ -38,39 +39,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
 
             var parameter = element as IParameter;
             var owner = parameter?.ContainingParametersOwner as IMethod;
-            if (owner != null && (owner.GetContainingType()?.IsFromUnityProject() ?? false))
+            if (owner == null || owner.GetContainingType()?.IsFromUnityProject() == false)
+                return null;
+
+            eventFunction = myUnityApi.GetUnityEventFunction(owner, out var match);
+            if (eventFunction == null || (match & MethodSignatureMatch.IncorrectParameters) ==
+                MethodSignatureMatch.IncorrectParameters)
             {
-                EventFunctionMatch match;
-                var eventFunction = myUnityApi.GetUnityEventFunction(owner, out match);
-                if (eventFunction == null || (match & EventFunctionMatch.MatchingSignature) == 0)
-                    return null;
+                return null;
+            }
 
-                var eventFunctionParameter = eventFunction.GetParameter(parameter.ShortName);
-                if (eventFunctionParameter == null)
+            var eventFunctionParameter = eventFunction.GetParameter(parameter.ShortName);
+            if (eventFunctionParameter == null)
+            {
+                var parameters = parameter.ContainingParametersOwner.Parameters;
+                for (var i = 0; i < parameters.Count; i++)
                 {
-                    var parameters = parameter.ContainingParametersOwner.Parameters;
-                    for (var i = 0; i < parameters.Count; i++)
+                    if (Equals(parameters[i], parameter))
                     {
-                        if (Equals(parameters[i], parameter))
-                        {
-                            eventFunctionParameter = eventFunction.Parameters[i];
-                            break;
-                        }
+                        eventFunctionParameter = eventFunction.Parameters[i];
+                        break;
                     }
                 }
+            }
 
-                if (eventFunctionParameter?.Description != null)
+            if (eventFunctionParameter?.Description != null)
+            {
+                var richTextBlock = new RichTextBlock(eventFunctionParameter.Description);
+                if (eventFunctionParameter.IsOptional)
                 {
-                    var richTextBlock = new RichTextBlock(eventFunctionParameter.Description);
-                    if (eventFunctionParameter.IsOptional)
-                    {
-                        if (string.IsNullOrEmpty(eventFunctionParameter.Justification))
-                            richTextBlock.Add("This parameter is optional and can be removed if not used.");
-                        else
-                            richTextBlock.Add($"This parameter is optional: {eventFunctionParameter.Justification}");
-                    }
-                    return richTextBlock;
+                    if (string.IsNullOrEmpty(eventFunctionParameter.Justification))
+                        richTextBlock.Add("This parameter is optional and can be removed if not used.");
+                    else
+                        richTextBlock.Add($"This parameter is optional: {eventFunctionParameter.Justification}");
                 }
+
+                return richTextBlock;
             }
 
             return null;

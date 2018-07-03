@@ -1,0 +1,7 @@
+﻿// ${COMPLETE_ITEM:Ref01}
+{
+  "name": "Test01",
+  "references": [
+    "Ref01{caret}"
+  ]
+}

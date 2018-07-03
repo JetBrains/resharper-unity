@@ -15,6 +15,20 @@
   </member>
 
 
+  <!-- UnityEngine.Object -->
+  <!-- Tell R#'s analysis engine to ignore our custom equality members. See RSRP-468462 -->
+  <member name="M:UnityEngine.Object.op_Equality(UnityEngine.Object,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>x: null, y: null =&gt; true</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Object.op_Inequality(UnityEngine.Object,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>x: null, y: null =&gt; false</argument>
+    </attribute>
+  </member>
+
+
   <!-- UnityEngine.GameObject -->
   <member name="M:UnityEngine.GameObject.AddComponent``1">
     <typeparameter name="T">

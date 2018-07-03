@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         private bool IsEventFunction(IMethod method)
         {
             Api.GetUnityEventFunction(method, out var match);
-            return match == EventFunctionMatch.ExactMatch;
+            return match == MethodSignatureMatch.ExactMatch;
         }
 
         private bool HasEmptyBody(IMethodDeclaration method)

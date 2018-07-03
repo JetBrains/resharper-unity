@@ -1,0 +1,10 @@
+﻿using System;
+using UnityEngine;
+using JetBrains.Annotations;
+
+public class Foo : MonoBehaviour
+{
+  [NotNull] public int myValue;
+  [NonSerialized] [NotNull] public int my{caret}Value2;
+  [NotNull] public int myValue3;
+}

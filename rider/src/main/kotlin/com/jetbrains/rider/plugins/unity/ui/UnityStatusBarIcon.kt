@@ -1,11 +1,8 @@
 package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.execution.runners.ExecutionUtil
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
-import com.intellij.ui.AnimatedIcon
-import com.intellij.ui.LayeredIcon
 import com.intellij.util.Consumer
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_IDLE
@@ -24,8 +21,10 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
         const val StatusBarIconId = "UnityStatusIcon"
     }
 
-    private val icon = UnityIcons.Status.UnityStatus
-    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Icons.EditorConnectionStatus)
+    private val statusIcon = UnityIcons.Status.UnityStatus
+    private val connectedIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Status.UnityStatus)
+    private val playIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Status.UnityStatusPlay)
+    private val progressIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Status.UnityStatusProgress)
     private var myStatusBar: StatusBar? = null
 
     override fun ID(): String {
@@ -45,31 +44,21 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
     }
 
     override fun getTooltipText(): String? {
-        if(host.sessionInitialized.value)
-            return "Connected to Unity Editor"
+        return if(host.sessionInitialized.value)
+            "Connected to Unity Editor"
         else
-            return "No Unity Editor connection\nLoad the project in the Unity Editor to enable advanced functionality"
+            "No Unity Editor connection\nLoad the project in the Unity Editor to enable advanced functionality"
     }
 
-    override fun getClickConsumer(): Consumer<MouseEvent>? {
-        return Consumer {event ->
-            if(event.button == MouseEvent.BUTTON1 || event.button == MouseEvent.BUTTON2)
-                onClick(event)
-        }
-    }
-
-    private fun onClick(e: MouseEvent) {
-    }
+    override fun getClickConsumer(): Consumer<MouseEvent>? = null
 
     override fun getIcon(): Icon {
-        when (host.unityState.value) {
-            DISCONNECTED -> return icon
-            CONNECTED_IDLE -> return connectedIcon
-            CONNECTED_PLAY -> return LayeredIcon(connectedIcon, UnityIcons.Status.UnityStatusPlay)
-            CONNECTED_REFRESH -> return LayeredIcon(connectedIcon, UnityIcons.Status.UnityStatusProgress)
+        return when (host.unityState.value) {
+            DISCONNECTED -> statusIcon
+            CONNECTED_IDLE -> connectedIcon
+            CONNECTED_PLAY -> playIcon
+            CONNECTED_REFRESH -> progressIcon
+            else -> statusIcon
         }
-
-        return UnityIcons.Icons.AttachEditorDebugConfiguration
     }
 }
-

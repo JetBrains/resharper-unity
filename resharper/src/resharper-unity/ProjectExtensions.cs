@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.Util;
-
-#if RIDER
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
-#endif
 using JetBrains.Util.Reflection;
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -54,16 +50,29 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             return project != null && project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
-
-        [Obsolete("Assets folder can be found in other solutions. Use IsUnitySolution instead.")]
-        public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionDir)
+        
+        [Obsolete("Unused. Refer to #581")]
+        public static bool IsSolutionGeneratedByUnity(FileSystemPath solutionFilePath)
         {
+            var solutionDir = solutionFilePath.Directory;
             var assetsFolder = solutionDir.CombineWithShortName(AssetsFolder);
             var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectSettingsFolder);
             var libraryFolder = solutionDir.CombineWithShortName(LibraryFolder);
             return assetsFolder.IsAbsolute && assetsFolder.ExistsDirectory 
                    && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
-                   && libraryFolder.IsAbsolute && libraryFolder.ExistsDirectory;
+                   && libraryFolder.IsAbsolute && libraryFolder.ExistsDirectory
+                   && solutionFilePath.NameWithoutExtension == solutionDir.Name;
+        }
+        
+        public static bool IsAbleToEstablishProtocolConnectionWithUnity(FileSystemPath solutionFilePath)
+        {
+            var solutionDir = solutionFilePath.Directory;
+            var assetsFolder = solutionDir.CombineWithShortName(AssetsFolder);
+            var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectSettingsFolder);
+            var libraryFolder = solutionDir.CombineWithShortName(LibraryFolder);
+            return assetsFolder.IsAbsolute && assetsFolder.ExistsDirectory
+                                           && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
+                                           && libraryFolder.IsAbsolute && libraryFolder.ExistsDirectory;
         }
 
         private static bool ReferencesUnity(IProject project)

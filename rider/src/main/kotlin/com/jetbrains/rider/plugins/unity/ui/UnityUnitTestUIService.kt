@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ui
 
+import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -12,10 +13,9 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.isConnectedToEditor
 import com.jetbrains.rider.isConnectedToEditorLive
-import com.jetbrains.rider.isUnityProject
+import com.jetbrains.rider.isUnityGeneratedProject
 import com.jetbrains.rider.model.UnitTestLaunchPreference
 import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.unitTesting.RiderUnitTestUIService
 import org.jdom.Element
@@ -23,7 +23,7 @@ import javax.swing.JComponent
 
 
 @State(name = "UnityUnitTestConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
-public class UnityUnitTestUIService(project: Project, val propertiesComponent: PropertiesComponent) : RiderUnitTestUIService(project), PersistentStateComponent<Element> {
+class UnityUnitTestUIService(project: Project, val propertiesComponent: PropertiesComponent) : RiderUnitTestUIService(project), PersistentStateComponent<Element> {
     override fun getState(): Element? {
         val element = Element("state")
         val value = getLauncherId(project.solution.rdUnityModel.unitTestPreference.value)
@@ -49,7 +49,7 @@ public class UnityUnitTestUIService(project: Project, val propertiesComponent: P
     }
 
     override fun customizeTopToolBarActionGroup(actionGroup: DefaultActionGroup) {
-        if (project.isUnityProject()) {
+        if (project.isUnityGeneratedProject()) {
             actionGroup.addSeparator()
             actionGroup.add(switchUnitTestLauncherComboBox)
 
@@ -116,7 +116,7 @@ public class UnityUnitTestUIService(project: Project, val propertiesComponent: P
 
             e.presentation.description = getLauncherDescription(currentPreference)
             e.presentation.isEnabledAndVisible = true
-            e.presentation.icon = UnityIcons.General.Settings
+            e.presentation.icon = AllIcons.General.Settings
 
             super.update(e)
         }

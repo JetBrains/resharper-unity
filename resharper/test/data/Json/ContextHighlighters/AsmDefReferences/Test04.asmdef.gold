@@ -1,0 +1,13 @@
+﻿{
+  "name": "|Test01|(0:Errors)",
+  "references": [
+    "|Test01|(1:Errors)", "|Test01|(2:Errors)", "|Test01|(3:Errors)", "|Test01|(4:Errors)"
+  ]
+}
+
+---------------------------------------------------------
+(0:Errors): ReSharper Usage of element under cursor
+(1:Errors): ReSharper Usage of element under cursor
+(2:Errors): ReSharper Usage of element under cursor
+(3:Errors): ReSharper Usage of element under cursor
+(4:Errors): ReSharper Usage of element under cursor

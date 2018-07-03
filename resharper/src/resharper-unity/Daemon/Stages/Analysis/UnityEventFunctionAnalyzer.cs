@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -16,12 +15,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         {
             typeof(UnityGutterMarkInfo),
             typeof(DuplicateEventFunctionWarning),
+            typeof(IncorrectSignatureWarning),
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
             typeof(InvalidParametersWarning),
             typeof(InvalidTypeParametersWarning)
         })]
-    public class UnityEventFunctionAnalyzer : UnityElementProblemAnalyzer<IMemberOwnerDeclaration>
+    public class UnityEventFunctionAnalyzer : MethodSignatureProblemAnalyzerBase<IMemberOwnerDeclaration>
     {
         public UnityEventFunctionAnalyzer(UnityApi unityApi)
             : base(unityApi)
@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 if (candidates.Count == 1)
                 {
                     // Only one function, mark it as a unity function, even if it's not an exact match
-                    // We'll let other inspections handle invalid signatures. Add inspections
+                    // We'll let other inspections handle invalid signatures
                     var method = candidates[0].Method;
                     AddGutterMark(consumer, method, function);
                     AddMethodSignatureInspections(consumer, method, function, candidates[0].Match);
@@ -69,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                     var duplicates = new FrugalLocalList<IMethod>();
                     foreach (var candidate in candidates)
                     {
-                        if (candidate.Match == EventFunctionMatch.ExactMatch)
+                        if (candidate.Match == MethodSignatureMatch.ExactMatch)
                         {
                             AddGutterMark(consumer, candidate.Method, function);
                             hasExactMatch = true;
@@ -124,10 +124,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             consumer.AddHighlighting(highlighting);
         }
 
-        private static void AddMethodSignatureInspections(IHighlightingConsumer consumer, IMethod method,
-            UnityEventFunction function, EventFunctionMatch match)
+        private void AddMethodSignatureInspections(IHighlightingConsumer consumer, IMethod method,
+            UnityEventFunction function, MethodSignatureMatch match)
         {
-            if (match == EventFunctionMatch.NoMatch || match == EventFunctionMatch.ExactMatch)
+            if (match == MethodSignatureMatch.NoMatch || match == MethodSignatureMatch.ExactMatch)
                 return;
 
             var methodSignature = function.AsMethodSignature(method.Module);
@@ -135,16 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             foreach (var declaration in method.GetDeclarations())
             {
                 if (declaration is IMethodDeclaration methodDeclaration)
-                {
-                    if ((match & EventFunctionMatch.MatchingStaticModifier) != EventFunctionMatch.MatchingStaticModifier)
-                        consumer.AddHighlighting(new InvalidStaticModifierWarning(methodDeclaration, methodSignature));
-                    if ((match & EventFunctionMatch.MatchingReturnType) != EventFunctionMatch.MatchingReturnType)
-                        consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, methodSignature));
-                    if ((match & EventFunctionMatch.MatchingSignature) != EventFunctionMatch.MatchingSignature)
-                        consumer.AddHighlighting(new InvalidParametersWarning(methodDeclaration, methodSignature));
-                    if ((match & EventFunctionMatch.MatchingTypeParameters) != EventFunctionMatch.MatchingTypeParameters)
-                        consumer.AddHighlighting(new InvalidTypeParametersWarning(methodDeclaration, methodSignature));
-                }
+                    AddMethodSignatureInspections(consumer, methodDeclaration, methodSignature, match);
             }
         }
 
@@ -153,7 +144,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
             public bool Equals(UnityEventFunction x, UnityEventFunction y)
             {
                 // Function name is enough. We know usage doesn't look at other types
+                // ReSharper disable PossibleNullReferenceException
                 return x.Name == y.Name;
+                // ReSharper restore PossibleNullReferenceException
             }
 
             public int GetHashCode(UnityEventFunction obj)
@@ -165,9 +158,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
         private struct Candidate
         {
             public readonly IMethod Method;
-            public readonly EventFunctionMatch Match;
+            public readonly MethodSignatureMatch Match;
 
-            public Candidate(IMethod method, EventFunctionMatch match)
+            public Candidate(IMethod method, MethodSignatureMatch match)
             {
                 Method = method;
                 Match = match;

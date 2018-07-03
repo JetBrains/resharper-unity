@@ -1,0 +1,4 @@
+﻿{
+    "name": "Foo",
+    "references": [ "zzz" ]
+}

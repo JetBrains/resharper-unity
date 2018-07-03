@@ -11,6 +11,8 @@ import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
@@ -18,10 +20,14 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import com.jetbrains.rider.unitTesting.panels.RiderUnitTestSessionPanel
+import com.jetbrains.rider.util.idea.application
+import net.miginfocom.swing.MigLayout
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.KeyAdapter
@@ -31,7 +37,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.swing.Icon
 import javax.swing.JMenuItem
+import javax.swing.JPanel
 import javax.swing.JPopupMenu
+import javax.swing.event.DocumentEvent
 
 class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
@@ -84,7 +92,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         }
     }
 
-    private fun UnityLogPanelEventList.getDateFromTicks(ticks:Long): Date {
+    private fun getDateFromTicks(ticks: Long): Date {
         val ticksAtEpoch = 621355968000000000L
         val ticksPerMilisecond = 10000
         val date = Date((ticks - ticksAtEpoch) / ticksPerMilisecond)
@@ -104,9 +112,37 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         }
     }
 
+    val searchTextField = LogSmartSearchField().apply {
+        focusGained = {
+            eventList.clearSelection()
+            logModel.selectedItem = null
+        }
+        goToList = {
+            if (eventList.model.size>0) {
+                eventList.selectedIndex = 0
+                IdeFocusManager.getInstance(project).requestFocus(eventList, false)
+                true
+            } else
+                false
+        }
+
+        addDocumentListener(object : DocumentAdapter() {
+            override fun textChanged(e: DocumentEvent?) {
+                application.invokeLater {
+                    logModel.textFilter.setPattern(text)
+                }
+            }
+        })
+    }
+
+    private val listPanel = RiderUI.boxPanel {
+        add(JBScrollPane(eventList))
+        add(searchTextField, "growx, pushx")
+    }
+
     private val mainSplitter = JBSplitter().apply {
         proportion = 1f / 2
-        firstComponent = JBScrollPane(eventList)
+        firstComponent = listPanel
         secondComponent = RiderUI.borderPanel {
             add(console.component, BorderLayout.CENTER)
             console.editor.settings.isCaretRowShown = true
@@ -137,8 +173,30 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
+    private fun addToList(newEvent: RdLogEvent) {
+        if (logModel.mergeSimilarItems.value)
+        {
+            var existing = eventList.riderModel.elements().toList()
+                .filter { it.message == newEvent.message && it.stackTrace==newEvent.stackTrace &&
+                    it.mode == newEvent.mode && it.type ==newEvent.type}.singleOrNull()
+            if (existing == null)
+                eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1))
+            else
+            {
+                var index = eventList.riderModel.indexOf(existing)
+                eventList.riderModel.setElementAt(LogPanelItem(existing.time, existing.type, existing.mode, existing.message, existing.stackTrace, existing.count+1), index)
+            }
+        }
+        else
+            eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1))
+        // on big amount of logs it causes frontend hangs
+//        if (logModel.selectedItem == null) {
+//            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
+//        }
+    }
+
     // TODO: optimize
-    private fun refreshList(newEvents: List<RdLogEvent>) {
+    private fun refreshList(newEvents: List<LogPanelItem>) {
         eventList.riderModel.clear()
         for (event in newEvents) {
             eventList.riderModel.addElement(event)
@@ -146,8 +204,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
         if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
-        } else
-            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
+        }
     }
 
     init {
@@ -158,7 +215,29 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
             mainSplitter.updateUI()
         }
 
-        logModel.onChanged.advise(logModel.lifetime) { refreshList(it) }
+        logModel.onAdded.advise(logModel.lifetime) { addToList(it) }
+        logModel.onChanged.advise(logModel.lifetime) {
+            data class LogItem(
+                val type: RdLogEventType,
+                val mode: RdLogEventMode,
+                val message: String,
+                val stackTrace: String)
+
+            if (logModel.mergeSimilarItems.value)
+            {
+                var list = it
+                    .groupBy() { LogItem(it.type, it.mode, it.message, it.stackTrace) }
+                    .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
+                    .values.toList()
+                refreshList(list)
+            }
+            else
+            {
+                var list = it.map { LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace,1) }
+                refreshList(list)
+            }
+        }
+
         logModel.onCleared.advise(logModel.lifetime) { console.clear() }
         logModel.fire()
     }

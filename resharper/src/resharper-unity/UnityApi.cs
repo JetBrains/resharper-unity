@@ -9,18 +9,6 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
-    [Flags]
-    public enum EventFunctionMatch
-    {
-        NoMatch = 1,
-        MatchingName = 2,
-        MatchingStaticModifier = 4,
-        MatchingSignature = 8,
-        MatchingReturnType = 16,
-        MatchingTypeParameters = 32,
-        ExactMatch = MatchingName | MatchingStaticModifier | MatchingSignature | MatchingReturnType | MatchingTypeParameters
-    }
-
     [SolutionComponent]
     public class UnityApi
     {
@@ -38,9 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type)
+        public IEnumerable<UnityType> GetBaseUnityTypes([CanBeNull] ITypeElement type)
         {
-            if (type.Module is IProjectPsiModule projectPsiModule)
+            if (type?.Module is IProjectPsiModule projectPsiModule)
             {
                 var unityVersion = myUnityVersion.GetActualVersion(projectPsiModule.Project);
                 return GetBaseUnityTypes(type, unityVersion);
@@ -56,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(types, type, unityVersion);
         }
 
-        public bool IsUnityType([NotNull] ITypeElement type)
+        public bool IsUnityType([CanBeNull] ITypeElement type)
         {
             return GetBaseUnityTypes(type).Any();
         }
@@ -66,9 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetUnityEventFunction(method) != null;
         }
 
-        public bool IsUnityField([NotNull] IField field)
+        public bool IsUnityField([CanBeNull] IField field)
         {
-            if (field.IsStatic || field.IsConstant || field.IsReadonly)
+            if (field == null || field.IsStatic || field.IsConstant || field.IsReadonly)
                 return false;
 
             var containingType = field.GetContainingType();
@@ -106,9 +94,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetUnityEventFunction(method, out var _);
         }
 
-        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, out EventFunctionMatch match)
+        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, out MethodSignatureMatch match)
         {
-            match = EventFunctionMatch.NoMatch;
+            match = MethodSignatureMatch.NoMatch;
 
             var projectPsiModule = method.Module as IProjectPsiModule;
             var containingType = method.GetContainingType();
@@ -120,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     foreach (var function in type.GetEventFunctions(unityVersion))
                     {
                         match = function.Match(method);
-                        if (function.Match(method) != EventFunctionMatch.NoMatch)
+                        if (function.Match(method) != MethodSignatureMatch.NoMatch)
                             return function;
                     }
                 }

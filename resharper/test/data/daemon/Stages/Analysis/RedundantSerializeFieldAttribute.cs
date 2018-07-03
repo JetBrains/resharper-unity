@@ -7,4 +7,5 @@ public class Test : MonoBehaviour
     [SerializeField] private int NotRedundant2;
     [SerializeField] [NonSerialized] public int Redundant1;
     [SerializeField] [NonSerialized] private int Redundant1;
+    [SerializeField] private readonly int ReadonlyFieldsAreNotSerialized;
 }

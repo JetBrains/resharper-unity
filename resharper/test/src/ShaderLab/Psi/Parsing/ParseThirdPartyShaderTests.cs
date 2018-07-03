@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
@@ -12,11 +11,8 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework.Utils;
 using JetBrains.Text;
 using JetBrains.Util;
-using NUnit.Framework;
-
-#if RIDER
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
-#endif
+using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
 {

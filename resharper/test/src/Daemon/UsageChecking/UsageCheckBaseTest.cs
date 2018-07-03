@@ -43,10 +43,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.UsageChecking
 
                             var process = new TestHighlightingDumper(file, writer,
                                 DaemonStageManager.GetInstance(Solution).Stages,
-                                (highlighting, settingsStore) =>
+                                (highlighting, psiSourceFile, settingsStore) =>
                                 {
                                     var attribute = highlightingSettingsManager.GetHighlightingAttribute(highlighting);
-                                    var severity = highlightingSettingsManager.GetSeverity(highlighting, file, Solution);
+                                    var severity = highlightingSettingsManager.GetSeverity(highlighting, psiSourceFile, Solution, settingsStore);
                                     return severity != Severity.INFO || attribute.OverlapResolve != OverlapResolveKind.NONE;
                                 },
                                 CSharpLanguage.Instance);
