@@ -5,12 +5,12 @@ using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
 {
-    // Provides the sope points that are valid for the given context
+    // Provides the scope points that are valid for the given context
     [ShellComponent]
     public class UnityProjectScopeProvider : ScopeProvider
     {

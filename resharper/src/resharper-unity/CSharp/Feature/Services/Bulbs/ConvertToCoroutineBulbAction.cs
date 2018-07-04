@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Bulbs
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs
 {
     public class ConvertToCoroutineBulbAction : BulbActionBase
     {

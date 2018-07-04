@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [QuickFix]
     public class CreateFromUsageFix : IQuickFix

@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.Naming.Impl;
 using JetBrains.ReSharper.Psi.Naming.Interfaces;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Naming
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming
 {
     [NamingConsistencyChecker(typeof(CSharpLanguage))]
     public class NamingConsistencyWarningSuppressor : INamingConsistencyChecker

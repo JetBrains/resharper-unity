@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
     public class UnityEventFunctionReferenceFactory : StringLiteralReferenceFactoryBase
     {

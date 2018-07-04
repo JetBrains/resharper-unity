@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IMemberOwnerDeclaration),
         HighlightingTypes = new[]

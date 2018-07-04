@@ -19,7 +19,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion
 {
     [Language(typeof(CSharpLanguage))]
     public class UnityEventFunctionRule : ItemsProviderOfSpecificContext<CSharpCodeCompletionContext>
@@ -178,7 +178,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             // We know we're in a place where we can complete, so now configure what we
             // complete and what we display
             hasReturnType = HasExistingReturnType(identifier, out var typeUsage);
-            hasVisibilityModifier = HasExisitingVisibilityModifier(typeUsage);
+            hasVisibilityModifier = HasExistingVisibilityModifier(typeUsage);
             classDeclaration = GetClassDeclaration(context.NodeInFile);
 
             return classDeclaration != null;
@@ -264,7 +264,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.CodeCompletion
             return false;
         }
 
-        private static bool HasExisitingVisibilityModifier([CanBeNull] ITreeNode typeUsage)
+        private static bool HasExistingVisibilityModifier([CanBeNull] ITreeNode typeUsage)
         {
             if (typeUsage == null || !(typeUsage.GetPreviousMeaningfulSibling() is IModifiersList modifiersList))
                 return false;

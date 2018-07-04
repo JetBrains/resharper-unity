@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
 {
     public class UnityColorTypes
     {

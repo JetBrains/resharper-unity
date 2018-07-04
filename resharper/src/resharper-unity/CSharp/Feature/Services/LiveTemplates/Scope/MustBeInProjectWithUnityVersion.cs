@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
     // If the scope point declares itself mandatory, then a template is unavailable unless the mandatory scope point is
     // valid for the current context. E.g. a file template declares it is available for an InUnityProjectVersion(2017.3)
-    // scope point. If this mandatory scope point is not in the current context, the template is unavailble
+    // scope point. If this mandatory scope point is not in the current context, the template is unavailable
     public class MustBeInProjectWithUnityVersion : InAnyFile, IMandatoryScopePoint
     {
         // Serialised name, so don't use nameof

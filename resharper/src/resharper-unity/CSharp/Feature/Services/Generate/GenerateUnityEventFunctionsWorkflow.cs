@@ -2,9 +2,9 @@ using JetBrains.Application.DataContext;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Generate.Actions;
 using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Logo;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 {
     public class GenerateUnityEventFunctionsWorkflow : GenerateCodeWorkflowBase
     {

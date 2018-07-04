@@ -5,7 +5,7 @@ using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
 {
     [ShellComponent]
     public class UnityTemplatesDefaultSettings : IHaveDefaultSettingsStream

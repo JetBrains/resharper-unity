@@ -16,7 +16,7 @@ using JetBrains.ReSharper.Refactorings.ChangeSignature;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [QuickFix]
     public class IncorrectMethodSignatureQuickFix : QuickFixBase

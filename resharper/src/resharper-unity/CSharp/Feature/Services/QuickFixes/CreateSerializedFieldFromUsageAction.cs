@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.Special;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     public class CreateSerializedFieldFromUsageAction : CreateFieldFromUsageAction
     {

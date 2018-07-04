@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
     [ReferenceProviderFactory]
     public class SyncVarHookReferenceProviderFactory : IReferenceProviderFactory

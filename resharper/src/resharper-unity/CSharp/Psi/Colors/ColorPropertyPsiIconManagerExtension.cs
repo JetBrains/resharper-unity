@@ -2,7 +2,7 @@ using JetBrains.Application.UI.Icons.ColorIcons;
 using JetBrains.ReSharper.Psi;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
 {
     [DeclaredElementIconProvider]
     public class ColorPropertyPsiIconManagerExtension : IDeclaredElementIconProvider

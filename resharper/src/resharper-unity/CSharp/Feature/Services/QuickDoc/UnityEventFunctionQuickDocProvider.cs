@@ -14,7 +14,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickDoc
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
     // Priority must be less than QuickDocLocalSymbolProvider and QuickDocTypeMemberProvider
     [QuickDocProvider(-1)]

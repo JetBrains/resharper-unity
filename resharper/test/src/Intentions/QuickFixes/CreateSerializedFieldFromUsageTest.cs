@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
 using JetBrains.ReSharper.Intentions.CreateFromUsage;
 using JetBrains.ReSharper.Intentions.Legacy;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.TextControl;
 using JetBrains.Util.Special;
 using NUnit.Framework;

@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {
     public abstract class CSharpUnityHighlightingBase : IUnityHighlighting
     {

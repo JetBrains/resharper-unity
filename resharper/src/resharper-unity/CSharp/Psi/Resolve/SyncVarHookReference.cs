@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
     // See https://blogs.unity3d.com/2014/05/29/unet-syncvar/
     // Make a reference from the string literal in a [SyncVar(hook = "OnValueChanged")] declaration.

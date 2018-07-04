@@ -15,7 +15,7 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ContextActions
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
         Name = "Toggle 'HideInInspector' attribute on fields",

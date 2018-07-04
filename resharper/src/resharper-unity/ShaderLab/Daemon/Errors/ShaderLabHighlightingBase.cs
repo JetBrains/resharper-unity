@@ -1,4 +1,4 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
+﻿using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors
 {

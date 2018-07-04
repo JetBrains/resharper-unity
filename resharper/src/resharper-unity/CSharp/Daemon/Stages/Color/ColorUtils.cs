@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Color
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 {
     // See http://stackoverflow.com/a/1626175/88374
     // And http://www.splinter.com.au/converting-hsv-to-rgb-colour-using-c/

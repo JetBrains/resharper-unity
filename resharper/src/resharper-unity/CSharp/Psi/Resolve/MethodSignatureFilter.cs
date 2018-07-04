@@ -2,7 +2,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.Resolve;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
     public class MethodSignatureFilter : SimpleSymbolFilter
     {

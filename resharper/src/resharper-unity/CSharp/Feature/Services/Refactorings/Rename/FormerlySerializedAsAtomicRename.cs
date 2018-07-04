@@ -14,7 +14,7 @@ using JetBrains.ReSharper.Refactorings.Rename;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Refactorings.Rename
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
     public class FormerlySerializedAsAtomicRename : AtomicRenameBase
     {

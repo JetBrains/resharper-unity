@@ -1,11 +1,11 @@
 ﻿using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
 {
     [TestUnity]
-    public class ConvertCoalesingToConditionalQuickFixAvailabilityTest : QuickFixAvailabilityTestBase
+    public class ConvertCoalescingToConditionalQuickFixAvailabilityTest : QuickFixAvailabilityTestBase
     {
         protected override string RelativeTestDataPath => @"Intentions\QuickFixes\ConvertCoalescingToConditional\Availability";
 
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     }
 
     [TestUnity]
-    public class ConvertCoalesingToConditionalQuickFixTests : QuickFixTestBase<ConvertCoalesingToConditionalQuickFix>
+    public class ConvertCoalescingToConditionalQuickFixTests : QuickFixTestBase<ConvertCoalescingToConditionalQuickFix>
     {
         protected override string RelativeTestDataPath => @"Intentions\QuickFixes\ConvertCoalescingToConditional";
         protected override bool AllowHighlightingOverlap => true;

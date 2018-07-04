@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Color;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
 {
     public class UnityColorReference : IColorReference
     {

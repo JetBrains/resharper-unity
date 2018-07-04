@@ -1,5 +1,5 @@
 ﻿using JetBrains.ReSharper.FeaturesTestFramework.Completion;
-using JetBrains.ReSharper.Plugins.Unity.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;

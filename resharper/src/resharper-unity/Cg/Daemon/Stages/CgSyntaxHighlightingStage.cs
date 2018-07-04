@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Cg.Daemon.Errors;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Settings;

@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 {
     [GeneratorElementProvider(GeneratorUnityKinds.UnityEventFunctions, typeof(CSharpLanguage))]
     public class GenerateUnityEventFunctionsProvider : GeneratorProviderBase<CSharpGeneratorContext>

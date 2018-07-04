@@ -3,7 +3,7 @@ using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.Explanatory;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Explanatory
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
 {
     [ShellComponent]
     public class UnityCodeInspectionWikiDataProvider : ICodeInspectionWikiDataProvider

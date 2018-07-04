@@ -6,7 +6,7 @@ using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.VisualElements;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Psi.Colors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
@@ -15,7 +15,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Special;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Color
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 {
     public class UnityColorHighlighterProcess : CSharpIncrementalDaemonStageProcessBase
     {

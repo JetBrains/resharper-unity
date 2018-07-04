@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Resolve;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Daemon
 {
     [Language(typeof(CSharpLanguage))]
     public class StringLiteralReferenceIncorrectSignatureErrorHandler : IResolveProblemHighlighter

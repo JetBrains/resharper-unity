@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
     // Needs to be a void method without parameters. Can be public or private. Must be instance
     // Not a compile time error - output to log as an informational message

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using JetBrains.ReSharper.Psi.Colors;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.Colors
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
 {
     public static class UnityNamedColors
     {

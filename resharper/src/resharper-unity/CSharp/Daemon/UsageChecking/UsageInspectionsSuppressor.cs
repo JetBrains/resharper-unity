@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.UsageChecking
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 {
     [ShellComponent]
     public class UsageInspectionsSuppressor : IUsageInspectionsSuppressor

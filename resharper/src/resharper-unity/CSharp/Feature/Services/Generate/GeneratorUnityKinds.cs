@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Generate
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 {
     public static class GeneratorUnityKinds
     {

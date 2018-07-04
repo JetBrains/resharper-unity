@@ -12,8 +12,7 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
-
-namespace JetBrains.ReSharper.Plugins.Unity.Psi.CodeAnnotations
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 {
     [SolutionComponent]
     public class CustomCodeAnnotationProvider : ICustomCodeAnnotationProvider

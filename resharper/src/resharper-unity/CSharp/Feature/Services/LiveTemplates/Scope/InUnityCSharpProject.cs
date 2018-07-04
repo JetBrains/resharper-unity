@@ -4,9 +4,9 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.LiveTemplates.Scope
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
-    // Defines a scope point, but has no inherent behavour, other than to compare against
+    // Defines a scope point, but has no inherent behaviour, other than to compare against
     // other scope points. A template can declare that it requires this scope point, and
     // the template will only be made available if a ScopeProvider "publishes" this scope
     // point based on the current context (e.g. the project is a Unity project)

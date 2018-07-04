@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Json.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
@@ -14,7 +13,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Json.Psi.Resolve
 {
     public class AsmDefNameReference : CheckedReferenceBase<IJavaScriptLiteralExpression>, ICompletableReference,
-        IUnityReferenceFromStringLiteral
+        IReferenceFromStringLiteral
     {
         public AsmDefNameReference([NotNull] IJavaScriptLiteralExpression owner)
             : base(owner)

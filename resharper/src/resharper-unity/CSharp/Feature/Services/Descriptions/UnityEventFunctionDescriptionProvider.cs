@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.UI.RichText;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Descriptions
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
 {
     // Adds the description to the tooltip for an event function and its parameters.
     // Requires "Colour identifiers" and "Replace Visual Studio tooltips" to

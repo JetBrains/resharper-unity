@@ -4,8 +4,8 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Logo;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
@@ -16,7 +16,7 @@ using JetBrains.Util;
     EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityGutterMark),
     Layer = HighlighterLayer.SYNTAX + 1)]
 
-namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {
     // This class describes the UI of a highlight (gutter icon), while an IHighlighting
     // is an instance of a highlight at a specific location in a document. The IHighlighting
