@@ -40,7 +40,7 @@
     </Compile>
     <ParserGen Include="Cg\Psi\Parsing\Cg.psi" />
     <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
-      <Namespace>JetBrains.ReSharper.Cg.Daemon.Errors</Namespace>
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Errors</Namespace>
       <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
