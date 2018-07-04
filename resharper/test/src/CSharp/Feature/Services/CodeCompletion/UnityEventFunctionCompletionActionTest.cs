@@ -1,7 +1,7 @@
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletion
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCompletion
 {
     [TestUnity]
     public class UnityEventFunctionCompletionActionTest : CodeCompletionTestBase

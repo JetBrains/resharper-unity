@@ -16,7 +16,7 @@ using JetBrains.TextControl;
 using JetBrains.TextControl.DataContext;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.QuickDoc
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.QuickDoc
 {
     [Category("QuickDoc")]
     [TestReferences("System.Core", DoesNotInherit = false)]

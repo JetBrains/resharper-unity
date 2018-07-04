@@ -1,7 +1,7 @@
 ﻿using JetBrains.ReSharper.FeaturesTestFramework.Generate;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Generate
 {
     [TestUnity]
     public class EventFunctionGeneratorTest : GenerateTestBase

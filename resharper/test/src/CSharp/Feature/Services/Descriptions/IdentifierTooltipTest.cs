@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descriptions
 {
     [TestUnity]
     public class IdentifierTooltipTest : IdentifierTooltipTestBase

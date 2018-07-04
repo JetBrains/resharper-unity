@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.UsageChecking
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
 {
     [TestUnity]
     public class UsageInspectionsSuppressorTest : UsageCheckBaseTest

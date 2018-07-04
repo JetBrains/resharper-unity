@@ -13,7 +13,7 @@ using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.Util;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Descriptions
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descriptions
 {
     // The default implementation doesn't handle resolving overlapping highlightings
     [Category("Daemon")]

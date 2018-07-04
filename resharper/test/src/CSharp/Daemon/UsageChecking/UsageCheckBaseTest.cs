@@ -12,7 +12,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.ReSharper.TestFramework.Components.Psi;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.UsageChecking
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
 {
     public abstract class UsageCheckBaseTest : BaseTestWithSingleProject
     {
