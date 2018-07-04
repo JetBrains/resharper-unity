@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel.Propoerties;
 using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
