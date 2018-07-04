@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.SyntaxHighli
 {
     internal class ShaderLabSyntaxHighlightingProcessor : SyntaxHighlightingProcessor
     {
-        protected override string GetAttributeId(TokenNodeType tokenType)
+        public override string GetAttributeId(TokenNodeType tokenType)
         {
             if (tokenType == ShaderLabTokenType.CG_CONTENT)
                 return ShaderLabHighlightingAttributeIds.INJECTED_LANGUAGE_FRAGMENT;

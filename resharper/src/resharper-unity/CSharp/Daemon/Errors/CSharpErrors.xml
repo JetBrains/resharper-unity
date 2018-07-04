@@ -5,9 +5,9 @@
   <Usings>
     JetBrains.ReSharper.Psi.CSharp;
     JetBrains.ReSharper.Psi.CSharp.Tree;
-    JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-    JetBrains.ReSharper.Plugins.Unity.Psi.Resolve
+    JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
+    JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
   </Usings>
   
   <!-- Register the static severity groups. This is mostly used in grouping items in SWEA results.
