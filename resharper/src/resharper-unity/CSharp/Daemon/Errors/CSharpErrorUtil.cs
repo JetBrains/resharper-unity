@@ -4,8 +4,6 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
-// ReSharper disable once CheckNamespace
-// TODO: I want to move all of these things into a top-level CSharp file like ShaderLab and Cg
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors
 {
     public static class CSharpErrorUtil

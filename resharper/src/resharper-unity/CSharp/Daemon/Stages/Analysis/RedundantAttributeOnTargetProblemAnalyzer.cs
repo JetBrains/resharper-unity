@@ -7,7 +7,6 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.IL.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
@@ -91,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Daemon.Stages.Analysis
                 case IEventDeclaration _: return AttributeTargets.Event;
                 case IInterfaceDeclaration _: return AttributeTargets.Interface;
                 case IParameterDeclaration _: return AttributeTargets.Parameter;
-                case IGenericParameterDeclaration _: return AttributeTargets.GenericParameter;
+                case ITypeParameterDeclaration _: return AttributeTargets.GenericParameter;
             }
 
             return AttributeTargets.Assembly;

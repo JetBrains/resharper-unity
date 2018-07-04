@@ -16,12 +16,12 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- C# -->
-    <ErrorsGen Include="Daemon\Errors\CSharpErrors.xml">
+    <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
-      <OutputFile>Daemon\Errors\CSharpErrors.generated.cs</OutputFile>
+      <OutputFile>CSharp\Daemon\Errors\CSharpErrors.generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
-    <Compile Update="Daemon\Errors\CSharpErrors.generated.cs">
+    <Compile Update="CSharp\Daemon\Errors\CSharpErrors.generated.cs">
       <DependentUpon>CSharpErrors.xml</DependentUpon>
     </Compile>
     <!-- Cg language -->
@@ -81,14 +81,11 @@
     <Compile Update="Json\Daemon\Errors\AsmDefErrors.generated.cs">
       <DependentUpon>AsmDefErrors.xml</DependentUpon>
     </Compile>
-    <Compile Remove="_Generated\**" />
-    <None Remove="_Generated\**" />
   </ItemGroup>
   <!-- Resources - api.xml, icons -->
   <ItemGroup>
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
-    <EmbeddedResource Remove="_Generated\**" />
   </ItemGroup>
   <ItemGroup>
     <LiveTemplate Include="Templates\**\*.md">
