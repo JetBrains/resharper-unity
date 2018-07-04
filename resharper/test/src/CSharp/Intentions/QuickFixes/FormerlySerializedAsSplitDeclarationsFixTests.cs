@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class FormerlySerializedAsSplitDeclarationsFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\FormerlySerializedAsSplitDeclarations\Availability";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\FormerlySerializedAsSplitDeclarations\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
     }
@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class FormerlySerializedAsSplitDeclarationsFixRemoveTests : CSharpQuickFixTestBase<FormerlySerializedAsSplitDeclarationsFix>
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\FormerlySerializedAsSplitDeclarations";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\FormerlySerializedAsSplitDeclarations";
 
         [Test] public void Test01() { DoNamedTest(); }
     }

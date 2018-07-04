@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class RedundantHideInInspectorAttributeQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\RedundantHideInInspectorAttribute\Availability";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantHideInInspectorAttribute\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class RedundantHideInInspectorAttributeQuickFixTests : CSharpQuickFixTestBase<RedundantAttributeDeadCodeQuickFix>
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\RedundantHideInInspectorAttribute";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantHideInInspectorAttribute";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }

@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class RedundantSerializeFieldAttributeQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\RedundantSerializeFieldAttribute\Availability";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantSerializeFieldAttribute\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class RedundantSerializeFieldAttributeQuickFixTests : CSharpQuickFixTestBase<RedundantAttributeDeadCodeQuickFix>
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\RedundantSerializeFieldAttribute";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantSerializeFieldAttribute";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }

@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class ConvertToCompareTagQuickFixAvailabilityTest : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath => @"Intentions\QuickFixes\ConvertToCompareTag\Availability";
+        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertToCompareTag\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class ConvertToCompareTagQuickFixTest : QuickFixTestBase<ConvertToCompareTagQuickFix>
     {
-        protected override string RelativeTestDataPath => @"Intentions\QuickFixes\ConvertToCompareTag";
+        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertToCompareTag";
         protected override bool AllowHighlightingOverlap => true;
 
         [Test] public void Test01() { DoNamedTest(); }

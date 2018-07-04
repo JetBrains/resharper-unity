@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
     public class UnityEventFunctionCompletionListTest : CodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
-        protected override string RelativeTestDataPath => @"codeCompletion\List";
+        protected override string RelativeTestDataPath => @"CSharp\CodeCompletion\List";
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override LookupListSorting Sorting => LookupListSorting.ByRelevance;
 

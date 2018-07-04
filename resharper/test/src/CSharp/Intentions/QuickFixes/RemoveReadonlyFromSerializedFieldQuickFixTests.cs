@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class RemoveReadonlyFromSerializedFieldQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\RemoveReadonlyFromSerializedField\Availability";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RemoveReadonlyFromSerializedField\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class RemoveReadonlyFromSerializedFieldQuickFixTests : CSharpQuickFixTestBase<RemoveReadonlyFromSerializedFieldQuickFix>
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\RemoveReadonlyFromSerializedField";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RemoveReadonlyFromSerializedField";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }

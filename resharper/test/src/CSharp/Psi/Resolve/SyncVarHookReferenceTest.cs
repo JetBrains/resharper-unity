@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Resolve
     [IncludeMsCorLib]
     public class SyncVarHookReferenceTest : ReferenceTestBase
     {
-        protected override string RelativeTestDataPath => @"resolve\SyncVarHook";
+        protected override string RelativeTestDataPath => @"CSharp\Resolve\SyncVarHook";
 
         protected override bool AcceptReference(IReference reference)
         {
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Resolve
     [IncludeMsCorLib]
     public class SyncVarHookCompletionTest : CodeCompletionTestBase
     {
-        protected override string RelativeTestDataPath => @"resolve\SyncVarHook\CodeCompletion";
+        protected override string RelativeTestDataPath => @"CSharp\Resolve\SyncVarHook\CodeCompletion";
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
 

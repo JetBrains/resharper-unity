@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.ContextActions
     public class ToggleHideInInspectorAttributeActionAvailabilityTest
         : ContextActionAvailabilityTestBase<ToggleHideInInspectorAttributeAction>
     {
+        protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"ToggleHideInInspectorAttribute";
 
         [Test] public void TestAvailability01() { DoNamedTest2(); }
@@ -17,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.ContextActions
     public class ToggleHideInInspectorAttributeActionExecutionTest
         : ContextActionExecuteTestBase<ToggleHideInInspectorAttributeAction>
     {
+        protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "ToggleHideInInspectorAttribute";
 
         [Test] public void TestAddAttribute() { DoNamedTest2(); }

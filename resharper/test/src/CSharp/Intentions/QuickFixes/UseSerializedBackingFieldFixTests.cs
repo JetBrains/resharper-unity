@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [CSharpLanguageLevel(CSharpLanguageLevel.CSharp40)]
     public class UseSerializedBackingFieldFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\UseSerializedBackingField\Availability";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\UseSerializedBackingField\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test, CSharpLanguageLevel(CSharpLanguageLevel.CSharp60)] public void Test02() { DoNamedTest(); }
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [CSharpLanguageLevel(CSharpLanguageLevel.CSharp40)]
     public class UseSerializedBackingFieldFixRemoveTests : CSharpQuickFixTestBase<UseSerializedBackingFieldFix>
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\UseSerializedBackingField";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\UseSerializedBackingField";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test, CSharpLanguageLevel(CSharpLanguageLevel.CSharp60)] public void Test02() { DoNamedTest(); }

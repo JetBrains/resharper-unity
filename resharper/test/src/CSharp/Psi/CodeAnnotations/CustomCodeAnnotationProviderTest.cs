@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.CodeAnnotations
     [TestUnity]
     public class CustomCodeAnnotationProviderTest : CSharpHighlightingTestBase
     {
-        protected override string RelativeTestDataPath => @"psi\CodeAnnotations";
+        protected override string RelativeTestDataPath => @"CSharp\Psi\CodeAnnotations";
 
         // IteratorMethodResultIsIgnoredWarning very similar warning, given if an iterator
         // result isn't used. We'll override it. Hopefully.

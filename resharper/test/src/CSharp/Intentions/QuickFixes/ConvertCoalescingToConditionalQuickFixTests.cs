@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class ConvertCoalescingToConditionalQuickFixAvailabilityTest : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath => @"Intentions\QuickFixes\ConvertCoalescingToConditional\Availability";
+        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertCoalescingToConditional\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class ConvertCoalescingToConditionalQuickFixTests : QuickFixTestBase<ConvertCoalescingToConditionalQuickFix>
     {
-        protected override string RelativeTestDataPath => @"Intentions\QuickFixes\ConvertCoalescingToConditional";
+        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertCoalescingToConditional";
         protected override bool AllowHighlightingOverlap => true;
 
         [Test] public void Test01() { DoNamedTest(); }

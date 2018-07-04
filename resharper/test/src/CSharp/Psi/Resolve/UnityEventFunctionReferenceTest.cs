@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Resolve
     [IncludeMsCorLib]
     public class UnityEventFunctionReferenceTest : ReferenceTestBase
     {
-        protected override string RelativeTestDataPath => @"resolve";
+        protected override string RelativeTestDataPath => @"CSharp\Resolve";
 
         protected override bool AcceptReference(IReference reference)
         {
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.Resolve
     [IncludeMsCorLib]
     public class UnityEventFunctionCompletionTest : CodeCompletionTestBase
     {
-        protected override string RelativeTestDataPath => @"resolve\CodeCompletion";
+        protected override string RelativeTestDataPath => @"CSharp\Resolve\CodeCompletion";
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
 

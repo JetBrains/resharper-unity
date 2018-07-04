@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class InvalidSignatureFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\InvalidSignature\Availability";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidSignature\Availability";
 
         [Test] public void AddAllParameters() { DoNamedTest(); }
         [Test] public void AddMissingParameter() { DoNamedTest(); }
@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class InvalidSignatureFixTests : CSharpQuickFixTestBase<IncorrectMethodSignatureQuickFix>
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\InvalidSignature";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidSignature";
 
         [Test] public void AddAllParameters() { DoNamedTest(); }
         [Test] public void AddMissingParameter() { DoNamedTest(); }

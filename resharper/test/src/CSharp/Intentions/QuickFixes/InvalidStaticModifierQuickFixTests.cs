@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class InvalidStaticModifierQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\InvalidStaticModifier\Availability";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidStaticModifier\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class InvalidStaticModifierQuickFixTests : CSharpQuickFixTestBase<IncorrectMethodSignatureQuickFix>
     {
-        protected override string RelativeTestDataPath=> @"Intentions\QuickFixes\InvalidStaticModifier";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidStaticModifier";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }

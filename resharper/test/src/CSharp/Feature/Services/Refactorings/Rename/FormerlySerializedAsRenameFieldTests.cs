@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Refactorings.
     [TestUnity]
     public class FormerlySerializedAsRenameFieldTests : RenameTestBase
     {
-        protected override string RelativeTestDataPath => @"Refactorings\Rename";
+        protected override string RelativeTestDataPath => @"CSharp\Refactorings\Rename";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }

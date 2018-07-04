@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.GutterMarks
     [TestUnity]
     public class GutterMarkTests : CSharpHighlightingTestBase<UnityGutterMarkInfo>
     {
-        protected override string RelativeTestDataPath => @"Daemon\Stages\GutterMark";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\GutterMark";
 
         [Test] public void Test01() { DoNamedTest(); }
     }

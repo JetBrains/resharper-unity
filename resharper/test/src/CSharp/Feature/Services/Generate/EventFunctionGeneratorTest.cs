@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
     [TestUnity]
     public class EventFunctionGeneratorTest : GenerateTestBase
     {
-        protected override string RelativeTestDataPath => @"generate";
+        protected override string RelativeTestDataPath => @"CSharp\Generate";
 
         [Test] public void ListElements01() { DoNamedTest(); }
         // TODO: Deriving from AssetModificationProcessor doesn't work. Don't know why
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.Generate
 
     public class EventFunctionGeneratorNonUnityProjectTest : GenerateTestBase
     {
-        protected override string RelativeTestDataPath => @"generate";
+        protected override string RelativeTestDataPath => @"CSharp\Generate";
 
         // It would be nice if the base test distinguished between unavailable, no items and disabled
         [Test] public void NonUnityProject() { DoNamedTest(); }

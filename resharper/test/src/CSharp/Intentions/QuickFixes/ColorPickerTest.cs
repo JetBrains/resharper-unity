@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     [TestUnity]
     public class ColorPickerTest : CSharpQuickFixTestBase<ColorPickerQuickFix>
     {
-        protected override string RelativeTestDataPath => @"intentions\QuickFixes\ColorPicker";
+        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ColorPicker";
 
         [Test] public void TestChangeToNamedColor() { DoNamedTest2(); }
         [Test] public void TestChangeToColorConstructor() { DoNamedTest2(); }

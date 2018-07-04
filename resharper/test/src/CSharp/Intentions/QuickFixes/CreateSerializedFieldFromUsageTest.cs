@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.QuickFixes
     public class CreateSerializedFieldFromUsageTest
         : CSharpCreateFromUsageTestBase<CreateSerializedFieldFromUsageAction>
     {
-        protected override string RelativeTestDataPath => @"intentions\QuickFixes\CreateFromUsage";
+        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\CreateFromUsage";
 
         [Test] public void TestSerializedField01() { DoNamedTest2(); }
         [Test] public void TestSerializedField02() { DoNamedTest2(); }

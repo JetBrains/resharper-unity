@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Psi.CodeAnnotations
     [TestUnity]
     public class FixPublicApiMeansImplicitUseAnnotationTests : UsageCheckBaseTest
     {
-        protected override string RelativeTestDataPath => @"psi\CodeAnnotations";
+        protected override string RelativeTestDataPath => @"CSharp\Psi\CodeAnnotations";
 
         [Test] public void TestPublicApiAnnotation() { DoNamedTest2(); }
     }

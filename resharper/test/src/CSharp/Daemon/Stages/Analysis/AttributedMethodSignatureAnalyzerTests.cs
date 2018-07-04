@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
     [TestUnity]
     public class AttributedMethodSignatureAnalyzerTests : CSharpHighlightingTestBase<IUnityHighlighting>
     {
-        protected override string RelativeTestDataPath => @"daemon\Stages\Analysis\AttributedMethodSignatures";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\AttributedMethodSignatures";
 
         [Test] public void TestInitializeOnLoadMethodAttributeSignature() { DoNamedTest2(); }
         [Test] public void TestRuntimeInitializeOnLoadMethodAttributeSignature() { DoNamedTest2(); }

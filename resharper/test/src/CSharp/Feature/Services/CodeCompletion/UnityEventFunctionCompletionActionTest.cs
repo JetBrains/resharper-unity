@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
     public class UnityEventFunctionCompletionActionTest : CodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.Action;
-        protected override string RelativeTestDataPath => @"codeCompletion\Action";
+        protected override string RelativeTestDataPath => @"CSharp\CodeCompletion\Action";
 
         [Test] public void MonoBehaviour01() { DoNamedTest(); }
         [Test] public void MonoBehaviour02() { DoNamedTest(); }

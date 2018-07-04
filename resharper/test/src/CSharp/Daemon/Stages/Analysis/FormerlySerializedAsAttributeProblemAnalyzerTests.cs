@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
     [TestUnity]
     public class FormerlySerializedAsAttributeProblemAnalyzerTests : CSharpHighlightingTestBase<IUnityHighlighting>
     {
-        protected override string RelativeTestDataPath => @"daemon\Stages\Analysis\FormerlySerializedAsAttribute";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\FormerlySerializedAsAttribute";
 
         [Test] public void TestNonUnityFields() { DoNamedTest2(); }
         [Test] public void TestRedundantFormerlySerializedAs() { DoNamedTest2(); }

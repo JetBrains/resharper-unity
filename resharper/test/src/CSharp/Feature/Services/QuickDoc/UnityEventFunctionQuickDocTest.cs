@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.QuickDoc
     [TestUnity]
     public class UnityEventFunctionQuickDocTest : QuickDocTestBase
     {
-        protected override string RelativeTestDataPath => @"quickDoc";
+        protected override string RelativeTestDataPath => @"CSharp\QuickDoc";
 
         protected override void TestAdditionalInfo(IDeclaredElement declaredElement, IProjectFile projectFile)
         {

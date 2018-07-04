@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
     [TestUnity]
     public class RedundantInitializeOnLoadAttributeAnalyzerTests : CSharpHighlightingTestBase<IUnityHighlighting>
     {
-        protected override string RelativeTestDataPath => @"daemon\Stages\Analysis";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
         [Test] public void TestInitializeOnLoadAttribute() { DoNamedTest2(); }
     }

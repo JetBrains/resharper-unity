@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.ContextActions
     public class AutoPropertyToSerializedBackingFieldAvailabilityTest
         : ContextActionAvailabilityTestBase<AutoPropertyToSerializedBackingFieldAction>
     {
+        protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"AutoPropertyToSerializedBackingField";
 
         [Test] public void TestAvailability01() { DoNamedTest2(); }
@@ -18,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.ContextActions
     public class AutoPropertyToSerializedBackingFieldExecutionTest
         : ContextActionExecuteTestBase<AutoPropertyToSerializedBackingFieldAction>
     {
+        protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "AutoPropertyToSerializedBackingField";
 
         [Test] public void Test01() { DoNamedTest(); }

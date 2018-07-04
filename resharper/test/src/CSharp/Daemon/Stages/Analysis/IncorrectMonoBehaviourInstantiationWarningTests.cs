@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Daemon.Stages.Analysis
     [TestUnity]
     public class IncorrectMonoBehaviourInstantiationWarningTests : CSharpHighlightingTestBase<IUnityHighlighting>
     {
-        protected override string RelativeTestDataPath => @"daemon\Stages\Analysis";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
         [Test] public void TestInstantiateMonoBehaviourWarning() { DoNamedTest2(); }
     }

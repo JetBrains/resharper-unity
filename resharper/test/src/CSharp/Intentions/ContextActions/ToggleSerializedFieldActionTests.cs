@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.ContextActions
     public class ToggleSerializedFieldActionAvailabilityTest
         : ContextActionAvailabilityTestBase<ToggleSerializedFieldAction>
     {
+        protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"ToggleSerializedField";
 
         [Test] public void TestAvailability01() { DoNamedTest2(); }
@@ -17,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Intentions.ContextActions
     public class ToggleSerializedFieldActionExecutionTest
         : ContextActionExecuteTestBase<ToggleSerializedFieldAction>
     {
+        protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "ToggleSerializedField";
 
         [Test] public void TestToNonSerialized01() { DoNamedTest2(); }

@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Feature.Services.CodeCompletio
     public abstract class VersionSpecificCompletionListTest : CodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
-        protected override string RelativeTestDataPath => @"codeCompletion\List";
+        protected override string RelativeTestDataPath => @"CSharp\CodeCompletion\List";
         protected override bool CheckAutomaticCompletionDefault() => true;
 
 
