@@ -49,21 +49,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
                 case IMethod method:
                     var function = unityApi.GetUnityEventFunction(method, out var match);
-                    if (function != null && match == MethodSignatureMatch.ExactMatch)
+                    if (function != null)
                     {
-                        foreach (var parameter in function.Parameters)
+                        if (match == MethodSignatureMatch.ExactMatch)
                         {
-                            if (parameter.IsOptional)
+                            foreach (var parameter in function.Parameters)
                             {
-                                // Allows optional parameters to be marked as unused
-                                // TODO: Might need to process IParameter if optional gets more complex
-                                flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                                return true;
+                                if (parameter.IsOptional)
+                                {
+                                    // Allows optional parameters to be marked as unused
+                                    // TODO: Might need to process IParameter if optional gets more complex
+                                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                                    return true;
+                                }
                             }
+
+                            flags = ImplicitUseKindFlags.Access;
+                            return true;
                         }
+
+                        return false;
+                    }
+
+                    if (IsPotentialEventHandler(unityApi, method))
+                    {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
                     }
+
                     break;
 
                 case IField field when unityApi.IsUnityField(field):
@@ -71,10 +84,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     // But it still should be checked if the field is ever accessed from the code.
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
+
+                case IProperty property when IsPotentialEventHandler(unityApi, property.Setter):
+                    flags = ImplicitUseKindFlags.Assign;
+                    return true;
             }
 
             flags = ImplicitUseKindFlags.Default;   // Value not used if we return false
             return false;
+        }
+
+        // Best effort attempt at preventing false positives for type members that are actually being used inside a
+        // scene. We don't have enough information to do this by name, so we'll mark all potential event handlers as
+        // implicitly used by Unity
+        // See https://github.com/Unity-Technologies/UnityCsReference/blob/02f8e8ca594f156dd6b2088ad89451143ca1b87e/Editor/Mono/Inspector/UnityEventDrawer.cs#L397
+        private static bool IsPotentialEventHandler(UnityApi unityApi, [CanBeNull] IMethod method)
+        {
+            if (method == null)
+                return false;
+
+            if (!method.ReturnType.IsVoid())
+                return false;
+
+            // Type.GetMethods() returns public instance methods only
+            if (method.GetAccessRights() != AccessRights.PUBLIC || method.IsStatic)
+                return false;
+
+            return unityApi.IsUnityType(method.GetContainingType()) && !method.HasAttributeInstance(PredefinedType.OBSOLETE_ATTRIBUTE_CLASS, true);
         }
     }
 }

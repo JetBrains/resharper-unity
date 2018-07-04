@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class A : MonoBehaviour
 {
+  // Potential event handler - marked as in use
   public void UnusedMethod()
   {
   }
