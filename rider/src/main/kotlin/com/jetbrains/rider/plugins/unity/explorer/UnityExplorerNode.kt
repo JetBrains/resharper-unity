@@ -49,8 +49,13 @@ open class UnityExplorerNode(project: Project,
             .mapNotNull { it.containingProject() }
             .map { it.name.removePrefix(UnityExplorer.DefaultProjectPrefix + "-").removePrefix(UnityExplorer.DefaultProjectPrefix) }
             .filter { it.isNotEmpty() }
+            .sorted()
         if (projectNames.any()) {
-            val description = projectNames.joinToString(", ")
+            var description = projectNames.take(3).joinToString(", ")
+            if (projectNames.count() > 3) {
+                description += ", ..."
+                presentation.tooltip = projectNames.joinToString(",\n")
+            }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
         }
     }
