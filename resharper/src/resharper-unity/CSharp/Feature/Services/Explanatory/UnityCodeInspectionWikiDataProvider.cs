@@ -16,6 +16,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
                     RedundantAttributeOnTargetWarning.HIGHLIGHTING_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/Attribute-is-redundant-when-applied-to-this-declaration-type"
                 },
+                // "Camera.main is inefficient in frequently called methods"
+                {
+                    InefficientCameraMainUsageWarning.HIGHLIGHTING_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Camera.main-is-inefficient-in-frequently-called-methods"
+                },
                 // "MonoBehaviours must be instantiated with GameObject.AddComponent instead of new"
                 {
                     IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID,
