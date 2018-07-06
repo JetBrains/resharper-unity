@@ -29,6 +29,13 @@
   </member>
 
 
+  <!-- UnityEngine.Camera -->
+  <member name="P:UnityEngine.Camera.main">
+    <!-- https://docs.unity3d.com/ScriptReference/Camera-main.html - "Returns null if there is no camera tagged 'MainCamera' in the scene" -->
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+  </member>
+
+
   <!-- UnityEngine.GameObject -->
   <member name="M:UnityEngine.GameObject.AddComponent``1">
     <typeparameter name="T">
