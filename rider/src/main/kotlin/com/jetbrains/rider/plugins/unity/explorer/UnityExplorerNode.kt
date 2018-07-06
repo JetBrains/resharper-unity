@@ -10,17 +10,29 @@ import com.jetbrains.rider.icons.ReSharperCommonIcons
 import com.jetbrains.rider.icons.ReSharperProjectModelIcons
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
-import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
+import com.jetbrains.rider.projectView.views.addNonIndexedMark
 import com.jetbrains.rider.util.getOrCreate
 import javax.swing.Icon
 
 class UnityExplorerRootNode(project: Project) : SolutionViewRootNodeBase(project) {
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val assetsFolder = myProject.baseDir?.findChild("Assets")!!
-        val rootNode = UnityExplorerNode.Root(myProject, assetsFolder)
-        return mutableListOf(rootNode)
+        val assetsNode = UnityExplorerNode.AssetsRoot(myProject, assetsFolder)
+
+        val nodes = mutableListOf<AbstractTreeNode<*>>(assetsNode)
+
+        // If the Packages folder exists, show the node. There might not be any packages in the project, but Unity will
+        // have created a Packages/mainfest.json file which can be edited by hand (Unity will resolve the packages when
+        // you next switch back to the Editor)
+        val packagesFolder = myProject.baseDir?.findChild("Packages")
+        if (packagesFolder?.exists() == true && packagesFolder.findChild("manifest.json")?.exists() == true) {
+            val packagesNode = PackagesRoot(myProject, packagesFolder)
+            nodes.add(packagesNode)
+        }
+
+        return nodes
     }
 }
 
@@ -42,19 +54,24 @@ open class UnityExplorerNode(project: Project,
         if (!virtualFile.isValid) return
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(calculateIcon())
+        presentation.addNonIndexedMark(myProject, virtualFile)
 
         // Add additional info for directories
         if (!virtualFile.isDirectory) return
+        addProjects(presentation)
+    }
+
+    protected fun addProjects(presentation: PresentationData) {
         val projectNames = nodes
-            .mapNotNull { it.containingProject() }
-            .map { it.name.removePrefix(UnityExplorer.DefaultProjectPrefix + "-").removePrefix(UnityExplorer.DefaultProjectPrefix) }
-            .filter { it.isNotEmpty() }
-            .sorted()
+                .mapNotNull { it.containingProject() }
+                .map { it.name.removePrefix(UnityExplorer.DefaultProjectPrefix + "-").removePrefix(UnityExplorer.DefaultProjectPrefix) }
+                .filter { it.isNotEmpty() }
+                .sorted()
         if (projectNames.any()) {
             var description = projectNames.take(3).joinToString(", ")
             if (projectNames.count() > 3) {
-                description += ", ..."
-                presentation.tooltip = projectNames.joinToString(",\n")
+                description += ", …"
+                presentation.tooltip = "Contains code from multiple projects:\n" + projectNames.joinToString(",\n")
             }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
         }
@@ -70,7 +87,7 @@ open class UnityExplorerNode(project: Project,
             return globalSpecialIcon
         }
 
-        if (parent is Root) {
+        if (parent is AssetsRoot) {
             val rootSpecialIcon = when (name) {
                 "Editor Default Resources" -> IconLoader.getIcon("/Icons/Explorer/FolderEditorResources.svg")
                 "Gizmos" -> IconLoader.getIcon("/Icons/Explorer/FolderGizmos.svg")
@@ -128,17 +145,18 @@ open class UnityExplorerNode(project: Project,
         return true
     }
 
-    class Root(project: Project, virtualFile: VirtualFile)
+    class AssetsRoot(project: Project, virtualFile: VirtualFile)
         : UnityExplorerNode(project, virtualFile, listOf()) {
 
         private val referenceRoot = ReferenceRoot(project)
 
         override fun update(presentation: PresentationData) {
             if (!virtualFile.isValid) return
-            presentation.presentableText = project!!.solutionName
+            presentation.presentableText = "Assets"
             presentation.setIcon(IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg"))
         }
 
+        // TODO: This doesn't work if there are two nodes. Doesn't even get called
         override fun isAlwaysExpand() = true
 
         override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {

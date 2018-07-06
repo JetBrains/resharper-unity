@@ -80,6 +80,19 @@ class UnityIcons {
         }
     }
 
+    class Explorer {
+        companion object {
+
+            // TODO: Proper icon
+            @JvmField
+            val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
+
+            // TODO: Proper icon
+            @JvmField
+            val Package = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
+        }
+    }
+
     class Actions {
         companion object {
             @JvmField
