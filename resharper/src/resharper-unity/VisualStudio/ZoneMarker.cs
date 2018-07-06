@@ -12,7 +12,7 @@ using JetBrains.VsIntegration.Shell.Zones;
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio
 {
     [ZoneMarker]
-    public class ZoneMarker : IRequire<IVisualStudioZone>
+    public class ZoneMarker : IRequire<IVisualStudioEnvZone>
     {
     }
 }

@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
     [ZoneDefinition]
-    public interface IUnityTestZone : ITestsZone, IRequire<PsiFeatureTestZone>
+    public interface IUnityTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>
     {
     }
 
