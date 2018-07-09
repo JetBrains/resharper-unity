@@ -53,9 +53,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Framework
             {
                 Model =
                 {
-                    RenameFile = {Value = bool.Parse(GetMySetting(control.Document, RenameFile))},
-                    ChangeTextOccurrences = {Value = bool.Parse(GetMySetting(control.Document, ChangeText))},
-                    UISearchTextOccurrences = {Value = bool.Parse(GetMySetting(control.Document, ChangeText))},
+                    RenameFile = bool.Parse(GetMySetting(control.Document, RenameFile)),
+                    ChangeTextOccurrences = bool.Parse(GetMySetting(control.Document, ChangeText)),
+//                    UISearchTextOccurrences = bool.Parse(GetMySetting(control.Document, ChangeText)),
                     RenameDerived = true
                 }
             };
