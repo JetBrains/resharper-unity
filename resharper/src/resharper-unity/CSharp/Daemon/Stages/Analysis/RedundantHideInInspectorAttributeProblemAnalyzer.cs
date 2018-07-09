@@ -23,10 +23,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!Equals(attributeTypeElement.GetClrName(), KnownTypes.HideInInspector))
                 return;
 
-            var fieldDeclarations = FieldDeclarationNavigator.GetByAttribute(attribute);
-            foreach (var fieldDeclaration in fieldDeclarations)
+            var fields = attribute.GetFieldsByAttribute();
+            foreach (var field in fields)
             {
-                if (!Api.IsSerialisedField(fieldDeclaration.DeclaredElement))
+                if (!Api.IsSerialisedField(field))
                 {
                     consumer.AddHighlighting(new RedundantHideInInspectorAttributeWarning(attribute));
                     return;

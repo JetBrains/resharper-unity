@@ -8,6 +8,8 @@ public class |Test|(0) : MonoBehaviour
     [|SerializeField|(3)] [NonSerialized] public int Redundant1;
     [|SerializeField|(4)] [NonSerialized] private int Redundant1;
     [|SerializeField|(5)] private readonly int ReadonlyFieldsAreNotSerialized;
+    [|SerializeField|(6)] private const int ConstFieldsAreNotSerialized;
+    [|SerializeField|(7)] private static int StaticFieldsAreNotSerialized;
 }
 
 ---------------------------------------------------------
@@ -17,3 +19,5 @@ public class |Test|(0) : MonoBehaviour
 (3): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (4): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (5): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(6): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(7): ReSharper Dead Code: Redundant 'SerializeField' attribute
