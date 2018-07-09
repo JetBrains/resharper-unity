@@ -47,6 +47,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
 
+                case ITypeElement typeElement when unityApi.IsSerializableType(typeElement):
+                    // TODO: We should only really mark it as in use if it's actually used somewhere
+                    // That is, it should be used as a field in a Unity type, or another serializable type
+                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                    return true;
+
                 case IMethod method:
                     var function = unityApi.GetUnityEventFunction(method, out var match);
                     if (function != null)
@@ -79,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
                     break;
 
-                case IField field when unityApi.IsUnityField(field):
+                case IField field when unityApi.IsSerialisedField(field):
                     // Public fields gets exposed to the Unity Editor and assigned from the UI.
                     // But it still should be checked if the field is ever accessed from the code.
                     flags = ImplicitUseKindFlags.Assign;

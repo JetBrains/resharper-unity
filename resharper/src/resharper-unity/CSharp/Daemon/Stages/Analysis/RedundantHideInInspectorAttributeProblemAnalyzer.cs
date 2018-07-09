@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var fieldDeclarations = FieldDeclarationNavigator.GetByAttribute(attribute);
             foreach (var fieldDeclaration in fieldDeclarations)
             {
-                if (!Api.IsUnityField(fieldDeclaration.DeclaredElement))
+                if (!Api.IsSerialisedField(fieldDeclaration.DeclaredElement))
                 {
                     consumer.AddHighlighting(new RedundantHideInInspectorAttributeWarning(attribute));
                     return;

@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!(fieldDeclaration.DeclaredElement is IField field))
                 return;
 
-            if (!Api.IsUnityField(field))
+            if (!Api.IsSerialisedField(field))
             {
                 consumer.AddHighlighting(new RedundantFormerlySerializedAsAttributeWarning(attribute));
                 return;

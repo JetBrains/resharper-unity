@@ -16,11 +16,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
         protected override void Analyze(IClassLikeDeclaration element, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            var @class = element.DeclaredElement;
-            if (@class != null && Api.IsUnityType(@class))
+            var typeElement = element.DeclaredElement;
+            if (typeElement != null)
             {
-                var highlighting = new UnityGutterMarkInfo(element, "Unity scripting component");
-                consumer.AddHighlighting(highlighting);
+                if (Api.IsUnityType(typeElement))
+                {
+                    var highlighting = new UnityGutterMarkInfo(element, "Unity scripting component");
+                    consumer.AddHighlighting(highlighting);
+                }
+                else if (Api.IsSerializableType(typeElement))
+                {
+                    var highlighting = new UnityGutterMarkInfo(element, "Unity custom serializable type");
+                    consumer.AddHighlighting(highlighting);
+                }
             }
         }
     }

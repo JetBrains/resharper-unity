@@ -1,14 +1,16 @@
 using System;
-using System.Collections;
 using UnityEngine;
-using UnityEditor;
 
-public class A : MonoBehaviour
+[Serializable]
+public class SerializableClass
 {
-    // All serialised by Unity - gutter icons
+    // Assigned but never used
     public string ImplicitlyAssignedField;
     public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
     [SerializeField] private int myImplicitlyAssignedPrivateField;
+
+    // Assigned + used - no warning
+    public string ImplicitlyAssignedAndUsedField;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -22,87 +24,22 @@ public class A : MonoBehaviour
     public static string UnusedStaticField;
     [SerializeField] private static string ourUnusedPrivateStaticField;
 
-    // Unity function
-    private void OnDestroy()
+    public void OnDestroy()
     {
-    }
-
-    // Not a Unity function
-    private void NotMessage()
-    {
-    }
-
-    // Unity message as coroutine
-    private IEnumerator Start()
-    {
-        return null;
-    }
-
-    // Optional parameter
-    private void OnCollisionStay()
-    {
-    }
-}
-
-[InitializeOnLoad]
-public class Startup
-{
-    static Startup()
-    {
-        Debug.Log("Up and running");
-    }
-
-    public Startup()
-    {
-        // Not used
-    }
-}
-
-class MyClass
-{
-    [RuntimeInitializeOnLoadMethod]
-    static void OnRuntimeMethodLoad()
-    {
-        Debug.Log("After scene is loaded and game is running");
-    }
-
-    [RuntimeInitializeOnLoadMethod]
-    public static void OnSecondRuntimeMethodLoad()
-    {
-        Debug.Log("SecondMethod After scene is loaded and game is running.");
-    }
-
-    [RuntimeInitializeOnLoadMethod]
-    public void NotAppliedToInstanceMethods()
-    {
-    }
-
-    [InitializeOnLoadMethod]
-    private static void OnProjectLoadedInEditor()
-    {
-        Debug.Log("Project loaded in Unity Editor");
-    }
-
-    [InitializeOnLoadMethod]
-    public static void OnProjectLoadedInEditor2()
-    {
-        Debug.Log("Project loaded in Unity Editor");
-    }
-
-    [InitializeOnLoadMethod]
-    public void NotAppliedToInstanceMethod()
-    {
-        Debug.Log("Project loaded in Unity Editor");
+        Console.WriteLine(ImplicitlyAssignedAndUsedField);
     }
 }
 
 [Serializable]
-class SerialisableClass
+public struct SerializableStruct
 {
-    // All serialised by Unity - gutter icons
+    // Assigned but never used
     public string ImplicitlyAssignedField;
     public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
     [SerializeField] private int myImplicitlyAssignedPrivateField;
+
+    // Assigned + used - no warning
+    public string ImplicitlyAssignedAndUsedField;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -115,15 +52,22 @@ class SerialisableClass
     [NonSerialized, SerializeField] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
     [SerializeField] private static string ourUnusedPrivateStaticField;
+
+    public void OnDestroy()
+    {
+        Console.WriteLine(ImplicitlyAssignedAndUsedField);
+    }
 }
 
-[Serializable]
-struct SerialisableStruct
+public class NotSerializable
 {
-    // All serialised by Unity - gutter icons
+    // Assigned but never used
     public string ImplicitlyAssignedField;
     public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
     [SerializeField] private int myImplicitlyAssignedPrivateField;
+
+    // Assigned + used - no warning
+    public string ImplicitlyAssignedAndUsedField;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -136,23 +80,9 @@ struct SerialisableStruct
     [NonSerialized, SerializeField] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
     [SerializeField] private static string ourUnusedPrivateStaticField;
-}
 
-class NotSerialisableClass
-{
-    public string NotSerialised1;
-    [SerializeField] public string NotSerialised2;
-}
-
-struct NotSerialisableStruct
-{
-    public string NotSerialised1;
-    [SerializeField] public string NotSerialised2;
-}
-
-[Serializable]
-static class NotSerialisableClass
-{
-    public string NotSerialised1;
-    [SerializeField] public string NotSerialised2;
+    public void OnDestroy()
+    {
+        Console.WriteLine(ImplicitlyAssignedAndUsedField);
+    }
 }

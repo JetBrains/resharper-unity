@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 return false;
 
             var unityApi = declaredElement.GetSolution().GetComponent<UnityApi>();
-            return unityApi.IsUnityField(declaredElement as IField);
+            return unityApi.IsSerialisedField(declaredElement as IField);
         }
 
         public RenameAvailabilityCheckResult CheckRenameAvailability(IDeclaredElement element)

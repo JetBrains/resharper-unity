@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return EmptyList<IntentionAction>.Enumerable;
 
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
-            var isSerialized = unityApi.IsUnityField(fieldDeclaration.DeclaredElement);
+            var isSerialized = unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement);
 
             if (multipleFieldDeclaration.Declarators.Count == 1)
             {

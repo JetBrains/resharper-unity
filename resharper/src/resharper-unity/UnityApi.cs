@@ -4,6 +4,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
@@ -26,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public IEnumerable<UnityType> GetBaseUnityTypes([CanBeNull] ITypeElement type)
+        private IEnumerable<UnityType> GetBaseUnityTypes([CanBeNull] ITypeElement type)
         {
             if (type?.Module is IProjectPsiModule projectPsiModule)
             {
@@ -37,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type, Version unityVersion)
+        private IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type, Version unityVersion)
         {
             var types = myTypes.Value;
             unityVersion = types.NormaliseSupportedVersion(unityVersion);
@@ -49,18 +50,34 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(type).Any();
         }
 
+        public bool IsSerializableType([CanBeNull] ITypeElement type)
+        {
+            // A class or struct with the `[System.Serializable]` attribute
+            // Should not be abstract, static or generic
+            // We'll ignore abstract or generic because it might be being used as a base class
+            // TODO: Add a warning if the serializable class isn't inherited
+            var clazz = type as IClass;
+            if (clazz?.IsStaticClass() == true)
+                return false;
+
+            if (type?.IsClassLike() == true)
+                return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
+
+            return false;
+        }
+
         public bool IsEventFunction([NotNull] IMethod method)
         {
             return GetUnityEventFunction(method) != null;
         }
 
-        public bool IsUnityField([CanBeNull] IField field)
+        public bool IsSerialisedField([CanBeNull] IField field)
         {
             if (field == null || field.IsStatic || field.IsConstant || field.IsReadonly)
                 return false;
 
             var containingType = field.GetContainingType();
-            if (containingType == null || !IsUnityType(containingType))
+            if (!IsUnityType(containingType) && !IsSerializableType(containingType))
                 return false;
 
             // [NonSerialized] trumps everything, even if there's a [SerializeField] as well
@@ -91,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method)
         {
-            return GetUnityEventFunction(method, out var _);
+            return GetUnityEventFunction(method, out _);
         }
 
         public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, out MethodSignatureMatch match)
