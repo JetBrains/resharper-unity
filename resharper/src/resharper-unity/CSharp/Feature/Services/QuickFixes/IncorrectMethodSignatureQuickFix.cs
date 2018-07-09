@@ -123,6 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 //                return null;
 
             var model = ClrChangeSignatureModel.CreateModel(myMethodDeclaration.DeclaredElement);
+            Assertion.AssertNotNull(model, "model != null");
             
             for (var i = 0; i < myExpectedMethodSignature.Parameters.Length; i++)
             {
@@ -136,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 else
                 {
                     model.Add(i);
-                    modelParameter = model.ChangeSignatureParameters[i] as ClrChangeSignatureParameter;
+                    modelParameter = (ClrChangeSignatureParameter) model.ChangeSignatureParameters[i];
                 }
                 
                 modelParameter.ParameterName = requiredParameter.Name;
