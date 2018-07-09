@@ -118,12 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         private Action<ITextControl> ChangeParameters(ISolution solution)
         {
-//            var changeSignature = LanguageManager.Instance.TryGetService<ChangeSignature>(myMethodDeclaration.Language);
-//            if (changeSignature == null)
-//                return null;
-
-            var model = ClrChangeSignatureModel.CreateModel(myMethodDeclaration.DeclaredElement);
-            Assertion.AssertNotNull(model, "model != null");
+            var model = ClrChangeSignatureModel.CreateModel(myMethodDeclaration.DeclaredElement).NotNull();            
             
             for (var i = 0; i < myExpectedMethodSignature.Parameters.Length; i++)
             {
@@ -145,7 +140,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 modelParameter.ParameterType = requiredParameter.Type;
 
                 // Reset everything else
-//              modelParameter.DefaultValue = null;
                 modelParameter.IsOptional = false;
                 modelParameter.IsParams = false;
                 modelParameter.IsThis = false;
@@ -179,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         
         private ClrChangeSignatureParameter FindBestMatch(ParameterSignature requiredParameter, ClrChangeSignatureModel model, int i)
         {
-            var parameters = model.ChangeSignatureParameters.OfType<ClrChangeSignatureParameter>().ToList();
+            var parameters = model.ChangeSignatureParameters.Cast<ClrChangeSignatureParameter>().ToList();
             
             // Try and match type and name first            
             for (var j = i; j < parameters.Count; j++)
