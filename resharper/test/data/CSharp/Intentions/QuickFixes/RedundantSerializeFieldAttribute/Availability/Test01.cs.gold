@@ -9,4 +9,5 @@ public class MissingConstructor
 ------------------------------------------------
 0: Redundant 'SerializeField' attribute
 QUICKFIXES:
+Make type 'MissingConstructor' serializable
 Remove redundant attribute

@@ -1,0 +1,9 @@
+﻿using System;
+using UnityEngine;
+
+[Serializable]
+public class NotSerialized
+{
+    public string NotSerializedField1;
+    [Serialize{caret}Field] public string SerializedField2;
+}
