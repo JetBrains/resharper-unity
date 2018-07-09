@@ -127,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 var modelParameter = FindBestMatch(requiredParameter, model, i);
                 if (modelParameter != null)
                 {
-                    model.MoveTo(modelParameter.OriginalParameterIndex, i);
+                    model.MoveTo(modelParameter.ParameterIndex, i);
                 }
                 else
                 {
