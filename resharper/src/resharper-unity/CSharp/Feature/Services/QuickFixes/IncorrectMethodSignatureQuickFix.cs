@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.Application.UI.ActionsRevised.Handlers;
@@ -117,11 +118,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         private Action<ITextControl> ChangeParameters(ISolution solution)
         {
-            var changeSignature = LanguageManager.Instance.TryGetService<ChangeSignature>(myMethodDeclaration.Language);
-            if (changeSignature == null)
-                return null;
-
-            var model = changeSignature.CreateModel(myMethodDeclaration.DeclaredElement);
+            var model = ClrChangeSignatureModel.CreateModel(myMethodDeclaration.DeclaredElement).NotNull();            
+            
             for (var i = 0; i < myExpectedMethodSignature.Parameters.Length; i++)
             {
                 var requiredParameter = myExpectedMethodSignature.Parameters[i];
@@ -134,24 +132,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 else
                 {
                     model.Add(i);
-                    modelParameter = model.ChangeSignatureParameters[i];
+                    modelParameter = (ClrChangeSignatureParameter) model.ChangeSignatureParameters[i];
                 }
-
+                
                 modelParameter.ParameterName = requiredParameter.Name;
                 modelParameter.ParameterKind = ParameterKind.VALUE;
                 modelParameter.ParameterType = requiredParameter.Type;
 
                 // Reset everything else
-                modelParameter.DefaultValue = null;
                 modelParameter.IsOptional = false;
                 modelParameter.IsParams = false;
                 modelParameter.IsThis = false;
                 modelParameter.IsVarArg = false;
             }
 
-            for (var i = model.ChangeSignatureParameters.Length - 1; i >= myExpectedMethodSignature.Parameters.Length; i--)
+            for (var i = model.ChangeSignatureParameters.Count - 1; i >= myExpectedMethodSignature.Parameters.Length; i--)
             {
-                model.Remove(i);
+                var param = model.ChangeSignatureParameters[i];
+                model.Remove(param);
             }
 
             var refactoring = new ChangeSignatureRefactoring(model);
@@ -172,25 +170,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 }
             };
         }
-
-        private ChangeSignatureParameter FindBestMatch(ParameterSignature requiredParameter, ChangeSignatureModel model, int i)
+        
+        private ClrChangeSignatureParameter FindBestMatch(ParameterSignature requiredParameter, ClrChangeSignatureModel model, int i)
         {
-            // Try and match type and name first
-            for (var j = i; j < model.ChangeSignatureParameters.Length; j++)
+            var parameters = model.ChangeSignatureParameters.Cast<ClrChangeSignatureParameter>().ToList();
+            
+            // Try and match type and name first            
+            for (var j = i; j < parameters.Count; j++)
             {
-                if (model.ChangeSignatureParameters[j].ParameterName == requiredParameter.Name
-                    && Equals(model.ChangeSignatureParameters[j].ParameterType, requiredParameter.Type))
+                if (parameters[j].ParameterName == requiredParameter.Name
+                    && Equals(parameters[j].ParameterType, requiredParameter.Type))
                 {
-                    return model.ChangeSignatureParameters[j];
+                    return parameters[j];
                 }
             }
 
-            // Now just match type - we'll update name after
-            for (var j = i; j < model.ChangeSignatureParameters.Length; j++)
+            // Now just match type - we'll update name after            
+            for (var j = i; j < parameters.Count; j++)
             {
-                if (Equals(model.ChangeSignatureParameters[j].ParameterType, requiredParameter.Type))
+                if (Equals(parameters[j].ParameterType, requiredParameter.Type))
                 {
-                    return model.ChangeSignatureParameters[j];
+                    return parameters[j];
                 }
             }
 

@@ -21,4 +21,12 @@
     <EmbeddedResource Remove="ShaderLab\Host\**" />
     <None Remove="ShaderLab\Host\**" />
   </ItemGroup>
+  <!-- TODO: remove after ClrChangeSignatureParameters stops using ListEvents -->
+  <ItemGroup Condition=" '$(OS)' == 'Unix' ">
+    <Compile Remove="CSharp/Intentions/QuickFixes/InvalidSignatureFixTests.cs" />
+    <Compile Remove="CSharp/Intentions/QuickFixes/InvalidTypeParametersFixTests.cs" />
+    <Compile Remove="CSharp/Intentions/QuickFixes/InvalidReturnTypeFixTests.cs" />
+    <Compile Remove="CSharp/Intentions/QuickFixes/IncorrectMethodSignatureFixTests.cs" />
+    <Compile Remove="CSharp/Intentions/QuickFixes/InvalidStaticModifierQuickFixTests.cs" />
+  </ItemGroup>
 </Project>

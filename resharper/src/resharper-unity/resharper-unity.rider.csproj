@@ -96,6 +96,10 @@
       <LogicalName>JetBrains.ReSharper.Plugins.Unity.Templates.templates.dotSettings</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <!-- TODO: remove after ClrChangeSignatureParameters stops using ListEvents -->
+  <ItemGroup Condition=" '$(OS)' == 'Unix' ">
+    <Compile Remove="CSharp\Feature\Services\QuickFixes\IncorrectMethodSignatureQuickFix.cs" />
+  </ItemGroup>
   <ItemGroup>
     <!-- This requires WPF and PresentationFramework to build -->
     <ThemedIconsXamlV3 Include="Resources\Logo\unity-logo.xaml" Condition=" '$(OS)' != 'Unix' ">
