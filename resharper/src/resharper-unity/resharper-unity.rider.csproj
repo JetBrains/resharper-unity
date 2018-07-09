@@ -102,7 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- This requires WPF and PresentationFramework to build -->
-    <ThemedIconsXamlV3 Include="Resources\Logo\unity-logo.xaml"  Condition=" '$(OS)' != 'Unix' ">
+    <ThemedIconsXamlV3 Include="Resources\Logo\unity-logo.xaml" Condition=" '$(OS)' != 'Unix' ">
       <ThemeColumns>Gray;GrayDark;Color</ThemeColumns>
       <RemoveBackgroundElement>False</RemoveBackgroundElement>
       <Generator>MSBuild:Compile</Generator>
