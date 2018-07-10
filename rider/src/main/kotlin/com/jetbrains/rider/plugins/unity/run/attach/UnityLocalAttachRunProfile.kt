@@ -6,19 +6,13 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rider.debugger.IDotNetDebuggable
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
-import javax.swing.Icon
 
 class UnityLocalAttachRunProfile(private val configurationName: String, private val configuration: UnityLocalAttachConfiguration) : RemoteRunProfile, IDotNetDebuggable {
 
-    override fun getState(p0: Executor, p1: ExecutionEnvironment): RunProfileState? {
-        return UnityLocalAttachProfileState(configuration, p1)
+    override fun getState(executor: Executor, executionEnvironment: ExecutionEnvironment): RunProfileState? {
+        return UnityLocalAttachProfileState(configuration, executionEnvironment)
     }
 
-    override fun getName(): String {
-        return configurationName
-    }
-
-    override fun getIcon(): Icon {
-        return UnityIcons.Icons.AttachEditorDebugConfiguration
-    }
+    override fun getName() = configurationName
+    override fun getIcon() = UnityIcons.Icons.AttachEditorDebugConfiguration
 }
