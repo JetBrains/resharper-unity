@@ -34,6 +34,22 @@ intellij {
     downloadSources = false
 }
 
+task validatePluginXml {
+    def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
+    assert pluginXml.isFile()
+
+    def parsed = new XmlParser().parse(pluginXml).text()
+    assert parsed.length() > 0
+
+    def rawBytes = pluginXml.bytes
+    assert rawBytes.length > 0
+
+    def invalid = rawBytes.findAll { it < 0 }
+    assert invalid.size() == 0
+
+    logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
+}
+
 def frontendSdkRoot = dependenciesDir
 // bundled build configuration on TC
 if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
@@ -164,7 +180,7 @@ task publishCiBuildData {
 }
 
 buildPlugin.finalizedBy publishCiBuildData
-buildPlugin.dependsOn generateModel
+buildPlugin.dependsOn generateModel, validatePluginXml
 
 
 // If we're building `runIde`, only build Rider bits. We only know this once the task graph
