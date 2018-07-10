@@ -1,0 +1,18 @@
+﻿using System;
+using UnityEngine;
+
+public class Test
+{
+    [|SerializeField|(0)] private static int ourValue1 = 42;
+
+    public void Thing()
+    {
+        ourValue1 = 42;
+        Console.WriteLine(ourValue1);
+    }
+}
+
+------------------------------------------------
+0: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Remove redundant attribute

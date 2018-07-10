@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var multipleFieldDeclaration = MultipleFieldDeclarationNavigator.GetByDeclarator(fieldDeclaration);
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
 
-            if (!unityApi.IsUnityField(fieldDeclaration?.DeclaredElement) || multipleFieldDeclaration == null)
+            if (!unityApi.IsSerialisedField(fieldDeclaration?.DeclaredElement) || multipleFieldDeclaration == null)
                 return EmptyList<IntentionAction>.Enumerable;
 
             var existingAttribute = AttributeUtil.GetAttribute(fieldDeclaration, KnownTypes.HideInInspector);
@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
             var fieldDeclaration = myDataProvider.GetSelectedElement<IFieldDeclaration>();
-            return unityApi.IsUnityField(fieldDeclaration?.DeclaredElement);
+            return unityApi.IsSerialisedField(fieldDeclaration?.DeclaredElement);
         }
 
         private class ToggleHideInInspectorAll : BulbActionBase

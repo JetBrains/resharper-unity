@@ -23,13 +23,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!Equals(attributeTypeElement.GetClrName(), KnownTypes.SerializeField))
                 return;
 
-            var fieldDeclarations = FieldDeclarationNavigator.GetByAttribute(attribute);
-            foreach (var fieldDeclaration in fieldDeclarations)
+            var fields = attribute.GetFieldsByAttribute();
+            foreach (var field in fields)
             {
-                if (!(fieldDeclaration.DeclaredElement is IField field))
-                    continue;
-
-                if (!Api.IsUnityField(field))
+                if (!Api.IsSerialisedField(field))
                 {
                     consumer.AddHighlighting(new RedundantSerializeFieldAttributeWarning(attribute));
                     return;

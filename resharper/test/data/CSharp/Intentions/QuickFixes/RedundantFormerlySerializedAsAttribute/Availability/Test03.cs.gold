@@ -1,0 +1,12 @@
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test : MonoBehaviour
+{
+    [|FormerlySerializedAs("NotSerializedField")|(0)] public static int Value;
+}
+
+------------------------------------------------
+0: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute

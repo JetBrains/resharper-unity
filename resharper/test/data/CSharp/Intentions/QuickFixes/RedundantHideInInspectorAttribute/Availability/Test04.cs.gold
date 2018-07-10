@@ -1,0 +1,11 @@
+﻿using UnityEngine;
+
+public class Test
+{
+    [|HideInInspector|(0)] public static int Value1 = 42;
+}
+
+------------------------------------------------
+0: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute

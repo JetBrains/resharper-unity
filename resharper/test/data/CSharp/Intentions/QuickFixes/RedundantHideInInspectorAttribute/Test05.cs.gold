@@ -1,0 +1,6 @@
+﻿using UnityEngine;
+
+public class Test
+{
+ {caret} public readonly int Value1 = 42;
+}

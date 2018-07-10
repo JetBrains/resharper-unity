@@ -1,0 +1,21 @@
+﻿using System;
+using UnityEngine;
+
+public class Test
+{
+    [|SerializeField|(0)] private readonly int |myValue1|(1) = 42;
+
+    public void Thing()
+    {
+        Console.WriteLine(myValue1);
+    }
+}
+
+------------------------------------------------
+0: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Remove redundant attribute
+Make field non-readonly
+1: Convert to constant
+QUICKFIXES:
+To const
