@@ -1,0 +1,26 @@
+﻿|using UnityEngine;|(0)
+using UnityEditor;
+
+public class FooProcessor : AssetPostprocessor
+{
+    private void |OnPostprocessGameObjectWithUserProperties|(1)(|string[] |propNames|(2)|(3))
+    {
+    }
+}
+------------------------------------------------
+0: Using directive is not required by the code and can be safely removed
+QUICKFIXES:
+Remove unused directives in file
+--Remove unused directives in project
+--Remove unused directives in solution
+1: Method 'OnPostprocessGameObjectWithUserProperties' is never used
+QUICKFIXES:
+Remove unused method
+--Comment unused method
+Used implicitly
+2: Incorrect method parameters. Expected '(GameObject go, string[] propNames, object[] values)'
+QUICKFIXES:
+Change parameters to '(GameObject go, string[] propNames, object[] values)'
+3: Parameter 'propNames' is never used
+QUICKFIXES:
+Remove parameter (and update usages)

@@ -37,7 +37,7 @@ The ReSharper plugin is installed via the _ReSharper &rarr; Extension Manager_. 
 **Unity API knowledge:**
 
 * The plugin knows about all Unity based classes (`MonoBehaviour`, `ScriptableObject`, `EditorWindow`, etc.) and their event functions via analysis of the Unity API surface and documentation.
-* Support for Unity API versions 5.0 - 5.6, as well as 2017.1.
+* Support for Unity API starting from 5.0.
 
 **Event functions:**
 

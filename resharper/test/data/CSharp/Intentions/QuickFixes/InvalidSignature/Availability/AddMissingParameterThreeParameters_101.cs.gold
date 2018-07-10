@@ -1,0 +1,24 @@
+﻿using UnityEngine;
+using UnityEditor;
+
+public class FooProcessor : AssetPostprocessor
+{
+    private void |OnPostprocessGameObjectWithUserProperties|(0)(|GameObject |go|(2), object[] |values|(1)|(3))
+    {
+    }
+}
+------------------------------------------------
+0: Method 'OnPostprocessGameObjectWithUserProperties' is never used
+QUICKFIXES:
+Remove unused method
+--Comment unused method
+Used implicitly
+1: Incorrect method parameters. Expected '(GameObject go, string[] propNames, object[] values)'
+QUICKFIXES:
+Change parameters to '(GameObject go, string[] propNames, object[] values)'
+2: Parameter 'go' is never used
+QUICKFIXES:
+Remove parameter (and update usages)
+3: Parameter 'values' is never used
+QUICKFIXES:
+Remove parameter (and update usages)

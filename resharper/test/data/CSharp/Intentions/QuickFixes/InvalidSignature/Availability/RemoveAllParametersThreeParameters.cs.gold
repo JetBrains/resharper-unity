@@ -1,0 +1,13 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public void Start(|int i, int j, int k|(0))
+    {
+    }
+}
+
+------------------------------------------------
+0: Incorrect method parameters. Expected '()'
+QUICKFIXES:
+Change parameters to '()'

@@ -1,0 +1,16 @@
+﻿using System;
+using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public void OnAudioFilterRead(|int c, float[] d|(0))
+    {
+        Console.WriteLine(c);
+        Console.WriteLine(d);
+    }
+}
+
+------------------------------------------------
+0: Incorrect method parameters. Expected '(float[] data, int channels)'
+QUICKFIXES:
+Change parameters to '(float[] data, int channels)'
