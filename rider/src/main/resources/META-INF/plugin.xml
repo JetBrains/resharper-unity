@@ -58,7 +58,7 @@
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
     <projectModelViewUpdater implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerUpdater"/>
 
-    <xdebugger.localAttachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityAttachProvider"/>
+    <xdebugger.attachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityAttachDebuggerProvider" />
   </extensions>
 
   <project-components>
@@ -87,6 +87,7 @@
         <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
         <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
         <action class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" id="SwitchUIModeAction" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessAction" />
       </group>
 
       <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />
@@ -98,11 +99,11 @@
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
     </group>
 
-    <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" text="Attach to Unity Process...">
+    <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>
 
-    <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties...">
+    <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties…">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
     </action>
 

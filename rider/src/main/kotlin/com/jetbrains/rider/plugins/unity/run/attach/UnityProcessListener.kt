@@ -13,7 +13,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
         private val logger = Logger.getInstance(UnityProcessListener::class.java)
     }
 
-    private val unityPlayerDescriptorRegex = Pattern.compile("\\[IP\\] (?<ip>.*) \\[Port\\] (?<port>.*) \\[Flags\\] (?<flags>.*) \\[Guid\\] (?<guid>.*) \\[EditorId\\] (?<editorid>.*) \\[Version\\] (?<version>.*) \\[Id\\] (?<id>[^:]+)(:(?<debuggerPort>\\d+))? \\[Debug\\] (?<debug>.*)")
+    private val unityPlayerDescriptorRegex = Pattern.compile("""\[IP] (?<ip>.*) \[Port] (?<port>.*) \[Flags] (?<flags>.*) \[Guid] (?<guid>.*) \[EditorId] (?<editorid>.*) \[Version] (?<version>.*) \[Id] (?<id>[^:]+)(:(?<debuggerPort>\\d+))? \[Debug] (?<debug>.*)""")
 
     private val defaultHeartbeat = 30
 
@@ -30,9 +30,11 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
 
     init {
         for (networkInterface in NetworkInterface.getNetworkInterfaces()) {
-            if (!networkInterface.isUp || !networkInterface.supportsMulticast() || !networkInterface.inetAddresses.hasMoreElements()
-                    || networkInterface.inetAddresses.nextElement() is Inet6Address) //TODO: remove this workaround by setting java.net.preferIPv4Stack to true
+            if (!networkInterface.isUp || !networkInterface.supportsMulticast()
+                    || !networkInterface.inetAddresses.asSequence().any { it is Inet4Address }) {
                 continue
+            }
+
             synchronized(socketsLock) {
                 for (port in multicastPorts) {
                     try {
@@ -50,9 +52,9 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer?) -> Unit, pr
             }
         }
 
-        refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod, {
+        refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
             refreshUnityPlayersList()
-        })
+        }
 
         OSProcessUtil.getProcessList().filter { UnityRunUtil.isUnityEditorProcess(it) }.map { processInfo ->
             val port = convertPortToDebuggerPort(processInfo.pid)
