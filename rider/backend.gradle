@@ -5,7 +5,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-ext.backend = new BackendHelper(ext.repoRoot, PackageSource, buildDir)
+ext.backend = new BackendHelper(ext.repoRoot, buildDir)
 
 // Used to provide a package version to both msbuild and dotnet restore
 ext.extraMSBuildArgs = []
@@ -21,7 +21,7 @@ class BackendHelper {
     File riderSdkPath
     File reSharperSdkPath
 
-    BackendHelper(File repoRoot, File packageSource, File buildDir) {
+    BackendHelper(File repoRoot, File buildDir) {
         repositoryRoot = repoRoot
         assert repositoryRoot.isDirectory()
 
@@ -38,12 +38,8 @@ class BackendHelper {
         riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
         assert riderTestsProject.isFile()
 
-        if (packageSource != null)
-            riderSdkPath = new File(packageSource.canonicalPath)
-        else
-            riderSdkPath = new File(repoRoot.canonicalPath, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
-
-        reSharperSdkPath = new File(buildDir.canonicalPath, "ReSharperSdk")
+        riderSdkPath = new File(repositoryRoot, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
+        reSharperSdkPath = new File(repositoryRoot, "rider/build/JetBrains.ReSharperUltimate.Packages")
     }
 }
 
@@ -195,18 +191,16 @@ class GenerateBuildPropsTask extends DefaultTask {
     }
 }
 
+// if there's no bundled SDK and we have to build R#, we download & unzip it, changing SDK path
 task unzipReSharperSdk(type: Sync){
     group backendGroup
-    onlyIf { !project.shouldBuildRiderOnly }
-
-    ci.Progress("Unzipping ReSharper SDK to $backend.reSharperSdkPath")
-    
+    onlyIf { !project.shouldBuildRiderOnly && !backend.reSharperSdkPath.isDirectory() }    
     dependsOn configurations.reSharper
-    from { 
-        configurations.reSharper.collect { zipTree(it) }
-    }
 
-    into backend.reSharperSdkPath    
+    backend.reSharperSdkPath = new File(backend.repositoryRoot, "rider/build/DownloadedReSharperSDK")
+    ci.Progress("Downloading/unzipping ReSharper SDK to $backend.reSharperSdkPath")
+    from { configurations.reSharper.collect { zipTree(it) } }
+    into backend.reSharperSdkPath
 }
 
 task prepareRiderBuildProps(type: GenerateBuildPropsTask) {
@@ -228,17 +222,24 @@ task prepareReSharperBuildProps(type: GenerateBuildPropsTask) {
 
 task prepareNuGetConfig {
     dependsOn unzipReSharperSdk
-    ci.Progress("Preparing NuGet.Config")
-    def nugetConfigText = """<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <packageSources>
-    <add key="local-rider-sdk" value="$backend.riderSdkPath" />
-    <add key="local-resharper-sdk" value="$backend.reSharperSdkPath" />
-  </packageSources>
-</configuration>
-"""
-    logger.lifecycle(nugetConfigText)
-    new File("$repoRoot/resharper/NuGet.Config").text = nugetConfigText
+
+    doLast {
+        assert backend.riderSdkPath.isDirectory()
+        assert backend.reSharperSdkPath.isDirectory()
+
+        ci.Progress("Preparing NuGet.Config")
+
+        def nugetConfigText = """<?xml version="1.0" encoding="utf-8"?>
+    <configuration>
+    <packageSources>
+        <add key="local-rider-sdk" value="$backend.riderSdkPath" />
+        <add key="local-resharper-sdk" value="$backend.reSharperSdkPath" />
+    </packageSources>
+    </configuration>
+    """
+        logger.lifecycle(nugetConfigText)
+        new File("$repoRoot/resharper/NuGet.Config").text = nugetConfigText
+    }
 }
 
 task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
