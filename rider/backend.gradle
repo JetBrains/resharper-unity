@@ -238,9 +238,6 @@ task prepareNuGetConfig {
     dependsOn unzipReSharperSdk
 
     doLast {
-        assert backend.riderSdkPath.isDirectory()
-        assert backend.reSharperSdkPath.isDirectory()
-
         ci.Progress("Preparing NuGet.Config")
 
         def nugetConfigText = """<?xml version="1.0" encoding="utf-8"?>
