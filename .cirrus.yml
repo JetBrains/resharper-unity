@@ -4,5 +4,5 @@ linux_build_task:
   script: ./build.sh
 windows_build_task:
   windows_container:
-    image: openjdk/8-jdk-windowsservercore-ltsc2016
+    image: openjdk:8-jdk-windowsservercore-ltsc2016
   script: ./build.ps1
