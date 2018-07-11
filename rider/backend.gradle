@@ -71,7 +71,7 @@ class MSBuildTask extends DefaultTask {
         }
 
         def msbuildPath = findMSBuildPath()
-        logger.lifecycle("$msbuildPath " + arguments.toString())
+        logger.lifecycle("msbuild call=$msbuildPath " + arguments.toString())
 
         project.exec {
             executable = msbuildPath
