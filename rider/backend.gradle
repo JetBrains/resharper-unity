@@ -224,7 +224,8 @@ task unzipReSharperSdk(type: Sync){
 
     
     if (backend.reSharperSdkPath.isDirectory()) {
-        logger.lifecycle("R# SDK bundle found: $reSharperSdkPath.canonicalPath")        
+        logger.lifecycle("R# SDK bundle found: $backend.reSharperSdkPath.canonicalPath")
+        return
     }
     else {
         logger.lifecycle("R# SDK is not bundled")
