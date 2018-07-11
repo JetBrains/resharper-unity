@@ -5,8 +5,6 @@ sourceSets {
     }
 }
 
-def dependenciesDir = new File("dependencies")
-
 intellij {
     pluginName 'rider-unity'
     type 'RD'
@@ -22,8 +20,8 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "F:\\RiderSDK"
 
-    if (dependenciesDir .exists()) {
-        localPath = dependenciesDir.absolutePath
+    if (dependenciesDir.exists()) {
+        localPath = dependenciesDir.canonicalPath
     } else {
         version = "2018.2-SNAPSHOT"
     }

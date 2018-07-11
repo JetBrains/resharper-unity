@@ -5,7 +5,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-ext.backend = new BackendHelper(ext.repoRoot, buildDir)
+ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.dependenciesDir)
 
 def teamcityVersion = System.env['TEAMCITY_VERSION']
 project.ci.Progress("teamcityVersion = $teamcityVersion")
@@ -25,7 +25,7 @@ class BackendHelper {
     File riderSdkPath
     File reSharperSdkPath
 
-    BackendHelper(File repoRoot, File buildDir) {
+    BackendHelper(File repoRoot, File buildDir, File dependenciesDir) {
         repositoryRoot = repoRoot
         assert repositoryRoot.isDirectory()
 
@@ -42,7 +42,12 @@ class BackendHelper {
         riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
         assert riderTestsProject.isFile()
 
-        riderSdkPath = new File(repositoryRoot, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
+        if (dependenciesDir.isDirectory())
+            riderSdkPath = new File(dependenciesDir.canonicalPath)
+        else
+            riderSdkPath = new File(repoRoot.canonicalPath, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
+
+        // bundled SDK, if there isn't one we'll patch the path and download an SDK in the unzip task
         reSharperSdkPath = new File(repositoryRoot, "rider/build/JetBrains.ReSharperUltimate.Packages")
     }
 }
