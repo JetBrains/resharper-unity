@@ -5,7 +5,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.dependenciesDir)
+ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.dependenciesDir, logger)
 
 def teamcityVersion = System.env['TEAMCITY_VERSION']
 project.ci.Progress("teamcityVersion = $teamcityVersion")
@@ -25,7 +25,7 @@ class BackendHelper {
     File riderSdkPath
     File reSharperSdkPath
 
-    BackendHelper(File repoRoot, File buildDir, File dependenciesDir) {
+    BackendHelper(File repoRoot, File buildDir, File dependenciesDir, Logger logger) {
         repositoryRoot = repoRoot
         assert repositoryRoot.isDirectory()
 
@@ -42,12 +42,16 @@ class BackendHelper {
         riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
         assert riderTestsProject.isFile()
 
-        if (dependenciesDir.isDirectory()) {
+        if (dependenciesDir.isDirectory()) {            
             riderSdkPath = new File(dependenciesDir.canonicalPath, "lib/ReSharperHostSdk")
             assert riderSdkPath.isDirectory()
+
+            logger.lifecycle("Rider SDK bundle found: $riderSdkPath.canonicalPath")
         }
-        else
+        else {
+            logger.lifecycle("Rider SDK is not bundled")
             riderSdkPath = new File(repoRoot.canonicalPath, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
+        }
 
         // bundled SDK, if there isn't one we'll patch the path and download an SDK in the unzip task
         reSharperSdkPath = new File(repositoryRoot, "rider/build/JetBrains.ReSharperUltimate.Packages")
@@ -215,10 +219,18 @@ class GenerateBuildPropsTask extends DefaultTask {
 // if there's no bundled SDK and we have to build R#, we download & unzip it, changing SDK path
 task unzipReSharperSdk(type: Sync){
     group backendGroup
-    onlyIf { !project.shouldBuildRiderOnly && !backend.reSharperSdkPath.isDirectory() }    
+    onlyIf { !project.shouldBuildRiderOnly }    
     dependsOn configurations.reSharper
 
-    backend.reSharperSdkPath = new File(backend.repositoryRoot, "rider/build/DownloadedReSharperSDK")
+    
+    if (backend.reSharperSdkPath.isDirectory()) {
+        logger.lifecycle("R# SDK bundle found: $reSharperSdkPath.canonicalPath")        
+    }
+    else {
+        logger.lifecycle("R# SDK is not bundled")
+        backend.reSharperSdkPath = new File(repoRoot, "rider/build/DownloadedReSharperSDK")
+    }
+    
     ci.Progress("Downloading/unzipping ReSharper SDK to $backend.reSharperSdkPath")
     from { configurations.reSharper.collect { zipTree(it) } }
     into backend.reSharperSdkPath
