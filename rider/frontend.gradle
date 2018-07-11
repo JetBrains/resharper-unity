@@ -5,8 +5,6 @@ sourceSets {
     }
 }
 
-def dependenciesDir = new File("dependencies")
-
 intellij {
     pluginName 'rider-unity'
     type 'RD'
@@ -22,8 +20,8 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "F:\\RiderSDK"
 
-    if (dependenciesDir .exists()) {
-        localPath = dependenciesDir.absolutePath
+    if (dependenciesDir.exists()) {
+        localPath = dependenciesDir.canonicalPath
     } else {
         version = "2018.2-SNAPSHOT"
     }
@@ -57,17 +55,8 @@ if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
 }
 else {
     def frontendSdkVersion = "2018.2-SNAPSHOT"
-    // rider/build/riderRD-2018.2-SNAPSHOT
     def frontendSdkDirs = []
     def frontendSdkSearchPath = new File(repoRoot, "rider/build")
-    //logger.lifecycle("listing $frontendSdkSearchPath.path:")
-    //fileTree(frontendSdkSearchPath).visit {
-        //if (it.isDirectory()){
-            //if (it.name.startsWith("riderRD"))
-                //frontendSdkDirs << it
-            //logger.lifecycle("DIR:  $it.name")
-        //}
-    //}
 
     if (frontendSdkDirs.size() > 0) {
         assert frontendSdkDirs.size() == 1
@@ -181,7 +170,6 @@ task publishCiBuildData {
 
 buildPlugin.finalizedBy publishCiBuildData
 buildPlugin.dependsOn generateModel, validatePluginXml
-
 
 // If we're building `runIde`, only build Rider bits. We only know this once the task graph
 // has been evaluated. It's now too late to change inputs/outputs or dependencies. An alternative
