@@ -48,10 +48,10 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     }
 
     private fun generatedSolutionFileExistsNear(solution: Solution): Boolean {
-        var dirPath = File(solution.path).toPath().parent
-        var expectedGeneratedSolutionName = dirPath.toFile().name+".sln"
-        var expectedGneratedSolutionFile = dirPath!!.resolve(expectedGeneratedSolutionName).toFile()
-        return expectedGneratedSolutionFile.exists()
+        val dirPath = File(solution.path).toPath().parent
+        val expectedGeneratedSolutionName = dirPath.toFile().name+".sln"
+        val expectedGeneratedSolutionFile = dirPath!!.resolve(expectedGeneratedSolutionName).toFile()
+        return expectedGeneratedSolutionFile.exists()
     }
 
     private fun isUnityGeneratedSolutionName(solution: Solution): Boolean {

@@ -25,7 +25,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private val peerPanel: JPanel = JPanel()
 
     init {
-        title = "Search for available Unity processes..."
+        title = "Searching for Unity Editors and Players…"
         list.model = listModel
         list.cellRenderer = UnityProcessCellRenderer()
         init()

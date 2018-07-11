@@ -73,7 +73,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
             "<br/>* <a href=\"openSettings_Editor Tabs_Mark modified tabs\">Mark modified tabs with asterisk</a>"
 
         val notification = Notification(notificationGroupId.displayId, "Unity: auto-save was disabled", message, NotificationType.INFORMATION)
-        notification.setListener {notification, hyperlinkEvent ->
+        notification.setListener {_, hyperlinkEvent ->
             if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
                 return@setListener
 
