@@ -5,6 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.TestFramework;
@@ -69,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descri
                 foreach (var highlightingInfo in context.HighlightingsToAdd)
                 {
                     var severity = instance.GetSeverity(highlightingInfo.Highlighting, SourceFile, Solution, ContextBoundSettingsStore);
-                    if (highlightingInfo.Range.Contains(myCaretRange) && severity == Severity.INFO)
+                    if (OldMsBuildWorkarounds.RangeContains(highlightingInfo.Range, myCaretRange) && severity == Severity.INFO)
                     {
                         if (highlightingInfo.Highlighting is CSharpIdentifierHighlighting)
                             HighlightingInfo = highlightingInfo;
