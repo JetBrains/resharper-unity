@@ -38,7 +38,7 @@ ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
 
 ext.repoRoot = new File("..").canonicalFile
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-
+ext.dependenciesDir = new File("dependencies")
 
 wrapper {
     gradleVersion = '4.7'
