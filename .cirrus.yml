@@ -1,4 +1,4 @@
 container:
-  image: gradle:jdk8
+  image: jetbrainsinfra/rider-plugins
 check_task:
   script: ./build.sh
