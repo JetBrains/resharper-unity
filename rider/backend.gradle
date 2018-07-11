@@ -75,7 +75,7 @@ class MSBuildTask extends DefaultTask {
         }
 
         def msbuildPath = findMSBuildPath()
-        project.ci.Progress("$msbuildPath " + arguments.toString())
+        logger.lifecycle("$msbuildPath " + arguments.toString())
 
         project.exec {
             executable = msbuildPath
