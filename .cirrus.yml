@@ -1,4 +1,4 @@
-container:
-  image: jetbrainsinfra/rider-plugins
-check_task:
+build_task:
+  container:
+    image: jetbrainsinfra/rider-plugins
   script: ./build.sh
