@@ -42,8 +42,10 @@ class BackendHelper {
         riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
         assert riderTestsProject.isFile()
 
-        if (dependenciesDir.isDirectory())
-            riderSdkPath = new File(dependenciesDir.canonicalPath)
+        if (dependenciesDir.isDirectory()) {
+            riderSdkPath = new File(dependenciesDir.canonicalPath, "lib/ReSharperHostSdk")
+            assert riderSdkPath.isDirectory()
+        }
         else
             riderSdkPath = new File(repoRoot.canonicalPath, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
 
