@@ -113,6 +113,13 @@
       <action id="PauseInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction" text="Pause/Resume" description="Pause/Resume play in Unity" />
       <action id="StepInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" text="Step" description="Perform a single frame step in Unity" />
     </group>
+
+    <action id="OpenFromUnity" class="com.jetbrains.rider.plugins.unity.actions.OpenFromUnityAction"
+            text="Open From Unity Editor"
+            icon="/Icons/actions/openFromUnity.svg" >
+        <add-to-group group-id="WelcomeScreen.QuickStart" anchor="before" relative-to-action="WelcomeScreen.GetFromVcs" />
+    </action>
+
   </actions>
 
   <description><![CDATA[
