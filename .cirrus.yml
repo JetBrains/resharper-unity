@@ -2,7 +2,8 @@ linux_build_task:
   container:
     image: jetbrainsinfra/rider-plugins
   script: ./build.sh
-windows_build_task:
-  windows_container:
-    image: openjdk:8-jdk-windowsservercore-ltsc2016
-  script: ./build.ps1
+
+# windows_build_task:
+#  windows_container:
+#    image: openjdk:8-jdk-windowsservercore-ltsc2016
+#  script: ./build.ps1
