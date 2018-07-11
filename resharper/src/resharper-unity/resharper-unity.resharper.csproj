@@ -11,7 +11,7 @@
     <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RESHARPER</DefineConstants>
+    <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <!-- C# -->
