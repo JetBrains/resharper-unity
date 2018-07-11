@@ -63,6 +63,12 @@ class MSBuildTask extends DefaultTask {
 
         def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:normal', '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
         arguments.addAll(project.extraMSBuildArgs)
+
+        // references to C# 7.2 from C# 7.1, old msbuild and all this stuff
+        if (System.env['TEAMCITY_VERSION'] != null) {
+            arguments.add("/p:DefineConstants=\"OLD_MSBUILD\"")
+        }
+
         project.exec {
             executable = findMSBuildPath()
             args = arguments
@@ -320,7 +326,6 @@ task buildUnityEditorPlugin {
     // See comment above
     dependsOn buildUnityEditorPluginLight, buildUnityEditorPluginFull
 }
-
 
 task packReSharperPlugin(type: MonoExecTask) {
     dependsOn buildReSharperHostPlugin

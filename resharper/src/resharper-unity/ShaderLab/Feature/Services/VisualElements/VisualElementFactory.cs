@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Colors;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.Tree;
@@ -57,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualEle
         {
             var startOffset = firstValue.GetDocumentStartOffset();
             var endOffset = lastValue.GetDocumentEndOffset();
-            return new DocumentRange(startOffset, endOffset);
+            return OldMsBuildWorkarounds.CreateDocumentRange(startOffset, endOffset);
         }
 
         private static int GetColorValue(INumericValue value)
