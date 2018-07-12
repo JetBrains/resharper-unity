@@ -1,14 +1,14 @@
 package com.jetbrains.rider.plugins.unity.openFrom
 
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.panel.ComponentPanelBuilder
-import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.ScrollPaneFactory
-import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.jetbrains.rider.plugins.unity.restClient.ProjectState
 import java.awt.Component
 import java.awt.Dimension
+import java.io.File
 import java.nio.file.Paths
 import javax.swing.*
 
@@ -22,6 +22,7 @@ class OpenFromUnityDialog(private val discoverer: UnityOpenProjectDiscoverer)
     private val listModelLock = Object()
     private val list = JBList<OpenUnityProject>()
     private val rootPanel = JPanel()
+    private var validationInfo: ValidationInfo? = null
 
     init {
         title = "Open project from Unity Editor"
@@ -40,6 +41,8 @@ class OpenFromUnityDialog(private val discoverer: UnityOpenProjectDiscoverer)
         init()
     }
 
+    override fun postponeValidation() = false
+
     override fun createCenterPanel(): JComponent? {
         rootPanel.layout = BoxLayout(rootPanel, BoxLayout.PAGE_AXIS)
         val pane = ScrollPaneFactory.createScrollPane(list)
@@ -53,7 +56,6 @@ class OpenFromUnityDialog(private val discoverer: UnityOpenProjectDiscoverer)
 
     override fun show() {
 
-        // TODO: Report errors
         discoverer.start({
             synchronized(listModelLock) {
                 val wasEmpty = listModel.isEmpty
@@ -61,6 +63,8 @@ class OpenFromUnityDialog(private val discoverer: UnityOpenProjectDiscoverer)
                 if (wasEmpty)
                     list.selectedIndex = 0
             }
+        }, { _, _ ->
+            validationInfo = ValidationInfo("Error contacting Unity Editor.<br/>If this happens again, please try reimporting assets.")
         }, {
             list.setPaintBusy(false)
             synchronized(listModelLock) {
@@ -72,6 +76,8 @@ class OpenFromUnityDialog(private val discoverer: UnityOpenProjectDiscoverer)
 
         super.show()
     }
+
+    override fun doValidate(): ValidationInfo? = validationInfo
 
     class OpenUnityProjectCellRenderer : ColoredListCellRenderer<OpenUnityProject>() {
         override fun customizeCellRenderer(list: JList<out OpenUnityProject>, openProject: OpenUnityProject?, index: Int, selected: Boolean, hasFocus: Boolean) {
@@ -90,6 +96,6 @@ class OpenUnityProject(val port: Int, val projectState: ProjectState) {
     private val projectPath = Paths.get(projectState.basedirectory)
 
     val projectName = projectPath.fileName.toString()
-    val solutionFile = projectPath.resolve(projectName + ".sln").toFile()
+    val solutionFile: File = projectPath.resolve("$projectName.sln").toFile()
 }
 

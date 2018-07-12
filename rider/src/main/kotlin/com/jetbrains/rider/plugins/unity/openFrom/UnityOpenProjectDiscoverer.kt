@@ -13,7 +13,7 @@ import java.nio.charset.Charset
 class UnityOpenProjectDiscoverer {
     private val logger = getLogger<UnityOpenProjectDiscoverer>()
 
-    fun start(onFound: (project: OpenUnityProject) -> Unit, onDone: () -> Unit) {
+    fun start(onFound: (project: OpenUnityProject) -> Unit, onError: (port: Int, error: Throwable) -> Unit, onDone: () -> Unit) {
         ApplicationManager.getApplication().executeOnPooledThread {
 
             // Note that this requires Unity 5.3.0+
@@ -48,8 +48,10 @@ class UnityOpenProjectDiscoverer {
                             println()
                         } catch (e: SocketTimeoutException) {
                             // Again, we don't care if it times out. This is likely on Windows, see above
+                        } catch (e: Throwable) {
+                            onError(port, e)
+                            throw e
                         }
-                        // TODO: Best way to handle error? Might need to tell user to re-import assets
                     }
                 }
             }
