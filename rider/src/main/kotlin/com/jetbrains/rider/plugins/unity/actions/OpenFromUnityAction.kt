@@ -28,6 +28,10 @@ class OpenFromUnityAction: AnAction() {
         private val logger = getLogger<OpenFromUnityAction>()
     }
 
+    override fun update(e: AnActionEvent?) {
+        e?.presentation?.isVisible = UnityInstallationIdentifier.hasUnityBeenUsed()
+    }
+
     override fun actionPerformed(event: AnActionEvent) {
         val projectDiscoverer = UnityOpenProjectDiscoverer()
         val dialog = OpenFromUnityDialog(projectDiscoverer)
