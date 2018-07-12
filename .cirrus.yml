@@ -7,3 +7,7 @@ linux_build_task:
 #  windows_container:
 #    image: openjdk:8-jdk-windowsservercore-ltsc2016
 #  script: ./build.ps1
+
+osx_build_task:
+  image: high-sierra-base
+  script: ./build.sh
