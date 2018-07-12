@@ -38,7 +38,7 @@ ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
 
 ext.repoRoot = new File("..").canonicalFile
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-
+ext.dependenciesDir = new File("dependencies")
 
 wrapper {
     gradleVersion = '4.7'
@@ -57,15 +57,6 @@ if (System.env['TEAMCITY_VERSION'] != null) {
     ext.ci = new NullService()
     ext.isBuildingUnderCi = false
 }
-
-// Renaming to be more meaningful, but would also require updating build.ps1
-// and also the build configuration settings in TeamCity
-if (!ext.has("Source"))
-    ext.Source = new File(ext.repoRoot, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
-else
-    ext.Source = new File(ext.Source)
-
-ext.PackageSource = ext.Source
 
 if (!ext.has("BuildCounter"))
     ext.BuildCounter = 9999

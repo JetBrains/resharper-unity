@@ -103,7 +103,7 @@
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
     </action>
 
-    <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties…">
+    <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties...">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
     </action>
 

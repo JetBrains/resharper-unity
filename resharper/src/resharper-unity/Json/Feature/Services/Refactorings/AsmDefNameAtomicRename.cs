@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Plugins.Unity.Json.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.Services;
 using JetBrains.ReSharper.Psi.Pointers;
@@ -89,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Refactorings
                     continue;
 
                 var occurrenceRange = occurrence.Marker.DocumentRange;
-                if (handledRange.Contains(occurrenceRange))
+                if (OldMsBuildWorkarounds.RangeContains(handledRange, occurrenceRange))
                 {
                     occurrence.Included = false;
                     break;
