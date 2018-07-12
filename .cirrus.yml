@@ -9,5 +9,6 @@ linux_build_task:
 #  script: ./build.ps1
 
 osx_build_task:
-  image: high-sierra-base
+  container:
+    image: high-sierra-base
   script: ./build.sh
