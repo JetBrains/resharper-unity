@@ -109,6 +109,7 @@ class OpenFromUnityAction: AnAction() {
     }
 
     private fun generateProjectFile(unityProject: OpenUnityProject, projectGuids: Map<String, String>, island: Island) {
+        if (island.files.isEmpty()) return
         val guid = projectGuids[island.name] ?: return
 
         File(unityProject.projectState.basedirectory, island.name + ".csproj").writer(Charset.forName("UTF-8")).use {
@@ -210,17 +211,16 @@ class OpenFromUnityAction: AnAction() {
     }
 
     private fun shouldGenerate(island: Island): Boolean {
-        if (island.language == "C#") {
-            for (fileName in island.files) {
-                // Make sure all of the files exist. We might get projects for non-embedded packages
-                val file = File(island.basedirectory, fileName)
-                if (!file.exists())
-                    return false
-            }
-            return true
-        }
+        if (island.files.isEmpty()) return false
+        if (island.language != "C#") return false
 
-        return false
+        for (fileName in island.files) {
+            // Make sure all of the files exist. We might get projects for non-embedded packages
+            val file = File(island.basedirectory, fileName)
+            if (!file.exists())
+                return false
+        }
+        return true
     }
 
     // If this GUID is deterministic, Rider will update changed projects in-place, rather than unloading and reloading
