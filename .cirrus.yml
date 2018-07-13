@@ -11,14 +11,8 @@
 osx_build_task:
   osx_instance:
     image: high-sierra-xcode-9.4
-  #install_jdk_script: brew cask install java
+  install_jdk_script: brew cask install java
   install_mono_script: brew cask install mono-mdk
-  #before_script: cat ~/.profile 
-  #install_dotnet_core_script: brew cask install dotnet-sdk
-  after_script: ls -la /Library/Frameworks/Mono.framework/Versions/Current/Commands
-  after_two_script: which msbuild
-  after_three_script: echo $PATH
-  # /usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands
-  #source_env_vars_script: . ~/.bashrc
-  #dotnet_test_script: dotnet --info
-  #build_script: ./build.sh
+  install_dotnet_core_script: brew cask install dotnet-sdk
+  patch_path_script: PATH=$PATH:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands
+  build_script: ./build.sh
