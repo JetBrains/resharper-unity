@@ -15,8 +15,8 @@ osx_build_task:
   #install_mono_script: brew cask install mono-mdk
   #install_dotnet_core_script: brew cask install dotnet-sdk
   experiment_script: mkdir foo && touch foo/bar && chmod +x foo/bar
-  which_one_script: which bar
-  path_patching_script: export PATH=${PATH}:~/foo/bar
+  #which_one_script: which bar
+  path_patching_script: echo $PATH && export PATH=${PATH}:~/foo && echo $PATH && source ~/.profile && echo $PATH
   which_two_script: which bar
   #patch_path_script: export PATH=${PATH}:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands
   #build_script: which dotnet
