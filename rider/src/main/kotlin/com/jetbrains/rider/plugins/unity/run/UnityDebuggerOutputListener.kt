@@ -16,7 +16,7 @@ class UnityDebuggerOutputListener(val project: Project) : IDebuggerOutputListene
     override fun onOutputMessageAvailable(message: OutputMessage) {
 
         if (message.subject == OutputSubject.ConnectionError) {
-            val text = "\nCheck \"Editor Attaching\" in Unity settings.\n"
+            val text = "Unable to connect to Unity Editor.\nPlease check \"Editor Attaching\" in Unity's External Tools settings page.\n"
             XDebuggerManagerImpl.NOTIFICATION_GROUP.createNotification(text, NotificationType.ERROR).notify(project)
 
             val debuggerManager = project.getComponent(XDebuggerManager::class.java)
@@ -24,7 +24,7 @@ class UnityDebuggerOutputListener(val project: Project) : IDebuggerOutputListene
 
             if (debugProcess != null) {
                 val console = debugProcess.console
-                (console as? ConsoleView)?.print(text, when (message.type) {
+                (console as? ConsoleView)?.print("\n" + text, when (message.type) {
                     OutputType.Info -> ConsoleViewContentType.NORMAL_OUTPUT
                     OutputType.Warning -> ConsoleViewContentType.LOG_WARNING_OUTPUT
                     OutputType.Error -> ConsoleViewContentType.ERROR_OUTPUT

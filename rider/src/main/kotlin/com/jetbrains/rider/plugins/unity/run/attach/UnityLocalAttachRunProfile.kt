@@ -14,5 +14,5 @@ class UnityLocalAttachRunProfile(private val configurationName: String, private 
     }
 
     override fun getName() = configurationName
-    override fun getIcon() = UnityIcons.Icons.AttachEditorDebugConfiguration
+    override fun getIcon() = UnityIcons.RunConfigurations.AttachToUnityParentConfiguration
 }

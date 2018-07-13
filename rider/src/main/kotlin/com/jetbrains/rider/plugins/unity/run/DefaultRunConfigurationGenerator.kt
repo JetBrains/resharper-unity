@@ -2,9 +2,11 @@ package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.ConfigurationTypeUtil
+import com.intellij.execution.configurations.UnknownConfigurationType
 import com.jetbrains.rider.UnityReferenceDiscoverer
 import com.jetbrains.rider.UnityReferenceListener
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugAndPlayConfigurationType
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorAndPlayFactory
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
 
 class DefaultRunConfigurationGenerator(unityReferenceDiscoverer: UnityReferenceDiscoverer, runManager: RunManager) {
@@ -15,26 +17,35 @@ class DefaultRunConfigurationGenerator(unityReferenceDiscoverer: UnityReferenceD
     init {
         unityReferenceDiscoverer.addUnityReferenceListener(object: UnityReferenceListener {
             override fun hasUnityReference() {
-                // Add Attach Unity Editor configuration, if it doesn't exist
-                if (!runManager.allSettings.any { a->a.type == UnityDebugConfigurationType::class.java})
-                {
+                // Clean up the renamed "attach and play" configuration from 2018.2 EAP1-3
+                // (Was changed from a separate configuration type to just another factory under "Attach to Unity")
+                val toRemove = runManager.allSettings.filter {
+                    it.type is UnknownConfigurationType && it.name == "Attach to Unity Editor & Play"
+                }
+                for (value in toRemove) {
+                    runManager.removeConfiguration(value)
+                }
+
+                // Add "Attach Unity Editor" configurations, if they don't exist
+                if (!runManager.allSettings.any { it.type is UnityDebugConfigurationType && it.factory is UnityAttachToEditorFactory }) {
                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDebugConfigurationType::class.java)
                     val runConfiguration = runManager.createRunConfiguration(ATTACH_CONFIGURATION_NAME, configurationType.attachToEditorFactory)
                     // Not shared, as that requires the entire team to have the plugin installed
                     runManager.addConfiguration(runConfiguration, false)
                 }
+
+                if (!runManager.allSettings.any { it.type is UnityDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory }) {
+                    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDebugConfigurationType::class.java)
+                    val runConfiguration = runManager.createRunConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationType.attachToEditorAndPlayFactory)
+                    runManager.addConfiguration(runConfiguration, false)
+                }
+
                 // make Attach Unity Editor configuration selected if nothing is selected
                 if (runManager.selectedConfiguration == null) {
                     val runConfiguration = runManager.findConfigurationByName(ATTACH_CONFIGURATION_NAME)
                     if (runConfiguration != null) {
                         runManager.selectedConfiguration = runConfiguration
                     }
-                }
-
-                if (!runManager.allSettings.any { a->a.type == UnityDebugAndPlayConfigurationType::class.java}) {
-                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDebugAndPlayConfigurationType::class.java)
-                     val runConfiguration = runManager.createRunConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationType.attachToEditorAndPlayFactory)
-                    runManager.addConfiguration(runConfiguration, false)
                 }
             }
         })
