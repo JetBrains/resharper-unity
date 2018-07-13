@@ -13,8 +13,9 @@ osx_build_task:
     image: high-sierra-xcode-9.4
   #install_jdk_script: brew cask install java
   #install_mono_script: brew cask install mono-mdk
+  before_script: cat ~/.profile 
   install_dotnet_core_script: brew cask install dotnet-sdk
-  ls_script: ls -la ~ 
+  after_script: cat ~/.profile 
   #source_env_vars_script: . ~/.bashrc
   #dotnet_test_script: dotnet --info
-  build_script: ./build.sh
+  #build_script: ./build.sh
