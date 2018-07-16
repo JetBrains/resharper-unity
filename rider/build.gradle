@@ -16,7 +16,8 @@ buildscript {
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.2.41'
-    id 'org.jetbrains.intellij' version '0.3.2'
+    id 'org.jetbrains.intellij' version '0.3.2'   
+    id 'com.ullink.nunit' version '1.12' 
 }
 
 configurations {
@@ -67,6 +68,10 @@ if (!ext.has("BuildConfiguration")) {
 
 if (!ext.has('dotNetUpToDate') || ext.dotNetUpToDate ==~ "(?i)False")
     ext.dotNetUpToDate = false
+
+/* done as an optional step so that we can reuse the build artifacts */
+if (!ext.has('runTests'))
+    ext.runTests = false
 
 ext.shouldBuildRiderOnly = false
 

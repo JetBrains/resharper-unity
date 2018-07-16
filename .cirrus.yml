@@ -3,10 +3,10 @@ linux_build_task:
     image: jetbrainsinfra/rider-plugins
   build_script: ./build.sh
 
-# windows_build_task:
-#  windows_container:
-#    image: openjdk:8-jdk-windowsservercore-ltsc2016
-#  script: ./build.ps1
+windows_build_task:
+ windows_container:
+  image: ivanpashchenko/rider-plugins
+ build_script: ./build.ps1
 
 osx_build_task:
   osx_instance:
