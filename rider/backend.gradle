@@ -296,14 +296,8 @@ nunit {
     shadowCopy false
 
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
-    assert buildDir.isDirectory()
-
     def riderTestsDll = new File(buildDir, "tests.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
-    assert riderTestsDll.isFile()
-
     def resharperTestsDll = new File(buildDir, "tests.resharper/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")    
-    assert resharperTestsDll.isFile()
-
     testAssemblies = [riderTestsDll, resharperTestsDll]
 }
 
