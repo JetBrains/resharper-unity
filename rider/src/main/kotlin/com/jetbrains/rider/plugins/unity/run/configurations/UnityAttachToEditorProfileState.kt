@@ -44,6 +44,6 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
 
     override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
         debugAttached.fire(true)
-        return UnityDebuggerOutputListener(project)
+        return UnityDebuggerOutputListener(project, remoteConfiguration.address, "Unity Editor", true)
     }
 }

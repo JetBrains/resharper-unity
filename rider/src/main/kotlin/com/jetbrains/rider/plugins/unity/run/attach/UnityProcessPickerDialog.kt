@@ -10,7 +10,6 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.panel
-import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
@@ -25,9 +24,18 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private val peerPanel: JPanel = JPanel()
 
     init {
-        title = "Search for available Unity processes..."
+        title = "Searching for Unity Editors and Players..."
         list.model = listModel
         list.cellRenderer = UnityProcessCellRenderer()
+        isOKActionEnabled = false
+
+        list.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        list.selectionModel.addListSelectionListener {
+            isOKActionEnabled = list.selectedIndex != -1
+            if (list.selectedIndex != -1) {
+                isOKActionEnabled = list.selectedValue.allowDebugging
+            }
+        }
         init()
     }
 
@@ -56,9 +64,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     override fun doOKAction() {
         if (okAction.isEnabled) {
             val player = list.selectedValue
-            if (player != null) {
-                val port = if (player.debuggerPort != 0) player.debuggerPort else convertPortToDebuggerPort(player.guid)
-                UnityRunUtil.runAttach(player.host, port, player.id, project)
+            if (player != null && player.allowDebugging) {
+                UnityRunUtil.attachToUnityProcess(player.host, player.debuggerPort, player.id, project, player.isEditor)
             }
             close(OK_EXIT_CODE)
         }
@@ -67,20 +74,16 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     override fun show() {
         var unityProcessListener: UnityProcessListener? = null
         try {
-            unityProcessListener = UnityProcessListener(
-                    { player ->
-                        if (player == null || !player.allowDebugging)
-                            return@UnityProcessListener
-                        synchronized(listModelLock) {
-                            listModel.addElement(player)
-                        }
-                    },
-                    { player ->
-                        player ?: return@UnityProcessListener
-                        synchronized(listModelLock) {
-                            listModel.removeElement(player)
-                        }
-                    })
+            unityProcessListener = UnityProcessListener({
+                synchronized(listModelLock) {
+                    listModel.addElement(it)
+                }
+            }, {
+                synchronized(listModelLock) {
+                    listModel.removeElement(it)
+                }
+            })
+
             super.show()
         } finally {
             unityProcessListener?.close()
@@ -93,7 +96,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
         val panel = panel {
             row("Address:") { hostField() }
-            row("Port:") { portField() }
+            row("Debugging Port:") { portField() }
         }
 
         val dialog = dialog(
@@ -111,7 +114,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             if (validationResult.count() > 0) return@dialog validationResult
 
-            val player = UnityPlayer(hostAddress, port, 0, port.toLong(), port.toLong(), 0, hostAddress, true, port)
+            val player = UnityPlayer(hostAddress, port, port, 0, port.toLong(), port.toLong(), 0, hostAddress, true, false)
             synchronized(listModelLock) {
                 listModel.addElement(player)
                 list.selectedIndex = listModel.size() - 1
@@ -125,9 +128,14 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 class UnityProcessCellRenderer : ColoredListCellRenderer<UnityPlayer>() {
     override fun customizeCellRenderer(list: JList<out UnityPlayer>, player: UnityPlayer?, index: Int, selected: Boolean, hasFocus: Boolean) {
         player ?: return
-        val port = if (player.debuggerPort != 0) player.debuggerPort else convertPortToDebuggerPort(player.guid)
-        append(player.id, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
-        append(" (${player.host}:$port)")
+        if (!player.allowDebugging) {
+            append(player.id, SimpleTextAttributes.GRAYED_ATTRIBUTES)
+            append(" (Debugging disabled)", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES)
+            append(" ${player.host}:${player.debuggerPort}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+        }
+        else {
+            append(player.id, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
+            append(" ${player.host}:${player.debuggerPort}")
+        }
     }
-
 }
