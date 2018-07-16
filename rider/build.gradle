@@ -70,8 +70,9 @@ if (!ext.has('dotNetUpToDate') || ext.dotNetUpToDate ==~ "(?i)False")
     ext.dotNetUpToDate = false
 
 /* done as an optional step so that we can reuse the build artifacts */
-if (!ext.has('runTests'))
-    ext.runTests = false
+if (!ext.has('RunTests'))
+    ext.RunTests = false
+logger.lifecycle("RunTests=$RunTests")
 
 ext.shouldBuildRiderOnly = false
 

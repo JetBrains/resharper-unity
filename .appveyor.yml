@@ -1,4 +1,4 @@
 image: Visual Studio 2017
 build_script:
-- ps: . .\build.ps1
+- ps: . .\build.ps1 -RunTests True
 test: off

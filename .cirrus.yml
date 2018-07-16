@@ -6,7 +6,7 @@ linux_build_task:
 windows_build_task:
  windows_container:
   image: ivanpashchenko/rider-plugins
- build_script: ./build.ps1
+ build_script: powershell -File ./build.ps1 -RunTests True
 
 osx_build_task:
   osx_instance:
