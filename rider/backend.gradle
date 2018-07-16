@@ -70,6 +70,7 @@ class MSBuildTask extends DefaultTask {
 
     @TaskAction
     def build() {
+        return
         project.ci.Progress("Building $buildFile ($project.BuildConfiguration)")
 
         def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:normal', '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
@@ -347,14 +348,20 @@ task buildReSharperHostPlugin {
 }
 
 nunit {
-    logger.lifecycle("project.RunTests=$project.RunTests")
-    logger.lifecycle("project.shouldBuildRiderOnly=$project.shouldBuildRiderOnly")
-
-    onlyIf { project.RunTests && !project.shouldBuildRiderOnly}
+    onlyIf { project.RunTests && !project.shouldBuildRiderOnly }
     dependsOn buildFullReSharperPlugin
     nunitVersion "2.6.4"
     framework "net-4.6.1"
     shadowCopy false
+
+    def check = project.RunTests && !project.shouldBuildRiderOnly    
+    logger.lifecycle("onlyif=$check")
+    logger.lifecycle("project.RunTests=$project.RunTests")
+    logger.lifecycle("project.shouldBuildRiderOnly=$project.shouldBuildRiderOnly")
+    if (!(project.RunTests && !project.shouldBuildRiderOnly))
+        return
+
+    outputs.upToDateWhen { false }
 
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
     def riderTestsDll = new File(buildDir, "tests.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
