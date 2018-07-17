@@ -197,7 +197,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         model.RiderProcessId.SetValue(frontendProcess.Id);
                     }
 
-                    myHost.SetModelData("UNITY_SessionInitialized", "true");
+                    myHost.PerformModelAction(m => m.SessionInitialized.Value = true);
 
                     SubscribeToLogs(lf, model);
                     SubscribeToOpenFile(model);
@@ -224,7 +224,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             myLocks.ExecuteOrQueueEx(myComponentLifetime, "clearModel", () =>
                             {
                                 myLogger.Info("Wire disconnected.");
-                                myHost.SetModelData("UNITY_SessionInitialized", "false");
+                                myHost.PerformModelAction(m => m.SessionInitialized.Value = false);
                                 myUnityModel.SetValue(null, myReadonlyToken);
                             });
                     });
