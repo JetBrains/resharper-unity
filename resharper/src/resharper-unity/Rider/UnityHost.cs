@@ -9,11 +9,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityHost
     {
-        // TODO: this shouldn't be up in tests until we figure out how to test unity-editor requiring features
+        // TODO: frontend isn't up in backend tests
         private readonly bool myIsInTests;
 
         private readonly RdUnityModel myModel;
 
+        // ReSharper disable once SuggestBaseTypeForParameter
         public UnityHost(ISolution solution, IShellLocks locks)
         {
             myIsInTests = locks.Dispatcher.IsAsyncBehaviorProhibited;

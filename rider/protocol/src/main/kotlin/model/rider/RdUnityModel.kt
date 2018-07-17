@@ -11,9 +11,19 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"EditMode"
     }
 
+    private val EditorState = enum {
+        +"Disconnected"
+        +"ConnectedIdle"
+        +"ConnectedPlay"
+        +"ConnectedRefresh"
+    }
+
     init {
         map("data", string, string)
+
         sink("activateRider", void)
+
+        property("editorState", EditorState)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
         property("hideSolutionConfiguration", bool)
 

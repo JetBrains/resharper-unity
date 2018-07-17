@@ -4,6 +4,7 @@ using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
+using JetBrains.Rider.Model;
 using JetBrains.Util;
 using ILogger = JetBrains.Util.ILogger;
 
@@ -38,25 +39,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
 
                 logger.Trace($"Sending connection state. State: {myLastCheckResult}");
-                host.SetModelData("UNITY_EditorState", Wrap(myLastCheckResult));
+                host.PerformModelAction(m => m.EditorState.Value = Wrap(myLastCheckResult));
             });
         }
 
         // ReSharper disable once UnusedMember.Global
         public UnityEditorState LastCheckResult => myLastCheckResult;
 
-        private string Wrap(UnityEditorState state)
+        private EditorState Wrap(UnityEditorState state)
         {
             switch (state)
             {
                 case UnityEditorState.Disconnected:
-                    return "Disconnected";
+                    return EditorState.Disconnected;
                 case UnityEditorState.Idle:
-                    return "ConnectedIdle";
+                    return EditorState.ConnectedIdle;
                 case UnityEditorState.Play:
-                    return "ConnectedPlay";
+                    return EditorState.ConnectedPlay;
                 case UnityEditorState.Refresh:
-                    return "ConnectedRefresh";
+                    return EditorState.ConnectedRefresh;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
