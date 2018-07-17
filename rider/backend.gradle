@@ -292,7 +292,7 @@ task restoreReSharperHostPluginPackages(type: RestorePackagesTask) {
 task buildFullReSharperPlugin(type: MSBuildTask) {
     group backendGroup
     description 'Builds the fill ReSharper backend plugin solution'
-    dependsOn restoreReSharperHostPluginPackages    
+    dependsOn restoreReSharperHostPluginPackages
 
     onlyIf { !project.shouldBuildRiderOnly }
 
