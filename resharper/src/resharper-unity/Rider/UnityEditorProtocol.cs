@@ -123,8 +123,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             }));
 
-            myHost.PerformModelAction(m =>
-                m.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(model => model.Pause.Value = p)));
+            myHost.PerformModelAction(rd =>
+                rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
             
             myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
             {
@@ -189,34 +189,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
                         new Identities(IdKind.Client), myDispatcher, wire);
-                    var model = new EditorPluginModel(lf, protocol);
-                    model.IsBackendConnected.Set(rdVoid => true);
+                    var editor = new EditorPluginModel(lf, protocol);
+                    editor.IsBackendConnected.Set(rdVoid => true);
                     var frontendProcess = Process.GetCurrentProcess().GetParent();
                     if (frontendProcess != null)
                     {
-                        model.RiderProcessId.SetValue(frontendProcess.Id);
+                        editor.RiderProcessId.SetValue(frontendProcess.Id);
                     }
 
                     myHost.PerformModelAction(m => m.SessionInitialized.Value = true);
 
-                    SubscribeToLogs(lf, model);
-                    SubscribeToOpenFile(model);
-                    
-                    model.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(a=>a.Play.SetValue(b)));
-                    model.Pause.AdviseNotNull(lf, b => myHost.PerformModelAction(a=>a.Pause.SetValue(b)));                    
+                    SubscribeToLogs(lf, editor);
+                    SubscribeToOpenFile(editor);
 
-                    model.EditorLogPath.Advise(lifetime,
+                    editor.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
+                    editor.Pause.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
+
+                    editor.EditorLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
-                    model.PlayerLogPath.Advise(lifetime,
+                    editor.PlayerLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.PlayerLogPath.SetValue(s)));
 
-                    BindPluginPathToSettings(lf, model);
+                    BindPluginPathToSettings(lf, editor);
 
-                    TrackActivity(model, lf);
+                    TrackActivity(editor, lf);
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel",
-                            () => { myUnityModel.SetValue(model, myReadonlyToken); });
+                            () => { myUnityModel.SetValue(editor, myReadonlyToken); });
 
                     lf.AddAction(() =>
                     {
