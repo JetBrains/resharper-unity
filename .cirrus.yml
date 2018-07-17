@@ -3,10 +3,10 @@ linux_build_task:
     image: jetbrainsinfra/rider-plugins
   build_script: ./build.sh
 
-# windows_build_task:
-#  windows_container:
-#   image: ivanpashchenko/rider-plugins
-#  build_script: powershell -File ./build.ps1 -RunTests
+windows_build_task:
+ windows_container:
+  image: ivanpashchenko/rider-plugins
+ build_script: powershell -File ./build.ps1 -RunTests
 
 osx_build_task:
   osx_instance:
