@@ -16,7 +16,7 @@ import java.util.*
 
 class UnityHost(project: Project) : LifetimedProjectComponent(project) {
 
-    val logger = Logger.getInstance(UnityHost::class.java)
+    private val logger = Logger.getInstance(UnityHost::class.java)
 
     val sessionInitialized = Property(false)
     val unityState = Property(DISCONNECTED)
@@ -28,13 +28,13 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
 
     init {
         model.play.advise(componentLifetime) { play.set(it) }
+        model.activateRider.advise(componentLifetime){
+            ProjectUtil.focusProjectWindow(project, true)
+        }
+
         model.data.advise(componentLifetime) { item ->
             val newVal = item.newValueOpt
-            if (item.key == "UNITY_ActivateRider" && newVal == "true") {
-                logger.info(item.key+" "+ newVal)
-                ProjectUtil.focusProjectWindow(project, true)
-                model.data["UNITY_ActivateRider"] = "false";
-            } else if (item.key == "UNITY_EditorState" && newVal != null) {
+            if (item.key == "UNITY_EditorState" && newVal != null) {
                 unityState.set(newVal.toString())
             } else if (item.key == "UNITY_Pause" && newVal!=null) {
                 pause.set(newVal.toBoolean())
@@ -45,7 +45,7 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
                 val jsonObj = JSONObject(newVal)
                 val type = RdLogEventType.values().get(jsonObj.getInt("Type"))
                 val mode = RdLogEventMode.values().get(jsonObj.getInt("Mode"))
-                var ticks = jsonObj.getLong("Time")
+                val ticks = jsonObj.getLong("Time")
                 logSignal.fire(RdLogEvent(ticks, type, mode, jsonObj.getString("Message"), jsonObj.getString("StackTrace")))
             }
         }

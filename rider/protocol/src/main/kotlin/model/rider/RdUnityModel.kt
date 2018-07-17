@@ -13,6 +13,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
     init {
         map("data", string, string)
+        sink("activateRider", void)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
         property("hideSolutionConfiguration", bool)
 

@@ -277,8 +277,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             CaretVisualPlacement.Generic);
                     }
                 }
-
-                myHost.SetModelData("UNITY_ActivateRider", "true");
+                
+                myHost.PerformModelAction(m => m.ActivateRider.Fire());
                 return true;
             });
         }
