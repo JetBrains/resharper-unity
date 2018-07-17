@@ -32,5 +32,13 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("play", bool)
         property("pause", bool)
         property("sessionInitialized", bool)
+
+        sink("onUnityLogEvent", structdef("logEntry") {
+            field("type", int)
+            field("mode", int)
+            field("ticks", long)
+            field("message", string)
+            field("stackTrace", string)
+        })
     }
 }

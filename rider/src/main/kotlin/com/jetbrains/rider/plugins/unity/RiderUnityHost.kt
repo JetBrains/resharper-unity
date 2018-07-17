@@ -12,13 +12,10 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
+import com.jetbrains.rider.util.reactive.adviseNotNull
 import com.jetbrains.rider.util.reactive.flowInto
-import org.codehaus.jettison.json.JSONObject
 
 class UnityHost(project: Project) : LifetimedProjectComponent(project) {
-
-    private val logger = Logger.getInstance(UnityHost::class.java)
-
     val sessionInitialized = Property(false)
     val unityState = Property(EditorState.Disconnected)
     val logSignal = Signal<RdLogEvent>()
@@ -36,17 +33,10 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
         model.pause.flowInto(componentLifetime, pause)
         model.editorState.flowInto(componentLifetime, unityState)
         model.sessionInitialized.flowInto(componentLifetime, sessionInitialized)
-
-        model.data.advise(componentLifetime) { item ->
-            val newVal = item.newValueOpt
-            if (item.key == "UNITY_LogEntry" && newVal!=null) {
-                logger.info(item.key+" "+ newVal)
-                val jsonObj = JSONObject(newVal)
-                val type = RdLogEventType.values().get(jsonObj.getInt("Type"))
-                val mode = RdLogEventMode.values().get(jsonObj.getInt("Mode"))
-                val ticks = jsonObj.getLong("Time")
-                logSignal.fire(RdLogEvent(ticks, type, mode, jsonObj.getString("Message"), jsonObj.getString("StackTrace")))
-            }
+        model.onUnityLogEvent.adviseNotNull(componentLifetime){
+            val type = RdLogEventType.values()[it.type]
+            val mode = RdLogEventMode.values()[it.mode]
+            logSignal.fire(RdLogEvent(it.ticks, type, mode, it.message, it.stackTrace))
         }
     }
     companion object {
