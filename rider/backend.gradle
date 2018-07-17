@@ -289,7 +289,6 @@ task restoreReSharperHostPluginPackages(type: RestorePackagesTask) {
     packagesFile backend.resharperHostPluginSolution
 }
 
-
 task buildFullReSharperPlugin(type: MSBuildTask) {
     group backendGroup
     description 'Builds the fill ReSharper backend plugin solution'
@@ -309,7 +308,6 @@ task buildRiderOnlyPlugin(type: MSBuildTask) {
 
     buildFile = backend.riderTestsProject
 }
-
 
 task buildUnityEditorPluginFull(type: MSBuildTask) {
     group backendGroup
@@ -346,6 +344,20 @@ task buildReSharperHostPlugin {
     // I can't think of a nicer way to have `prepareSandbox` depend on different tasks
     // based on what's executing
     dependsOn buildRiderOnlyPlugin, buildFullReSharperPlugin
+}
+
+nunit {
+    onlyIf { project.RunTests && !project.shouldBuildRiderOnly }
+    dependsOn buildFullReSharperPlugin
+    nunitVersion "2.6.4"
+    framework "net-4.6.1"
+    shadowCopy false
+    outputs.upToDateWhen { false } // we should always run unit tests when RunTests are true
+
+    def buildDir = new File(backend.repositoryRoot, "resharper/build")
+    def riderTestsDll = new File(buildDir, "tests.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
+    def resharperTestsDll = new File(buildDir, "tests.resharper/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")    
+    testAssemblies = [riderTestsDll, resharperTestsDll]
 }
 
 task buildUnityEditorPlugin {
