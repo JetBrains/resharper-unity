@@ -24,6 +24,7 @@ using JetBrains.Rider.Model;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
+using JetBrains.Util.Special;
 using Newtonsoft.Json;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -121,6 +122,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 model.Play.SetValue(e);
 
             }));
+
+            myHost.PerformModelAction(m =>
+                m.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(model => model.Pause.Value = p)));
             
             myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
             {
@@ -145,11 +149,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         model.Step.Start(RdVoid.Instance);
                         solution.CustomData.Data.Remove("UNITY_Step");
-                        break;
-                    
-                    case "UNITY_Pause":
-                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        model.Pause.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
                 }
             }));
@@ -202,8 +201,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     SubscribeToLogs(lf, model);
                     SubscribeToOpenFile(model);
+                    
                     model.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(a=>a.Play.SetValue(b)));
-                    model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
+                    model.Pause.AdviseNotNull(lf, b => myHost.PerformModelAction(a=>a.Pause.SetValue(b)));                    
 
                     model.EditorLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
