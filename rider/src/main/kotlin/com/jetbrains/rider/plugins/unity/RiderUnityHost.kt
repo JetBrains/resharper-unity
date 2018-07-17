@@ -34,13 +34,12 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
         }
 
         model.play.flowInto(componentLifetime, play)
+        model.pause.flowInto(componentLifetime, pause)
         model.editorState.flowInto(componentLifetime, unityState)
 
         model.data.advise(componentLifetime) { item ->
             val newVal = item.newValueOpt
-            if (item.key == "UNITY_Pause" && newVal!=null) {
-                pause.set(newVal.toBoolean())
-            } else if (item.key == "UNITY_SessionInitialized" && newVal!=null) {
+            if (item.key == "UNITY_SessionInitialized" && newVal!=null) {
                 sessionInitialized.set(newVal.toBoolean())
             } else if (item.key == "UNITY_LogEntry" && newVal!=null) {
                 logger.info(item.key+" "+ newVal)

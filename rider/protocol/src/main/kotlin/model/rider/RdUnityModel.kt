@@ -30,5 +30,6 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("editorLogPath", string)
         property("playerLogPath", string)
         property("play", bool)
+        property("pause", bool)
     }
 }
