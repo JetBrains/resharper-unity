@@ -70,7 +70,6 @@ class MSBuildTask extends DefaultTask {
 
     @TaskAction
     def build() {
-        return
         project.ci.Progress("Building $buildFile ($project.BuildConfiguration)")
 
         def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:normal', '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
