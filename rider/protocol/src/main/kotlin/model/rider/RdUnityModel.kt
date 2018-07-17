@@ -31,5 +31,6 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("playerLogPath", string)
         property("play", bool)
         property("pause", bool)
+        property("sessionInitialized", bool)
     }
 }
