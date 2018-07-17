@@ -352,15 +352,7 @@ nunit {
     nunitVersion "2.6.4"
     framework "net-4.6.1"
     shadowCopy false
-
-    def check = project.RunTests && !project.shouldBuildRiderOnly    
-    logger.lifecycle("onlyif=$check")
-    logger.lifecycle("project.RunTests=$project.RunTests")
-    logger.lifecycle("project.shouldBuildRiderOnly=$project.shouldBuildRiderOnly")
-    if (!(project.RunTests && !project.shouldBuildRiderOnly))
-        return
-
-    outputs.upToDateWhen { false }
+    outputs.upToDateWhen { false } // we should always run unit tests when RunTests are true
 
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
     def riderTestsDll = new File(buildDir, "tests.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")

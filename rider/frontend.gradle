@@ -193,7 +193,7 @@ def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Un
 prepareSandbox {
     // Already depends on the standard Java build/jar task
     dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
-    dependsOn nunit // will only get run when pass runTests
+    dependsOn nunit // will only get run when passed RunTests
 
     // Have dependent tasks use uptodateWhen { project.isRunningUnderCi etc. }
     //inputs.files(buildRiderPlugin.outputs)
