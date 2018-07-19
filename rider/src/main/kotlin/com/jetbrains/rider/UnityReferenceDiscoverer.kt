@@ -55,7 +55,8 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     }
 
     private fun isUnityGeneratedSolutionName(solution: Solution): Boolean {
-        return File(solution.path).nameWithoutExtension == File(File(solution.path).parent).name
+        val solutionPath = File(solution.path)
+        return solutionPath.nameWithoutExtension == File(solutionPath.parent).name
     }
 
     fun addUnityReferenceListener(listener: UnityReferenceListener) {
@@ -63,24 +64,17 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     }
 
     companion object {
-        private fun hasUnityFolders (project:Project):Boolean {
-            return hasAssetsFolder(project) && hasLibraryFolder(project) && hasProjectSettingsFolder(project)
-        }
+        private fun hasUnityFolders (project:Project):Boolean =
+                hasAssetsFolder(project) && hasLibraryFolder(project) && hasProjectSettingsFolder(project)
 
-        private fun hasAssetsFolder (project:Project):Boolean {
-            val assetsFolder = project.baseDir?.findChild("Assets")
-            return assetsFolder != null
-        }
+        private fun hasAssetsFolder (project:Project):Boolean =
+                project.baseDir?.findChild("Assets")?.isDirectory == true
 
-        private fun hasLibraryFolder (project:Project):Boolean {
-            val assetsFolder = project.baseDir?.findChild("Library")
-            return assetsFolder != null
-        }
+        private fun hasLibraryFolder (project:Project):Boolean =
+                project.baseDir?.findChild("Library")?.isDirectory == true
 
-        private fun hasProjectSettingsFolder (project:Project):Boolean {
-            val assetsFolder = project.baseDir?.findChild("ProjectSettings")
-            return assetsFolder != null
-        }
+        private fun hasProjectSettingsFolder (project:Project):Boolean =
+                project.baseDir?.findChild("ProjectSettings")?.isDirectory == true
     }
 }
 
