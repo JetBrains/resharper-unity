@@ -23,7 +23,7 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     var hasReferenceToUnityProject = false
 
     init {
-        isUnityGeneratedProject = hasAssetsFolder(project) && isUnityGeneratedSolutionName(project.solution)
+        isUnityGeneratedProject = hasUnityFolders(project) && isUnityGeneratedSolutionName(project.solution)
         isUnityNearGeneratedProject = hasUnityFolders(project) && generatedSolutionFileExistsNear(project.solution)
 
         application.invokeLater {
@@ -48,10 +48,10 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     }
 
     private fun generatedSolutionFileExistsNear(solution: Solution): Boolean {
-        var dirPath = File(solution.path).toPath().parent
-        var expectedGeneratedSolutionName = dirPath.toFile().name+".sln"
-        var expectedGneratedSolutionFile = dirPath!!.resolve(expectedGeneratedSolutionName).toFile()
-        return expectedGneratedSolutionFile.exists()
+        val dirPath = File(solution.path).toPath().parent
+        val expectedGeneratedSolutionName = dirPath.toFile().name+".sln"
+        val expectedGeneratedSolutionFile = dirPath!!.resolve(expectedGeneratedSolutionName).toFile()
+        return expectedGeneratedSolutionFile.exists()
     }
 
     private fun isUnityGeneratedSolutionName(solution: Solution): Boolean {
@@ -63,18 +63,21 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     }
 
     companion object {
-        fun hasUnityFolders (project:Project):Boolean {
-            return hasAssetsFolder(project) && hasLibraryFolder(project) && hasProjectSettingsFolder(project);
+        private fun hasUnityFolders (project:Project):Boolean {
+            return hasAssetsFolder(project) && hasLibraryFolder(project) && hasProjectSettingsFolder(project)
         }
-        fun hasAssetsFolder (project:Project):Boolean {
+
+        private fun hasAssetsFolder (project:Project):Boolean {
             val assetsFolder = project.baseDir?.findChild("Assets")
             return assetsFolder != null
         }
-        fun hasLibraryFolder (project:Project):Boolean {
+
+        private fun hasLibraryFolder (project:Project):Boolean {
             val assetsFolder = project.baseDir?.findChild("Library")
             return assetsFolder != null
         }
-        fun hasProjectSettingsFolder (project:Project):Boolean {
+
+        private fun hasProjectSettingsFolder (project:Project):Boolean {
             val assetsFolder = project.baseDir?.findChild("ProjectSettings")
             return assetsFolder != null
         }
