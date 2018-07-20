@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
-import com.intellij.notification.NotificationGroup
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
@@ -12,7 +11,6 @@ class UnityToolWindowManager(project: Project,
                              private val unityToolWindowFactory: UnityToolWindowFactory)
     : LifetimedProjectComponent(project) {
     companion object {
-        val BUILD_NOTIFICATION_GROUP = NotificationGroup.toolWindowGroup("Unity Console Messages", UnityToolWindowFactory.TOOLWINDOW_ID)
         private val myLogger = getLogger<UnityToolWindowManager>()
     }
 
@@ -20,9 +18,7 @@ class UnityToolWindowManager(project: Project,
         host.sessionInitialized.whenTrue(componentLifetime) {
             myLogger.info("new session")
             val context = unityToolWindowFactory.getOrCreateContext()
-            //context.clear()
             val shouldReactivateBuildToolWindow = context.isActive
-
 
             if (shouldReactivateBuildToolWindow) {
                 context.activateToolWindowIfNotActive()

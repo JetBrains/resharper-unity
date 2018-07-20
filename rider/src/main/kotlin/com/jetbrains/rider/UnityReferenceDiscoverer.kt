@@ -3,29 +3,33 @@ package com.jetbrains.rider
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
 import com.jetbrains.rider.model.RdAssemblyReferenceDescriptor
+import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
-import com.jetbrains.rider.model.Solution
 import com.jetbrains.rider.model.projectModelView
 import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.projectView.path
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.projectView.solutionDescription
+import com.jetbrains.rider.projectView.solutionFile
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
 import com.jetbrains.rider.util.reactive.Property
-import java.io.File
 
 class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
     private val myProjectModelView = project.solution.projectModelView
     private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
-    var isUnityGeneratedProject = false
-    var isUnityNearGeneratedProject = false
+
+    val isUnityProjectFolder = hasUnityFolders(project)
+
+    // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
+    // lives in the same folder as generated unity project
+    val isUnitySidecarProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && !solutionNameMatchesUnityProjectName(project)
+    val isUnityGeneratedProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && solutionNameMatchesUnityProjectName(project)
+
+    // TODO: This isn't used anywhere
     var hasReferenceToUnityProject = false
 
     init {
-        isUnityGeneratedProject = hasUnityFolders(project) && isUnityGeneratedSolutionName(project.solution)
-        isUnityNearGeneratedProject = hasUnityFolders(project) && generatedSolutionFileExistsNear(project.solution)
-
         application.invokeLater {
             myProjectModelView.items.advise(componentLifetime) { item ->
                 val itemData = item.newValueOpt
@@ -47,16 +51,15 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
         }
     }
 
-    private fun generatedSolutionFileExistsNear(solution: Solution): Boolean {
-        val dirPath = File(solution.path).toPath().parent
-        val expectedGeneratedSolutionName = dirPath.toFile().name+".sln"
-        val expectedGeneratedSolutionFile = dirPath!!.resolve(expectedGeneratedSolutionName).toFile()
-        return expectedGeneratedSolutionFile.exists()
+    // Returns false when opening a Unity project as a plain folder
+    private fun isCorrectlyLoadedSolution(project: Project): Boolean {
+        val solutionFile = project.solutionFile
+        return project.solutionDescription is RdExistingSolution && solutionFile.isFile && solutionFile.extension.equals("sln", true)
     }
 
-    private fun isUnityGeneratedSolutionName(solution: Solution): Boolean {
-        val solutionPath = File(solution.path)
-        return solutionPath.nameWithoutExtension == File(solutionPath.parent).name
+    private fun solutionNameMatchesUnityProjectName(project: Project): Boolean {
+        val solutionFile = project.solutionFile
+        return solutionFile.nameWithoutExtension == project.baseDir.name
     }
 
     fun addUnityReferenceListener(listener: UnityReferenceListener) {
@@ -79,8 +82,14 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
 }
 
 fun Project.isUnityGeneratedProject(): Boolean {
-    val component = this.getComponent<UnityReferenceDiscoverer>()
-    return component.isUnityGeneratedProject
+    val referenceDiscoverer = this.getComponent<UnityReferenceDiscoverer>()
+    return referenceDiscoverer.isUnityGeneratedProject
+}
+
+// Lives in the same folder as a normal Unity project, but isn't the generated one
+fun Project.isUnitySidecarProject(): Boolean {
+    val referenceDiscoverer = this.getComponent<UnityReferenceDiscoverer>()
+    return referenceDiscoverer.isUnitySidecarProject
 }
 
 fun Project.isConnectedToEditor(): Boolean {
