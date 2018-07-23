@@ -1,4 +1,5 @@
 ﻿using JetBrains.DocumentModel;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -52,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors
                 ? rparRange.Value
                 : paramsRange;
 
-            return new DocumentRange(startOffset.StartOffset, endOffset.EndOffset);
+            return OldMsBuildWorkarounds.CreateDocumentRange(startOffset.StartOffset, endOffset.EndOffset);
         }
 
         public static DocumentRange GetReturnTypeHighlightingRange(IMethodDeclaration methodDeclaration)

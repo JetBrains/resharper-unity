@@ -5,8 +5,6 @@ sourceSets {
     }
 }
 
-def dependenciesDir = new File("dependencies")
-
 intellij {
     pluginName 'rider-unity'
     type 'RD'
@@ -22,8 +20,8 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "F:\\RiderSDK"
 
-    if (dependenciesDir .exists()) {
-        localPath = dependenciesDir.absolutePath
+    if (dependenciesDir.exists()) {
+        localPath = dependenciesDir.canonicalPath
     } else {
         version = "2018.2-SNAPSHOT"
     }
@@ -34,6 +32,22 @@ intellij {
     downloadSources = false
 }
 
+task validatePluginXml {
+    def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
+    assert pluginXml.isFile()
+
+    def parsed = new XmlParser().parse(pluginXml).text()
+    assert parsed.length() > 0
+
+    def rawBytes = pluginXml.bytes
+    assert rawBytes.length > 0
+
+    def invalid = rawBytes.findAll { it < 0 }
+    assert invalid.size() == 0
+
+    logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
+}
+
 def frontendSdkRoot = dependenciesDir
 // bundled build configuration on TC
 if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
@@ -41,17 +55,8 @@ if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
 }
 else {
     def frontendSdkVersion = "2018.2-SNAPSHOT"
-    // rider/build/riderRD-2018.2-SNAPSHOT
     def frontendSdkDirs = []
     def frontendSdkSearchPath = new File(repoRoot, "rider/build")
-    //logger.lifecycle("listing $frontendSdkSearchPath.path:")
-    //fileTree(frontendSdkSearchPath).visit {
-        //if (it.isDirectory()){
-            //if (it.name.startsWith("riderRD"))
-                //frontendSdkDirs << it
-            //logger.lifecycle("DIR:  $it.name")
-        //}
-    //}
 
     if (frontendSdkDirs.size() > 0) {
         assert frontendSdkDirs.size() == 1
@@ -164,8 +169,7 @@ task publishCiBuildData {
 }
 
 buildPlugin.finalizedBy publishCiBuildData
-buildPlugin.dependsOn generateModel
-
+buildPlugin.dependsOn generateModel, validatePluginXml
 
 // If we're building `runIde`, only build Rider bits. We only know this once the task graph
 // has been evaluated. It's now too late to change inputs/outputs or dependencies. An alternative
@@ -189,6 +193,7 @@ def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Un
 prepareSandbox {
     // Already depends on the standard Java build/jar task
     dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
+    dependsOn nunit // will only get run when passed RunTests
 
     // Have dependent tasks use uptodateWhen { project.isRunningUnderCi etc. }
     //inputs.files(buildRiderPlugin.outputs)

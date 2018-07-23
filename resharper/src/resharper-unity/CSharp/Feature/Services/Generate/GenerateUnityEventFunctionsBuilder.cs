@@ -48,8 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 
         private bool HasUnityBaseType(CSharpGeneratorContext context)
         {
-            var typeElement = context.ClassDeclaration.DeclaredElement as IClass;
-            return typeElement != null && myUnityApi.GetBaseUnityTypes(typeElement).Any();
+            return context.ClassDeclaration.DeclaredElement is IClass typeElement && myUnityApi.IsUnityType(typeElement);
         }
     }
 }

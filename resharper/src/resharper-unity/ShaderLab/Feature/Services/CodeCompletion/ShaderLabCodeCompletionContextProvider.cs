@@ -3,6 +3,7 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.CodeCompletion.Settings;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -45,11 +46,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.CodeCompl
             if (!referenceDocumentRange.IsValid())
                 return null;
 
-            if (!referenceDocumentRange.Contains(context.EffectiveCaretDocumentOffset))
+            if (!OldMsBuildWorkarounds.RangeContains(referenceDocumentRange, context.EffectiveCaretDocumentOffset))
                 return null;
 
             var ranges = GetTextLookupRanges(context, referenceDocumentRange);
             return new ShaderLabCodeCompletionContext(context, unterminatedContext, ranges);
+            
         }
 
         private bool IsIntellisenseEnabled(CodeCompletionContext context)

@@ -6,7 +6,6 @@ import com.intellij.ui.AnActionButton
 import com.intellij.ui.PanelWithButtons
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
-import com.jetbrains.rider.util.reactive.AddRemove
 import java.awt.Dimension
 import javax.swing.JButton
 import javax.swing.JComponent
@@ -65,13 +64,12 @@ class ProcessesPanel : PanelWithButtons() {
             }
         }
 
-        vm.editorProcesses.advise(vm.lifetime,
-            {
-                if (it.newValueOpt == null)
-                    dataModel.fireTableRowsDeleted(it.index, it.index)
-                else
-                    dataModel.fireTableRowsInserted(it.index, it.index)
-            })
+        vm.editorProcesses.advise(vm.lifetime) {
+            if (it.newValueOpt == null)
+                dataModel.fireTableRowsDeleted(it.index, it.index)
+            else
+                dataModel.fireTableRowsInserted(it.index, it.index)
+        }
 
         table = JBTable(dataModel)
         with(table!!) {
@@ -90,7 +88,7 @@ class ProcessesPanel : PanelWithButtons() {
 
             updateSelection(this)
 
-            vm.pid.advise(vm.lifetime, { it.let { updateSelection(this) } })
+            vm.pid.advise(vm.lifetime) { it.let { updateSelection(this) } }
         }
 
         return ToolbarDecorator.createDecorator(table!!)

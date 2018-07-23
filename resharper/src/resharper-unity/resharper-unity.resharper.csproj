@@ -8,10 +8,10 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER</DefineConstants>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RESHARPER</DefineConstants>
+    <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <!-- C# -->
@@ -94,6 +94,10 @@
     <EmbeddedResource Include="Templates\templates.generated.dotSettings">
       <LogicalName>JetBrains.ReSharper.Plugins.Unity.Templates.templates.dotSettings</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <!-- TODO: remove after ClrChangeSignatureParameters stops using ListEvents -->
+  <ItemGroup Condition=" '$(OS)' == 'Unix' ">
+    <Compile Remove="CSharp\Feature\Services\QuickFixes\IncorrectMethodSignatureQuickFix.cs" />
   </ItemGroup>
   <ItemGroup>
     <!-- This requires WPF and PresentationFramework to build -->

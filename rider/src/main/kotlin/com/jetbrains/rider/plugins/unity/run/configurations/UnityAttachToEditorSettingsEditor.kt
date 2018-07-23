@@ -19,7 +19,7 @@ class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<Unity
 
         // This doesn't work, because this editor seems to be wrapped, and any listeners
         // subscribe to the wrapper, not this class, so firing this doesn't do any good.
-        viewModel.pid.advise(lifetimeDefinition.lifetime, { fireEditorStateChanged() })
+        viewModel.pid.advise(lifetimeDefinition.lifetime) { fireEditorStateChanged() }
     }
 
     override fun checkEditorData(configuration: UnityAttachToEditorRunConfiguration) {

@@ -96,6 +96,67 @@ class MyClass
     }
 }
 
+[Serializable]
+class |SerialisableClass|(9)
+{
+    // All serialised by Unity - gutter icons
+    public string |ImplicitlyAssignedField|(10);
+    public string |ImplicitlyAssignedMultiField1|(11), |ImplicitlyAssignedMultiField2|(12);
+    [SerializeField] private int |myImplicitlyAssignedPrivateField|(13);
+
+    // Not serialized by Unity
+    public const string UnusedConst = "hello";
+    private const string UnusedPrivateConst = "hello";
+    [SerializeField] private const string UnusedPrivateConst2 = "hello";
+    private string myUnusedField;
+    public readonly string UnusedReadonlyField;
+    [NonSerialized] public string ExplicitlyUnusedField;
+    [NonSerialized, SerializeField] public string ExplicitlyUnusedField2;
+    [NonSerialized, SerializeField] private string myExplicitlyUnusedField3;
+    public static string UnusedStaticField;
+    [SerializeField] private static string ourUnusedPrivateStaticField;
+}
+
+[Serializable]
+struct |SerialisableStruct|(14)
+{
+    // All serialised by Unity - gutter icons
+    public string |ImplicitlyAssignedField|(15);
+    public string |ImplicitlyAssignedMultiField1|(16), |ImplicitlyAssignedMultiField2|(17);
+    [SerializeField] private int |myImplicitlyAssignedPrivateField|(18);
+
+    // Not serialized by Unity
+    public const string UnusedConst = "hello";
+    private const string UnusedPrivateConst = "hello";
+    [SerializeField] private const string UnusedPrivateConst2 = "hello";
+    private string myUnusedField;
+    public readonly string UnusedReadonlyField;
+    [NonSerialized] public string ExplicitlyUnusedField;
+    [NonSerialized, SerializeField] public string ExplicitlyUnusedField2;
+    [NonSerialized, SerializeField] private string myExplicitlyUnusedField3;
+    public static string UnusedStaticField;
+    [SerializeField] private static string ourUnusedPrivateStaticField;
+}
+
+class NotSerialisableClass
+{
+    public string NotSerialised1;
+    [SerializeField] public string NotSerialised2;
+}
+
+struct NotSerialisableStruct
+{
+    public string NotSerialised1;
+    [SerializeField] public string NotSerialised2;
+}
+
+[Serializable]
+static class NotSerialisableClass
+{
+    public string NotSerialised1;
+    [SerializeField] public string NotSerialised2;
+}
+
 ---------------------------------------------------------
 (0): Unity Gutter Icon: Unity scripting component
 (1): Unity Gutter Icon: This field is initialised by Unity
@@ -114,3 +175,13 @@ This function can be a coroutine.
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
 (8): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
+(9): Unity Gutter Icon: Unity custom serializable type
+(10): Unity Gutter Icon: This field is initialised by Unity
+(11): Unity Gutter Icon: This field is initialised by Unity
+(12): Unity Gutter Icon: This field is initialised by Unity
+(13): Unity Gutter Icon: This field is initialised by Unity
+(14): Unity Gutter Icon: Unity custom serializable type
+(15): Unity Gutter Icon: This field is initialised by Unity
+(16): Unity Gutter Icon: This field is initialised by Unity
+(17): Unity Gutter Icon: This field is initialised by Unity
+(18): Unity Gutter Icon: This field is initialised by Unity

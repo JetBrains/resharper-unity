@@ -12,12 +12,6 @@ class UnityIcons {
 
             // TODO: Proper icons!
             @JvmField
-            val AttachEditorDebugConfiguration = UnityLogo
-
-            @JvmField
-            val AttachAndPlayEditorDebugConfiguration = UnityLogo
-
-            @JvmField
             val ImportantActions = UnityLogo
         }
     }
@@ -113,6 +107,17 @@ class UnityIcons {
 
             val OpenEditorLog = FilterEditModeMessages
             val OpenPlayerLog = FilterPlayModeMessages
+
+            val AttachToUnity = Icons.UnityLogo
+        }
+    }
+
+    class RunConfigurations {
+        companion object {
+            // TODO: Proper icons!
+            val AttachToUnityParentConfiguration = Icons.UnityLogo
+            val AttachAndDebug = AttachToUnityParentConfiguration
+            val AttachDebugAndPlay = AttachToUnityParentConfiguration
         }
     }
 

@@ -7,7 +7,6 @@ import com.jetbrains.rider.projectView.nodes.ProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
 
 class UnityExplorerUpdater(project: Project) : ProjectModelViewUpdater(project) {
-
     private val pane get() = UnityExplorer.tryGetInstance(project)
 
     override fun update(node: ProjectModelNode?) {
@@ -26,5 +25,9 @@ class UnityExplorerUpdater(project: Project) : ProjectModelViewUpdater(project) 
         virtualFile?.let {
             pane?.refresh(SolutionViewVisitor.createFor(it), false, true)
         }
+    }
+
+    override fun updateAll() {
+        pane?.updateFromRoot()
     }
 }

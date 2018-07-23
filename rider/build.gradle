@@ -17,6 +17,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.2.41'
     id 'org.jetbrains.intellij' version '0.3.2'
+    id 'com.ullink.nunit' version '1.12' 
 }
 
 configurations {
@@ -38,7 +39,7 @@ ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
 
 ext.repoRoot = new File("..").canonicalFile
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-
+ext.dependenciesDir = new File("dependencies")
 
 wrapper {
     gradleVersion = '4.7'
@@ -58,15 +59,6 @@ if (System.env['TEAMCITY_VERSION'] != null) {
     ext.isBuildingUnderCi = false
 }
 
-// Renaming to be more meaningful, but would also require updating build.ps1
-// and also the build configuration settings in TeamCity
-if (!ext.has("Source"))
-    ext.Source = new File(ext.repoRoot, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
-else
-    ext.Source = new File(ext.Source)
-
-ext.PackageSource = ext.Source
-
 if (!ext.has("BuildCounter"))
     ext.BuildCounter = 9999
 
@@ -76,6 +68,11 @@ if (!ext.has("BuildConfiguration")) {
 
 if (!ext.has('dotNetUpToDate') || ext.dotNetUpToDate ==~ "(?i)False")
     ext.dotNetUpToDate = false
+
+/* done as an optional step so that we can reuse the build artifacts */
+if (!ext.has("RunTests") || ext.RunTests ==~ "(?i)False")
+    ext.RunTests = false
+logger.lifecycle("RunTests=$RunTests")
 
 ext.shouldBuildRiderOnly = false
 

@@ -1,0 +1,13 @@
+﻿using System;
+using UnityEngine;
+
+public class Test
+{
+ {caret} private static int ourValue1 = 42;
+
+    public void Thing()
+    {
+        ourValue1 = 42;
+        Console.WriteLine(ourValue1);
+    }
+}

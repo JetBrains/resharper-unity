@@ -1,8 +1,7 @@
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.jetbrains.rider.test.CompletionTestBase
+import com.jetbrains.rider.test.base.CompletionTestBase
 import com.jetbrains.rider.test.scriptingApi.completeWithTab
 import com.jetbrains.rider.test.scriptingApi.typeWithLatency
-import com.jetbrains.rider.test.scriptingApi.wait
 import com.jetbrains.rider.test.scriptingApi.waitForCompletion
 import org.testng.annotations.Test
 

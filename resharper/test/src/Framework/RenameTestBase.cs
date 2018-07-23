@@ -41,21 +41,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Framework
             var workflow = RefactoringsManager.Instance.GetWorkflowProviders<RenameWorkflowProvider>()
                 .SelectMany(x => x.CreateWorkflow(context)).FirstOrDefault(x => x.IsAvailable(context));
 
-            // workflow.SetRenameDataProvider(CreateRenameDataProvider(context, control));
-
             return workflow;
         }
 
         protected virtual RenameDataProvider CreateRenameDataProvider(IDataContext context, ITextControl control)
         {
-            var mySetting = GetMySetting(control.Document, NewName);
-            return new RenameDataProvider(mySetting)
+            var setting = GetMySetting(control.Document, NewName);
+            return new RenameDataProvider(setting)
             {
                 Model =
                 {
-                    RenameFile = {Value = bool.Parse(GetMySetting(control.Document, RenameFile))},
-                    ChangeTextOccurrences = {Value = bool.Parse(GetMySetting(control.Document, ChangeText))},
-                    UISearchTextOccurrences = {Value = bool.Parse(GetMySetting(control.Document, ChangeText))},
+                    RenameFile = bool.Parse(GetMySetting(control.Document, RenameFile)),
+                    ChangeTextOccurrences = bool.Parse(GetMySetting(control.Document, ChangeText)),
                     RenameDerived = true
                 }
             };

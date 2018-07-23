@@ -8,4 +8,6 @@ public class Test : MonoBehaviour
     [SerializeField] [NonSerialized] public int Redundant1;
     [SerializeField] [NonSerialized] private int Redundant1;
     [SerializeField] private readonly int ReadonlyFieldsAreNotSerialized;
+    [SerializeField] private const int ConstFieldsAreNotSerialized;
+    [SerializeField] private static int StaticFieldsAreNotSerialized;
 }
