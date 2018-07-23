@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Psi;
@@ -26,7 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         public IEnumerable<AtomicRenameBase> CreateAtomicRenames(IDeclaredElement declaredElement, string newName,
             bool doNotAddBindingConflicts)
         {
-            yield return new FormerlySerializedAsAtomicRename(declaredElement, newName);
+            var settingsStore = declaredElement.GetSolution().GetComponent<ISettingsStore>();
+            yield return new FormerlySerializedAsAtomicRename(declaredElement, newName, settingsStore);
         }
     }
 }
