@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
+using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -19,18 +20,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 {
     public class FormerlySerializedAsAtomicRename : AtomicRenameBase
     {
+        private readonly SerializedFieldRenameModel myModel;
         private readonly IDeclaredElementPointer<IDeclaredElement> myPointer;
 
-        public FormerlySerializedAsAtomicRename(IDeclaredElement declaredElement, string newName)
+        public FormerlySerializedAsAtomicRename(IDeclaredElement declaredElement, string newName, ISettingsStore settingsStore)
         {
+            myModel = new SerializedFieldRenameModel(settingsStore);
+
             myPointer = declaredElement.CreateElementPointer();
             OldName = declaredElement.ShortName;
             NewName = newName;
         }
 
+        public override IRefactoringPage CreateRenamesConfirmationPage(IRenameWorkflow renameWorkflow,
+            IProgressIndicator pi)
+        {
+            return new FormerlySerializedAsRefactoringPage(
+                ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, myModel);
+        }
+
         public override void Rename(IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations,
             IRefactoringDriver driver)
         {
+            if (!myModel.ShouldAddFormerlySerializedAs)
+                return;
+
             var fieldDeclaration = GetFieldDeclaration(myPointer.FindDeclaredElement() as IField);
             if (fieldDeclaration == null)
                 return;
@@ -121,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 if (!occurrence.Included)
                     continue;
 
-                
+
                 var occurrenceRange = occurrence.Marker.DocumentRange;
                 if (OldMsBuildWorkarounds.RangeContains(attributesRange, occurrenceRange))
                 {
