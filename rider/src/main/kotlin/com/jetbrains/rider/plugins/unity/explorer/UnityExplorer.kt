@@ -9,8 +9,8 @@ import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
-import com.jetbrains.rider.UnityReferenceDiscoverer
 import com.jetbrains.rider.icons.ReSharperSolutionAnalysisIcons
+import com.jetbrains.rider.isUnityGeneratedProject
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
@@ -41,9 +41,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
 
     var myShowHiddenItems = false
 
-    override fun isInitiallyVisible(): Boolean {
-        return UnityReferenceDiscoverer.hasAssetsFolder(project)
-    }
+    override fun isInitiallyVisible() = project.isUnityGeneratedProject()
 
     override fun getData(dataId: String?): Any? {
         return when {
