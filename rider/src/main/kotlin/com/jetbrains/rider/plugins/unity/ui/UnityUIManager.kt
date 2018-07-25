@@ -13,7 +13,6 @@ import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.lifetime
-import com.jetbrains.rider.util.idea.tryGetComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.util.reactive.Property
@@ -61,9 +60,7 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
     }
 
     override fun frameCreated(frame: IdeFrame) {
-        val unityReferenceDiscoverer = project.tryGetComponent<UnityReferenceDiscoverer>() ?: return
-
-        if (frame.project == project && unityReferenceDiscoverer.isUnityNearGeneratedProject) {
+        if (frame.project == project && (unityReferenceDiscoverer.isUnityGeneratedProject || unityReferenceDiscoverer.isUnitySidecarProject)) {
             frameLifetime?.terminate()
 
             frameLifetime = Lifetime.create(project.lifetime)

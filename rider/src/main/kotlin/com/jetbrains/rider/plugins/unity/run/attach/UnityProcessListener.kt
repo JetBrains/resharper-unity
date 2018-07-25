@@ -15,13 +15,15 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, pri
 
     // As far as I can tell:
     // * IP - where the process is running. On iPhone (and perhaps other devices) this can be the mobile data IP, which
-    //        might be unreachable from this subnet
-    // * port - NOT the debugging port. I think Unity connects to this to get player log information (maybe more?)
-    // * flags - ?
-    // * guid - ? If no debugging port is found (either as its own field, or part of id), then the debugging port is
-    //          `guid % 1000 + 56000`
-    // * editorId - ?
-    // * version - ?
+    //        might be unreachable from this subnet, so be prepared to use the IP address from the UDP packet instead
+    // * port - NOT the debugging port. I think this is the port uses to connect to the player (to e.g. get logs)
+    // * flags - settings for the editor. Don't know what the values are
+    // * guid - random number. Consistent only for the lifetime of the player. If no debugging port is found as part of
+    //          `id`, then the debugging port is `guid % 1000 + 56000` (which belies the part that it's a random number,
+    //          and is more likely that if no debugging port is specified, this must be a PID)
+    // * editorId - random number representing an ID of the editor instance that built this player. Consistent for the
+    //              lifetime of the editor. Will also be used by any other player built by the same editor instance.
+    // * version - static value. Never been changed
     // * id - a textual identifier, e.g. "OSXPlayer(Matts.MacBookPro.Local)". May also include debugging port, e.g.
     //        `iPhonePlayer(Matts.iPhone7):56000`
     // * Debug - 0 or 1 to show if debugging is enabled. Will not be able to attach if this is 0

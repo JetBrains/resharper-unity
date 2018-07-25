@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.projectView.indexing.contentModel.ContentModelExcludes
 import java.io.File
 
-class UnityConfigurationImpl(private val project: Project, unityReferenceDiscoverer: UnityReferenceDiscoverer, private val excludes: ContentModelExcludes) {
+class UnityConfigurationImpl(private val project: Project, unityReferenceDiscoverer: UnityReferenceDiscoverer, excludes: ContentModelExcludes) {
 
     companion object {
         private val ignoredDirectories = arrayOf("Library", "Temp")
@@ -16,7 +16,7 @@ class UnityConfigurationImpl(private val project: Project, unityReferenceDiscove
             .filter { f -> f != null }
             .map { f -> f!! }
             .toHashSet()
-        if (unityReferenceDiscoverer.isUnityNearGeneratedProject) {
+        if (unityReferenceDiscoverer.isUnityGeneratedProject || unityReferenceDiscoverer.isUnitySidecarProject) {
             excludes.updateExcludes(this, excludePaths)
         }
     }
