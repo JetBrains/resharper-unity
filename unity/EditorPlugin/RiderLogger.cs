@@ -8,6 +8,11 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public class RiderLoggerFactory : ILogFactory
   {
+    public static void Init()
+    {
+      Log.DefaultFactory = new RiderLoggerFactory();
+    }
+
     public ILog GetLog(string category)
     {
       return new RiderLogger(category);

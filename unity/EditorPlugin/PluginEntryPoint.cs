@@ -27,6 +27,7 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
 
+    private static readonly LifetimeDefinition ourAppDomainLifetimeDefinition;
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
     private static readonly UnityEventCollector ourLogEventCollector;
@@ -44,14 +45,25 @@ namespace JetBrains.Rider.Unity.Editor
     // This an entry point
     static PluginEntryPoint()
     {
+      RiderLoggerFactory.Init();
+
+      ourLogger.Trace("Rider::PluginEntryPoint");
+
+      ourAppDomainLifetimeDefinition = CreateAppDomainLifetimeDefinition();
+
+      // Start collecting log events as soon as we can, so we miss as few as possible
       ourLogEventCollector = new UnityEventCollector();
+      ourLogEventCollector.StartCollecting(ourAppDomainLifetimeDefinition.Lifetime);
 
       ourPluginSettings = new PluginSettings();
       ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
       var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
         RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
       if (string.IsNullOrEmpty(riderPath))
+      {
+        ourLogger.Trace("Cannot find installed Rider! Aborting");
         return;
+      }
 
       AddRiderToRecentlyUsedScriptApp(riderPath);
       if (!PluginSettings.RiderInitializedOnce)
@@ -62,8 +74,20 @@ namespace JetBrains.Rider.Unity.Editor
 
       if (Enabled)
       {
-        Init();
+        Init(ourAppDomainLifetimeDefinition.Lifetime);
       }
+    }
+
+    private static LifetimeDefinition CreateAppDomainLifetimeDefinition()
+    {
+      var appDomainLifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
+      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
+      {
+        ourLogger.Verbose("appDomainLifetimeDefinition.Terminate");
+        appDomainLifetimeDefinition.Terminate();
+      });
+
+      return appDomainLifetimeDefinition;
     }
 
     internal static bool CheckConnectedToBackendSync(EditorPluginModel model)
@@ -99,14 +123,14 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static void Init()
+    private static void Init(Lifetime appDomainLifetime)
     {
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.GetFullPath($"{projectName}.sln");
 
-      InitializeEditorInstanceJson();
+      InitializeEditorInstanceJson(appDomainLifetime);
       ResetDefaultFileExtensions();
 
       // process csproj files once per Unity process
@@ -117,22 +141,11 @@ namespace JetBrains.Rider.Unity.Editor
         RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
       }
 
-      Log.DefaultFactory = new RiderLoggerFactory();
-
-      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
-      var lifetime = lifetimeDefinition.Lifetime;
-
-      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
-      {
-        ourLogger.Verbose("lifetimeDefinition.Terminate");
-        lifetimeDefinition.Terminate();
-      });
-
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
         Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {RiderLogger.LogPath}.");
 
       var list = new List<ProtocolInstance>();
-      CreateProtocolAndAdvise(lifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
+      CreateProtocolAndAdvise(appDomainLifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
 
       // list all sln files in CurrentDirectory, except main one and create server protocol for each of them
       var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
@@ -141,23 +154,24 @@ namespace JetBrains.Rider.Unity.Editor
       {
         if (Path.GetFileNameWithoutExtension(solutionFile.FullName) != currentDir.Name)
         {
-          CreateProtocolAndAdvise(lifetime, list, Path.GetFileNameWithoutExtension(solutionFile.FullName));
+          CreateProtocolAndAdvise(appDomainLifetime, list, Path.GetFileNameWithoutExtension(solutionFile.FullName));
         }
       }
 
-      ourOpenAssetHandler = new OnOpenAssetHandler(ourRiderPathLocator, ourPluginSettings, SlnFile);
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
       var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
       File.WriteAllText(protocolInstanceJsonPath, ProtocolInstance.ToJson(list));
 
-      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      appDomainLifetime.AddAction(() =>
       {
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
-      };
+      });
+
+      ourOpenAssetHandler = new OnOpenAssetHandler(ourRiderPathLocator, ourPluginSettings, SlnFile);
 
       ourSavedState = GetEditorState();
-      SetupAssemblyReloadEvents();
+      SetupAssemblyReloadEvents(appDomainLifetime);
 
       ourInitialized = true;
     }
@@ -194,7 +208,7 @@ namespace JetBrains.Rider.Unity.Editor
       return PlayModeState.Stopped;
     }
 
-    private static void SetupAssemblyReloadEvents()
+    private static void SetupAssemblyReloadEvents(Lifetime appDomainLifetime)
     {
 #pragma warning disable 618
       EditorApplication.playmodeStateChanged += () =>
@@ -218,7 +232,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
       };
 
-      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      appDomainLifetime.AddAction(() =>
       {
         if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.StopPlayingAndRecompile)
         {
@@ -227,7 +241,7 @@ namespace JetBrains.Rider.Unity.Editor
             EditorApplication.isPlaying = false;
           }
         }
-      };
+      });
     }
 
     private static void CreateProtocolAndAdvise(Lifetime lifetime, List<ProtocolInstance> list, string solutionFileName)
@@ -429,7 +443,7 @@ namespace JetBrains.Rider.Unity.Editor
     /// <summary>
     /// Creates and deletes Library/EditorInstance.json containing info about unity instance
     /// </summary>
-    private static void InitializeEditorInstanceJson()
+    private static void InitializeEditorInstanceJson(Lifetime appDomainLifetime)
     {
       ourLogger.Verbose("Writing Library/EditorInstance.json");
 
@@ -444,11 +458,11 @@ namespace JetBrains.Rider.Unity.Editor
   ""is_loaded_from_assets"": ""{IsLoadedFromAssets()}""
 }}");
 
-      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      appDomainLifetime.AddAction(() =>
       {
         ourLogger.Verbose("Deleting Library/EditorInstance.json");
         File.Delete(editorInstanceJsonPath);
-      };
+      });
     }
 
     private static void AddRiderToRecentlyUsedScriptApp(string userAppPath)
@@ -478,7 +492,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         // make sure the plugin was initialized first.
         // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
-        Init();
+        Init(ourAppDomainLifetimeDefinition.Lifetime);
       }
 
       return ourOpenAssetHandler.OnOpenedAsset(instanceID, line);

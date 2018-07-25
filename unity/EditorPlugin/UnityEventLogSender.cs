@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Reflection;
 using JetBrains.DataFlow;
@@ -12,25 +11,22 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public class UnityEventCollector
   {
-    private readonly int myDelayedLogEventsMaxSize = 1000;
+    private const int DelayedLogEventsMaxSize = 1000;
+
     public readonly LinkedList<RdLogEvent> DelayedLogEvents = new LinkedList<RdLogEvent>();
 
-    public UnityEventCollector()
+    public void StartCollecting(Lifetime appDomainLifetime)
     {
+      // logMessageReceivedThreaded is not thread safe. The other events are only ever fired on the main thread
       var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public); // Unity 2017.x+
       if (eventInfo == null)
         eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
-      var domainLifetime = Lifetimes.Define();
-      
       if (eventInfo != null)
       {
         var handler = new Application.LogCallback(ApplicationOnLogMessageReceived);
         eventInfo.AddEventHandler(null, handler);
-        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
-        {
-          eventInfo.RemoveEventHandler(null, handler);
-          domainLifetime.Terminate();
-        });
+
+        appDomainLifetime.AddAction(() => { eventInfo.RemoveEventHandler(null, handler); });
       }
       else
       {
@@ -64,7 +60,7 @@ namespace JetBrains.Rider.Unity.Editor
 
         var evt = new RdLogEvent(ticks, eventType, eventMode, message, stackTrace);
         DelayedLogEvents.AddLast(evt);
-        if (DelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
+        if (DelayedLogEvents.Count >= DelayedLogEventsMaxSize)
           DelayedLogEvents.RemoveFirst(); // limit max size
 
         OnAddEvent(new EventArgs());
@@ -83,7 +79,7 @@ namespace JetBrains.Rider.Unity.Editor
       AddEvent?.Invoke(this, e);
     }
   }
-  
+
   public class UnityEventLogSender
   {
     public UnityEventLogSender(UnityEventCollector collector)
@@ -111,7 +107,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
       collector.DelayedLogEvents.Clear();
     }
-    
+
     private void SendLogEvent(RdLogEvent logEvent)
     {
       MainThreadDispatcher.Instance.Queue(() =>
@@ -123,7 +119,7 @@ namespace JetBrains.Rider.Unity.Editor
             modelWithLifetime.Model.Log.Fire(logEvent);
           }
         }
-      });      
+      });
     }
   }
 }
