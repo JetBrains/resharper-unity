@@ -2,12 +2,12 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.Utils
 {
-  // no need to set cache, because otherwise new Unity process will restore the value from the file cache. 
-  //[Location("JetBrainsRiderPluginCache.txt", LocationAttribute.Location.LibraryFolder)] 
+  // no need to set cache, because otherwise new Unity process will restore the value from the file cache.
+  //[Location("JetBrainsRiderPluginCache.txt", LocationAttribute.Location.LibraryFolder)]
   internal class RiderScriptableSingleton: ScriptObjectSingleton<RiderScriptableSingleton>
   {
-    [SerializeField] 
-    private bool myCsprojProcessedOnce;
+    [SerializeField] private bool myCsprojProcessedOnce;
+
     public bool CsprojProcessedOnce
     {
       get => myCsprojProcessedOnce;
@@ -18,5 +18,16 @@ namespace JetBrains.Rider.Unity.Editor.Utils
       }
     }
 
+    [SerializeField] private bool myHasModifiedScriptAssets;
+
+    public bool HasModifiedScriptAssets
+    {
+      get => myHasModifiedScriptAssets;
+      set
+      {
+        myHasModifiedScriptAssets = value;
+        Save(true);
+      }
+    }
   }
 }

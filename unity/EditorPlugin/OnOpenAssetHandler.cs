@@ -6,8 +6,8 @@ using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
-using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.Unity.Editor.Utils;
 using JetBrains.Util.Logging;
 using UnityEditor;
 
@@ -72,14 +72,15 @@ namespace JetBrains.Rider.Unity.Editor
     [UsedImplicitly] // https://github.com/JetBrains/resharper-unity/issues/475
     public bool OnOpenedAsset(string assetFilePath, int line)
     {
-      var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
+      var modifiedSource = RiderScriptableSingleton.Instance.HasModifiedScriptAssets;
+
       myLogger.Verbose("ModifiedSource: {0} EditorApplication.isPlaying: {1} EditorPrefsWrapper.AutoRefresh: {2}",
         modifiedSource, EditorApplication.isPlaying, EditorPrefsWrapper.AutoRefresh);
 
       if (modifiedSource && !EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || !File.Exists(PluginEntryPoint.SlnFile))
       {
         UnityUtils.SyncSolution(); // added to handle opening file, which was just recently created.
-        EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
+        RiderScriptableSingleton.Instance.HasModifiedScriptAssets = false;
       }
 
       var models = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
