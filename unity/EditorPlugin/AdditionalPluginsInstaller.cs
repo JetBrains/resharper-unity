@@ -11,12 +11,12 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly ILog ourLogger = Log.GetLog("AdditionalPluginsInstaller");
     private static readonly string ourTarget = ExecutingAssemblyPath;
-    
+
     public static void UpdateSelf(string fullPluginPath)
     {
       if (string.IsNullOrEmpty(fullPluginPath))
         return;
-      
+
       if (!PluginEntryPoint.IsLoadedFromAssets())
       {
         ourLogger.Verbose($"Plugin was not loaded from Assets.");
@@ -42,7 +42,7 @@ namespace JetBrains.Rider.Unity.Editor
           if (targetVersionInfo.FileVersion != originVersionInfo.FileVersion ||
             targetVersionInfo.InternalName != originVersionInfo.InternalName)
           {
-            ourLogger.Verbose($"Coping ${fullPluginFileInfo} -> ${ourTarget}.");
+            ourLogger.Verbose($"Copying ${fullPluginFileInfo} -> ${ourTarget}.");
             File.Delete(ourTarget);
             File.Delete(ourTarget+".meta");
             fullPluginFileInfo.CopyTo(ourTarget, true);
@@ -50,7 +50,7 @@ namespace JetBrains.Rider.Unity.Editor
             return;
           }
         }
-        
+
         ourLogger.Verbose($"Plugin {ourTarget} was not updated by {fullPluginPath}.");
       }
     }

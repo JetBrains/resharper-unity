@@ -52,8 +52,11 @@ namespace JetBrains.Rider.Unity.Editor.Utils
 
   public class ScriptObjectSingleton<T> : ScriptableObject where T : ScriptableObject
   {
+    // ReSharper disable once StaticMemberInGenericType
     private static readonly ILog ourLogger = Log.GetLog("ScriptObjectSingleton");
+
     protected static T instance;
+
     public static T Instance
     {
       get
@@ -119,7 +122,8 @@ namespace JetBrains.Rider.Unity.Editor.Utils
       var attr = typeof(T).GetCustomAttributes(true)
         .OfType<LocationAttribute>()
         .FirstOrDefault();
-      ourLogger.Verbose("FilePath {0}", attr?.Filepath);
+      if (attr != null)
+        ourLogger.Verbose("Saving to: {0}", attr.Filepath);
       return attr?.Filepath;
     }
   }

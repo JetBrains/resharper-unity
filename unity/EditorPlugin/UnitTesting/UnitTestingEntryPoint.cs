@@ -5,13 +5,18 @@ using UnityEditor;
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
   [InitializeOnLoad]
-  public static class EntryPoint
+  public static class UnitTestingEntryPoint
   {
-    private static readonly ILog ourLogger = Log.GetLog("UnitTesting.EntryPoint");
-    
-    static EntryPoint()
+    private static readonly ILog ourLogger = Log.GetLog("UnitTestingEntryPoint");
+
+    static UnitTestingEntryPoint()
     {
-      ourLogger.Verbose("EntryPoint");
+      // Ordering of InitializeOnLoad methods is undefined
+      if (!(Log.DefaultFactory is RiderLoggerFactory))
+        Log.DefaultFactory = new RiderLoggerFactory();
+
+      ourLogger.Verbose("UnitTesting.EntryPoint");
+
       PluginEntryPoint.OnModelInitialization+=ModelAdviceExtension.AdviseUnitTestLaunch;
       AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
       {

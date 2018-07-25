@@ -26,7 +26,7 @@ namespace JetBrains.Rider.Unity.Editor
       myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
     }
-    
+
     public bool OnOpenedAsset(int instanceID, int line)
     {
       // determine asset that has been double clicked in the project view
@@ -59,7 +59,7 @@ namespace JetBrains.Rider.Unity.Editor
         var value = propertyInfo.GetValue(null, null);
         extensionStrings = (string[]) value;
       }
-      
+
       // https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/VisualStudioIntegration/SolutionSynchronizer.cs#L50
       var builtinSupportedExtensions = new[] {"template", "compute", "cginc", "hlsl", "glslinc"}; // todo: get it via reflection
       var list = extensionStrings.ToList();
@@ -94,9 +94,9 @@ namespace JetBrains.Rider.Unity.Editor
             ActivateWindow(model.RiderProcessId.Value);
           else
             ActivateWindow();
-          
+
           model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, column));
-          
+
           // todo: maybe fallback to CallRider, if returns false
           return true;
         }
@@ -140,16 +140,16 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (myPluginSettings.OperatingSystemFamilyRider != OperatingSystemFamilyRider.Windows)
         return;
-      
+
       try
       {
         var process = processId == null ? GetRiderProcess() : Process.GetProcessById((int)processId);
         if (process == null)
           return;
-        
+
         if (process.Id>0)
           User32Dll.AllowSetForegroundWindow(process.Id);
-        
+
         // Collect top level windows
         var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
         // Get process main window title

@@ -36,7 +36,7 @@ namespace JetBrains.Rider.Unity.Editor
         var alreadySetPath = new FileInfo(externalEditor).FullName;
         if (RiderPathExist(alreadySetPath))
         {
-          if (!allFoundPaths.Any() || allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
+          if (allFoundPaths.Length == 0 || allFoundPaths.Contains(alreadySetPath))
           {
             myPluginSettings.RiderPath = alreadySetPath;
             return alreadySetPath;
@@ -92,10 +92,10 @@ namespace JetBrains.Rider.Unity.Editor
       {
         Debug.LogException(e);
       }
-      
+
       return new RiderInfo[0];
     }
-    
+
     internal static string[] GetAllFoundPaths(OperatingSystemFamilyRider operatingSystemFamily)
     {
       return GetAllFoundInfos(operatingSystemFamily).Select(a=>a.Path).ToArray();
@@ -112,11 +112,11 @@ namespace JetBrains.Rider.Unity.Editor
       var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
       var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
         .Select(a=>new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true)).ToList();
-      
-      
+
+
       // /home/ivan/.local/share/applications/jetbrains-rider.desktop
       var shortcut = new FileInfo(Path.Combine(home, @".local/share/applications/jetbrains-rider.desktop"));
-      
+
       if (shortcut.Exists)
       {
         var lines = File.ReadAllLines(shortcut.FullName);
@@ -141,7 +141,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static RiderInfo[] CollectRiderInfosMac()
     {
       var pathToBuildTxt = "Contents/Resources/build.txt";
-      
+
       // "/Applications/*Rider*.app"
       var folder = new DirectoryInfo("/Applications");
       var results = folder.GetDirectories("*Rider*.app")
@@ -157,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor
           .Select(a => new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true));
         results.AddRange(paths);
       }
-      
+
       return results.ToArray();
     }
 
@@ -172,7 +172,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static RiderInfo[] CollectRiderInfosWindows()
     {
       var pathToBuildTxt = "../../build.txt";
-      
+
       var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
       var toolboxRiderRootPath = Path.Combine(localAppData, @"JetBrains\Toolbox\apps\Rider");
       var installPathsToolbox = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider64.exe", false).ToList();
@@ -183,10 +183,10 @@ namespace JetBrains.Rider.Unity.Editor
       CollectPathsFromRegistry(registryKey, installPaths);
       const string wowRegistryKey = @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
       CollectPathsFromRegistry(wowRegistryKey, installPaths);
-      
+
       var installInfos = installPaths.Select(a => new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, false)).ToList();
       installInfos.AddRange(installInfosToolbox);
-      
+
       return installInfos.ToArray();
     }
 
@@ -209,7 +209,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
     }
-    
+
 #if !(UNITY_4_7 || UNITY_5_5)
     [UsedImplicitly]
     public static RiderInfo[] GetAllRiderPaths()
@@ -236,10 +236,10 @@ namespace JetBrains.Rider.Unity.Editor
       {
         Debug.LogException(e);
       }
-      
+
       return new RiderInfo[0];
     }
-#endif 
+#endif
 
     private static string[] CollectPathsFromToolbox(string toolboxRiderRootPath, string dirName, string searchPattern, bool isMac)
     {
