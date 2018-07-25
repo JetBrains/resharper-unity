@@ -22,6 +22,11 @@ namespace JetBrains.Rider.Unity.Editor
       myPluginSettings = pluginSettings;
     }
 
+    public string GetDefaultRiderApp(string externalEditor)
+    {
+      return GetDefaultRiderApp(externalEditor, GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider));
+    }
+
     /// <summary>
     /// Returns RiderPath, if it exists
     /// </summary>

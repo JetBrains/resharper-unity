@@ -44,7 +44,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
 
     public static string ToJson(List<ProtocolInstance> connections)
     {
-        return JsonConvert.SerializeObject(connections);
+      return JsonConvert.SerializeObject(connections);
     }
   }
 }

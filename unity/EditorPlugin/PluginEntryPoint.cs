@@ -57,20 +57,15 @@ namespace JetBrains.Rider.Unity.Editor
 
       ourPluginSettings = new PluginSettings();
       ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
-      var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
-        RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
+      var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor);
       if (string.IsNullOrEmpty(riderPath))
       {
-        ourLogger.Trace("Cannot find installed Rider! Aborting");
+        ourLogger.Warn("Cannot find installed Rider! Aborting");
         return;
       }
 
       AddRiderToRecentlyUsedScriptApp(riderPath);
-      if (!PluginSettings.RiderInitializedOnce)
-      {
-        EditorPrefsWrapper.ExternalScriptEditor = riderPath;
-        PluginSettings.RiderInitializedOnce = true;
-      }
+      SetDefaultApp(riderPath);
 
       if (Enabled)
       {
@@ -118,6 +113,39 @@ namespace JetBrains.Rider.Unity.Editor
       });
 
       return appDomainLifetimeDefinition;
+    }
+
+    // So that Rider appears in the drop down of known external editors
+    private static void AddRiderToRecentlyUsedScriptApp(string userAppPath)
+    {
+      const string recentAppsKey = "RecentlyUsedScriptApp";
+
+      for (var i = 0; i < 10; ++i)
+      {
+        var path = EditorPrefs.GetString($"{recentAppsKey}{i}");
+        // ReSharper disable once PossibleNullReferenceException
+        if (File.Exists(path) && Path.GetFileName(path).ToLower().Contains("rider"))
+          return;
+      }
+
+      EditorPrefs.SetString($"{recentAppsKey}{9}", userAppPath);
+    }
+
+    private static void SetDefaultApp(string riderPath)
+    {
+      // Only set Rider as the default app the very first time the plugin is installed/initialised. After that, respect
+      // the user's preferences
+      if (!PluginSettings.RiderInitializedOnce)
+      {
+        ourLogger.Verbose("Setting Rider as default external editor");
+
+        EditorPrefsWrapper.ExternalScriptEditor = riderPath;
+        PluginSettings.RiderInitializedOnce = true;
+      }
+      else
+      {
+        ourLogger.Trace("Not setting Rider as default external editor");
+      }
     }
 
     private static void Init(Lifetime appDomainLifetime)
@@ -170,6 +198,31 @@ namespace JetBrains.Rider.Unity.Editor
       SetupAssemblyReloadEvents(appDomainLifetime);
 
       ourInitialized = true;
+    }
+
+    // Later versions of Unity also write this file, although it doesn't have all of the same properties
+    // TODO: What version added this?
+    // TODO: Should we not write it if it already exists?
+    private static void InitializeEditorInstanceJson(Lifetime appDomainLifetime)
+    {
+      ourLogger.Verbose("Writing Library/EditorInstance.json");
+
+      var editorInstanceJsonPath = Path.GetFullPath("Library/EditorInstance.json");
+
+      File.WriteAllText(editorInstanceJsonPath, $@"{{
+  ""process_id"": {System.Diagnostics.Process.GetCurrentProcess().Id},
+  ""version"": ""{Application.unityVersion}"",
+  ""app_path"": ""{EditorApplication.applicationPath}"",
+  ""app_contents_path"": ""{EditorApplication.applicationContentsPath}"",
+  ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}"",
+  ""is_loaded_from_assets"": ""{IsLoadedFromAssets()}""
+}}");
+
+      appDomainLifetime.AddAction(() =>
+      {
+        ourLogger.Verbose("Deleting Library/EditorInstance.json");
+        File.Delete(editorInstanceJsonPath);
+      });
     }
 
     // Unity 2017.3 added "asmdef" to the default list of file extensions used to generate the C# projects, but only for
@@ -434,46 +487,6 @@ namespace JetBrains.Rider.Unity.Editor
 
       editorPluginModel.EditorLogPath.SetValue(editorLogpath);
       editorPluginModel.PlayerLogPath.SetValue(playerLogPath);
-    }
-
-    /// <summary>
-    /// Creates and deletes Library/EditorInstance.json containing info about unity instance
-    /// </summary>
-    private static void InitializeEditorInstanceJson(Lifetime appDomainLifetime)
-    {
-      ourLogger.Verbose("Writing Library/EditorInstance.json");
-
-      var editorInstanceJsonPath = Path.GetFullPath("Library/EditorInstance.json");
-
-      File.WriteAllText(editorInstanceJsonPath, $@"{{
-  ""process_id"": {System.Diagnostics.Process.GetCurrentProcess().Id},
-  ""version"": ""{Application.unityVersion}"",
-  ""app_path"": ""{EditorApplication.applicationPath}"",
-  ""app_contents_path"": ""{EditorApplication.applicationContentsPath}"",
-  ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}"",
-  ""is_loaded_from_assets"": ""{IsLoadedFromAssets()}""
-}}");
-
-      appDomainLifetime.AddAction(() =>
-      {
-        ourLogger.Verbose("Deleting Library/EditorInstance.json");
-        File.Delete(editorInstanceJsonPath);
-      });
-    }
-
-    private static void AddRiderToRecentlyUsedScriptApp(string userAppPath)
-    {
-      const string recentAppsKey = "RecentlyUsedScriptApp";
-
-      for (var i = 0; i < 10; ++i)
-      {
-        var path = EditorPrefs.GetString($"{recentAppsKey}{i}");
-        // ReSharper disable once PossibleNullReferenceException
-        if (File.Exists(path) && Path.GetFileName(path).ToLower().Contains("rider"))
-          return;
-      }
-
-      EditorPrefs.SetString($"{recentAppsKey}{9}", userAppPath);
     }
 
     // TODO: I don't know what this method is for...
