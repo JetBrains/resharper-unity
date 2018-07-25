@@ -162,7 +162,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       CreateEditorInstanceJson(appDomainLifetime);
       InitialiseProtocol(appDomainLifetime);
-      SetupAssemblyReloadEvents(appDomainLifetime);
+      AssemblyReloadPolicyHandler.Initialise(appDomainLifetime);
 
       ourLogger.Verbose("Rider plugin initialised");
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
@@ -261,62 +261,6 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
-      });
-    }
-
-    public enum PlayModeState
-    {
-      Stopped,
-      Playing,
-      Paused
-    }
-
-    private static PlayModeState ourSavedState = PlayModeState.Stopped;
-
-    private static PlayModeState GetEditorState()
-    {
-      if (EditorApplication.isPaused)
-        return PlayModeState.Paused;
-      if (EditorApplication.isPlaying)
-        return PlayModeState.Playing;
-      return PlayModeState.Stopped;
-    }
-
-    private static void SetupAssemblyReloadEvents(Lifetime appDomainLifetime)
-    {
-      ourSavedState = GetEditorState();
-
-#pragma warning disable 618
-      EditorApplication.playmodeStateChanged += () =>
-#pragma warning restore 618
-      {
-        var newState = GetEditorState();
-        if (ourSavedState != newState)
-        {
-          if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
-          {
-            if (newState == PlayModeState.Playing)
-            {
-              EditorApplication.LockReloadAssemblies();
-            }
-            else if (newState == PlayModeState.Stopped)
-            {
-              EditorApplication.UnlockReloadAssemblies();
-            }
-          }
-          ourSavedState = newState;
-        }
-      };
-
-      appDomainLifetime.AddAction(() =>
-      {
-        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.StopPlayingAndRecompile)
-        {
-          if (EditorApplication.isPlaying)
-          {
-            EditorApplication.isPlaying = false;
-          }
-        }
       });
     }
 
