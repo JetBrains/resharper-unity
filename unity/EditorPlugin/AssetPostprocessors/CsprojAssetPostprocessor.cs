@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -23,13 +24,19 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // This method is new for 2017.4. It allows multiple processors to modify the contents of the generated .csproj in
     // memory, and Unity will only write to disk if it's different to the existing file. It's safe for pre-2017.4 as it
     // simply won't get called
-    public static string OnGeneratedCSProject(string path, string contents)
+    // ReSharper disable once InconsistentNaming
+    [UsedImplicitly]
+    public static string OnGeneratedCSProject(string path, string content)
     {
       if (!PluginEntryPoint.Enabled)
-        return contents;
+      {
+        ourLogger.Verbose("OnGeneratedCSProject: Not updating solution files - plugin not enabled");
+        return content;
+      }
 
       ourLogger.Verbose("Post-processing {0} (in memory)", path);
-      var doc = XDocument.Parse(contents);
+
+      var doc = XDocument.Parse(content);
       if (UpgradeProjectFile(path, doc))
       {
         ourLogger.Verbose("Post-processed with changes {0} (in memory)", path);
@@ -37,14 +44,23 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       }
 
       ourLogger.Verbose("Post-processed with NO changes {0}", path);
-      return contents;
+      return content;
     }
 
     // This method is for pre-2017.4, and is called after the file has been written to disk
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!PluginEntryPoint.Enabled || UnityUtils.UnityVersion >= new Version(2017, 4))
+      if (!PluginEntryPoint.Enabled)
+      {
+        ourLogger.Verbose("OnGeneratedCSProjectFiles: Not updating project files - plugin not enabled");
         return;
+      }
+
+      if (UnityUtils.UnityVersion >= new Version(2017, 4))
+      {
+        ourLogger.Verbose("OnGeneratedCSProjectFiles: Not updating project files - legacy method");
+        return;
+      }
 
       try
       {

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
@@ -18,10 +19,44 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return 10;
     }
 
+    // This method is new for 2017.4. It allows multiple processors to modify the contents of the generated .csproj in
+    // memory, and Unity will only write to disk if it's different to the existing file. It's safe for pre-2017.4 as it
+    // simply won't get called
+    [UsedImplicitly]
+    public static string OnGeneratedSlnSolution(string path, string content)
+    {
+      if (!PluginEntryPoint.Enabled)
+      {
+        ourLogger.Verbose("OnGeneratedSlnSolution: Not updating solution file - plugin not enabled");
+        return content;
+      }
+
+      ourLogger.Verbose("Post-processing {0} (in memory)", path);
+      try
+      {
+        return ProcessSlnText(content);
+      }
+      catch (Exception e)
+      {
+        Debug.LogError(e);
+        ourLogger.Error(e, "OnGeneratedSlnSolution");
+        return content;
+      }
+    }
+
     public static void OnGeneratedCSProjectFiles()
     {
       if (!PluginEntryPoint.Enabled)
+      {
+        ourLogger.Verbose("OnGeneratedCSProjectFiles: Not updating solution files - plugin not enabled");
         return;
+      }
+
+      if (UnityUtils.UnityVersion >= new Version(2017, 4))
+      {
+        ourLogger.Verbose("OnGeneratedCSProjectFiles: Not updating files - legacy method");
+        return;
+      }
 
       try
       {
@@ -38,6 +73,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       {
         // unhandled exception kills editor
         Debug.LogError(e);
+        ourLogger.Error(e, "OnGeneratedCSProjectFiles");
       }
     }
 
