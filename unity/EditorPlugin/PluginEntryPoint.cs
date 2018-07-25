@@ -27,10 +27,21 @@ namespace JetBrains.Rider.Unity.Editor
   [InitializeOnLoad]
   public static class PluginEntryPoint
   {
+    private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
+
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
-    public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
     private static readonly UnityEventCollector ourLogEventCollector;
+    private static bool ourInitialized;
+    private static OnOpenAssetHandler ourOpenAssetHandler;
+
+    internal static string SlnFile;
+
+    public delegate void OnModelInitializationHandler(UnityModelAndLifetime e);
+
+    [UsedImplicitly]
+    public static event OnModelInitializationHandler OnModelInitialization = delegate {};
+    public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
 
     // This an entry point
     static PluginEntryPoint()
@@ -57,10 +68,6 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    public delegate void OnModelInitializationHandler(UnityModelAndLifetime e);
-    [UsedImplicitly]
-    public static event OnModelInitializationHandler OnModelInitialization = delegate {};
-
     internal static bool CheckConnectedToBackendSync(EditorPluginModel model)
     {
       if (model == null)
@@ -84,12 +91,6 @@ namespace JetBrains.Rider.Unity.Editor
     {
       return ourOpenAssetHandler.CallRider(args);
     }
-
-    private static bool ourInitialized;
-
-    private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
-
-    internal static string SlnFile;
 
     public static bool Enabled
     {
@@ -130,7 +131,7 @@ namespace JetBrains.Rider.Unity.Editor
       });
 
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-        Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+        Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {RiderLogger.LogPath}.");
 
       var list = new List<ProtocolInstance>();
       CreateProtocolAndAdvise(lifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
@@ -423,9 +424,6 @@ namespace JetBrains.Rider.Unity.Editor
       editorPluginModel.EditorLogPath.SetValue(editorLogpath);
       editorPluginModel.PlayerLogPath.SetValue(playerLogPath);
     }
-
-    internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
-    private static OnOpenAssetHandler ourOpenAssetHandler;
 
     /// <summary>
     /// Creates and deletes Library/EditorInstance.json containing info about unity instance

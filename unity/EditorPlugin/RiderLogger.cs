@@ -16,6 +16,8 @@ namespace JetBrains.Rider.Unity.Editor
 
   public class RiderLogger : ILog
   {
+    internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+
     public RiderLogger(string category)
     {
       Category = category;
@@ -39,7 +41,7 @@ namespace JetBrains.Rider.Unity.Editor
       var dateTime = "";
       try
       {
-        // Unity may crash on this 
+        // Unity may crash on this
         dateTime = DateTime.Now.ToString(Util.Logging.Log.DefaultDateFormat);
       }
       catch (Exception e)
@@ -47,7 +49,7 @@ namespace JetBrains.Rider.Unity.Editor
         Debug.Log("DateTime.Now: "+ DateTime.Now);
         Debug.LogError(e);
       }
-      
+
       var text = categoryText + "[" + level + "]" + dateTime + " " + message;
       if (exception != null)
         text = text + Environment.NewLine + exception.Message + Environment.NewLine + exception.StackTrace;
@@ -55,9 +57,10 @@ namespace JetBrains.Rider.Unity.Editor
       // using Unity logs causes frequent Unity hangs
       MainThreadDispatcher.Instance.Queue(() =>
       {
-        if (!new FileInfo(PluginEntryPoint.LogPath).Directory.Exists)
-          new FileInfo(PluginEntryPoint.LogPath).Directory.Create();
-        File.AppendAllText(PluginEntryPoint.LogPath, Environment.NewLine + text);
+        var directory = new FileInfo(LogPath).Directory;
+        if (!directory.Exists)
+          directory.Create();
+        File.AppendAllText(LogPath, Environment.NewLine + text);
       });
     }
 
