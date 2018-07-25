@@ -82,7 +82,7 @@ namespace JetBrains.Rider.Unity.Editor
       get { return EditorPrefs.GetBool("Rider_OverrideTargetFrameworkVersion", false); }
       private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersion", value);; }
     }
-    
+
     public static AssemblyReloadSettings AssemblyReloadSettings
     {
       get
@@ -282,7 +282,7 @@ namespace JetBrains.Rider.Unity.Editor
           SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
-      
+
       EditorGUI.EndChangeCheck();
 
       if (UnityUtils.UnityVersion < new Version(2018, 2))
@@ -300,9 +300,9 @@ namespace JetBrains.Rider.Unity.Editor
           {
             EditorApplication.UnlockReloadAssemblies();
           }
-        }  
+        }
       }
-      
+
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
       var caption = $"<color=#0000FF>{githubRepo}</color>";
       LinkButton(caption: caption, url: githubRepo);

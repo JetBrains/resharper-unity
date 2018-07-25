@@ -29,12 +29,10 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static readonly LifetimeDefinition ourAppDomainLifetimeDefinition;
     private static readonly UnityEventCollector ourLogEventCollector;
-    private static readonly IPluginSettings ourPluginSettings;
-    private static readonly RiderPathLocator ourRiderPathLocator;
+    private static readonly OnOpenAssetHandler ourOpenAssetHandler;
     private static bool ourPluginInitialised;
-    private static OnOpenAssetHandler ourOpenAssetHandler;
 
-    internal static string SlnFile;
+    internal static readonly string SlnFile;
 
     public delegate void OnModelInitializationHandler(ModelWithLifetime e);
 
@@ -55,14 +53,20 @@ namespace JetBrains.Rider.Unity.Editor
       ourLogEventCollector = new UnityEventCollector();
       ourLogEventCollector.StartCollecting(ourAppDomainLifetimeDefinition.Lifetime);
 
-      ourPluginSettings = new PluginSettings();
-      ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
-      var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor);
+      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+      var projectName = Path.GetFileName(projectDirectory);
+      SlnFile = Path.GetFullPath($"{projectName}.sln");
+
+      var pluginSettings = new PluginSettings();
+      var riderPathLocator = new RiderPathLocator(pluginSettings);
+      var riderPath = riderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor);
       if (string.IsNullOrEmpty(riderPath))
       {
         ourLogger.Warn("Cannot find installed Rider! Aborting");
         return;
       }
+
+      ourOpenAssetHandler = new OnOpenAssetHandler(riderPathLocator, pluginSettings, SlnFile);
 
       AddRiderToRecentlyUsedScriptApp(riderPath);
       SetDefaultApp(riderPath);
@@ -71,7 +75,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool CallRider(string args)
     {
-      return ourOpenAssetHandler != null && ourOpenAssetHandler.CallRider(args);
+      return ourOpenAssetHandler.CallRider(args);
     }
 
     public static bool Enabled
@@ -148,10 +152,6 @@ namespace JetBrains.Rider.Unity.Editor
 
       ourLogger.Verbose("Initialising Rider plugin");
 
-      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-      var projectName = Path.GetFileName(projectDirectory);
-      SlnFile = Path.GetFullPath($"{projectName}.sln");
-
       // See if the solution files need updating on every AppDomain init, even if the plugin has previously been
       // initialised (the AppDomain reload might have been the plugin being updated)
       ResetDefaultFileExtensions();
@@ -160,35 +160,8 @@ namespace JetBrains.Rider.Unity.Editor
       if (ourPluginInitialised)
         return;
 
-      InitializeEditorInstanceJson(appDomainLifetime);
-
-      var list = new List<ProtocolInstance>();
-      CreateProtocolAndAdvise(appDomainLifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
-
-      // list all sln files in CurrentDirectory, except main one and create server protocol for each of them
-      var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
-      var solutionFiles = currentDir.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
-      foreach (var solutionFile in solutionFiles)
-      {
-        if (Path.GetFileNameWithoutExtension(solutionFile.FullName) != currentDir.Name)
-        {
-          CreateProtocolAndAdvise(appDomainLifetime, list, Path.GetFileNameWithoutExtension(solutionFile.FullName));
-        }
-      }
-
-      ourLogger.Verbose("Writing Library/ProtocolInstance.json");
-      var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
-      File.WriteAllText(protocolInstanceJsonPath, ProtocolInstance.ToJson(list));
-
-      appDomainLifetime.AddAction(() =>
-      {
-        ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
-        File.Delete(protocolInstanceJsonPath);
-      });
-
-      ourOpenAssetHandler = new OnOpenAssetHandler(ourRiderPathLocator, ourPluginSettings, SlnFile);
-
-      ourSavedState = GetEditorState();
+      CreateEditorInstanceJson(appDomainLifetime);
+      InitialiseProtocol(appDomainLifetime);
       SetupAssemblyReloadEvents(appDomainLifetime);
 
       ourLogger.Verbose("Rider plugin initialised");
@@ -237,7 +210,7 @@ namespace JetBrains.Rider.Unity.Editor
     // Later versions of Unity also write this file, although it doesn't have all of the same properties
     // TODO: What version added this?
     // TODO: Should we not write it if it already exists?
-    private static void InitializeEditorInstanceJson(Lifetime appDomainLifetime)
+    private static void CreateEditorInstanceJson(Lifetime appDomainLifetime)
     {
       ourLogger.Verbose("Writing Library/EditorInstance.json");
 
@@ -259,6 +232,47 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
+    private static void InitialiseProtocol(Lifetime appDomainLifetime)
+    {
+      var instances = new List<ProtocolInstance>();
+      var instance = CreateProtocolAndAdvise(appDomainLifetime, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
+      if (instance != null)
+        instances.Add(instance);
+
+      // list all sln files in CurrentDirectory, except main one and create server protocol for each of them
+      var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
+      var solutionFiles = currentDir.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
+      foreach (var solutionFile in solutionFiles)
+      {
+        if (Path.GetFileNameWithoutExtension(solutionFile.FullName) != currentDir.Name)
+        {
+          instance = CreateProtocolAndAdvise(appDomainLifetime, Path.GetFileNameWithoutExtension(solutionFile.FullName));
+          if (instance != null)
+            instances.Add(instance);
+        }
+      }
+
+      ourLogger.Verbose("Writing Library/ProtocolInstance.json");
+
+      var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
+      File.WriteAllText(protocolInstanceJsonPath, ProtocolInstance.ToJson(instances));
+
+      appDomainLifetime.AddAction(() =>
+      {
+        ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
+        File.Delete(protocolInstanceJsonPath);
+      });
+    }
+
+    public enum PlayModeState
+    {
+      Stopped,
+      Playing,
+      Paused
+    }
+
+    private static PlayModeState ourSavedState = PlayModeState.Stopped;
+
     private static PlayModeState GetEditorState()
     {
       if (EditorApplication.isPaused)
@@ -270,6 +284,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void SetupAssemblyReloadEvents(Lifetime appDomainLifetime)
     {
+      ourSavedState = GetEditorState();
+
 #pragma warning disable 618
       EditorApplication.playmodeStateChanged += () =>
 #pragma warning restore 618
@@ -304,12 +320,12 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static void CreateProtocolAndAdvise(Lifetime lifetime, List<ProtocolInstance> list, string solutionFileName)
+    private static ProtocolInstance CreateProtocolAndAdvise(Lifetime lifetime, string solutionFileName)
     {
       try
       {
         var riderProtocolController = new RiderProtocolController(MainThreadDispatcher.Instance, lifetime);
-        list.Add(new ProtocolInstance(riderProtocolController.Wire.Port, solutionFileName));
+        var instance = new ProtocolInstance(riderProtocolController.Wire.Port, solutionFileName);
 
         var serializers = new Serializers();
         var identities = new Identities(IdKind.Server);
@@ -340,10 +356,13 @@ namespace JetBrains.Rider.Unity.Editor
 
           new UnityEventLogSender(ourLogEventCollector);
         });
+
+        return instance;
       }
       catch (Exception ex)
       {
         ourLogger.Error("Init Rider Plugin " + ex);
+        return null;
       }
     }
 
@@ -381,15 +400,6 @@ namespace JetBrains.Rider.Unity.Editor
         return task;
       });
     }
-
-    public enum PlayModeState
-    {
-      Stopped,
-      Playing,
-      Paused
-    }
-
-    private static PlayModeState ourSavedState = PlayModeState.Stopped;
 
     private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
     {
