@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.Utils
@@ -6,19 +7,19 @@ namespace JetBrains.Rider.Unity.Editor.Utils
   //[Location("JetBrainsRiderPluginCache.txt", LocationAttribute.Location.LibraryFolder)]
   internal class RiderScriptableSingleton: ScriptObjectSingleton<RiderScriptableSingleton>
   {
-    [SerializeField] private bool myCsprojProcessedOnce;
+    [SerializeField] private string myPluginVersionUsedToGenerateSolution;
+    [SerializeField] private bool myHasModifiedScriptAssets;
 
-    public bool CsprojProcessedOnce
+    [CanBeNull]
+    public string PluginVersionUsedToGenerateSolution
     {
-      get => myCsprojProcessedOnce;
+      get => myPluginVersionUsedToGenerateSolution;
       set
       {
-        myCsprojProcessedOnce = value;
+        myPluginVersionUsedToGenerateSolution = value;
         Save(true);
       }
     }
-
-    [SerializeField] private bool myHasModifiedScriptAssets;
 
     public bool HasModifiedScriptAssets
     {

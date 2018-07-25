@@ -73,6 +73,7 @@ namespace JetBrains.Rider.Unity.Editor
       InitialisePlugin(ourAppDomainLifetimeDefinition.Lifetime);
     }
 
+    // ReSharper disable once UnusedMethodReturnValue.Global
     public static bool CallRider(string args)
     {
       return ourOpenAssetHandler.CallRider(args);
@@ -196,14 +197,28 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void EnsureSolutionIsUpToDate()
     {
-      // process csproj files once per Unity process
-      // TODO: This doesn't handle the scenario where the plugin is updated
-      if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
-      {
-        ourLogger.Verbose("Call OnGeneratedCSProjectFiles once per Unity process.");
+      var thisPluginVersion = typeof(PluginEntryPoint).Assembly.GetName().Version.ToString(4);
+      var lastPluginVersion = RiderScriptableSingleton.Instance.PluginVersionUsedToGenerateSolution;
+      var shouldSyncSolution = false;
 
-        CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
-        RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
+      // TODO: This doesn't cover the scenario where the files don't exist
+
+      if (lastPluginVersion == null)
+      {
+        ourLogger.Verbose("SyncSolution called for the first time this process");
+        shouldSyncSolution = true;
+      }
+      else if (lastPluginVersion != thisPluginVersion)
+      {
+        ourLogger.Verbose("SyncSolution called because plugin changed from {0} to {1}", lastPluginVersion, thisPluginVersion);
+        shouldSyncSolution = true;
+      }
+
+      if (shouldSyncSolution)
+      {
+        SlnAssetPostprocessor.DoOnGeneratedCSProjectFiles();
+        CsprojAssetPostprocessor.DoOnGeneratedCSProjectFiles();
+        RiderScriptableSingleton.Instance.PluginVersionUsedToGenerateSolution = thisPluginVersion;
       }
     }
 
@@ -298,6 +313,7 @@ namespace JetBrains.Rider.Unity.Editor
           connectionLifetime.AddAction(() => { UnityModels.Remove(modelWithLifetime); });
           UnityModels.Add(modelWithLifetime);
 
+          // ReSharper disable once ObjectCreationAsStatement
           new UnityEventLogSender(ourLogEventCollector);
         });
 

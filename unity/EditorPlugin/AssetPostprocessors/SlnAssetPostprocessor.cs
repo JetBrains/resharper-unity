@@ -58,6 +58,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         return;
       }
 
+      DoOnGeneratedCSProjectFiles();
+    }
+
+    // ReSharper disable once InconsistentNaming
+    internal static void DoOnGeneratedCSProjectFiles()
+    {
       try
       {
         var slnFile = PluginEntryPoint.SlnFile;
@@ -65,9 +71,10 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           return;
 
         ourLogger.Verbose("Post-processing {0}", slnFile);
-        var slnAllText = File.ReadAllText(slnFile);
-        var text = ProcessSlnText(slnAllText);
-        File.WriteAllText(slnFile, text);
+        var originalContent = File.ReadAllText(slnFile);
+        var processedContent = ProcessSlnText(originalContent);
+        if (processedContent != originalContent)
+          File.WriteAllText(slnFile, processedContent);
       }
       catch (Exception e)
       {

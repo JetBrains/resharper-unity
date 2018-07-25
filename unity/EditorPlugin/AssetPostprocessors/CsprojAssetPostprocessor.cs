@@ -62,6 +62,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         return;
       }
 
+      DoOnGeneratedCSProjectFiles();
+    }
+
+    // ReSharper disable once InconsistentNaming
+    internal static void DoOnGeneratedCSProjectFiles()
+    {
       try
       {
         // get only csproj files, which are mentioned in sln
