@@ -83,7 +83,7 @@ namespace JetBrains.Rider.Unity.Editor
         RiderScriptableSingleton.Instance.HasModifiedScriptAssets = false;
       }
 
-      var models = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
+      var models = PluginEntryPoint.UnityModels.Where(a => !a.Lifetime.IsTerminated).ToArray();
       if (models.Any())
       {
         var model = models.First().Model;

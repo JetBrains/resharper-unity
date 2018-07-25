@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,14 +12,13 @@ using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
+using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.Unity.Editor.Utils;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
-using Application = UnityEngine.Application;
-using Debug = UnityEngine.Debug;
-using JetBrains.Rider.Unity.Editor.NonUnity;
-using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor.Callbacks;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -37,7 +35,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     internal static string SlnFile;
 
-    public delegate void OnModelInitializationHandler(UnityModelAndLifetime e);
+    public delegate void OnModelInitializationHandler(ModelWithLifetime e);
 
     [UsedImplicitly]
     public static event OnModelInitializationHandler OnModelInitialization = delegate {};
@@ -246,12 +244,15 @@ namespace JetBrains.Rider.Unity.Editor
 
         riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
         {
+          ourLogger.Verbose("Create UnityModel and advise for new sessions...");
+
           var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
-          ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
           var model = new EditorPluginModel(connectionLifetime, protocol);
+          var modelWithLifetime = new ModelWithLifetime(model, connectionLifetime);
+
           AdviseUnityActions(model, connectionLifetime);
           AdviseEditorState(model);
-          OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
+          OnModelInitialization(modelWithLifetime);
           AdviseRefresh(model);
           InitEditorLogPath(model);
 
@@ -260,9 +261,9 @@ namespace JetBrains.Rider.Unity.Editor
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           ourLogger.Verbose("UnityModel initialized.");
-          var pair = new ModelWithLifetime(model, connectionLifetime);
-          connectionLifetime.AddAction(() => { UnityModels.Remove(pair); });
-          UnityModels.Add(pair);
+          connectionLifetime.AddAction(() => { UnityModels.Remove(modelWithLifetime); });
+          UnityModels.Add(modelWithLifetime);
+
           new UnityEventLogSender(ourLogEventCollector);
         });
       }
@@ -435,7 +436,7 @@ namespace JetBrains.Rider.Unity.Editor
       var editorInstanceJsonPath = Path.GetFullPath("Library/EditorInstance.json");
 
       File.WriteAllText(editorInstanceJsonPath, $@"{{
-  ""process_id"": {Process.GetCurrentProcess().Id},
+  ""process_id"": {System.Diagnostics.Process.GetCurrentProcess().Id},
   ""version"": ""{Application.unityVersion}"",
   ""app_path"": ""{EditorApplication.applicationPath}"",
   ""app_contents_path"": ""{EditorApplication.applicationContentsPath}"",
@@ -488,18 +489,6 @@ namespace JetBrains.Rider.Unity.Editor
       var currentDir = Directory.GetCurrentDirectory();
       var location = Assembly.GetExecutingAssembly().Location;
       return location.StartsWith(currentDir, StringComparison.InvariantCultureIgnoreCase);
-    }
-  }
-
-  public struct UnityModelAndLifetime
-  {
-    public EditorPluginModel Model;
-    public Lifetime Lifetime;
-
-    public UnityModelAndLifetime(EditorPluginModel model, Lifetime lifetime)
-    {
-      Model = model;
-      Lifetime = lifetime;
     }
   }
 }

@@ -5,8 +5,8 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   public static class ModelAdviceExtension
   {
     private static readonly ILog ourLogger = Log.GetLog("ModelAdviceExtension");
-    
-    public static void AdviseUnitTestLaunch(UnityModelAndLifetime modelAndLifetime)
+
+    public static void AdviseUnitTestLaunch(ModelWithLifetime modelAndLifetime)
     {
       ourLogger.Verbose("AdviseUnitTestLaunch");
       var modelValue = modelAndLifetime.Model;
