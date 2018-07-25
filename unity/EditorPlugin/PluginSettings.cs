@@ -207,7 +207,7 @@ namespace JetBrains.Rider.Unity.Editor
         if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))
         {
           EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
-          EditorGUILayout.HelpBox("Unckecking will restore default external editor.", MessageType.None);
+          EditorGUILayout.HelpBox("Clearing will restore default external editor.", MessageType.None);
         }
         else
         {
@@ -369,6 +369,5 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
     }
-
   }
 }
