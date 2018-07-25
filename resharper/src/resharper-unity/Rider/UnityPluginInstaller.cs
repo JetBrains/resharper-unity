@@ -84,41 +84,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             if (!args.GetNewOrNull())
                 return;
-            
+
             myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", () => InstallPluginIfRequired(mySolution.GetAllProjects().Where(p => p.IsUnityProject()).ToList()));
         }
+
+        readonly Version myCurrentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
 
         private void InstallPluginIfRequired(ICollection<IProject> projects)
         {
             if (projects.Count == 0)
                 return;
-            
+
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
-            
+
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.InstallUnity3DRiderPlugin))
                 return;
 
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
-            var installationInfo = myDetector.GetInstallationInfo(previousInstallationDir: FileSystemPath.Empty);
+            var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: FileSystemPath.Empty);
             if (!installationInfo.ShouldInstallPlugin)
             {
                 myLogger.Info("Plugin should not be installed.");
                 if (installationInfo.ExistingFiles.Count > 0)
                     myLogger.Info("Already existing plugin files:\n{0}", string.Join("\n", installationInfo.ExistingFiles));
-                
+
                 return;
             }
-            
+
             myQueue.Enqueue(() =>
             {
                 Install(installationInfo);
                 myPluginInstallations.Add(mySolution.SolutionFilePath);
             });
         }
-
-        readonly Version currentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
 
         private void Install(UnityPluginDetector.InstallationInfo installationInfo)
         {
@@ -127,26 +127,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 Assertion.Assert(false, "Should not be here if installation is not required.");
                 return;
             }
-            
+
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
             {
                 myLogger.Verbose("Installation already done.");
                 return;
             }
 
-            if (currentVersion == installationInfo.Version)
-            {
-                myLogger.Verbose($"Plugin v{installationInfo.Version} already installed.");
-                return;
-            }
+            myLogger.Info("Installing Rider Unity editor plugin: {0}", installationInfo.InstallReason);
 
-            var isFreshInstall = installationInfo.Version == UnityPluginDetector.ZeroVersion;
-            if (isFreshInstall)
-                myLogger.Info("Fresh install");
-
-            FileSystemPath installedPath;
-
-            if (!TryCopyFiles(installationInfo, out installedPath))
+            if (!TryCopyFiles(installationInfo, out var installedPath))
             {
                 myLogger.Warn("Plugin was not installed");
             }
@@ -155,30 +145,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 string userTitle;
                 string userMessage;
 
-                if (isFreshInstall)
+                switch (installationInfo.InstallReason)
                 {
-                    userTitle = "Unity: plugin installed";
-                    userMessage =
-                        $@"Rider plugin v{
-                                currentVersion
-                            } for the Unity Editor was automatically installed for the project '{mySolution.Name}'
-This allows better integration between the Unity Editor and Rider IDE.
-The plugin file can be found on the following path:
-{installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.
-Please switch back to Unity to make plugin file appear in the solution.";
-                }
-                else
-                {
-                    userTitle = "Unity: plugin updated";
-                    userMessage = $"Rider plugin was succesfully upgraded to version {currentVersion}";
+                    case UnityPluginDetector.InstallReason.FreshInstall:
+                        userTitle = "Unity: plugin installed";
+                        userMessage =
+                            $@"Rider plugin v{myCurrentVersion} for the Unity Editor was automatically installed for the project '{mySolution.Name}' and can be found at:
+    {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.
+    Please switch back to Unity to load the plugin.";
+                        break;
+
+                    case UnityPluginDetector.InstallReason.Update:
+                        userTitle = "Unity: plugin updated";
+                        userMessage = $"Editor plugin was successfully updated to version {myCurrentVersion}";
+                        break;
+
+                    case UnityPluginDetector.InstallReason.ForceUpdateForDebug:
+                        userTitle = "Unity: plugin updated (debug build)";
+                        userMessage = $"Editor plugin was successfully updated to version {myCurrentVersion}";
+                        break;
+
+                    default:
+                        myLogger.Error("Unexpected install reason: {0}", installationInfo.InstallReason);
+                        return;
                 }
 
                 myLogger.Info(userTitle);
 
-                var notification = new RdNotificationEntry(userTitle,
-                    userMessage, true,
-                    RdNotificationEntryType.INFO);
-                
+                var notification = new RdNotificationEntry(userTitle, userMessage, true, RdNotificationEntryType.INFO);
+
                 myShellLocks.ExecuteOrQueueEx(myLifetime, "UnityPluginInstaller.Notify", () => myNotifications.Notification.Fire(notification));
             }
         }

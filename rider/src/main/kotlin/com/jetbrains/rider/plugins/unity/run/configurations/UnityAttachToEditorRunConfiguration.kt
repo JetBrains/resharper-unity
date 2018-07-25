@@ -10,10 +10,10 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.plugins.unity.util.convertPortToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
+import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.use2
 import org.apache.commons.logging.LogFactory
 import org.jdom.Element
@@ -62,7 +62,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
                 ?: findUnityEditorInstance(processList)
                 ?: throw RuntimeConfigurationError("Cannot find Unity Editor instance")
 
-        port = convertPortToDebuggerPort(pid!!)
+        port = convertPidToDebuggerPort(pid!!)
     }
 
     private fun checkValidEditorInstance(pid: Int?, processList: Array<ProcessInfo>): Int? {

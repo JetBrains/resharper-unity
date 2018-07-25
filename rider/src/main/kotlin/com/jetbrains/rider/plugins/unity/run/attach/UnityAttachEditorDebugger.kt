@@ -4,10 +4,11 @@ import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.project.Project
 import com.intellij.xdebugger.attach.XLocalAttachDebugger
 
-class UnityAttachDebugger : XLocalAttachDebugger {
+class UnityAttachEditorDebugger : XLocalAttachDebugger {
     override fun getDebuggerDisplayName() = "Unity debugger"
 
     override fun attachDebugSession(project: Project, processInfo: ProcessInfo) {
-        UnityRunUtil.runAttach(processInfo.pid, project)
+        // We can safely assume that since it's a local process, it's the editor (standalone players are announced via UDP)
+        UnityRunUtil.attachToEditor(processInfo.pid, project)
     }
 }

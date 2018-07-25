@@ -4,27 +4,32 @@ import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.ide.ui.UISettings
 import com.intellij.ide.ui.search.SearchUtil
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.notification.*
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationGroup
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.components.AbstractProjectComponent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurableGroup
 import com.intellij.openapi.options.newEditor.SettingsDialogFactory
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.UnityReferenceDiscoverer
+import com.jetbrains.rider.isUnityGeneratedProject
 import javax.swing.event.HyperlinkEvent
 
-class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, project: Project, unityReferenceDiscoverer: UnityReferenceDiscoverer) : AbstractProjectComponent(project){
-    var firstRun = true
+class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, private val project: Project)
+    : AbstractProjectComponent(project){
+
+    private var firstRun = true
 
     companion object {
-        private val settingName = "do_not_show_unity_auto_save_notification"
-        private val notificationGroupId = NotificationGroup.toolWindowGroup("UnitySolutionNotification", EventLog.LOG_TOOL_WINDOW_ID, true)
+        private const val settingName = "do_not_show_unity_auto_save_notification"
+        private val notificationGroupId = NotificationGroup.balloonGroup("Unity Disable Auto Save")
         private val logger = Logger.getInstance(RiderShowSettingsUtilImpl::class.java)
     }
 
-    init {
-        if (unityReferenceDiscoverer.isUnityGeneratedProject) {
+    override fun projectOpened() {
+        if (project.isUnityGeneratedProject()) {
             showNotificationIfNeeded()
         }
     }
@@ -56,7 +61,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
                 }
             }
 
-            Notifications.Bus.notify(autoSaveNotification)
+            Notifications.Bus.notify(autoSaveNotification, project)
         }
     }
 
@@ -73,7 +78,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
             "<br/>* <a href=\"openSettings_Editor Tabs_Mark modified tabs\">Mark modified tabs with asterisk</a>"
 
         val notification = Notification(notificationGroupId.displayId, "Unity: auto-save was disabled", message, NotificationType.INFORMATION)
-        notification.setListener {_, hyperlinkEvent ->
+        notification.setListener { _, hyperlinkEvent ->
             if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
                 return@setListener
 
@@ -83,7 +88,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
             }
         }
 
-        Notifications.Bus.notify(notification)
+        Notifications.Bus.notify(notification, project)
     }
 
     private fun showSettings(setting: String){

@@ -18,8 +18,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Daemon
                 var nameCache = data.Solution.GetComponent<AsmDefNameCache>();
                 var nameDeclaredElement = nameCache.GetNameDeclaredElement(data.SourceFile);
                 var reference = element.FindReference<AsmDefNameReference>();
-                if (Equals(reference?.Resolve().DeclaredElement, nameDeclaredElement))
+                if (reference != null && nameDeclaredElement != null &&
+                    Equals(reference.Resolve().DeclaredElement, nameDeclaredElement))
+                {
                     consumer.AddHighlighting(new ReferencingSelfError(reference));
+                }
             }
         }
     }

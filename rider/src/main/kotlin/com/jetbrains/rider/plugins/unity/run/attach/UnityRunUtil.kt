@@ -5,6 +5,7 @@ import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 
 object UnityRunUtil {
 
@@ -20,14 +21,14 @@ object UnityRunUtil {
             !name.contains("UnityCrashHandler")
     }
 
-    fun runAttach(pid: Int, project: Project) {
-        val port = 56000 + pid % 1000
-        runAttach("localhost", port, pid.toString(), project)
+    fun attachToEditor(pid: Int, project: Project) {
+        val port = convertPidToDebuggerPort(pid)
+        attachToUnityProcess("localhost", port, "Unity Editor", project, true)
     }
 
-    fun runAttach(host: String, port: Int, playerId: String, project: Project) {
-        val configuration = UnityLocalAttachConfiguration(port, playerId, host)
-        val profile = UnityLocalAttachRunProfile(playerId, configuration)
+    fun attachToUnityProcess(host: String, port: Int, playerId: String, project: Project, isEditor: Boolean) {
+        val configuration = UnityAttachConfiguration(host, port, playerId, isEditor)
+        val profile = UnityAttachRunProfile(playerId, configuration, playerId, isEditor)
         val environment = ExecutionEnvironmentBuilder
             .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), profile)
             .build()
