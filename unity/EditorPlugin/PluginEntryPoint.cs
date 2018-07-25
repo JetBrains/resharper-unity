@@ -31,7 +31,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly UnityEventCollector ourLogEventCollector;
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
-    private static bool ourInitialized;
+    private static bool ourPluginInitialised;
     private static OnOpenAssetHandler ourOpenAssetHandler;
 
     internal static string SlnFile;
@@ -66,11 +66,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       AddRiderToRecentlyUsedScriptApp(riderPath);
       SetDefaultApp(riderPath);
-
-      if (Enabled)
-      {
-        Init(ourAppDomainLifetimeDefinition.Lifetime);
-      }
+      InitialisePlugin(ourAppDomainLifetimeDefinition.Lifetime);
     }
 
     public static bool CallRider(string args)
@@ -93,12 +89,9 @@ namespace JetBrains.Rider.Unity.Editor
       if (!Enabled)
         return false;
 
-      if (!ourInitialized)
-      {
-        // make sure the plugin was initialized first.
-        // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
-        Init(ourAppDomainLifetimeDefinition.Lifetime);
-      }
+      // make sure the plugin was initialized first.
+      // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
+      InitialisePlugin(ourAppDomainLifetimeDefinition.Lifetime);
 
       return ourOpenAssetHandler.OnOpenedAsset(instanceID, line);
     }
@@ -148,25 +141,26 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static void Init(Lifetime appDomainLifetime)
+    private static void InitialisePlugin(Lifetime appDomainLifetime)
     {
+      if (!Enabled)
+        return;
+
+      ourLogger.Verbose("Initialising Rider plugin");
+
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.GetFullPath($"{projectName}.sln");
 
-      InitializeEditorInstanceJson(appDomainLifetime);
+      // See if the solution files need updating on every AppDomain init, even if the plugin has previously been
+      // initialised (the AppDomain reload might have been the plugin being updated)
       ResetDefaultFileExtensions();
+      EnsureSolutionIsUpToDate();
 
-      // process csproj files once per Unity process
-      if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
-      {
-        ourLogger.Verbose("Call OnGeneratedCSProjectFiles once per Unity process.");
-        CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
-        RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
-      }
+      if (ourPluginInitialised)
+        return;
 
-      if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-        Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {RiderLogger.LogPath}.");
+      InitializeEditorInstanceJson(appDomainLifetime);
 
       var list = new List<ProtocolInstance>();
       CreateProtocolAndAdvise(appDomainLifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
@@ -197,7 +191,47 @@ namespace JetBrains.Rider.Unity.Editor
       ourSavedState = GetEditorState();
       SetupAssemblyReloadEvents(appDomainLifetime);
 
-      ourInitialized = true;
+      ourLogger.Verbose("Rider plugin initialised");
+      if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
+        Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {RiderLogger.LogPath}.");
+
+      ourPluginInitialised = true;
+    }
+
+    // Unity 2017.3 added "asmdef" to the default list of file extensions used to generate the C# projects, but only for
+    // new projects. Existing projects have this value serialised, and Unity doesn't update or reset it. We need .asmdef
+    // files in the project, so we'll add it if it's missing.
+    // For the record, the default list of file extensions in Unity 2017.4.6f1 is: txt;xml;fnt;cd;asmdef;rsp
+    private static void ResetDefaultFileExtensions()
+    {
+      // EditorSettings.projectGenerationUserExtensions (and projectGenerationBuiltinExtensions) were added in 5.2. We
+      // support 5.0+, so yay! reflection
+      var propertyInfo = typeof(EditorSettings)
+        .GetProperty("projectGenerationUserExtensions", BindingFlags.Public | BindingFlags.Static);
+      if (propertyInfo?.GetValue(null, null) is string[] currentValues)
+      {
+        if (!currentValues.Contains("asmdef"))
+        {
+          var newValues = new string[currentValues.Length + 1];
+          Array.Copy(currentValues, newValues, currentValues.Length);
+          newValues[currentValues.Length] = "asmdef";
+
+          propertyInfo.SetValue(null, newValues, null);
+        }
+      }
+    }
+
+    private static void EnsureSolutionIsUpToDate()
+    {
+      // process csproj files once per Unity process
+      // TODO: This doesn't handle the scenario where the plugin is updated
+      if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
+      {
+        ourLogger.Verbose("Call OnGeneratedCSProjectFiles once per Unity process.");
+
+        CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
+        RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
+      }
     }
 
     // Later versions of Unity also write this file, although it doesn't have all of the same properties
@@ -223,29 +257,6 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("Deleting Library/EditorInstance.json");
         File.Delete(editorInstanceJsonPath);
       });
-    }
-
-    // Unity 2017.3 added "asmdef" to the default list of file extensions used to generate the C# projects, but only for
-    // new projects. Existing projects have this value serialised, and Unity doesn't update or reset it. We need .asmdef
-    // files in the project, so we'll add it if it's missing.
-    // For the record, the default list of file extensions in Unity 2017.4.6f1 is: txt;xml;fnt;cd;asmdef;rsp
-    private static void ResetDefaultFileExtensions()
-    {
-      // EditorSettings.projectGenerationUserExtensions (and projectGenerationBuiltinExtensions) were added in 5.2. We
-      // support 5.0+, so yay! reflection
-      var propertyInfo = typeof(EditorSettings)
-        .GetProperty("projectGenerationUserExtensions", BindingFlags.Public | BindingFlags.Static);
-      if (propertyInfo?.GetValue(null, null) is string[] currentValues)
-      {
-        if (!currentValues.Contains("asmdef"))
-        {
-          var newValues = new string[currentValues.Length + 1];
-          Array.Copy(currentValues, newValues, currentValues.Length);
-          newValues[currentValues.Length] = "asmdef";
-
-          propertyInfo.SetValue(null, newValues, null);
-        }
-      }
     }
 
     private static PlayModeState GetEditorState()
