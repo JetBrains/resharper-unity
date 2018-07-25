@@ -87,7 +87,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (models.Any())
       {
         var model = models.First().Model;
-        if (PluginEntryPoint.CheckConnectedToBackendSync(model))
+        if (model.CheckConnectedToBackendSync())
         {
           const int column = 0;
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);

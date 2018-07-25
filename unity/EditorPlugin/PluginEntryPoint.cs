@@ -28,9 +28,9 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
 
     private static readonly LifetimeDefinition ourAppDomainLifetimeDefinition;
+    private static readonly UnityEventCollector ourLogEventCollector;
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathLocator ourRiderPathLocator;
-    private static readonly UnityEventCollector ourLogEventCollector;
     private static bool ourInitialized;
     private static OnOpenAssetHandler ourOpenAssetHandler;
 
@@ -78,6 +78,36 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
+    public static bool CallRider(string args)
+    {
+      return ourOpenAssetHandler != null && ourOpenAssetHandler.CallRider(args);
+    }
+
+    public static bool Enabled
+    {
+      get
+      {
+        var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
+        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
+      }
+    }
+
+    [OnOpenAsset]
+    private static bool OnOpenedAsset(int instanceID, int line)
+    {
+      if (!Enabled)
+        return false;
+
+      if (!ourInitialized)
+      {
+        // make sure the plugin was initialized first.
+        // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
+        Init(ourAppDomainLifetimeDefinition.Lifetime);
+      }
+
+      return ourOpenAssetHandler.OnOpenedAsset(instanceID, line);
+    }
+
     private static LifetimeDefinition CreateAppDomainLifetimeDefinition()
     {
       var appDomainLifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
@@ -90,43 +120,9 @@ namespace JetBrains.Rider.Unity.Editor
       return appDomainLifetimeDefinition;
     }
 
-    internal static bool CheckConnectedToBackendSync(EditorPluginModel model)
-    {
-      if (model == null)
-        return false;
-      var connected = false;
-      try
-      {
-        // HostConnected also means that in Rider and in Unity the same solution is opened
-        connected = model.IsBackendConnected.Sync(RdVoid.Instance,
-          new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
-      }
-      catch (Exception)
-      {
-        ourLogger.Verbose("Rider Protocol not connected.");
-      }
-
-      return connected;
-    }
-
-    public static bool CallRider(string args)
-    {
-      return ourOpenAssetHandler.CallRider(args);
-    }
-
-    public static bool Enabled
-    {
-      get
-      {
-        var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
-        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider");
-      }
-    }
-
     private static void Init(Lifetime appDomainLifetime)
     {
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.GetFullPath($"{projectName}.sln");
 
@@ -480,25 +476,8 @@ namespace JetBrains.Rider.Unity.Editor
       EditorPrefs.SetString($"{recentAppsKey}{9}", userAppPath);
     }
 
-    /// <summary>
-    /// Called when Unity is about to open an asset.
-    /// </summary>
-    [OnOpenAsset]
-    private static bool OnOpenedAsset(int instanceID, int line)
-    {
-      if (!Enabled)
-        return false;
-      if (!ourInitialized)
-      {
-        // make sure the plugin was initialized first.
-        // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
-        Init(ourAppDomainLifetimeDefinition.Lifetime);
-      }
-
-      return ourOpenAssetHandler.OnOpenedAsset(instanceID, line);
-    }
-
-    public static bool IsLoadedFromAssets()
+    // TODO: I don't know what this method is for...
+    internal static bool IsLoadedFromAssets()
     {
       var currentDir = Directory.GetCurrentDirectory();
       var location = Assembly.GetExecutingAssembly().Location;
