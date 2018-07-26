@@ -2,11 +2,13 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.google.gson.Gson
 import com.intellij.ide.projectView.PresentationData
+import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
+import com.jetbrains.rider.projectView.views.addNonIndexedMark
 
 class PackagesRoot(project: Project, virtualFile: VirtualFile)
     : UnityExplorerNode(project, virtualFile, listOf()) {
@@ -68,12 +70,16 @@ class PackagesRoot(project: Project, virtualFile: VirtualFile)
 class PackageNode(project: Project,
                   virtualFile: VirtualFile,
                   private val packageJson: PackageJson)
-    : UnityExplorerNode(project, virtualFile, listOf()) {
+    : UnityExplorerNode(project, virtualFile, listOf()), Comparable<AbstractTreeNode<*>> {
+
+    override fun getName(): String {
+        return packageJson.displayName ?: packageJson.name ?: super.getName()
+    }
 
     override fun update(presentation: PresentationData) {
-        val name = packageJson.displayName ?: packageJson.name ?: virtualFile.name
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.Package)
+        presentation.addNonIndexedMark(myProject, virtualFile)
 
         // Note that this might also set the tooltip if we have too many projects underneath
         addProjects(presentation)
@@ -94,6 +100,13 @@ class PackageNode(project: Project,
             newTooltip += "\n" + existingTooltip
         }
         presentation.tooltip = newTooltip
+    }
+
+    override fun compareTo(other: AbstractTreeNode<*>): Int {
+        if (other is PackageNode) {
+            return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
+        }
+        return -1
     }
 }
 
