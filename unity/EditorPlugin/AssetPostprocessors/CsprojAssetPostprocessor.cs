@@ -92,33 +92,23 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool UpgradeProjectFile(string projectFile, XDocument doc)
     {
-      var changed = false;
-      doc.Changed += (sender, args) => changed = true;
-
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
-      FixTargetFrameworkVersion(projectContentElement, xmlns);
-      FixUnityEngineReference(projectContentElement, xmlns); // shouldn't be needed in Unity 2018.2
-      FixSystemXml(projectContentElement, xmlns);
-      SetLangVersion(projectContentElement, xmlns);
-      SetProjectFlavour(projectContentElement, xmlns);
-
-      // Unity 2017.1 and later has this features by itself
-      if (UnityUtils.UnityVersion < new Version(2017, 1))
-      {
-        SetManuallyDefinedComilingSettings(projectFile, projectContentElement, xmlns);
-      }
-
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
-      SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
-
-      ApplyManualCompilingSettingsReferences(projectContentElement, xmlns);
+      var changed = FixTargetFrameworkVersion(projectContentElement, xmlns);
+      changed |= FixUnityEngineReference(projectContentElement, xmlns); // shouldn't be needed in Unity 2018.2
+      changed |= FixSystemXml(projectContentElement, xmlns);
+      changed |= SetLangVersion(projectContentElement, xmlns);
+      changed |= SetProjectFlavour(projectContentElement, xmlns);
+      changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
+      changed |= ApplyManualCompilerSettingsReferences(projectContentElement, xmlns);
+      changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
+      changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
 
       return changed;
     }
 
-    private static void FixSystemXml(XElement projectContentElement, XNamespace xmlns)
+    private static bool FixSystemXml(XElement projectContentElement, XNamespace xmlns)
     {
       var el = projectContentElement
         .Elements(xmlns+"ItemGroup")
@@ -127,19 +117,26 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (el != null)
       {
         el.Attribute("Include").Value = "System.Xml";
+        return true;
       }
+
+      return false;
     }
 
-    private static readonly string PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
     private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private static readonly string  PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
-    private static readonly string  EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
+    private static readonly string PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
+    private static readonly string PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
+    private static readonly string EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
 
-    private static void SetManuallyDefinedComilingSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
+    private static bool SetManuallyDefinedCompilerSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
+      // Handled natively by Unity 2017.1+
+      if (UnityUtils.UnityVersion < new Version(2017, 1))
+        return false;
+
       string configPath = null;
 
       //Prefer mcs.rsp if it exists
@@ -156,11 +153,15 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       }
 
       if (!string.IsNullOrEmpty(configPath))
-        ApplyManualCompilingSettings(configPath, projectContentElement, xmlns);
+        return ApplyManualCompilerSettings(configPath, projectContentElement, xmlns);
+
+      return false;
     }
 
-    private static void ApplyManualCompilingSettings(string configFilePath, XElement projectContentElement, XNamespace xmlns)
+    private static bool ApplyManualCompilerSettings(string configFilePath, XElement projectContentElement, XNamespace xmlns)
     {
+      var changed = false;
+
       if (File.Exists(configFilePath))
       {
         var configText = File.ReadAllText(configFilePath);
@@ -168,7 +169,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         {
           // Add AllowUnsafeBlocks to the .csproj. Unity doesn't generate it (although VSTU does).
           // Strictly necessary to compile unsafe code
-          ApplyAllowUnsafeBlocks(projectContentElement, xmlns);
+          changed |= ApplyAllowUnsafeBlocks(projectContentElement, xmlns);
         }
         if (configText.Contains(UNITY_DEFINE_KEYWORD))
         {
@@ -194,12 +195,14 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
             }
           }
 
-          ApplyCustomDefines(definesList.ToArray(), projectContentElement, xmlns);
+          changed |= ApplyCustomDefines(definesList.ToArray(), projectContentElement, xmlns);
         }
       }
+
+      return changed;
     }
 
-    private static void ApplyCustomDefines(string[] customDefines, XElement projectContentElement, XNamespace xmlns)
+    private static bool ApplyCustomDefines(string[] customDefines, XElement projectContentElement, XNamespace xmlns)
     {
       var definesString = string.Join(";", customDefines);
 
@@ -209,12 +212,14 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         .FirstOrDefault(definesConsts=> !string.IsNullOrEmpty(definesConsts.Value));
 
       defineConstants?.SetValue(defineConstants.Value + ";" + definesString);
+      return true;
     }
 
-    private static void ApplyAllowUnsafeBlocks(XElement projectContentElement, XNamespace xmlns)
+    private static bool ApplyAllowUnsafeBlocks(XElement projectContentElement, XNamespace xmlns)
     {
       projectContentElement.AddFirst(
         new XElement(xmlns + "PropertyGroup", new XElement(xmlns + "AllowUnsafeBlocks", true)));
+      return true;
     }
 
     private static bool IsPlayerProjectFile(string projectFile)
@@ -227,13 +232,13 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return Path.GetFileName(projectFile) == UNITY_EDITOR_PROJECT_NAME;
     }
 
-    private static void SetXCodeDllReference(string name, XElement projectContentElement, XNamespace xmlns)
+    private static bool SetXCodeDllReference(string name, XElement projectContentElement, XNamespace xmlns)
     {
       var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
       if (string.IsNullOrEmpty(unityAppBaseFolder))
       {
         ourLogger.Verbose("SetXCodeDllReference. unityAppBaseFolder IsNullOrEmpty");
-        return;
+        return false;
       }
 
       var xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("Data/PlaybackEngines/iOSSupport", name));
@@ -241,7 +246,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("PlaybackEngines/iOSSupport", name));
 
       if (!File.Exists(xcodeDllPath))
-        return;
+        return false;
 
       var itemGroup = new XElement(xmlns + "ItemGroup");
       var reference = new XElement(xmlns + "Reference");
@@ -249,15 +254,17 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       reference.Add(new XElement(xmlns + "HintPath", xcodeDllPath));
       itemGroup.Add(reference);
       projectContentElement.Add(itemGroup);
+
+      return true;
     }
 
-    private static void FixUnityEngineReference(XElement projectContentElement, XNamespace xmlns)
+    private static bool FixUnityEngineReference(XElement projectContentElement, XNamespace xmlns)
     {
       var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
       if (string.IsNullOrEmpty(unityAppBaseFolder))
       {
         ourLogger.Verbose("FixUnityEngineReference. unityAppBaseFolder IsNullOrEmpty");
-        return;
+        return false;
       }
 
       var el = projectContentElement
@@ -266,15 +273,16 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         .FirstOrDefault(a => a.Attribute("Include") !=null && a.Attribute("Include").Value=="UnityEngine");
       var hintPath = el?.Elements(xmlns + "HintPath").FirstOrDefault();
       if (hintPath == null)
-        return;
+        return false;
+
       var oldUnityEngineDllFileInfo = new FileInfo(hintPath.Value);
       var unityEngineDir = new DirectoryInfo(Path.Combine(oldUnityEngineDllFileInfo.Directory.FullName, "UnityEngine"));
       if (!unityEngineDir.Exists)
-        return;
+        return false;
 
       var newDllPath = Path.Combine(unityEngineDir.FullName, "UnityEngine.dll");
       if (!File.Exists(newDllPath))
-        return;
+        return false;
 
       hintPath.SetValue(newDllPath);
 
@@ -288,68 +296,68 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         itemGroup.Add(reference);
         projectContentElement.Add(itemGroup);
       }
+
+      return true;
     }
 
     private const string UNITY_REFERENCE_KEYWORD = "-r:";
+
     /// <summary>
     /// Handles custom references -r: in "mcs.rsp"
     /// </summary>
     /// <param name="projectContentElement"></param>
     /// <param name="xmlns"></param>
-    private static void ApplyManualCompilingSettingsReferences(XElement projectContentElement, XNamespace xmlns)
+    private static bool ApplyManualCompilerSettingsReferences(XElement projectContentElement, XNamespace xmlns)
     {
       if (!File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
-        return;
+        return false;
 
-      var configFilePath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+      var configText = File.ReadAllText(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH);
+      if (!configText.Contains(UNITY_REFERENCE_KEYWORD))
+        return false;
 
-      if (File.Exists(configFilePath))
+      var referenceList = new List<string>();
+      var compileFlags = configText.Split(' ', '\n');
+      foreach (var flag in compileFlags)
       {
-        var configText = File.ReadAllText(configFilePath);
-        if (configText.Contains(UNITY_REFERENCE_KEYWORD))
+        var f = flag.Trim();
+        if (f.Contains(UNITY_REFERENCE_KEYWORD))
         {
-          var referenceList = new List<string>();
-          var compileFlags = configText.Split(' ', '\n');
-          foreach (var flag in compileFlags)
-          {
-            var f = flag.Trim();
-            if (f.Contains(UNITY_REFERENCE_KEYWORD))
-            {
-              var defineEndPos = f.IndexOf(UNITY_REFERENCE_KEYWORD) + UNITY_REFERENCE_KEYWORD.Length;
-              var definesSubString = f.Substring(defineEndPos,f.Length - defineEndPos);
-              definesSubString = definesSubString.Replace(";", ",");
-              referenceList.AddRange(definesSubString.Split(','));
-            }
-          }
-
-          foreach (var referenceName in referenceList)
-          {
-            string hintPath = null;
-
-            var name = referenceName;
-            if (name.Substring(name.Length - 4) != ".dll")
-              name += ".dll"; // RIDER-15093
-
-            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
-            {
-              var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-              var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
-              if (!monoDir.Exists)
-                monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
-
-              var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
-              if (newestApiDir != null)
-              {
-                var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, name));
-                if (dllPath.Exists)
-                  hintPath = dllPath.FullName;
-              }
-            }
-
-            ApplyCustomReference(name, projectContentElement, xmlns, hintPath);
-          }
+          var defineEndPos = f.IndexOf(UNITY_REFERENCE_KEYWORD) + UNITY_REFERENCE_KEYWORD.Length;
+          var definesSubString = f.Substring(defineEndPos, f.Length - defineEndPos);
+          definesSubString = definesSubString.Replace(";", ",");
+          referenceList.AddRange(definesSubString.Split(','));
         }
       }
+
+      foreach (var referenceName in referenceList)
+      {
+        string hintPath = null;
+
+        var name = referenceName;
+        if (name.Substring(name.Length - 4) != ".dll")
+          name += ".dll"; // RIDER-15093
+
+        if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+        {
+          var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+          var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
+          if (!monoDir.Exists)
+            monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
+
+          var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
+          if (newestApiDir != null)
+          {
+            var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, name));
+            if (dllPath.Exists)
+              hintPath = dllPath.FullName;
+          }
+        }
+
+        ApplyCustomReference(name, projectContentElement, xmlns, hintPath);
+      }
+
+      return true;
     }
 
     private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns, string hintPath = null)
@@ -364,9 +372,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     }
 
     // Set appropriate version
-    private static void FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
+    private static bool FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
-      SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", s =>
+      return SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", s =>
         {
           if (string.IsNullOrEmpty(s))
           {
@@ -374,7 +382,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
             return string.Empty;
           }
 
-          string version = string.Empty;
+          var version = string.Empty;
           try
           {
             version = s.Substring(1);
@@ -420,7 +428,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           {
             if (PluginSettings.OverrideTargetFrameworkVersionOldMono)
             {
-              return "v" + PluginSettings.TargetFrameworkVersionOldMono;;
+              return "v" + PluginSettings.TargetFrameworkVersionOldMono;
             }
           }
 
@@ -429,11 +437,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       );
     }
 
-    private static void SetLangVersion(XElement projectElement, XNamespace xmlns)
+    private static bool SetLangVersion(XElement projectElement, XNamespace xmlns)
     {
       // Set the C# language level, so Rider doesn't have to guess (although it does a good job)
       // VSTU sets this, and I think newer versions of Unity do too (should check which version)
-      SetOrUpdateProperty(projectElement, xmlns, "LangVersion", existing =>
+      return SetOrUpdateProperty(projectElement, xmlns, "LangVersion", existing =>
       {
         if (PluginSettings.OverrideLangVersion)
         {
@@ -448,9 +456,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         // Note that if existing is "default", we'll override it
         var currentIsParsed = VersionExtensions.TryParse(existing, out var currentLanguageLevel);
         var expectedIsParsed = VersionExtensions.TryParse(expected, out var expectedLanguageLevel);
-        if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel
-            || !currentIsParsed
-            )
+        if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel)
         {
           return expected;
         }
@@ -499,19 +505,19 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return "4";
     }
 
-    private static void SetProjectFlavour(XElement projectElement, XNamespace xmlns)
+    private static bool SetProjectFlavour(XElement projectElement, XNamespace xmlns)
     {
       // This is the VSTU project flavour GUID, followed by the C# project type
-      SetOrUpdateProperty(projectElement, xmlns, "ProjectTypeGuids",
+      return SetOrUpdateProperty(projectElement, xmlns, "ProjectTypeGuids",
         "{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}");
     }
 
-    private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, string content)
+    private static bool SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, string content)
     {
-      SetOrUpdateProperty(root, xmlns, name, v => content);
+      return SetOrUpdateProperty(root, xmlns, name, v => content);
     }
 
-    private static void SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, Func<string, string> updater)
+    private static bool SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, Func<string, string> updater)
     {
       var element = root.Elements(xmlns + "PropertyGroup").Elements(xmlns + name).FirstOrDefault();
       if (element != null)
@@ -522,12 +528,18 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           ourLogger.Verbose("Overriding existing project property {0}. Old value: {1}, new value: {2}", name, element.Value, result);
 
           element.SetValue(result);
+          return true;
         }
-        else
-          ourLogger.Verbose("Property {0} already set. Old value: {1}, new value: {2}", name, element.Value, result);
+
+        ourLogger.Verbose("Property {0} already set. Old value: {1}, new value: {2}", name, element.Value, result);
       }
       else
+      {
         AddProperty(root, xmlns, name, updater(string.Empty));
+        return true;
+      }
+
+      return false;
     }
 
     // Adds a property to the first property group without a condition
