@@ -57,7 +57,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // This method is for pre-2017.4, and is called after the file has been written to disk
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!PluginEntryPoint.Enabled))
+      if (!PluginEntryPoint.Enabled)
         return;
 
       try
