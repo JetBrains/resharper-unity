@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -15,6 +16,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
   {
     private static readonly ILog ourLogger = Log.GetLog<CsprojAssetPostprocessor>();
 
+    // Note that this does not affect the order in which postprocessors are evaluated. Order of execution is undefined.
+    // https://github.com/Unity-Technologies/UnityCsReference/blob/2018.2/Editor/Mono/AssetPostprocessor.cs#L152
     public override int GetPostprocessOrder()
     {
       return 10;
@@ -23,27 +26,38 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // This method is new for 2017.4. It allows multiple processors to modify the contents of the generated .csproj in
     // memory, and Unity will only write to disk if it's different to the existing file. It's safe for pre-2017.4 as it
     // simply won't get called
+    // ReSharper disable once InconsistentNaming
+    [UsedImplicitly]
     public static string OnGeneratedCSProject(string path, string contents)
     {
       if (!PluginEntryPoint.Enabled)
         return contents;
 
-      ourLogger.Verbose("Post-processing {0} (in memory)", path);
-      var doc = XDocument.Parse(contents);
-      if (UpgradeProjectFile(path, doc))
+      try
       {
-        ourLogger.Verbose("Post-processed with changes {0} (in memory)", path);
-        return doc.ToString();
-      }
+        ourLogger.Verbose("Post-processing {0} (in memory)", path);
+        var doc = XDocument.Parse(contents);
+        if (UpgradeProjectFile(path, doc))
+        {
+          ourLogger.Verbose("Post-processed with changes {0} (in memory)", path);
+          return doc.ToString();
+        }
 
-      ourLogger.Verbose("Post-processed with NO changes {0}", path);
-      return contents;
+        ourLogger.Verbose("Post-processed with NO changes {0}", path);
+        return contents;
+      }
+      catch (Exception e)
+      {
+        // unhandled exception kills editor
+        Debug.LogError(e);
+        return contents;
+      }
     }
 
     // This method is for pre-2017.4, and is called after the file has been written to disk
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!PluginEntryPoint.Enabled || UnityUtils.UnityVersion >= new Version(2017, 4))
+      if (!PluginEntryPoint.Enabled))
         return;
 
       try
