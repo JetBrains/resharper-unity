@@ -101,7 +101,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetLangVersion(projectContentElement, xmlns);
       changed |= SetProjectFlavour(projectContentElement, xmlns);
       changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
-      changed |= ApplyManualCompilerSettingsReferences(projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
 
@@ -165,13 +164,21 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (File.Exists(configFilePath))
       {
         var configText = File.ReadAllText(configFilePath);
-        if (configText.Contains(UNITY_UNSAFE_KEYWORD))
+
+        var isUnity20171OrLater = UnityUtils.UnityVersion < new Version(2017, 1);
+
+        // Unity always sets AllowUnsafeBlocks in 2017.1+
+        // Strictly necessary to compile unsafe code
+        // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/VisualStudioIntegration/SolutionSynchronizationSettings.cs#L119
+        if (configText.Contains(UNITY_UNSAFE_KEYWORD) && !isUnity20171OrLater)
         {
-          // Add AllowUnsafeBlocks to the .csproj. Unity doesn't generate it (although VSTU does).
-          // Strictly necessary to compile unsafe code
           changed |= ApplyAllowUnsafeBlocks(projectContentElement, xmlns);
         }
-        if (configText.Contains(UNITY_DEFINE_KEYWORD))
+
+        // Unity natively handles this in 2017.1+
+        // https://github.com/Unity-Technologies/UnityCsReference/blob/33cbfe062d795667c39e16777230e790fcd4b28b/Editor/Mono/VisualStudioIntegration/SolutionSynchronizer.cs#L191
+        // Also note that we don't support the short "-d" form. Neither does Unity
+        if (configText.Contains(UNITY_DEFINE_KEYWORD) && !isUnity20171OrLater)
         {
           // defines could be
           // 1) -define:DEFINE1,DEFINE2
@@ -196,6 +203,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           }
 
           changed |= ApplyCustomDefines(definesList.ToArray(), projectContentElement, xmlns);
+        }
+
+        // Note that this doesn't handle the long version "-reference:"
+        if (configText.Contains(UNITY_REFERENCE_KEYWORD))
+        {
+          changed |= ApplyManualCompilerSettingsReferences(projectContentElement, xmlns, configText);
         }
       }
 
@@ -302,20 +315,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private const string UNITY_REFERENCE_KEYWORD = "-r:";
 
-    /// <summary>
-    /// Handles custom references -r: in "mcs.rsp"
-    /// </summary>
-    /// <param name="projectContentElement"></param>
-    /// <param name="xmlns"></param>
-    private static bool ApplyManualCompilerSettingsReferences(XElement projectContentElement, XNamespace xmlns)
+    private static bool ApplyManualCompilerSettingsReferences(XElement projectContentElement, XNamespace xmlns, string configText)
     {
-      if (!File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
-        return false;
-
-      var configText = File.ReadAllText(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH);
-      if (!configText.Contains(UNITY_REFERENCE_KEYWORD))
-        return false;
-
       var referenceList = new List<string>();
       var compileFlags = configText.Split(' ', '\n');
       foreach (var flag in compileFlags)
