@@ -28,6 +28,7 @@ using System.Linq;
 using JetBrains.Util.Logging;
 using UnityEditorInternal;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 namespace JetBrains.Rider.Unity.Editor.Utils
 {
@@ -73,13 +74,13 @@ namespace JetBrains.Rider.Unity.Editor.Utils
       else
       {
         instance = this as T;
-        System.Diagnostics.Debug.Assert(instance != null);
+        Debug.Assert(instance != null);
       }
     }
 
     private static void CreateAndLoad()
     {
-      System.Diagnostics.Debug.Assert(instance == null);
+      Debug.Assert(instance == null);
 
       string filePath = GetFilePath();
       if (!string.IsNullOrEmpty(filePath))
@@ -94,7 +95,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
         inst.Save(true);
       }
 
-      System.Diagnostics.Debug.Assert(instance != null);
+      Debug.Assert(instance != null);
     }
 
     protected void Save(bool saveAsText)
