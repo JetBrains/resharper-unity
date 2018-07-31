@@ -252,7 +252,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             model.Log.Advise(lifetime, entry =>
             {
                 myLogger.Verbose(entry.Time + " " + entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
-                var logEntry = new LogEntry((int)entry.Type, (int)entry.Mode, entry.Time, entry.Message, entry.StackTrace);
+                var logEntry = new EditorLogEntry((int)entry.Type, (int)entry.Mode, entry.Time, entry.Message, entry.StackTrace);
                 myHost.PerformModelAction(m => m.OnUnityLogEvent.Fire(logEntry));
             });
         }

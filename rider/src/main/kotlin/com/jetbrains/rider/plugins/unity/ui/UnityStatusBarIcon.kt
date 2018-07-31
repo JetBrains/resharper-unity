@@ -7,6 +7,7 @@ import com.intellij.util.Consumer
 import com.jetbrains.rider.model.EditorState
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import com.jetbrains.rider.util.reactive.valueOrDefault
 import java.awt.event.MouseEvent
 import javax.swing.Icon
 
@@ -41,7 +42,7 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
     }
 
     override fun getTooltipText(): String? {
-        return if(host.sessionInitialized.value)
+        return if(host.sessionInitialized.valueOrDefault(false))
             "Connected to Unity Editor"
         else
             "No Unity Editor connection\nLoad the project in the Unity Editor to enable advanced functionality"
@@ -50,7 +51,7 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
     override fun getClickConsumer(): Consumer<MouseEvent>? = null
 
     override fun getIcon(): Icon {
-        return when (host.unityState.value) {
+        return when (host.unityState.valueOrDefault(EditorState.Disconnected)) {
             EditorState.Disconnected -> statusIcon
             EditorState.ConnectedIdle -> connectedIcon
             EditorState.ConnectedPlay -> playIcon

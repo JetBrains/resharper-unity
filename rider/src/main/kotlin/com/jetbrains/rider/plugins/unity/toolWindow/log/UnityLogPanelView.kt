@@ -85,7 +85,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         var prevVal: Boolean? = null
 
         unityHost.play.advise(logModel.lifetime) {
-            if (it != null && it && prevVal == false) {
+            if (it && prevVal == false) {
                 logModel.events.clear()
             }
             prevVal = it

@@ -7,6 +7,7 @@ import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.application
+import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class RefreshInUnityAction : AnAction("Refresh", "Triggers Refresh in Unity Editor", AllIcons.Actions.Refresh) {
     override fun actionPerformed(e: AnActionEvent) {
@@ -25,7 +26,7 @@ class RefreshInUnityAction : AnAction("Refresh", "Triggers Refresh in Unity Edit
         e.presentation.isVisible = true
 
         val projectCustomDataHost = e.getHost() ?: return
-        e.presentation.isEnabled = projectCustomDataHost.sessionInitialized.value
+        e.presentation.isEnabled = projectCustomDataHost.sessionInitialized.valueOrDefault(false)
         super.update(e)
     }
 }

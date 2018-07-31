@@ -41,7 +41,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         // doesn't seem like the best way to do this
         property("externalDocContext", string)
 
-        sink("onUnityLogEvent", structdef("logEntry") {
+        sink("onUnityLogEvent", structdef("editorLogEntry") {
             field("type", int)
             field("mode", int)
             field("ticks", long)

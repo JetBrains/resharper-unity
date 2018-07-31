@@ -12,23 +12,20 @@ import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.reactive.*
 
 class UnityHost(project: Project) : LifetimedProjectComponent(project) {
-    val sessionInitialized = Property(false)
-    val unityState = Property(EditorState.Disconnected)
-    val logSignal = Signal<RdLogEvent>()
-    val play = Property<Boolean?>(null)
-    val pause = Property(false)
-
     val model = project.solution.rdUnityModel
+
+    val sessionInitialized = model.sessionInitialized
+    val unityState = model.editorState
+    val play = model.play
+    val pause = model.pause
+
+    val logSignal = Signal<RdLogEvent>()
 
     init {
         model.activateRider.advise(componentLifetime){
             ProjectUtil.focusProjectWindow(project, true)
         }
 
-        model.play.flowInto(componentLifetime, play)
-        model.pause.flowInto(componentLifetime, pause)
-        model.editorState.flowInto(componentLifetime, unityState)
-        model.sessionInitialized.flowInto(componentLifetime, sessionInitialized)
         model.onUnityLogEvent.adviseNotNull(componentLifetime){
             val type = RdLogEventType.values()[it.type]
             val mode = RdLogEventMode.values()[it.mode]
