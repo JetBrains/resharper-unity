@@ -35,12 +35,4 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
             logSignal.fire(RdLogEvent(it.ticks, type, mode, it.message, it.stackTrace))
         }
     }
-    companion object {
-        fun CallBackendRefresh(project: Project, force:Boolean) { CallBackend(project, "UNITY_Refresh", force.toString().toLowerCase()) }
-
-        private fun CallBackend(project: Project, key : String, value:String) {
-            project.solution.rdUnityModel.data.remove(key) // Step Action requires this
-            project.solution.rdUnityModel.data[key] = value
-        }
-    }
 }
