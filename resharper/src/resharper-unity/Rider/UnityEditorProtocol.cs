@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
 
             var solFolder = mySolution.SolutionFilePath.Directory;
-            AdviseModelData(lifetime, mySolution.GetProtocolSolution());
+            AdviseModelData(lifetime);
             
             // todo: consider non-Unity Solution with Unity-generated projects
             var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
@@ -110,51 +110,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 () => CreateProtocols(protocolInstancePath));
         }
 
-        private void AdviseModelData(Lifetime lifetime, Solution solution)
+        private void AdviseModelData(Lifetime lifetime)
         {   
-            myHost.PerformModelAction(m => m.Play.Advise(lifetime, e =>
-            {
-                var model = UnityModel.Value;
-                if (UnityModel.Value == null) return;
-                if (model.Play.Value == e) return;
-                
-                myLogger.Info($"Play = {e} came from frontend.");
-                model.Play.SetValue(e);
-
-            }));
-
-            myHost.PerformModelAction(rd =>
-                rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
-            
-            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () =>
-            {
-                var model = UnityModel.Value;
-                if (UnityModel.Value == null) return;
-                
-                myLogger.Info("Step source came from frontend.");
-                model.Step.Start(RdVoid.Instance);                
-            }));
-            
-            myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
-            {
-                var model = UnityModel.Value;
-                if (e.NewValue == e.OldValue)
-                    return;
-                if (e.NewValue == null)
-                    return;
-                if (model==null)
-                    return;
-                
-                switch (e.Key)
-                {
-                    case "UNITY_Refresh":
-                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        var force = Convert.ToBoolean(e.NewValue);
-                        Refresh.Fire(force);
-                        solution.CustomData.Data.Remove("UNITY_Refresh");
-                        break;
-                }
-            }));
+            myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
+            myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
+            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.IfNotNull(editor => editor.Step.Start(RdVoid.Instance))));
+            myHost.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => UnityModel.Value.IfNotNull(editor => editor.Refresh.Start(force))));
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -177,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (protocolInstance == null)
                 return;
             
-            myLogger.Info($"UNITY_Port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
+            myLogger.Info($"EditorPlugin protocol port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
 
             try
             {

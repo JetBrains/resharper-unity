@@ -18,8 +18,7 @@ class PlayInUnityAction : ToggleAction("Play/Edit", "Change Play/Edit mode in Un
         return play != null && play
     }
     override fun setSelected(e: AnActionEvent?, value: Boolean) {
-        val project = e?.project?: return
-        UnityHost.CallBackendPlay(project, value)
+        e?.getHost()?.play?.value = value
     }
     override fun update(e: AnActionEvent) {
         if (!e.isUnityProject()) {
@@ -41,8 +40,7 @@ class PauseInUnityAction : ToggleAction("Pause/Resume", "Pause/Resume play in Un
         return unityHost.pause.value
     }
     override fun setSelected(e: AnActionEvent?, value: Boolean) {
-        val unityHost = e?.getHost() ?: return
-        unityHost.pause.value = value
+        e?.getHost()?.pause?.value = value
     }
 
     override fun update(e: AnActionEvent) {

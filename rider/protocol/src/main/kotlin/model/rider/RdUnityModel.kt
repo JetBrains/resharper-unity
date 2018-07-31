@@ -32,7 +32,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         property("play", bool)
         property("pause", bool)
+
         source("step", void)
+        source("refresh", bool)
 
         property("sessionInitialized", bool)
 
