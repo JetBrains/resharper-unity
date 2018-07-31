@@ -33,12 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public void OnSolutionLoaded(UnityProjectsCollection solution)
         {
-            var entry = myBoundStore.Schema.GetScalarEntry((UnitySettings s) => s.EnableShaderLabHippieCompletion);
+            var entry = myBoundStore.Schema.GetScalarEntry((UnitySettings s) => s.EnableShaderLabHippieCompletion);            
             myBoundStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise(myLifetime, pcea =>
             {
                 if (pcea.HasNew)
                 {
-                    myHost.SetModelData("UNITY_SETTINGS_EnableShaderLabHippieCompletion", pcea.New.ToString());
+                    myHost.PerformModelAction(rd => rd.EnableShaderLabHippieCompletion.Value = pcea.New);
                 }
             });
         }

@@ -29,9 +29,13 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         property("editorLogPath", string)
         property("playerLogPath", string)
+
         property("play", bool)
         property("pause", bool)
+
         property("sessionInitialized", bool)
+
+        property("enableShaderLabHippieCompletion", bool)
 
         // doesn't seem like the best way to do this
         property("externalDocContext", string)
