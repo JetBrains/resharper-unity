@@ -36,12 +36,12 @@ class PlayInUnityAction : ToggleAction("Play/Edit", "Change Play/Edit mode in Un
 
 class PauseInUnityAction : ToggleAction("Pause/Resume", "Pause/Resume play in Unity", UnityIcons.Actions.Pause) {
     override fun isSelected(e: AnActionEvent):Boolean {
-        val projectCustomDataHost = e.getHost() ?: return false
-        return projectCustomDataHost.pause.value
+        val unityHost = e.getHost() ?: return false
+        return unityHost.pause.value
     }
     override fun setSelected(e: AnActionEvent?, value: Boolean) {
-        val project = e?.project?: return
-        UnityHost.CallBackendPause(project, value)
+        val unityHost = e?.getHost() ?: return
+        unityHost.pause.value = value
     }
 
     override fun update(e: AnActionEvent) {
