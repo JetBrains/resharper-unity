@@ -19,8 +19,7 @@ class UnityDocumentationProvider : DocumentationProvider {
     private val documentationRoot by lazy(this::findLocalDocumentationRoot)
 
     override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String>? {
-        val data = p0?.project?.solution?.rdUnityModel?.data
-        val context = data?.get("UNITY_ExternalDocContext")
+        val context = p0?.project?.solution?.rdUnityModel?.externalDocContext?.valueOrNull
         if (!context.isNullOrBlank())
             return arrayListOf(getUrlForContext(context!!))
         return null

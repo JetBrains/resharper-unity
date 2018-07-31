@@ -37,10 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             var unityName = GetUnityName(psiDocumentRangeView, unityApi);
 
             // This is called only if the process finished while the context is still valid
-            return () =>
-            {
-                host.SetModelData("UNITY_ExternalDocContext", unityName);
-            };
+            return () => { host.PerformModelAction(rd => rd.ExternalDocContext.Value = unityName); };
         }
 
         [NotNull]
