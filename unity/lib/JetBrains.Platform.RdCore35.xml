@@ -297,6 +297,11 @@
             <param name="timeoutMs">Timeout to wait. -1 for infinite waiting.</param>
             <returns>'true' if Join(timeoutMs) was successful, false otherwise. Also returns 'false' if thread is already stopped or killed."></returns>
         </member>
+        <member name="F:JetBrains.Util.RdJetFunc`1.Identity">
+            <summary>
+            Identity function that always returns the same value that was used as its argument.
+            </summary>
+        </member>
         <member name="T:JetBrains.Util.Util.RName">
             <summary>
             Recursive name. For constructs like Aaaa.Bbb::CCC
