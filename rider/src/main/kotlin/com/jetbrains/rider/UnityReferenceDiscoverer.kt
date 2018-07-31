@@ -14,6 +14,7 @@ import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
 import com.jetbrains.rider.util.reactive.Property
+import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
     private val myProjectModelView = project.solution.projectModelView
@@ -94,10 +95,5 @@ fun Project.isUnitySidecarProject(): Boolean {
 
 fun Project.isConnectedToEditor(): Boolean {
     val component = this.getComponent<UnityHost>()
-    return component.sessionInitialized.value
-}
-
-fun Project.isConnectedToEditorLive(): Property<Boolean> {
-    val component = this.getComponent<UnityHost>()
-    return component.sessionInitialized
+    return component.sessionInitialized.valueOrDefault(false)
 }

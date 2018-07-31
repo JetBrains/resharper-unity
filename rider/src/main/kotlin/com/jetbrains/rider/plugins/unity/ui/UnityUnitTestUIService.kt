@@ -12,7 +12,6 @@ import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.isConnectedToEditor
-import com.jetbrains.rider.isConnectedToEditorLive
 import com.jetbrains.rider.isUnityGeneratedProject
 import com.jetbrains.rider.model.UnitTestLaunchPreference
 import com.jetbrains.rider.model.rdUnityModel
@@ -55,7 +54,7 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
 
             //advertise launching via Unity Editor for the very first time
             if (!propertiesComponent.getBoolean(discoverLaunchViaUnity)) {
-                project.isConnectedToEditorLive().advise(componentLifetime){ isConnected ->
+                project.solution.rdUnityModel.sessionInitialized.advise(componentLifetime){ isConnected ->
                     if(isConnected)
                         project.solution.rdUnityModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
                 }

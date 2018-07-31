@@ -7,6 +7,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.wm.ToolWindowManager
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class UnityPluginShowSettingsAction : DumbAwareAction("Unity Plugin Settings...", "", AllIcons.General.Settings) {
     override fun actionPerformed(e: AnActionEvent) {
@@ -25,6 +26,6 @@ class ShowUnityLogInRiderAction : DumbAwareAction("Show Unity Log Window", "", U
 
     override fun update(e: AnActionEvent) {
         val host = e.getHost()
-        e.presentation.isEnabled = !(host == null || !host.sessionInitialized.value)
+        e.presentation.isEnabled = !(host == null || !host.sessionInitialized.valueOrDefault(false))
     }
 }
