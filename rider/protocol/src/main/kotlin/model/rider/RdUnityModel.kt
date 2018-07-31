@@ -33,6 +33,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("pause", bool)
         property("sessionInitialized", bool)
 
+        // doesn't seem like the best way to do this
+        property("externalDocContext", string)
+
         sink("onUnityLogEvent", structdef("logEntry") {
             field("type", int)
             field("mode", int)
