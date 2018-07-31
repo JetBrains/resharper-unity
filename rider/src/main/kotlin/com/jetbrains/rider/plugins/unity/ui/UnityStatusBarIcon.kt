@@ -4,11 +4,8 @@ import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.util.Consumer
+import com.jetbrains.rider.model.EditorState
 import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_IDLE
-import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_PLAY
-import com.jetbrains.rider.plugins.unity.UnityHost.Companion.CONNECTED_REFRESH
-import com.jetbrains.rider.plugins.unity.UnityHost.Companion.DISCONNECTED
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import java.awt.event.MouseEvent
 import javax.swing.Icon
@@ -54,11 +51,10 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
 
     override fun getIcon(): Icon {
         return when (host.unityState.value) {
-            DISCONNECTED -> statusIcon
-            CONNECTED_IDLE -> connectedIcon
-            CONNECTED_PLAY -> playIcon
-            CONNECTED_REFRESH -> progressIcon
-            else -> statusIcon
+            EditorState.Disconnected -> statusIcon
+            EditorState.ConnectedIdle -> connectedIcon
+            EditorState.ConnectedPlay -> playIcon
+            EditorState.ConnectedRefresh -> progressIcon
         }
     }
 }
