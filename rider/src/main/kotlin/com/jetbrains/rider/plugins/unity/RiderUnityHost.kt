@@ -37,8 +37,6 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
     }
     companion object {
         fun CallBackendRefresh(project: Project, force:Boolean) { CallBackend(project, "UNITY_Refresh", force.toString().toLowerCase()) }
-        fun CallBackendPlay(project: Project, value:Boolean) { project.solution.rdUnityModel.play.set(value) }
-        fun CallBackendStep(project: Project) { CallBackend(project, "UNITY_Step", "true") }
 
         private fun CallBackend(project: Project, key : String, value:String) {
             project.solution.rdUnityModel.data.remove(key) // Step Action requires this
