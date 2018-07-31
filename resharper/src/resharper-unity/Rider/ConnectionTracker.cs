@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     });    
                 }
 
-                logger.Trace($"Sending connection state. State: {myLastCheckResult}");
+                logger.Trace($"Sending connection state. State: {myLastCheckResult}");                
                 host.PerformModelAction(m => m.EditorState.Value = Wrap(myLastCheckResult));
             });
         }

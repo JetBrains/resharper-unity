@@ -111,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         private void AdviseModelData(Lifetime lifetime, Solution solution)
-        {
+        {   
             myHost.PerformModelAction(m => m.Play.Advise(lifetime, e =>
             {
                 var model = UnityModel.Value;
@@ -125,6 +125,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             myHost.PerformModelAction(rd =>
                 rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
+            
+            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () =>
+            {
+                var model = UnityModel.Value;
+                if (UnityModel.Value == null) return;
+                
+                myLogger.Info("Step source came from frontend.");
+                model.Step.Start(RdVoid.Instance);                
+            }));
             
             myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
             {
@@ -143,12 +152,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         var force = Convert.ToBoolean(e.NewValue);
                         Refresh.Fire(force);
                         solution.CustomData.Data.Remove("UNITY_Refresh");
-                        break;
-                    
-                    case "UNITY_Step":
-                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
-                        model.Step.Start(RdVoid.Instance);
-                        solution.CustomData.Data.Remove("UNITY_Step");
                         break;
                 }
             }));
