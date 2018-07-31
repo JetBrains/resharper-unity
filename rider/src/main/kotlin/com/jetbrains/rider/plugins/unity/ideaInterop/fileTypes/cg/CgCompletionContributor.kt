@@ -7,13 +7,14 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class CgCompletionContributor : WordCompletionContributor() {
 
     override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
         // TODO: this is temporary solution until we get proper completion up and running on backend
         val project = parameters.editor.project ?: return
-        val isEnabled = project.solution.rdUnityModel.data["UNITY_SETTINGS_EnableShaderLabHippieCompletion"] == "True"
+        val isEnabled = project.solution.rdUnityModel.enableShaderLabHippieCompletion.valueOrDefault(false)
         if (!(isEnabled && (parameters.completionType == CompletionType.BASIC)))
             return
 
