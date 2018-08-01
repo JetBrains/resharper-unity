@@ -41,9 +41,9 @@ namespace JetBrains.Rider.Unity.Editor
 
       var programFiles86 = Environment.GetEnvironmentVariable("PROGRAMFILES(X86)") ??
                            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-      var referenceAssembliesPath = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework";
-      if (!string.IsNullOrEmpty(programFiles86))
-        referenceAssembliesPath = Path.Combine(programFiles86, @"Reference Assemblies\Microsoft\Framework\.NETFramework");
+      if (string.IsNullOrEmpty(programFiles86))
+        programFiles86 = @"C:\Program Files (x86)";
+      var referenceAssembliesPath = Path.Combine(programFiles86, @"Reference Assemblies\Microsoft\Framework\.NETFramework");
       var dir = new DirectoryInfo(referenceAssembliesPath);
       if (!dir.Exists)
         return new string[0];
@@ -249,7 +249,10 @@ namespace JetBrains.Rider.Unity.Editor
 
       if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
       {
-        var detectedDotnetText = GetInstalledNetFrameworks().OrderBy(v => new Version(v)).Aggregate((a, b) => a+"; "+b);
+        var detectedDotnetText = string.Empty;
+        var installedFrameworks = GetInstalledNetFrameworks();
+        if (installedFrameworks.Any())
+          detectedDotnetText = installedFrameworks.OrderBy(v => new Version(v)).Aggregate((a, b) => a+"; "+b);
         EditorGUILayout.HelpBox($"Installed dotnet versions: {detectedDotnetText}", MessageType.None);
       }
 
