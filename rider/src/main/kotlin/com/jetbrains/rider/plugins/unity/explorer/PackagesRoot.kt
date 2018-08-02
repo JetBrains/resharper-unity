@@ -1,17 +1,63 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
-import com.google.gson.Gson
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
+import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
+import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerNode
+import com.jetbrains.rider.projectView.views.navigateToSolutionView
 
-class PackagesRoot(project: Project, virtualFile: VirtualFile)
-    : UnityExplorerNode(project, virtualFile, listOf()) {
+// Packages are included in a project by listing in the "dependencies" node of Packages/manifest.json. Packages can
+// contain assets, such as source, resources, and .dlls. They can also include .asmdef files
+// a) Built-in (modules). These are pseudo-package that ship built in to Unity. They can be resolved by manifests in the
+//    application directory. Modules are cached in an application specific folder, so can't be found without knowing the
+//    path to the currently running instance of Unity. Path is: Editor/Data/Resources/PackageManager/BuiltInPackages for
+//    Windows and Unity.app/Contents/Resources/PackageManager/BuiltInPackages on OSX
+// b) Referenced. These are cached in a per-user and per-registry location, and are read only. Any .asmdef files in the
+//    package will be used to compile an assembly, saved to Library/ScriptAssemblies and added as a binary reference to
+//    the project. A referenced package can be copied into the Packages folder to convert it into a writable embedded
+//    package. Cache folder is %LOCALAPPDATA%\Unity\cache\packages on Windows and ~/Library/Unity/cache/packages on OSX
+// c) Embedded. This is a package that lives inside the Packages folder, and is read-write. Any .asmdef files are used
+//    to create C# projects and added to the generated solution.
+// d) Local. These are read-write packages that live outside of the Packages folder. Any .asmdef files are used to
+//    generate C# projects. The version in Packages/manifest.json begins with `file:` and is a path to the package,
+//    either relative to the project root, or fully qualified
+// e) Git. Currently undocumented. Unity will check out a git repo to a cache folder and treat it as a read-only package
+// f) Excluded. A package can have a version of "excluded" in the manifest.json. It is simply ignored
+//
+// If there is a Packages/manifest.json file, show the Packages node in the Unity Explorer. The Packages node will show
+// all editable packages at the root, with a child node for read only packages. It will show all files and folders under
+// the Packages folder, with embedded packages being highlighted and sorted to the top. Local packages will also be
+// listed here. All other packages will be listed under "Read only", with source packages listed at the top as folders,
+// followed by modules and other/unresolved packages
+//
+// Potential actions:
+// a) If a folder has a package.json, but isn't listed in manifest.json, highlight with an error, and offer a right
+//    click action to add to manifest.json
+// b) Right click on a referenced package to convert to embedded - simply copy into the project's Packages folder
+//
+// MVP:
+// TODO: Proper paths for modules on Mac + Windows
+// TODO: Error handling/logging
+// TODO: Refresh Packages node when manifest.json changes
+// TODO: Proper paths for registry cache + modules on Linux
+
+// Nice to have:
+// TODO: Clean up right click on the various node types
+// TODO: Disable npm support popups for package.json
+
+class PackagesRoot(project: Project, packagesFolder: VirtualFile, manifestJson: VirtualFile)
+    : UnityExplorerNode(project, packagesFolder, listOf()) {
+
+    private val packagesManager = PackagesManager(project, packagesFolder, manifestJson)
+    private val localPackageFolders = mutableSetOf<VirtualFile>()
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -19,66 +65,64 @@ class PackagesRoot(project: Project, virtualFile: VirtualFile)
         presentation.setIcon(UnityIcons.Explorer.PackagesRoot)
     }
 
-    // TODO: This doesn't work if there are two nodes. Doesn't even get called
     override fun isAlwaysExpand() = true
 
-    // This means we will only show "embedded packages", which are packages that have been copied into the user's
-    // project, will be compiled from source, and are user modifiable (so read/write). Any .asmdef files in the
-    // package will be converted into projects, and included into the solution. Since they are already in the project
-    // model, everything just works - opening files, VCS status, analysis, navigation, refactoring, locate in Unity
-    // explorer, etc.
-    // TODO: File and Live template scopes currently require being in the "Assets" folder
-    // We do not show other kinds of packages. If the files aren't in the Packages folder, they are in a known cache
-    // location and are read-only. They are not included in the project as source. Unity will create one assembly
-    // for each .asmdef file in the package, compile it into an assembly, save it in Library/ScriptAssemblies and
-    // add a binary reference to the project
-    // The only downside to not supporting this right now is that references from .asmdef files to these packages
-    // will not be resolved correctly. The tricky part about supporting them is that we will have no functionality
-    // for them because they are not part of the project. We could add custom PSI modules for them, but then we need
-    // to associate the binary reference to our new custom PSI module. The custom PSI module would allow us to
-    // resolve the .asmdef references.
-    // I also don't know what Unity are calling these kinds of packages. I'm calling them cached packages for now
-    // TODO: Find out what happens with debug symbols and debugging/navigation. We should be able to have full source access
-    // TODO: Resolve references to .asmdef files in cached packages
-    // We also don't support local file packages or git based packages. Instead of a version number, the manifest.json
-    // can contain a file: based URL, which points to a folder that is treated as a package. This URL is local to the
-    // Packages folder, but can point outside of it, either via relative paths or a fully qualified path. These
-    // packages are treated as source, so will be included in the project model.
-    // (And git based packages aren't supported by Unity right now, either
+    override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
+        val children = super.calculateChildren()
+
+        // We want the children to be file system folders and editable packages, which means embedded packages and local
+        // packages. We've already added the embedded packages by including file system folders
+        val localPackages = packagesManager.localPackages
+        for (localPackage in localPackages) {
+            if (localPackage.packageFolder != null) {
+                children.add(PackageNode(project!!, packagesManager, localPackage.packageFolder, localPackage))
+                localPackageFolders.add(virtualFile)
+            }
+            else {
+                children.add(UnknownPackageNode(project!!, localPackage))
+            }
+        }
+
+        if (packagesManager.immutablePackages.any())
+            children.add(0, ReadOnlyPackagesRoot(project!!, packagesManager))
+
+        return children
+    }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
         if (virtualFile.isDirectory) {
-            val gson = Gson()
-
-            try {
-                val packageFile = virtualFile.findChild("package.json")
-                if (packageFile?.exists() == true && !packageFile.isDirectory) {
-                    val packageJson = gson.fromJson(packageFile.inputStream.reader(), PackageJson::class.java)
-                    if (packageJson != null) {
-                        return PackageNode(project!!, virtualFile, packageJson)
-                    }
-                }
-            }
-            catch (e: Throwable) {
-                // Do nothing, drop down to file system
+            packagesManager.getPackageData(virtualFile)?.let {
+                val embeddedPackageData = PackageData(it.name, virtualFile, it.details, PackageSource.Embedded)
+                return PackageNode(project!!, packagesManager, virtualFile, embeddedPackageData)
             }
         }
         return super.createNode(virtualFile, nestedFiles)
     }
+
+    // Required for "Locate in Solution Explorer" to work. If we return false, the solution view visitor stops walking.
+    // True is effectively "maybe"
+    override fun contains(file: VirtualFile) = true
 }
 
-class PackageNode(project: Project,
-                  virtualFile: VirtualFile,
-                  private val packageJson: PackageJson)
-    : UnityExplorerNode(project, virtualFile, listOf()), Comparable<AbstractTreeNode<*>> {
+class PackageNode(project: Project, private val packagesManager: PackagesManager, packageFolder: VirtualFile, private val packageData: PackageData)
+    : UnityExplorerNode(project, packageFolder, listOf()), Comparable<AbstractTreeNode<*>> {
 
-    override fun getName(): String {
-        return packageJson.displayName ?: packageJson.name ?: super.getName()
+    init {
+        icon = when (packageData.source) {
+            PackageSource.Registry -> UnityIcons.Explorer.ReferencedPackage
+            PackageSource.Embedded -> UnityIcons.Explorer.EmbeddedPackage
+            PackageSource.Local -> UnityIcons.Explorer.LocalPackage
+            PackageSource.BuiltIn -> UnityIcons.Explorer.BuiltInPackage
+            PackageSource.Git -> UnityIcons.Explorer.GitPackage
+            PackageSource.Unknown -> UnityIcons.Explorer.UnknownPackage
+        }
     }
+
+    override fun getName() = packageData.details.displayName
 
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
-        presentation.setIcon(UnityIcons.Explorer.Package)
+        presentation.setIcon(icon)
         presentation.addNonIndexedMark(myProject, virtualFile)
 
         // Note that this might also set the tooltip if we have too many projects underneath
@@ -88,13 +132,16 @@ class PackageNode(project: Project,
         val existingTooltip = presentation.tooltip ?: ""
         var newTooltip = ""
         if (name != virtualFile.name) {
-            newTooltip = virtualFile.name + "\n"
+            newTooltip += virtualFile.name + "\n"
         }
-        if (packageJson.version != null && packageJson.version.isNotEmpty()) {
-            newTooltip += packageJson.version
+        if (name != packageData.details.canonicalName) {
+            newTooltip += packageData.details.canonicalName + "\n"
         }
-        if (packageJson.description != null) {
-            newTooltip += "\n${packageJson.description}"
+        if (!packageData.details.version.isEmpty()) {
+            newTooltip += packageData.details.version
+        }
+        if (!packageData.details.description.isEmpty()) {
+            newTooltip += "\n${packageData.details.description}"
         }
         if (existingTooltip.isNotEmpty()) {
             newTooltip += "\n" + existingTooltip
@@ -102,15 +149,259 @@ class PackageNode(project: Project,
         presentation.tooltip = newTooltip
     }
 
+    override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
+        val children = super.calculateChildren()
+
+        if (!packageData.details.dependencies.isEmpty()) {
+            children.add(0, DependenciesRoot(project!!, packagesManager, packageData))
+        }
+
+        return children
+    }
+
     override fun compareTo(other: AbstractTreeNode<*>): Int {
         if (other is PackageNode) {
             return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
         }
+        else if (other is ReadOnlyPackagesRoot || other is BuiltinPackagesRoot) {
+            return 1
+        }
+        // Other is UnresolvedPackageNode
         return -1
     }
 }
 
-//class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?)
+class DependenciesRoot(project: Project, private val packagesManager: PackagesManager, private val packageData: PackageData)
+    : AbstractTreeNode<Any>(project, packageData), Comparable<AbstractTreeNode<*>> {
 
-// Other properties are available: category, keywords, unity (supported version), author, dependencies
-data class PackageJson(val name: String?, val displayName: String?, val version: String?, val description: String?)
+    override fun update(presentation: PresentationData) {
+        presentation.presentableText = "Dependencies"
+        presentation.setIcon(UnityIcons.Explorer.DependenciesRoot)
+    }
+
+    override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
+        val children = mutableListOf<AbstractTreeNode<*>>()
+        for ((name, version) in packageData.details.dependencies) {
+            children.add(DependencyItemNode(project!!, packagesManager, name, version))
+        }
+        return children
+    }
+
+    override fun compareTo(other: AbstractTreeNode<*>) = -1
+}
+
+class DependencyItemNode(project: Project, private val packagesManager: PackagesManager, private val packageName: String, version: String)
+    : AbstractTreeNode<Any>(project, "$packageName@$version"), Comparable<AbstractTreeNode<*>> {
+
+    init {
+        myName = "$packageName@$version"
+    }
+
+    override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
+    override fun isAlwaysLeaf() = true
+
+    override fun update(presentation: PresentationData) {
+        presentation.presentableText = name
+        presentation.setIcon(UnityIcons.Explorer.PackageDependency)
+    }
+
+    override fun canNavigate(): Boolean {
+        return packagesManager.getPackageData(packageName) != null
+    }
+
+    override fun navigate(requestFocus: Boolean) {
+        val packageData = packagesManager.getPackageData(packageName)
+        if (packageData?.packageFolder == null) return
+        project!!.navigateToSolutionView(packageData.packageFolder, requestFocus)
+    }
+
+    override fun compareTo(other: AbstractTreeNode<*>): Int {
+        return String.CASE_INSENSITIVE_ORDER.compare(this.name, other.name)
+    }
+}
+
+abstract class CompositeFolderRoot(project: Project, key: Any)
+    : SolutionViewNode<Any>(project, key) {
+
+    private val packageFolders = mutableSetOf<VirtualFile>()
+
+    protected fun addPackageFolder(packageFolder: VirtualFile) {
+        packageFolders.add(packageFolder)
+    }
+
+    // Note that this requires the children to have been expanded first. The SolutionViewVisitor will ensure this happens
+    override fun contains(file: VirtualFile): Boolean {
+        if (packageFolders.contains(file)) return true
+        for (packageFolder in packageFolders) {
+            if (VfsUtil.isAncestor(packageFolder,  file, false)) return true
+        }
+        return false
+    }
+}
+
+class ReadOnlyPackagesRoot(project: Project, private val packagesManager: PackagesManager)
+    : CompositeFolderRoot(project, key), Comparable<AbstractTreeNode<*>> {
+
+    companion object {
+        val key = Any()
+    }
+
+    override fun update(presentation: PresentationData) {
+        presentation.presentableText = "Read only"
+        presentation.setIcon(UnityIcons.Explorer.ReadOnlyPackagesRoot)
+    }
+
+    override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
+        val children = mutableListOf<AbstractTreeNode<*>>()
+
+        if (packagesManager.hasBuiltInPackages)
+            children.add(BuiltinPackagesRoot(project!!, packagesManager))
+
+        for (packageData in packagesManager.immutablePackages) {
+            if (packageData.source == PackageSource.BuiltIn) continue
+
+            if (packageData.packageFolder == null) {
+                children.add(UnknownPackageNode(project!!, packageData))
+            }
+            else {
+                children.add(PackageNode(project!!, packagesManager, packageData.packageFolder, packageData))
+                addPackageFolder(packageData.packageFolder)
+            }
+        }
+        return children
+    }
+
+    override fun compareTo(other: AbstractTreeNode<*>) = -1
+}
+
+class BuiltinPackagesRoot(project: Project, private val packagesManager: PackagesManager)
+    : CompositeFolderRoot(project, key), Comparable<AbstractTreeNode<*>> {
+
+    companion object {
+        val key = Any()
+    }
+
+    override fun update(presentation: PresentationData) {
+        presentation.presentableText = "Modules"
+        presentation.setIcon(UnityIcons.Explorer.BuiltInPackagesRoot)
+    }
+
+    override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
+        val children = mutableListOf<AbstractTreeNode<*>>()
+        for (packageData in packagesManager.immutablePackages) {
+            if (packageData.source != PackageSource.BuiltIn) continue
+
+            if (packageData.packageFolder == null) {
+                children.add(UnknownPackageNode(project!!, packageData))
+            }
+            else {
+                children.add(BuiltinPackageNode(project!!, packageData))
+                addPackageFolder(packageData.packageFolder)
+            }
+        }
+        return children
+    }
+
+    override fun compareTo(other: AbstractTreeNode<*>) = -1
+}
+
+// Represents a module, built in part of the Unity product. We show it as a single node with no children, unless we have
+// "show hidden items" enabled, in which case we show the package folder, including the package.json.
+// Note that a module can have dependencies. Perhaps we want to always show this as a folder, including the Dependencies
+// node?
+class BuiltinPackageNode(project: Project, private val packageData: PackageData)
+    : FileSystemNodeBase(project, packageData.packageFolder!!, listOf()), Comparable<AbstractTreeNode<*>> {
+
+    override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
+
+        if (!UnityExplorer.getInstance(project!!).myShowHiddenItems) {
+            return arrayListOf()
+        }
+        return super.calculateChildren()
+    }
+
+    override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
+        return FileSystemExplorerNode(project!!, virtualFile, nestedFiles, false)
+    }
+
+    override fun canNavigateToSource(): Boolean {
+        if (UnityExplorer.getInstance(project!!).myShowHiddenItems) {
+            return super.canNavigateToSource()
+        }
+        return true
+    }
+
+    override fun navigate(requestFocus: Boolean) {
+        if (UnityExplorer.getInstance(project!!).myShowHiddenItems) {
+            return super.navigate(requestFocus)
+        }
+
+        val packageJson = virtualFile.findChild("package.json")
+        if (packageJson != null) {
+            OpenFileDescriptor(project!!, packageJson).navigate(requestFocus)
+        }
+    }
+
+    override fun getName() = packageData.details.displayName
+
+    override fun update(presentation: PresentationData) {
+        presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
+        presentation.setIcon(UnityIcons.Explorer.BuiltInPackage)
+
+        var newTooltip = ""
+        if (name != virtualFile.name) {
+            newTooltip = virtualFile.name + "\n"
+        }
+        if (!packageData.details.version.isEmpty()) {
+            newTooltip += packageData.details.version
+        }
+        if (!packageData.details.description.isEmpty()) {
+            newTooltip += "\n${packageData.details.description}"
+        }
+        presentation.tooltip = newTooltip
+    }
+
+    override fun compareTo(other: AbstractTreeNode<*>): Int {
+        if (other is BuiltinPackageNode) {
+            return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
+        }
+        else if (other is PackageNode) {
+            return 1
+        }
+        // other is UnknownPackageNode
+        return -1
+    }
+}
+
+// Note that this might get a PackageData with source == PackageSource.Unknown
+class UnknownPackageNode(project: Project, private val packageData: PackageData)
+    : AbstractTreeNode<Any>(project, packageData), Comparable<AbstractTreeNode<*>> {
+
+    init {
+        icon = when (packageData.source) {
+            PackageSource.BuiltIn -> UnityIcons.Explorer.BuiltInPackage
+            else -> UnityIcons.Explorer.UnknownPackage
+        }
+    }
+
+    override fun getName() = packageData.details.displayName
+    override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
+    override fun isAlwaysLeaf() = true
+
+    override fun update(presentation: PresentationData) {
+        presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
+        presentation.setIcon(icon)
+    }
+
+    override fun compareTo(other: AbstractTreeNode<*>): Int {
+        if (other is UnknownPackageNode) {
+            return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
+        }
+        // other is PackageNode or BuiltinPackageNode
+        return 1
+    }
+}
+
+// TODO: What are "testables"?
+class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?)
+

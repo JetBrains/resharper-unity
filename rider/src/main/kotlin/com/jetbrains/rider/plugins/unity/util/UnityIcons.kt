@@ -2,7 +2,12 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.LayeredIcon
+import com.jetbrains.rider.icons.ReSharperAssemblyExplorerIcons
+import com.jetbrains.rider.icons.ReSharperCommonIcons
+import com.jetbrains.rider.icons.ReSharperProjectModelIcons
 import com.jetbrains.rider.icons.ReSharperPsiJavaScriptIcons
+import javax.swing.Icon
 
 class UnityIcons {
     class Icons {
@@ -77,13 +82,22 @@ class UnityIcons {
     class Explorer {
         companion object {
 
-            // TODO: Proper icon
-            @JvmField
-            val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
+            val AssetsRoot = IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg")
+            val ReferencesRoot = ReSharperCommonIcons.CompositeElement
+            val Reference = ReSharperProjectModelIcons.Assembly
 
-            // TODO: Proper icon
-            @JvmField
-            val Package = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
+            // TODO: Proper icons!
+            val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
+            val ReadOnlyPackagesRoot = ReSharperCommonIcons.CompositeElement
+            val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
+            val LocalPackage: Icon = LayeredIcon.create(EmbeddedPackage, ReSharperProjectModelIcons.ShortcutOverlay)
+            val ReferencedPackage = EmbeddedPackage
+            val GitPackage = ReferencedPackage
+            val BuiltInPackagesRoot = ReSharperCommonIcons.CompositeElement
+            val BuiltInPackage = ReSharperProjectModelIcons.Assembly
+            val UnknownPackage = ReSharperAssemblyExplorerIcons.AssemblyBroken
+            val DependenciesRoot = ReSharperProjectModelIcons.Assemblies
+            val PackageDependency = ReSharperProjectModelIcons.AssemblyReference    // Assembly with shortcut arrow
         }
     }
 

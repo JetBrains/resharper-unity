@@ -71,9 +71,15 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
     override fun getWeight() = Weight
 
     override fun createSelectInTarget() =  object : SolutionViewSelectInTargetBase(project) {
+
+        // We have to return true here, because a file might be from a local package, which could be almost anywhere on
+        // the filesystem
+        override fun canSelect(context: SelectInContext) = true
+
         override fun selectIn(context: SelectInContext?, requestFocus: Boolean) {
             context?.let { select(it, null, requestFocus) }
         }
+
         override fun toString() = Title
         override fun getMinorViewId() = ID
         override fun getWeight() = Weight.toFloat()

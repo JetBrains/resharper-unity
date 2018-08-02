@@ -6,13 +6,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.jetbrains.rider.icons.ReSharperCommonIcons
-import com.jetbrains.rider.icons.ReSharperProjectModelIcons
+import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
-import com.jetbrains.rider.projectView.views.addNonIndexedMark
 import com.jetbrains.rider.util.getOrCreate
 import javax.swing.Icon
 
@@ -23,13 +21,13 @@ class UnityExplorerRootNode(project: Project) : SolutionViewRootNodeBase(project
 
         val nodes = mutableListOf<AbstractTreeNode<*>>(assetsNode)
 
-        // If the Packages folder exists, show the node. There might not be any packages in the project, but Unity will
-        // have created a Packages/mainfest.json file which can be edited by hand (Unity will resolve the packages when
-        // you next switch back to the Editor)
         val packagesFolder = myProject.baseDir?.findChild("Packages")
-        if (packagesFolder?.exists() == true && packagesFolder.findChild("manifest.json")?.exists() == true) {
-            val packagesNode = PackagesRoot(myProject, packagesFolder)
-            nodes.add(packagesNode)
+        packagesFolder?.let {
+            val manifest = it.findChild("manifest.json")
+            if (manifest?.exists() == true) {
+                val packagesRoot = PackagesRoot(myProject, packagesFolder, manifest)
+                nodes.add(packagesRoot)
+            }
         }
 
         return nodes
@@ -54,7 +52,6 @@ open class UnityExplorerNode(project: Project,
         if (!virtualFile.isValid) return
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(calculateIcon())
-        presentation.addNonIndexedMark(myProject, virtualFile)
 
         // Add additional info for directories
         if (!virtualFile.isDirectory) return
@@ -153,10 +150,9 @@ open class UnityExplorerNode(project: Project,
         override fun update(presentation: PresentationData) {
             if (!virtualFile.isValid) return
             presentation.presentableText = "Assets"
-            presentation.setIcon(IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg"))
+            presentation.setIcon(UnityIcons.Explorer.AssetsRoot)
         }
 
-        // TODO: This doesn't work if there are two nodes. Doesn't even get called
         override fun isAlwaysExpand() = true
 
         override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
@@ -174,7 +170,7 @@ open class UnityExplorerNode(project: Project,
 
         override fun update(presentation: PresentationData?) {
             presentation?.presentableText = "References"
-            presentation?.setIcon(ReSharperCommonIcons.CompositeElement)
+            presentation?.setIcon(UnityIcons.Explorer.ReferencesRoot)
         }
 
         override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
@@ -182,7 +178,7 @@ open class UnityExplorerNode(project: Project,
             val visitor = object : ProjectModelNodeVisitor() {
                 override fun visitReference(node: ProjectModelNode): Result {
                     if (node.isAssemblyReference()) {
-                        val keys = referenceNames.getOrCreate(node.name, { _ -> arrayListOf() })
+                        val keys = referenceNames.getOrCreate(node.name) { _ -> arrayListOf() }
                         keys.add(node.key)
                     }
                     return Result.Stop
@@ -211,7 +207,7 @@ open class UnityExplorerNode(project: Project,
 
         override fun update(presentation: PresentationData?) {
             presentation?.presentableText = referenceName
-            presentation?.setIcon(ReSharperProjectModelIcons.Assembly)
+            presentation?.setIcon(UnityIcons.Explorer.Reference)
         }
     }
 }
