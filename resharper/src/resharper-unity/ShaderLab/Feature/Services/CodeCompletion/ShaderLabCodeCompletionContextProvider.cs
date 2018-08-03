@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.CodeCompletion;
+﻿using JetBrains.DocumentModel;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.CodeCompletion.Settings;
@@ -46,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.CodeCompl
             if (!referenceDocumentRange.IsValid())
                 return null;
 
-            if (!OldMsBuildWorkarounds.RangeContains(referenceDocumentRange, context.EffectiveCaretDocumentOffset))
+            if (!referenceDocumentRange.Contains(context.EffectiveCaretDocumentOffset))
                 return null;
 
             var ranges = GetTextLookupRanges(context, referenceDocumentRange);

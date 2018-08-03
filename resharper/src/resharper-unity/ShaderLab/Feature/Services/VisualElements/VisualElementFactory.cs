@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualEle
         {
             var startOffset = firstValue.GetDocumentStartOffset();
             var endOffset = lastValue.GetDocumentEndOffset();
-            return OldMsBuildWorkarounds.CreateDocumentRange(startOffset, endOffset);
+            return new DocumentRange(startOffset, (DocumentOffset) endOffset);
         }
 
         private static int GetColorValue(INumericValue value)

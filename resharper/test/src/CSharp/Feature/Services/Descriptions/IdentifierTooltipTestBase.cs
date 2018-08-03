@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descri
                 foreach (var highlightingInfo in context.HighlightingsToAdd)
                 {
                     var severity = instance.GetSeverity(highlightingInfo.Highlighting, SourceFile, Solution, ContextBoundSettingsStore);
-                    if (OldMsBuildWorkarounds.RangeContains(highlightingInfo.Range, myCaretRange) && severity == Severity.INFO)
+                    if (highlightingInfo.Range.Contains(myCaretRange) && severity == Severity.INFO)
                     {
                         if (highlightingInfo.Highlighting is CSharpIdentifierHighlighting)
                             HighlightingInfo = highlightingInfo;

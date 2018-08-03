@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Refactorings
                     continue;
 
                 var occurrenceRange = occurrence.Marker.DocumentRange;
-                if (OldMsBuildWorkarounds.RangeContains(handledRange, occurrenceRange))
+                if (handledRange.Contains(occurrenceRange))
                 {
                     occurrence.Included = false;
                     break;

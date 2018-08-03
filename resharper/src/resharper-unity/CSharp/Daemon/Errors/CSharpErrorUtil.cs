@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors
                 ? rparRange.Value
                 : paramsRange;
 
-            return OldMsBuildWorkarounds.CreateDocumentRange(startOffset.StartOffset, endOffset.EndOffset);
+            return new DocumentRange(startOffset.StartOffset, endOffset.EndOffset);
         }
 
         public static DocumentRange GetReturnTypeHighlightingRange(IMethodDeclaration methodDeclaration)

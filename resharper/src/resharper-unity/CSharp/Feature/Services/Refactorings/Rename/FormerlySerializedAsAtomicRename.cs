@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
+using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -137,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
 
                 var occurrenceRange = occurrence.Marker.DocumentRange;
-                if (OldMsBuildWorkarounds.RangeContains(attributesRange, occurrenceRange))
+                if (attributesRange.Contains(occurrenceRange))
                 {
                     occurrence.Included = false;
                     break;
