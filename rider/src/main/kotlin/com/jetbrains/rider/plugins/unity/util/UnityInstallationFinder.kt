@@ -2,9 +2,10 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
-import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.util.idea.tryGetComponent
+import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
+import java.nio.file.Paths
 
 class UnityInstallationFinder(private val project: Project) {
 
@@ -27,6 +28,9 @@ class UnityInstallationFinder(private val project: Project) {
     // Windows: C:\Program Files\Unity\Hub\Editor\2018.2.1f1\Editor\Data
     // TODO: What is Linux path?
     private fun getApplicationContentsPath(): Path? {
+        val contentsPath = getApplicationContentsPathFromProtocol()
+        if (contentsPath != null) return contentsPath
+
         val root = getApplicationPath() ?: return null
         return when {
             SystemInfo.isMac -> root.resolve("Contents")
@@ -47,17 +51,25 @@ class UnityInstallationFinder(private val project: Project) {
             ?: getApplicationPathFromProjectVersion()
     }
 
+    private fun getApplicationContentsPathFromProtocol(): Path? {
+        return project.solution.rdUnityModel.applicationContentsPath.valueOrNull?.let { Paths.get(it) }
+    }
+
     private fun getApplicationPathFromProtocol(): Path? {
-        val unityHost = project.tryGetComponent<UnityHost>() ?: return null
-        // TODO: Add app_path and app_contents_path to protocol
-        return null
+        return project.solution.rdUnityModel.applicationPath.valueOrNull?.let { Paths.get(it) }
     }
 
     private fun getApplicationPathFromEditorInstanceJson(): Path? {
+        // Get the version from Library/EditorInstance.json and try and heuristically try to find the application.
+        // Later versions of Unity will write this file, and it will only exist while the project is open. The protocol
+        // is more accurate, as it will give us the actual application path
         return null
     }
 
     private fun getApplicationPathFromProjectVersion(): Path? {
+        // Get the version from ProjectSettings/ProjectVersion.txt, and heuristically try to find the application.
+        // This is a best effort attempt to find the application, as the version is the version of Unity that last saved
+        // the project, rather than last opened it, and we're guessing where the application folder is
         return null
     }
 }

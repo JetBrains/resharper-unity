@@ -8,6 +8,7 @@ import com.intellij.util.io.isDirectory
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import java.nio.file.Path
 import java.nio.file.Paths
 
 enum class PackageSource {
@@ -49,6 +50,11 @@ class PackagesManager(private val project: Project, packagesFolder: VirtualFile,
     private val gson = Gson()
     private val packagesByCanonicalName: MutableMap<String, PackageData> = mutableMapOf()
     private val packagesByFolderName: MutableMap<String, PackageData> = mutableMapOf()
+
+    // This is fairly expensive to calculate, especially when it's called so frequently
+    private val builtInPackagesFolder: Path? by lazy {
+        UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
+    }
 
     init {
         val manifest = try {
@@ -194,7 +200,7 @@ class PackagesManager(private val project: Project, packagesFolder: VirtualFile,
     private fun getBuiltInPackage(name: String, version: String): PackageData? {
 
         // If we can identify the module root of the current project, use it to look up the module
-        val modulesRoot = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
+        val modulesRoot = builtInPackagesFolder
         if (modulesRoot?.isDirectory() == true) {
             val packageFolder = VfsUtil.findFile(modulesRoot.resolve(name), true)
             return getPackageDataFromFolder(name, packageFolder, PackageSource.BuiltIn)

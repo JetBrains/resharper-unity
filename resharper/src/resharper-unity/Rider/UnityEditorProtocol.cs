@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
         public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
-        
+
         private readonly IProperty<EditorPluginModel> myUnityModel;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var solFolder = mySolution.SolutionFilePath.Directory;
             AdviseModelData(lifetime, mySolution.GetProtocolSolution());
-            
+
             // todo: consider non-Unity Solution with Unity-generated projects
             var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
 
@@ -116,12 +116,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var model = UnityModel.Value;
                 if (UnityModel.Value == null) return;
                 if (model.Play.Value == e) return;
-                
+
                 myLogger.Info($"Play = {e} came from frontend.");
                 model.Play.SetValue(e);
 
             }));
-            
+
             myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
             {
                 var model = UnityModel.Value;
@@ -131,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return;
                 if (model==null)
                     return;
-                
+
                 switch (e.Key)
                 {
                     case "UNITY_Refresh":
@@ -140,13 +140,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         Refresh.Fire(force);
                         solution.CustomData.Data.Remove("UNITY_Refresh");
                         break;
-                    
+
                     case "UNITY_Step":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         model.Step.Start(RdVoid.Instance);
                         solution.CustomData.Data.Remove("UNITY_Step");
                         break;
-                    
+
                     case "UNITY_Pause":
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         model.Pause.SetValue(Convert.ToBoolean(e.NewValue));
@@ -174,7 +174,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var protocolInstance = protocolInstanceList?.SingleOrDefault(a => a.SolutionName == mySolution.SolutionFilePath.NameWithoutExtension);
             if (protocolInstance == null)
                 return;
-            
+
             myLogger.Info($"UNITY_Port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
 
             try
@@ -209,6 +209,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
                     model.PlayerLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.PlayerLogPath.SetValue(s)));
+
+                    model.ApplicationPath.Advise(lifetime,
+                        s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
+                    model.ApplicationContentsPath.Advise(lifetime,
+                        s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
 
                     BindPluginPathToSettings(lf, model);
 
@@ -248,7 +253,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.FullPluginPath.SetValue(string.Empty);
                 });
         }
-        
+
         private void TrackActivity(EditorPluginModel model, Lifetime lf)
         {
             if (!model.ApplicationVersion.HasValue())
