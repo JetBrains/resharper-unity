@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myShellLocks;
         private readonly UnityPluginDetector myDetector;
         private readonly ILogger myLogger;
-        private readonly RdNotificationsModel myNotifications;
+        private readonly NotificationsModel myNotifications;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityVersionDetector myUnityVersionDetector;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             ISolution solution,
             IShellLocks shellLocks,
             UnityPluginDetector detector,
-            RdNotificationsModel notifications,
+            NotificationsModel notifications,
             ISettingsStore settingsStore,
             PluginPathsProvider pluginPathsProvider,
             UnityVersionDetector unityVersionDetector)
