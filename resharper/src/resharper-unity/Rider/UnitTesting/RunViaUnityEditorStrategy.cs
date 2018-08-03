@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             if (hostId != WellKnownHostProvidersIds.RunProviderId)
             {
-                run.Launch.Output.Error($"Starting Unity tests from '{hostId}' is currently unsupported.");
+                run.Launch.Output.Error($"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
                 return Task.FromResult(false);
             }
             
