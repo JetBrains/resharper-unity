@@ -427,9 +427,8 @@ namespace JetBrains.Rider.Unity.Editor
     internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
     private static OnOpenAssetHandler ourOpenAssetHandler;
 
-    /// <summary>
-    /// Creates and deletes Library/EditorInstance.json containing info about unity instance
-    /// </summary>
+    // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
+    // file itself. We'll always overwrite, just to be sure it's up to date. The file contents are exactly the same
     private static void InitializeEditorInstanceJson()
     {
       ourLogger.Verbose("Writing Library/EditorInstance.json");
@@ -438,11 +437,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       File.WriteAllText(editorInstanceJsonPath, $@"{{
   ""process_id"": {Process.GetCurrentProcess().Id},
-  ""version"": ""{Application.unityVersion}"",
-  ""app_path"": ""{EditorApplication.applicationPath}"",
-  ""app_contents_path"": ""{EditorApplication.applicationContentsPath}"",
-  ""attach_allowed"": ""{EditorPrefs.GetBool("AllowAttachedDebuggingOfEditor", true)}"",
-  ""is_loaded_from_assets"": ""{IsLoadedFromAssets()}""
+  ""version"": ""{Application.unityVersion}""
 }}");
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
