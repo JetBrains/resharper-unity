@@ -23,7 +23,7 @@ intellij {
     if (dependenciesDir.exists()) {
         localPath = dependenciesDir.canonicalPath
     } else {
-        version = "2018.2-SNAPSHOT"
+        version = "${productVersion}-SNAPSHOT"
     }
     
     intellijRepo = "https://cache-redirector.jetbrains.com/intellij-repository"
@@ -54,7 +54,7 @@ if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
     logger.lifecycle("dependencies dir found, using as frontend SDK root")    
 }
 else {
-    def frontendSdkVersion = "2018.2-SNAPSHOT"
+    def frontendSdkVersion = "${productVersion}-SNAPSHOT"
     def frontendSdkDirs = []
     def frontendSdkSearchPath = new File(repoRoot, "rider/build")
 

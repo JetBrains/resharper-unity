@@ -1,7 +1,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 buildscript {
-    ext.rd_version = '0.1.18'
+    ext.rd_version = '0.1831.17'
 
     repositories {
         maven { url "https://cache-redirector.jetbrains.com/myget.org.rd-snapshots.maven" }
@@ -20,6 +20,8 @@ plugins {
     id 'com.ullink.nunit' version '1.12' 
 }
 
+ext.productVersion = "2018.3"
+
 configurations {
     reSharper
 }
@@ -30,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "2018.2-SNAPSHOT", ext: "zip"
+    reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "${productVersion}-SNAPSHOT", ext: "zip"
 }
 
 apply plugin: 'com.jetbrains.rdgen'
@@ -76,7 +78,7 @@ logger.lifecycle("RunTests=$RunTests")
 
 ext.shouldBuildRiderOnly = false
 
-version "2018.2.0.$BuildCounter"
+version "${productVersion}.0.$BuildCounter"
 
 logger.lifecycle("version=$version")
 logger.lifecycle("Configuration=$BuildConfiguration")

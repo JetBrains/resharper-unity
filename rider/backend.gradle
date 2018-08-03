@@ -5,7 +5,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.dependenciesDir, logger)
+ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.dependenciesDir, logger, ext.productVersion)
 
 def teamcityVersion = System.env['TEAMCITY_VERSION']
 project.ci.Progress("teamcityVersion = $teamcityVersion")
@@ -25,7 +25,7 @@ class BackendHelper {
     File riderSdkPath
     File reSharperSdkPath
 
-    BackendHelper(File repoRoot, File buildDir, File dependenciesDir, Logger logger) {
+    BackendHelper(File repoRoot, File buildDir, File dependenciesDir, Logger logger, String productVersion) {
         repositoryRoot = repoRoot
         assert repositoryRoot.isDirectory()
 
@@ -50,7 +50,7 @@ class BackendHelper {
         }
         else {
             logger.lifecycle("Rider SDK is not bundled")
-            riderSdkPath = new File(repoRoot.canonicalPath, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
+            riderSdkPath = new File(repoRoot.canonicalPath, "rider/build/riderRD-${productVersion}-SNAPSHOT/lib/ReSharperHostSdk")
         }
 
         // bundled SDK, if there isn't one we'll patch the path and download an SDK in the unzip task
