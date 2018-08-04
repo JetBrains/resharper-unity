@@ -77,6 +77,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 return Task.FromResult(false);
             }
+
+            var hostId = run.HostController.HostId;
+            if (hostId == WellKnownHostProvidersIds.DebugProviderId)
+            {
+                run.Launch.Output.Error("Starting Unity tests from 'Debug' is currently unsupported. Please attach to editor and use 'Run'.");
+                return Task.FromResult(false);
+            }
+            
+            if (hostId != WellKnownHostProvidersIds.RunProviderId)
+            {
+                run.Launch.Output.Error($"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
+                return Task.FromResult(false);
+            }
             
             var tcs = new TaskCompletionSource<bool>();
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
@@ -116,8 +129,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 if (unitTestElement == null) //https://youtrack.jetbrains.com/issue/RIDER-15849
                 {
                     var name = result.ParentId.Substring(result.ParentId.LastIndexOf(".", StringComparison.Ordinal) + 1);
-                    var brakets = result.TestId.Substring(result.ParentId.Length);
-                    var newID = result.ParentId+"."+name+brakets;
+                    var brackets = result.TestId.Substring(result.ParentId.Length);
+                    var newID = result.ParentId+"."+name+brackets;
                     unitTestElement = GetElementById(newID);
                 }
                 if (unitTestElement == null)

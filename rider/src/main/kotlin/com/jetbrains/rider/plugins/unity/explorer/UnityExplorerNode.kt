@@ -132,7 +132,7 @@ open class UnityExplorerNode(project: Project,
         }
 
         val name = file.nameWithoutExtension.toLowerCase()
-        if (name == "cvs" || file.name.startsWith(".") || file.nameWithoutExtension.endsWith("~")) {
+        if (name == "cvs" || file.name.startsWith(".") || file.name.endsWith("~")) {
             return false
         }
 
