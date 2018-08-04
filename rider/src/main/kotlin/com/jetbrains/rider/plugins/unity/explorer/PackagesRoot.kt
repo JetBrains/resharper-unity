@@ -44,20 +44,15 @@ import com.jetbrains.rider.projectView.views.navigateToSolutionView
 // b) Right click on a referenced package to convert to embedded - simply copy into the project's Packages folder
 //
 // MVP:
-// TODO: Proper paths for modules on Mac + Windows
 // TODO: Error handling/logging
-// TODO: Refresh Packages node when manifest.json changes
 // TODO: Proper paths for registry cache + modules on Linux
 
 // Nice to have:
 // TODO: Clean up right click on the various node types
 // TODO: Disable npm support popups for package.json
 
-class PackagesRoot(project: Project, packagesFolder: VirtualFile, manifestJson: VirtualFile)
-    : UnityExplorerNode(project, packagesFolder, listOf()) {
-
-    private val packagesManager = PackagesManager(project, packagesFolder, manifestJson)
-    private val localPackageFolders = mutableSetOf<VirtualFile>()
+class PackagesRoot(project: Project, private val packagesManager: PackagesManager)
+    : UnityExplorerNode(project, packagesManager.packagesFolder, listOf()) {
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -76,7 +71,6 @@ class PackagesRoot(project: Project, packagesFolder: VirtualFile, manifestJson: 
         for (localPackage in localPackages) {
             if (localPackage.packageFolder != null) {
                 children.add(PackageNode(project!!, packagesManager, localPackage.packageFolder, localPackage))
-                localPackageFolders.add(virtualFile)
             }
             else {
                 children.add(UnknownPackageNode(project!!, localPackage))

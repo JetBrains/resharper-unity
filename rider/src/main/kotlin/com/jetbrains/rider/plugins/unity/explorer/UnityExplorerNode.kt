@@ -14,20 +14,17 @@ import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import com.jetbrains.rider.util.getOrCreate
 import javax.swing.Icon
 
-class UnityExplorerRootNode(project: Project) : SolutionViewRootNodeBase(project) {
+class UnityExplorerRootNode(project: Project, private val packagesManager: PackagesManager)
+    : SolutionViewRootNodeBase(project) {
+
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val assetsFolder = myProject.baseDir?.findChild("Assets")!!
         val assetsNode = UnityExplorerNode.AssetsRoot(myProject, assetsFolder)
 
         val nodes = mutableListOf<AbstractTreeNode<*>>(assetsNode)
 
-        val packagesFolder = myProject.baseDir?.findChild("Packages")
-        packagesFolder?.let {
-            val manifest = it.findChild("manifest.json")
-            if (manifest?.exists() == true) {
-                val packagesRoot = PackagesRoot(myProject, packagesFolder, manifest)
-                nodes.add(packagesRoot)
-            }
+        if (packagesManager.hasPackages) {
+            nodes.add(PackagesRoot(myProject, packagesManager))
         }
 
         return nodes

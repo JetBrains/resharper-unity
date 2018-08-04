@@ -2,12 +2,14 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.google.gson.Gson
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.util.idea.getOrCreateUserData
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -45,18 +47,59 @@ data class PackageDetails(val canonicalName: String, val displayName: String, va
 // Other properties are available: category, keywords, unity (supported version), author
 data class PackageJson(val name: String?, val displayName: String?, val version: String?, val description: String?, val dependencies: Map<String, String>?)
 
-class PackagesManager(private val project: Project, packagesFolder: VirtualFile, manifestJson: VirtualFile) {
+class PackagesManager(private val project: Project) {
+
+    companion object {
+        private val key: Key<PackagesManager> = Key("UnityExplorer::PackagesManager")
+
+        fun getInstance(project: Project): PackagesManager {
+            return project.getOrCreateUserData(key) { PackagesManager(project) }
+        }
+    }
 
     private val gson = Gson()
     private val packagesByCanonicalName: MutableMap<String, PackageData> = mutableMapOf()
     private val packagesByFolderName: MutableMap<String, PackageData> = mutableMapOf()
 
     // This is fairly expensive to calculate, especially when it's called so frequently
-    private val builtInPackagesFolder: Path? by lazy {
-        UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
-    }
+    private var builtInPackagesFolder: Path? = null
 
     init {
+        refresh()
+    }
+
+    val packagesFolder: VirtualFile
+        get() = project.baseDir.findChild("Packages")!!
+
+    val hasPackages: Boolean
+        get() = packagesByCanonicalName.isNotEmpty()
+
+    val localPackages: List<PackageData>
+        get() = filterPackagesBySource(PackageSource.Local).toList()
+
+    val immutablePackages: List<PackageData>
+        get() = packagesByCanonicalName.filterValues { !it.source.isEditable() }.values.toList()
+
+    val hasBuiltInPackages: Boolean
+        get() = filterPackagesBySource(PackageSource.BuiltIn).any()
+
+    fun getPackageData(packageFolder: VirtualFile): PackageData? {
+        return packagesByFolderName[packageFolder.name]
+    }
+
+    fun getPackageData(canonicalName: String): PackageData? {
+        return packagesByCanonicalName[canonicalName]
+    }
+
+    fun refresh() {
+        packagesByCanonicalName.clear()
+        packagesByFolderName.clear()
+
+        val manifestJson = getManifestJsonFile() ?: return
+
+        // Cache the install locations
+        builtInPackagesFolder = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
+
         val manifest = try {
             gson.fromJson(manifestJson.inputStream.reader(), ManifestJson::class.java)
         } catch (e: Throwable) {
@@ -99,6 +142,10 @@ class PackagesManager(private val project: Project, packagesFolder: VirtualFile,
         }
     }
 
+    private fun getManifestJsonFile(): VirtualFile? {
+        return project.baseDir.findFileByRelativePath("Packages/manifest.json")
+    }
+
     private fun getPackagesFromDependencies(packagesFolder: VirtualFile, registry: String,
                                             resolvedPackages: Map<String, PackageData>,
                                             packages: Collection<PackageData>)
@@ -129,23 +176,6 @@ class PackagesManager(private val project: Project, packagesFolder: VirtualFile,
             newPackages.add(getPackageData(packagesFolder, name, version.toString(), registry))
         }
         return newPackages
-    }
-
-    val localPackages: List<PackageData>
-        get() = filterPackagesBySource(PackageSource.Local).toList()
-
-    val immutablePackages: List<PackageData>
-        get() = packagesByCanonicalName.filterValues { !it.source.isEditable() }.values.toList()
-
-    val hasBuiltInPackages: Boolean
-        get() = filterPackagesBySource(PackageSource.BuiltIn).any()
-
-    fun getPackageData(packageFolder: VirtualFile): PackageData? {
-        return packagesByFolderName[packageFolder.name]
-    }
-
-    fun getPackageData(canonicalName: String): PackageData? {
-        return packagesByCanonicalName[canonicalName]
     }
 
     private fun getPackageData(packagesFolder: VirtualFile, name: String, version: String, registry: String): PackageData {

@@ -205,6 +205,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(a=>a.Play.SetValue(b)));
                     model.Pause.AdviseNotNull(lf, b => myHost.SetModelData("UNITY_Pause", b.ToString().ToLower()));
 
+                    // Note that these are late-init properties. Once set, they are always set and do not allow nulls.
+                    // This means that if/when the Unity <-> Backend protocol closes, they still retain the last value
+                    // they had - so the front end will retain the log and application paths of the just-closed editor.
+                    // Opening a new editor instance will reconnect and push a new value through to the front end
                     model.EditorLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
                     model.PlayerLogPath.Advise(lifetime,

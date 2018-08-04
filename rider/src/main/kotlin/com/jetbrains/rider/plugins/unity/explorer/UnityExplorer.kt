@@ -17,29 +17,34 @@ import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
 import org.jdom.Element
 
-class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplorerRootNode(project)) {
+class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplorerRootNode(project, PackagesManager.getInstance(project))) {
 
     companion object {
         const val ID = "UnityExplorer"
         const val Title = "Unity"
         const val Weight = 1
         const val ShowHiddenItemsOption = "show-hidden-items"
-        val Icon = UnityIcons.Toolwindows.ToolWindowUnityLog
-
         const val DefaultProjectPrefix = "Assembly-CSharp"
-        val IgnoredExtensions = hashSetOf("meta", "tmp")
 
+        val Icon = UnityIcons.Toolwindows.ToolWindowUnityLog
+        val IgnoredExtensions = hashSetOf("meta", "tmp")
         val SELECTED_REFERENCE_KEY: DataKey<UnityExplorerNode.ReferenceItem> = DataKey.create("selectedReference")
 
-        fun getInstance(project: Project): UnityExplorer {
-            return tryGetInstance(project)!!
-        }
+        fun getInstance(project: Project) = tryGetInstance(project)!!
+
         fun tryGetInstance(project: Project): UnityExplorer? {
             return ProjectView.getInstance(project).getProjectViewPaneById(ID) as? UnityExplorer
         }
     }
 
+    private val packagesViewUpdater = UnityExplorerPackagesViewUpdater(project, this, PackagesManager.getInstance(project))
+
     var myShowHiddenItems = false
+
+    override fun dispose() {
+        packagesViewUpdater.dispose()
+        super.dispose()
+    }
 
     override fun isInitiallyVisible() = project.isUnityGeneratedProject()
 
@@ -90,16 +95,6 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         actionGroup.addSeparator()
         super.addPrimaryToolbarActions(actionGroup)
     }
-
-//    override fun getStripe(data: Any?, expanded: Boolean): ErrorStripe? {
-//        if (expanded) {
-//            val node = data as? UnityExplorerNode
-//            if (node != null && !node.hasProblemFileBeneath()) {
-//                return null
-//            }
-//        }
-//        return super.getStripe(data, expanded)
-//    }
 
     private inner class ShowHiddenItemsAction
         : ToggleAction("Show Hidden Files", null, ReSharperSolutionAnalysisIcons.UnignoreErrors), DumbAware {
