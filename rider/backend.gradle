@@ -75,12 +75,6 @@ class MSBuildTask extends DefaultTask {
         def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:normal', '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
         arguments.addAll(project.extraMSBuildArgs)
 
-        // references to C# 7.2 from C# 7.1, old msbuild and all this stuff
-        if (project.isTeamcity) {
-            // /p:DefineConstants will overrider whatever is set in a project file, so we have a special property
-            arguments.add("/p:CommandLineConstants=OLD_MSBUILD")            
-        }
-
         def msbuildPath = findMSBuildPath()
         logger.lifecycle("msbuild call=$msbuildPath " + arguments.toString())
 
