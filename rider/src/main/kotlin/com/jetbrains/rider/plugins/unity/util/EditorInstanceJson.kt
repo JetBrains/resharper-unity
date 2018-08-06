@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.util
 
 import com.google.gson.Gson
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 
 enum class EditorInstanceJsonStatus {
@@ -13,6 +14,8 @@ enum class EditorInstanceJsonStatus {
 data class EditorInstanceJson(val process_id: Int, val version: String) {
 
     companion object {
+        private val logger = Logger.getInstance(EditorInstanceJson::class.java)
+
         fun load(project: Project): Pair<EditorInstanceJsonStatus, EditorInstanceJson?> {
 
             val path = project.baseDir.findFileByRelativePath("Library/EditorInstance.json")
@@ -27,6 +30,7 @@ data class EditorInstanceJson(val process_id: Int, val version: String) {
                     }
                 }
                 catch (t: Throwable) {
+                    logger.error("Error loading EditorInstance.json", t)
                     Pair(EditorInstanceJsonStatus.Error, null)
                 }
             }
