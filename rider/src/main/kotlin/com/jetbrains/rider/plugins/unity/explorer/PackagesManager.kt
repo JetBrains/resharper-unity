@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.google.gson.Gson
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VfsUtil
@@ -51,6 +52,7 @@ class PackagesManager(private val project: Project) {
 
     companion object {
         private val key: Key<PackagesManager> = Key("UnityExplorer::PackagesManager")
+        private val logger = Logger.getInstance(PackagesManager::class.java)
 
         fun getInstance(project: Project): PackagesManager {
             return project.getOrCreateUserData(key) { PackagesManager(project) }
@@ -89,6 +91,8 @@ class PackagesManager(private val project: Project) {
     }
 
     fun refresh() {
+        logger.debug("Refreshing packages manager")
+
         packagesByCanonicalName.clear()
         packagesByFolderName.clear()
 
@@ -98,7 +102,7 @@ class PackagesManager(private val project: Project) {
         val manifest = try {
             gson.fromJson(manifestJson.inputStream.reader(), ManifestJson::class.java)
         } catch (e: Throwable) {
-            // TODO: Log
+            logger.error("Error deserializing Packages/manifest.json", e)
             ManifestJson(emptyMap(), emptyArray(), null)
         }
 
@@ -128,7 +132,9 @@ class PackagesManager(private val project: Project) {
         var packagesToProcess: Collection<PackageData> = packagesByCanonicalName.values
         while (packagesToProcess.isNotEmpty()) {
 
-            // TODO: Can this get stuck in an infinite loop?
+            // This can't get stuck in an infinite loop. We look up each package in resolvedPackages - if it's already
+            // there, it doesn't get processed any further, and we update resolvedPackages (well packagesByCanonicalName)
+            // after every loop
             packagesToProcess = getPackagesFromDependencies(packagesFolder, registry, builtInPackagesFolder, resolvedPackages, packagesToProcess)
             for (newPackage in packagesToProcess) {
                 packagesByCanonicalName[newPackage.details.canonicalName] = newPackage
@@ -153,7 +159,7 @@ class PackagesManager(private val project: Project) {
 
             for ((name, version) in packageData.details.dependencies) {
 
-                // If it's been previously resolved, there's nothing more to do. Note that skipping it here, means it's
+                // If it's been previously resolved, there's nothing more to do. Note that skipping it here means it's
                 // not processed further, including dependencies
                 if (resolvedPackages.containsKey(name)) continue
 
@@ -196,8 +202,8 @@ class PackagesManager(private val project: Project) {
                     // It should be a local package, but it's broken
                     PackageData.unknown(name, version)
                 }
-            } catch (_: Throwable) {
-                // TODO: Log
+            } catch (throwable: Throwable) {
+                logger.error("Error finding local package", throwable)
                 null
             }
         }
@@ -256,8 +262,13 @@ class PackagesManager(private val project: Project) {
     private fun readPackagesJson(packageFolder: VirtualFile): PackageDetails? {
         val packageFile = packageFolder.findChild("package.json")
         if (packageFile?.exists() == true && !packageFile.isDirectory) {
-            val packageJson = gson.fromJson(packageFile.inputStream.reader(), PackageJson::class.java)
-            return PackageDetails.fromPackageJson(packageFolder, packageJson!!)
+            try {
+                val packageJson = gson.fromJson(packageFile.inputStream.reader(), PackageJson::class.java)
+                return PackageDetails.fromPackageJson(packageFolder, packageJson!!)
+            }
+            catch (t: Throwable) {
+                logger.error("Error reading package.json", t)
+            }
         }
         return null
     }

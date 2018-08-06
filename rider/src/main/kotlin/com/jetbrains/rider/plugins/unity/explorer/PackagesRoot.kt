@@ -42,14 +42,6 @@ import com.jetbrains.rider.projectView.views.navigateToSolutionView
 // a) If a folder has a package.json, but isn't listed in manifest.json, highlight with an error, and offer a right
 //    click action to add to manifest.json
 // b) Right click on a referenced package to convert to embedded - simply copy into the project's Packages folder
-//
-// MVP:
-// TODO: Error handling/logging
-// TODO: Proper paths for registry cache + modules on Linux
-
-// Nice to have:
-// TODO: Clean up right click on the various node types
-// TODO: Disable npm support popups for package.json
 
 class PackagesRoot(project: Project, private val packagesManager: PackagesManager)
     : UnityExplorerNode(project, packagesManager.packagesFolder, listOf()) {
