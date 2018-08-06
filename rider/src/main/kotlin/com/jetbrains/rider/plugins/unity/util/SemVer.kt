@@ -11,11 +11,11 @@ data class SemVer(val major: Int, val minor: Int, val patch: Int, val prerelease
             val pattern = Regex("""(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:-(?<prerelease>[0-9A-Za-z\-]+(?:\.([0-9A-Za-z\-])+)*)(?:\+(?<build>[0-9A-Za-z\-.]+))?)?""")
             val match = pattern.matchEntire(version)
             return match?.let {
-                val major = match.groups["major"]?.value?.toInt() ?: 0
-                val minor = match.groups["minor"]?.value?.toInt() ?: 0
-                val patch = match.groups["patch"]?.value?.toInt() ?: 0
-                val prerelease = match.groups["prerelease"]?.value
-                val build = match.groups["build"]?.value
+                val major = it.groups["major"]?.value?.toInt() ?: 0
+                val minor = it.groups["minor"]?.value?.toInt() ?: 0
+                val patch = it.groups["patch"]?.value?.toInt() ?: 0
+                val prerelease = it.groups["prerelease"]?.value
+                val build = it.groups["build"]?.value
                 SemVer(major, minor, patch, prerelease, build)
             }
         }

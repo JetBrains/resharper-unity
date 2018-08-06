@@ -61,9 +61,6 @@ class PackagesManager(private val project: Project) {
     private val packagesByCanonicalName: MutableMap<String, PackageData> = mutableMapOf()
     private val packagesByFolderName: MutableMap<String, PackageData> = mutableMapOf()
 
-    // This is fairly expensive to calculate, especially when it's called so frequently
-    private var builtInPackagesFolder: Path? = null
-
     init {
         refresh()
     }
@@ -96,9 +93,7 @@ class PackagesManager(private val project: Project) {
         packagesByFolderName.clear()
 
         val manifestJson = getManifestJsonFile() ?: return
-
-        // Cache the install locations
-        builtInPackagesFolder = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
+        val builtInPackagesFolder = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
 
         val manifest = try {
             gson.fromJson(manifestJson.inputStream.reader(), ManifestJson::class.java)
@@ -111,7 +106,7 @@ class PackagesManager(private val project: Project) {
         for ((name, version) in manifest.dependencies) {
             if (version.equals("exclude", true)) continue
 
-            val packageData = getPackageData(packagesFolder, name, version, registry)
+            val packageData = getPackageData(packagesFolder, name, version, registry, builtInPackagesFolder)
             packagesByCanonicalName[name] = packageData
             if (packageData.packageFolder != null) {
                 packagesByFolderName[packageData.packageFolder.name] = packageData
@@ -134,7 +129,7 @@ class PackagesManager(private val project: Project) {
         while (packagesToProcess.isNotEmpty()) {
 
             // TODO: Can this get stuck in an infinite loop?
-            packagesToProcess = getPackagesFromDependencies(packagesFolder, registry, resolvedPackages, packagesToProcess)
+            packagesToProcess = getPackagesFromDependencies(packagesFolder, registry, builtInPackagesFolder, resolvedPackages, packagesToProcess)
             for (newPackage in packagesToProcess) {
                 packagesByCanonicalName[newPackage.details.canonicalName] = newPackage
                 newPackage.packageFolder?.let { packagesByFolderName[it.name] = newPackage }
@@ -146,7 +141,7 @@ class PackagesManager(private val project: Project) {
         return project.baseDir.findFileByRelativePath("Packages/manifest.json")
     }
 
-    private fun getPackagesFromDependencies(packagesFolder: VirtualFile, registry: String,
+    private fun getPackagesFromDependencies(packagesFolder: VirtualFile, registry: String, builtInPackagesFolder: Path?,
                                             resolvedPackages: Map<String, PackageData>,
                                             packages: Collection<PackageData>)
             : Collection<PackageData> {
@@ -173,17 +168,17 @@ class PackagesManager(private val project: Project) {
         // Now find all of the packages for all of these dependencies
         val newPackages = mutableListOf<PackageData>()
         for ((name, version) in dependencies) {
-            newPackages.add(getPackageData(packagesFolder, name, version.toString(), registry))
+            newPackages.add(getPackageData(packagesFolder, name, version.toString(), registry, builtInPackagesFolder))
         }
         return newPackages
     }
 
-    private fun getPackageData(packagesFolder: VirtualFile, name: String, version: String, registry: String): PackageData {
+    private fun getPackageData(packagesFolder: VirtualFile, name: String, version: String, registry: String, builtInPackagesFolder: Path?): PackageData {
         return getLocalPackage(packagesFolder, name, version)
                 ?: getGitPackage(name, version)
                 ?: getEmbeddedPackage(packagesFolder, name)
                 ?: getRegistryPackage(name, version, registry)
-                ?: getBuiltInPackage(name, version)
+                ?: getBuiltInPackage(name, version, builtInPackagesFolder)
                 ?: PackageData.unknown(name, version)
     }
 
@@ -209,6 +204,7 @@ class PackagesManager(private val project: Project) {
         return null
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun getGitPackage(name: String, version: String): PackageData? {
         // Not yet documented/supported in Unity
         return null
@@ -227,12 +223,11 @@ class PackagesManager(private val project: Project) {
         return getPackageDataFromFolder(name, packageFolder, PackageSource.Registry)
     }
 
-    private fun getBuiltInPackage(name: String, version: String): PackageData? {
+    private fun getBuiltInPackage(name: String, version: String, builtInPackagesFolder: Path?): PackageData? {
 
         // If we can identify the module root of the current project, use it to look up the module
-        val modulesRoot = builtInPackagesFolder
-        if (modulesRoot?.isDirectory() == true) {
-            val packageFolder = VfsUtil.findFile(modulesRoot.resolve(name), true)
+        if (builtInPackagesFolder?.isDirectory() == true) {
+            val packageFolder = VfsUtil.findFile(builtInPackagesFolder.resolve(name), true)
             return getPackageDataFromFolder(name, packageFolder, PackageSource.BuiltIn)
         }
 
