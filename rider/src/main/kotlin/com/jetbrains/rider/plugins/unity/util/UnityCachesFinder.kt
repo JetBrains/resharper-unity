@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.util
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -12,6 +13,7 @@ class UnityCachesFinder {
 
     // The cache location is static, across all projects
     companion object {
+        private val logger = Logger.getInstance(UnityCachesFinder::class.java)
         private val packagesCacheRoot: Path? by lazy(this::findPackagesCacheRoot)
 
         // registry is a user defined string, can be anything. We expect it to be a URL, e.g. https://packages.unity.com
@@ -22,9 +24,10 @@ class UnityCachesFinder {
             val registryHost = try {
                 URL(registry).host
             }
-            catch(_: Throwable) {
-                // TODO: Log
-                if (registry.isNotEmpty()) { registry } else { defaultRegistry }
+            catch(throwable: Throwable) {
+                val reg = if (registry.isNotEmpty()) { registry } else { defaultRegistry }
+                logger.error("Error parsing registry as URL. Falling back to $reg", throwable)
+                reg
             }
 
             return findPackagesCache(cache, registryHost) ?: findPackagesCache(cache, defaultRegistry)
@@ -34,18 +37,20 @@ class UnityCachesFinder {
             SystemInfo.isWindows -> Paths.get(System.getenv("LOCALAPPDATA")).resolve("Unity/cache/packages")
             SystemInfo.isMac -> Paths.get(SystemProperties.getUserHome()).resolve("Library/Unity/cache/packages")
             SystemInfo.isLinux -> {
-                // TODO: What's the Linux cache path?
-                null
+                val config = Paths.get(System.getenv("XDG_CONFIG_HOME"))
+                        ?: Paths.get(SystemProperties.getUserHome()).resolve(".config")
+                config.resolve("unity3d/cache/packages")
             }
             else -> null
         }
 
         private fun findPackagesCache(cacheRoot: Path, registry: String): VirtualFile? {
-            // Can throw if the user has entered a weird registry value
+            // Path#resolve can throw if the user entered a weird registry value that isn't a proper path
             return try {
                 VfsUtil.findFile(cacheRoot.resolve(registry), true)
             }
-            catch(_: Throwable) {
+            catch(throwable: Throwable) {
+                logger.error("Error looking for registry cache location: $cacheRoot/$registry", throwable)
                 null
             }
         }
