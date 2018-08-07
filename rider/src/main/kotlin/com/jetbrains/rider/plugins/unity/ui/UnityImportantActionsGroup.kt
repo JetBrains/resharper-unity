@@ -1,11 +1,9 @@
 package com.jetbrains.rider.plugins.unity.ui
 
-import com.intellij.ide.actions.ActivateToolWindowAction
-import com.intellij.openapi.actionSystem.*
-import com.jetbrains.rider.actions.RiderActions
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
-import com.jetbrains.rider.solutionAnalysis.actions.PauseSWEAAction
-import com.jetbrains.rider.solutionAnalysis.actions.ToggleSWEAAction
 
 /**
  * @author Kirill.Skrygan

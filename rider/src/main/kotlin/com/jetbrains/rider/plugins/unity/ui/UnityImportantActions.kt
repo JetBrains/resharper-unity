@@ -27,6 +27,6 @@ class UnityImportantActions : DefaultActionGroup(), DumbAware {
         }
 
         e.presentation.isVisible = true
-        e.presentation.icon = UnityIcons.Icons.ImportantActions
+        e.presentation.icon = UnityIcons.Actions.ImportantActions
     }
 }
