@@ -34,6 +34,7 @@ namespace ApiParser
 
         public static void Main(string[] args)
         {
+            args = new[] {@"C:\work\resharper-unity\resharper\src\resharper-unity\api.xml", "2018.2.2f1"};
             if (args.Length != 1 && args.Length != 2)
             {
                 Console.WriteLine("Usage: ApiParser.exe docsFolder");
@@ -72,8 +73,10 @@ namespace ApiParser
             var managedPath = Path.Combine(progPath, "Unity", "Editor", "Data", "Managed");
             if (!Directory.Exists(managedPath))
             {
-                // TODO: Handle this in Windows, too
-                managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Unity.app", "Contents", "Managed");
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                    managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Editor", "Data", "Managed");
+                else
+                    managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Unity.app", "Contents", "Managed");
             }
 
             // Add assemblies to the type resolver so we can get the fully qualified names of types
@@ -227,6 +230,15 @@ namespace ApiParser
                 // 2018.2 removes a UnityScript example which gave us the return type
                 foreach (var function in type.FindEventFunctions("OnAssignMaterialModel"))
                     function.SetReturnType(new ApiType("UnityEngine.Material"));
+            }
+            
+            type = unityApi.FindType("EditorWindow");
+            if (type != null)
+            {
+                foreach (var function in type.FindEventFunctions("OnProjectChange"))
+                {
+                    function.SetIsInstance();
+                }
             }
         }
 

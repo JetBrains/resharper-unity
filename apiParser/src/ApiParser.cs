@@ -19,8 +19,12 @@ namespace ApiParser
         // I don't know why we match without brackets
         private static readonly Regex CaptureArgumentsRegex = new Regex(@"^(?:[\w.]+)?\.(?:\w+)(?:\((?<args>.*)\)|(?<args>.*))$", RegexOptions.Compiled);
 
-        private static readonly string ScriptReferenceRelativePath1 = @"Documentation" + Path.DirectorySeparatorChar + "en" + Path.DirectorySeparatorChar + "ScriptReference";
-        private static readonly string ScriptReferenceRelativePath2 = @"Documentation" + Path.DirectorySeparatorChar + "ScriptReference";    // 2018.1.6f1
+        private static readonly string[] ScriptReferenceRelativePaths = new[]
+        {
+            @"Documentation" + Path.DirectorySeparatorChar + "en" + Path.DirectorySeparatorChar + "ScriptReference",
+            @"Documentation" + Path.DirectorySeparatorChar + "ScriptReference", // 2018.1.6f1
+            @"20182-08cdcee9b18e-edited" + Path.DirectorySeparatorChar + "Documentation" + Path.DirectorySeparatorChar + "ScriptReference" // 2018.2.2f1
+        };
 
         private readonly UnityApi myApi;
 
@@ -43,9 +47,7 @@ namespace ApiParser
             {
                 Directory.SetCurrentDirectory(path);
 
-                var scriptReferenceRelativePath = Directory.Exists(ScriptReferenceRelativePath1)
-                    ? ScriptReferenceRelativePath1
-                    : ScriptReferenceRelativePath2;
+                var scriptReferenceRelativePath = ScriptReferenceRelativePaths.First(Directory.Exists);
 
                 var files = Directory.EnumerateFiles(scriptReferenceRelativePath, @"*.html").Reverse().ToArray();
                 var processed = new HashSet<string>();
@@ -55,7 +57,6 @@ namespace ApiParser
                     ParseFile(files[i], apiVersion, processed);
                     OnProgress(new ProgressEventArgs(i + 1, files.Length));
                 }
-
             }
             finally
             {
@@ -160,9 +161,7 @@ namespace ApiParser
             var detailsPath = link[@"href"];
             if (string.IsNullOrWhiteSpace(detailsPath)) return null;
 
-            var scriptReferenceRelativePath = Directory.Exists(ScriptReferenceRelativePath1)
-                ? ScriptReferenceRelativePath1
-                : ScriptReferenceRelativePath2;
+            var scriptReferenceRelativePath = ScriptReferenceRelativePaths.First(Directory.Exists);
             var path = Path.Combine(scriptReferenceRelativePath, detailsPath);
             processed.Add(path);
             if (!File.Exists(path)) return null;
