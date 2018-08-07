@@ -31,8 +31,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [CanBeNull]
         public ITypeElement GetTypeElement([NotNull] IPsiModule module)
         {
-            var type = TypeFactory.CreateTypeByCLRName(myTypeName, module);
-            return type.GetTypeElement();
+            using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+            {
+                var type = TypeFactory.CreateTypeByCLRName(myTypeName, module);
+                return type.GetTypeElement();
+            }
         }
 
         public bool HasEventFunction([NotNull] IMethod method, Version normalisedUnityVersion)
