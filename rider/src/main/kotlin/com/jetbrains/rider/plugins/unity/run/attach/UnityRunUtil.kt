@@ -18,7 +18,8 @@ object UnityRunUtil {
             !name.contains("UnityHelper") &&
             !name.contains("Unity Helper") &&
             !name.contains("Unity Hub") &&
-            !name.contains("UnityCrashHandler")
+            !name.contains("UnityCrashHandler") &&
+            !name.contains("UnityPackageManager")
     }
 
     fun attachToEditor(pid: Int, project: Project) {
