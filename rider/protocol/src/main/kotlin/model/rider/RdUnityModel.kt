@@ -16,6 +16,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
         property("hideSolutionConfiguration", bool)
 
+        property("applicationPath", string)
+        property("applicationContentsPath", string)
+
         property("editorLogPath", string)
         property("playerLogPath", string)
         property("play", bool)

@@ -1,12 +1,11 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
-import com.google.gson.JsonParser
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
-import com.jetbrains.rider.use2
+import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
+import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.IProperty
 import com.jetbrains.rider.util.reactive.Property
@@ -16,22 +15,21 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
     val editorInstanceJsonStatus: EditorInstanceJsonStatus
     val editorProcesses: ViewableList<EditorProcessInfo> = ViewableList()
     val pid: IProperty<Int?> = Property(null)
-    val logger = Logger.getInstance(UnityAttachToEditorViewModel::class.java)
 
     data class EditorProcessInfo(val name: String, val pid: Int?)
-    data class EditorInstanceJsonResult(val status: EditorInstanceJsonStatus, val pid: Int?)
 
     init {
         val processList = OSProcessUtil.getProcessList()
         updateProcessList(processList)
 
-        var (status, pid) = readEditorInstanceJson(project, processList)
-        if (status != EditorInstanceJsonStatus.Valid && editorProcesses.count() == 1) {
-            pid = editorProcesses[0].pid
-        }
-
+        val (status, editorInstanceJson) = readEditorInstanceJson(project, processList)
         editorInstanceJsonStatus = status
-        this.pid.value = pid
+        this.pid.value = if (status != EditorInstanceJsonStatus.Valid && editorProcesses.count() == 1) {
+            editorProcesses[0].pid
+        }
+        else {
+            editorInstanceJson?.let { it.process_id }
+        }
     }
 
     private fun updateProcessList(processList: Array<out ProcessInfo>) {
@@ -41,32 +39,18 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
         }
     }
 
-    private fun readEditorInstanceJson(project: Project, processList: Array<ProcessInfo>): EditorInstanceJsonResult {
-        val editorInstanceJsonFile = project.baseDir.findFileByRelativePath("Library/EditorInstance.json")
-        if (editorInstanceJsonFile == null || !editorInstanceJsonFile.exists()) {
-            return EditorInstanceJsonResult(EditorInstanceJsonStatus.Missing, null)
+    private fun readEditorInstanceJson(project: Project, processList: Array<ProcessInfo>): Pair<EditorInstanceJsonStatus, EditorInstanceJson?> {
+        val editorInstanceJson = EditorInstanceJson.load(project)
+        if (editorInstanceJson.first == EditorInstanceJsonStatus.Valid && !isValidProcessId(editorInstanceJson.second!!, processList)) {
+            return Pair(EditorInstanceJsonStatus.Outdated, editorInstanceJson.second)
         }
-
-        try {
-            val processId = editorInstanceJsonFile.inputStream.reader().use2 { reader ->
-                val jsonObject = JsonParser().parse(reader).asJsonObject
-                return@use2 jsonObject["process_id"].asInt
-            }
-
-            return if (checkValidEditorInstance(processId, processList))
-                EditorInstanceJsonResult(EditorInstanceJsonStatus.Valid, processId)
-            else
-                EditorInstanceJsonResult(EditorInstanceJsonStatus.Outdated, null)
-        }
-        catch(ex: Exception) {
-            return EditorInstanceJsonResult(EditorInstanceJsonStatus.Error, null)
-        }
+        return editorInstanceJson
     }
 
-    private fun checkValidEditorInstance(pid: Int, processList: Array<ProcessInfo>): Boolean {
+    private fun isValidProcessId(editorInstanceJson: EditorInstanceJson, processList: Array<ProcessInfo>): Boolean {
         // Look for processes, if it exists and has the correct name, return it unchanged,
         // else return invalidValue. Do not throw, as we'll attempt to recover
-        return processList.any { it.pid == pid && UnityRunUtil.isUnityEditorProcess(it) }
+        return processList.any { it.pid == editorInstanceJson.process_id && UnityRunUtil.isUnityEditorProcess(it) }
     }
 
     fun updateProcessList() {

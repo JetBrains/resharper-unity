@@ -78,6 +78,7 @@ object EditorPluginModel: Root(
         property("riderProcessId", int)
 
         property("applicationPath", string)
+        property("applicationContentsPath", string)
         property("applicationVersion", string)
         property("scriptingRuntime", int)
 
