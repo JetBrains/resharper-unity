@@ -24,7 +24,7 @@
               <text value="EditorInstance Error"/>
             </properties>
           </component>
-          <component id="3cb85" class="com.intellij.ui.HyperlinkLabel" binding="downloadLabel" custom-create="true">
+          <component id="ed298" class="javax.swing.JLabel" binding="commentLabel" custom-create="true">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>

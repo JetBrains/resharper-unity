@@ -1,26 +1,42 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.projectView.PresentationData
+import com.intellij.ide.projectView.ViewSettings
+import com.intellij.ide.scratch.ScratchProjectViewPane
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.jetbrains.rider.icons.ReSharperCommonIcons
-import com.jetbrains.rider.icons.ReSharperProjectModelIcons
+import com.jetbrains.rider.model.*
+import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
-import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
+import com.jetbrains.rider.projectView.views.addAdditionalText
 import com.jetbrains.rider.util.getOrCreate
 import javax.swing.Icon
 
-class UnityExplorerRootNode(project: Project) : SolutionViewRootNodeBase(project) {
+class UnityExplorerRootNode(project: Project, private val packagesManager: PackagesManager)
+    : SolutionViewRootNodeBase(project) {
+
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val assetsFolder = myProject.baseDir?.findChild("Assets")!!
-        val rootNode = UnityExplorerNode.Root(myProject, assetsFolder)
-        return mutableListOf(rootNode)
+        val assetsNode = UnityExplorerNode.AssetsRoot(myProject, assetsFolder)
+
+        val nodes = mutableListOf<AbstractTreeNode<*>>(assetsNode)
+
+        if (packagesManager.hasPackages) {
+            nodes.add(PackagesRoot(myProject, packagesManager))
+        }
+
+        if (ScratchProjectViewPane.isScratchesMergedIntoProjectTab()) {
+            nodes.add(ScratchProjectViewPane.createRootNode(myProject, ViewSettings.DEFAULT))
+        }
+
+        return nodes
     }
 }
 
@@ -45,12 +61,21 @@ open class UnityExplorerNode(project: Project,
 
         // Add additional info for directories
         if (!virtualFile.isDirectory) return
+        addProjects(presentation)
+    }
+
+    protected fun addProjects(presentation: PresentationData) {
         val projectNames = nodes
-            .mapNotNull { it.containingProject() }
-            .map { it.name.removePrefix(UnityExplorer.DefaultProjectPrefix + "-").removePrefix(UnityExplorer.DefaultProjectPrefix) }
-            .filter { it.isNotEmpty() }
+                .mapNotNull { it.containingProject() }
+                .map { it.name.removePrefix(UnityExplorer.DefaultProjectPrefix + "-").removePrefix(UnityExplorer.DefaultProjectPrefix) }
+                .filter { it.isNotEmpty() }
+                .sorted()
         if (projectNames.any()) {
-            val description = projectNames.joinToString(", ")
+            var description = projectNames.take(3).joinToString(", ")
+            if (projectNames.count() > 3) {
+                description += ", …"
+                presentation.tooltip = "Contains code from multiple projects:\n" + projectNames.joinToString(",\n")
+            }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
         }
     }
@@ -65,7 +90,7 @@ open class UnityExplorerNode(project: Project,
             return globalSpecialIcon
         }
 
-        if (parent is Root) {
+        if (parent is AssetsRoot) {
             val rootSpecialIcon = when (name) {
                 "Editor Default Resources" -> IconLoader.getIcon("/Icons/Explorer/FolderEditorResources.svg")
                 "Gizmos" -> IconLoader.getIcon("/Icons/Explorer/FolderGizmos.svg")
@@ -123,15 +148,74 @@ open class UnityExplorerNode(project: Project,
         return true
     }
 
-    class Root(project: Project, virtualFile: VirtualFile)
+    class AssetsRoot(project: Project, virtualFile: VirtualFile)
         : UnityExplorerNode(project, virtualFile, listOf()) {
 
         private val referenceRoot = ReferenceRoot(project)
+        private val solutionNode = ProjectModelViewHost.getInstance(project).solutionNode
 
         override fun update(presentation: PresentationData) {
             if (!virtualFile.isValid) return
-            presentation.presentableText = project!!.solutionName
-            presentation.setIcon(IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg"))
+            presentation.addText("Assets", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+            presentation.setIcon(UnityIcons.Explorer.AssetsRoot)
+
+            val descriptor = solutionNode.descriptor as? RdSolutionDescriptor ?: return
+            val state = getAggregateSolutionState(descriptor)
+            when (state) {
+                RdSolutionState.Loading -> presentation.addAdditionalText("loading...")
+                RdSolutionState.Sync -> presentation.addAdditionalText("synchronizing...")
+                RdSolutionState.Ready -> {
+                    if (descriptor.projectsCount.failed + descriptor.projectsCount.unloaded > 0) {
+                        presentProjectsCount(presentation, descriptor.projectsCount, true)
+                    }
+                }
+                RdSolutionState.ReadyWithErrors -> presentation.addAdditionalText("load failed")
+                RdSolutionState.ReadyWithWarnings -> presentProjectsCount(presentation, descriptor.projectsCount, true)
+                else -> {}
+            }
+        }
+
+        private fun getAggregateSolutionState(descriptor: RdSolutionDescriptor): RdSolutionState {
+            var state = descriptor.state
+
+            // Solution loading/synchronizing takes precedence
+            if (state == RdSolutionState.Loading || state == RdSolutionState.Sync) {
+                return state
+            }
+
+            state = RdSolutionState.Ready
+            val children = solutionNode.getChildren(false, false)
+            for (child in children) {
+                if (child.isProject()) {
+                    val projectDescriptor = child.descriptor as? RdProjectDescriptor ?: continue
+
+                    // Aggregate project loading and sync. Loading takes precedence over sync
+                    if (projectDescriptor.state == RdProjectState.Loading) {
+                        state = RdSolutionState.Loading
+                    }
+                    else if (projectDescriptor.state == RdProjectState.Sync && state != RdSolutionState.Loading) {
+                        state = RdSolutionState.Sync
+                    }
+                }
+            }
+
+            // Make sure we don't miss solution ReadWithErrors
+            if (state == RdSolutionState.Ready) {
+                state = descriptor.state
+            }
+
+            return state
+        }
+
+        private fun presentProjectsCount(presentation: PresentationData, count: RdProjectsCount, showZero: Boolean) {
+            if (count.total == 0 && !showZero) return
+
+            var text = "${count.total} ${StringUtil.pluralize("project", count.total)}"
+            val unloadedCount = count.failed + count.unloaded
+            if (unloadedCount > 0) {
+                text += ", $unloadedCount unloaded"
+            }
+            presentation.addAdditionalText(text)
         }
 
         override fun isAlwaysExpand() = true
@@ -151,7 +235,7 @@ open class UnityExplorerNode(project: Project,
 
         override fun update(presentation: PresentationData?) {
             presentation?.presentableText = "References"
-            presentation?.setIcon(ReSharperCommonIcons.CompositeElement)
+            presentation?.setIcon(UnityIcons.Explorer.ReferencesRoot)
         }
 
         override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
@@ -159,7 +243,7 @@ open class UnityExplorerNode(project: Project,
             val visitor = object : ProjectModelNodeVisitor() {
                 override fun visitReference(node: ProjectModelNode): Result {
                     if (node.isAssemblyReference()) {
-                        val keys = referenceNames.getOrCreate(node.name, { _ -> arrayListOf() })
+                        val keys = referenceNames.getOrCreate(node.name) { _ -> arrayListOf() }
                         keys.add(node.key)
                     }
                     return Result.Stop
@@ -188,7 +272,7 @@ open class UnityExplorerNode(project: Project,
 
         override fun update(presentation: PresentationData?) {
             presentation?.presentableText = referenceName
-            presentation?.setIcon(ReSharperProjectModelIcons.Assembly)
+            presentation?.setIcon(UnityIcons.Explorer.Reference)
         }
     }
 }

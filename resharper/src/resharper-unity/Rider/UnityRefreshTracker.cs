@@ -114,25 +114,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myLogger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
                 groupingEvent.FireIncoming();
             });
-            
-            documentTransactionManager.AfterTransactionCommit.Advise(lifetime,
-                args =>
-                {
-                    if (protocolController.UnityModel.Value == null)
-                        return;
-                    
-                    if (args.Succeded && args.Changes !=null && args.Changes.Any())
-                    {
-                        locks.ExecuteWithReadLock(() =>
-                        {
-                            if (documentTransactionManager.CurrentTransaction?.ParentTransaction == null)
-                            {
-                                myLogger.Verbose("documentTransactionManager.AfterTransactionCommit");
-                                groupingEvent.FireIncoming();
-                            }
-                        });    
-                    }
-                });
         }
     }
 }

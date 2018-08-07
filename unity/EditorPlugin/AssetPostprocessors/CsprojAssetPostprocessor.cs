@@ -153,9 +153,10 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private static readonly string PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
-    private static readonly string PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
-    private static readonly string EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
+    private static readonly string PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH = Path.GetFullPath("Assets/csc.rsp");
+    private static readonly string PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
+    private static readonly string PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
+    private static readonly string EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
 
     private static bool SetManuallyDefinedCompilerSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
@@ -165,17 +166,20 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       string configPath = null;
 
-      //Prefer mcs.rsp if it exists
-      if (File.Exists(PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH))
+      if (File.Exists(PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH)) // First choice - prefer csc.rsp if it exists
       {
-        configPath = PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+        configPath = PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH;
+      }
+      else if (File.Exists(PROJECT_MANUAL_CONFIG_FILE_PATH)) //Second choice - prefer mcs.rsp if it exists
+      {
+        configPath = PROJECT_MANUAL_CONFIG_FILE_PATH;
       }
       else
       {
         if (IsPlayerProjectFile(projectFile))
-          configPath = PLAYER_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+          configPath = PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH;
         else if (IsEditorProjectFile(projectFile))
-          configPath = EDITOR_PROJECT_MANUAL_CONFIG_ABSOLUTE_FILE_PATH;
+          configPath = EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH;
       }
 
       if (!string.IsNullOrEmpty(configPath))
@@ -363,7 +367,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         string hintPath = null;
 
         var name = referenceName;
-        if (name.Substring(name.Length - 4) != ".dll")
+        if (new FileInfo(name).Extension != ".dll")
           name += ".dll"; // RIDER-15093
 
         if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)

@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myIsInTests = locks.Dispatcher.IsAsyncBehaviorProhibited;
             if (myIsInTests)
                 return;
-            
+
             myModel = solution.GetProtocolSolution().GetRdUnityModel();
         }
 
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             if (myIsInTests)
                 return;
-            
+
             action(myModel);
         }
     }
