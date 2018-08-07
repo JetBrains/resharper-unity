@@ -71,7 +71,7 @@ class UnityDocumentationProvider : DocumentationProvider {
                 // Unity is installed to `C:\Program Files\Unity`, on both 32 bit and 64 bit
                 // %PROGRAMFILES% differs if we're a 32 or 64 bit process
                 // %PROGRAMFILES(X86)% only exists if we're 64 bit, and is always in the form `C:\Program Files (x86)`
-                // %PROGRAMFILESW6432% is always in the form `C:\Program Files`
+                // %PROGRAMW6432% is always in the form `C:\Program Files`
                 val programFiles = System.getenv("ProgramW6432") ?: System.getenv("ProgramFiles")
                 Paths.get(programFiles).resolve("/Unity/Editor/Data/Documentation/en")
             }
