@@ -1,9 +1,12 @@
 package com.jetbrains.rider.plugins.unity.run.configurations;
 
+import com.intellij.openapi.ui.panel.ComponentPanelBuilder;
+import com.intellij.ui.ContextHelpLabel;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -11,7 +14,7 @@ import java.awt.*;
 
 public class UnityAttachToEditorFormLayout {
     protected JPanel rootPanel;
-    protected HyperlinkLabel downloadLabel;
+    protected JLabel commentLabel;
     protected JLabel editorInstanceJsonError;
     protected JLabel processIdInfo;
     protected JPanel editorInstanceJsonErrorPanel;
@@ -25,11 +28,11 @@ public class UnityAttachToEditorFormLayout {
     }
 
     private void createUIComponents() {
-        downloadLabel = new HyperlinkLabel();
-        downloadLabel.setAlignmentX(-2);
-        downloadLabel.setIconTextGap(0);
-        downloadLabel.setHyperlinkText("", "Unity Editor plugin", " is required for the \"Attach to Unity Editor\" run configuration to work.");
-        downloadLabel.setHyperlinkTarget("https://github.com/JetBrains/resharper-unity#unity-editor-plugin");
+        commentLabel = ComponentPanelBuilder.createCommentComponent("The EditorInstance.json file is required to automatically configure the <i>Attach to Unity Editor</i> run configuration. " +
+                "This file is automatically created when the project is opened in Unity 2017.1 and above, " +
+                "or when the <a href=\"https://github.com/JetBrains/resharper-unity#unity-editor-plugin\">Unity Editor plugin</a> " +
+                "is installed in a project and loaded by Unity.", true);
+        commentLabel.setBorder(JBUI.Borders.emptyLeft(18));
     }
 
     {
@@ -56,7 +59,7 @@ public class UnityAttachToEditorFormLayout {
         editorInstanceJsonError = new JLabel();
         editorInstanceJsonError.setText("EditorInstance Error");
         editorInstanceJsonErrorPanel.add(editorInstanceJsonError, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        editorInstanceJsonErrorPanel.add(downloadLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        editorInstanceJsonErrorPanel.add(commentLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         editorInstanceJsonErrorPanel.add(spacer1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 25), new Dimension(-1, 25), new Dimension(-1, 25), 1, false));
         processesList = new ProcessesPanel();
