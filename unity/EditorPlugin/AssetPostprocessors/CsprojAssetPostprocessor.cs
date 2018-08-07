@@ -117,8 +117,21 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
+      changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
 
       return changed;
+    }
+
+    private static bool SetDisableHandlePackageFileConflicts(XElement projectContentElement, XNamespace xmlns)
+    {
+      // https://developercommunity.visualstudio.com/content/problem/138986/1550-preview-2-breaks-scriptsharp-compilation.html
+      // RIDER-18316 Rider fails to resolve mscorlib
+      
+      // is expected to be no problem with new unity mono runtime or non-windows OS-s
+      if (UnityUtils.ScriptingRuntime > 0 || PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)  
+        return false;
+      
+      return SetOrUpdateProperty(projectContentElement, xmlns, "DisableHandlePackageFileConflicts", existing => "true");
     }
 
     private static bool FixSystemXml(XElement projectContentElement, XNamespace xmlns)
