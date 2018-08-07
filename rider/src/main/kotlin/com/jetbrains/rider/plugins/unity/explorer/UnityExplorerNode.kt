@@ -1,6 +1,8 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.projectView.PresentationData
+import com.intellij.ide.projectView.ViewSettings
+import com.intellij.ide.scratch.ScratchProjectViewPane
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
@@ -25,6 +27,10 @@ class UnityExplorerRootNode(project: Project, private val packagesManager: Packa
 
         if (packagesManager.hasPackages) {
             nodes.add(PackagesRoot(myProject, packagesManager))
+        }
+
+        if (ScratchProjectViewPane.isScratchesMergedIntoProjectTab()) {
+            nodes.add(ScratchProjectViewPane.createRootNode(myProject, ViewSettings.DEFAULT))
         }
 
         return nodes
