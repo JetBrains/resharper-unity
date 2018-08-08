@@ -72,8 +72,10 @@ namespace ApiParser
             var managedPath = Path.Combine(progPath, "Unity", "Editor", "Data", "Managed");
             if (!Directory.Exists(managedPath))
             {
-                // TODO: Handle this in Windows, too
-                managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Unity.app", "Contents", "Managed");
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                    managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Editor", "Data", "Managed");
+                else
+                    managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Unity.app", "Contents", "Managed");
             }
 
             // Add assemblies to the type resolver so we can get the fully qualified names of types
@@ -258,10 +260,10 @@ namespace ApiParser
                     true, false, ApiType.Bool, apiVersion, description, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
-                // These two were added in 2017.4, as verified on GitHub
-                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.3/Editor/Mono/AssetPostprocessor.cs
+                // These two were added in 2018.1, as verified on GitHub
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.4/Editor/Mono/AssetPostprocessor.cs
-                if (apiVersion >= new Version(2017, 4))
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2018.1/Editor/Mono/AssetPostprocessor.cs#L76
+                if (apiVersion >= new Version(2018, 1))
                 {
                     // Technically, return type is optional
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L123

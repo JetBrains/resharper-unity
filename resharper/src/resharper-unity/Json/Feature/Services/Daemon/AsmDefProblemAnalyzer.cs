@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Feature.Services.Daemon
         protected override void Run(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             var processKind = data.GetDaemonProcessKind();
-            if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT)
+            if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT && processKind != DaemonProcessKind.SOLUTION_ANALYSIS)
                 return;
 
             if (data.SourceFile == null)

@@ -300,6 +300,11 @@ namespace ApiParser
             myIsStatic = true;
         }
 
+        public void SetIsInstance()
+        {
+            myIsStatic = false;
+        }
+
         public void SetReturnType(ApiType returnType)
         {
             myReturnType = returnType;
