@@ -72,8 +72,10 @@ namespace ApiParser
             var managedPath = Path.Combine(progPath, "Unity", "Editor", "Data", "Managed");
             if (!Directory.Exists(managedPath))
             {
-                // TODO: Handle this in Windows, too
-                managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Unity.app", "Contents", "Managed");
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                    managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Editor", "Data", "Managed");
+                else
+                    managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Unity.app", "Contents", "Managed");
             }
 
             // Add assemblies to the type resolver so we can get the fully qualified names of types

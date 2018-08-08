@@ -299,7 +299,7 @@
     <message name="OnLostFocus" static="False" description="Called when the window loses keyboard focus." path="Documentation/en/ScriptReference/EditorWindow.OnLostFocus.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnProjectChange" static="True" description="Handler for message that is sent whenever the state of the project changes." path="Documentation/en/ScriptReference/EditorWindow.OnProjectChange.html">
+    <message name="OnProjectChange" static="False" description="Handler for message that is sent whenever the state of the project changes." path="Documentation/en/ScriptReference/EditorWindow.OnProjectChange.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnSelectionChange" static="False" description="Called whenever the selection has changed." path="Documentation/en/ScriptReference/EditorWindow.OnSelectionChange.html">
