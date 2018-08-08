@@ -231,15 +231,6 @@ namespace ApiParser
                 foreach (var function in type.FindEventFunctions("OnAssignMaterialModel"))
                     function.SetReturnType(new ApiType("UnityEngine.Material"));
             }
-            
-            type = unityApi.FindType("EditorWindow");
-            if (type != null)
-            {
-                foreach (var function in type.FindEventFunctions("OnProjectChange"))
-                {
-                    function.SetIsInstance();
-                }
-            }
         }
 
         private static void AddUndocumentedApis(UnityApi unityApi, Version apiVersion)

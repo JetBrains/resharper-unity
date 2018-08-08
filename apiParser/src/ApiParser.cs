@@ -197,6 +197,7 @@ namespace ApiParser
                         case "MonoBehaviour.OnCollisionStay2D":
                         case "MonoBehaviour.Start":
                         case "MonoBehaviour.OnDestroy":
+                        case "EditorWindow.OnProjectChange":
                             Console.WriteLine(
                                 $"WARNING: Unable to parse example for {fullName}. Example incorrect in docs");
                             break;
@@ -307,12 +308,6 @@ namespace ApiParser
 
         private static Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, ApiNode example, string owningMessageNamespace)
         {
-            // Grr. This took far too long to figure out...
-            // The example for OnProjectChange uses "OnProjectChanged" instead
-            // https://docs.unity3d.com/ScriptReference/EditorWindow.OnProjectChange.html
-            if (messageName == "OnProjectChange" && example.Text.Contains("OnProjectChanged"))
-                messageName = "OnProjectChanged";
-
             var exampleText = example.Text;
             exampleText = SingleLineCommentsRegex.Replace(exampleText, string.Empty);
             exampleText = BlankCleanup1.Replace(exampleText, " ");
