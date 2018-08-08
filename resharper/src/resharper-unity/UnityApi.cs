@@ -140,7 +140,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         private IEnumerable<UnityType> GetBaseUnityTypes(UnityTypes types, ITypeElement type, Version normalisedVersion)
         {
-            return types.Types.Where(t => t.SupportsVersion(normalisedVersion) && type.IsDescendantOf(t.GetTypeElement(type.Module)));
+            return types.Types.Where(t =>
+            {
+                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                    return t.SupportsVersion(normalisedVersion) && type.IsDescendantOf(t.GetTypeElement(type.Module));
+            });
         }
     }
 }

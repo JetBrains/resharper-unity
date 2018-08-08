@@ -2,17 +2,27 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.LayeredIcon
+import com.jetbrains.rider.icons.ReSharperAssemblyExplorerIcons
+import com.jetbrains.rider.icons.ReSharperCommonIcons
+import com.jetbrains.rider.icons.ReSharperProjectModelIcons
 import com.jetbrains.rider.icons.ReSharperPsiJavaScriptIcons
+import javax.swing.Icon
 
 class UnityIcons {
     class Icons {
         companion object {
             @JvmField
             val UnityLogo = IconLoader.getIcon("/Icons/Logo/UnityLogo.png")
+        }
+    }
 
-            // TODO: Proper icons!
+    class Common {
+        companion object {
             @JvmField
-            val ImportantActions = UnityLogo
+            val UnityEditMode = IconLoader.getIcon("/Icons/common/unityEditMode.svg")
+            @JvmField
+            val UnityPlayMode = IconLoader.getIcon("/Icons/common/unityPlayMode.svg")
         }
     }
 
@@ -74,8 +84,32 @@ class UnityIcons {
         }
     }
 
+    class Explorer {
+        companion object {
+
+            val AssetsRoot = IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg")
+            val ReferencesRoot = ReSharperCommonIcons.CompositeElement
+            val Reference = ReSharperProjectModelIcons.Assembly
+
+            // TODO: Proper icons!
+            val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
+            val ReadOnlyPackagesRoot = ReSharperCommonIcons.CompositeElement
+            val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
+            val LocalPackage: Icon = LayeredIcon.create(EmbeddedPackage, ReSharperProjectModelIcons.ShortcutOverlay)
+            val ReferencedPackage = EmbeddedPackage
+            val GitPackage = ReferencedPackage
+            val BuiltInPackagesRoot = ReSharperCommonIcons.CompositeElement
+            val BuiltInPackage = ReSharperProjectModelIcons.Assembly
+            val UnknownPackage = ReSharperAssemblyExplorerIcons.AssemblyBroken
+            val DependenciesRoot = ReSharperProjectModelIcons.Assemblies
+            val PackageDependency = ReSharperProjectModelIcons.AssemblyReference    // Assembly with shortcut arrow
+        }
+    }
+
     class Actions {
         companion object {
+            @JvmField
+            val ImportantActions = Icons.UnityLogo
             @JvmField
             val Execute = IconLoader.getIcon("/Icons/actions/execute.svg")
             @JvmField
@@ -88,9 +122,9 @@ class UnityIcons {
             val Step = IconLoader.getIcon("/Icons/actions/step.svg")
 
             @JvmField
-            val FilterEditModeMessages = IconLoader.getIcon("/Icons/actions/filterEditModeMessages.svg")
+            val FilterEditModeMessages = Common.UnityEditMode
             @JvmField
-            val FilterPlayModeMessages = IconLoader.getIcon("/Icons/actions/filterPlayModeMessages.svg")
+            val FilterPlayModeMessages = Common.UnityPlayMode
 
             val OpenEditorLog = FilterEditModeMessages
             val OpenPlayerLog = FilterPlayModeMessages
@@ -101,10 +135,9 @@ class UnityIcons {
 
     class RunConfigurations {
         companion object {
-            // TODO: Proper icons!
             val AttachToUnityParentConfiguration = Icons.UnityLogo
-            val AttachAndDebug = AttachToUnityParentConfiguration
-            val AttachDebugAndPlay = AttachToUnityParentConfiguration
+            val AttachAndDebug = Common.UnityEditMode
+            val AttachDebugAndPlay = Common.UnityPlayMode
         }
     }
 

@@ -3,13 +3,13 @@ package com.jetbrains.rider.plugins.unity.run.attach
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
+import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.PortField
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.dialog
-import com.intellij.ui.layout.panel
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
@@ -37,6 +37,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }
         }
         init()
+        setResizable(false)
     }
 
     override fun createCenterPanel(): JComponent? {
@@ -94,10 +95,10 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         val hostField = JTextField("127.0.0.1")
         val portField = PortField(0)
 
-        val panel = panel {
-            row("Address:") { hostField() }
-            row("Debugging Port:") { portField() }
-        }
+        val panel = JPanel()
+        panel.layout = VerticalFlowLayout()
+        panel.add(hostField)
+        panel.add(portField)
 
         val dialog = dialog(
                 title = "Enter address of remote process",

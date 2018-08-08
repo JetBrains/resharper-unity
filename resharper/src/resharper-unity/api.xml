@@ -137,7 +137,7 @@
     <message name="OnPreprocessTexture" static="False" description="Add this function to a subclass to get a notification just before the texture importer is run." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessTexture.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnGeneratedCSProject" static="True" minimumVersion="2017.4" undocumented="True" description="This callback is used by C# code editors to modify the .csproj files.">
+    <message name="OnGeneratedCSProject" static="True" minimumVersion="2018.1" undocumented="True" description="This callback is used by C# code editors to modify the .csproj files.">
       <parameters>
         <parameter type="System.String" array="False" name="path" />
         <parameter type="System.String" array="False" name="content" />
@@ -147,7 +147,7 @@
     <message name="OnGeneratedCSProjectFiles" static="True" undocumented="True" description="This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnGeneratedSlnSolution" static="True" minimumVersion="2017.4" undocumented="True" description="This callback is used by C# code editors to modify the .sln file">
+    <message name="OnGeneratedSlnSolution" static="True" minimumVersion="2018.1" undocumented="True" description="This callback is used by C# code editors to modify the .sln file">
       <parameters>
         <parameter type="System.String" array="False" name="path" />
         <parameter type="System.String" array="False" name="content" />
@@ -299,7 +299,7 @@
     <message name="OnLostFocus" static="False" description="Called when the window loses keyboard focus." path="Documentation/en/ScriptReference/EditorWindow.OnLostFocus.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnProjectChange" static="True" description="Handler for message that is sent whenever the state of the project changes." path="Documentation/en/ScriptReference/EditorWindow.OnProjectChange.html">
+    <message name="OnProjectChange" static="False" description="Handler for message that is sent whenever the state of the project changes." path="Documentation/en/ScriptReference/EditorWindow.OnProjectChange.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnSelectionChange" static="False" description="Called whenever the selection has changed." path="Documentation/en/ScriptReference/EditorWindow.OnSelectionChange.html">

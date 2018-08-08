@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
         public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
-        
+
         private readonly IProperty<EditorPluginModel> myUnityModel;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var solFolder = mySolution.SolutionFilePath.Directory;
             AdviseModelData(lifetime);
-            
+
             // todo: consider non-Unity Solution with Unity-generated projects
             var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
 
@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var protocolInstance = protocolInstanceList?.SingleOrDefault(a => a.SolutionName == mySolution.SolutionFilePath.NameWithoutExtension);
             if (protocolInstance == null)
                 return;
-            
+
             myLogger.Info($"EditorPlugin protocol port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
 
             try
@@ -169,12 +169,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     editor.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
                     editor.Pause.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
 
-                    editor.EditorLogPath.Advise(lifetime,
+                    editor.EditorLogPath.Advise(lifetime,                    
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
                     editor.PlayerLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.PlayerLogPath.SetValue(s)));
+                        
+                    // Note that these are late-init properties. Once set, they are always set and do not allow nulls.
+                    // This means that if/when the Unity <-> Backend protocol closes, they still retain the last value
+                    // they had - so the front end will retain the log and application paths of the just-closed editor.
+                    // Opening a new editor instance will reconnect and push a new value through to the front end
+                    model.ApplicationPath.Advise(lifetime,
+                        s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
+                    model.ApplicationContentsPath.Advise(lifetime,
+                        s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
 
-                    BindPluginPathToSettings(lf, editor);
+                    BindPluginPathToSettings(lf, model);
 
                     TrackActivity(editor, lf);
 
@@ -212,7 +221,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     model.FullPluginPath.SetValue(string.Empty);
                 });
         }
-        
+
         private void TrackActivity(EditorPluginModel model, Lifetime lf)
         {
             if (!model.ApplicationVersion.HasValue())

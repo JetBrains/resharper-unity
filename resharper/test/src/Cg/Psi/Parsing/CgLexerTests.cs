@@ -15,14 +15,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
     {
         protected override string RelativeTestDataPath => @"Cg\Psi\Lexing";
 
-        protected override ILexer CreateLexer(StreamReader sr)
+        protected override ILexer CreateLexer(IBuffer buffer)
         {
-            var text = sr.ReadToEnd();
-            text = NormaliseLindEndines(text);
+            var text = buffer.GetText();
+            text = NormaliseLindEndings(text);
             return new CgLexerGenerated(new StringBuffer(text));
         }
 
-        private string NormaliseLindEndines(string text)
+        private string NormaliseLindEndings(string text)
         {
             // TeamCity doesn't respect .gitattributes and pulls everything out as
             // LF, instead of CRLF. Normalise to CRLF
