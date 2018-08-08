@@ -34,7 +34,6 @@ namespace ApiParser
 
         public static void Main(string[] args)
         {
-            args = new[] {@"C:\work\resharper-unity\resharper\src\resharper-unity\api.xml", "2018.2.2f1"};
             if (args.Length != 1 && args.Length != 2)
             {
                 Console.WriteLine("Usage: ApiParser.exe docsFolder");
