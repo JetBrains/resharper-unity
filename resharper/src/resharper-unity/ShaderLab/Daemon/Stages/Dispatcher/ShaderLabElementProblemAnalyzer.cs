@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Dispatcher
         protected sealed override void Run(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             var processKind = data.GetDaemonProcessKind();
-            if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT)
+            if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT && processKind != DaemonProcessKind.SOLUTION_ANALYSIS)
                 return;
 
             Analyze(element, data, consumer);
