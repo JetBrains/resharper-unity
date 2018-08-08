@@ -21,8 +21,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return 10;
     }
 
-    // This method is new for 2017.4. It allows multiple processors to modify the contents of the generated .csproj in
-    // memory, and Unity will only write to disk if it's different to the existing file. It's safe for pre-2017.4 as it
+    // This method is new for 2018.1. It allows multiple processors to modify the contents of the generated .csproj in
+    // memory, and Unity will only write to disk if it's different to the existing file. It's safe for pre-2018.1 as it
     // simply won't get called
     [UsedImplicitly]
     public static string OnGeneratedSlnSolution(string path, string content)
@@ -51,10 +51,10 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       }
     }
 
-    // This method is for pre-2017.4, and is called after the file has been written to disk
+    // This method is for pre-2018.1, and is called after the file has been written to disk
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!PluginEntryPoint.Enabled || UnityUtils.UnityVersion >= new Version(2017, 4))
+      if (!PluginEntryPoint.Enabled || UnityUtils.UnityVersion >= new Version(2018, 1))
         return;
 
       try
