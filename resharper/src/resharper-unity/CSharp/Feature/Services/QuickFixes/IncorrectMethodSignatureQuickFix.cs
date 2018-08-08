@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.Application.UI.ActionsRevised.Handlers;
@@ -118,8 +117,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         private Action<ITextControl> ChangeParameters(ISolution solution)
         {
-            var model = ClrChangeSignatureModel.CreateModel(myMethodDeclaration.DeclaredElement).NotNull();            
-            
+            var model = ClrChangeSignatureModel.CreateModel(myMethodDeclaration.DeclaredElement).NotNull();
+
             for (var i = 0; i < myExpectedMethodSignature.Parameters.Length; i++)
             {
                 var requiredParameter = myExpectedMethodSignature.Parameters[i];
@@ -134,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                     model.Add(i);
                     modelParameter = (ClrChangeSignatureParameter) model.ChangeSignatureParameters[i];
                 }
-                
+
                 modelParameter.ParameterName = requiredParameter.Name;
                 modelParameter.ParameterKind = ParameterKind.VALUE;
                 modelParameter.ParameterType = requiredParameter.Type;
@@ -146,11 +145,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 modelParameter.IsVarArg = false;
             }
 
-            for (var i = model.ChangeSignatureParameters.Count - 1; i >= myExpectedMethodSignature.Parameters.Length; i--)
-            {
-                var param = model.ChangeSignatureParameters[i];
-                model.Remove(param);
-            }
+            for (var i = model.ChangeSignatureParameters.Length - 1; i >= myExpectedMethodSignature.Parameters.Length; i--)
+                model.RemoveAt(i);
 
             var refactoring = new ChangeSignatureRefactoring(model);
             refactoring.Execute(NullProgressIndicator.Create());
@@ -170,12 +166,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 }
             };
         }
-        
+
         private ClrChangeSignatureParameter FindBestMatch(ParameterSignature requiredParameter, ClrChangeSignatureModel model, int i)
         {
             var parameters = model.ChangeSignatureParameters.Cast<ClrChangeSignatureParameter>().ToList();
-            
-            // Try and match type and name first            
+
+            // Try and match type and name first
             for (var j = i; j < parameters.Count; j++)
             {
                 if (parameters[j].ParameterName == requiredParameter.Name
@@ -185,7 +181,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 }
             }
 
-            // Now just match type - we'll update name after            
+            // Now just match type - we'll update name after
             for (var j = i; j < parameters.Count; j++)
             {
                 if (Equals(parameters[j].ParameterType, requiredParameter.Type))
