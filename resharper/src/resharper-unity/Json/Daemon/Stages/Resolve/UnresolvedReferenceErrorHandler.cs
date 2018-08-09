@@ -13,7 +13,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Daemon.Stages.Resolve
     {
         public IHighlighting Run(IReference reference)
         {
-            return new UnresolvedProjectReferenceError(reference);
+            // Don't show the error highlight for now - there are too many false positive hits due to references to
+            // assembly definitions in .asmdef files that are not part of the solution. These files need to be added
+            // into a custom PSI module to make this work properly. This is a quick fix
+            // return new UnresolvedProjectReferenceError(reference);
+            return null;
         }
 
         public IEnumerable<ResolveErrorType> ErrorTypes => new[]
