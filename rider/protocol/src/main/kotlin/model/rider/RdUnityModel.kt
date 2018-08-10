@@ -51,5 +51,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
             field("message", string)
             field("stackTrace", string)
         })
+
+        call("installEditorPlugin", void, void)
     }
 }
