@@ -118,8 +118,19 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
-
+      changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
+      
       return changed;
+    }
+
+    private static bool SetGenerateTargetFrameworkAttribute(XElement projectContentElement, XNamespace xmlns)
+    {
+      //https://youtrack.jetbrains.com/issue/RIDER-17390
+      
+      if (UnityUtils.ScriptingRuntime > 0)  
+        return false;
+      
+      return SetOrUpdateProperty(projectContentElement, xmlns, "GenerateTargetFrameworkAttribute", existing => "false");
     }
 
     private static bool SetDisableHandlePackageFileConflicts(XElement projectContentElement, XNamespace xmlns)
