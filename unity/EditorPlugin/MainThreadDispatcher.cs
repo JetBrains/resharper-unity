@@ -10,21 +10,18 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public class MainThreadDispatcher : IScheduler
   {
-    internal static readonly MainThreadDispatcher Instance = new MainThreadDispatcher();
-
     private static Thread ourUIThread;
-
-    private MainThreadDispatcher()
-    {
-      ourUIThread = Thread.CurrentThread;
-      EditorApplication.update += DispatchTasks;
-    }
-
+    internal static readonly MainThreadDispatcher Instance = new MainThreadDispatcher();
     /// <summary>
     /// The queue of tasks that are being requested for the next time DispatchTasks is called
     /// </summary>
     private readonly Queue<Action> myTaskQueue = new Queue<Action>();
 
+    private MainThreadDispatcher()
+    {
+      EditorApplication.update += DispatchTasks;
+    }
+    
     /// <summary>
     /// Dispatches the specified action delegate.
     /// </summary>
@@ -48,6 +45,8 @@ namespace JetBrains.Rider.Unity.Editor
     /// </summary>
     private void DispatchTasks()
     {
+      ourUIThread = Thread.CurrentThread;
+      
       if (myTaskQueue.Count == 0)
         return;
       while (true)
@@ -64,12 +63,11 @@ namespace JetBrains.Rider.Unity.Editor
           Log.GetLog<MainThreadDispatcher>().Error(e);
         }
       }
-
     }
 
     public static void AssertThread()
     {
-      Assertion.Require(ourUIThread == null || ourUIThread == Thread.CurrentThread, "Not not UI thread");
+      Assertion.Require(ourUIThread == null || ourUIThread == Thread.CurrentThread, "Not a UI thread");
     }
     
     /// <summary>
