@@ -56,7 +56,7 @@ class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, 
         return null;
     }
 
-    override fun getData(dataId: String?): Any? = when {
+    override fun getData(dataId: String): Any? = when {
         PlatformDataKeys.COPY_PROVIDER.`is`(dataId) -> this
         else -> null
     }

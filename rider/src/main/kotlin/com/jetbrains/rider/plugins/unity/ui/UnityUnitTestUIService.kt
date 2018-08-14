@@ -91,13 +91,13 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
     }
 
     val useNunitLauncher = object : DumbAwareAction(NUnitDescription, "Run with NUnit launcher", null) {
-        override fun actionPerformed(p0: AnActionEvent?) {
+        override fun actionPerformed(p0: AnActionEvent) {
             project.solution.rdUnityModel.unitTestPreference.value = UnitTestLaunchPreference.NUnit
         }
     }
 
     val useUnityEditLauncher = object : DumbAwareAction(EditModeDescription, "Run with Unity Editor in Edit Mode", null) {
-        override fun actionPerformed(p0: AnActionEvent?) {
+        override fun actionPerformed(p0: AnActionEvent) {
             project.solution.rdUnityModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
         }
 

@@ -48,7 +48,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
 
     override fun isInitiallyVisible() = project.isUnityGeneratedProject()
 
-    override fun getData(dataId: String?): Any? {
+    override fun getData(dataId: String): Any? {
         return when {
             SELECTED_REFERENCE_KEY.`is`(dataId) -> getSelectedNodes().filterIsInstance<UnityExplorerNode.ReferenceItem>().singleOrNull()
             else -> super.getData(dataId)
