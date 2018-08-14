@@ -72,7 +72,7 @@ object EditorPluginModel: Root(
     init {
         property("play", bool)
         property("pause", bool)
-        call("step", void, void)
+        source("step", void)
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)

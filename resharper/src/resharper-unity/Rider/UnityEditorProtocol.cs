@@ -114,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {   
             myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
             myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
-            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.IfNotNull(editor => editor.Step.Start(RdVoid.Instance))));
+            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
             myHost.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => UnityModel.Value.IfNotNull(editor => editor.Refresh.Start(force))));
         }
 
