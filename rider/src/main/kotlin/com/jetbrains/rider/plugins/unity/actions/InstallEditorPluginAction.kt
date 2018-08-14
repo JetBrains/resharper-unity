@@ -9,6 +9,6 @@ import com.jetbrains.rider.projectView.solution
 class InstallEditorPluginAction : AnAction("Install EditorPlugin", "Install/Update EditorPlugin.", UnityIcons.Actions.ImportantActions) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        project.solution.rdUnityModel.installEditorPlugin.start(Unit)
+        project.solution.rdUnityModel.installEditorPlugin.fire(Unit)
     }
 }
