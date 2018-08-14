@@ -178,12 +178,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     // This means that if/when the Unity <-> Backend protocol closes, they still retain the last value
                     // they had - so the front end will retain the log and application paths of the just-closed editor.
                     // Opening a new editor instance will reconnect and push a new value through to the front end
-                    model.ApplicationPath.Advise(lifetime,
+                    editor.ApplicationPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
-                    model.ApplicationContentsPath.Advise(lifetime,
+                    editor.ApplicationContentsPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
 
-                    BindPluginPathToSettings(lf, model);
+                    BindPluginPathToSettings(lf, editor);
 
                     TrackActivity(editor, lf);
 
