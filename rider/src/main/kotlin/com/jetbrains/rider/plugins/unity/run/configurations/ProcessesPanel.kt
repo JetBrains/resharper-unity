@@ -93,7 +93,7 @@ class ProcessesPanel : PanelWithButtons() {
 
         return ToolbarDecorator.createDecorator(table!!)
                 .addExtraAction(object: AnActionButton("Refresh", AllIcons.Actions.Refresh){
-                    override fun actionPerformed(p0: AnActionEvent?) {
+                    override fun actionPerformed(p0: AnActionEvent) {
                         vm.updateProcessList()
                         updateSelection(table!!)
                     }
