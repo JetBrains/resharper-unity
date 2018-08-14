@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         [NotNull]
-        public InstallationInfo GetInstallationInfo(Version newVersion, FileSystemPath previousInstallationDir)
+        public InstallationInfo GetInstallationInfo(Version newVersion, FileSystemPath previousInstallationDir = null)
         {
             myLogger.Verbose("GetInstallationInfo.");
             try
