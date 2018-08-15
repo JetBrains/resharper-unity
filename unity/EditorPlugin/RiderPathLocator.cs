@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using JetBrains.Util.Logging;
 using Microsoft.Win32;
 #if UNITY_4_7 || UNITY_5_5 || UNITY_2017_3
+// ReSharper disable once RedundantUsingDirective
 using Newtonsoft.Json;
 #endif
 using UnityEngine;
@@ -282,6 +283,7 @@ namespace JetBrains.Rider.Unity.Editor
     [Serializable]
     class ToolboxInstallData
     {
+      // ReSharper disable once InconsistentNaming
       public ActiveApplication active_application;
 
       public static ToolboxInstallData FromJson(string json)
@@ -297,6 +299,7 @@ namespace JetBrains.Rider.Unity.Editor
     [Serializable]
     class ActiveApplication
     {
+      // ReSharper disable once InconsistentNaming
       public List<string> builds;
     }
 
