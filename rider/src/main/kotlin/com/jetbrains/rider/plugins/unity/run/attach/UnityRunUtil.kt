@@ -6,13 +6,19 @@ import com.intellij.execution.process.ProcessInfo
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
+import java.nio.file.Paths
 
 object UnityRunUtil {
 
     fun isUnityEditorProcess(processInfo: ProcessInfo): Boolean {
         val name = processInfo.executableDisplayName
+        var execPathName = "";
+        if (processInfo.executableCannonicalPath.isPresent)
+            execPathName = Paths.get(processInfo.executableCannonicalPath.get()).fileName.toString() // for the case of symlink
         return (name.startsWith("Unity", true) ||
-            name.contains("Unity.app")) &&
+            name.contains("Unity.app") ||
+            execPathName.equals("Unity", true)
+            ) &&
             !name.contains("UnityDebug") &&
             !name.contains("UnityShader") &&
             !name.contains("UnityHelper") &&
