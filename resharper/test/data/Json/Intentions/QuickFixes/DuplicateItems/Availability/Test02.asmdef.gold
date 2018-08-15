@@ -1,6 +1,6 @@
 ﻿{
   "name": "Test02",
-  "references": [ ||"Ref1"|(0)|(1), ||"Ref1"|(2)|(3), "|Ref2|(4)" ]
+  "references": [ ||"Ref1"|(0)|(1), ||"Ref1"|(2)|(3), "Ref2" ]
 }
 
 ------------------------------------------------
@@ -16,5 +16,3 @@ Remove invalid value
 3: JSON validation failed: Array items should be unique
 QUICKFIXES:
 Remove invalid value
-4: Unknown project reference 'Ref2'
-NO QUICKFIXES
