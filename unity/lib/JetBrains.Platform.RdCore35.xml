@@ -617,6 +617,12 @@
             </param>
             <param name="λ">The code to execute with a temporary lifetime.</param>
         </member>
+        <member name="T:JetBrains.DataFlow.LifetimesUnion">
+            <summary>
+            Represents a union of lifetimes that is "alive" until all <see cref="T:JetBrains.DataFlow.Lifetime"/>s of the union are terminated.
+            Exposes a common lifetime for all united lifetimes.
+            </summary>
+        </member>
         <member name="T:JetBrains.DataFlow.OuterLifetime">
             <summary>
               <para>A subset of the <see cref="T:JetBrains.DataFlow.Lifetime" /> interface with which you cannot “bind” actions to a lifetime.</para>
