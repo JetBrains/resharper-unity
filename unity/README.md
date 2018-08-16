@@ -41,7 +41,7 @@ but if it fails, you may need to point it once:
 
 You don't need to manually copy the plugin to your solution. After opening your solution in Rider the ReSharper Unity plugin will automatically copy JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll into `Assets/Plugins/Editor/JetBrains`. Next time you focus Unity window the solution will recompile and initialize it. You can move the dll into different directory, given that it's still inside `Assets` — it will be detected and updated accordingly by the ReSharper Unity plugin.
 
-## Roadmap
+## Roadmap 
 
 This plugin is intended to be lightweight and simple, and is not intended to do much more than it currently does. If you have any issues or feature suggestions with regard to plugin functionality inside Unity, please [file an issue with unity-plugin label](https://github.com/JetBrains/resharper-unity/issues).
 
