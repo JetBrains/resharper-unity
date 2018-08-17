@@ -1,6 +1,8 @@
 ﻿using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Extentions;
+using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Util;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Psi.Caches;
@@ -21,7 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnityEditorProtocol myUnityEditorProtocol;
         private readonly RunViaUnityEditorStrategy myUnityEditorStrategy;
         private readonly RdUnityModel myRdUnityModel;
-        
+        private readonly IProperty<EditorPluginModel> myUnityEditorModel;
+
         public UnityNUnitServiceProvider(ISolution solution, IPsiModules psiModules, ISymbolCache symbolCache,
             IUnitTestElementIdFactory idFactory, IUnitTestElementManager elementManager, NUnitTestProvider provider,
             ISettingsStore settingsStore, ISettingsOptimization settingsOptimization, ISettingsCache settingsCache,
@@ -37,16 +40,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
 
-            myUnityEditorProtocol = unityEditorProtocol;
+            myUnityEditorModel = unityEditorProtocol.UnityModel;
             myUnityEditorStrategy = runViaUnityEditorStrategy;
         }
 
         public override IUnitTestRunStrategy GetRunStrategy(IUnitTestElement element)
         {
-            if (myRdUnityModel == null)
-                return base.GetRunStrategy(element);
-            
-            if (myUnityEditorProtocol.UnityModel.Value == null)
+            if (myUnityEditorModel.Value == null)
                 return base.GetRunStrategy(element);
 
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605

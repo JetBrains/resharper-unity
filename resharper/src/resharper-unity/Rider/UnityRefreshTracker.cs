@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.DocumentModel;
-using JetBrains.DocumentModel.Transactions;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
@@ -94,14 +91,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
 
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, 
-            UnityEditorProtocol protocolController, DocumentTransactionManager documentTransactionManager, IShellLocks locks,
+            UnityEditorProtocol protocolController,
             ILogger logger)
         {
             myLogger = logger;
-
+            
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
-            
+                       
             var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
                 Rgc.Invariant, ()=> refresher.Refresh(false));
 

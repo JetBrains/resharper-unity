@@ -24,12 +24,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         [NotNull]
-        public InstallationInfo GetInstallationInfo(Version newVersion, FileSystemPath previousInstallationDir)
+        public InstallationInfo GetInstallationInfo(Version newVersion, FileSystemPath previousInstallationDir = null)
         {
             myLogger.Verbose("GetInstallationInfo.");
             try
             {
-                var assetsDir = mySolution.SolutionFilePath.Directory.CombineWithShortName(ProjectExtensions.AssetsFolder);
+                var assetsDir = mySolution.SolutionDirectory.CombineWithShortName(ProjectExtensions.AssetsFolder);
                 if (!assetsDir.IsAbsolute)
                 {
                     myLogger.Warn($"Computed assetsDir {assetsDir} is not absolute. Skipping installation.");

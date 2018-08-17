@@ -114,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {   
             myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
             myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
-            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.IfNotNull(editor => editor.Step.Start(RdVoid.Instance))));
+            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
             myHost.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => UnityModel.Value.IfNotNull(editor => editor.Refresh.Start(force))));
         }
 
@@ -209,34 +209,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        private void BindPluginPathToSettings(Lifetime lf, EditorPluginModel model)
+        private void BindPluginPathToSettings(Lifetime lf, EditorPluginModel editor)
         {
             var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
             myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Change.Advise(lf,
                 val =>
                 {
                     if (val.HasNew && val.New)
-                        model.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir()
+                        editor.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir()
                             .Combine(PluginPathsProvider.FullPluginDllFile).FullPath);
-                    model.FullPluginPath.SetValue(string.Empty);
+                    editor.FullPluginPath.SetValue(string.Empty);
                 });
         }
 
-        private void TrackActivity(EditorPluginModel model, Lifetime lf)
+        private void TrackActivity(EditorPluginModel editor, Lifetime lf)
         {
-            if (!model.ApplicationVersion.HasValue())
-                model.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("UnityVersion", version); });
+            if (!editor.ApplicationVersion.HasValue())
+                editor.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("UnityVersion", version); });
             else
-                myUsageStatistics.TrackActivity("UnityVersion", model.ApplicationVersion.Value);
-            if (!model.ScriptingRuntime.HasValue())
-                model.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
+                myUsageStatistics.TrackActivity("UnityVersion", editor.ApplicationVersion.Value);
+            if (!editor.ScriptingRuntime.HasValue())
+                editor.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
             else
-                myUsageStatistics.TrackActivity("ScriptingRuntime", model.ScriptingRuntime.Value.ToString());
+                myUsageStatistics.TrackActivity("ScriptingRuntime", editor.ScriptingRuntime.Value.ToString());
         }
 
-        private void SubscribeToOpenFile([NotNull] EditorPluginModel model)
+        private void SubscribeToOpenFile([NotNull] EditorPluginModel editor)
         {
-            model.OpenFileLineCol.Set(args =>
+            editor.OpenFileLineCol.Set(args =>
             {
                 using (ReadLockCookie.Create())
                 {
@@ -256,9 +256,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private void SubscribeToLogs(Lifetime lifetime, EditorPluginModel model)
+        private void SubscribeToLogs(Lifetime lifetime, EditorPluginModel editor)
         {
-            model.Log.Advise(lifetime, entry =>
+            editor.Log.Advise(lifetime, entry =>
             {
                 myLogger.Verbose(entry.Time + " " + entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
                 var logEntry = new EditorLogEntry((int)entry.Type, (int)entry.Mode, entry.Time, entry.Message, entry.StackTrace);

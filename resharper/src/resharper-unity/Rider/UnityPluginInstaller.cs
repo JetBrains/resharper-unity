@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 
@@ -28,7 +29,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityVersionDetector myUnityVersionDetector;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
-
         private readonly ProcessingQueue myQueue;
 
         public UnityPluginInstaller(
@@ -40,7 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             NotificationsModel notifications,
             ISettingsStore settingsStore,
             PluginPathsProvider pluginPathsProvider,
-            UnityVersionDetector unityVersionDetector)
+            UnityVersionDetector unityVersionDetector,
+            UnityHost unityHost)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
@@ -55,6 +56,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
+
+            unityHost.PerformModelAction(rdUnityModel =>
+            {
+                rdUnityModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
+                {
+                    myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.InstallEditorPlugin", () =>
+                    {
+                        var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion);
+                        QueueInstall(installationInfo, true);
+                    });
+                });
+            });
         }
 
         void UnityReferencesTracker.IHandler.OnSolutionLoaded(UnityProjectsCollection solution)
@@ -113,27 +126,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
 
+            QueueInstall(installationInfo);
+        }
+
+        private void QueueInstall(UnityPluginDetector.InstallationInfo installationInfo, bool force = false)
+        {
             myQueue.Enqueue(() =>
             {
-                Install(installationInfo);
+                Install(installationInfo, force);
                 myPluginInstallations.Add(mySolution.SolutionFilePath);
             });
         }
 
-        private void Install(UnityPluginDetector.InstallationInfo installationInfo)
+        private void Install(UnityPluginDetector.InstallationInfo installationInfo, bool force)
         {
-            if (!installationInfo.ShouldInstallPlugin)
+            if (!force)
             {
-                Assertion.Assert(false, "Should not be here if installation is not required.");
-                return;
-            }
+                if (!installationInfo.ShouldInstallPlugin)
+                {
+                    Assertion.Assert(false, "Should not be here if installation is not required.");
+                    return;
+                }
 
-            if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
-            {
-                myLogger.Verbose("Installation already done.");
-                return;
+                if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
+                {
+                    myLogger.Verbose("Installation already done.");
+                    return;
+                }
             }
-
+            
             myLogger.Info("Installing Rider Unity editor plugin: {0}", installationInfo.InstallReason);
 
             if (!TryCopyFiles(installationInfo, out var installedPath))

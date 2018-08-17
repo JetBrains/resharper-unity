@@ -254,7 +254,7 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseRefresh(model);
           InitEditorLogPath(model);
 
-          model.FullPluginPath.Advise(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
+          model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
           model.ApplicationPath.SetValue(EditorApplication.applicationPath);
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
           model.ApplicationVersion.SetValue(Application.unityVersion);
@@ -333,7 +333,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
       isPlayingAction(); // get Unity state
-      model.Play.Advise(connectionLifetime, play =>
+      model.Play.AdviseNotNull(connectionLifetime, play =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -343,7 +343,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.Pause.Advise(connectionLifetime, pause =>
+      model.Pause.AdviseNotNull(connectionLifetime, pause =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -351,15 +351,9 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.Step.Set((l, x) =>
+      model.Step.AdviseNotNull(connectionLifetime, x =>
       {
-        var task = new RdTask<RdVoid>();
-        MainThreadDispatcher.Instance.Queue(() =>
-        {
-          EditorApplication.Step();
-          task.Set(RdVoid.Instance);
-        });
-        return task;
+        MainThreadDispatcher.Instance.Queue(EditorApplication.Step);
       });
 
       var isPlayingHandler = new EditorApplication.CallbackFunction(() => isPlayingAction());

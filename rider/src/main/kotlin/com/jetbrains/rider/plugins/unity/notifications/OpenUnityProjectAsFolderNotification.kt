@@ -12,6 +12,7 @@ import com.intellij.util.ui.EdtInvocationManager
 import com.jetbrains.rider.UnityReferenceDiscoverer
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdVirtualSolution
+import com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solutionDescription
@@ -76,6 +77,8 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                     })
                 }
             }
+
+            notification.addAction(InstallEditorPluginAction())
 
             Notifications.Bus.notify(notification, project)
         }
