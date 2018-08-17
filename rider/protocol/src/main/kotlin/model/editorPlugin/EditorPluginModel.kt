@@ -44,8 +44,10 @@ object EditorPluginModel: Root(
         field("status", enum {
             +"Pending"
             +"Running"
-            +"Passed"
-            +"Failed"
+            +"Inconclusive"
+            +"Ignored"
+            +"Success"
+            +"Failure"
         })
         field("parentId", string)
     }
