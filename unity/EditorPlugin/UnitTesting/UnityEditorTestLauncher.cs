@@ -255,7 +255,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       if (!(test is TestMethod))
         return;
 
-      ourLogger.Verbose("TestFinished : {0}", test.FullName);
+      ourLogger.Verbose("TestFinished : {0}, result : {1}", test.FullName, testResult.ResultState);
       var id = GetIdFromNUnitTest(test);
 
       var output = ExtractOutput(testResult);
