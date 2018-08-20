@@ -255,13 +255,23 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       if (!(test is TestMethod))
         return;
 
-      ourLogger.Verbose("TestFinished : {0}", test.FullName);
+      ourLogger.Verbose("TestFinished : {0}, result : {1}", test.FullName, testResult.ResultState);
       var id = GetIdFromNUnitTest(test);
 
       var output = ExtractOutput(testResult);
+      Status status;
+      if (Equals(testResult.ResultState, ResultState.Success))
+        status = Status.Success;
+      else if (Equals(testResult.ResultState, ResultState.Ignored))
+        status = Status.Ignored;
+      else if (Equals(testResult.ResultState, ResultState.Inconclusive) || Equals(testResult.ResultState, ResultState.Skipped))
+        status = Status.Inconclusive;
+      else
+        status = Status.Failure;
+          
       myLaunch.TestResult.Fire(new TestResult(id, output,
         (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
-        Equals(testResult.ResultState, ResultState.Success) ? Status.Passed : Status.Failed, GetIdFromNUnitTest(test.Parent)));
+        status, GetIdFromNUnitTest(test.Parent)));
     }
 
     private static string ExtractOutput(ITestResult testResult)

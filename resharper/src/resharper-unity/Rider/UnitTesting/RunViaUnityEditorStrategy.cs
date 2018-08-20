@@ -159,11 +159,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         myUnitTestResultManager.TestStarting(unitTestElement,
                             firstRun.Launch.Session);
                         break;
-                    case Status.Passed:
-                    case Status.Failed:
-                        var taskResult = result.Status == Status.Failed ? TaskResult.Error : TaskResult.Success;
-                        var message = result.Status == Status.Failed ? "Failed" : "Passed";
-                        
+                    case Status.Success:
+                    case Status.Failure:
+                    case Status.Ignored:
+                    case Status.Inconclusive:
+                        string message = result.Status.ToString();
+                        TaskResult taskResult = TaskResult.Inconclusive;
+                        if (result.Status == Status.Failure)
+                            taskResult = TaskResult.Error;
+                        else if (result.Status == Status.Ignored)
+                            taskResult = TaskResult.Skipped;
+                        else if (result.Status == Status.Success)
+                            taskResult = TaskResult.Success;
+                            
                         myUnitTestResultManager.TestOutput(unitTestElement, firstRun.Launch.Session, result.Output, TaskOutputType.STDOUT);
                         myUnitTestResultManager.TestDuration(unitTestElement, firstRun.Launch.Session, TimeSpan.FromMilliseconds(result.Duration));
                         myUnitTestResultManager.TestFinishing(unitTestElement,

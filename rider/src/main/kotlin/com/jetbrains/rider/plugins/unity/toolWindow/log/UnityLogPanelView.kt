@@ -127,7 +127,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         }
 
         addDocumentListener(object : DocumentAdapter() {
-            override fun textChanged(e: DocumentEvent?) {
+            override fun textChanged(e: DocumentEvent) {
                 application.invokeLater {
                     logModel.textFilter.setPattern(text)
                 }

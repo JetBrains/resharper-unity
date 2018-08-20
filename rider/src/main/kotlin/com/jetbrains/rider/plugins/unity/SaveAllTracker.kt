@@ -20,7 +20,7 @@ class SaveAllTracker(project: Project, val actionManagerEx: ActionManagerEx) : L
     }
 
     class FileListenerImpl(val project: Project) : AnActionListener {
-        override fun beforeActionPerformed(action: AnAction?, dataContext: DataContext?, event: AnActionEvent?) {
+        override fun beforeActionPerformed(action: AnAction, dataContext: DataContext?, event: AnActionEvent?) {
 
         }
 
