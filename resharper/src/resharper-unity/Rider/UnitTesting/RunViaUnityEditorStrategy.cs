@@ -8,6 +8,7 @@ using JetBrains.DataFlow;
 using JetBrains.Metadata.Access;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Host.Features.SolutionBuilder.ComponentsImpl;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
@@ -31,6 +32,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnityEditorProtocol myUnityEditorProtocol;
         private readonly NUnitTestProvider myUnitTestProvider;
         private readonly IUnitTestElementIdFactory myIDFactory;
+        private readonly RiderSolutionSaver myRiderSolutionSaver;
+        private readonly UnityRefresher myUnityRefresher;
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
@@ -39,13 +42,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             IUnitTestResultManager unitTestResultManager, 
             UnityEditorProtocol unityEditorProtocol,
             NUnitTestProvider unitTestProvider, 
-            IUnitTestElementIdFactory idFactory)
+            IUnitTestElementIdFactory idFactory, 
+            RiderSolutionSaver riderSolutionSaver,
+            UnityRefresher unityRefresher)
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
             myUnityEditorProtocol = unityEditorProtocol;
             myUnitTestProvider = unitTestProvider;
             myIDFactory = idFactory;
+            myRiderSolutionSaver = riderSolutionSaver;
+            myUnityRefresher = unityRefresher;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
         }
 
@@ -95,6 +102,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
             run.PutData(ourCompletionSourceKey, tcs);
 
+            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RefreshBeforeUT", () =>
+            {
+                myRiderSolutionSaver.Save(run.Lifetime, mySolution, async () =>
+                {
+                    await myUnityRefresher.Refresh(true);    
+                }); 
+            });
+            
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
             {
                 if (myUnityEditorProtocol.UnityModel.Value == null)

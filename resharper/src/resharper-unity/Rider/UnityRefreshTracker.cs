@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
@@ -36,31 +38,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             
-            myPluginProtocolController.Refresh.Advise(lifetime, Refresh);
+            myPluginProtocolController.Refresh.Advise(lifetime, b => { Refresh(b); });
         }
 
-        private bool IsRefreshing { get; set; }
+        private Task CurrentTask;
 
-        public void Refresh(bool force)
+        public Task Refresh(bool force)
         {
             myLocks.AssertMainThread();
-            if (IsRefreshing)
-                return;
-            
+            if (CurrentTask != null)
+                return CurrentTask;
+
             if (myPluginProtocolController.UnityModel.Value == null)
-                return;
-            
+                return new Task(()=>{});
+
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && !force)
-                return;
+                return new Task(()=>{});
 
-            IsRefreshing = true;
-            var result = myPluginProtocolController.UnityModel.Value.Refresh.Start(force)?.Result;
-
-            if (result == null)
-            {
-                IsRefreshing = false;
-                return;
-            }
+            var task = myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask(force);
+            CurrentTask = task;
             
             var lifetimeDef = Lifetimes.Define(myLifetime);
             var solution = mySolution.GetProtocolSolution();
@@ -69,19 +65,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime, 
                 RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...").AsIndeterminate().AsNonCancelable());
                         
-            result.Advise(lifetimeDef.Lifetime, _ =>
+            task.ContinueWith(_ =>
             {
-                try
+                mySolution.Locks.ExecuteOrQueueEx(lifetimeDef.Lifetime, "RefreshPaths", () =>
                 {
-                    var list = new List<string> {solFolder.FullPath};
-                    solution.GetFileSystemModel().RefreshPaths.Start(new RdRefreshRequest(list, true));
-                }
-                finally
-                {
-                    IsRefreshing = false;
-                    lifetimeDef.Terminate();
-                }
+                    try
+                    {
+                        var list = new List<string> {solFolder.FullPath};
+                        solution.GetFileSystemModel().RefreshPaths.Start(new RdRefreshRequest(list, true));
+                    }
+                    finally
+                    {
+                        CurrentTask = null;
+                        lifetimeDef.Terminate();
+                    }
+                });
             });
+            return task;
         }
     }
 
