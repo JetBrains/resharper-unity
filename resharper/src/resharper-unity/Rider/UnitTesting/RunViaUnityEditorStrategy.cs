@@ -95,13 +95,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
             run.PutData(ourCompletionSourceKey, tcs);
 
-            mySolution.Locks.ExecuteOrQueueEx(mySolution.GetLifetime(), "ExecuteRunUT", () =>
+            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
             {
-                if(myUnityEditorProtocol.UnityModel.Value == null)
+                if (myUnityEditorProtocol.UnityModel.Value == null)
+                {
+                    tcs.SetException(new Exception("Unity Editor connection unavailable."));
                     return;
+                }
                 
-                var currentConnectionLifetime = Lifetimes.Define(mySolution.GetLifetime());
-                myUnityEditorProtocol.UnityModel.Change.Advise_NoAcknowledgement(currentConnectionLifetime.Lifetime, (args) =>
+                var currentConnectionLifetime = Lifetimes.Define(run.Lifetime);
+                myUnityEditorProtocol.UnityModel.Change.Advise_NoAcknowledgement(currentConnectionLifetime.Lifetime, args =>
                 {
                     if (args.HasNew && args.New == null)
                         currentConnectionLifetime.Terminate();
