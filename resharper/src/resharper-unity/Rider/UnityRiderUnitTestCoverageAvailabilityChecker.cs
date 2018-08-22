@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         // this method should be very fast as it gets called a lot
         public HostProviderAvailability GetAvailability(IUnitTestElement element)
         {
-            return element.Id.Project.GetSolution().IsUnitySolution()
+            return element.Id.Project.GetSolution().IsAbleToEstablishProtocolConnectionWithUnity()
                 ? HostProviderAvailability.Nonexistent
                 : HostProviderAvailability.Available;
         }
