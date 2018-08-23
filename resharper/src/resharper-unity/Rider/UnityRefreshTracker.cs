@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.DocumentModel.Transactions;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -92,7 +94,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, 
             UnityEditorProtocol protocolController,
-            ILogger logger)
+            ILogger logger,
+            DocumentTransactionManager documentTransactionManager,
+            IShellLocks locks)
         {
             myLogger = logger;
             
@@ -111,6 +115,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myLogger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
                 groupingEvent.FireIncoming();
             });
+            
+            documentTransactionManager.AfterTransactionCommit.Advise(lifetime,
+                args =>
+                {
+                    // call refresh on file removed
+                    if (args.Succeded && args.Changes != null && !args.Changes.Any() && args.Documents.Any(doc => doc.Moniker.EndsWith(".csproj")))
+                    {
+                        locks.ExecuteWithReadLock(() =>
+                        {
+                            if (documentTransactionManager.CurrentTransaction?.ParentTransaction == null)
+                            {
+                                myLogger.Verbose("documentTransactionManager.AfterTransactionCommit");
+                                groupingEvent.FireIncoming();
+                            }
+                        });
+                    }
+                });
         }
     }
 }
