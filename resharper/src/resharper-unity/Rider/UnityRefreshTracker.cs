@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Application.changes;
+using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.DocumentModel.Transactions;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -25,16 +25,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
         private readonly UnityEditorProtocol myPluginProtocolController;
+        private readonly ILogger myLogger;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, 
-            UnityEditorProtocol pluginProtocolController, ISettingsStore settingsStore)
+            UnityEditorProtocol pluginProtocolController, ISettingsStore settingsStore,
+            ILogger logger)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
             myPluginProtocolController = pluginProtocolController;
-            
+            myLogger = logger;
+
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
                         
@@ -57,6 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && !force)
                 return new Task(()=>{});
 
+            myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force}");
             var task = myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask(force);
             CurrentTask = task;
             
@@ -91,20 +95,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityRefreshTracker
     {
         private readonly ILogger myLogger;
+        private readonly GroupingEvent myGroupingEvent;
 
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, 
             UnityEditorProtocol protocolController,
             ILogger logger,
-            DocumentTransactionManager documentTransactionManager,
-            IShellLocks locks)
+            IFileSystemTracker fileSystemTracker)
         {
             myLogger = logger;
-            
+
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
-                       
-            var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
-                Rgc.Invariant, ()=> refresher.Refresh(false));
+            
+            // Rgc.Guarded - beware RIDER-15577
+            myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
+                Rgc.Guarded, ()=> refresher.Refresh(false));
 
             var protocolSolution = solution.GetProtocolSolution();
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
@@ -113,25 +118,56 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return;
                 
                 myLogger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
-                groupingEvent.FireIncoming();
+                myGroupingEvent.FireIncoming();
             });
             
-            documentTransactionManager.AfterTransactionCommit.Advise(lifetime,
-                args =>
+            fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
+        }
+        
+        private void FileSystemChange(FileSystemChange fileSystemChange)
+        {
+            var visitor = new Visitor(this);
+            foreach (var fileSystemChangeDelta in fileSystemChange.Deltas)
+                fileSystemChangeDelta.Accept(visitor);
+        }
+        
+        private class Visitor : RecursiveFileSystemChangeDeltaVisitor
+        {
+            private readonly UnityRefreshTracker myRefreshTracker;
+
+            public Visitor(UnityRefreshTracker refreshTracker)
+            {
+                myRefreshTracker = refreshTracker;
+            }
+
+            public override void Visit(FileSystemChangeDelta delta)
+            {
+                base.Visit(delta);
+
+                switch (delta.ChangeType)
                 {
-                    // call refresh on file removed
-                    if (args.Succeded && args.Changes != null && !args.Changes.Any() && args.Documents.Any(doc => doc.Moniker.EndsWith(".csproj")))
-                    {
-                        locks.ExecuteWithReadLock(() =>
-                        {
-                            if (documentTransactionManager.CurrentTransaction?.ParentTransaction == null)
-                            {
-                                myLogger.Verbose("documentTransactionManager.AfterTransactionCommit");
-                                groupingEvent.FireIncoming();
-                            }
-                        });
-                    }
-                });
+                    case FileSystemChangeType.ADDED:
+                    case FileSystemChangeType.DELETED:
+                        myRefreshTracker.AdviseFileAddedOrDeleted(delta);
+                        break;
+                    case FileSystemChangeType.CHANGED:
+                    case FileSystemChangeType.RENAMED:
+                    case FileSystemChangeType.UNKNOWN:
+                    case FileSystemChangeType.SUBTREE_CHANGED:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        private void AdviseFileAddedOrDeleted(FileSystemChangeDelta delta)
+        {
+            if (delta.NewPath.ExtensionNoDot == "cs")
+            {
+                myLogger.Verbose($"fileSystemTracker.AdviseDirectoryChanges {delta.ChangeType}, {delta.NewPath}, {delta.OldPath}");
+                myGroupingEvent.FireIncoming();
+            }
         }
     }
 }
