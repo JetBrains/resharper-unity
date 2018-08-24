@@ -304,6 +304,10 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool FixUnityEngineReference(XElement projectContentElement, XNamespace xmlns)
     {
+      // Handled natively by Unity 2018.2+
+      if (UnityUtils.UnityVersion >= new Version(2018, 2))
+        return false;
+      
       var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
       if (string.IsNullOrEmpty(unityAppBaseFolder))
       {
@@ -403,7 +407,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       projectContentElement.Add(itemGroup);
     }
 
-    // Set appropriate version
+    // Setappropriate version
     private static bool FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
       return SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", s =>
