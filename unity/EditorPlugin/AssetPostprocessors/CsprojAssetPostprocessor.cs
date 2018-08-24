@@ -161,7 +161,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static bool SetManuallyDefinedCompilerSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
       // Handled natively by Unity 2017.1+
-      if (UnityUtils.UnityVersion < new Version(2017, 1))
+      if (UnityUtils.UnityVersion >= new Version(2017, 1))
         return false;
 
       string configPath = null;
