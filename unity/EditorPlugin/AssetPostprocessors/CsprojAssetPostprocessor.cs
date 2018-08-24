@@ -196,7 +196,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       {
         var configText = File.ReadAllText(configFilePath);
 
-        var isUnity20171OrLater = UnityUtils.UnityVersion < new Version(2017, 1);
+        var isUnity20171OrLater = UnityUtils.UnityVersion >= new Version(2017, 1);
 
         // Unity always sets AllowUnsafeBlocks in 2017.1+
         // Strictly necessary to compile unsafe code
