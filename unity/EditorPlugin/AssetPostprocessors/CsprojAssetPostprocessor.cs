@@ -12,6 +12,14 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
+  public class UTF8StringWriter : StringWriter
+  {
+    public override Encoding Encoding
+    {
+      get { return Encoding.UTF8; }
+    }
+  }
+  
   public class CsprojAssetPostprocessor : AssetPostprocessor
   {
     private static readonly ILog ourLogger = Log.GetLog<CsprojAssetPostprocessor>();
@@ -40,7 +48,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         if (UpgradeProjectFile(path, doc))
         {
           ourLogger.Verbose("Post-processed with changes {0} (in memory)", path);
-          return doc.ToString();
+          var stringWriter = new UTF8StringWriter();
+          doc.Save(stringWriter);
+          return stringWriter.ToString();
         }
 
         ourLogger.Verbose("Post-processed with NO changes {0}", path);
