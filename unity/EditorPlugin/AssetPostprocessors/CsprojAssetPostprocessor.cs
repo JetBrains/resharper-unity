@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using JetBrains.Rider.Unity.Editor.NonUnity;
@@ -40,7 +41,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         if (UpgradeProjectFile(path, doc))
         {
           ourLogger.Verbose("Post-processed with changes {0} (in memory)", path);
-          return doc.ToString();
+          using (var sw = new Utf8StringWriter())
+          {
+            doc.Save(sw);
+            return sw.ToString(); // https://github.com/JetBrains/resharper-unity/issues/727
+          }
         }
 
         ourLogger.Verbose("Post-processed with NO changes {0}", path);
@@ -588,6 +593,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       }
 
       propertyGroup.Add(new XElement(xmlns + name, content));
+    }
+    
+    class Utf8StringWriter : StringWriter
+    {
+      public override Encoding Encoding => Encoding.UTF8;
     }
   }
 }
