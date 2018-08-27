@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             IsAbleToEstablishProtocolConnectionWithUnity = new Lazy<bool>(ProjectExtensions.IsAbleToEstablishProtocolConnectionWithUnity(mySolution.SolutionDirectory));
         }
 
-        public Lazy<bool> IsAbleToEstablishProtocolConnectionWithUnity;
+        public readonly Lazy<bool> IsAbleToEstablishProtocolConnectionWithUnity;
 
 
         public override void BeforeChangeProjects(ICollection<IProjectMark> projectMarks)
