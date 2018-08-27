@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.ProjectsHost;
@@ -13,25 +14,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         public UnitySolutionHostSyncListener(ISolution solution)
         {
             mySolution = solution;
+            IsAbleToEstablishProtocolConnectionWithUnity = new Lazy<bool>(ProjectExtensions.IsAbleToEstablishProtocolConnectionWithUnity(mySolution.SolutionDirectory));
         }
 
-        private bool? isAbleToEstablishProtocolConnectionWithUnityCached;
-        public bool IsAbleToEstablishProtocolConnectionWithUnity
-        {
-            get
-            {
-                if (isAbleToEstablishProtocolConnectionWithUnityCached != null)
-                    return isAbleToEstablishProtocolConnectionWithUnityCached.Value;
-                isAbleToEstablishProtocolConnectionWithUnityCached =
-                    ProjectExtensions.IsAbleToEstablishProtocolConnectionWithUnity(mySolution.SolutionDirectory);
-                return isAbleToEstablishProtocolConnectionWithUnityCached.Value;
-            }
-        }
+        public readonly Lazy<bool> IsAbleToEstablishProtocolConnectionWithUnity;
+
 
         public override void BeforeChangeProjects(ICollection<IProjectMark> projectMarks)
         {
             base.BeforeChangeProjects(projectMarks);
-            isAbleToEstablishProtocolConnectionWithUnityCached = ProjectExtensions.IsAbleToEstablishProtocolConnectionWithUnity(mySolution.SolutionDirectory);
+            IsAbleToEstablishProtocolConnectionWithUnity = new Lazy<bool>(ProjectExtensions.IsAbleToEstablishProtocolConnectionWithUnity(mySolution.SolutionDirectory));
         }
     }
 }
