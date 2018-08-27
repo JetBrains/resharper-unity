@@ -120,11 +120,25 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetLangVersion(projectContentElement, xmlns);
       changed |= SetProjectFlavour(projectContentElement, xmlns);
       changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
+      changed |= SetAdditionalReference("Microsoft.CSharp.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
 
       return changed;
+    }
+
+    private static bool SetAdditionalReference(string referenceName, XElement projectContentElement, XNamespace xmlns)
+    {
+      if (UnityUtils.ScriptingRuntime == 0)
+        return false;
+
+      if (ourApiCompatibilityLevel != apiCompatibilityLevelNet46)
+        return false;
+      
+      var hintPath = GetHintPath(referenceName);
+      ApplyCustomReference(referenceName, projectContentElement, xmlns, hintPath);
+      return true;
     }
 
     private static bool SetDisableHandlePackageFileConflicts(XElement projectContentElement, XNamespace xmlns)
@@ -160,6 +174,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static readonly string PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
     private static readonly string PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
     private static readonly string EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
+    private static readonly int ourApiCompatibilityLevel = GetApiCompatibilityLevel();
+    private const int apiCompatibilityLevelNet46 = 3;
 
     private static bool SetManuallyDefinedCompilerSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
@@ -353,32 +369,39 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       foreach (var referenceName in referenceList)
       {
-        string hintPath = null;
-
         var name = referenceName;
         if (new FileInfo(name).Extension != ".dll")
           name += ".dll"; // RIDER-15093
-
-        if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
-        {
-          var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-          var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
-          if (!monoDir.Exists)
-            monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
-
-          var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
-          if (newestApiDir != null)
-          {
-            var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, name));
-            if (dllPath.Exists)
-              hintPath = dllPath.FullName;
-          }
-        }
-
-        ApplyCustomReference(name, projectContentElement, xmlns, hintPath);
+        
+        var hintPath = GetHintPath(name);
+        ApplyCustomReference(Path.GetFileName(hintPath), projectContentElement, xmlns, hintPath);
       }
 
       return true;
+    }
+
+    [CanBeNull]
+    private static string GetHintPath(string name)
+    {
+      string hintPath = null;
+
+      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+      {
+        var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+        var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
+        if (!monoDir.Exists)
+          monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
+
+        var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
+        if (newestApiDir != null)
+        {
+          var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, name));
+          if (dllPath.Exists)
+            hintPath = dllPath.FullName;
+        }
+      }
+
+      return hintPath;
     }
 
     private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns, string hintPath = null)
@@ -494,6 +517,15 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (Directory.Exists(Path.GetFullPath("CSharp60Support")))
         return "6";
 
+      // Unity 5.5+ supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
+      if (ourApiCompatibilityLevel >= apiCompatibilityLevelNet46)
+        return "6";
+
+      return "4";
+    }
+
+    private static int GetApiCompatibilityLevel()
+    {
       var apiCompatibilityLevel = 0;
       try
       {
@@ -501,11 +533,13 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         var method = typeof(PlayerSettings).GetMethod("GetApiCompatibilityLevel");
         var parameter = typeof(EditorUserBuildSettings).GetProperty("selectedBuildTargetGroup");
         var val = parameter.GetValue(null, null);
-        apiCompatibilityLevel = (int) method.Invoke(null, new [] {val});
+        apiCompatibilityLevel = (int) method.Invoke(null, new[] {val});
       }
       catch (Exception ex)
       {
-        ourLogger.Verbose("Exception on evaluating PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)"+ ex);
+        ourLogger.Verbose(
+          "Exception on evaluating PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)" +
+          ex);
       }
 
       try
@@ -518,12 +552,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         ourLogger.Verbose("Exception on evaluating PlayerSettings.apiCompatibilityLevel");
       }
 
-      // Unity 5.5+ supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-      const int apiCompatibilityLevelNet46 = 3;
-      if (apiCompatibilityLevel >= apiCompatibilityLevelNet46)
-        return "6";
-
-      return "4";
+      return apiCompatibilityLevel;
     }
 
     private static bool SetProjectFlavour(XElement projectElement, XNamespace xmlns)
