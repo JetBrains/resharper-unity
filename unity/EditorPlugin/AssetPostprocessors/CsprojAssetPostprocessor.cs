@@ -131,11 +131,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       // https://developercommunity.visualstudio.com/content/problem/138986/1550-preview-2-breaks-scriptsharp-compilation.html
       // RIDER-18316 Rider fails to resolve mscorlib
-      
+
       // is expected to be no problem with new unity mono runtime or non-windows OS-s
-      if (UnityUtils.ScriptingRuntime > 0 || PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)  
+      if (UnityUtils.ScriptingRuntime > 0 || PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
         return false;
-      
+
       return SetOrUpdateProperty(projectContentElement, xmlns, "DisableHandlePackageFileConflicts", existing => "true");
     }
 
@@ -154,8 +154,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return false;
     }
 
-    private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
-    private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
     private static readonly string PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH = Path.GetFullPath("Assets/csc.rsp");
@@ -165,39 +163,35 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool SetManuallyDefinedCompilerSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
-      // Handled natively by Unity 2017.1+
-      if (UnityUtils.UnityVersion >= new Version(2017, 1))
-        return false;
-
-      string configPath = null;
-
-      if (File.Exists(PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH)) // First choice - prefer csc.rsp if it exists
-      {
-        configPath = PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH;
-      }
-      else if (File.Exists(PROJECT_MANUAL_CONFIG_FILE_PATH)) //Second choice - prefer mcs.rsp if it exists
-      {
-        configPath = PROJECT_MANUAL_CONFIG_FILE_PATH;
-      }
-      else
-      {
-        if (IsPlayerProjectFile(projectFile))
-          configPath = PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH;
-        else if (IsEditorProjectFile(projectFile))
-          configPath = EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH;
-      }
-
-      if (!string.IsNullOrEmpty(configPath))
-        return ApplyManualCompilerSettings(configPath, projectContentElement, xmlns);
-
-      return false;
+      var configPath = GetConfigPath(projectFile);
+      return ApplyManualCompilerSettings(configPath, projectContentElement, xmlns);
     }
 
-    private static bool ApplyManualCompilerSettings(string configFilePath, XElement projectContentElement, XNamespace xmlns)
+    [CanBeNull]
+    private static string GetConfigPath(string projectFile)
+    {
+      // First choice - prefer csc.rsp if it exists
+      if (File.Exists(PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH))
+        return PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH;
+
+      // Second choice - prefer mcs.rsp if it exists
+      if (File.Exists(PROJECT_MANUAL_CONFIG_FILE_PATH))
+        return PROJECT_MANUAL_CONFIG_FILE_PATH;
+
+      var filename = Path.GetFileName(projectFile);
+      if (filename == "Assembly-CSharp.csproj")
+        return PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH;
+      if (filename == "Assembly-CSharp-Editor.csproj")
+        return EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH;
+
+      return null;
+    }
+
+    private static bool ApplyManualCompilerSettings([CanBeNull] string configFilePath, XElement projectContentElement, XNamespace xmlns)
     {
       var changed = false;
 
-      if (File.Exists(configFilePath))
+      if (!string.IsNullOrEmpty(configFilePath) && File.Exists(configFilePath))
       {
         var configText = File.ReadAllText(configFilePath);
 
@@ -232,7 +226,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
             if (f.Contains(UNITY_DEFINE_KEYWORD))
             {
               var defineEndPos = f.IndexOf(UNITY_DEFINE_KEYWORD) + UNITY_DEFINE_KEYWORD.Length;
-              var definesSubString = f.Substring(defineEndPos,f.Length - defineEndPos);
+              var definesSubString = f.Substring(defineEndPos, f.Length - defineEndPos);
               definesSubString = definesSubString.Replace(";", ",");
               definesList.AddRange(definesSubString.Split(','));
             }
@@ -269,16 +263,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       projectContentElement.AddFirst(
         new XElement(xmlns + "PropertyGroup", new XElement(xmlns + "AllowUnsafeBlocks", true)));
       return true;
-    }
-
-    private static bool IsPlayerProjectFile(string projectFile)
-    {
-      return Path.GetFileName(projectFile) == UNITY_PLAYER_PROJECT_NAME;
-    }
-
-    private static bool IsEditorProjectFile(string projectFile)
-    {
-      return Path.GetFileName(projectFile) == UNITY_EDITOR_PROJECT_NAME;
     }
 
     private static bool SetXCodeDllReference(string name, XElement projectContentElement, XNamespace xmlns)
@@ -594,7 +578,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       propertyGroup.Add(new XElement(xmlns + name, content));
     }
-    
+
     class Utf8StringWriter : StringWriter
     {
       public override Encoding Encoding => Encoding.UTF8;
