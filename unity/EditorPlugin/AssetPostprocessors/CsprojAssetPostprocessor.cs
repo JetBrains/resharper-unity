@@ -120,7 +120,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetLangVersion(projectContentElement, xmlns);
       changed |= SetProjectFlavour(projectContentElement, xmlns);
       changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
-      changed |= SetAdditionalReference("Microsoft.CSharp.dll", projectContentElement, xmlns);
+      changed |= AddMicrosoftCSharpReference(projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
@@ -128,8 +128,10 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return changed;
     }
 
-    private static bool SetAdditionalReference(string referenceName, XElement projectContentElement, XNamespace xmlns)
+    private static bool AddMicrosoftCSharpReference (XElement projectContentElement, XNamespace xmlns)
     {
+      string referenceName = "Microsoft.CSharp.dll";
+      
       if (UnityUtils.ScriptingRuntime == 0)
         return false;
 
