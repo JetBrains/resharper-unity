@@ -376,7 +376,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           name += ".dll"; // RIDER-15093
         
         var hintPath = GetHintPath(name);
-        ApplyCustomReference(Path.GetFileName(hintPath), projectContentElement, xmlns, hintPath);
+        ApplyCustomReference(name, projectContentElement, xmlns, hintPath);
       }
 
       return true;
@@ -387,8 +387,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       // Without hintpath non-Unity MSBuild will resolve assembly from dotnetframework targets path
       string hintPath = null;
-
-      var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+      
+      var unityAppBaseFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
       var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
       if (!monoDir.Exists)
         monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
