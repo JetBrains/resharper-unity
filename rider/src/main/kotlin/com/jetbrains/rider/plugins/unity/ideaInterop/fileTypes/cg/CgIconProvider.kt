@@ -11,7 +11,7 @@ import javax.swing.Icon
 class CgIconProvider : IconProvider(), DumbAware {
     override fun getIcon(element: PsiElement, @Iconable.IconFlags flags: Int): Icon? {
         val fileElement = element as? PsiFile
-        if ((fileElement != null) && fileElement.name.endsWith(".cginc", true))
+        if ((fileElement != null) && CgFileTypeFactory.extensions.any { fileElement.name.endsWith(".$it") })
             return UnityIcons.FileTypes.Cg
         return null
     }
