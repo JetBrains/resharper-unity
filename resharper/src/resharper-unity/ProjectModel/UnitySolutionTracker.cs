@@ -15,11 +15,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             mySolution = solution;
             
+            IsAbleToEstablishProtocolConnectionWithUnity = new Property<bool>(lifetime, "IsAbleToEstablishProtocolConnectionWithUnity");
             if (!mySolution.SolutionDirectory.IsAbsolute) // in tests
                 return;
-            
-            IsAbleToEstablishProtocolConnectionWithUnity = new Property<bool>(lifetime, "IsAbleToEstablishProtocolConnectionWithUnity", 
+
+            IsAbleToEstablishProtocolConnectionWithUnity.SetValue(
                 ProjectExtensions.IsAbleToEstablishProtocolConnectionWithUnity(mySolution.SolutionDirectory));
+            
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false,
                 OnChangeAction);
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.LibraryFolder), false,
