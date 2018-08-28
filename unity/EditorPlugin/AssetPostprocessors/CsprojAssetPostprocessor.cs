@@ -385,22 +385,24 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     [CanBeNull]
     private static string GetHintPath(string name)
     {
+      // Without hintpath non-Unity MSBuild will resolve assembly from dotnetframework targets path
       string hintPath = null;
 
-      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
-      {
-        var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-        var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
-        if (!monoDir.Exists)
-          monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
+      var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
+      var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
+      if (!monoDir.Exists)
+        monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
 
-        var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
-        if (newestApiDir != null)
-        {
-          var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, name));
-          if (dllPath.Exists)
-            hintPath = dllPath.FullName;
-        }
+      var mask = "4.*";
+      if (UnityUtils.ScriptingRuntime == 0)
+        mask = "2.*";
+      
+      var apiDir = monoDir.GetDirectories(mask).LastOrDefault(); // take newest
+      if (apiDir != null)
+      {
+        var dllPath = new FileInfo(Path.Combine(apiDir.FullName, name));
+        if (dllPath.Exists)
+          hintPath = dllPath.FullName;
       }
 
       return hintPath;
