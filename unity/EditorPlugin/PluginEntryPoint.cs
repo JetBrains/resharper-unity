@@ -157,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor
         File.Delete(protocolInstanceJsonPath);
       };
 
-      ourSavedState = GetEditorState();
+      PlayModeSavedState = GetEditorState();
       SetupAssemblyReloadEvents();
 
       ourInitialized = true;
@@ -202,7 +202,7 @@ namespace JetBrains.Rider.Unity.Editor
 #pragma warning restore 618
       {
         var newState = GetEditorState();
-        if (ourSavedState != newState)
+        if (PlayModeSavedState != newState)
         {
           if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
           {
@@ -215,7 +215,7 @@ namespace JetBrains.Rider.Unity.Editor
               EditorApplication.UnlockReloadAssemblies();
             }
           }
-          ourSavedState = newState;
+          PlayModeSavedState = newState;
         }
       };
 
@@ -315,7 +315,7 @@ namespace JetBrains.Rider.Unity.Editor
       Paused
     }
 
-    private static PlayModeState ourSavedState = PlayModeState.Stopped;
+    public static PlayModeState PlayModeSavedState = PlayModeState.Stopped;
 
     private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
     {
