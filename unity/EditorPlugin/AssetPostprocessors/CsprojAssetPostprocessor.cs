@@ -285,13 +285,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool SetXCodeDllReference(string name, XElement projectContentElement, XNamespace xmlns)
     {
-      var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-      if (string.IsNullOrEmpty(unityAppBaseFolder))
-      {
-        ourLogger.Verbose("SetXCodeDllReference. unityAppBaseFolder IsNullOrEmpty");
-        return false;
-      }
-
+      var unityAppBaseFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
       var xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("Data/PlaybackEngines/iOSSupport", name));
       if (!File.Exists(xcodeDllPath))
         xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("PlaybackEngines/iOSSupport", name));
