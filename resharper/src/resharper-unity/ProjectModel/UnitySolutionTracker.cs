@@ -1,5 +1,6 @@
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 
@@ -11,12 +12,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ISolution mySolution;
         public readonly IProperty<bool> IsAbleToEstablishProtocolConnectionWithUnity;
 
-        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, IShellLocks locks)
         {
             mySolution = solution;
             
             IsAbleToEstablishProtocolConnectionWithUnity = new Property<bool>(lifetime, "IsAbleToEstablishProtocolConnectionWithUnity");
-            if (!mySolution.SolutionDirectory.IsAbsolute) // in tests
+            if (locks.Dispatcher.IsAsyncBehaviorProhibited) // for tests
                 return;
 
             IsAbleToEstablishProtocolConnectionWithUnity.SetValue(
