@@ -14,6 +14,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
         {
             mySolution = solution;
+            
+            if (!mySolution.SolutionDirectory.IsAbsolute) // in tests
+                return;
+            
             IsAbleToEstablishProtocolConnectionWithUnity = new Property<bool>(lifetime, "IsAbleToEstablishProtocolConnectionWithUnity", 
                 ProjectExtensions.IsAbleToEstablishProtocolConnectionWithUnity(mySolution.SolutionDirectory));
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false,
