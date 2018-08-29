@@ -18,6 +18,7 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
@@ -53,7 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
-            ISettingsStore settingsStore, Application.ActivityTrackingNew.UsageStatistics usageStatistics)
+            ISettingsStore settingsStore, Application.ActivityTrackingNew.UsageStatistics usageStatistics,
+            UnitySolutionTracker unitySolutionTracker)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
@@ -69,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null)
                 .EnsureReadonly(myReadonlyToken).EnsureThisThread();
 
-            if (!ProjectExtensions.IsAbleToEstablishProtocolConnectionWithUnity(solution.SolutionDirectory))
+            if (!unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.Value)
                 return;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
