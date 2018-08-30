@@ -233,9 +233,9 @@ open class UnityExplorerNode(project: Project,
             val key = Any()
         }
 
-        override fun update(presentation: PresentationData?) {
-            presentation?.presentableText = "References"
-            presentation?.setIcon(UnityIcons.Explorer.ReferencesRoot)
+        override fun update(presentation: PresentationData) {
+            presentation.presentableText = "References"
+            presentation.setIcon(UnityIcons.Explorer.ReferencesRoot)
         }
 
         override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
@@ -270,9 +270,9 @@ open class UnityExplorerNode(project: Project,
         override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
         override fun isAlwaysLeaf() = true
 
-        override fun update(presentation: PresentationData?) {
-            presentation?.presentableText = referenceName
-            presentation?.setIcon(UnityIcons.Explorer.Reference)
+        override fun update(presentation: PresentationData) {
+            presentation.presentableText = referenceName
+            presentation.setIcon(UnityIcons.Explorer.Reference)
         }
     }
 }
