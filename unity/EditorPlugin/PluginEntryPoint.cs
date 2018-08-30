@@ -35,7 +35,8 @@ namespace JetBrains.Rider.Unity.Editor
     // This an entry point
     static PluginEntryPoint()
     {
-      ourLogEventCollector = new UnityEventCollector();
+      ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap 
+      Log.DefaultFactory = new RiderLoggerFactory(); // init log before doing any logging
 
       ourPluginSettings = new PluginSettings();
       ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
@@ -117,8 +118,6 @@ namespace JetBrains.Rider.Unity.Editor
         CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
         RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
       }
-
-      Log.DefaultFactory = new RiderLoggerFactory();
 
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
