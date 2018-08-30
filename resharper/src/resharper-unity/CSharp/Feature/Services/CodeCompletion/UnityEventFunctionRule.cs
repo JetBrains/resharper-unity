@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
@@ -7,17 +8,22 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.BaseInfrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Info;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Matchers;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Presentations;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.LookupItems.Presentation;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
-using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp;
-using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.AspectLookupItems.Generate;
+using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.ExpectedTypes;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Text;
+using JetBrains.TextControl;
+using JetBrains.UI.RichText;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion
 {
@@ -73,47 +79,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var unityVersionApi = context.BasicContext.Solution.GetComponent<UnityVersion>();
             var project = context.BasicContext.File.GetProject();
             var actualVersion = unityVersionApi.GetActualVersion(project);
-            var functions = unityApi.GetEventFunctions(typeElement, actualVersion);
+            var existingMethods = typeElement.Methods.ToList();
 
-            var items = new List<ILookupItem>();
-            foreach (var function in functions)
+            foreach (var function in unityApi.GetEventFunctions(typeElement, actualVersion))
             {
-                if (typeElement.Methods.Any(m => function.Match(m) != MethodSignatureMatch.NoMatch))
+                if (HasAnyPartiallyMatchingExistingMethods(existingMethods, function))
                     continue;
-
-                items.Clear();
 
                 // TODO: Decide what to do with e.g. `void OnAnima{caret}`
                 // If we want to insert a visibility modifier, it has to go *before* the `void`,
                 // which means adding a behaviour here that will remove it
-                if (!hasVisibilityModifier && !hasReturnType)
-                {
-                    var factory = CSharpLookupItemFactory.Instance;
-                    var lookupItem = factory.CreateTextLookupItem(context.BasicContext, context.CompletionRanges,
-                        "private ");
-                    items.Add(lookupItem);
-                }
+                var addModifier = !hasVisibilityModifier && !hasReturnType;
 
-                var item = CreateMethodItem(context, function, classDeclaration);
+                var item = CreateMethodItem(context, function, classDeclaration, addModifier);
                 if (item == null) continue;
 
-                items.Add(item);
-
-                item = CombineLookupItems(context.BasicContext, context.CompletionRanges, items, item)
-                    .WithHighSelectionPriority();
-
-                // When items are sorted by relevance, highest value wins. But relevance is a mix of language
-                // specific values plus matching, plus evaluation order. Light has higher relevance than Full.
-                // Secondary sort is OrderString if relevance matches. This is usually display text, but can
-                // be overridden. When items are sorted lexicographically, first sort is Location, then Rank,
-                // then OrderString.
-                // This, coupled with the fact that we're in Light evaluation mode, is enough to put us to the
-                // top of the code completion window
-                item.Placement.Relevance |= (long) (CLRLookupItemRelevance.GenerateItems | CLRLookupItemRelevance.Methods);
-                if (function.Undocumented)
-                    item.PlaceBottom();
-                else
-                    item.PlaceTop();
+                item = SetRelevanceSortPriority(item, function);
+                item = SetLexicographicalSortPriority(item, function);
 
                 collector.Add(item);
             }
@@ -121,42 +103,117 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return true;
         }
 
-        private ILookupItem CombineLookupItems(CodeCompletionContext basicContext, TextLookupRanges completionRanges,
-            List<ILookupItem> displayItems, ILookupItem sampleMatchItem)
+        private bool HasAnyPartiallyMatchingExistingMethods(List<IMethod> existingMethods, UnityEventFunction function)
         {
-            // Use a combined lookup item list to add "private " to the start of the display text.
-            // We could probably get the same effect with a customised ILookupItemPresentation.
-            // Make sure the completion lookup item list is different to the display lookup item
-            // list or we get errors in highlighting matches - see RSRP-466980
-            var matchingItems = new[] {sampleMatchItem};
-            var item = new CombinedLookupItem(matchingItems, displayItems);
-            item.InitializeRanges(completionRanges, basicContext);
+            // Don't use Any() - it's surprisingly expensive when called for each function we're adding to the lookup list
+            foreach (var existingMethod in existingMethods)
+            {
+                if (function.Match(existingMethod) != MethodSignatureMatch.NoMatch)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private ILookupItem SetRelevanceSortPriority(ILookupItem item, UnityEventFunction function)
+        {
+            // When items are sorted by relevance, highest value wins. It can be tricky to know if the item is going to
+            // be positioned correctly, but essentially, the more flags you have, the higher up in the list you'll be.
+            // Language specific flags have the most boost power, so the type of declared element helps a lot (methods
+            // are higher than types, but not as high as local variables). Environmental flags will still boost the
+            // relevance, but not by as much. So text matching will boost above other items of the same declared element
+            // type, but won't boost a method name over a local variable name. The evaluation mode can also give a small
+            // but significant boost - Light has higher relevance than Full. Many of these flags are set automatically
+            // by looking at the declared element type, or evaluation mode, etc. But we can set some values explicitly,
+            // which can give a meaningful boost and get our items to the top of the list
+            // Secondary sort order is OrderString, which is usually display text, but can be overridden.
+
+            // Generated items get a boost over normal declared element items
+            item.Placement.Relevance |= (long) CLRLookupItemRelevance.GenerateItems;
+
+            // Set high selection priority to push us further up, unless it's undocumented, in which case, give it a
+            // smaller selection boost
+            item = !function.Undocumented ? item.WithHighSelectionPriority() : item.WithLowSelectionPriority();
             return item;
         }
 
-        private static ILookupItem CreateMethodItem(CSharpCodeCompletionContext context, UnityEventFunction eventFunction,
-            IClassLikeDeclaration declaration)
+        private ILookupItem SetLexicographicalSortPriority(ILookupItem item, UnityEventFunction function)
+        {
+            // When items are sorted lexicographically, first sort key is Location, then Rank, then OrderString.
+            // NOTE: Don't use item.PlaceBottom(), because it resets item.Placement, resetting any relevance values
+            // Don't do any sorting here. If the user really wants lexicographical sorting, they won't appreciate us
+            // messing around with the sorting.
+            // I'm willing to be convinced otherwise here. Let's see if anyone shouts (I don't know if anyone even uses
+            // lexicographical sorting instead of the default relevance sorting). If we want to change things, push
+            // everything to the top, with the undocumented items at the bottom of this group
+//            item.Placement.Location = PlacementLocation.Top;
+//            item.Placement.Rank = (byte) (function.Undocumented ? 1 : 0);
+            return item;
+        }
+
+        private static ILookupItem CreateMethodItem(CSharpCodeCompletionContext context,
+            UnityEventFunction eventFunction, IClassLikeDeclaration declaration, bool addModifier)
         {
             if (CSharpLanguage.Instance == null)
                 return null;
 
-            var method = eventFunction.CreateDeclaration(CSharpElementFactory.GetInstance(declaration), declaration);
+            var method = eventFunction.CreateDeclaration(CSharpElementFactory.GetInstance(declaration, false), declaration);
             if (method.DeclaredElement == null)
                 return null;
 
             var instance = new DeclaredElementInstance(method.DeclaredElement);
 
-            var declaredElementInfo = new DeclaredElementInfo(method.DeclaredName, instance, CSharpLanguage.Instance,
+            var declaredElementInfo = new DeclaredElementInfoWithoutParameterInfo(method.DeclaredName, instance, CSharpLanguage.Instance,
                 context.BasicContext.LookupItemsOwner, context)
             {
                 Ranges = context.CompletionRanges
             };
 
-            var withMatcher = LookupItemFactory.CreateLookupItem(declaredElementInfo).
-                WithPresentation(_ => new GenerateMemberPresentation(declaredElementInfo, PresenterStyles.DefaultPresenterStyle)).
-                WithBehavior(_ => new UnityEventFunctionBehavior(declaredElementInfo, eventFunction)).
-                WithMatcher(_ => new DeclaredElementMatcher(declaredElementInfo, context.BasicContext.IdentifierMatchingStyle));
-            return withMatcher;
+            // This is effectively the same as GenerateMemberPresentation, but without the overhead that comes
+            // with the flexibility of formatting any time of declared element. We just hard code the format
+            var predefinedType = context.PsiModule.GetPredefinedType();
+            var parameters = string.Empty;
+            if (eventFunction.Parameters.Length > 0)
+            {
+                var sb = new StringBuilder();
+                for (var i = 0; i < eventFunction.Parameters.Length; i++)
+                {
+                    if (i > 0) sb.Append(", ");
+
+                    var parameter = eventFunction.Parameters[i];
+                    var type = predefinedType.TryGetType(parameter.ClrTypeName);
+                    var typeName = type?.GetPresentableName(CSharpLanguage.Instance) ??
+                                   parameter.ClrTypeName.ShortName;
+                    sb.AppendFormat("{0}{1}{2}", parameter.IsByRef ? "out" : string.Empty,
+                        typeName, parameter.IsArray ? "[]" : string.Empty);
+                }
+                parameters = sb.ToString();
+            }
+            var text = $"{eventFunction.Name}({parameters})";
+            var parameterOffset = eventFunction.Name.Length;
+            var modifier = addModifier ? "private " : string.Empty;
+
+            var psiIconManager = context.BasicContext.LookupItemsOwner.Services.PsiIconManager;
+
+            return LookupItemFactory.CreateLookupItem(declaredElementInfo)
+                .WithPresentation(item =>
+                    {
+                        var displayName = new RichText($"{modifier}{text} {{ ... }}");
+
+                        // GenerateMemberPresentation marks everything as bold, and the parameters + block syntax as not important
+                        var parameterStartOffset = modifier.Length + parameterOffset;
+                        LookupUtil.MarkAsNotImportant(displayName,
+                            TextRange.FromLength(parameterStartOffset, displayName.Length - parameterStartOffset));
+                        LookupUtil.AddEmphasize(displayName, new TextRange(modifier.Length, displayName.Length));
+
+                        var image = psiIconManager.GetImage(CLRDeclaredElementType.METHOD, PsiIconExtension.Private);
+                        var marker = item.Info.Ranges.CreateVisualReplaceRangeMarker();
+                        return new SimplePresentation(displayName, image, marker);
+                    })
+                .WithBehavior(_ => new UnityEventFunctionBehavior(declaredElementInfo, eventFunction))
+                .WithMatcher(_ =>
+                new ShiftedDeclaredElementMatcher(text, modifier.Length, declaredElementInfo,
+                    context.BasicContext.IdentifierMatchingStyle));
         }
 
         [ContractAnnotation("=> false, classDeclaration: null; => true, classDeclaration: notnull")]
@@ -280,6 +337,48 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         private static IClassLikeDeclaration GetClassDeclaration(ITreeNode completionNode)
         {
             return completionNode.GetContainingNode<IClassLikeDeclaration>();
+        }
+
+        // The code completion tooltip tries to show parameter info, if available. We already show this as part of the
+        // lookup item text, so it's pointless showing it again. If there aren't any parameter info candidates, the
+        // tooltip will show a custom description via IDescriptionProvidingLookupItem, which LookupItem<T> doesn't
+        // implement. Fortunately, it also falls back to showing the standard declared element description, so we'll
+        // get a proper description after all.
+        private class DeclaredElementInfoWithoutParameterInfo : DeclaredElementInfo
+        {
+            public DeclaredElementInfoWithoutParameterInfo(string methodDeclaredName, DeclaredElementInstance instance,
+                                                           PsiLanguageType language,
+                                                           ILookupItemsOwner lookupItemsOwner,
+                                                           IElementPointerFactory elementPointerFactory)
+                : base(methodDeclaredName, instance, language, lookupItemsOwner, elementPointerFactory)
+            {
+            }
+
+            public override bool HasCandidates => false;
+            public override IEnumerable<InvocationCandidate> Candidates => EmptyList<InvocationCandidate>.Enumerable;
+        }
+
+        // DeclaredElementMatcher can take a custom text to match against, but ReSharper applies the matching result to
+        // the display text, so it looks wrong. Interestingly, Rider gets it right. Don't know why they're difference.
+        // This class will shift the match result by a given value. It assumes that the custom text is the tail of the
+        // display text and makes no other modifications to the matched offsets
+        private class ShiftedDeclaredElementMatcher : DeclaredElementMatcher
+        {
+            private readonly int myShiftOffset;
+
+            public ShiftedDeclaredElementMatcher(string customText, int shiftOffset,
+                                                 DeclaredElementInfo declaredElementInfo,
+                                                 IdentifierMatchingStyle matchingStyle)
+                : base(customText, declaredElementInfo, matchingStyle)
+            {
+                myShiftOffset = shiftOffset;
+            }
+
+            public override MatchingResult Match(PrefixMatcher prefixMatcher, ITextControl textControl)
+            {
+                var result = base.Match(prefixMatcher, textControl);
+                return result?.Shift(myShiftOffset);
+            }
         }
     }
 }
