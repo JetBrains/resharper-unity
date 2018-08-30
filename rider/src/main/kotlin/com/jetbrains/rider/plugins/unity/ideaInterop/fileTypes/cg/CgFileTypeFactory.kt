@@ -6,7 +6,11 @@ import com.intellij.openapi.fileTypes.FileTypeConsumer
 import com.intellij.openapi.fileTypes.FileTypeFactory
 
 class CgFileTypeFactory : FileTypeFactory() {
-    private val extensions: List<String> = arrayListOf("cginc", "compute")
+    companion object {
+        // Don't forget to update CgProjectFileType list on the backend
+        val extensions: List<String> = arrayListOf("cginc", "compute", "hlsl", "glsl", "hlslinc", "glslinc")
+    }
+
     private val matchers: List<FileNameMatcher> = extensions.map { ExtensionFileNameMatcher(it) }
 
     override fun createFileTypes(consumer: FileTypeConsumer) {

@@ -6,6 +6,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel
     public class CgProjectFileType : KnownProjectFileType
     {
         public new const string Name = "CG";
+        
+        // Don't forget to update list in CgFileTypeFactory on the frontend 
         public const string CG_EXTENSION = ".cginc";
         public const string COMPUTE_EXTENSION = ".compute";
         public const string HLSL_EXTENSION = ".hlsl";
