@@ -11,8 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.ReSpeller
     {
         public bool ShouldSkipFile(IFile file)
         {
-            var sourceFile = file.GetSourceFile();
-            var path = sourceFile != null ? sourceFile.ToProjectFile()?.Location : null;
+            var path = file.GetSourceFile()?.GetLocation();
             if (FileSystemPathEx.IsNullOrEmpty(path))
                 return false;
             return path.ExtensionNoDot.Equals("asmdef", StringComparison.OrdinalIgnoreCase);
