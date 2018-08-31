@@ -7,10 +7,10 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.isDirectory
+import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.util.idea.getOrCreateUserData
 import java.nio.file.Path
 import java.nio.file.Paths
 
