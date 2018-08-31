@@ -509,7 +509,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         // Note that if existing is "default", we'll override it
         var currentIsParsed = VersionExtensions.TryParse(existing, out var currentLanguageLevel);
         var expectedIsParsed = VersionExtensions.TryParse(expected, out var expectedLanguageLevel);
-        if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel)
+        if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel
+            || !currentIsParsed)
         {
           return expected;
         }
