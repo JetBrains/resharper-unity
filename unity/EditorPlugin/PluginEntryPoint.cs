@@ -37,7 +37,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap 
       Log.DefaultFactory = new RiderLoggerFactory(); // init log before doing any logging
-
+ 
       ourPluginSettings = new PluginSettings();
       ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
       var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
