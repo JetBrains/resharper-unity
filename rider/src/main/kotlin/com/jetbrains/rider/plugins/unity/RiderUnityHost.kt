@@ -2,14 +2,14 @@ package com.jetbrains.rider.plugins.unity
 
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.model.EditorState
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.util.reactive.*
+import com.jetbrains.rider.util.reactive.Signal
+import com.jetbrains.rider.util.reactive.adviseNotNull
 
 class UnityHost(project: Project) : LifetimedProjectComponent(project) {
     val model = project.solution.rdUnityModel

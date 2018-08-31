@@ -2,6 +2,7 @@ package com.jetbrains.rider
 
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.RdAssemblyReferenceDescriptor
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
@@ -10,10 +11,8 @@ import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionFile
-import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
-import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(project) {
