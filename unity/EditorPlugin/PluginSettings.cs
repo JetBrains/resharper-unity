@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using JetBrains.DataFlow;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,16 +24,22 @@ namespace JetBrains.Rider.Unity.Editor
 
   public class PluginSettings : IPluginSettings
   {
-    private static LoggingLevel ourSelectedLoggingLevel = (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 4);
-
     internal static LoggingLevel SelectedLoggingLevel
     {
-      get => ourSelectedLoggingLevel;
+      get => (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 0);
       private set
       {
         EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
-        ourSelectedLoggingLevel = value;
+        InitLog();
       }
+    }
+
+    public static void InitLog()
+    {
+      if (SelectedLoggingLevel > LoggingLevel.OFF) 
+        Log.DefaultFactory = Log.CreateFileLogFactory(EternalLifetime.Instance, PluginEntryPoint.LogPath, true, SelectedLoggingLevel);
+      else
+        Log.DefaultFactory = new SingletonLogFactory(NullLog.Instance); // use profiler in Unity - this is faster than leaving TextWriterLogFactory with LoggingLevel OFF 
     }
 
     public static string[] GetInstalledNetFrameworks()
