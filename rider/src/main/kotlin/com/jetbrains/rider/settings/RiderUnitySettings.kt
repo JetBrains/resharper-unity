@@ -2,7 +2,7 @@ package com.jetbrains.rider.settings
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.util.idea.LifetimedProjectComponent
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.reactive.Signal
 

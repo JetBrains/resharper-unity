@@ -8,9 +8,9 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.actionSystem.ex.AnActionListener
 import com.intellij.openapi.project.Project
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 
 class SaveAllTracker(project: Project, val actionManagerEx: ActionManagerEx) : LifetimedProjectComponent(project) {
     init {

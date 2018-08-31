@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.util.idea.LifetimedProjectComponent
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.getLogger
 import com.jetbrains.rider.util.reactive.whenTrue
 
