@@ -48,7 +48,7 @@ class UnityToolWindowFactory(project: Project,
 
         val contentManager = toolWindow.contentManager
         contentManager.addContentManagerListener(object : ContentManagerAdapter() {
-            override fun contentRemoved(event: ContentManagerEvent?) {
+            override fun contentRemoved(event: ContentManagerEvent) {
                 context = null
                 toolWindowManager.unregisterToolWindow(TOOLWINDOW_ID)
             }

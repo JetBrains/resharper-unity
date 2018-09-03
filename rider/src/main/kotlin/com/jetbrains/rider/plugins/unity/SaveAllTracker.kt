@@ -20,11 +20,11 @@ class SaveAllTracker(project: Project, val actionManagerEx: ActionManagerEx) : L
     }
 
     class FileListenerImpl(val project: Project) : AnActionListener {
-        override fun beforeActionPerformed(action: AnAction, dataContext: DataContext?, event: AnActionEvent?) {
+        override fun beforeActionPerformed(action: AnAction, dataContext: DataContext, event: AnActionEvent?) {
 
         }
 
-        override fun afterActionPerformed(action: AnAction?, dataContext: DataContext?, event: AnActionEvent?) {
+        override fun afterActionPerformed(action: AnAction?, dataContext: DataContext, event: AnActionEvent?) {
             super.afterActionPerformed(action, dataContext, event)
 
             if (action!=null && (action is SaveAllAction || action is SaveDocumentAction)) {
