@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Impl;
-using JetBrains.Util;
 using JetBrains.Util.Logging;
-using Newtonsoft.Json;
 
 namespace JetBrains.Rider.Unity.Editor.NonUnity
 {

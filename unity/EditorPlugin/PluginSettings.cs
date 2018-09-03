@@ -355,7 +355,7 @@ namespace JetBrains.Rider.Unity.Editor
       // This call on Linux is extremely slow, so cache it
       private static readonly string ourOperatingSystem = SystemInfo.operatingSystem;
 
-      // Do not rename. Expicitly disabled for consistency/compatibility with future Unity API
+      // Do not rename. Explicitly disabled for consistency/compatibility with future Unity API
       // ReSharper disable once InconsistentNaming
       public static OperatingSystemFamilyRider operatingSystemFamily
       {
