@@ -504,13 +504,18 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         {
           return PluginSettings.LangVersion;
         }
-
+        
         var expected = GetExpectedLanguageLevel();
+        if (string.IsNullOrEmpty(existing))
+          return expected;
+
+        if (existing == "default")
+          return expected;
+        
         if (expected == "latest" || existing == "latest")
           return "latest";
 
         // Only use our version if it's not already set, or it's less than what we would set
-        // Note that if existing is "default", we'll override it
         var currentIsParsed = VersionExtensions.TryParse(existing, out var currentLanguageLevel);
         var expectedIsParsed = VersionExtensions.TryParse(expected, out var expectedLanguageLevel);
         if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel)
