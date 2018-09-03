@@ -63,6 +63,11 @@ private OnWillRenderObject() { ... }
 private Reset() { ... }
 private Start() { ... }
 private Update() { ... }
+private OnBeforeTransformParentChanged() { ... }
+private OnCanvasGroupChanged() { ... }
+private OnCanvasHierarchyChanged() { ... }
+private OnDidApplyAnimationProperties() { ... }
+private OnRectTransformDimensionsChange() { ... }
 abstract
 async
 bool
@@ -1036,11 +1041,6 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
-private OnBeforeTransformParentChanged() { ... }
-private OnCanvasGroupChanged() { ... }
-private OnCanvasHierarchyChanged() { ... }
-private OnDidApplyAnimationProperties() { ... }
-private OnRectTransformDimensionsChange() { ... }
 public override Equals(object) { ... }
 public override GetHashCode() { ... }
 public override ToString() { ... }
@@ -1110,6 +1110,11 @@ private OnWillRenderObject() { ... }
 private Reset() { ... }
 private Start() { ... }
 private Update() { ... }
+private OnBeforeTransformParentChanged() { ... }
+private OnCanvasGroupChanged() { ... }
+private OnCanvasHierarchyChanged() { ... }
+private OnDidApplyAnimationProperties() { ... }
+private OnRectTransformDimensionsChange() { ... }
 abstract
 async
 bool
@@ -2083,11 +2088,6 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
-private OnBeforeTransformParentChanged() { ... }
-private OnCanvasGroupChanged() { ... }
-private OnCanvasHierarchyChanged() { ... }
-private OnDidApplyAnimationProperties() { ... }
-private OnRectTransformDimensionsChange() { ... }
 public override Equals(object) { ... }
 public override GetHashCode() { ... }
 public override ToString() { ... }
