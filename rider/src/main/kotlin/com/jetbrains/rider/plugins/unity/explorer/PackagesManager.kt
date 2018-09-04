@@ -7,10 +7,10 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.isDirectory
-import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.projectDir
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -76,7 +76,7 @@ class PackagesManager(private val project: Project) {
     }
 
     val packagesFolder: VirtualFile
-        get() = project.baseDir.findChild("Packages")!!
+        get() = project.projectDir.findChild("Packages")!!
 
     val hasPackages: Boolean
         get() = packagesByCanonicalName.isNotEmpty()
@@ -152,7 +152,7 @@ class PackagesManager(private val project: Project) {
     }
 
     private fun getManifestJsonFile(): VirtualFile? {
-        return project.baseDir.findFileByRelativePath("Packages/manifest.json")
+        return project.projectDir.findFileByRelativePath("Packages/manifest.json")
     }
 
     private fun getPackagesFromDependencies(packagesFolder: VirtualFile, registry: String, builtInPackagesFolder: Path?,

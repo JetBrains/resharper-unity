@@ -17,9 +17,11 @@ class PlayInUnityAction : ToggleAction("Play/Edit", "Change Play/Edit mode in Un
         val unityHost = e.getHost() ?: return false
         return unityHost.play.valueOrDefault(false)
     }
+
     override fun setSelected(e: AnActionEvent, value: Boolean) {
         e.getHost()?.play?.set(value)
     }
+
     override fun update(e: AnActionEvent) {
         if (!e.isUnityProject()) {
             e.presentation.isVisible = false
@@ -39,6 +41,7 @@ class PauseInUnityAction : ToggleAction("Pause/Resume", "Pause/Resume play in Un
         val unityHost = e.getHost() ?: return false
         return unityHost.pause.valueOrDefault(false)
     }
+
     override fun setSelected(e: AnActionEvent, value: Boolean) {
         e.getHost()?.pause?.set(value)
     }

@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.util
 import com.google.gson.Gson
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.projectDir
 
 enum class EditorInstanceJsonStatus {
     Missing,
@@ -18,7 +19,7 @@ data class EditorInstanceJson(val process_id: Int, val version: String) {
 
         fun load(project: Project): Pair<EditorInstanceJsonStatus, EditorInstanceJson?> {
 
-            val path = project.baseDir.findFileByRelativePath("Library/EditorInstance.json")
+            val path = project.projectDir.findFileByRelativePath("Library/EditorInstance.json")
             return if (path == null || !path.exists()) {
                 Pair(EditorInstanceJsonStatus.Missing, null)
             }
