@@ -29,14 +29,14 @@ class DefaultRunConfigurationGenerator(unityReferenceDiscoverer: UnityReferenceD
                 // Add "Attach Unity Editor" configurations, if they don't exist
                 if (!runManager.allSettings.any { it.type is UnityDebugConfigurationType && it.factory is UnityAttachToEditorFactory }) {
                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDebugConfigurationType::class.java)
-                    val runConfiguration = runManager.createRunConfiguration(ATTACH_CONFIGURATION_NAME, configurationType.attachToEditorFactory)
+                    val runConfiguration = runManager.createConfiguration(ATTACH_CONFIGURATION_NAME, configurationType.attachToEditorFactory)
                     // Not shared, as that requires the entire team to have the plugin installed
                     runManager.addConfiguration(runConfiguration, false)
                 }
 
                 if (!runManager.allSettings.any { it.type is UnityDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory }) {
                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDebugConfigurationType::class.java)
-                    val runConfiguration = runManager.createRunConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationType.attachToEditorAndPlayFactory)
+                    val runConfiguration = runManager.createConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationType.attachToEditorAndPlayFactory)
                     runManager.addConfiguration(runConfiguration, false)
                 }
 

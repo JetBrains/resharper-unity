@@ -14,6 +14,7 @@ import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.use2
 import org.apache.commons.logging.LogFactory
 import org.jdom.Element
@@ -81,7 +82,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     }
 
     private fun findUnityEditorInstanceFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
-        project.baseDir.findFileByRelativePath("Library/EditorInstance.json")?.let { file ->
+        project.projectDir.findFileByRelativePath("Library/EditorInstance.json")?.let { file ->
             try {
                 // Not a RuntimeConfigurationError, mainly because we can recover
                 return file.inputStream.reader().use2 { reader ->

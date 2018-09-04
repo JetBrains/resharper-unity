@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.model.*
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
@@ -23,7 +24,7 @@ class UnityExplorerRootNode(project: Project, private val packagesManager: Packa
     : SolutionViewRootNodeBase(project) {
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
-        val assetsFolder = myProject.baseDir?.findChild("Assets")!!
+        val assetsFolder = myProject.projectDir.findChild("Assets")!!
         val assetsNode = UnityExplorerNode.AssetsRoot(myProject, assetsFolder)
 
         val nodes = mutableListOf<AbstractTreeNode<*>>(assetsNode)

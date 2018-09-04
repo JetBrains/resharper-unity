@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFileListener
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.ui.tree.TreeVisitor
 import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
 import com.jetbrains.rider.util.lifetime.Lifetime
@@ -77,7 +78,7 @@ class UnityExplorerPackagesViewUpdater(project: Project, private val pane: Unity
     private inner class FileListener(private val project: Project) : VirtualFileListener {
 
         override fun contentsChanged(event: VirtualFileEvent) {
-            if (event.file == project.baseDir.findFileByRelativePath("Packages/manifest.json")) {
+            if (event.file == project.projectDir.findFileByRelativePath("Packages/manifest.json")) {
                 updatePackagesRoot()
             }
             else if (event.file.name == "package.json" && containsFile(event.file)) {
@@ -100,7 +101,7 @@ class UnityExplorerPackagesViewUpdater(project: Project, private val pane: Unity
         }
 
         private fun isPackagesFolder(file: VirtualFile?): Boolean {
-            return file != null && file.name == "Packages" && file.parent == project.baseDir
+            return file != null && file.name == "Packages" && file.parent == project.projectDir
         }
 
         private fun isManifestJson(file: VirtualFile?): Boolean {

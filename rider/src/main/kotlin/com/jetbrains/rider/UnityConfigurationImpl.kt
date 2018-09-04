@@ -23,7 +23,7 @@ class UnityConfigurationImpl(private val project: Project, unityReferenceDiscove
 
     private fun getChildAsFile(directoryName: String) : File?
     {
-        val libraryFolder = project.baseDir.findChild(directoryName)
+        val libraryFolder = project.projectDir.findChild(directoryName)
         val path = libraryFolder?.canonicalPath ?: return null
         return File(path)
     }
