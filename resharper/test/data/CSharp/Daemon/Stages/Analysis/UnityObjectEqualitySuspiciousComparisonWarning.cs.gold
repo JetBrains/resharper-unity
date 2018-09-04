@@ -1,0 +1,51 @@
+﻿using UnityEngine;
+
+public class UnityObjectEqualitySuspiciousComparisonWarning : MonoBehaviour
+{
+    public void TestMethod(Component component, Component component2)
+    {
+        var rigidBody = GetComponent<Rigidbody>();
+        var collider = GetComponent<Collider>();
+        
+        // No warning
+        if (component == component2) { }
+
+        // Suspicious comparison warnings
+        if (|this == rigidBody|(0)) { }
+        if (|this != rigidBody|(1)) { }
+
+        // Suspicious comparison warnings
+        if (|collider == rigidBody|(2)) { }
+        if (|collider != rigidBody|(3)) { }
+        
+        // No warnings
+        if (collider == component) { }
+        if (rigidBody == component) { }
+    }
+
+    public void TestMethod2(BaseBehaviour baseBehaviour, DerivedBehaviour derivedBehaviour)
+    {
+        // Suspicious comparison warnings
+        if (|baseBehaviour == this|(4)) { }
+        if (|baseBehaviour != this|(5)) { }
+        
+        // No warnings
+        if (baseBehaviour == derivedBehaviour) { }
+    }
+}
+
+public class BaseBehaviour : MonoBehaviour
+{
+}
+
+public class DerivedBehaviour : BaseBehaviour
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Suspicious comparison: there is no type in the solution which is inherited from both 'UnityObjectEqualitySuspiciousComparisonWarning' and 'UnityEngine.Rigidbody'
+(1): ReSharper Warning: Suspicious comparison: there is no type in the solution which is inherited from both 'UnityObjectEqualitySuspiciousComparisonWarning' and 'UnityEngine.Rigidbody'
+(2): ReSharper Warning: Suspicious comparison: there is no type in the solution which is inherited from both 'UnityEngine.Collider' and 'UnityEngine.Rigidbody'
+(3): ReSharper Warning: Suspicious comparison: there is no type in the solution which is inherited from both 'UnityEngine.Collider' and 'UnityEngine.Rigidbody'
+(4): ReSharper Warning: Suspicious comparison: there is no type in the solution which is inherited from both 'BaseBehaviour' and 'UnityObjectEqualitySuspiciousComparisonWarning'
+(5): ReSharper Warning: Suspicious comparison: there is no type in the solution which is inherited from both 'BaseBehaviour' and 'UnityObjectEqualitySuspiciousComparisonWarning'
