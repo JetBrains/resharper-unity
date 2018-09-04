@@ -55,7 +55,15 @@ class PackagesManager(private val project: Project) {
         private val logger = Logger.getInstance(PackagesManager::class.java)
 
         fun getInstance(project: Project): PackagesManager {
-            return project.getOrCreateUserData(key) { PackagesManager(project) }
+            // We can't use the UserDataHolderEx.getOrCreateUserData extension function, because the compiler tries to
+            // inline it, but the scrambler has inserted references to a private static field
+            // This should be fixed in IDEA/Rider. Please test again!
+            var packagesManager = project.getUserData(key)
+            if (packagesManager == null) {
+                packagesManager = PackagesManager(project)
+                project.putUserData(key, packagesManager)
+            }
+            return packagesManager
         }
     }
 
