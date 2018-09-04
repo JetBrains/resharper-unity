@@ -1,3 +1,5 @@
+#pragma warning disable 169
+
 using UnityEngine;
 using UnityEditor;
 

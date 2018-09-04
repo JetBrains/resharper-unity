@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 169
+
+using UnityEngine;
 
 public class Test
 {
