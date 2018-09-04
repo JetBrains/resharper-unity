@@ -57,6 +57,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
         }
 
+        public void QueueWithLock()
+        {
+            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.InstallEditorPlugin", () =>
+            {
+                var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion);
+                QueueInstall(installationInfo, true);
+            });
+        }
+
         void UnityReferencesTracker.IHandler.OnSolutionLoaded(UnityProjectsCollection solution)
         {
             myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.OnSolutionLoaded", () => InstallPluginIfRequired(solution.UnityProjectLifetimes.Keys));
@@ -113,25 +122,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
 
+            QueueInstall(installationInfo);
+        }
+
+        private void QueueInstall(UnityPluginDetector.InstallationInfo installationInfo, bool force = false)
+        {
             myQueue.Enqueue(() =>
             {
-                Install(installationInfo);
+                Install(installationInfo, force);
                 myPluginInstallations.Add(mySolution.SolutionFilePath);
             });
         }
 
-        private void Install(UnityPluginDetector.InstallationInfo installationInfo)
+        private void Install(UnityPluginDetector.InstallationInfo installationInfo, bool force)
         {
-            if (!installationInfo.ShouldInstallPlugin)
+            if (!force)
             {
-                Assertion.Assert(false, "Should not be here if installation is not required.");
-                return;
-            }
+                if (!installationInfo.ShouldInstallPlugin)
+                {
+                    Assertion.Assert(false, "Should not be here if installation is not required.");
+                    return;
+                }
 
-            if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
-            {
-                myLogger.Verbose("Installation already done.");
-                return;
+                if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
+                {
+                    myLogger.Verbose("Installation already done.");
+                    return;
+                }
             }
 
             myLogger.Info("Installing Rider Unity editor plugin: {0}", installationInfo.InstallReason);

@@ -11,6 +11,7 @@ import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
 import org.codehaus.jettison.json.JSONObject
+import org.jetbrains.annotations.Nullable
 import java.time.LocalDateTime
 import java.util.*
 
@@ -55,6 +56,7 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
         fun CallBackendPlay(project: Project, value:Boolean) { project.solution.rdUnityModel.play.set(value) }
         fun CallBackendPause(project: Project, value:Boolean) { CallBackend(project, "UNITY_Pause", value.toString().toLowerCase()) }
         fun CallBackendStep(project: Project) { CallBackend(project, "UNITY_Step", "true") }
+        fun CallBackendInstallEditorPlugin(project: Project) { CallBackend(project, "UNITY_InstallEditorPlugin", "true") }
 
         const val DISCONNECTED = "Disconnected"
         const val CONNECTED_IDLE = "ConnectedIdle"

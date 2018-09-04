@@ -39,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
         private readonly Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
+        private readonly UnityPluginInstaller myUnityPluginInstaller;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
 
@@ -55,7 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
             ISettingsStore settingsStore, Application.ActivityTrackingNew.UsageStatistics usageStatistics,
-            UnitySolutionTracker unitySolutionTracker)
+            UnitySolutionTracker unitySolutionTracker,
+            UnityPluginInstaller unityPluginInstaller)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
@@ -64,6 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution = solution;
             myPluginPathsProvider = pluginPathsProvider;
             myUsageStatistics = usageStatistics;
+            myUnityPluginInstaller = unityPluginInstaller;
             myHost = host;
             myBoundSettingsStore =
                 settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
@@ -77,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            var solFolder = mySolution.SolutionFilePath.Directory;
+            var solFolder = mySolution.SolutionDirectory;
             AdviseModelData(lifetime, mySolution.GetProtocolSolution());
 
             // todo: consider non-Unity Solution with Unity-generated projects
@@ -131,12 +134,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return;
                 if (e.NewValue == null)
                     return;
-                if (model==null)
-                    return;
 
                 switch (e.Key)
                 {
+                    case "UNITY_InstallEditorPlugin":
+                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
+                        myUnityPluginInstaller.QueueWithLock();
+                        solution.CustomData.Data.Remove("UNITY_InstallEditorPlugin");
+                        break;
+                    
                     case "UNITY_Refresh":
+                        if (model==null)
+                            return;
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         var force = Convert.ToBoolean(e.NewValue);
                         Refresh.Fire(force);
@@ -144,12 +153,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         break;
 
                     case "UNITY_Step":
+                        if (model==null)
+                            return;
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         model.Step.Start(RdVoid.Instance);
                         solution.CustomData.Data.Remove("UNITY_Step");
                         break;
 
                     case "UNITY_Pause":
+                        if (model==null)
+                            return;
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         model.Pause.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
