@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using JetBrains.Rider.Unity.Editor.NonUnity;
@@ -40,7 +41,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         if (UpgradeProjectFile(path, doc))
         {
           ourLogger.Verbose("Post-processed with changes {0} (in memory)", path);
-          return doc.ToString();
+          using (var sw = new Utf8StringWriter())
+          {
+            doc.Save(sw);
+            return sw.ToString(); // https://github.com/JetBrains/resharper-unity/issues/727
+          }
         }
 
         ourLogger.Verbose("Post-processed with NO changes {0}", path);
@@ -115,22 +120,49 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetLangVersion(projectContentElement, xmlns);
       changed |= SetProjectFlavour(projectContentElement, xmlns);
       changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
+      changed |= AddMicrosoftCSharpReference(projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
-
+      changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
+      
       return changed;
+    }
+
+    private static bool SetGenerateTargetFrameworkAttribute(XElement projectContentElement, XNamespace xmlns)
+    {
+      //https://youtrack.jetbrains.com/issue/RIDER-17390
+      
+      if (UnityUtils.ScriptingRuntime > 0)  
+        return false;
+      
+      return SetOrUpdateProperty(projectContentElement, xmlns, "GenerateTargetFrameworkAttribute", existing => "false");
+    }
+
+    private static bool AddMicrosoftCSharpReference (XElement projectContentElement, XNamespace xmlns)
+    {
+      string referenceName = "Microsoft.CSharp.dll";
+      
+      if (UnityUtils.ScriptingRuntime == 0)
+        return false;
+
+      if (ourApiCompatibilityLevel != apiCompatibilityLevelNet46)
+        return false;
+      
+      var hintPath = GetHintPath(referenceName);
+      ApplyCustomReference(referenceName, projectContentElement, xmlns, hintPath);
+      return true;
     }
 
     private static bool SetDisableHandlePackageFileConflicts(XElement projectContentElement, XNamespace xmlns)
     {
       // https://developercommunity.visualstudio.com/content/problem/138986/1550-preview-2-breaks-scriptsharp-compilation.html
       // RIDER-18316 Rider fails to resolve mscorlib
-      
+
       // is expected to be no problem with new unity mono runtime or non-windows OS-s
-      if (UnityUtils.ScriptingRuntime > 0 || PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)  
+      if (UnityUtils.ScriptingRuntime > 0 || PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
         return false;
-      
+
       return SetOrUpdateProperty(projectContentElement, xmlns, "DisableHandlePackageFileConflicts", existing => "true");
     }
 
@@ -149,54 +181,50 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return false;
     }
 
-    private const string UNITY_PLAYER_PROJECT_NAME = "Assembly-CSharp.csproj";
-    private const string UNITY_EDITOR_PROJECT_NAME = "Assembly-CSharp-Editor.csproj";
     private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
     private const string UNITY_DEFINE_KEYWORD = "-define:";
     private static readonly string PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH = Path.GetFullPath("Assets/csc.rsp");
     private static readonly string PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
     private static readonly string PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
     private static readonly string EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
+    private static readonly int ourApiCompatibilityLevel = GetApiCompatibilityLevel();
+    private const int apiCompatibilityLevelNet46 = 3;
 
     private static bool SetManuallyDefinedCompilerSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
-      // Handled natively by Unity 2017.1+
-      if (UnityUtils.UnityVersion < new Version(2017, 1))
-        return false;
-
-      string configPath = null;
-
-      if (File.Exists(PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH)) // First choice - prefer csc.rsp if it exists
-      {
-        configPath = PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH;
-      }
-      else if (File.Exists(PROJECT_MANUAL_CONFIG_FILE_PATH)) //Second choice - prefer mcs.rsp if it exists
-      {
-        configPath = PROJECT_MANUAL_CONFIG_FILE_PATH;
-      }
-      else
-      {
-        if (IsPlayerProjectFile(projectFile))
-          configPath = PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH;
-        else if (IsEditorProjectFile(projectFile))
-          configPath = EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH;
-      }
-
-      if (!string.IsNullOrEmpty(configPath))
-        return ApplyManualCompilerSettings(configPath, projectContentElement, xmlns);
-
-      return false;
+      var configPath = GetConfigPath(projectFile);
+      return ApplyManualCompilerSettings(configPath, projectContentElement, xmlns);
     }
 
-    private static bool ApplyManualCompilerSettings(string configFilePath, XElement projectContentElement, XNamespace xmlns)
+    [CanBeNull]
+    private static string GetConfigPath(string projectFile)
+    {
+      // First choice - prefer csc.rsp if it exists
+      if (File.Exists(PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH))
+        return PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH;
+
+      // Second choice - prefer mcs.rsp if it exists
+      if (File.Exists(PROJECT_MANUAL_CONFIG_FILE_PATH))
+        return PROJECT_MANUAL_CONFIG_FILE_PATH;
+
+      var filename = Path.GetFileName(projectFile);
+      if (filename == "Assembly-CSharp.csproj")
+        return PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH;
+      if (filename == "Assembly-CSharp-Editor.csproj")
+        return EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH;
+
+      return null;
+    }
+
+    private static bool ApplyManualCompilerSettings([CanBeNull] string configFilePath, XElement projectContentElement, XNamespace xmlns)
     {
       var changed = false;
 
-      if (File.Exists(configFilePath))
+      if (!string.IsNullOrEmpty(configFilePath) && File.Exists(configFilePath))
       {
         var configText = File.ReadAllText(configFilePath);
 
-        var isUnity20171OrLater = UnityUtils.UnityVersion < new Version(2017, 1);
+        var isUnity20171OrLater = UnityUtils.UnityVersion >= new Version(2017, 1);
 
         // Unity always sets AllowUnsafeBlocks in 2017.1+
         // Strictly necessary to compile unsafe code
@@ -227,7 +255,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
             if (f.Contains(UNITY_DEFINE_KEYWORD))
             {
               var defineEndPos = f.IndexOf(UNITY_DEFINE_KEYWORD) + UNITY_DEFINE_KEYWORD.Length;
-              var definesSubString = f.Substring(defineEndPos,f.Length - defineEndPos);
+              var definesSubString = f.Substring(defineEndPos, f.Length - defineEndPos);
               definesSubString = definesSubString.Replace(";", ",");
               definesList.AddRange(definesSubString.Split(','));
             }
@@ -266,25 +294,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return true;
     }
 
-    private static bool IsPlayerProjectFile(string projectFile)
-    {
-      return Path.GetFileName(projectFile) == UNITY_PLAYER_PROJECT_NAME;
-    }
-
-    private static bool IsEditorProjectFile(string projectFile)
-    {
-      return Path.GetFileName(projectFile) == UNITY_EDITOR_PROJECT_NAME;
-    }
-
     private static bool SetXCodeDllReference(string name, XElement projectContentElement, XNamespace xmlns)
     {
-      var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-      if (string.IsNullOrEmpty(unityAppBaseFolder))
-      {
-        ourLogger.Verbose("SetXCodeDllReference. unityAppBaseFolder IsNullOrEmpty");
-        return false;
-      }
-
+      var unityAppBaseFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
       var xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("Data/PlaybackEngines/iOSSupport", name));
       if (!File.Exists(xcodeDllPath))
         xcodeDllPath = Path.Combine(unityAppBaseFolder, Path.Combine("PlaybackEngines/iOSSupport", name));
@@ -304,6 +316,10 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool FixUnityEngineReference(XElement projectContentElement, XNamespace xmlns)
     {
+      // Handled natively by Unity 2018.2+
+      if (UnityUtils.UnityVersion >= new Version(2018, 2))
+        return false;
+      
       var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
       if (string.IsNullOrEmpty(unityAppBaseFolder))
       {
@@ -364,32 +380,41 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       foreach (var referenceName in referenceList)
       {
-        string hintPath = null;
-
         var name = referenceName;
         if (new FileInfo(name).Extension != ".dll")
           name += ".dll"; // RIDER-15093
-
-        if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
-        {
-          var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
-          var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
-          if (!monoDir.Exists)
-            monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
-
-          var newestApiDir = monoDir.GetDirectories("4.*").LastOrDefault();
-          if (newestApiDir != null)
-          {
-            var dllPath = new FileInfo(Path.Combine(newestApiDir.FullName, name));
-            if (dllPath.Exists)
-              hintPath = dllPath.FullName;
-          }
-        }
-
+        
+        var hintPath = GetHintPath(name);
         ApplyCustomReference(name, projectContentElement, xmlns, hintPath);
       }
 
       return true;
+    }
+
+    [CanBeNull]
+    private static string GetHintPath(string name)
+    {
+      // Without hintpath non-Unity MSBuild will resolve assembly from dotnetframework targets path
+      string hintPath = null;
+      
+      var unityAppBaseFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
+      var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
+      if (!monoDir.Exists)
+        monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "Data/MonoBleedingEdge/lib/mono"));
+
+      var mask = "4.*";
+      if (UnityUtils.ScriptingRuntime == 0)
+        mask = "2.*";
+      
+      var apiDir = monoDir.GetDirectories(mask).LastOrDefault(); // take newest
+      if (apiDir != null)
+      {
+        var dllPath = new FileInfo(Path.Combine(apiDir.FullName, name));
+        if (dllPath.Exists)
+          hintPath = dllPath.FullName;
+      }
+
+      return hintPath;
     }
 
     private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns, string hintPath = null)
@@ -403,7 +428,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       projectContentElement.Add(itemGroup);
     }
 
-    // Set appropriate version
+    // Setappropriate version
     private static bool FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
       return SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", s =>
@@ -479,13 +504,18 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         {
           return PluginSettings.LangVersion;
         }
-
+        
         var expected = GetExpectedLanguageLevel();
+        if (string.IsNullOrEmpty(existing))
+          return expected;
+
+        if (existing == "default")
+          return expected;
+        
         if (expected == "latest" || existing == "latest")
           return "latest";
 
         // Only use our version if it's not already set, or it's less than what we would set
-        // Note that if existing is "default", we'll override it
         var currentIsParsed = VersionExtensions.TryParse(existing, out var currentLanguageLevel);
         var expectedIsParsed = VersionExtensions.TryParse(expected, out var expectedLanguageLevel);
         if (currentIsParsed && expectedIsParsed && currentLanguageLevel < expectedLanguageLevel)
@@ -505,6 +535,15 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (Directory.Exists(Path.GetFullPath("CSharp60Support")))
         return "6";
 
+      // Unity 5.5+ supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
+      if (ourApiCompatibilityLevel >= apiCompatibilityLevelNet46)
+        return "6";
+
+      return "4";
+    }
+
+    private static int GetApiCompatibilityLevel()
+    {
       var apiCompatibilityLevel = 0;
       try
       {
@@ -512,11 +551,13 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         var method = typeof(PlayerSettings).GetMethod("GetApiCompatibilityLevel");
         var parameter = typeof(EditorUserBuildSettings).GetProperty("selectedBuildTargetGroup");
         var val = parameter.GetValue(null, null);
-        apiCompatibilityLevel = (int) method.Invoke(null, new [] {val});
+        apiCompatibilityLevel = (int) method.Invoke(null, new[] {val});
       }
       catch (Exception ex)
       {
-        ourLogger.Verbose("Exception on evaluating PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)"+ ex);
+        ourLogger.Verbose(
+          "Exception on evaluating PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)" +
+          ex);
       }
 
       try
@@ -529,12 +570,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         ourLogger.Verbose("Exception on evaluating PlayerSettings.apiCompatibilityLevel");
       }
 
-      // Unity 5.5+ supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-      const int apiCompatibilityLevelNet46 = 3;
-      if (apiCompatibilityLevel >= apiCompatibilityLevelNet46)
-        return "6";
-
-      return "4";
+      return apiCompatibilityLevel;
     }
 
     private static bool SetProjectFlavour(XElement projectElement, XNamespace xmlns)
@@ -588,6 +624,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       }
 
       propertyGroup.Add(new XElement(xmlns + name, content));
+    }
+
+    class Utf8StringWriter : StringWriter
+    {
+      public override Encoding Encoding => Encoding.UTF8;
     }
   }
 }

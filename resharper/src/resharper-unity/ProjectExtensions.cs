@@ -39,6 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var tracker = solution.GetComponent<UnityReferencesTracker>();
             return tracker.IsUnitySolution.Value;
         }
+        
+        public static bool IsAbleToEstablishProtocolConnectionWithUnity([NotNull] this ISolution solution)
+        {
+            var tracker = solution.GetComponent<UnitySolutionTracker>();
+            return tracker.IsAbleToEstablishProtocolConnectionWithUnity.Value;
+        }
 
         public static bool IsUnityProject([CanBeNull] this IProject project)
         {
@@ -64,9 +70,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
                    && solutionFilePath.NameWithoutExtension == solutionDir.Name;
         }
         
-        public static bool IsAbleToEstablishProtocolConnectionWithUnity(FileSystemPath solutionFilePath)
+        public static bool IsAbleToEstablishProtocolConnectionWithUnity(FileSystemPath solutionDir)
         {
-            var solutionDir = solutionFilePath.Directory;
             var assetsFolder = solutionDir.CombineWithShortName(AssetsFolder);
             var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectSettingsFolder);
             var libraryFolder = solutionDir.CombineWithShortName(LibraryFolder);

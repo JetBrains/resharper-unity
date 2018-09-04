@@ -14,9 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return description.AttributeId == ShaderLabHighlightingAttributeIds.INJECTED_LANGUAGE_FRAGMENT;
         }
 
-        public RiderHighlighterProperties GetProperties(RiderHighlighterDescription description)
+        public HighlighterProperties GetProperties(RiderHighlighterDescription description)
         {
-            return new RiderHighlighterProperties(
+            return new HighlighterProperties(
                 description.Kind.ToModel(), !description.NotRecyclable,
                 GreedySide.NONE, false, false, false);
         }

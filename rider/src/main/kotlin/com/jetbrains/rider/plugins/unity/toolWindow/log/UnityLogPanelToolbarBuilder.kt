@@ -25,18 +25,18 @@ object UnityLogPanelToolbarBuilder {
 
     fun createLeftToolbar(model: UnityLogPanelModel, mainSplitterToggleAction: DumbAwareAction, consoleActionsList : List<AnAction>): JPanel {
         fun createType(type: RdLogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
-            override fun isSelected(e: AnActionEvent?) = model.typeFilters.getShouldBeShown(type)
-            override fun setSelected(e: AnActionEvent?, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
+            override fun isSelected(e: AnActionEvent) = model.typeFilters.getShouldBeShown(type)
+            override fun setSelected(e: AnActionEvent, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
         }
 
         fun createMode(mode: RdLogEventMode) = object : ToggleAction("Show/Hide '$mode' mode", "", mode.getIcon()) {
-            override fun isSelected(e: AnActionEvent?) = model.modeFilters.getShouldBeShown(mode)
-            override fun setSelected(e: AnActionEvent?, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
+            override fun isSelected(e: AnActionEvent) = model.modeFilters.getShouldBeShown(mode)
+            override fun setSelected(e: AnActionEvent, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
         }
 
         fun collapseall() = object : ToggleAction("Collapse similar items", "", AllIcons.Actions.Collapseall) {
-            override fun isSelected(e: AnActionEvent?) = model.mergeSimilarItems.value
-            override fun setSelected(e: AnActionEvent?, value: Boolean) {
+            override fun isSelected(e: AnActionEvent) = model.mergeSimilarItems.value
+            override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.mergeSimilarItems.set(value)
             }
         }

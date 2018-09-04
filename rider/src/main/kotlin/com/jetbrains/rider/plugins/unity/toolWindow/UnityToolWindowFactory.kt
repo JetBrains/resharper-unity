@@ -9,14 +9,13 @@ import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.impl.status.StatusBarUtil
 import com.intellij.ui.content.ContentManagerAdapter
 import com.intellij.ui.content.ContentManagerEvent
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
-import com.jetbrains.rider.unitTesting.actions.RiderUnitTestRenameSessionAction
-import com.jetbrains.rider.util.idea.LifetimedProjectComponent
 
 class UnityToolWindowFactory(project: Project,
                              private val toolWindowManager: ToolWindowManager,
@@ -49,7 +48,7 @@ class UnityToolWindowFactory(project: Project,
 
         val contentManager = toolWindow.contentManager
         contentManager.addContentManagerListener(object : ContentManagerAdapter() {
-            override fun contentRemoved(event: ContentManagerEvent?) {
+            override fun contentRemoved(event: ContentManagerEvent) {
                 context = null
                 toolWindowManager.unregisterToolWindow(TOOLWINDOW_ID)
             }

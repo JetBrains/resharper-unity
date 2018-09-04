@@ -184,6 +184,11 @@ def dllFiles = [
     "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
 ]
 
+def debuggerDllFiles = [
+    "../resharper/build/resharper-unity.rider.debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
+    "../resharper/build/resharper-unity.rider.debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
+]
+
 def annotationsFrom = '../resharper/src/resharper-unity/annotations'
 def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 
@@ -217,6 +222,11 @@ prepareSandbox {
             def file = file("$f")
             if (!file.exists()) throw new RuntimeException("File $file does not exist")
         })
+
+        debuggerDllFiles.forEach({ f ->
+            def file = file("$f")
+            if (!file.exists()) throw new RuntimeException("File $file does not exist")
+        })
     }
 
     from(unityeditorplugin_path, {
@@ -230,6 +240,11 @@ prepareSandbox {
     dllFiles.forEach({ f ->
         def file = file(f)
         from(file, { into "$intellij.pluginName/dotnet" })
+    })
+
+    debuggerDllFiles.forEach({ f ->
+        def file = file(f)
+        from(file, { into "$intellij.pluginName/dotnetDebuggerWorker" })
     })
 
     from(annotationsFrom, { into "$intellij.pluginName/dotnet/$annotationsTo" })

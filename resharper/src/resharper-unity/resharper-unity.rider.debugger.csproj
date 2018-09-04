@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net461</TargetFramework>
+        <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Debugger</AssemblyName>
+        <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider.Debugger</RootNamespace>
+        <LangVersion>7.2</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="**" />
+        <EmbeddedResource Remove="**" />
+        <None Remove="**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="**/Rider/Debugger/**" />
+    </ItemGroup>
+    <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>

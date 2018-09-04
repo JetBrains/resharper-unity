@@ -35,8 +35,9 @@ namespace JetBrains.Rider.Unity.Editor
     // This an entry point
     static PluginEntryPoint()
     {
-      ourLogEventCollector = new UnityEventCollector();
-
+      PluginSettings.InitLog(); // init log before doing any logging
+      ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap 
+      
       ourPluginSettings = new PluginSettings();
       ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
       var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
@@ -118,8 +119,6 @@ namespace JetBrains.Rider.Unity.Editor
         RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
       }
 
-      Log.DefaultFactory = new RiderLoggerFactory();
-
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
       var lifetime = lifetimeDefinition.Lifetime;
 
@@ -157,7 +156,7 @@ namespace JetBrains.Rider.Unity.Editor
         File.Delete(protocolInstanceJsonPath);
       };
 
-      ourSavedState = GetEditorState();
+      PlayModeSavedState = GetEditorState();
       SetupAssemblyReloadEvents();
 
       ourInitialized = true;
@@ -202,7 +201,7 @@ namespace JetBrains.Rider.Unity.Editor
 #pragma warning restore 618
       {
         var newState = GetEditorState();
-        if (ourSavedState != newState)
+        if (PlayModeSavedState != newState)
         {
           if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
           {
@@ -215,7 +214,7 @@ namespace JetBrains.Rider.Unity.Editor
               EditorApplication.UnlockReloadAssemblies();
             }
           }
-          ourSavedState = newState;
+          PlayModeSavedState = newState;
         }
       };
 
@@ -315,7 +314,7 @@ namespace JetBrains.Rider.Unity.Editor
       Paused
     }
 
-    private static PlayModeState ourSavedState = PlayModeState.Stopped;
+    public static PlayModeState PlayModeSavedState = PlayModeState.Stopped;
 
     private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
     {
@@ -420,7 +419,7 @@ namespace JetBrains.Rider.Unity.Editor
       editorPluginModel.PlayerLogPath.SetValue(playerLogPath);
     }
 
-    internal static readonly string  LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), DateTime.Now.ToString("yyyy-MM-ddT-HH-mm-ss") + ".log");
+    internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), "JetBrains.Rider.Unity.Editor.Plugin.log");
     private static OnOpenAssetHandler ourOpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this

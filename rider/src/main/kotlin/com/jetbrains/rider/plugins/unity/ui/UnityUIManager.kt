@@ -11,7 +11,7 @@ import com.intellij.openapi.wm.WindowManagerListener
 import com.jetbrains.rider.UnityReferenceDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
-import com.jetbrains.rider.util.idea.LifetimedProjectComponent
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.lifetime
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.lifetime.LifetimeDefinition

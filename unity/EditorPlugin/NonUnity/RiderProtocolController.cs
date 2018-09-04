@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
+using System.Text;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Impl;
-using JetBrains.Util;
 using JetBrains.Util.Logging;
-using Newtonsoft.Json;
 
 namespace JetBrains.Rider.Unity.Editor.NonUnity
 {
@@ -32,7 +31,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     }
   }
   
-  [Serializable]
+//  [Serializable]
   class ProtocolInstance
   {
     public int Port;
@@ -46,7 +45,15 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
 
     public static string ToJson(List<ProtocolInstance> connections)
     {
-        return JsonConvert.SerializeObject(connections);
+        //return JsonConvert.SerializeObject(connections); //turns out to be slow https://github.com/JetBrains/resharper-unity/issues/728 
+      var sb = new StringBuilder("[");
+
+      sb.Append(connections
+        .Select(connection=> "{" + $"\"Port\":{connection.Port},\"SolutionName\":\"{connection.SolutionName}\"" + "}")
+        .Aggregate((a, b) => a + "," + b));
+
+      sb.Append("]");
+      return sb.ToString();
     }
   }
 }
