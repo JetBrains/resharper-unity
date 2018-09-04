@@ -30,28 +30,26 @@ class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, 
     fun getNavigatableForSelected(list: UnityLogPanelEventList, project: Project): Navigatable? {
         val node = list.selectedValue
         if (node!=null && (node.stackTrace=="")) {
-            var index = node.message.indexOf("(");
+            val index = node.message.indexOf("(")
             if (index<0)
                 return null
-            var path = node.message.substring(0, index)
-            var regex = Regex("^\\(\\d{1,}\\,\\d{1,}\\)")
-            var res = regex.find(node.message.substring(index), 0)
-            if (res==null)
-                return null
-            var coordinates = res.value.substring(1, res.value.length-1).split(",")
-            var line = (coordinates[0])
-            var col = coordinates[1]
+            val path = node.message.substring(0, index)
+            val regex = Regex("^\\(\\d{1,}\\,\\d{1,}\\)")
+            val res = regex.find(node.message.substring(index), 0) ?: return null
+            val coordinates = res.value.substring(1, res.value.length-1).split(",")
+            val line = (coordinates[0])
+            val col = coordinates[1]
 
-            val file = File(project.baseDir.path, path)
+            val file = File(project.basePath, path)
             if (!file.exists())
                 return null
-            var virtualFile = file.toVirtualFile()
-            if (virtualFile != null)
-                return OpenFileDescriptor(project, virtualFile , line.toInt()-1, col.toInt()-1, true)
+            val virtualFile = file.toVirtualFile()
+            return if (virtualFile != null)
+                OpenFileDescriptor(project, virtualFile , line.toInt()-1, col.toInt()-1, true)
             else
-                return null
+                null
         }
-        return null;
+        return null
     }
 
     override fun getData(dataId: String): Any? = when {

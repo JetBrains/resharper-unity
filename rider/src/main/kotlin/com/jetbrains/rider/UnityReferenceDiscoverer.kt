@@ -59,7 +59,7 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
 
     private fun solutionNameMatchesUnityProjectName(project: Project): Boolean {
         val solutionFile = project.solutionFile
-        return solutionFile.nameWithoutExtension == project.baseDir.name
+        return solutionFile.nameWithoutExtension == project.projectDir.name
     }
 
     fun addUnityReferenceListener(listener: UnityReferenceListener) {
@@ -71,13 +71,13 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
                 hasAssetsFolder(project) && hasLibraryFolder(project) && hasProjectSettingsFolder(project)
 
         private fun hasAssetsFolder (project:Project):Boolean =
-                project.baseDir?.findChild("Assets")?.isDirectory == true
+                project.projectDir.findChild("Assets")?.isDirectory == true
 
         private fun hasLibraryFolder (project:Project):Boolean =
-                project.baseDir?.findChild("Library")?.isDirectory == true
+                project.projectDir.findChild("Library")?.isDirectory == true
 
         private fun hasProjectSettingsFolder (project:Project):Boolean =
-                project.baseDir?.findChild("ProjectSettings")?.isDirectory == true
+                project.projectDir.findChild("ProjectSettings")?.isDirectory == true
     }
 }
 

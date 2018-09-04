@@ -255,7 +255,8 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
 
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+      // Unity 2018.1 doesn't require installed dotnet framework, it references everything from Unity installation
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows && UnityUtils.UnityVersion < new Version(2018, 1))
       {
         var detectedDotnetText = string.Empty;
         var installedFrameworks = GetInstalledNetFrameworks();

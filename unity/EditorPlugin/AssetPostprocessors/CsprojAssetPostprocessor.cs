@@ -124,6 +124,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
+      changed |= AvoidGetReferenceAssemblyPathsCall(projectContentElement, xmlns);
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
       
       return changed;
@@ -153,15 +154,25 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       ApplyCustomReference(referenceName, projectContentElement, xmlns, hintPath);
       return true;
     }
+    
+    private static bool AvoidGetReferenceAssemblyPathsCall(XElement projectContentElement, XNamespace xmlns)
+    {
+      // Starting with Unity 2018, dotnet target pack is not required
+      if (UnityUtils.UnityVersion < new Version(2018, 1))
+        return false;
+      
+      // Set _TargetFrameworkDirectories and _FullFrameworkReferenceAssemblyPaths to something to avoid GetReferenceAssemblyPaths task being called
+      return SetOrUpdateProperty(projectContentElement, xmlns, "_TargetFrameworkDirectories", 
+               existing => string.IsNullOrEmpty(existing) ? "non_empty_path_generated_by_rider_editor_plugin" : existing)
+             &&
+             SetOrUpdateProperty(projectContentElement, xmlns, "_FullFrameworkReferenceAssemblyPaths",
+               existing => string.IsNullOrEmpty(existing) ? "non_empty_path_generated_by_rider_editor_plugin" : existing);
+    }
 
     private static bool SetDisableHandlePackageFileConflicts(XElement projectContentElement, XNamespace xmlns)
     {
       // https://developercommunity.visualstudio.com/content/problem/138986/1550-preview-2-breaks-scriptsharp-compilation.html
       // RIDER-18316 Rider fails to resolve mscorlib
-
-      // is expected to be no problem with new unity mono runtime or non-windows OS-s
-      if (UnityUtils.ScriptingRuntime > 0 || PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
-        return false;
 
       return SetOrUpdateProperty(projectContentElement, xmlns, "DisableHandlePackageFileConflicts", existing => "true");
     }
@@ -433,6 +444,21 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       return SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", s =>
         {
+          if (UnityUtils.ScriptingRuntime > 0)
+          {
+            if (PluginSettings.OverrideTargetFrameworkVersion)
+            {
+              return "v" + PluginSettings.TargetFrameworkVersion;
+            }
+          }
+          else
+          {
+            if (PluginSettings.OverrideTargetFrameworkVersionOldMono)
+            {
+              return "v" + PluginSettings.TargetFrameworkVersionOldMono;
+            }
+          }
+
           if (string.IsNullOrEmpty(s))
           {
             ourLogger.Verbose("TargetFrameworkVersion in csproj is null or empty.");
@@ -444,7 +470,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           {
             version = s.Substring(1);
             // for windows try to use installed dotnet framework
-            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+            // Unity 2018.1 doesn't require installed dotnet framework, it references everything from Unity installation
+            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows && UnityUtils.UnityVersion < new Version(2018, 1))
             {
               var versions = PluginSettings.GetInstalledNetFrameworks();
               if (versions.Any())
@@ -472,21 +499,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           catch (Exception e)
           {
             ourLogger.Log(LoggingLevel.WARN, "Fail to FixTargetFrameworkVersion", e);
-          }
-
-          if (UnityUtils.ScriptingRuntime > 0)
-          {
-            if (PluginSettings.OverrideTargetFrameworkVersion)
-            {
-              return "v" + PluginSettings.TargetFrameworkVersion;
-            }
-          }
-          else
-          {
-            if (PluginSettings.OverrideTargetFrameworkVersionOldMono)
-            {
-              return "v" + PluginSettings.TargetFrameworkVersionOldMono;
-            }
           }
 
           return "v" + version;

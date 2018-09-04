@@ -8,7 +8,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
-import com.intellij.openapi.components.AbstractProjectComponent
+import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurableGroup
@@ -18,7 +18,7 @@ import com.jetbrains.rider.isUnityGeneratedProject
 import javax.swing.event.HyperlinkEvent
 
 class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, private val project: Project)
-    : AbstractProjectComponent(project){
+    : ProjectComponent {
 
     private var firstRun = true
 
@@ -98,7 +98,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
 
             val groupName = if (split == -1) setting else setting.substring(0, split)
             val filter = if (split == -1) "" else setting.substring(split + 1, setting.length)
-            SettingsViewModelHost.getOrCreate(myProject)
+            SettingsViewModelHost.getOrCreate(project)
             showDialog(groupName, filter)
         } catch (e: Exception) {
             logger.error(e)
@@ -106,11 +106,11 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
     }
 
     private fun showDialog(groupName: String, filter: String){
-        var groups = ShowSettingsUtilImpl.getConfigurableGroups(myProject, true)
+        var groups = ShowSettingsUtilImpl.getConfigurableGroups(project, true)
         groups = groups.filter { it.configurables.isNotEmpty() }.toTypedArray()
 
         val configurable2Select = findPreselectedByDisplayName(groupName, groups)
-        SettingsDialogFactory.getInstance().create(myProject, groups, configurable2Select, filter).show()
+        SettingsDialogFactory.getInstance().create(project, groups, configurable2Select, filter).show()
     }
 
     private fun findPreselectedByDisplayName(preselectedConfigurableDisplayName: String, groups: Array<ConfigurableGroup>): Configurable? {

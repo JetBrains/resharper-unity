@@ -4,7 +4,7 @@ import com.intellij.ide.impl.ProjectUtil
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.components.AbstractProjectComponent
+import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
@@ -14,12 +14,13 @@ import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdVirtualSolution
 import com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solutionDescription
 import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(private val project: Project, private val unityReferenceDiscoverer: UnityReferenceDiscoverer)
-    : AbstractProjectComponent(project) {
+    : ProjectComponent {
 
     companion object {
         private val notificationGroupId = NotificationGroup("Unity project open", NotificationDisplayType.STICKY_BALLOON, true)
@@ -52,30 +53,28 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                 }
             }
 
-            val baseDir: VirtualFile? = project.baseDir
-            baseDir?.let {
-                val solutionFile = baseDir.findChild(baseDir.name + ".sln")
-                if (solutionFile != null && solutionFile.exists()) {
-                    notification.addAction(object: NotificationAction("Reopen as Unity project") {
-                        override fun actionPerformed(e: AnActionEvent, n: Notification) {
-                            // SolutionManager doesn't close the current project if focusOpenInNewFrame is set to true,
-                            // and if it's set to false, we get prompted if we want to open in new or same frame. We
-                            // don't care - we want to close this project, so new frame or reusing means nothing
-                            e.project?.let { ProjectUtil.closeAndDispose(it) }
-                            val newProject = SolutionManager.openExistingSolution(null, true, solutionFile)
+            val baseDir: VirtualFile = project.projectDir
+            val solutionFile = baseDir.findChild(baseDir.name + ".sln")
+            if (solutionFile != null && solutionFile.exists()) {
+                notification.addAction(object: NotificationAction("Reopen as Unity project") {
+                    override fun actionPerformed(e: AnActionEvent, n: Notification) {
+                        // SolutionManager doesn't close the current project if focusOpenInNewFrame is set to true,
+                        // and if it's set to false, we get prompted if we want to open in new or same frame. We
+                        // don't care - we want to close this project, so new frame or reusing means nothing
+                        e.project?.let { ProjectUtil.closeAndDispose(it) }
+                        val newProject = SolutionManager.openExistingSolution(null, true, solutionFile)
 
-                            // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected
-                            // solution view pane, which will be file system. A Unity generated solution will use the
-                            // same settings folder, so will read the last selected solution view pane and fail to show
-                            // the Unity explorer view. We'll override that saved value here, and make Unity Explorer
-                            // the currently selected value. See RIDER-17865
-                            EdtInvocationManager.getInstance().invokeLater {
-                                val projectView = ProjectView.getInstance(newProject)
-                                projectView.changeView(UnityExplorer.ID)
-                            }
+                        // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected
+                        // solution view pane, which will be file system. A Unity generated solution will use the
+                        // same settings folder, so will read the last selected solution view pane and fail to show
+                        // the Unity explorer view. We'll override that saved value here, and make Unity Explorer
+                        // the currently selected value. See RIDER-17865
+                        EdtInvocationManager.getInstance().invokeLater {
+                            val projectView = ProjectView.getInstance(newProject)
+                            projectView.changeView(UnityExplorer.ID)
                         }
-                    })
-                }
+                    }
+                })
             }
 
             notification.addAction(InstallEditorPluginAction())
