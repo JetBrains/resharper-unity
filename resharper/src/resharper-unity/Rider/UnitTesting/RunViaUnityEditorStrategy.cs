@@ -32,8 +32,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnityEditorProtocol myUnityEditorProtocol;
         private readonly NUnitTestProvider myUnitTestProvider;
         private readonly IUnitTestElementIdFactory myIDFactory;
-        private readonly RiderSolutionSaver myRiderSolutionSaver;
-        private readonly UnityRefresher myUnityRefresher;
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
@@ -42,17 +40,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             IUnitTestResultManager unitTestResultManager, 
             UnityEditorProtocol unityEditorProtocol,
             NUnitTestProvider unitTestProvider, 
-            IUnitTestElementIdFactory idFactory, 
-            RiderSolutionSaver riderSolutionSaver,
-            UnityRefresher unityRefresher)
+            IUnitTestElementIdFactory idFactory
+            )
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
             myUnityEditorProtocol = unityEditorProtocol;
             myUnitTestProvider = unitTestProvider;
             myIDFactory = idFactory;
-            myRiderSolutionSaver = riderSolutionSaver;
-            myUnityRefresher = unityRefresher;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
         }
 
