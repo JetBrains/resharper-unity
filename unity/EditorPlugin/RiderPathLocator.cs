@@ -5,7 +5,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Util.Logging;
 using Microsoft.Win32;
-#if UNITY_4_7 || UNITY_5_5 || UNITY_2017_3
+#if UNITY_4_7 || UNITY_5_5
 using Newtonsoft.Json;
 #endif
 using UnityEngine;
