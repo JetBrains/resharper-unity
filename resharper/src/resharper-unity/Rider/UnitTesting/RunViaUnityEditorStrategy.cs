@@ -102,13 +102,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
             run.PutData(ourCompletionSourceKey, tcs);
 
-            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RefreshBeforeUT", () =>
-            {
-                myRiderSolutionSaver.Save(run.Lifetime, mySolution, async () =>
-                {
-                    await myUnityRefresher.Refresh(true);    
-                }); 
-            });
+            // todo: Refresh Assets DB before running tests #558
+            // You can check EditorApplication.isCompiling after the refresh and if it is true, then a refresh will happen if there are no compile errors.
+            // You can also hook into these event, this will tell you when compilation of assemblies started/finished.
+            // https://docs.unity3d.com/ScriptReference/Compilation.CompilationPipeline-assemblyCompilationFinished.html
+            // https://docs.unity3d.com/ScriptReference/Compilation.CompilationPipeline-assemblyCompilationStarted.html
+            // Note that those events are only available for Unity 5.6+
+//            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RefreshBeforeUT", () =>
+//            {
+//                myRiderSolutionSaver.Save(run.Lifetime, mySolution, async () =>
+//                {
+//                    await myUnityRefresher.Refresh(true);    
+//                }); 
+//            });
             
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
             {
