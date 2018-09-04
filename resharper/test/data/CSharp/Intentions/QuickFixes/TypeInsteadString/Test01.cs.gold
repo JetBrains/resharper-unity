@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Foo
+{
+    class Whatever
+    {
+        
+    }
+    
+    public void Method(GameObject o)
+    {
+        if (GetComponent<Whate{caret}ver>()) { }
+    }
+}

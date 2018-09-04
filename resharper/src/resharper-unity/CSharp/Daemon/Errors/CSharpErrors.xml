@@ -52,6 +52,18 @@
         <Description>Explicit string comparison with 'GameObject.tag' or 'Component.tag' is inefficient. Use the 'CompareTag' method instead.</Description>
       </Tag>
 
+      <Tag externalName="TypeInsteadOfStringUsingWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Use type method instead of overload with string</Title>
+        <Description>Using the string for the component type variants results in additional overhead that should not be incurred</Description>
+      </Tag>
+
+      <Tag externalName="InvalidStringForTypeWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Type is not found</Title>
+        <Description>The type could not be resolved from string</Description>
+      </Tag>
+      
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</Title>
         <Description>Instantiating a MonoBehaviour based class with 'new' does not attach it to a GameObject, and Unity will not invoke any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;().</Description>
@@ -180,7 +192,32 @@
     <Range>EqualityExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
+  
+  <Warning name="TypeInsteadOfStringUsing" configurableSeverity="Unity.TypeInsteadOfStringUsing">
+    <Parameter type="IInvocationExpression" name="invocationMethod" />
+    <Parameter type="string" name="methodName" />
+    <Parameter type="IExpression" name="argument" />
+    <Parameter type="string" name="typeLiteral" />
+    <Message value="Using the string for the component type variants results in additional overhead and is not safe. Suggestion is transform from .{0}({1}) to .{0}&lt;{2}&gt;()">
+      <Argument>MethodName</Argument>
+      <Argument>Argument.GetText()</Argument>
+      <Argument>TypeLiteral</Argument>
+    </Message> 
+    <Range>InvocationMethod.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
 
+  <Warning name="InvalidStringForType" configurableSeverity="Unity.InvalidStringForType">
+    <Parameter type="ILiteralExpression" name="argument" />
+    <Parameter type="string" name="typeLiteral" />
+    <Message value="{0} could not be found."> 
+      <Argument>TypeLiteral</Argument>
+    </Message>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
     <Message value="MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
