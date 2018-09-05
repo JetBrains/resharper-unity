@@ -74,15 +74,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null)
                 .EnsureReadonly(myReadonlyToken).EnsureThisThread();
 
-            if (!unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.Value)
-                return;
-
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            var solFolder = mySolution.SolutionDirectory;
+            AdviseInstallEditorPluginSignal(lifetime, mySolution.GetProtocolSolution());
+            
+            if (!unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.Value)
+                return;
+            
             AdviseModelData(lifetime, mySolution.GetProtocolSolution());
 
+            var solFolder = mySolution.SolutionDirectory;
             // todo: consider non-Unity Solution with Unity-generated projects
             var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
 
@@ -114,22 +116,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 () => CreateProtocols(protocolInstancePath));
         }
 
-        private void AdviseModelData(Lifetime lifetime, Solution solution)
+        private void AdviseInstallEditorPluginSignal(Lifetime lifetime, Solution solution)
         {
-            myHost.PerformModelAction(m => m.Play.Advise(lifetime, e =>
-            {
-                var model = UnityModel.Value;
-                if (UnityModel.Value == null) return;
-                if (model.Play.Value == e) return;
-
-                myLogger.Info($"Play = {e} came from frontend.");
-                model.Play.SetValue(e);
-
-            }));
-
             myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
             {
-                var model = UnityModel.Value;
                 if (e.NewValue == e.OldValue)
                     return;
                 if (e.NewValue == null)
@@ -142,10 +132,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         myUnityPluginInstaller.QueueWithLock();
                         solution.CustomData.Data.Remove("UNITY_InstallEditorPlugin");
                         break;
-                    
+                }
+            }));
+        }
+
+        
+        private void AdviseModelData(Lifetime lifetime, Solution solution)
+        {
+            myHost.PerformModelAction(m => m.Play.Advise(lifetime, e =>
+            {
+                var model = UnityModel.Value;
+                if (model == null) return;
+                if (model.Play.Value == e) return;
+
+                myLogger.Info($"Play = {e} came from frontend.");
+                model.Play.SetValue(e);
+            }));
+
+            myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
+            {
+                var model = UnityModel.Value;
+                if (model == null) return;
+                if (e.NewValue == e.OldValue) return;
+                if (e.NewValue == null) return;
+
+                switch (e.Key)
+                {
                     case "UNITY_Refresh":
-                        if (model==null)
-                            return;
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         var force = Convert.ToBoolean(e.NewValue);
                         Refresh.Fire(force);
@@ -153,16 +166,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         break;
 
                     case "UNITY_Step":
-                        if (model==null)
-                            return;
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         model.Step.Start(RdVoid.Instance);
                         solution.CustomData.Data.Remove("UNITY_Step");
                         break;
 
                     case "UNITY_Pause":
-                        if (model==null)
-                            return;
                         myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
                         model.Pause.SetValue(Convert.ToBoolean(e.NewValue));
                         break;
