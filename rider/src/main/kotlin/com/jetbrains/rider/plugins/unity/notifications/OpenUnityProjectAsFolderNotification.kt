@@ -32,7 +32,11 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
         val solutionDescription = project.solutionDescription
         if (solutionDescription is RdVirtualSolution) {
 
-            val content =
+            val content = if (solutionDescription.projectFilePaths.isEmpty()) {
+                "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
+                    " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
+            }
+            else
                 "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
                     " Please <a href=\"close\">close</a> and reopen through the Unity editor, by configuring Rider as the default external editor and double clicking on a C# file to generate and open a solution."
             val title = "Unity functionality unavailable"
