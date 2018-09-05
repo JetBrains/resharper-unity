@@ -14,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         protected OptionsPageBase(
             [NotNull] Lifetime lifetime,
-            [NotNull] OptionsSettingsSmartContext optionsSettingsSmartContext)
-            : base(lifetime, optionsSettingsSmartContext)
+            [NotNull] OptionsSettingsSmartContext settingsStore)
+            : base(lifetime, settingsStore)
         {
         }
 

@@ -3,5 +3,5 @@ using UnityEngine.Serialization;
 
 public class Test : MonoBehaviour
 {
-    [Formerly{caret}SerializedAs("Value")] public int Value;
+    [Formerly{caret}SerializedAs("value")] public int value;
 }

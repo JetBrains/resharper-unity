@@ -5,12 +5,12 @@ using UnityEngine;
 public class SerializableClass
 {
     // Assigned but never used
-    public string ImplicitlyAssignedField;
-    public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
-    [SerializeField] private int myImplicitlyAssignedPrivateField;
+    public string implicitlyAssignedField;
+    public string implicitlyAssignedMultiField1, implicitlyAssignedMultiField2;
+    [SerializeField] private int implicitlyAssignedPrivateField;
 
     // Assigned + used - no warning
-    public string ImplicitlyAssignedAndUsedField;
+    public string implicitlyAssignedAndUsedField;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -26,7 +26,7 @@ public class SerializableClass
 
     public void OnDestroy()
     {
-        Console.WriteLine(ImplicitlyAssignedAndUsedField);
+        Console.WriteLine(implicitlyAssignedAndUsedField);
     }
 }
 
@@ -34,12 +34,12 @@ public class SerializableClass
 public struct SerializableStruct
 {
     // Assigned but never used
-    public string ImplicitlyAssignedField;
-    public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
-    [SerializeField] private int myImplicitlyAssignedPrivateField;
+    public string implicitlyAssignedField;
+    public string implicitlyAssignedMultiField1, implicitlyAssignedMultiField2;
+    [SerializeField] private int implicitlyAssignedPrivateField;
 
     // Assigned + used - no warning
-    public string ImplicitlyAssignedAndUsedField;
+    public string implicitlyAssignedAndUsedField;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -55,7 +55,7 @@ public struct SerializableStruct
 
     public void OnDestroy()
     {
-        Console.WriteLine(ImplicitlyAssignedAndUsedField);
+        Console.WriteLine(implicitlyAssignedAndUsedField);
     }
 }
 

@@ -4,12 +4,12 @@ using UnityEngine;
 public class A : MonoBehaviour
 {
     // Assigned but never used
-    public string |ImplicitlyAssignedField|(0);
-    public string |ImplicitlyAssignedMultiField1|(1), |ImplicitlyAssignedMultiField2|(2);
-    [SerializeField] private int |myImplicitlyAssignedPrivateField|(3);
+    public string |implicitlyAssignedField|(0);
+    public string |implicitlyAssignedMultiField1|(1), |implicitlyAssignedMultiField2|(2);
+    [SerializeField] private int |implicitlyAssignedPrivateField|(3);
 
     // Assigned + used - no warning
-    public string ImplicitlyAssignedAndUsedField;
+    public string implicitlyAssignedAndUsedField;
 
     // Not serialized by Unity
     public const string |UnusedConst|(4) = "hello";
@@ -25,15 +25,15 @@ public class A : MonoBehaviour
 
     public void OnDestroy()
     {
-        Console.WriteLine(ImplicitlyAssignedAndUsedField);
+        Console.WriteLine(implicitlyAssignedAndUsedField);
     }
 }
 
 ---------------------------------------------------------
-(0): ReSharper Dead Code: Field 'ImplicitlyAssignedField' is assigned but its value is never used
-(1): ReSharper Dead Code: Field 'ImplicitlyAssignedMultiField1' is assigned but its value is never used
-(2): ReSharper Dead Code: Field 'ImplicitlyAssignedMultiField2' is assigned but its value is never used
-(3): ReSharper Dead Code: Field 'myImplicitlyAssignedPrivateField' is assigned but its value is never used
+(0): ReSharper Dead Code: Field 'implicitlyAssignedField' is assigned but its value is never used
+(1): ReSharper Dead Code: Field 'implicitlyAssignedMultiField1' is assigned but its value is never used
+(2): ReSharper Dead Code: Field 'implicitlyAssignedMultiField2' is assigned but its value is never used
+(3): ReSharper Dead Code: Field 'implicitlyAssignedPrivateField' is assigned but its value is never used
 (4): ReSharper Dead Code: Constant 'UnusedConst' is never used
 (5): ReSharper Dead Code: Constant 'UnusedPrivateConst' is never used
 (6): ReSharper Dead Code: Redundant 'SerializeField' attribute
