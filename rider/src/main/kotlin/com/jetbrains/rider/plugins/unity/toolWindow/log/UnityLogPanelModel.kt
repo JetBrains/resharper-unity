@@ -68,7 +68,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
         private var searchTerm = ""
 
         fun getShouldBeShown(text: String):Boolean {
-            return text.contains(searchTerm)
+            return text.contains(searchTerm, true)
         }
 
         fun setPattern(value: String) {
