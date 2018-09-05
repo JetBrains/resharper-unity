@@ -1,119 +1,9 @@
 ﻿# 742 ITEMS #
 
-+ private Awake() { ... }
-private FixedUpdate() { ... }
-private LateUpdate() { ... }
-private OnAnimatorIK(int) { ... }
-private OnAnimatorMove() { ... }
-private OnApplicationFocus(bool) { ... }
-private OnApplicationPause(bool) { ... }
-private OnApplicationQuit() { ... }
-private OnAudioFilterRead(float[], int) { ... }
-private OnBecameInvisible() { ... }
-private OnBecameVisible() { ... }
-private OnCollisionEnter(Collision) { ... }
-private OnCollisionEnter2D(Collision2D) { ... }
-private OnCollisionExit(Collision) { ... }
-private OnCollisionExit2D(Collision2D) { ... }
-private OnCollisionStay(Collision) { ... }
-private OnCollisionStay2D(Collision2D) { ... }
-private OnConnectedToServer() { ... }
-private OnControllerColliderHit(ControllerColliderHit) { ... }
-private OnDestroy() { ... }
-private OnDisable() { ... }
-private OnDisconnectedFromServer(NetworkDisconnection) { ... }
-private OnDrawGizmos() { ... }
-private OnDrawGizmosSelected() { ... }
-private OnEnable() { ... }
-private OnFailedToConnect(NetworkConnectionError) { ... }
-private OnFailedToConnectToMasterServer(NetworkConnectionError) { ... }
-private OnGUI() { ... }
-private OnJointBreak(float) { ... }
-private OnJointBreak2D(Joint2D) { ... }
-private OnMasterServerEvent(MasterServerEvent) { ... }
-private OnMouseDown() { ... }
-private OnMouseDrag() { ... }
-private OnMouseEnter() { ... }
-private OnMouseExit() { ... }
-private OnMouseOver() { ... }
-private OnMouseUp() { ... }
-private OnMouseUpAsButton() { ... }
-private OnNetworkInstantiate(NetworkMessageInfo) { ... }
-private OnParticleCollision(GameObject) { ... }
-private OnParticleTrigger() { ... }
-private OnPlayerConnected(NetworkPlayer) { ... }
-private OnPlayerDisconnected(NetworkPlayer) { ... }
-private OnPostRender() { ... }
-private OnPreCull() { ... }
-private OnPreRender() { ... }
-private OnRenderImage(RenderTexture, RenderTexture) { ... }
-private OnRenderObject() { ... }
-private OnSerializeNetworkView(BitStream, NetworkMessageInfo) { ... }
-private OnServerInitialized() { ... }
-private OnTransformChildrenChanged() { ... }
-private OnTransformParentChanged() { ... }
-private OnTriggerEnter(Collider) { ... }
-private OnTriggerEnter2D(Collider2D) { ... }
-private OnTriggerExit(Collider) { ... }
-private OnTriggerExit2D(Collider2D) { ... }
-private OnTriggerStay(Collider) { ... }
-private OnTriggerStay2D(Collider2D) { ... }
-private OnValidate() { ... }
-private OnWillRenderObject() { ... }
-private Reset() { ... }
-private Start() { ... }
-private Update() { ... }
-private OnBeforeTransformParentChanged() { ... }
-private OnCanvasGroupChanged() { ... }
-private OnCanvasHierarchyChanged() { ... }
-private OnDidApplyAnimationProperties() { ... }
-private OnRectTransformDimensionsChange() { ... }
-abstract
-async
-bool
-byte
-char
-class
-const
-decimal
-delegate
-double
-dynamic
-enum
-event
-explicit
-extern
-float
-implicit
-int
-interface
-internal
-long
-new
-object
-override
-partial
-private
-protected
-public
-readonly
-ref
-sbyte
-sealed
-short
-static
-string
-struct
-uint
-ulong
-unsafe
-ushort
-virtual
-void
-volatile
 A
 ADBannerView
 ADInterstitialAd
+AOT
 AccelerationEvent
 AddComponentMenu
 AdditionalCanvasShaderChannels
@@ -189,6 +79,7 @@ AvatarIKHint
 AvatarMask
 AvatarMaskBodyPart
 AvatarTarget
++ private Awake() { ... }
 BatteryStatus
 Behaviour
 BillboardAsset
@@ -308,6 +199,7 @@ FFTWindow
 FilterMode
 FixedJoint
 FixedJoint2D
++ private FixedUpdate() { ... }
 Flare
 FlareLayer
 FocusType
@@ -377,6 +269,7 @@ ImageEffectOpaque
 ImageEffectTransformsToLDR
 ImagePosition
 Input
+JetBrains
 Joint
 Joint2D
 JointAngleLimits2D
@@ -396,6 +289,7 @@ Keyframe
 LOD
 LODFadeMode
 LODGroup
++ private LateUpdate() { ... }
 LayerMask
 LensFlare
 Light
@@ -436,6 +330,7 @@ MeshParticleEmitter
 MeshRenderer
 MeshTopology
 Microphone
+Microsoft
 MissingComponentException
 MissingReferenceException
 MonoBehaviour
@@ -461,6 +356,68 @@ NotificationServices
 Object
 OcclusionArea
 OcclusionPortal
++ private OnAnimatorIK(int) { ... }
++ private OnAnimatorMove() { ... }
++ private OnApplicationFocus(bool) { ... }
++ private OnApplicationPause(bool) { ... }
++ private OnApplicationQuit() { ... }
++ private OnAudioFilterRead(float[], int) { ... }
++ private OnBecameInvisible() { ... }
++ private OnBecameVisible() { ... }
+private OnBeforeTransformParentChanged() { ... }
+private OnCanvasGroupChanged() { ... }
+private OnCanvasHierarchyChanged() { ... }
++ private OnCollisionEnter(Collision) { ... }
++ private OnCollisionEnter2D(Collision2D) { ... }
++ private OnCollisionExit(Collision) { ... }
++ private OnCollisionExit2D(Collision2D) { ... }
++ private OnCollisionStay(Collision) { ... }
++ private OnCollisionStay2D(Collision2D) { ... }
++ private OnConnectedToServer() { ... }
++ private OnControllerColliderHit(ControllerColliderHit) { ... }
++ private OnDestroy() { ... }
+private OnDidApplyAnimationProperties() { ... }
++ private OnDisable() { ... }
++ private OnDisconnectedFromServer(NetworkDisconnection) { ... }
++ private OnDrawGizmos() { ... }
++ private OnDrawGizmosSelected() { ... }
++ private OnEnable() { ... }
++ private OnFailedToConnect(NetworkConnectionError) { ... }
++ private OnFailedToConnectToMasterServer(NetworkConnectionError) { ... }
++ private OnGUI() { ... }
++ private OnJointBreak(float) { ... }
++ private OnJointBreak2D(Joint2D) { ... }
++ private OnMasterServerEvent(MasterServerEvent) { ... }
++ private OnMouseDown() { ... }
++ private OnMouseDrag() { ... }
++ private OnMouseEnter() { ... }
++ private OnMouseExit() { ... }
++ private OnMouseOver() { ... }
++ private OnMouseUp() { ... }
++ private OnMouseUpAsButton() { ... }
++ private OnNetworkInstantiate(NetworkMessageInfo) { ... }
++ private OnParticleCollision(GameObject) { ... }
++ private OnParticleTrigger() { ... }
++ private OnPlayerConnected(NetworkPlayer) { ... }
++ private OnPlayerDisconnected(NetworkPlayer) { ... }
++ private OnPostRender() { ... }
++ private OnPreCull() { ... }
++ private OnPreRender() { ... }
+private OnRectTransformDimensionsChange() { ... }
++ private OnRenderImage(RenderTexture, RenderTexture) { ... }
++ private OnRenderObject() { ... }
++ private OnSerializeNetworkView(BitStream, NetworkMessageInfo) { ... }
++ private OnServerInitialized() { ... }
++ private OnTransformChildrenChanged() { ... }
++ private OnTransformParentChanged() { ... }
++ private OnTriggerEnter(Collider) { ... }
++ private OnTriggerEnter2D(Collider2D) { ... }
++ private OnTriggerExit(Collider) { ... }
++ private OnTriggerExit2D(Collider2D) { ... }
++ private OnTriggerStay(Collider) { ... }
++ private OnTriggerStay2D(Collider2D) { ... }
++ private OnValidate() { ... }
++ private OnWillRenderObject() { ... }
 OperatingSystemFamily
 Particle
 ParticleAnimator
@@ -567,6 +524,7 @@ Renderer
 RendererExtensions
 RenderingPath
 RequireComponent
++ private Reset() { ... }
 Resolution
 ResourceRequest
 Resources
@@ -601,6 +559,7 @@ ShadowQuality
 ShadowResolution
 ShadowmaskMode
 SharedBetweenAnimatorsAttribute
+SimpleJson
 SkeletonBone
 SkinQuality
 SkinnedMeshRenderer
@@ -630,10 +589,12 @@ SpriteRenderer
 SpriteTileMode
 StackTraceLogType
 StackTraceUtility
++ private Start() { ... }
 StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
 SurfaceEffector2D
+System
 SystemInfo
 SystemLanguage
 TargetJoint2D
@@ -683,8 +644,13 @@ UISystemProfilerApi
 UIVertex
 UnassignedReferenceException
 UnityAPICompatibilityVersionAttribute
+UnityEditor
+UnityEditorInternal
+UnityEngine
+UnityEngineInternal
 UnityEventQueueSystem
 UnityException
++ private Update() { ... }
 UserAuthorization
 VRTextureUsage
 Vector2
@@ -713,6 +679,22 @@ WindZone
 WindZoneMode
 WrapMode
 YieldInstruction
+abstract
+async
+bool
+byte
+char
+class
+const
+decimal
+delegate
+double
+dynamic
+enum
+event
+explicit
+extern
+float
 iOSActivityIndicatorStyle
 iPhone
 iPhoneAccelerationEvent
@@ -729,136 +711,45 @@ iPhoneSettings
 iPhoneTouch
 iPhoneTouchPhase
 iPhoneUtils
+implicit
+int
+interface
+internal
 jvalue
-AOT
-JetBrains
-Microsoft
-SimpleJson
-System
-UnityEditor
-UnityEditorInternal
-UnityEngine
-UnityEngineInternal
+long
+new
+object
+override
+partial
+private
+protected
+public
+readonly
+ref
+sbyte
+sealed
+short
+static
+string
+struct
+uint
+ulong
+unsafe
+ushort
+virtual
+void
+volatile
+---- FULL EVALUATION ----
 public override Equals(object) { ... }
 public override GetHashCode() { ... }
 public override ToString() { ... }
 # AUTOMATIC #
 # 742 ITEMS #
 
-+ private Awake() { ... }
-private FixedUpdate() { ... }
-private LateUpdate() { ... }
-private OnAnimatorIK(int) { ... }
-private OnAnimatorMove() { ... }
-private OnApplicationFocus(bool) { ... }
-private OnApplicationPause(bool) { ... }
-private OnApplicationQuit() { ... }
-private OnAudioFilterRead(float[], int) { ... }
-private OnBecameInvisible() { ... }
-private OnBecameVisible() { ... }
-private OnCollisionEnter(Collision) { ... }
-private OnCollisionEnter2D(Collision2D) { ... }
-private OnCollisionExit(Collision) { ... }
-private OnCollisionExit2D(Collision2D) { ... }
-private OnCollisionStay(Collision) { ... }
-private OnCollisionStay2D(Collision2D) { ... }
-private OnConnectedToServer() { ... }
-private OnControllerColliderHit(ControllerColliderHit) { ... }
-private OnDestroy() { ... }
-private OnDisable() { ... }
-private OnDisconnectedFromServer(NetworkDisconnection) { ... }
-private OnDrawGizmos() { ... }
-private OnDrawGizmosSelected() { ... }
-private OnEnable() { ... }
-private OnFailedToConnect(NetworkConnectionError) { ... }
-private OnFailedToConnectToMasterServer(NetworkConnectionError) { ... }
-private OnGUI() { ... }
-private OnJointBreak(float) { ... }
-private OnJointBreak2D(Joint2D) { ... }
-private OnMasterServerEvent(MasterServerEvent) { ... }
-private OnMouseDown() { ... }
-private OnMouseDrag() { ... }
-private OnMouseEnter() { ... }
-private OnMouseExit() { ... }
-private OnMouseOver() { ... }
-private OnMouseUp() { ... }
-private OnMouseUpAsButton() { ... }
-private OnNetworkInstantiate(NetworkMessageInfo) { ... }
-private OnParticleCollision(GameObject) { ... }
-private OnParticleTrigger() { ... }
-private OnPlayerConnected(NetworkPlayer) { ... }
-private OnPlayerDisconnected(NetworkPlayer) { ... }
-private OnPostRender() { ... }
-private OnPreCull() { ... }
-private OnPreRender() { ... }
-private OnRenderImage(RenderTexture, RenderTexture) { ... }
-private OnRenderObject() { ... }
-private OnSerializeNetworkView(BitStream, NetworkMessageInfo) { ... }
-private OnServerInitialized() { ... }
-private OnTransformChildrenChanged() { ... }
-private OnTransformParentChanged() { ... }
-private OnTriggerEnter(Collider) { ... }
-private OnTriggerEnter2D(Collider2D) { ... }
-private OnTriggerExit(Collider) { ... }
-private OnTriggerExit2D(Collider2D) { ... }
-private OnTriggerStay(Collider) { ... }
-private OnTriggerStay2D(Collider2D) { ... }
-private OnValidate() { ... }
-private OnWillRenderObject() { ... }
-private Reset() { ... }
-private Start() { ... }
-private Update() { ... }
-private OnBeforeTransformParentChanged() { ... }
-private OnCanvasGroupChanged() { ... }
-private OnCanvasHierarchyChanged() { ... }
-private OnDidApplyAnimationProperties() { ... }
-private OnRectTransformDimensionsChange() { ... }
-abstract
-async
-bool
-byte
-char
-class
-const
-decimal
-delegate
-double
-dynamic
-enum
-event
-explicit
-extern
-float
-implicit
-int
-interface
-internal
-long
-new
-object
-override
-partial
-private
-protected
-public
-readonly
-ref
-sbyte
-sealed
-short
-static
-string
-struct
-uint
-ulong
-unsafe
-ushort
-virtual
-void
-volatile
 A
 ADBannerView
 ADInterstitialAd
+AOT
 AccelerationEvent
 AddComponentMenu
 AdditionalCanvasShaderChannels
@@ -934,6 +825,7 @@ AvatarIKHint
 AvatarMask
 AvatarMaskBodyPart
 AvatarTarget
++ private Awake() { ... }
 BatteryStatus
 Behaviour
 BillboardAsset
@@ -1053,6 +945,7 @@ FFTWindow
 FilterMode
 FixedJoint
 FixedJoint2D
++ private FixedUpdate() { ... }
 Flare
 FlareLayer
 FocusType
@@ -1122,6 +1015,7 @@ ImageEffectOpaque
 ImageEffectTransformsToLDR
 ImagePosition
 Input
+JetBrains
 Joint
 Joint2D
 JointAngleLimits2D
@@ -1141,6 +1035,7 @@ Keyframe
 LOD
 LODFadeMode
 LODGroup
++ private LateUpdate() { ... }
 LayerMask
 LensFlare
 Light
@@ -1181,6 +1076,7 @@ MeshParticleEmitter
 MeshRenderer
 MeshTopology
 Microphone
+Microsoft
 MissingComponentException
 MissingReferenceException
 MonoBehaviour
@@ -1206,6 +1102,68 @@ NotificationServices
 Object
 OcclusionArea
 OcclusionPortal
++ private OnAnimatorIK(int) { ... }
++ private OnAnimatorMove() { ... }
++ private OnApplicationFocus(bool) { ... }
++ private OnApplicationPause(bool) { ... }
++ private OnApplicationQuit() { ... }
++ private OnAudioFilterRead(float[], int) { ... }
++ private OnBecameInvisible() { ... }
++ private OnBecameVisible() { ... }
+private OnBeforeTransformParentChanged() { ... }
+private OnCanvasGroupChanged() { ... }
+private OnCanvasHierarchyChanged() { ... }
++ private OnCollisionEnter(Collision) { ... }
++ private OnCollisionEnter2D(Collision2D) { ... }
++ private OnCollisionExit(Collision) { ... }
++ private OnCollisionExit2D(Collision2D) { ... }
++ private OnCollisionStay(Collision) { ... }
++ private OnCollisionStay2D(Collision2D) { ... }
++ private OnConnectedToServer() { ... }
++ private OnControllerColliderHit(ControllerColliderHit) { ... }
++ private OnDestroy() { ... }
+private OnDidApplyAnimationProperties() { ... }
++ private OnDisable() { ... }
++ private OnDisconnectedFromServer(NetworkDisconnection) { ... }
++ private OnDrawGizmos() { ... }
++ private OnDrawGizmosSelected() { ... }
++ private OnEnable() { ... }
++ private OnFailedToConnect(NetworkConnectionError) { ... }
++ private OnFailedToConnectToMasterServer(NetworkConnectionError) { ... }
++ private OnGUI() { ... }
++ private OnJointBreak(float) { ... }
++ private OnJointBreak2D(Joint2D) { ... }
++ private OnMasterServerEvent(MasterServerEvent) { ... }
++ private OnMouseDown() { ... }
++ private OnMouseDrag() { ... }
++ private OnMouseEnter() { ... }
++ private OnMouseExit() { ... }
++ private OnMouseOver() { ... }
++ private OnMouseUp() { ... }
++ private OnMouseUpAsButton() { ... }
++ private OnNetworkInstantiate(NetworkMessageInfo) { ... }
++ private OnParticleCollision(GameObject) { ... }
++ private OnParticleTrigger() { ... }
++ private OnPlayerConnected(NetworkPlayer) { ... }
++ private OnPlayerDisconnected(NetworkPlayer) { ... }
++ private OnPostRender() { ... }
++ private OnPreCull() { ... }
++ private OnPreRender() { ... }
+private OnRectTransformDimensionsChange() { ... }
++ private OnRenderImage(RenderTexture, RenderTexture) { ... }
++ private OnRenderObject() { ... }
++ private OnSerializeNetworkView(BitStream, NetworkMessageInfo) { ... }
++ private OnServerInitialized() { ... }
++ private OnTransformChildrenChanged() { ... }
++ private OnTransformParentChanged() { ... }
++ private OnTriggerEnter(Collider) { ... }
++ private OnTriggerEnter2D(Collider2D) { ... }
++ private OnTriggerExit(Collider) { ... }
++ private OnTriggerExit2D(Collider2D) { ... }
++ private OnTriggerStay(Collider) { ... }
++ private OnTriggerStay2D(Collider2D) { ... }
++ private OnValidate() { ... }
++ private OnWillRenderObject() { ... }
 OperatingSystemFamily
 Particle
 ParticleAnimator
@@ -1312,6 +1270,7 @@ Renderer
 RendererExtensions
 RenderingPath
 RequireComponent
++ private Reset() { ... }
 Resolution
 ResourceRequest
 Resources
@@ -1346,6 +1305,7 @@ ShadowQuality
 ShadowResolution
 ShadowmaskMode
 SharedBetweenAnimatorsAttribute
+SimpleJson
 SkeletonBone
 SkinQuality
 SkinnedMeshRenderer
@@ -1375,10 +1335,12 @@ SpriteRenderer
 SpriteTileMode
 StackTraceLogType
 StackTraceUtility
++ private Start() { ... }
 StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
 SurfaceEffector2D
+System
 SystemInfo
 SystemLanguage
 TargetJoint2D
@@ -1428,8 +1390,13 @@ UISystemProfilerApi
 UIVertex
 UnassignedReferenceException
 UnityAPICompatibilityVersionAttribute
+UnityEditor
+UnityEditorInternal
+UnityEngine
+UnityEngineInternal
 UnityEventQueueSystem
 UnityException
++ private Update() { ... }
 UserAuthorization
 VRTextureUsage
 Vector2
@@ -1458,6 +1425,22 @@ WindZone
 WindZoneMode
 WrapMode
 YieldInstruction
+abstract
+async
+bool
+byte
+char
+class
+const
+decimal
+delegate
+double
+dynamic
+enum
+event
+explicit
+extern
+float
 iOSActivityIndicatorStyle
 iPhone
 iPhoneAccelerationEvent
@@ -1474,16 +1457,35 @@ iPhoneSettings
 iPhoneTouch
 iPhoneTouchPhase
 iPhoneUtils
+implicit
+int
+interface
+internal
 jvalue
-AOT
-JetBrains
-Microsoft
-SimpleJson
-System
-UnityEditor
-UnityEditorInternal
-UnityEngine
-UnityEngineInternal
+long
+new
+object
+override
+partial
+private
+protected
+public
+readonly
+ref
+sbyte
+sealed
+short
+static
+string
+struct
+uint
+ulong
+unsafe
+ushort
+virtual
+void
+volatile
+---- FULL EVALUATION ----
 public override Equals(object) { ... }
 public override GetHashCode() { ... }
 public override ToString() { ... }

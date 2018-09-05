@@ -328,7 +328,8 @@ namespace JetBrains.Rider.Unity.Editor
             model.Play.SetValue(isPlaying);
 
           var isPaused = EditorApplication.isPaused;
-          model.Pause.SetValue(isPaused);
+          if (!model.Pause.HasValue() || model.Pause.HasValue() && model.Pause.Value != isPaused)
+            model.Pause.SetValue(isPaused);
         });
       });
       isPlayingAction(); // get Unity state

@@ -4,7 +4,6 @@ using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
@@ -73,7 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             var declaration = (IMethodDeclaration)factory.CreateTypeMemberDeclaration(builder.ToString());
             declaration.SetResolveContextForSandBox(classDeclaration, SandBoxContextType.Child);
-            declaration.FormatNode();
             return declaration;
         }
 

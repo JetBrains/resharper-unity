@@ -5,10 +5,10 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_2017_3</DefineConstants>
+    <DefineConstants>UNITY_4_7</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
+    <PackageReference Include="JetBrains.Unity.Libs.4.7.2f1" Version="2017.7.21" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
@@ -18,6 +18,9 @@
     <EmbeddedResource Remove="UnitTesting\**" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Annotations">
+      <HintPath>..\lib\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="JetBrains.Platform.RdCore35">
       <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
