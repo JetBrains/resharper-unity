@@ -10,7 +10,6 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Platform.RdCore35">
@@ -27,7 +26,7 @@
        AND we are in Release. But we require it for Debug builds, too,
        as it's a required artifact for the backend plugin -->
   <PropertyGroup>
-    <ILRepackTargetsFile>$(MSBuildThisFileDirectory)ILRepack.targets</ILRepackTargetsFile>
+    <ILRepackTargetsFile>$(MSBuildThisFileDirectory)ILRepackFull.targets</ILRepackTargetsFile>
   </PropertyGroup>
   <Import Project="$(ILRepackTargetsFile)" Condition="'$(Configuration)' != 'Release'" />
 </Project>
