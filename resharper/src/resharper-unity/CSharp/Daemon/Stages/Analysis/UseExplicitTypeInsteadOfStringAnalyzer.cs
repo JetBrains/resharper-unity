@@ -17,17 +17,15 @@ using JetBrains.ReSharper.Psi.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes =
-        new[] {typeof(TypeInsteadOfStringUsingWarning), typeof(InvalidStringForTypeWarning)})]
-    public class TypeInsteadStringAnalyze : UnityElementProblemAnalyzer<IInvocationExpression>
+        new[] {typeof(UseExplicitTypeInsteadOfStringUsingWarning), typeof(InvalidStringForTypeWarning)})]
+    public class UseExplicitTypeInsteadStringAnalyze : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        private static ISet<string> KnownMethods = new HashSet<string>() 
-            {
-                "GetComponent", 
-                "AddComponent",
-                "CreateInstance"
-            };
+        private static readonly ISet<string> KnownMethods = new HashSet<string>()
+        {
+            "GetComponent", "AddComponent", "CreateInstance"
+        };
 
-        public TypeInsteadStringAnalyze(UnityApi unityApi)
+        public UseExplicitTypeInsteadStringAnalyze(UnityApi unityApi)
             : base(unityApi)
         {
         }
@@ -35,50 +33,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         protected override void Analyze(IInvocationExpression expression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            if (expression.TypeArguments.Count != 0 || expression.Arguments.Count != 1 || !IsComponentKnownMethod(expression)) return;
+            var reference = expression.Reference;
+            if (expression.TypeArguments.Count != 0 || expression.Arguments.Count != 1 || reference == null ||
+                !IsComponentKnownMethod(reference)) return;
 
-            var name = expression.Reference.GetName();
+            var name = reference.GetName();
             var argument = expression.Arguments.First().Value;
-            
-            var typeLiteral = ExtractType(argument, out bool isStringLiteral);
-            
+
+            var typeLiteral = ExtractType(argument);
+
             if (typeLiteral == null) return;
-            if (isStringLiteral)
+            if (!CSharpTypeFactory.CreateType(typeLiteral, expression).IsResolved)
             {
-                if (!CSharpTypeFactory.CreateType(typeLiteral, expression).IsResolved)
-                {
-                    consumer.AddHighlighting(new InvalidStringForTypeWarning(argument as ILiteralExpression, typeLiteral));
-                    return;
-                }
+                consumer.AddHighlighting(new InvalidStringForTypeWarning(argument as ILiteralExpression, typeLiteral));
+                return;
             }
-            
-            consumer.AddHighlighting(new TypeInsteadOfStringUsingWarning(expression, name, argument, typeLiteral));
+
+            consumer.AddHighlighting(new UseExplicitTypeInsteadOfStringUsingWarning(expression, name, argument, typeLiteral));
         }
 
-        private string ExtractType(IExpression argument, out bool isStringLiteral)
+        private string ExtractType(IExpression argument)
         {
-            isStringLiteral = false;
-            switch (argument)
+            if (argument is ILiteralExpression literal && literal.Literal.IsAnyStringLiteral())
             {
-                case ILiteralExpression literal:
-                    if (literal.Literal.IsAnyStringLiteral())
-                    {
-                        isStringLiteral = true;
-                        return literal.ConstantValue.Value as string;
-                    }
-                    break;
-                case ITypeofExpression typeofExpression:
-                    return typeofExpression.ArgumentType.GetTypeElement()?.GetClrName().ShortName;
+                return literal.ConstantValue.Value as string;
             }
+
             return null;
         }
-        
-        private bool IsComponentKnownMethod(IInvocationExpression expression)
+
+        private bool IsComponentKnownMethod([NotNull] IReference reference)
         {
-            var name = expression?.Reference?.GetName() ?? string.Empty;
+            var name = reference.GetName();
             if (!KnownMethods.Contains(name)) return false;
-            
-            var info = expression.Reference.Resolve();
+
+            var info = reference.Resolve();
             if (info.ResolveErrorType == ResolveErrorType.OK)
             {
                 var method = info.DeclaredElement as IMethod;
