@@ -4,12 +4,12 @@ using UnityEngine;
 public class A : MonoBehaviour
 {
     // Assigned but never used
-    public string ImplicitlyAssignedField;
-    public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
-    [SerializeField] private int myImplicitlyAssignedPrivateField;
+    public string implicitlyAssignedField;
+    public string implicitlyAssignedMultiField1, implicitlyAssignedMultiField2;
+    [SerializeField] private int implicitlyAssignedPrivateField;
 
     // Assigned + used - no warning
-    public string ImplicitlyAssignedAndUsedField;
+    public string implicitlyAssignedAndUsedField;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -25,6 +25,6 @@ public class A : MonoBehaviour
 
     public void OnDestroy()
     {
-        Console.WriteLine(ImplicitlyAssignedAndUsedField);
+        Console.WriteLine(implicitlyAssignedAndUsedField);
     }
 }
