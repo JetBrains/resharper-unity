@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Foo
+public class Test01
 {
     class Whatever
     {
@@ -9,6 +9,6 @@ public class Foo
     
     public void Method(GameObject o)
     {
-        if (o.GetComponent("Whate{caret}ver")) { }
+        o.GetComponent<Whate{caret}ver>());
     }
 }
