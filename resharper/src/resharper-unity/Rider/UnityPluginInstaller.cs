@@ -166,20 +166,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     case UnityPluginDetector.InstallReason.FreshInstall:
                         userTitle = "Unity: plugin installed";
-                        userMessage =
-                            $@"Rider plugin v{myCurrentVersion} for the Unity Editor was automatically installed for the project '{mySolution.Name}' and can be found at:
-    {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.
-    Please switch back to Unity to load the plugin.";
+                        userMessage = $@"Please switch back to Unity to load the plugin.
+                            Rider plugin v{myCurrentVersion} can be found at:
+                            {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.";
                         break;
 
                     case UnityPluginDetector.InstallReason.Update:
                         userTitle = "Unity: plugin updated";
-                        userMessage = $"Editor plugin was successfully updated to version {myCurrentVersion}";
+                        userMessage = $@"Please switch to the Unity to reload the plugin.
+                            Rider plugin v{myCurrentVersion} can be found at:
+                            {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.";
                         break;
 
                     case UnityPluginDetector.InstallReason.ForceUpdateForDebug:
                         userTitle = "Unity: plugin updated (debug build)";
-                        userMessage = $"Editor plugin was successfully updated to version {myCurrentVersion}";
+                        userMessage = $@"Please switch to the Unity to reload the plugin.
+                            Rider plugin v{myCurrentVersion} can be found at:
+                            {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.";
                         break;
 
                     default:

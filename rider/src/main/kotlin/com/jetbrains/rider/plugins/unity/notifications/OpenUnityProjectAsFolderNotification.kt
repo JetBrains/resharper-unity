@@ -32,14 +32,9 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
         val solutionDescription = project.solutionDescription
         if (solutionDescription is RdVirtualSolution) {
 
-            val content = if (solutionDescription.projectFilePaths.isEmpty()) {
+            val content =
                 "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
-                    " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
-            }
-            else {
-                "This looks like a Unity project. C# and Unity specific functionality is not available when only a single project is opened." +
-                    " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
-            }
+                    " Please <a href=\"close\">close</a> and reopen through the Unity editor, by configuring Rider as the default external editor and double clicking on a C# file to generate and open a solution."
             val title = "Unity functionality unavailable"
             val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
             notification.setListener { _, hyperlinkEvent ->
@@ -76,9 +71,20 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                         }
                     })
                 }
-            }
 
-            notification.addAction(InstallEditorPluginAction())
+                val pluginPath: VirtualFile? = baseDir.findFileByRelativePath("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll");
+                if (pluginPath == null || !pluginPath.exists()) {
+                    notification.setContent( notification.content + "\r\n"+
+                        " Install Rider’s Unity Editor plugin to automatically configure Rider as the default external editor and enable advanced functionality."
+                    )
+                    notification.addAction(object: InstallEditorPluginAction() {
+                        override fun actionPerformed(e: AnActionEvent) {
+                            super.actionPerformed(e)
+                            notification.hideBalloon()
+                        }
+                    })
+                }
+            }
 
             Notifications.Bus.notify(notification, project)
         }
