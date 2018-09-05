@@ -165,24 +165,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 switch (installationInfo.InstallReason)
                 {
                     case UnityPluginDetector.InstallReason.FreshInstall:
-                        userTitle = "Unity: plugin installed";
-                        userMessage = $@"Please switch back to Unity to load the plugin.
+                        userTitle = "Unity Editor plugin installed";
+                        userMessage = $@"Please switch to Unity Editor to load the plugin.
                             Rider plugin v{myCurrentVersion} can be found at:
-                            {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.";
+                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
                         break;
 
                     case UnityPluginDetector.InstallReason.Update:
-                        userTitle = "Unity: plugin updated";
-                        userMessage = $@"Please switch to the Unity to reload the plugin.
+                        userTitle = "Unity Editor plugin updated";
+                        userMessage = $@"Please switch to the Unity Editor to reload the plugin.
                             Rider plugin v{myCurrentVersion} can be found at:
-                            {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.";
+                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
                         break;
 
                     case UnityPluginDetector.InstallReason.ForceUpdateForDebug:
-                        userTitle = "Unity: plugin updated (debug build)";
-                        userMessage = $@"Please switch to the Unity to reload the plugin.
+                        userTitle = "Unity Editor plugin updated (debug build)";
+                        userMessage = $@"Please switch to the Unity Editor to reload the plugin.
                             Rider plugin v{myCurrentVersion} can be found at:
-                            {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.";
+                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
                         break;
 
                     default:
