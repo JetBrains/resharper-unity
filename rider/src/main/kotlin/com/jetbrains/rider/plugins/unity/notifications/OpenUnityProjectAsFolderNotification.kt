@@ -27,7 +27,7 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
 
     override fun projectOpened() {
         // Do nothing if we're not in Unity folders, or we are, but we're a proper .sln based solution
-        if (!unityReferenceDiscoverer.isUnityProjectFolder || project.solutionDescription is RdExistingSolution) return
+        if (!unityReferenceDiscoverer.isUnityLikeProjectFolder || project.solutionDescription is RdExistingSolution) return
 
         val solutionDescription = project.solutionDescription
         if (solutionDescription is RdVirtualSolution) {
