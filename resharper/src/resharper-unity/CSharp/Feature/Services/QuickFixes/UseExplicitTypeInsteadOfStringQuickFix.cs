@@ -132,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             }
 
             public override string Text =>
-                $"Change .{myMethodName}(\"{myLiteralName}\") to .{myMethodName}<{myType.GetClrName()}>()";
+                $"Change '.{myMethodName}(\"{myLiteralName}\")' to '.{myMethodName}<{myType.GetClrName()}>()'";
         }
     }
 }

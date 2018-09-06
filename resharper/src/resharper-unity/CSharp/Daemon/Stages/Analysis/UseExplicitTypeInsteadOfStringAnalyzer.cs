@@ -28,13 +28,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class UseExplicitTypeInsteadStringAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private delegate bool TypeFilter(ITypeElement typeElement);
-        private static readonly IDictionary<string, TypeFilter> KnownMethods = new Dictionary<string, TypeFilter>()
+        private static readonly IDictionary<string, TypeFilter> InterestingMethods = new Dictionary<string, TypeFilter>()
         {
             {"GetComponent", GetComponentTypeFilter},
             {"AddComponent", AddComponentTypeFilter},
             {"CreateInstance", CreateInstanceTypeFilter}
         };
-
+        
+        private static readonly ISet<IClrTypeName> InterestingClasses = new HashSet<IClrTypeName>()
+        {
+            KnownTypes.ScriptableObject,
+            KnownTypes.GameObject,
+            KnownTypes.Component,
+        };
+        
         public UseExplicitTypeInsteadStringAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
@@ -43,65 +50,72 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         protected override void Analyze(IInvocationExpression expression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
+            if (!expression.IsValid()) return;
             if (!ValidityChecker.IsValidExpression(expression.GetText())) return;
             
             var reference = expression.Reference;
-            if (expression.TypeArguments.Count != 0 || expression.Arguments.Count != 1 || reference == null ||
-                !IsComponentKnownMethod(reference)) return;
+            if (expression.TypeArguments.Count != 0 || expression.Arguments.Count != 1 || reference == null) return;
 
             var methodName = reference.GetName();
+            if (!InterestingMethods.ContainsKey(methodName)) return;
+
+            var containingClrTypeName = GetContainingClrTypeName(reference);
+            if (!InterestingClasses.Contains(containingClrTypeName)) return;
+            
             var argument = expression.Arguments.First().Value;
+            var stringLiteral = GetStringLiteralFromArgument(argument);
+            if (stringLiteral == null) return;
 
-            var types = ExtractType(argument, methodName, out var stringLiteral);
-
-            if (types == null)
+            var types = ResolveStringLiteral(stringLiteral, methodName, argument);
+            var filteredTypes = types.Where(t => InterestingMethods[methodName](t)).ToArray();
+            
+            if (filteredTypes.Length == 0 && types.Any())
+            {
+                var inheritedName = containingClrTypeName.Equals(KnownTypes.ScriptableObject)
+                    ? KnownTypes.ScriptableObject
+                    : KnownTypes.MonoBehaviour;
+                consumer.AddHighlighting(new OnlyInvalidTypeInsteadOfStringWarning(argument as ILiteralExpression, stringLiteral, inheritedName.FullName));
+                return;
+            }
+            
+            if (filteredTypes.Length == 0)
             {
                 consumer.AddHighlighting(new InvalidStringForTypeWarning(argument as ILiteralExpression, stringLiteral));
                 return;
             }
+
+            if (filteredTypes.Length >= 2)
+            {
+                consumer.AddHighlighting(new AmbiguousUnityMonoBehaviourDefinitionWarning(argument as ILiteralExpression, stringLiteral));
+            }
             
-            consumer.AddHighlighting(new UseExplicitTypeInsteadOfStringUsingWarning(expression, methodName, stringLiteral, argument, types));
+            consumer.AddHighlighting(new UseExplicitTypeInsteadOfStringUsingWarning(expression, methodName, stringLiteral, argument, filteredTypes));
         }
 
-        private ITypeElement[] ExtractType(IExpression argument, string methodName, out string stringLiteral)
+        private string GetStringLiteralFromArgument(IExpression argument)
         {
-            stringLiteral = null;
             if (argument is ILiteralExpression literal && literal.Literal.IsAnyStringLiteral())
             {
-                stringLiteral = literal.ConstantValue.Value as string;
-                if (stringLiteral == null || !ValidityChecker.IsValidIdentifier(stringLiteral)) return null;
-
-                // try to find type
-                var result = ResolveStringLiteral(stringLiteral, methodName, argument);
-
-                if (result.Length != 0)
-                {
-                    return result;
-                }
+                var result =  literal.ConstantValue.Value as string;
+                if (result == null || !ValidityChecker.IsValidIdentifier(result)) return null;
+                return result;
             }
+
             return null;
         }
-
-        private bool IsComponentKnownMethod([NotNull] IReference reference)
+         
+        private IClrTypeName GetContainingClrTypeName([NotNull] IReference reference)
         {
             var name = reference.GetName();
-            if (!KnownMethods.ContainsKey(name)) return false;
 
             var info = reference.Resolve();
             if (info.ResolveErrorType == ResolveErrorType.OK)
             {
                 var method = info.DeclaredElement as IMethod;
-                var containingType = method?.GetContainingType();
-                if (containingType != null)
-                {
-                    var qualifierTypeName = containingType.GetClrName();
-                    return KnownTypes.Component.Equals(qualifierTypeName) ||
-                           KnownTypes.GameObject.Equals(qualifierTypeName) ||
-                           KnownTypes.ScriptableObject.Equals(qualifierTypeName);
-                }
+                return method?.GetContainingType()?.GetClrName();
             }
 
-            return false;
+            return null;
         }
 
         [NotNull]
@@ -120,12 +134,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var typeReference = (typeNode.FirstChild as IReferenceName).Reference;
             
             var typeResolver = TypeResolverFactory(typeNode);
-            
+
             var candidates = typeReference.GetAllNames()
                 .SelectMany(typeName => typeResolver(typeName))
-                .OfType<ITypeElement>();
+                .OfType<ITypeElement>()
+                .Where(typeElement => ImportTypeUtil.TypeIsVisible(typeElement, typeNode)).ToArray();
 
-            return candidates.Where(typeElement => ImportTypeUtil.TypeIsVisible(typeElement, typeNode) && KnownMethods[methodName](typeElement)).ToArray();
+            
+            return candidates.Where(typeElement => ImportTypeUtil.TypeIsVisible(typeElement, typeNode)).ToArray();
         }
 
         private static bool GetComponentTypeFilter(ITypeElement element)
@@ -154,6 +170,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             var scriptableObjects = element.GetAllSuperClasses().Where(t => t.GetClrName().Equals(KnownTypes.ScriptableObject)).ToArray();
             return scriptableObjects.Any();
-        }
+        } 
     }
 }
