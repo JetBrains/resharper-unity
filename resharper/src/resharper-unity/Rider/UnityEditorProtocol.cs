@@ -39,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
         private readonly Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
+        private readonly UnityPluginInstaller myUnityPluginInstaller;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
 
@@ -55,7 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
             ISettingsStore settingsStore, Application.ActivityTrackingNew.UsageStatistics usageStatistics,
-            UnitySolutionTracker unitySolutionTracker)
+            UnitySolutionTracker unitySolutionTracker,
+            UnityPluginInstaller unityPluginInstaller)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
@@ -64,6 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution = solution;
             myPluginPathsProvider = pluginPathsProvider;
             myUsageStatistics = usageStatistics;
+            myUnityPluginInstaller = unityPluginInstaller;
             myHost = host;
             myBoundSettingsStore =
                 settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
@@ -71,15 +74,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null)
                 .EnsureReadonly(myReadonlyToken).EnsureThisThread();
 
-            if (!unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.Value)
-                return;
-
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            var solFolder = mySolution.SolutionFilePath.Directory;
+            AdviseInstallEditorPluginSignal(lifetime, mySolution.GetProtocolSolution());
+            
+            if (!unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.Value)
+                return;
+            
             AdviseModelData(lifetime, mySolution.GetProtocolSolution());
 
+            var solFolder = mySolution.SolutionDirectory;
             // todo: consider non-Unity Solution with Unity-generated projects
             var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
 
@@ -111,28 +116,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 () => CreateProtocols(protocolInstancePath));
         }
 
+        private void AdviseInstallEditorPluginSignal(Lifetime lifetime, Solution solution)
+        {
+            myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
+            {
+                if (e.NewValue == e.OldValue)
+                    return;
+                if (e.NewValue == null)
+                    return;
+
+                switch (e.Key)
+                {
+                    case "UNITY_InstallEditorPlugin":
+                        myLogger.Info($"{e.Key} = {e.NewValue} came from frontend.");
+                        myUnityPluginInstaller.QueueWithLock();
+                        solution.CustomData.Data.Remove("UNITY_InstallEditorPlugin");
+                        break;
+                }
+            }));
+        }
+
+        
         private void AdviseModelData(Lifetime lifetime, Solution solution)
         {
             myHost.PerformModelAction(m => m.Play.Advise(lifetime, e =>
             {
                 var model = UnityModel.Value;
-                if (UnityModel.Value == null) return;
+                if (model == null) return;
                 if (model.Play.Value == e) return;
 
                 myLogger.Info($"Play = {e} came from frontend.");
                 model.Play.SetValue(e);
-
             }));
 
             myHost.PerformModelAction(m => m.Data.Advise(lifetime, e =>
             {
                 var model = UnityModel.Value;
-                if (e.NewValue == e.OldValue)
-                    return;
-                if (e.NewValue == null)
-                    return;
-                if (model==null)
-                    return;
+                if (model == null) return;
+                if (e.NewValue == e.OldValue) return;
+                if (e.NewValue == null) return;
 
                 switch (e.Key)
                 {

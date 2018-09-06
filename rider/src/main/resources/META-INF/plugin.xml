@@ -90,6 +90,7 @@
         <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
         <action class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" id="SwitchUIModeAction" />
         <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessAction" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" id="InstallEditorPluginAction" />
       </group>
 
       <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />

@@ -57,6 +57,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
         }
 
+        public void QueueWithLock()
+        {
+            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.InstallEditorPlugin", () =>
+            {
+                var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion);
+                QueueInstall(installationInfo, true);
+            });
+        }
+
         void UnityReferencesTracker.IHandler.OnSolutionLoaded(UnityProjectsCollection solution)
         {
             myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.OnSolutionLoaded", () => InstallPluginIfRequired(solution.UnityProjectLifetimes.Keys));
@@ -113,25 +122,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             }
 
+            QueueInstall(installationInfo);
+        }
+
+        private void QueueInstall(UnityPluginDetector.InstallationInfo installationInfo, bool force = false)
+        {
             myQueue.Enqueue(() =>
             {
-                Install(installationInfo);
+                Install(installationInfo, force);
                 myPluginInstallations.Add(mySolution.SolutionFilePath);
             });
         }
 
-        private void Install(UnityPluginDetector.InstallationInfo installationInfo)
+        private void Install(UnityPluginDetector.InstallationInfo installationInfo, bool force)
         {
-            if (!installationInfo.ShouldInstallPlugin)
+            if (!force)
             {
-                Assertion.Assert(false, "Should not be here if installation is not required.");
-                return;
-            }
+                if (!installationInfo.ShouldInstallPlugin)
+                {
+                    Assertion.Assert(false, "Should not be here if installation is not required.");
+                    return;
+                }
 
-            if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
-            {
-                myLogger.Verbose("Installation already done.");
-                return;
+                if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
+                {
+                    myLogger.Verbose("Installation already done.");
+                    return;
+                }
             }
 
             myLogger.Info("Installing Rider Unity editor plugin: {0}", installationInfo.InstallReason);
@@ -148,21 +165,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 switch (installationInfo.InstallReason)
                 {
                     case UnityPluginDetector.InstallReason.FreshInstall:
-                        userTitle = "Unity: plugin installed";
-                        userMessage =
-                            $@"Rider plugin v{myCurrentVersion} for the Unity Editor was automatically installed for the project '{mySolution.Name}' and can be found at:
-    {installedPath.MakeRelativeTo(mySolution.SolutionFilePath)}.
-    Please switch back to Unity to load the plugin.";
+                        userTitle = "Unity Editor plugin installed";
+                        userMessage = $@"Please switch to Unity Editor to load the plugin.
+                            Rider plugin v{myCurrentVersion} can be found at:
+                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
                         break;
 
                     case UnityPluginDetector.InstallReason.Update:
-                        userTitle = "Unity: plugin updated";
-                        userMessage = $"Editor plugin was successfully updated to version {myCurrentVersion}";
+                        userTitle = "Unity Editor plugin updated";
+                        userMessage = $@"Please switch to the Unity Editor to reload the plugin.
+                            Rider plugin v{myCurrentVersion} can be found at:
+                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
                         break;
 
                     case UnityPluginDetector.InstallReason.ForceUpdateForDebug:
-                        userTitle = "Unity: plugin updated (debug build)";
-                        userMessage = $"Editor plugin was successfully updated to version {myCurrentVersion}";
+                        userTitle = "Unity Editor plugin updated (debug build)";
+                        userMessage = $@"Please switch to the Unity Editor to reload the plugin.
+                            Rider plugin v{myCurrentVersion} can be found at:
+                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
                         break;
 
                     default:
