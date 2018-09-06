@@ -21,9 +21,6 @@
       <OutputFile>CSharp\Daemon\Errors\CSharpErrors.generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
-    <Compile Update="CSharp\Daemon\Errors\CSharpErrors.generated.cs">
-      <DependentUpon>CSharpErrors.xml</DependentUpon>
-    </Compile>
     <!-- Cg language -->
     <PsiLanguageNames Include="Cg">
       <Visible>False</Visible>
@@ -80,6 +77,9 @@
     </ErrorsGen>
     <Compile Update="Json\Daemon\Errors\AsmDefErrors.generated.cs">
       <DependentUpon>AsmDefErrors.xml</DependentUpon>
+    </Compile>
+    <Compile Update="CSharp\Daemon\Errors\CSharpErrors.generated.cs">
+      <DependentUpon>CSharpErrors.xml</DependentUpon>
     </Compile>
   </ItemGroup>
   <!-- Resources - api.xml, icons -->

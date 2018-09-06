@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+
+public class Whatever : Component
+{
+        
+}
+
+public class Test03
+{
+    public void Method(GameObject o)
+    {
+        o.GetComponent(|"Whatever"|(0));
+    }
+}
+
+------------------------------------------------
+0: Whatever could not be found or any type with same name is unsuitable here.
+NO QUICKFIXES

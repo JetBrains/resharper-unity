@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+
+public class Whatever : MonoBehaviour
+{
+        
+}
+
+public class Test01
+{
+    public void Method(GameObject o)
+    {
+        |o.GetComponent("Whatever")|(0);
+    }
+}
+
+------------------------------------------------
+0: Using the string for the component type variants results in additional overhead and is not safe.      Suggestion is transform from .GetComponent("Whatever") to .GetComponent<Whatever>()..
+QUICKFIXES:
+Change .GetComponent("Whatever") to .GetComponent<Whatever>()
