@@ -60,8 +60,8 @@
 
       <Tag externalName="InvalidStringForTypeWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Type is not found</Title>
-        <Description>The type could not be resolved from string</Description>
+        <Title>Correct type is not found</Title>
+        <Description>The type could not be resolved from string or type is not correct</Description>
       </Tag>
       
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
@@ -195,13 +195,15 @@
   
   <Warning name="UseExplicitTypeInsteadOfStringUsing" configurableSeverity="Unity.UseExplicitTypeInsteadOfStringUsing">
     <Parameter type="IInvocationExpression" name="invocationMethod" />
-    <Parameter type="string" name="methodName" />
+    <Parameter type="string" name="methodName" isValid="skip"/>
+    <Parameter type="string" name="stringLiteral" isValid="skip"/>
     <Parameter type="IExpression" name="argument" />
-    <Parameter type="string" name="typeLiteral" />
-    <Message value="Using the string for the component type variants results in additional overhead and is not safe. Suggestion is transform from .{0}({1}) to .{0}&lt;{2}&gt;()">
+    <Parameter type="ITypeElement[]" name="availableTypes" isValid="skip"/>
+    <Message value="Using the string for the component type variants results in additional overhead and is not safe. 
+    Suggestion is transform from .{0}(\&quot;{1}\&quot;) to .{0}&lt;{1}&gt;().{2}.">
       <Argument>MethodName</Argument>
-      <Argument>Argument.GetText()</Argument>
-      <Argument>TypeLiteral</Argument>
+      <Argument>StringLiteral</Argument>
+      <Argument>AvailableTypes.Length > 1 ? "\nThe type defined in several namespaces and behavior is unexpected" : string.Empty</Argument>
     </Message> 
     <Range>InvocationMethod.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
@@ -210,7 +212,7 @@
   <Warning name="InvalidStringForType" configurableSeverity="Unity.InvalidStringForType">
     <Parameter type="ILiteralExpression" name="argument" />
     <Parameter type="string" name="typeLiteral" />
-    <Message value="{0} could not be found."> 
+    <Message value="{0} could not be found or any type with same name is unsuitable here."> 
       <Argument>TypeLiteral</Argument>
     </Message>
     <Range>Argument.GetHighlightingRange()</Range>

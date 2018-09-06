@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+
+public class Whatever : MonoBehaviour
+{
+        
+}
+
+public class Test04
+{
+    public void Method(GameObject o)
+    {
+        o.GetComponent("Whatever"|
+|(0)    }
+}
+
+------------------------------------------------
+0: ) expected
+NO QUICKFIXES

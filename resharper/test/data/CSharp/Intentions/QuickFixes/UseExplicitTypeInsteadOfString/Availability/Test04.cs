@@ -5,10 +5,10 @@ public class Whatever : MonoBehaviour
         
 }
 
-public class Test01
+public class Test04
 {
     public void Method(GameObject o)
     {
-        o.GetComponent("Whate{caret}ver");
+        o.GetComponent("Whateve{caret}r"
     }
 }
