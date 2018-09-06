@@ -9,12 +9,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UseExplicitTypeInsteadOfString\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
+        [Test] public void GetComponentAvailableTest() { DoNamedTest(); }
+        [Test] public void GetComponentBuiltInComponentTest() { DoNamedTest(); }
+        [Test] public void GetComponentUnavailableDueToBadInheritanceTest() { DoNamedTest(); }
+        [Test] public void GetComponentUnavailableDueToBadSyntaxTest() { DoNamedTest(); }
+        [Test] public void GetComponentUnavailableTest() { DoNamedTest(); }
+        [Test] public void ScriptableObjectAvailableTest() { DoNamedTest(); }
     }
     
     [TestUnity]
@@ -23,15 +23,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UseExplicitTypeInsteadOfString";
         protected override bool AllowHighlightingOverlap => true;
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); } 
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
-        [Test] public void Test07() { DoNamedTest(); }
-        [Test] public void Test08() { DoNamedTest(); }
-        [Test] public void Test09() { DoNamedTest(); }
+        [Test] public void AddComponentOnObjectTransformationTest() { DoNamedTest(); }
+        [Test] public void GetComponentBuiltInTransform() { DoNamedTest(); } 
+        [Test] public void GetComponentInScriptTransformationTest() { DoNamedTest(); }
+        [Test] public void GetComponentTransformationTest() { DoNamedTest(); }
+        [Test] public void ScriptableObjectTest() { DoNamedTest(); }
+        [Test] public void TransformWithOptionsTest01() { DoNamedTest(); }
+        [Test] public void TransformWithOptionsTest02() { DoNamedTest(); }
+        [Test] public void TransformWithOptionsTest03() { DoNamedTest(); }
+        [Test] public void TransformWithOptionsTest04() { DoNamedTest(); }
         
     }
 }

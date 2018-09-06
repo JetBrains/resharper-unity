@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-public class Whatever
+public class Whatever : Component
 {
         
 }
 
-public class Test02
+public class Test03
 {
     public void Method(GameObject o)
     {
@@ -14,5 +14,5 @@ public class Test02
 }
 
 ------------------------------------------------
-0: Whatever could not be found or any type with same name is unsuitable here.
+0: 'Whatever' should be inherited from UnityEngine.MonoBehaviour.
 NO QUICKFIXES

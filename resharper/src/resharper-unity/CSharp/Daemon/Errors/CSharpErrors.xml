@@ -61,7 +61,19 @@
       <Tag externalName="InvalidStringForTypeWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Correct type is not found</Title>
-        <Description>The type could not be resolved from string or type is not correct</Description>
+        <Description>The type could not be resolved from string</Description>
+      </Tag>
+
+      <Tag externalName="AmbiguousUnityMonoBehaviourDefinitionWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Inheritor of 'MonoBehaviour' with same name defined twice in different namespaces</Title>
+        <Description>Its dangerous to use name of this type in methods like 'GetComponent' due to unexpected behaviour</Description>
+      </Tag>
+      
+      <Tag externalName="OnlyInvalidTypeInsteadOfStringWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Correct type is not found</Title>
+        <Description>The type should have correct inheritance</Description>
       </Tag>
       
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
@@ -200,26 +212,46 @@
     <Parameter type="IExpression" name="argument" />
     <Parameter type="ITypeElement[]" name="availableTypes" isValid="skip"/>
     <Message value="Using the string for the component type variants results in additional overhead and is not safe. 
-    Suggestion is transform from .{0}(\&quot;{1}\&quot;) to .{0}&lt;{1}&gt;().{2}.">
+    Suggestion is transform from '.{0}(\&quot;{1}\&quot;)' to '.{0}&lt;{1}&gt;()'.">
       <Argument>MethodName</Argument>
       <Argument>StringLiteral</Argument>
-      <Argument>AvailableTypes.Length > 1 ? "\nThe type defined in several namespaces and behavior is unexpected" : string.Empty</Argument>
     </Message> 
     <Range>InvocationMethod.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-
-  <Warning name="InvalidStringForType" configurableSeverity="Unity.InvalidStringForType">
+  
+  <Warning name="AmbiguousUnityMonoBehaviourDefinition" configurableSeverity="Unity.AmbiguousUnityMonoBehaviourDefinition">
     <Parameter type="ILiteralExpression" name="argument" />
     <Parameter type="string" name="typeLiteral" />
-    <Message value="{0} could not be found or any type with same name is unsuitable here."> 
+    <Message value="Type with name '{0}' defined in different namespaces and it's dangerous to use method with string overload due to unexpected behaviour. Use generic method">
       <Argument>TypeLiteral</Argument>
     </Message>
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
   
-  
+  <Warning name="OnlyInvalidTypeInsteadOfString" configurableSeverity="Unity.OnlyInvalidTypeInsteadOfString">
+    <Parameter type="ILiteralExpression" name="argument" />
+    <Parameter type="string" name="typeLiteral" />
+    <Parameter type="string" name="inheritedFrom" />
+    <Message value="'{0}' should be inherited from {1}.">
+      <Argument>TypeLiteral</Argument>
+      <Argument>InheritedFrom</Argument>
+    </Message>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="InvalidStringForType" configurableSeverity="Unity.InvalidStringForType">
+    <Parameter type="ILiteralExpression" name="argument" />
+    <Parameter type="string" name="typeLiteral" />
+    <Message value="'{0}' could not be found.">
+      <Argument>TypeLiteral</Argument>
+    </Message>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
     <Message value="MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
