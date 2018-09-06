@@ -1,0 +1,21 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class Foo : ScriptableObject
+    {
+        
+    }
+
+    public class Test06
+    {
+        public void Test()
+        {
+            |ScriptableObject.CreateInstance("Foo")|(0);
+        }
+    }
+}
+------------------------------------------------
+0: Using the string for the component type variants results in additional overhead and is not safe.      Suggestion is transform from .CreateInstance("Foo") to .CreateInstance<Foo>()..
+QUICKFIXES:
+Change .CreateInstance("Foo") to .CreateInstance<DefaultNamespace.Foo>()
