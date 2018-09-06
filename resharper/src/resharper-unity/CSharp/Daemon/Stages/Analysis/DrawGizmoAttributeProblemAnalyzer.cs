@@ -39,50 +39,56 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (attributeTypeElement.GetClrName().Equals(KnownTypes.DrawGizmo))
             {
                 var methodDeclaration = MethodDeclarationNavigator.GetByAttribute(element);
-                if (methodDeclaration == null)
-                    return;
+                CheckMethodDeclaration(methodDeclaration, element, consumer);
+            }
+        }
 
-                var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
-                var gizmoTypeName = TypeFactory.CreateTypeByCLRName("UnityEditor.GizmoType", predefinedType.Module);
-                var componentName = TypeFactory.CreateTypeByCLRName("UnityEngine.Component", predefinedType.Module);
+        private void CheckMethodDeclaration(IMethodDeclaration methodDeclaration, IAttribute element, IHighlightingConsumer consumer)
+        {
+            if (methodDeclaration == null)
+                return;
 
-                if (methodDeclaration.Params.ParameterDeclarations.Count == 2)
-                {
-                    var parameters = methodDeclaration.Params.ParameterDeclarations;
-                    var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
-                        new[] {componentName, gizmoTypeName},
-                        new[] {parameters[0].DeclaredName, parameters[1].DeclaredName});
+            var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
+            var gizmoTypeName = TypeFactory.CreateTypeByCLRName("UnityEditor.GizmoType", predefinedType.Module);
+            var componentName = TypeFactory.CreateTypeByCLRName("UnityEngine.Component", predefinedType.Module);
 
-                    if (methodDeclaration.Type.IsVoid())
-                        if (methodDeclaration.IsStatic)
-                            if (parameters[0].Type.GetTypeElement()
-                                    ?.IsDescendantOf(componentName.GetTypeElement()) == true)
+            if (methodDeclaration.Params.ParameterDeclarations.Count == 2)
+            {
+                var parameters = methodDeclaration.Params.ParameterDeclarations;
+                var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
+                    new[] {componentName, gizmoTypeName},
+                    new[] {parameters[0].DeclaredName, parameters[1].DeclaredName});
+
+                if (methodDeclaration.Type.IsVoid())
+                    if (methodDeclaration.IsStatic)
+                        if (parameters[0].Type.GetTypeElement()
+                                ?.IsDescendantOf(componentName.GetTypeElement()) == true)
+                        {
+                            if (parameters[1].Type.GetTypeElement()
+                                    ?.IsDescendantOf(gizmoTypeName.GetTypeElement()) == false)
                             {
-                                if (parameters[1].Type.GetTypeElement()
-                                        ?.IsDescendantOf(gizmoTypeName.GetTypeElement()) == false)
-                                {
-                                    expectedDeclaration = new MethodSignature(predefinedType.Void, true,
-                                        new[] {parameters[0].Type, gizmoTypeName},
-                                        new[] {parameters[0].DeclaredName, parameters[1].DeclaredName});
-                                    consumer.AddHighlighting(new IncorrectSignatureWarning(methodDeclaration,
-                                        expectedDeclaration, MethodSignatureMatch.IncorrectParameters));
-                                }
-                            }
-                            else
+                                expectedDeclaration = new MethodSignature(predefinedType.Void, true,
+                                    new[] {parameters[0].Type, gizmoTypeName},
+                                    new[] {parameters[0].DeclaredName, parameters[1].DeclaredName});
                                 consumer.AddHighlighting(new IncorrectSignatureWarning(methodDeclaration,
                                     expectedDeclaration, MethodSignatureMatch.IncorrectParameters));
+                            }
+                        }
                         else
-                            consumer.AddHighlighting(new InvalidStaticModifierWarning(methodDeclaration, expectedDeclaration));
+                            consumer.AddHighlighting(new IncorrectSignatureWarning(methodDeclaration,
+                                expectedDeclaration, MethodSignatureMatch.IncorrectParameters));
                     else
-                        consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, expectedDeclaration));
-                }
+                        consumer.AddHighlighting(
+                            new InvalidStaticModifierWarning(methodDeclaration, expectedDeclaration));
                 else
-                {
-                    var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
-                        new[] {componentName, gizmoTypeName},
-                        new[] {"scr", "gizmoType"});
-                    consumer.AddHighlighting(new InvalidParametersWarning(methodDeclaration, expectedDeclaration));
-                }
+                    consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, expectedDeclaration));
+            }
+            else
+            {
+                var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
+                    new[] {componentName, gizmoTypeName},
+                    new[] {"scr", "gizmoType"});
+                consumer.AddHighlighting(new InvalidParametersWarning(methodDeclaration, expectedDeclaration));
             }
         }
     }
