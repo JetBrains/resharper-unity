@@ -16,6 +16,6 @@ namespace DefaultNamespace
     }
 }
 ------------------------------------------------
-0: Using the string parameter is additional overhead. Use generic version
+0: Generic method overload is preferred. Using the string parameter results in additional overhead.
 QUICKFIXES:
 Convert to 'CreateInstance<DefaultNamespace.Foo>()'

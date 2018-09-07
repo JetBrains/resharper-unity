@@ -32,7 +32,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class UseExplicitTypeInsteadOfStringQuickFix : IQuickFix
+    public class PreferGenericMethodOverloadQuickFix : IQuickFix
     {
         [NotNull] public static readonly InvisibleAnchor IntentionAnchor =
             new InvisibleAnchor(IntentionsAnchors.QuickFixesAnchor);
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         private readonly string myMethodName;
         private readonly ITypeElement[] myAvailableTypes;
 
-        public UseExplicitTypeInsteadOfStringQuickFix(UseExplicitTypeInsteadOfStringUsingWarning warning)
+        public PreferGenericMethodOverloadQuickFix(PreferGenericMethodOverloadWarning warning)
         {
             myInvocationExpression = warning.InvocationMethod;
             myMethodName = warning.MethodName;
@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         public bool IsAvailable(IUserDataHolder cache)
         {
-            return myInvocationExpression.IsValid();
+            return myAvailableTypes.Length > 0 && myInvocationExpression.IsValid();
         }
 
 

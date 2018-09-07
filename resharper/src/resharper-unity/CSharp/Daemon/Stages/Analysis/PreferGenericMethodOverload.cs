@@ -30,28 +30,26 @@ using JetBrains.Util.Extension;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes =
-        new[] {typeof(UseExplicitTypeInsteadOfStringUsingWarning), typeof(InvalidStringForTypeWarning),
-            typeof(OnlyGenericTypeInsteadOfStringWarning), typeof(OnlyBadInheritanceTypeInsteadOfStringWarning),
-            typeof(AmbiguousInternalTypeInsteadOfStringUsingWarning), typeof(IneffectiveStringUsageTypeInsteadOfStringUsingWarning)
-        })]
-    public class UseExplicitTypeInsteadStringAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
+        new[] {typeof(PreferGenericMethodOverloadWarning), typeof(AmbiguousTypeInStringLiteralWarning),
+            typeof(UnknownTypeInStringLiteralWarning)})] 
+    public class PreferGenericMethodOverloadAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private delegate bool TypeFilter(ITypeElement typeElement);
-        private static readonly IDictionary<string, TypeFilter> InterestingMethods = new Dictionary<string, TypeFilter>()
+        private static readonly IDictionary<string, TypeFilter> ourInterestingMethods = new Dictionary<string, TypeFilter>()
         {
             {"GetComponent", GetComponentTypeFilter},
             {"AddComponent", AddComponentTypeFilter},
             {"CreateInstance", CreateInstanceTypeFilter}
         };
         
-        private static readonly ISet<IClrTypeName> InterestingClasses = new HashSet<IClrTypeName>()
+        private static readonly ISet<IClrTypeName> ourInterestingClasses = new HashSet<IClrTypeName>()
         {
             KnownTypes.ScriptableObject,
             KnownTypes.GameObject,
             KnownTypes.Component,
         };
         
-        public UseExplicitTypeInsteadStringAnalyzer(UnityApi unityApi)
+        public PreferGenericMethodOverloadAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
         }
@@ -62,8 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (expression.RPar == null) return;
             if (expression.ContainsPreprocessorDirectives()) return;
 
-            var invokedExpression = expression.InvokedExpression as IReferenceExpression;
-            if (invokedExpression == null) return;
+            if (!(expression.InvokedExpression is IReferenceExpression)) return;
             
             var reference = expression.Reference;
             var argument = expression.Arguments.SingleItem?.Value as ILiteralExpression;
@@ -72,93 +69,70 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!argument.Literal.IsAnyStringLiteral()) return;
 
             var methodName = GetMethodName(reference);
-            if (methodName == null || !InterestingMethods.ContainsKey(methodName)) return;
+            if (methodName == null || !ourInterestingMethods.ContainsKey(methodName)) return;
 
             var containingClrTypeName = GetContainingClrTypeName(reference);
-            if (containingClrTypeName == null || !InterestingClasses.Contains(containingClrTypeName)) return;
+            if (containingClrTypeName == null || !ourInterestingClasses.Contains(containingClrTypeName)) return;
 
 
             var stringLiteral = argument.ConstantValue.Value as string;
             if (!ValidityChecker.IsValidDeclaredType(stringLiteral))
             {
-                consumer.AddHighlighting(new InvalidStringForTypeWarning(argument, stringLiteral));
+                consumer.AddHighlighting(new UnknownTypeInStringLiteralWarning(argument));
                 return;
             }
 
             var types = ResolveStringLiteral(stringLiteral, argument);
-            var nonGenericTypes = types.Where(typeElement => typeElement.TypeParameters.Count == 0).ToArray();
+            var typesWithRightInheritance = types.Where(t => ourInterestingMethods[methodName](t)).ToArray();
+            var suitableTypes = typesWithRightInheritance.Where(t => ImportTypeUtil.TypeIsVisible(t, expression)).ToArray();
             
-            var typesWithCorrectInheritance = nonGenericTypes.Where(t => InterestingMethods[methodName](t)).ToArray();
-            var suitableTypes = typesWithCorrectInheritance.Where(typeElement => ImportTypeUtil.TypeIsVisible(typeElement, expression)).ToArray();
-            
-            var invisibleTypesCount = nonGenericTypes.Count(typeElement => !ImportTypeUtil.TypeIsVisible(typeElement, expression));
-            if (invisibleTypesCount == 0)
-            {
-                if (typesWithCorrectInheritance.Length == 0 && types.Any() && !nonGenericTypes.Any())
-                {
-                    consumer.AddHighlighting(new OnlyGenericTypeInsteadOfStringWarning(argument, stringLiteral));
-                    return;
-                }
-
-                if (typesWithCorrectInheritance.Length == 0 && types.Any())
-                {
-                    var inheritedName = containingClrTypeName.Equals(KnownTypes.ScriptableObject)
-                        ? KnownTypes.ScriptableObject
-                        : KnownTypes.MonoBehaviour;
-                    consumer.AddHighlighting(
-                        new OnlyBadInheritanceTypeInsteadOfStringWarning(argument, stringLiteral,
-                            inheritedName.FullName));
-                    return;
-                }
-
-                if (types.Length == 0)
-                {
-                    consumer.AddHighlighting(new InvalidStringForTypeWarning(argument, stringLiteral));
-                    return;
-                }
-            }
-
             if (suitableTypes.Length > 0)
             {
-                // Notify if ambiguous type  or an internal type exist
-                consumer.AddHighlighting(new UseExplicitTypeInsteadOfStringUsingWarning(expression, methodName,
-                    argument, suitableTypes, nonGenericTypes.Length >= 2));
-                
+                consumer.AddHighlighting(new PreferGenericMethodOverloadWarning(expression, methodName, argument, suitableTypes));
             }
-            else // Notify about performance lost (we can't fix it), but that only internal class from another assembly available
+
+            if (types.Any() && typesWithRightInheritance.Length == 0)
             {
-                if (nonGenericTypes.Length >= 2) // Notify if ambiguous 
-                {
-                    consumer.AddHighlighting(new AmbiguousInternalTypeInsteadOfStringUsingWarning(argument));
-                }
-                else
-                {
-                    consumer.AddHighlighting(new IneffectiveStringUsageTypeInsteadOfStringUsingWarning(argument));
-                }
+                var inheritedName = containingClrTypeName.Equals(KnownTypes.ScriptableObject)
+                    ? KnownTypes.ScriptableObject
+                    : KnownTypes.MonoBehaviour;
+                consumer.AddHighlighting(new TypeWithWrongInheritanceInStringLiteralWarning(argument, inheritedName.FullName));
+                return;
+            }
+            
+            if (types.Length == 0)
+            {
+                consumer.AddHighlighting(new UnknownTypeInStringLiteralWarning(argument));
+                return;
+            }
+            
+            // Notify if ambiguous type
+            if (types.Length >= 2)
+            {
+                consumer.AddHighlighting(new AmbiguousTypeInStringLiteralWarning(argument));
             }
         }
 
-
-        private string GetMethodName(IReference reference)
+        private static string GetMethodName(IReference reference)
         {
             var info = reference.Resolve();
+            
             if (info.ResolveErrorType == ResolveErrorType.OK)
             {
                 return info.DeclaredElement?.ShortName;
             }
-
             return null;
         }
         
-        private IClrTypeName GetContainingClrTypeName([NotNull] IReference reference)
+        private static IClrTypeName GetContainingClrTypeName([NotNull] IReference reference)
         {
             var info = reference.Resolve();
+            
             if (info.ResolveErrorType == ResolveErrorType.OK)
             {
                 var method = info.DeclaredElement as IMethod;
                 return method?.GetContainingType()?.GetClrName();
             }
-
             return null;
         }
 
@@ -186,8 +160,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var candidates = typeReference.GetAllNames()
                 .SelectMany(typeName => typeResolver(typeName))
                 .OfType<ITypeElement>()
-                .Where(typeElement => typeElement.GetContainingType() == null);
-            //
+                .Where(typeElement => typeElement.GetContainingType() == null 
+                                      && typeElement.TypeParameters.Count == 0);
             
             return candidates.ToArray();
         }

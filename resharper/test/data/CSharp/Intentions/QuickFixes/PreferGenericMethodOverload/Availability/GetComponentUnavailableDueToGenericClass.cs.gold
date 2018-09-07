@@ -21,5 +21,5 @@ QUICKFIXES:
 Remove redundant type parameter T
 1: Method 'UnityEngine.GameObject.AddComponent' is obsolete: GameObject.AddComponent with string argument has been deprecated. Use GameObject.AddComponent<T>() instead. (UnityUpgradable).
 NO QUICKFIXES
-2: 'Foo' is not correct because only generic type with same name presents. Unity do not allow use them in this context
+2: No types found with the specified short name.
 NO QUICKFIXES
