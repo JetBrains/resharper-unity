@@ -28,7 +28,7 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
 
     override fun projectOpened() {
         // Do nothing if we're not in Unity folders, or we are, but we're a proper .sln based solution
-        if (!unityReferenceDiscoverer.isUnityProjectFolder || project.solutionDescription is RdExistingSolution) return
+        if (!unityReferenceDiscoverer.isUnityLikeProjectFolder || project.solutionDescription is RdExistingSolution) return
 
         val solutionDescription = project.solutionDescription
         if (solutionDescription is RdVirtualSolution) {
@@ -37,10 +37,9 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                 "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
                     " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
             }
-            else {
+            else
                 "This looks like a Unity project. C# and Unity specific functionality is not available when only a single project is opened." +
                     " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
-            }
             val title = "Unity functionality unavailable"
             val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
             notification.setListener { _, hyperlinkEvent ->
@@ -73,11 +72,22 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                             val projectView = ProjectView.getInstance(newProject)
                             projectView.changeView(UnityExplorer.ID)
                         }
+                        }
+                    })
+                }
+
+                val pluginPath: VirtualFile? = baseDir.findFileByRelativePath("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll");
+                if (pluginPath == null || !pluginPath.exists()) {
+                    notification.setContent( notification.content + "\r\n"+
+                        " Install Rider’s Unity Editor plugin to automatically configure Rider as the default external editor and enable advanced functionality."
+                    )
+                    notification.addAction(object: InstallEditorPluginAction() {
+                        override fun actionPerformed(e: AnActionEvent) {
+                            super.actionPerformed(e)
+                            notification.hideBalloon()
                     }
                 })
             }
-
-            notification.addAction(InstallEditorPluginAction())
 
             Notifications.Bus.notify(notification, project)
         }

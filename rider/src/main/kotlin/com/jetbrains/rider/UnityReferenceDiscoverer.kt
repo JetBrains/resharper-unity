@@ -19,6 +19,7 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     private val myProjectModelView = project.solution.projectModelView
     private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
 
+    val isUnityLikeProjectFolder = hasAssestAndProjectSettingsFolders(project) // projects in vcs don't usually have Library folder, we want to show a OpenUnityProjectAsFolderNotification for them
     val isUnityProjectFolder = hasUnityFolders(project)
 
     // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
@@ -67,6 +68,9 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     }
 
     companion object {
+        private fun hasAssestAndProjectSettingsFolders (project:Project):Boolean =
+            hasAssetsFolder(project) && hasProjectSettingsFolder(project)
+
         private fun hasUnityFolders (project:Project):Boolean =
                 hasAssetsFolder(project) && hasLibraryFolder(project) && hasProjectSettingsFolder(project)
 
