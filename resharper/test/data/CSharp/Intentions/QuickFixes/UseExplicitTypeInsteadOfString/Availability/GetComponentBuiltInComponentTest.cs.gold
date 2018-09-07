@@ -4,11 +4,11 @@ public class Test05
 {
     public void Method(GameObject o)
     {
-        |o.GetComponent("Transform")|(0);
+        o.GetComponent(|"Transform"|(0));
     }
 }
 
 ------------------------------------------------
-0: Using the string for the component type variants results in additional overhead and is not safe.      Suggestion is transform from '.GetComponent("Transform")' to '.GetComponent<Transform>()'.
+0: Using the string parameter is additional overhead. Use generic version
 QUICKFIXES:
-Change '.GetComponent("Transform")' to '.GetComponent<UnityEngine.Transform>()'
+Convert to 'GetComponent<UnityEngine.Transform>()'

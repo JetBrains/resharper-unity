@@ -11,11 +11,11 @@ namespace DefaultNamespace
     {
         public void Test()
         {
-            |ScriptableObject.CreateInstance("Foo")|(0);
+            ScriptableObject.CreateInstance(|"Foo"|(0));
         }
     }
 }
 ------------------------------------------------
-0: Using the string for the component type variants results in additional overhead and is not safe.      Suggestion is transform from '.CreateInstance("Foo")' to '.CreateInstance<Foo>()'.
+0: Using the string parameter is additional overhead. Use generic version
 QUICKFIXES:
-Change '.CreateInstance("Foo")' to '.CreateInstance<DefaultNamespace.Foo>()'
+Convert to 'CreateInstance<DefaultNamespace.Foo>()'
