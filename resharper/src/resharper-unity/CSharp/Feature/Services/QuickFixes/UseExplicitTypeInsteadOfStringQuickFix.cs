@@ -34,19 +34,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
     [QuickFix]
     public class UseExplicitTypeInsteadOfStringQuickFix : IQuickFix
     {
-        [NotNull] public static readonly InvisibleAnchor CreateFromUsageAnchor =
-            new InvisibleAnchor(ResolveProblemsFixAnchors.CreateFromUsageAnchor);
+        [NotNull] public static readonly InvisibleAnchor IntentionAnchor =
+            new InvisibleAnchor(IntentionsAnchors.QuickFixesAnchor);
 
         private readonly IInvocationExpression myInvocationExpression;
         private readonly string myMethodName;
-        private readonly string myStringLiteral;
         private readonly ITypeElement[] myAvailableTypes;
 
         public UseExplicitTypeInsteadOfStringQuickFix(UseExplicitTypeInsteadOfStringUsingWarning warning)
         {
             myInvocationExpression = warning.InvocationMethod;
             myMethodName = warning.MethodName;
-            myStringLiteral = warning.StringLiteral;
             myAvailableTypes = warning.AvailableTypes;
         }
 
@@ -59,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         private IReadOnlyList<IBulbAction> GetItems()
         {
             return myAvailableTypes.Select(t =>
-                    new UseExplicitTypeInsteadOfStringAction(t, myInvocationExpression, myMethodName, myStringLiteral))
+                    new UseExplicitTypeInsteadOfStringAction(t, myInvocationExpression, myMethodName))
                 .ToList();
         }
 
@@ -67,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         {
             foreach (var action in GetItems())
             {
-                var anchor = new SubmenuAnchor(CreateFromUsageAnchor, SubmenuBehavior.Executable);
+                var anchor = new SubmenuAnchor(IntentionAnchor, SubmenuBehavior.Executable);
                 yield return new IntentionAction(action, null, anchor);
             }
         }
@@ -78,61 +76,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             private readonly ITypeElement myType;
             private readonly IInvocationExpression myOldInvocation;
             private readonly string myMethodName;
-            private readonly string myLiteralName;
 
-            public UseExplicitTypeInsteadOfStringAction(ITypeElement type, IInvocationExpression oldInvocation,
-                string methodName, string literalName)
+            public UseExplicitTypeInsteadOfStringAction(ITypeElement type, IInvocationExpression oldInvocation, string methodName)
             {
                 myType = type;
                 myOldInvocation = oldInvocation;
                 myMethodName = methodName;
-                myLiteralName = literalName;
             }
 
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution,
                 IProgressIndicator progress)
             {
-                using (WriteLockCookie.Create())
+                var factory = CSharpElementFactory.GetInstance(myOldInvocation);
+                if (myOldInvocation.InvokedExpression is IReferenceExpression referenceExpression)
                 {
-                    var factory = CSharpElementFactory.GetInstance(myOldInvocation);
-                    if (myOldInvocation.InvokedExpression is IReferenceExpression referenceExpression)
+                    var builder = FactoryArgumentsBuilder.Create();
+
+                    var qualifier = referenceExpression.QualifierExpression;
+                    if (qualifier != null)
                     {
-                        var builder = FactoryArgumentsBuilder.Create();
-
-                        var qualifier = referenceExpression.QualifierExpression;
-                        if (qualifier != null)
-                        {
-                            builder.Argument(qualifier);
-                            builder.Append(".");
-                        }
-
-                        builder.Append(myMethodName);
-                        builder.Append("<");
-                        builder.Append(myType.GetClrName().FullName);
-                        builder.Append(">");
-                        builder.Append("()");
-
-                        var newInvocation = factory.CreateExpression(builder.ToString(), builder.ToArguments());
-                        var result = ModificationUtil.ReplaceChild(myOldInvocation, newInvocation);
-
-                        // beatify generated reference
-                        var resultTextRange = result.GetDocumentRange();
-
-                        var psiServices = solution.GetPsiServices();
-                        if (psiServices.GetPsiFile<CSharpLanguage>(resultTextRange) is ICSharpFile file)
-                        {
-                            file.OptimizeImportsAndRefs(
-                                resultTextRange.CreateRangeMarker(DocumentManager.GetInstance(solution)), false, true,
-                                NullProgressIndicator.Instance);
-                        }
+                        builder.Argument(qualifier);
+                        builder.Append(".");
                     }
+
+                    builder.Append(myMethodName);
+                    builder.Append("<");
+                    builder.Argument(TypeFactory.CreateType(myType));
+                    builder.Append(">");
+                    builder.Append("()");
+
+                    var newInvocation = factory.CreateExpression(builder.ToString(), builder.ToArguments());
+                    myOldInvocation.ReplaceBy(newInvocation);
+
                 }
 
                 return null;
             }
 
-            public override string Text =>
-                $"Change '.{myMethodName}(\"{myLiteralName}\")' to '.{myMethodName}<{myType.GetClrName()}>()'";
+            public override string Text => $"Convert to '{myMethodName}<{myType.GetClrName()}>()'";
         }
     }
 }

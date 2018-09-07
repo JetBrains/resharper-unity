@@ -9,11 +9,11 @@ public class Test01
 {
     public void Method(GameObject o)
     {
-        |o.GetComponent("Whatever")|(0);
+        o.GetComponent(|"Whatever"|(0));
     }
 }
 
 ------------------------------------------------
-0: Using the string for the component type variants results in additional overhead and is not safe.      Suggestion is transform from '.GetComponent("Whatever")' to '.GetComponent<Whatever>()'.
+0: Using the string parameter is additional overhead. Use generic version
 QUICKFIXES:
-Change '.GetComponent("Whatever")' to '.GetComponent<Whatever>()'
+Convert to 'GetComponent<Whatever>()'
