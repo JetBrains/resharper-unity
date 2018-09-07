@@ -6,9 +6,9 @@ using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Metadata.Access;
+using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.SolutionBuilder.ComponentsImpl;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
@@ -68,8 +68,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project, TargetFrameworkId targetFrameworkId)
         {
-            var targetPlaform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
-            return new UnityRuntimeEnvironment(targetPlaform);
+            var targetPlatform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
+            return new UnityRuntimeEnvironment(targetPlatform);
         }
 
         Task IUnitTestRunStrategy.Run(IUnitTestRun run)
@@ -140,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var allNames = InitElementsMap(unitTestElements);
             var emptyList = new List<string>();
 
-            var launch = new UnitTestLaunch(allNames, emptyList, emptyList);
+            var launch = new UnitTestLaunch(allNames, emptyList, emptyList, TestMode.Edit);
 
             launch.TestResult.Advise(connectionLifetime, result =>
             {
@@ -249,12 +249,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
+            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Fire(RdVoid.Instance);
+            
             // TODO: cancel tests in Unity Editor
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 
         public void Abort(IUnitTestRun run)
         {
+            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Fire(RdVoid.Instance);
+
             // TODO: cancel tests in Unity Editor
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }

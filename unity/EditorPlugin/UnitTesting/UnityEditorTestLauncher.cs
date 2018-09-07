@@ -2,6 +2,9 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using JetBrains.DataFlow;
+using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -16,15 +19,19 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   public class UnityEditorTestLauncher
   {
     private readonly UnitTestLaunch myLaunch;
+    private readonly Lifetime myLifetime;
     private const string RunnerAddlistener = "AddListener";
     private const string LauncherRun = "Run";
+    private const string StopRun = "StopRun";
     private const string MTeststartedevent = "m_TestStartedEvent";
     private const string MRunfinishedevent = "m_RunFinishedEvent";
     private const string MTestfinishedevent = "m_TestFinishedEvent";
     private const string MEditmoderunner = "m_EditModeRunner";
+    private const string MRunner = "m_Runner";
     private const string TestNames = "testNames";
     private const string TestNames56 = "names";
     private const string EditModeLauncher = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
+    private const string PlayModeLauncher = "UnityEditor.TestTools.TestRunner.PlaymodeLauncher";
     private const string TestRunnerFilter = "UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter";
     private const string TestPlatform = "UnityEngine.TestTools.TestPlatform";
 
@@ -33,9 +40,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
 
-    public UnityEditorTestLauncher(UnitTestLaunch launch)
+    public UnityEditorTestLauncher(UnitTestLaunch launch, Lifetime lifetime)
     {
       myLaunch = launch;
+      myLifetime = lifetime;
     }
 
     public void TryLaunchUnitTests()
@@ -58,9 +66,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         string testEditorAssemblyProperties =  testEditorAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b);
         string testEngineAssemblyProperties = testEngineAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b);
 
-        var launcherType = testEditorAssembly.GetType(EditModeLauncher);
+        var launcherTypeString = myLaunch.TestMode == TestMode.Edit ? EditModeLauncher : PlayModeLauncher;
+        var launcherType = testEditorAssembly.GetType(launcherTypeString);
         if (launcherType == null)
-          throw new NullReferenceException($"Could not find {EditModeLauncher} among {testEditorAssemblyProperties}");
+          throw new NullReferenceException($"Could not find {launcherTypeString} among {testEditorAssemblyProperties}");
         
         var filterType = testEngineAssembly.GetType(TestRunnerFilter);
         if (filterType==null)
@@ -89,11 +98,12 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           fieldInfo.SetValue(filter, testNameStrings);
           
           var assemblyProviderType = testEditorAssembly.GetType(TestInEditorTestAssemblyProvider);
+          var testPlatformVal = myLaunch.TestMode == TestMode.Edit ? 2 : 4; // All = 255, // 0xFF, EditMode = 2, PlayMode = 4,
           if (assemblyProviderType != null)
           {
             var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
               BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-              new[] {Enum.ToObject(enumType, 2)}, null); // TestPlatform.EditMode
+              new[] {Enum.ToObject(enumType, testPlatformVal)}, null); 
             ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
             launcher = Activator.CreateInstance(launcherType,
               BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
@@ -105,7 +115,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           {
             launcher = Activator.CreateInstance(launcherType,
               BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-              null, new[] {filter, Enum.ToObject(enumType, 2)},
+              null, new[] {filter, Enum.ToObject(enumType, testPlatformVal)}, 
               null);
           }
         }
@@ -128,6 +138,15 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         }
 
         var runner = runnerField.GetValue(launcher);
+        
+        var unityTestAssemblyRunnerField = runner.GetType().GetField(MRunner, BindingFlags.Instance | BindingFlags.NonPublic);
+        if (unityTestAssemblyRunnerField != null)
+        {
+          var unityTestAssemblyRunner = unityTestAssemblyRunnerField.GetValue(runner);
+          var stopRunMethod = unityTestAssemblyRunner.GetType().GetMethod(StopRun, BindingFlags.Instance | BindingFlags.Public);
+          
+          myLaunch.Abort.AdviseNotNull(myLifetime, _ => { stopRunMethod.Invoke(unityTestAssemblyRunner, null); });
+        }
 
         if (!AdviseTestStarted(runner))
           return;
@@ -193,17 +212,17 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       var mTestStarted = mTestStartedEventMethodInfo.GetValue(runner);
-      var addListenertMethod =
+      var addListenerMethod =
         mTestStarted.GetType().GetMethod(RunnerAddlistener, BindingFlags.Instance | BindingFlags.Public);
 
-      if (addListenertMethod == null)
+      if (addListenerMethod == null)
       {
-        ourLogger.Verbose("Could not find addListenertMethod via reflection");
+        ourLogger.Verbose("Could not find addListenerMethod via reflection");
         return false;
       }
 
       //subscribe for tests callbacks
-      addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITest>(TestStarted)});
+      addListenerMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITest>(TestStarted)});
       return true;
     }
 
