@@ -16,7 +16,6 @@ The plugin adds code completion and generation of Unity event functions, inspect
 
 This plugin comes bundled with Rider, and manual installation is not required. However, it is necessary to configure Unity to use Rider as the external script editor:
 
-* Open project in Unity
 * Check if `.sln` file is present:  
     - Start Rider and open the `.sln` file. Rider will install a Unity Editor plugin into the project ([see below for more details](#unity-editor-plugin))
     - Otherwise, start Rider and open project folder in Rider. Rider will show Notification, which allows to install Unity Editor plugin. 
