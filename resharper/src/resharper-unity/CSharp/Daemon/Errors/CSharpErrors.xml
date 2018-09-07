@@ -52,40 +52,28 @@
         <Description>Explicit string comparison with 'GameObject.tag' or 'Component.tag' is inefficient. Use the 'CompareTag' method instead.</Description>
       </Tag>
 
-      <Tag externalName="UseExplicitTypeInsteadOfStringUsingWarning.HIGHLIGHTING_ID"
+      <Tag externalName="PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Use type method instead of overload with string</Title>
+        <Title>Use generic method overload instead of a string one</Title>
         <Description>Using the string for the component type variants results in additional overhead that should not be incurred.</Description>
       </Tag>
 
-      <Tag externalName="InvalidStringForTypeWarning.HIGHLIGHTING_ID"
+      <Tag externalName="AmbiguousTypeInStringLiteralWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Correct type is not found</Title>
-        <Description>The type could not be resolved from string.</Description>
+        <Title>Several types with the same short name, this can result in unexpected behaviour at runtime</Title>
+        <Description>There are no guarantees on the object returned if there are several with the same short name.</Description>
       </Tag>
 
-      <Tag externalName="OnlyBadInheritanceTypeInsteadOfStringWarning.HIGHLIGHTING_ID" 
+      <Tag externalName="UnknownTypeInStringLiteralWarning.HIGHLIGHTING_ID" 
            default="WARNING">
-        <Title>Correct type is not found</Title>
-        <Description>Type does not have required super type.</Description>
+        <Title>Type with the specified short name not found</Title>
+        <Description>Type with the specified short name not found.</Description>
       </Tag>
 
-      <Tag externalName="OnlyGenericTypeInsteadOfStringWarning.HIGHLIGHTING_ID"
+      <Tag externalName="TypeWithWrongInheritanceInStringLiteralWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Correct type is not found</Title>
-        <Description>Only generic version was found. Unity does not allow generic types in this context.</Description>
-      </Tag>
-
-      <Tag externalName="IneffectiveStringUsageTypeInsteadOfStringUsingWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>The string usage is inefficient</Title>
-        <Description>The string usage is inefficient, but only internal types are available.</Description>
-      </Tag>
-
-      <Tag externalName="AmbiguousInternalTypeInsteadOfStringUsingWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Unexpected behaviour because several types defined with same name</Title>
-        <Description>Unexpected behaviour because several types available from different namespaces and Unity can use any.</Description>
+        <Title>Type with the specified short name has wrong inheritance</Title>
+        <Description>No type with the specified short name and required superclass not found.</Description>
       </Tag>
       
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
@@ -217,66 +205,40 @@
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
   
-  <Warning name="UseExplicitTypeInsteadOfStringUsing" configurableSeverity="Unity.UseExplicitTypeInsteadOfStringUsing">
+  <Warning name="PreferGenericMethodOverload" configurableSeverity="Unity.PreferGenericMethodOverload">
     <Parameter type="IInvocationExpression" name="invocationMethod" />
     <Parameter type="string" name="methodName" isValid="skip"/>
     <Parameter type="ILiteralExpression" name="argument" />
     <Parameter type="ITypeElement[]" name="availableTypes" isValid="skip"/>
-    <Parameter type="bool" name="ambiguousTypeDefinition" isValid="skip"/>
-    <Message value="Using the string parameter is additional overhead. Use generic version{0}">
-      <Argument>AmbiguousTypeDefinition ? &quot;.\n Type with same name defined in several namespaces and behaviour will be unexpected&quot; : string.Empty</Argument>
+    <Message value="Generic method overload is preferred. Using the string parameter results in additional overhead."/>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="AmbiguousTypeInStringLiteral" configurableSeverity="Unity.AmbiguousTypeInStringLiteral">
+    <Parameter type="ILiteralExpression" name="argument" />
+    <Message value="There are several types with the same short name, this can result in an unexpected behaviour at the runtime."/>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="UnknownTypeInStringLiteral" configurableSeverity="Unity.UnknownTypeInStringLiteral">
+    <Parameter type="ILiteralExpression" name="argument" />
+    <Message value="No types found with the specified short name."/>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="TypeWithWrongInheritanceInStringLiteral" configurableSeverity="Unity.TypeWithWrongInheritanceInStringLiteral">
+    <Parameter type="ILiteralExpression" name="argument" />
+    <Parameter type="string" name="parentClass" />
+    <Message value="No types found with the specified short name and correct inheritance. {0} should be the superclass">
+      <Argument>ParentClass</Argument>
     </Message>
     <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
-  </Warning>
-
-  <Warning name="AmbiguousInternalTypeInsteadOfStringUsing" configurableSeverity="Unity.AmbiguousInternalTypeInsteadOfStringUsing">
-    <Parameter type="ILiteralExpression" name="argument" />
-    <Message value="There are several internal types with same name and behaviour is unexpected"/>
-    <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
-  </Warning>
-
-  <Warning name="IneffectiveStringUsageTypeInsteadOfStringUsing" configurableSeverity="Unity.IneffectiveStringUsageTypeInsteadOfStringUsing">
-    <Parameter type="ILiteralExpression" name="argument" />
-    <Message value="String usage is inefficient, but only internal type is available"/>
-    <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
-  </Warning>
-
-  <Warning name="OnlyGenericTypeInsteadOfString" configurableSeverity="Unity.OnlyGenericTypeInsteadOfString">
-    <Parameter type="ILiteralExpression" name="argument" />
-    <Parameter type="string" name="typeLiteral" /> 
-    <Message value="'{0}' is not correct because only generic type with same name presents. Unity do not allow use them in this context">
-      <Argument>TypeLiteral</Argument>
-    </Message>
-    <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
-  </Warning>
-
-
-  <Warning name="OnlyBadInheritanceTypeInsteadOfString" configurableSeverity="Unity.OnlyBadInheritanceTypeInsteadOfString">
-    <Parameter type="ILiteralExpression" name="argument" />
-    <Parameter type="string" name="typeLiteral" />
-    <Parameter type="string" name="requiredParent" />
-    <Message value="'{0}' should be inherited from {1}">
-      <Argument>TypeLiteral</Argument>
-      <Argument>RequiredParent</Argument>
-    </Message>
-    <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
   
-  <Warning name="InvalidStringForType" configurableSeverity="Unity.InvalidStringForType">
-    <Parameter type="ILiteralExpression" name="argument" />
-    <Parameter type="string" name="typeLiteral" />
-    <Message value="'{0}' could not be found">
-      <Argument>TypeLiteral</Argument>
-    </Message>
-    <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
-  </Warning>
-
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
     <Message value="MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />

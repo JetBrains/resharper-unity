@@ -5,9 +5,9 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 {
     [TestUnity]
-    public class UseExplicitTypeInsteadOfStringQuickFixAvailabilityTest : QuickFixAvailabilityTestBase
+    public class PreferGenericMethodOverloadQuickFixAvailabilityTest : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UseExplicitTypeInsteadOfString\Availability";
+        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\PreferGenericMethodOverload\Availability";
 
         [Test] public void GetComponentAvailableTest() { DoNamedTest(); }
         [Test] public void GetComponentBuiltInComponentTest() { DoNamedTest(); }
@@ -19,9 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
     }
     
     [TestUnity]
-    public class UseExplicitTypeInsteadOfStringQuickFixTest : QuickFixTestBase<UseExplicitTypeInsteadOfStringQuickFix>
+    public class PreferGenericMethodOverloadQuickFixTest : QuickFixTestBase<PreferGenericMethodOverloadQuickFix>
     {
-        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UseExplicitTypeInsteadOfString";
+        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\PreferGenericMethodOverload";
         protected override bool AllowHighlightingOverlap => true;
 
         [Test] public void AddComponentOnObjectTransformationTest() { DoNamedTest(); }
