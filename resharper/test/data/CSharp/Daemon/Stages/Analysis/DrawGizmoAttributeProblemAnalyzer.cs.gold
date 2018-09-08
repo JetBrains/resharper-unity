@@ -1,0 +1,37 @@
+﻿using UnityEngine;
+using UnityEditor;
+
+public class TestDrawGizmoMethod
+{
+    [DrawGizmo]
+    public void |NotStatic|(0)(Component arg1, GizmoType arg2) { }
+
+    [DrawGizmo]
+    public static |int|(1) WrongReturnType(Component arg1, GizmoType arg2) { }
+
+    [DrawGizmo]
+    public static void WrongReturnType(Component arg1, GizmoType arg2) { }
+
+    [DrawGizmo]
+    public static void OneCorrectParameter(|GameObject arg1, GizmoType arg2|(2)) { }
+	
+    [DrawGizmo]
+    public static void OneParameter(|GizmoType arg2|(3)) { }
+	
+    [DrawGizmo]
+    public static void WrongTypeParameters|<T>|(4)(Component arg1, GizmoType arg2) { }
+
+    [DrawGizmo]
+    public static void JustRight(Component arg1, GizmoType arg2) { }
+
+    [DrawGizmo]
+    private static void JustRight2(MonoBehaviour arg1, GizmoType arg2) { }
+}
+
+
+---------------------------------------------------------
+(0): ReSharper Warning: Missing static modifier
+(1): ReSharper Warning: Incorrect return type. Expected 'void'
+(2): ReSharper Warning: Incorrect method parameters. Expected '(Component component, GizmoType gizmoType)'
+(3): ReSharper Warning: Incorrect method parameters. Expected '(Component component, GizmoType gizmoType)'
+(4): ReSharper Warning: Incorrect type parameters

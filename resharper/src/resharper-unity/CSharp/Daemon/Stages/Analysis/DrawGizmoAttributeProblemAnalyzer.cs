@@ -47,49 +47,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             if (methodDeclaration == null)
                 return;
-
+            
             var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
-            var gizmoTypeName = TypeFactory.CreateTypeByCLRName("UnityEditor.GizmoType", predefinedType.Module);
-            var componentName = TypeFactory.CreateTypeByCLRName("UnityEngine.Component", predefinedType.Module);
+            var gizmoType = TypeFactory.CreateTypeByCLRName("UnityEditor.GizmoType", predefinedType.Module);
+            var componentType = TypeFactory.CreateTypeByCLRName("UnityEngine.Component", predefinedType.Module);
+          
 
+            var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
+                new[] {componentType, gizmoType},
+                new[] {"component", "gizmoType"});
+
+            var match = expectedDeclaration.Match(methodDeclaration);
+            
             if (methodDeclaration.Params.ParameterDeclarations.Count == 2)
             {
                 var parameters = methodDeclaration.Params.ParameterDeclarations;
-                var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
-                    new[] {componentName, gizmoTypeName},
-                    new[] {parameters[0].DeclaredName, parameters[1].DeclaredName});
 
-                if (methodDeclaration.Type.IsVoid())
-                    if (methodDeclaration.IsStatic)
-                        if (parameters[0].Type.GetTypeElement()
-                                ?.IsDescendantOf(componentName.GetTypeElement()) == true)
-                        {
-                            if (parameters[1].Type.GetTypeElement()
-                                    ?.IsDescendantOf(gizmoTypeName.GetTypeElement()) == false)
-                            {
-                                expectedDeclaration = new MethodSignature(predefinedType.Void, true,
-                                    new[] {parameters[0].Type, gizmoTypeName},
-                                    new[] {parameters[0].DeclaredName, parameters[1].DeclaredName});
-                                consumer.AddHighlighting(new IncorrectSignatureWarning(methodDeclaration,
-                                    expectedDeclaration, MethodSignatureMatch.IncorrectParameters));
-                            }
-                        }
-                        else
-                            consumer.AddHighlighting(new IncorrectSignatureWarning(methodDeclaration,
-                                expectedDeclaration, MethodSignatureMatch.IncorrectParameters));
-                    else
-                        consumer.AddHighlighting(
-                            new InvalidStaticModifierWarning(methodDeclaration, expectedDeclaration));
-                else
-                    consumer.AddHighlighting(new InvalidReturnTypeWarning(methodDeclaration, expectedDeclaration));
+                Log.Root.Log(LoggingLevel.INFO, string.Format("component {0}:{1}:{2}", parameters[0].Type.GetTypeElement(), componentType.GetTypeElement(), parameters[0].Type.GetTypeElement()
+                    ?.IsDescendantOf(componentType.GetTypeElement())));
+                Log.Root.Log(LoggingLevel.INFO, string.Format("gizmo {0}:{1}:{2}", parameters[1].Type.GetTypeElement(), gizmoType.GetTypeElement(), parameters[1].Type.GetTypeElement()?.Equals(gizmoType?.GetTypeElement())));
+
+                if (parameters[0].Type.GetTypeElement()
+                        ?.IsDescendantOf(componentType.GetTypeElement()) == true)
+                {
+                    Log.Root.Log(LoggingLevel.INFO, "First matched");
+                    if (parameters[1].Type.GetTypeElement()?.Equals(gizmoType?.GetTypeElement()) == true)
+                    {
+                        Log.Root.Log(LoggingLevel.INFO, "second matched");
+                        match &= ~MethodSignatureMatch.IncorrectParameters;
+                    }
+                
+                    expectedDeclaration = new MethodSignature(predefinedType.Void, true,
+                        new[] {parameters[0].Type, gizmoType},
+                        new[] {parameters[0].DeclaredName, parameters[1].DeclaredName});
+                }
             }
-            else
-            {
-                var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
-                    new[] {componentName, gizmoTypeName},
-                    new[] {"scr", "gizmoType"});
-                consumer.AddHighlighting(new InvalidParametersWarning(methodDeclaration, expectedDeclaration));
-            }
+            
+            base.AddMethodSignatureInspections(consumer, methodDeclaration, expectedDeclaration, match);
         }
     }
 }
