@@ -229,57 +229,56 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool ApplyManualCompilerSettings([CanBeNull] string configFilePath, XElement projectContentElement, XNamespace xmlns)
     {
+      if (string.IsNullOrEmpty(configFilePath) || !File.Exists(configFilePath)) 
+        return false;
+      
+      var configText = File.ReadAllText(configFilePath);
+      var isUnity20171OrLater = UnityUtils.UnityVersion >= new Version(2017, 1);
+
       var changed = false;
-
-      if (!string.IsNullOrEmpty(configFilePath) && File.Exists(configFilePath))
+      
+      // Unity always sets AllowUnsafeBlocks in 2017.1+
+      // Strictly necessary to compile unsafe code
+      // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/VisualStudioIntegration/SolutionSynchronizationSettings.cs#L119
+      if (configText.Contains(UNITY_UNSAFE_KEYWORD) && !isUnity20171OrLater)
       {
-        var configText = File.ReadAllText(configFilePath);
+        changed |= ApplyAllowUnsafeBlocks(projectContentElement, xmlns);
+      }
 
-        var isUnity20171OrLater = UnityUtils.UnityVersion >= new Version(2017, 1);
+      // Unity natively handles this in 2017.1+
+      // https://github.com/Unity-Technologies/UnityCsReference/blob/33cbfe062d795667c39e16777230e790fcd4b28b/Editor/Mono/VisualStudioIntegration/SolutionSynchronizer.cs#L191
+      // Also note that we don't support the short "-d" form. Neither does Unity
+      if (configText.Contains(UNITY_DEFINE_KEYWORD) && !isUnity20171OrLater)
+      {
+        // defines could be
+        // 1) -define:DEFINE1,DEFINE2
+        // 2) -define:DEFINE1;DEFINE2
+        // 3) -define:DEFINE1 -define:DEFINE2
+        // 4) -define:DEFINE1,DEFINE2;DEFINE3
+        // tested on "-define:DEF1;DEF2 -define:DEF3,DEF4;DEFFFF \n -define:DEF5"
+        // result: DEF1, DEF2, DEF3, DEF4, DEFFFF, DEF5
 
-        // Unity always sets AllowUnsafeBlocks in 2017.1+
-        // Strictly necessary to compile unsafe code
-        // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/VisualStudioIntegration/SolutionSynchronizationSettings.cs#L119
-        if (configText.Contains(UNITY_UNSAFE_KEYWORD) && !isUnity20171OrLater)
+        var definesList = new List<string>();
+        var compileFlags = configText.Split(' ', '\n');
+        foreach (var flag in compileFlags)
         {
-          changed |= ApplyAllowUnsafeBlocks(projectContentElement, xmlns);
-        }
-
-        // Unity natively handles this in 2017.1+
-        // https://github.com/Unity-Technologies/UnityCsReference/blob/33cbfe062d795667c39e16777230e790fcd4b28b/Editor/Mono/VisualStudioIntegration/SolutionSynchronizer.cs#L191
-        // Also note that we don't support the short "-d" form. Neither does Unity
-        if (configText.Contains(UNITY_DEFINE_KEYWORD) && !isUnity20171OrLater)
-        {
-          // defines could be
-          // 1) -define:DEFINE1,DEFINE2
-          // 2) -define:DEFINE1;DEFINE2
-          // 3) -define:DEFINE1 -define:DEFINE2
-          // 4) -define:DEFINE1,DEFINE2;DEFINE3
-          // tested on "-define:DEF1;DEF2 -define:DEF3,DEF4;DEFFFF \n -define:DEF5"
-          // result: DEF1, DEF2, DEF3, DEF4, DEFFFF, DEF5
-
-          var definesList = new List<string>();
-          var compileFlags = configText.Split(' ', '\n');
-          foreach (var flag in compileFlags)
+          var f = flag.Trim();
+          if (f.Contains(UNITY_DEFINE_KEYWORD))
           {
-            var f = flag.Trim();
-            if (f.Contains(UNITY_DEFINE_KEYWORD))
-            {
-              var defineEndPos = f.IndexOf(UNITY_DEFINE_KEYWORD) + UNITY_DEFINE_KEYWORD.Length;
-              var definesSubString = f.Substring(defineEndPos, f.Length - defineEndPos);
-              definesSubString = definesSubString.Replace(";", ",");
-              definesList.AddRange(definesSubString.Split(','));
-            }
+            var defineEndPos = f.IndexOf(UNITY_DEFINE_KEYWORD) + UNITY_DEFINE_KEYWORD.Length;
+            var definesSubString = f.Substring(defineEndPos, f.Length - defineEndPos);
+            definesSubString = definesSubString.Replace(";", ",");
+            definesList.AddRange(definesSubString.Split(','));
           }
-
-          changed |= ApplyCustomDefines(definesList.ToArray(), projectContentElement, xmlns);
         }
 
-        // Note that this doesn't handle the long version "-reference:"
-        if (configText.Contains(UNITY_REFERENCE_KEYWORD))
-        {
-          changed |= ApplyManualCompilerSettingsReferences(projectContentElement, xmlns, configText);
-        }
+        changed |= ApplyCustomDefines(definesList.ToArray(), projectContentElement, xmlns);
+      }
+
+      // Note that this doesn't handle the long version "-reference:"
+      if (configText.Contains(UNITY_REFERENCE_KEYWORD))
+      {
+        changed |= ApplyManualCompilerSettingsReferences(projectContentElement, xmlns, configText);
       }
 
       return changed;
@@ -391,11 +390,16 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       foreach (var referenceName in referenceList)
       {
-        var name = referenceName;
-        if (new FileInfo(name).Extension != ".dll")
+        var name = referenceName.Trim().TrimStart('"').TrimEnd('"');
+        var nameFileInfo = new FileInfo(name);
+        if (nameFileInfo.Extension.ToLower() != ".dll")
           name += ".dll"; // RIDER-15093
-        
-        var hintPath = GetHintPath(name);
+
+        string hintPath;
+        if (!nameFileInfo.Exists)
+          hintPath = GetHintPath(name);
+        else
+          hintPath = nameFileInfo.FullName;
         ApplyCustomReference(name, projectContentElement, xmlns, hintPath);
       }
 
