@@ -232,7 +232,7 @@
   <Warning name="TypeWithWrongInheritanceInStringLiteral" configurableSeverity="Unity.TypeWithWrongInheritanceInStringLiteral">
     <Parameter type="ILiteralExpression" name="argument" />
     <Parameter type="string" name="parentClass" />
-    <Message value="No types found with the specified short name and correct inheritance. {0} should be the superclass">
+    <Message value="No types found with the specified short name and correct inheritance. Type should be inherited from '{0}'">
       <Argument>ParentClass</Argument>
     </Message>
     <Range>Argument.GetHighlightingRange()</Range>

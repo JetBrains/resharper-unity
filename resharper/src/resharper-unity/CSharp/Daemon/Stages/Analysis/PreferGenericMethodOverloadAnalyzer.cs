@@ -107,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
             
             // Notify if ambiguous type
-            if (types.Length >= 2)
+            if (typesWithRightInheritance.Length >= 2)
             {
                 consumer.AddHighlighting(new AmbiguousTypeInStringLiteralWarning(argument));
             }
@@ -175,12 +175,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return true;
             }
 
-            if (components.Length == 1 && monoScripts.Any())
-            {
-                return true;
-            }
-            
-            return false;
+            return components.Length == 1 && monoScripts.Any();
         }
         
         private static bool AddComponentTypeFilter(ITypeElement element)
