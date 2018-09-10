@@ -27,7 +27,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
+        namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes =
         new[] {typeof(PreferGenericMethodOverloadWarning), typeof(AmbiguousTypeInStringLiteralWarning),
@@ -139,6 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             var symbolCache = context.GetPsiServices().Symbols;
             var symbolScope = symbolCache.GetSymbolScope(context.GetPsiModule(), withReferences: true, true);
+            
             return typeName => symbolScope.GetElementsByShortName(typeName);
         }
 
@@ -160,6 +161,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 .OfType<ITypeElement>()
                 .Where(typeElement => typeElement.GetContainingType() == null 
                                       && typeElement.TypeParameters.Count == 0);
+
+            if (literal.Contains("."))
+            {
+                candidates = candidates.Where(t => t.GetClrName().FullName.Equals(literal));
+            }
             
             return candidates.ToArray();
         }

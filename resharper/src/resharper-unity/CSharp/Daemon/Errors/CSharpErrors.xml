@@ -60,20 +60,20 @@
 
       <Tag externalName="AmbiguousTypeInStringLiteralWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Several types with the same short name, this can result in unexpected behaviour at runtime</Title>
-        <Description>There are no guarantees on the object returned if there are several with the same short name.</Description>
+        <Title>Several types with the same name, this can result in unexpected behaviour at runtime</Title>
+        <Description>There are no guarantees on the object returned if there are several with the same name.</Description>
       </Tag>
 
       <Tag externalName="UnknownTypeInStringLiteralWarning.HIGHLIGHTING_ID" 
            default="WARNING">
-        <Title>Type with the specified short name not found</Title>
-        <Description>Type with the specified short name not found.</Description>
+        <Title>Type with the specified name not found</Title>
+        <Description>Type with the specified name not found.</Description>
       </Tag>
 
       <Tag externalName="TypeWithWrongInheritanceInStringLiteralWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Type with the specified short name has wrong inheritance</Title>
-        <Description>No type with the specified short name and required superclass not found.</Description>
+        <Title>Type with the specified name has wrong inheritance</Title>
+        <Description>No type with the specified name and required superclass not found.</Description>
       </Tag>
       
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
@@ -217,14 +217,14 @@
 
   <Warning name="AmbiguousTypeInStringLiteral" configurableSeverity="Unity.AmbiguousTypeInStringLiteral">
     <Parameter type="ILiteralExpression" name="argument" />
-    <Message value="There are several types with the same short name, this can result in an unexpected behaviour at the runtime."/>
+    <Message value="There are several types with the same name, this can result in an unexpected behaviour at the runtime."/>
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="UnknownTypeInStringLiteral" configurableSeverity="Unity.UnknownTypeInStringLiteral">
     <Parameter type="ILiteralExpression" name="argument" />
-    <Message value="No types found with the specified short name."/>
+    <Message value="No types found with the specified name."/>
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -232,7 +232,7 @@
   <Warning name="TypeWithWrongInheritanceInStringLiteral" configurableSeverity="Unity.TypeWithWrongInheritanceInStringLiteral">
     <Parameter type="ILiteralExpression" name="argument" />
     <Parameter type="string" name="parentClass" />
-    <Message value="No types found with the specified short name and correct inheritance. Type should be inherited from '{0}'">
+    <Message value="No types found with the specified name and correct inheritance. Type should be inherited from '{0}'">
       <Argument>ParentClass</Argument>
     </Message>
     <Range>Argument.GetHighlightingRange()</Range>
