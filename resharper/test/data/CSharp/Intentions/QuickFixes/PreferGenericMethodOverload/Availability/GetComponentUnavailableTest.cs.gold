@@ -14,5 +14,5 @@ public class Test02
 }
 
 ------------------------------------------------
-0: No types found with the specified short name and correct inheritance. UnityEngine.MonoBehaviour should be the superclass
+0: No types found with the specified short name and correct inheritance. Type should be inherited from 'UnityEngine.MonoBehaviour'
 NO QUICKFIXES
