@@ -58,7 +58,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             IHighlightingConsumer consumer)
         {
             if (expression.RPar == null) return;
-            if (expression.ContainsPreprocessorDirectives()) return;
 
             if (!(expression.InvokedExpression is IReferenceExpression)) return;
             
@@ -73,8 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             var containingClrTypeName = GetContainingClrTypeName(reference);
             if (containingClrTypeName == null || !ourInterestingClasses.Contains(containingClrTypeName)) return;
-
-
+ 
             var stringLiteral = argument.ConstantValue.Value as string;
             if (!ValidityChecker.IsValidDeclaredType(stringLiteral))
             {
@@ -86,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var typesWithRightInheritance = types.Where(t => ourInterestingMethods[methodName](t)).ToArray();
             var suitableTypes = typesWithRightInheritance.Where(t => ImportTypeUtil.TypeIsVisible(t, expression)).ToArray();
             
-            if (suitableTypes.Length > 0)
+            if (suitableTypes.Length > 0  && !expression.ContainsPreprocessorDirectives())
             {
                 consumer.AddHighlighting(new PreferGenericMethodOverloadWarning(expression, methodName, argument, suitableTypes));
             }
