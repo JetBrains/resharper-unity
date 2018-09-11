@@ -221,7 +221,7 @@
   <Warning name="PreferNonAllocApi" configurableSeverity="Unity.PreferNonAllocApi">
     <Parameter type="IReference" name="invokedExpression" />
     <Parameter type="string" name="nonAllocName" />
-    <Message value="Reusing buffer with NonAlloc api will increase performance. Use '{0}'">
+    <Message value="Non allocating method will increase performance. Use '{0}' and reuse buffer for return value">
       <Argument>NonAllocName</Argument>
     </Message>
     <Range>InvokedExpression.GetDocumentRange()</Range>

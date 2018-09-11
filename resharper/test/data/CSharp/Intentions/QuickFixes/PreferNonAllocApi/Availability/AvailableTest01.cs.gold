@@ -9,5 +9,5 @@ public class Available01 : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Reusing buffer with NonAlloc api will increase performance. Use 'RaycastNonAlloc'
+0: Non allocating method will increase performance. Use 'RaycastNonAlloc' and reuse buffer for return value
 NO QUICKFIXES
