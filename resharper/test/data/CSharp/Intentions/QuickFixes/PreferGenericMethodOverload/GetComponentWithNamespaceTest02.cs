@@ -1,4 +1,4 @@
-using UnityEngine
+using UnityEngine;
 
 namespace A
 {
@@ -20,7 +20,7 @@ namespace DefaultNamespace
     {
         public void TestMethod(GameObject go)
         {
-            go.GetComponent("TestMono");
+            go.GetComponent("Test{caret}Mono");
         }
     }
 }

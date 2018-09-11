@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace A
 {
@@ -16,11 +16,14 @@ namespace A
 
 namespace DefaultNamespace
 {
-    public class GetComponentWithNamespaceTest02
+    public class GetComponentWithNamespaceUnavailableTest
     {
         public void TestMethod(GameObject go)
         {
-            go.GetComponent("A.B.C.Tes{caret}tMono");
+            go.GetComponent(|"B.C.TestMono"|(0));
         }
     }
 }
+------------------------------------------------
+0: No types found with the specified name.
+NO QUICKFIXES

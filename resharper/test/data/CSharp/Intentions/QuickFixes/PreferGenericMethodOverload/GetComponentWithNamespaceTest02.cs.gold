@@ -1,3 +1,4 @@
+﻿using A.B.C;
 using UnityEngine;
 
 namespace A
@@ -16,11 +17,11 @@ namespace A
 
 namespace DefaultNamespace
 {
-    public class GetComponentWithNamespaceTest02
+    public class GetComponentWithNamespaceTest01
     {
         public void TestMethod(GameObject go)
         {
-            go.GetComponent("A.B.C.Tes{caret}tMono");
+            go.GetComponent<Test{caret}Mono>();
         }
     }
 }
