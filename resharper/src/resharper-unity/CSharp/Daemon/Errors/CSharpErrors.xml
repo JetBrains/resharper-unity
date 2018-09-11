@@ -219,12 +219,13 @@
   </Warning>
 
   <Warning name="PreferNonAllocApi" configurableSeverity="Unity.PreferNonAllocApi">
-    <Parameter type="IReference" name="invokedExpression" />
-    <Parameter type="string" name="nonAllocName" />
-    <Message value="Non allocating method will increase performance. Use '{0}' and reuse buffer for return value">
-      <Argument>NonAllocName</Argument>
+    <Parameter type="IInvocationExpression" name="invocationExpression" />
+    <Parameter type="IReferenceExpression" name="invokedExpression" />
+    <Parameter type="IMethod" name="nonAllocMethod" />
+    <Message value="Allocating method will decrease performance. Use '{0}' and reuse buffer for return value">
+      <Argument>NonAllocMethod.ShortName</Argument>
     </Message>
-    <Range>InvokedExpression.GetDocumentRange()</Range>
+    <Range>InvokedExpression.Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
   

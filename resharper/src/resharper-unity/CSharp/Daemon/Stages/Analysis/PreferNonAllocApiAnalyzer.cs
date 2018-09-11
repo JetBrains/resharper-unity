@@ -31,25 +31,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             if (!(expression.InvokedExpression is IReferenceExpression referenceExpression)) return;
 
-            if (HasNonAllocVersion(expression, out var nonAllocName))
+            var nonAllocMethod = GetNonAllocVersion(expression);
+            if (nonAllocMethod != null)
             {
-                consumer.AddHighlighting(new PreferNonAllocApiWarning(referenceExpression.Reference, nonAllocName));
+                consumer.AddHighlighting(new PreferNonAllocApiWarning(expression, referenceExpression, nonAllocMethod));
             }
         }
 
-        private bool HasNonAllocVersion(IInvocationExpression expression, out string nonAllocName)
+        private IMethod GetNonAllocVersion(IInvocationExpression expression)
         {
-            nonAllocName = null;
-
             var reference = expression.Reference;
-            if (reference == null) return false;
+            if (reference == null) return null;
             
             var info = reference.Resolve();
 
             if (info.ResolveErrorType == ResolveErrorType.OK && info.DeclaredElement is IMethod method)
             {
                 var originName = method.ShortName;
-                if (originName.Length < 3) return false;
+                if (originName.Length < 3) return null;
                 
                 var suffix = originName.Substring(originName.Length - 3, 3);
                 var newName = (suffix.Equals("All") ? originName.Substring(0, originName.Length - 3) : originName) + "NonAlloc";
@@ -58,13 +57,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 
                 if (containingType == null)
                 {
-                    return false;
+                    return null;
                 }
 
                 if (!containingType.GetClrName().Equals(KnownTypes.Physics) &&
                     !containingType.GetClrName().Equals(KnownTypes.Physics2D))
                 {
-                    return false;
+                    return null;
                 }
 
                 var type = TypeFactory.CreateType(containingType);
@@ -74,17 +73,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     new PredicateFilter(t => MatchSignatureAllocToNonAlloc(method, t.GetDeclaredElement() as IMethod)));
                 
                
-
-                if (table.GetSymbolInfos(newName).SingleOrDefault() != null)
-                {
-                    nonAllocName = newName;
-                    return true;
-                }
-
-                return false;
+                return table.GetSymbolInfos(newName).SingleOrDefault()?.GetDeclaredElement() as IMethod;
             }
 
-            return false;
+            return null;
         }
 
         private bool MatchSignatureAllocToNonAlloc(IMethod method, IMethod nonAllocMethod)
