@@ -7,8 +7,11 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Resolve;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
@@ -28,19 +31,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             if (!(expression.InvokedExpression is IReferenceExpression referenceExpression)) return;
 
-            var reference = expression.Reference;
-            if (reference == null) return;
-
-            if (HasNonAllocVersion(reference, out var nonAllocName))
+            if (HasNonAllocVersion(expression, out var nonAllocName))
             {
                 consumer.AddHighlighting(new PreferNonAllocApiWarning(referenceExpression.Reference, nonAllocName));
             }
         }
 
-        private bool HasNonAllocVersion(ICSharpInvocationReference reference, out string nonAllocName)
+        private bool HasNonAllocVersion(IInvocationExpression expression, out string nonAllocName)
         {
-            var info = reference.Resolve();
             nonAllocName = null;
+
+            var reference = expression.Reference;
+            if (reference == null) return false;
+            
+            var info = reference.Resolve();
 
             if (info.ResolveErrorType == ResolveErrorType.OK && info.DeclaredElement is IMethod method)
             {
@@ -50,11 +54,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 var suffix = originName.Substring(originName.Length - 3, 3);
                 var newName = (suffix.Equals("All") ? originName.Substring(0, originName.Length - 3) : originName) + "NonAlloc";
 
-                // try to find method with same parameters + return value as parameter
-                var candidates = method.GetContainingType()?.Methods
-                    .Where(t => t.ShortName.Equals(newName) && MatchSignatureAllocToNonAlloc(method, t)).ToArray();
+                var containingType = method.GetContainingType();
+                
+                if (containingType == null)
+                {
+                    return false;
+                }
 
-                if (candidates?.SingleOrDefault() != null)
+                if (!containingType.GetClrName().Equals(KnownTypes.Physics) &&
+                    !containingType.GetClrName().Equals(KnownTypes.Physics2D))
+                {
+                    return false;
+                }
+
+                var type = TypeFactory.CreateType(containingType);
+                var table = type.GetSymbolTable(expression.PsiModule).Filter(
+                    new AccessRightsFilter(new DefaultAccessContext(expression)),
+                    new ExactNameFilter(newName),
+                    new PredicateFilter(t => MatchSignatureAllocToNonAlloc(method, t.GetDeclaredElement() as IMethod)));
+                
+               
+
+                if (table.GetSymbolInfos(newName).SingleOrDefault() != null)
                 {
                     nonAllocName = newName;
                     return true;
@@ -68,6 +89,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private bool MatchSignatureAllocToNonAlloc(IMethod method, IMethod nonAllocMethod)
         {
+            // try to find method with same parameters + return value as parameter
+            if (nonAllocMethod == null)
+            {
+                return false;
+            }
             var originReturnType = method.ReturnType;
             var originParameters = method.Parameters;
             var nonAllocMethodParameters = nonAllocMethod.Parameters;
