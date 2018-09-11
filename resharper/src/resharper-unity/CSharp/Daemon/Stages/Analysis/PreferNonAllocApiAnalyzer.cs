@@ -26,9 +26,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         protected override void Analyze(IInvocationExpression expression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            if (expression.RPar == null) return;
-            if (expression.ContainsPreprocessorDirectives()) return;
-
             if (!(expression.InvokedExpression is IReferenceExpression referenceExpression)) return;
 
             var reference = expression.Reference;
@@ -49,13 +46,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {
                 var originName = method.ShortName;
                 if (originName.Length < 3) return false;
+                
                 var suffix = originName.Substring(originName.Length - 3, 3);
-                if (!suffix.Equals("All"))
-                {
-                    return false;
-                }
-
-                var newName = originName.Substring(0, originName.Length - 3) + "NonAlloc";
+                var newName = (suffix.Equals("All") ? originName.Substring(0, originName.Length - 3) : originName) + "NonAlloc";
 
                 // try to find method with same parameters + return value as parameter
                 var candidates = method.GetContainingType()?.Methods
@@ -78,7 +71,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var originReturnType = method.ReturnType;
             var originParameters = method.Parameters;
             var nonAllocMethodParameters = nonAllocMethod.Parameters;
-            if (originParameters.Count + 1 != nonAllocMethodParameters.Count)
+            var originSize = originParameters.Count;
+            
+            if (originSize + 1 != nonAllocMethodParameters.Count)
             {
                 return false;
             }
@@ -91,7 +86,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 {
                     continue;
                 }
-
+                
+                if (curOriginParameterIdx == originSize)
+                {
+                    return false;
+                }   
+                
                 if (nonAllocParameter.Type.Equals(originParameters[curOriginParameterIdx].Type))
                 {
                     curOriginParameterIdx++;

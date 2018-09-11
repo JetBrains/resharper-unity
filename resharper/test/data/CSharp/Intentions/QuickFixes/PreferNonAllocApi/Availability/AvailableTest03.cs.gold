@@ -1,0 +1,13 @@
+﻿using UnityEngine;
+
+public class Available03 : MonoBehaviour
+{
+    public void Method()
+    {
+        Physics.|BoxCastAll|(0)(Vector3.zero, Vector3.down,Vector3.forward);
+    }
+}
+
+------------------------------------------------
+0: Non allocating method will increase performance. Use 'BoxCastNonAlloc' and reuse buffer for return value
+NO QUICKFIXES
