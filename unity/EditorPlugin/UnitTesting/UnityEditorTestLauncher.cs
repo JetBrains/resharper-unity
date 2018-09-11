@@ -135,24 +135,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         }
 
         var runner = runnerField.GetValue(launcher);          
-        var unityTestAssemblyRunnerField = runner.GetType().GetField(MRunner, BindingFlags.Instance | BindingFlags.NonPublic);
-        if (unityTestAssemblyRunnerField != null)
-        {
-          var unityTestAssemblyRunner = unityTestAssemblyRunnerField.GetValue(runner);
-          var stopRunMethod = unityTestAssemblyRunner.GetType().GetMethod(StopRun, BindingFlags.Instance | BindingFlags.Public); 
-          myLaunch.Abort.AdviseNotNull(myLifetime, _ =>
-          {
-            ourLogger.Verbose($"Call {StopRun} method via reflection.");
-            try
-            {
-              stopRunMethod.Invoke(unityTestAssemblyRunner, null);
-            }
-            catch (Exception)
-            {
-              ourLogger.Verbose($"Call {StopRun} method failed.");
-            }
-          });
-        }
+        SupportAbort(runner);
 
         if (!AdviseTestStarted(runner))
           return;
@@ -178,6 +161,30 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         ourLogger.Error(e, "Exception while launching Unity Editor tests.");
       }
 
+    }
+
+    private void SupportAbort(object runner)
+    {
+      var unityTestAssemblyRunnerField =
+        runner.GetType().GetField(MRunner, BindingFlags.Instance | BindingFlags.NonPublic);
+      if (unityTestAssemblyRunnerField != null)
+      {
+        var unityTestAssemblyRunner = unityTestAssemblyRunnerField.GetValue(runner);
+        var stopRunMethod = unityTestAssemblyRunner.GetType()
+          .GetMethod(StopRun, BindingFlags.Instance | BindingFlags.Public);
+        myLaunch.Abort.AdviseNotNull(myLifetime, _ =>
+        {
+          ourLogger.Verbose($"Call {StopRun} method via reflection.");
+          try
+          {
+            stopRunMethod.Invoke(unityTestAssemblyRunner, null);
+          }
+          catch (Exception)
+          {
+            ourLogger.Verbose($"Call {StopRun} method failed.");
+          }
+        });
+      }
     }
 
     private bool AdviseSessionFinished(object runner)
