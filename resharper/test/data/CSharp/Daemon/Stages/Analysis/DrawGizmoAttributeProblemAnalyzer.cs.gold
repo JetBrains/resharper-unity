@@ -10,17 +10,23 @@ public class TestDrawGizmoMethod
     public static |int|(1) WrongReturnType(Component arg1, GizmoType arg2) { }
 
     [DrawGizmo]
-    public static void WrongReturnType(Component arg1, GizmoType arg2) { }
-
-    [DrawGizmo]
     public static void OneCorrectParameter(|GameObject arg1, GizmoType arg2|(2)) { }
+    
+    [DrawGizmo]
+    public static void OneCorrectParameter2(|MonoBehaviour arg1, string arg2|(3)) { }
 	
     [DrawGizmo]
-    public static void OneParameter(|GizmoType arg2|(3)) { }
+    public static void OneParameter(|GizmoType arg2|(4)) { }
 	
     [DrawGizmo]
-    public static void WrongTypeParameters|<T>|(4)(Component arg1, GizmoType arg2) { }
+    public static void WrongTypeParameters|<T>|(5)(Component arg1, GizmoType arg2) { }
 
+    [DrawGizmo]
+    private static void TooManyParams(|string arg1, Transform arg2, GizmoType arg3|(6)) { }
+    
+    [DrawGizmo]
+    private static void TooManyParams2(|Transform arg1, GizmoType arg2, string arg3|(7)) { }
+    
     [DrawGizmo]
     public static void JustRight(Component arg1, GizmoType arg2) { }
 
@@ -34,13 +40,13 @@ public class TestDrawGizmoMethod
     private static void JustRight4(TestClass2 arg1, GizmoType arg2) { }
     
     [DrawGizmo]
-    private static void JustRight4(Transform arg1, GizmoType arg2) { }
-
-    public class |TestClass1|(5) : MonoBehaviour
+    private static void JustRight5(Transform arg1, GizmoType arg2) { }
+    
+    public class |TestClass1|(8) : MonoBehaviour
     {
     }
     
-    public class |TestClass2|(6) : TestClass1
+    public class |TestClass2|(9) : TestClass1
     {
     }
 }
@@ -49,8 +55,11 @@ public class TestDrawGizmoMethod
 ---------------------------------------------------------
 (0): ReSharper Warning: Missing static modifier
 (1): ReSharper Warning: Incorrect return type. Expected 'void'
-(2): ReSharper Warning: Incorrect method parameters. Expected '(Component component, GizmoType gizmoType)'
-(3): ReSharper Warning: Incorrect method parameters. Expected '(Component component, GizmoType gizmoType)'
-(4): ReSharper Warning: Incorrect type parameters
-(5): Unity Gutter Icon: Unity scripting component
-(6): Unity Gutter Icon: Unity scripting component
+(2): ReSharper Warning: Incorrect method parameters. Expected '(Component component, GizmoType arg2)'
+(3): ReSharper Warning: Incorrect method parameters. Expected '(MonoBehaviour arg1, GizmoType gizmoType)'
+(4): ReSharper Warning: Incorrect method parameters. Expected '(Component component, GizmoType arg2)'
+(5): ReSharper Warning: Incorrect type parameters
+(6): ReSharper Warning: Incorrect method parameters. Expected '(Transform arg2, GizmoType arg3)'
+(7): ReSharper Warning: Incorrect method parameters. Expected '(Transform arg1, GizmoType arg2)'
+(8): Unity Gutter Icon: Unity scripting component
+(9): Unity Gutter Icon: Unity scripting component

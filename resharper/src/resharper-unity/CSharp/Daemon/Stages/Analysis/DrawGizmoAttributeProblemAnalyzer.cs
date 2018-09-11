@@ -53,27 +53,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var componentType = TypeFactory.CreateTypeByCLRName(KnownTypes.Component, predefinedType.Module);
           
 
-            var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
-                new[] {componentType, gizmoType},
-                new[] {"component", "gizmoType"});
 
+            IType derivedType = componentType;
+            string derivedName = "component";
+            string gizmoName = "gizmoType";
+            bool firstParamCorrect = false;
+            bool secondParamCorrect = false;
+
+            for (var i = 0; i < methodDeclaration.Params.ParameterDeclarations.Count; i++)
+            {
+                var param = methodDeclaration.Params.ParameterDeclarations[i];
+                if (param.Type.GetTypeElement()
+                        ?.IsDescendantOf(componentType.GetTypeElement()) == true)
+                {
+                    if (i == 0)
+                        firstParamCorrect = true;
+
+                    derivedType = param.Type;
+                    derivedName = param.DeclaredName;
+                }
+                
+                if (param.Type.GetTypeElement()
+                        ?.Equals(gizmoType?.GetTypeElement()) == true)
+                {
+                    if (i == 1)
+                        secondParamCorrect = true;
+
+                    gizmoName = param.DeclaredName;
+                }
+            }
+
+            var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
+                new[] {derivedType, gizmoType},
+                new[] {derivedName, gizmoName});
             var match = expectedDeclaration.Match(methodDeclaration);
             
             if (methodDeclaration.Params.ParameterDeclarations.Count == 2)
             {
                 var parameters = methodDeclaration.Params.ParameterDeclarations;
 
-                if (parameters[0].Type.GetTypeElement()
-                        ?.IsDescendantOf(componentType.GetTypeElement()) == true)
+                if (firstParamCorrect)
                 {
-                    if (parameters[1].Type.GetTypeElement()?.Equals(gizmoType?.GetTypeElement()) == true)
+                    if (secondParamCorrect)
                     {
                         match &= ~MethodSignatureMatch.IncorrectParameters;
                     }
-                
-                    expectedDeclaration = new MethodSignature(predefinedType.Void, true,
-                        new[] {parameters[0].Type, gizmoType},
-                        new[] {parameters[0].DeclaredName, parameters[1].DeclaredName});
                 }
             }
             
