@@ -151,7 +151,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         return false;
       
       var hintPath = GetHintPath(referenceName);
-      ApplyCustomReference(referenceName, projectContentElement, xmlns, hintPath);
+      AddCustomReference(referenceName, projectContentElement, xmlns, hintPath);
       return true;
     }
     
@@ -314,13 +314,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (!File.Exists(xcodeDllPath))
         return false;
 
-      var itemGroup = new XElement(xmlns + "ItemGroup");
-      var reference = new XElement(xmlns + "Reference");
-      reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(xcodeDllPath)));
-      reference.Add(new XElement(xmlns + "HintPath", xcodeDllPath));
-      itemGroup.Add(reference);
-      projectContentElement.Add(itemGroup);
-
+      AddCustomReference(Path.GetFileNameWithoutExtension(xcodeDllPath), projectContentElement, xmlns, xcodeDllPath);
       return true;
     }
 
@@ -359,12 +353,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       var files = unityEngineDir.GetFiles("*.dll");
       foreach (var file in files)
       {
-        var itemGroup = new XElement(xmlns + "ItemGroup");
-        var reference = new XElement(xmlns + "Reference");
-        reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(file.Name)));
-        reference.Add(new XElement(xmlns + "HintPath", file.FullName));
-        itemGroup.Add(reference);
-        projectContentElement.Add(itemGroup);
+        AddCustomReference(Path.GetFileNameWithoutExtension(file.Name), projectContentElement, xmlns, file.FullName);
       }
 
       return true;
@@ -400,7 +389,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           hintPath = GetHintPath(name);
         else
           hintPath = nameFileInfo.FullName;
-        ApplyCustomReference(name, projectContentElement, xmlns, hintPath);
+        AddCustomReference(name, projectContentElement, xmlns, hintPath);
       }
 
       return true;
@@ -432,18 +421,23 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return hintPath;
     }
 
-    private static void ApplyCustomReference(string name, XElement projectContentElement, XNamespace xmlns, string hintPath = null)
+    private static void AddCustomReference(string name, XElement projectContentElement, XNamespace xmlns, string hintPath = null)
     {
-      var itemGroup = new XElement(xmlns + "ItemGroup");
+      ourLogger.Verbose($"AddCustomReference {name}, {hintPath}");
+      var itemGroup = projectContentElement.Elements(xmlns + "ItemGroup").FirstOrDefault();
+      if (itemGroup == null)
+      {
+        ourLogger.Verbose("Skip AddCustomReference, ItemGroup is null.");
+        return;
+      }
       var reference = new XElement(xmlns + "Reference");
       reference.Add(new XAttribute("Include", Path.GetFileNameWithoutExtension(name)));
       if (!string.IsNullOrEmpty(hintPath))
         reference.Add(new XElement(xmlns + "HintPath", hintPath));
       itemGroup.Add(reference);
-      projectContentElement.Add(itemGroup);
     }
 
-    // Setappropriate version
+    // Set appropriate version
     private static bool FixTargetFrameworkVersion(XElement projectElement, XNamespace xmlns)
     {
       return SetOrUpdateProperty(projectElement, xmlns, "TargetFrameworkVersion", s =>
