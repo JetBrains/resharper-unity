@@ -251,7 +251,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Fire(RdVoid.Instance);
             
-            // TODO: cancel tests in Unity Editor
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 
@@ -259,7 +258,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Fire(RdVoid.Instance);
 
-            // TODO: cancel tests in Unity Editor
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 

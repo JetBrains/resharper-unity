@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util;
@@ -12,7 +11,6 @@ using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
-
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
@@ -109,7 +107,6 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
               BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
               null, new[] {filter, assemblyProvider},
               null);
-            
           }
           else
           {
@@ -137,15 +134,24 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           return;
         }
 
-        var runner = runnerField.GetValue(launcher);
-        
+        var runner = runnerField.GetValue(launcher);          
         var unityTestAssemblyRunnerField = runner.GetType().GetField(MRunner, BindingFlags.Instance | BindingFlags.NonPublic);
         if (unityTestAssemblyRunnerField != null)
         {
           var unityTestAssemblyRunner = unityTestAssemblyRunnerField.GetValue(runner);
-          var stopRunMethod = unityTestAssemblyRunner.GetType().GetMethod(StopRun, BindingFlags.Instance | BindingFlags.Public);
-          
-          myLaunch.Abort.AdviseNotNull(myLifetime, _ => { stopRunMethod.Invoke(unityTestAssemblyRunner, null); });
+          var stopRunMethod = unityTestAssemblyRunner.GetType().GetMethod(StopRun, BindingFlags.Instance | BindingFlags.Public); 
+          myLaunch.Abort.AdviseNotNull(myLifetime, _ =>
+          {
+            ourLogger.Verbose($"Call {StopRun} method via reflection.");
+            try
+            {
+              stopRunMethod.Invoke(unityTestAssemblyRunner, null);
+            }
+            catch (Exception)
+            {
+              ourLogger.Verbose($"Call {StopRun} method failed.");
+            }
+          });
         }
 
         if (!AdviseTestStarted(runner))
@@ -186,17 +192,17 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       var mTestStarted = mTestStartedEventMethodInfo.GetValue(runner);
-      var addListenertMethod =
+      var addListenerMethod =
         mTestStarted.GetType().GetMethod(RunnerAddlistener, BindingFlags.Instance | BindingFlags.Public);
 
-      if (addListenertMethod == null)
+      if (addListenerMethod == null)
       {
         ourLogger.Verbose("Could not find addListenertMethod via reflection");
         return false;
       }
 
       //subscribe for tests callbacks
-      addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITestResult>(RunFinished)});
+      addListenerMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITestResult>(RunFinished)});
       return true;
     }
 
@@ -238,17 +244,17 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       var mTestFinished = mTestFinishedEventMethodInfo.GetValue(runner);
-      var addListenertMethod =
+      var addListenerMethod =
         mTestFinished.GetType().GetMethod(RunnerAddlistener, BindingFlags.Instance | BindingFlags.Public);
 
-      if (addListenertMethod == null)
+      if (addListenerMethod == null)
       {
-        ourLogger.Verbose("Could not find addListenertMethod via reflection");
+        ourLogger.Verbose("Could not find addListenerMethod via reflection");
         return false;
       }
 
       //subscribe for tests callbacks
-      addListenertMethod.Invoke(mTestFinished, new object[] {new UnityAction<ITestResult>(TestFinished)});
+      addListenerMethod.Invoke(mTestFinished, new object[] {new UnityAction<ITestResult>(TestFinished)});
       return true;
     }
     
