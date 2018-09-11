@@ -388,9 +388,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         }
       }
 
-      foreach (var referenceName in referenceList)
+      foreach (var reference in referenceList)
       {
-        var name = referenceName.Trim().TrimStart('"').TrimEnd('"');
+        var name = reference.Trim().TrimStart('"').TrimEnd('"');
         var nameFileInfo = new FileInfo(name);
         if (nameFileInfo.Extension.ToLower() != ".dll")
           name += ".dll"; // RIDER-15093
