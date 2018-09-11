@@ -26,6 +26,23 @@ public class TestDrawGizmoMethod
 
     [DrawGizmo]
     private static void JustRight2(MonoBehaviour arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight3(TestClass1 arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight4(TestClass2 arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight4(Transform arg1, GizmoType arg2) { }
+
+    public class |TestClass1|(5) : MonoBehaviour
+    {
+    }
+    
+    public class |TestClass2|(6) : TestClass1
+    {
+    }
 }
 
 
@@ -35,3 +52,5 @@ public class TestDrawGizmoMethod
 (2): ReSharper Warning: Incorrect method parameters. Expected '(Component component, GizmoType gizmoType)'
 (3): ReSharper Warning: Incorrect method parameters. Expected '(Component component, GizmoType gizmoType)'
 (4): ReSharper Warning: Incorrect type parameters
+(5): Unity Gutter Icon: Unity scripting component
+(6): Unity Gutter Icon: Unity scripting component

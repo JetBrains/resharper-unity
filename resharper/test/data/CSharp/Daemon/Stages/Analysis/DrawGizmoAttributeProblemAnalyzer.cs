@@ -26,5 +26,22 @@ public class TestDrawGizmoMethod
 
     [DrawGizmo]
     private static void JustRight2(MonoBehaviour arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight3(TestClass1 arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight4(TestClass2 arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight4(Transform arg1, GizmoType arg2) { }
+
+    public class TestClass1 : MonoBehaviour
+    {
+    }
+    
+    public class TestClass2 : TestClass1
+    {
+    }
 }
 

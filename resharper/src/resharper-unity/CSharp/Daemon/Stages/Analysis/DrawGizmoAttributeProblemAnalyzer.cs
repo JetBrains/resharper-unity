@@ -49,8 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return;
             
             var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
-            var gizmoType = TypeFactory.CreateTypeByCLRName("UnityEditor.GizmoType", predefinedType.Module);
-            var componentType = TypeFactory.CreateTypeByCLRName("UnityEngine.Component", predefinedType.Module);
+            var gizmoType = TypeFactory.CreateTypeByCLRName(KnownTypes.GizmoType, predefinedType.Module);
+            var componentType = TypeFactory.CreateTypeByCLRName(KnownTypes.Component, predefinedType.Module);
           
 
             var expectedDeclaration = new MethodSignature(predefinedType.Void, true,
@@ -63,17 +63,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {
                 var parameters = methodDeclaration.Params.ParameterDeclarations;
 
-                Log.Root.Log(LoggingLevel.INFO, string.Format("component {0}:{1}:{2}", parameters[0].Type.GetTypeElement(), componentType.GetTypeElement(), parameters[0].Type.GetTypeElement()
-                    ?.IsDescendantOf(componentType.GetTypeElement())));
-                Log.Root.Log(LoggingLevel.INFO, string.Format("gizmo {0}:{1}:{2}", parameters[1].Type.GetTypeElement(), gizmoType.GetTypeElement(), parameters[1].Type.GetTypeElement()?.Equals(gizmoType?.GetTypeElement())));
-
                 if (parameters[0].Type.GetTypeElement()
                         ?.IsDescendantOf(componentType.GetTypeElement()) == true)
                 {
-                    Log.Root.Log(LoggingLevel.INFO, "First matched");
                     if (parameters[1].Type.GetTypeElement()?.Equals(gizmoType?.GetTypeElement()) == true)
                     {
-                        Log.Root.Log(LoggingLevel.INFO, "second matched");
                         match &= ~MethodSignatureMatch.IncorrectParameters;
                     }
                 
