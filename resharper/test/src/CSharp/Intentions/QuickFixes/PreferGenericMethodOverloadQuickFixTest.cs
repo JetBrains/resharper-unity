@@ -16,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void GetComponentUnavailableTest() { DoNamedTest(); }
         [Test] public void ScriptableObjectAvailableTest() { DoNamedTest(); }
         [Test] public void GetComponentUnavailableDueToGenericClass() { DoNamedTest(); }
+        [Test] public void GetComponentWithNamespaceUnavailableTest() { DoNamedTest(); }
     }
     
     [TestUnity]
@@ -34,12 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void TransformWithOptionsTest03() { DoNamedTest(); }
         [Test] public void TransformWithOptionsTest04() { DoNamedTest(); } 
         [Test] public void GetComponentWithNamespaceTest01() { DoNamedTest(); }
-
-        [Test]
-        public void GetComponentWithNamespaceTest02()
-        {
-            DoNamedTest();
-        }
-        
+        [Test] public void GetComponentWithNamespaceTest02() { DoNamedTest(); }
     }
 }

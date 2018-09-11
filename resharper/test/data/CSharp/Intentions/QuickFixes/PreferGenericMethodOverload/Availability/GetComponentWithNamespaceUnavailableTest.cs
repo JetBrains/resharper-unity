@@ -16,11 +16,11 @@ namespace A
 
 namespace DefaultNamespace
 {
-    public class GetComponentWithNamespaceTest02
+    public class GetComponentWithNamespaceUnavailableTest
     {
         public void TestMethod(GameObject go)
         {
-            go.GetComponent("A.B.C.Tes{caret}tMono");
+            go.GetComponent("B.C.T{caret}estMono");
         }
     }
 }

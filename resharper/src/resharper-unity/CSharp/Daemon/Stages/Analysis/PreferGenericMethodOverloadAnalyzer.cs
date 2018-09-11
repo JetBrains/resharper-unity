@@ -81,7 +81,11 @@ using JetBrains.Util.Extension;
             }
 
             var types = ResolveStringLiteral(stringLiteral, argument);
+            
+            // we can pass to methods only types with right inheritance
             var typesWithRightInheritance = types.Where(t => ourInterestingMethods[methodName](t)).ToArray();
+            
+            // for transformation we can use only visible types, but unity can find types with internal visibility by string literal
             var suitableTypes = typesWithRightInheritance.Where(t => ImportTypeUtil.TypeIsVisible(t, expression)).ToArray();
             
             if (suitableTypes.Length > 0  && !expression.ContainsPreprocessorDirectives())
@@ -104,7 +108,8 @@ using JetBrains.Util.Extension;
                 return;
             }
             
-            // Notify if ambiguous type
+            // Notify if ambiguous type, because it is unexpected behaviour. Unity does not specify which type will be chosen
+            // if two component with same name will be attached to object
             if (typesWithRightInheritance.Length >= 2)
             {
                 consumer.AddHighlighting(new AmbiguousTypeInStringLiteralWarning(argument));
@@ -162,6 +167,7 @@ using JetBrains.Util.Extension;
                 .Where(typeElement => typeElement.GetContainingType() == null 
                                       && typeElement.TypeParameters.Count == 0);
 
+            // if string literal look like qualified name, we should check that name is full, because unity checks only by simple name + full name
             if (literal.Contains("."))
             {
                 candidates = candidates.Where(t => t.GetClrName().FullName.Equals(literal));
@@ -172,6 +178,7 @@ using JetBrains.Util.Extension;
 
         private static bool GetComponentTypeFilter(ITypeElement element)
         {
+            // GetComponent can use only built-in types which inherited from 'Component'. User type should be inherited from 'MonoBehaviour'
             var components = element.GetAllSuperClasses().Where(t => t.GetClrName().Equals(KnownTypes.Component)).ToArray();
             var monoScripts = element.GetAllSuperClasses().Where(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour)).ToArray();
             if (components.Any() && monoScripts.Length == 0 && element.GetClrName().FullName.StartsWith("UnityEngine."))
