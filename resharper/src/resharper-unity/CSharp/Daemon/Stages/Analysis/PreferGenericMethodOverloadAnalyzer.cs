@@ -27,7 +27,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
-        namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes =
         new[] {typeof(PreferGenericMethodOverloadWarning), typeof(AmbiguousTypeInStringLiteralWarning),
