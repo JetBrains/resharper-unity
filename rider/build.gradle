@@ -1,7 +1,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 buildscript {
-    ext.rd_version = '0.1831.17'
+    ext.rd_version = '0.183.47'
 
     repositories {
         maven { url "https://cache-redirector.jetbrains.com/myget.org.rd-snapshots.maven" }
