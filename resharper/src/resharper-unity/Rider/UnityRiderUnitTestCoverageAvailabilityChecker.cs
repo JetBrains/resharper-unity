@@ -1,7 +1,10 @@
 using JetBrains.Application;
 using JetBrains.Application.Components;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.UnitTesting;
 using JetBrains.ReSharper.UnitTestFramework;
+using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {    
@@ -11,9 +14,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         // this method should be very fast as it gets called a lot
         public HostProviderAvailability GetAvailability(IUnitTestElement element)
         {
-            return element.Id.Project.GetSolution().IsAbleToEstablishProtocolConnectionWithUnity()
-                ? HostProviderAvailability.Nonexistent
-                : HostProviderAvailability.Available;
+            var solution = element.Id.Project.GetSolution();
+            if (!solution.IsAbleToEstablishProtocolConnectionWithUnity())
+                return HostProviderAvailability.Available; 
+            
+            var rdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
+            if (rdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.NUnit)
+                return HostProviderAvailability.Available;
+            
+            return HostProviderAvailability.Nonexistent;
         }
     }
 }
