@@ -13,7 +13,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       var connectionLifetime = modelAndLifetime.Lifetime;
       modelValue.UnitTestLaunch.Change.Advise(connectionLifetime, launch =>
       {
-        var unityEditorTestLauncher = new UnityEditorTestLauncher(launch, connectionLifetime);
+        var unityEditorTestLauncher = new UnityEditorTestLauncher(launch);
         unityEditorTestLauncher.TryLaunchUnitTests();
       });
     }

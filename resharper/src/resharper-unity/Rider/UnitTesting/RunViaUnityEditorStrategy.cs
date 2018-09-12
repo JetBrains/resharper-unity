@@ -7,14 +7,17 @@ using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Metadata.Access;
 using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
+using JetBrains.Rider.Model;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
@@ -35,6 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
+        private RdUnityModel myRdUnityModel;
 
         public RunViaUnityEditorStrategy(ISolution solution,
             IUnitTestResultManager unitTestResultManager, 
@@ -49,6 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myUnitTestProvider = unitTestProvider;
             myIDFactory = idFactory;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
+            myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
         }
 
         public bool RequiresProjectBuild(IProject project)
@@ -140,7 +145,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var allNames = InitElementsMap(unitTestElements);
             var emptyList = new List<string>();
 
-            var launch = new UnitTestLaunch(allNames, emptyList, emptyList, TestMode.Edit);
+            var mode = TestMode.Edit;
+            if (myRdUnityModel.UnitTestPreference.HasValue())
+            {
+                mode = myRdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
+                    ? TestMode.Play
+                    : TestMode.Edit;    
+            }
+              
+            var launch = new UnitTestLaunch(allNames, emptyList, emptyList, mode);
 
             launch.TestResult.Advise(connectionLifetime, result =>
             {
@@ -249,15 +262,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
-            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Fire(RdVoid.Instance);
-            
+            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Start(RdVoid.Instance);
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 
         public void Abort(IUnitTestRun run)
         {
-            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Fire(RdVoid.Instance);
-
+            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Start(RdVoid.Instance);
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 
