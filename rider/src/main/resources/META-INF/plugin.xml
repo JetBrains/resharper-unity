@@ -28,18 +28,18 @@
     <lang.altEnter language="ShaderLab" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterActionHandler" />
     <lang.parserDefinition language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabParserDefinition" />
     <lang.syntaxHighlighterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabSyntaxHighlighterProvider" />
-    <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
+    <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.autoPopup.support language="ShaderLab" implementationClass="com.jetbrains.rider.completion.BackendAndGenericRider" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
-    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.completion.ReSharperCompletionContributor" />
+    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
     <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
 
     <!-- Cg support -->
     <fileTypeFactory id="Cg" implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgFileTypeFactory" />
     <lang.parserDefinition language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgParserDefinition" />
     <lang.syntaxHighlighterFactory language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgSyntaxHighlighterProvider" />
-    <backend.markup.adapterFactory language="Cg" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
+    <backend.markup.adapterFactory language="Cg" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <backend.actions.support language="Cg" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgIconProvider" />
     <completion.contributor language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
@@ -47,13 +47,13 @@
     <!-- asmdef support -->
     <fileTypeFactory id="AsmDef" implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileTypeFactory"/>
     <lang.altEnter language="AsmDef" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterActionHandler" />
-    <lang.documentationProvider language="AsmDef" implementationClass="com.jetbrains.rider.quickDoc.RiderDocumentationProvider"/>
+    <lang.documentationProvider language="AsmDef" implementationClass="com.jetbrains.rdclient.quickDoc.FrontendDocumentationProvider"/>
     <lang.parserDefinition language="AsmDef" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefParserDefinition" />
     <lang.syntaxHighlighterFactory language="AsmDef" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefSyntaxHighlighterProvider" />
     <backend.actions.support language="AsmDef" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
-    <backend.markup.adapterFactory language="AsmDef" implementationClass="com.jetbrains.rider.daemon.RiderMarkupAdapterFactory" />
+    <backend.markup.adapterFactory language="AsmDef" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <backend.typedHandler language="AsmDef" implementationClass="com.jetbrains.rider.editorActions.RiderTypedHandler"/>
-    <completion.contributor language="AsmDef" implementationClass="com.jetbrains.rider.completion.ReSharperCompletionContributor" />
+    <completion.contributor language="AsmDef" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
 
     <!-- Unity Explorer -->
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>

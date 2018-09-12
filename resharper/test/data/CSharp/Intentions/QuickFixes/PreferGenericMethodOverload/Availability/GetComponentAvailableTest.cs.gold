@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+
+public class Whatever : MonoBehaviour
+{
+        
+}
+
+public class Test01
+{
+    public void Method(GameObject o)
+    {
+        o.GetComponent(|"Whatever"|(0));
+    }
+}
+
+------------------------------------------------
+0: Generic method overload is preferred. Using the string parameter results in additional overhead.
+QUICKFIXES:
+Convert to 'GetComponent<Whatever>()'
