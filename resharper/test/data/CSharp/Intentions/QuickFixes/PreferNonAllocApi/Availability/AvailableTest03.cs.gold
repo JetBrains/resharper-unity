@@ -9,5 +9,6 @@ public class Available03 : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Non allocating method will increase performance. Use 'BoxCastNonAlloc' and reuse buffer for return value
-NO QUICKFIXES
+0: Allocating method will decrease performance. Use 'BoxCastNonAlloc' and reuse buffer for return value
+QUICKFIXES:
+Convert to BoxCastNonAlloc

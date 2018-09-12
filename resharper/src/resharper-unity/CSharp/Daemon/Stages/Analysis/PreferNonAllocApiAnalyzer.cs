@@ -31,52 +31,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             if (!(expression.InvokedExpression is IReferenceExpression referenceExpression)) return;
 
-            var nonAllocMethod = GetNonAllocVersion(expression);
-            if (nonAllocMethod != null)
+            var reference = expression.Reference;
+            if (reference == null) return;
+            
+            var info = reference.Resolve();
+            if (info.ResolveErrorType == ResolveErrorType.OK && info.DeclaredElement is IMethod allocMethod)
             {
-                consumer.AddHighlighting(new PreferNonAllocApiWarning(expression, referenceExpression, nonAllocMethod));
+                var nonAllocMethod = GetNonAllocVersion(allocMethod, expression);
+                if (nonAllocMethod != null)
+                {
+                    consumer.AddHighlighting(new PreferNonAllocApiWarning(expression, referenceExpression, nonAllocMethod, allocMethod));
+                }
             }
         }
 
-        private IMethod GetNonAllocVersion(IInvocationExpression expression)
+        private IMethod GetNonAllocVersion(IMethod method, IInvocationExpression expression)
         {
-            var reference = expression.Reference;
-            if (reference == null) return null;
+
+            var originName = method.ShortName;
+            if (originName.Length < 3) return null;
             
-            var info = reference.Resolve();
+            var suffix = originName.Substring(originName.Length - 3, 3);
+            var newName = (suffix.Equals("All") ? originName.Substring(0, originName.Length - 3) : originName) + "NonAlloc";
 
-            if (info.ResolveErrorType == ResolveErrorType.OK && info.DeclaredElement is IMethod method)
+            var containingType = method.GetContainingType();
+            
+            if (containingType == null)
             {
-                var originName = method.ShortName;
-                if (originName.Length < 3) return null;
-                
-                var suffix = originName.Substring(originName.Length - 3, 3);
-                var newName = (suffix.Equals("All") ? originName.Substring(0, originName.Length - 3) : originName) + "NonAlloc";
-
-                var containingType = method.GetContainingType();
-                
-                if (containingType == null)
-                {
-                    return null;
-                }
-
-                if (!containingType.GetClrName().Equals(KnownTypes.Physics) &&
-                    !containingType.GetClrName().Equals(KnownTypes.Physics2D))
-                {
-                    return null;
-                }
-
-                var type = TypeFactory.CreateType(containingType);
-                var table = type.GetSymbolTable(expression.PsiModule).Filter(
-                    new AccessRightsFilter(new DefaultAccessContext(expression)),
-                    new ExactNameFilter(newName),
-                    new PredicateFilter(t => MatchSignatureAllocToNonAlloc(method, t.GetDeclaredElement() as IMethod)));
-                
-               
-                return table.GetSymbolInfos(newName).SingleOrDefault()?.GetDeclaredElement() as IMethod;
+                return null;
             }
 
-            return null;
+            if (!containingType.GetClrName().Equals(KnownTypes.Physics) &&
+                !containingType.GetClrName().Equals(KnownTypes.Physics2D))
+            {
+                return null;
+            }
+
+            var type = TypeFactory.CreateType(containingType);
+            var table = type.GetSymbolTable(expression.PsiModule).Filter(
+                new AccessRightsFilter(new DefaultAccessContext(expression)),
+                new ExactNameFilter(newName),
+                new PredicateFilter(t => MatchSignatureAllocToNonAlloc(method, t.GetDeclaredElement() as IMethod)));
+            
+           
+            return table.GetSymbolInfos(newName).SingleOrDefault()?.GetDeclaredElement() as IMethod;
         }
 
         private bool MatchSignatureAllocToNonAlloc(IMethod method, IMethod nonAllocMethod)

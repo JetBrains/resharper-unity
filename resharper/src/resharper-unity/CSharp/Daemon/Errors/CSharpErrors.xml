@@ -222,6 +222,7 @@
     <Parameter type="IInvocationExpression" name="invocationExpression" />
     <Parameter type="IReferenceExpression" name="invokedExpression" />
     <Parameter type="IMethod" name="nonAllocMethod" />
+    <Parameter type="IMethod" name="allocMethod" />
     <Message value="Allocating method will decrease performance. Use '{0}' and reuse buffer for return value">
       <Argument>NonAllocMethod.ShortName</Argument>
     </Message>
