@@ -4,16 +4,9 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Resolve;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
-using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Resolve.Managed;
-using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -40,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 var nonAllocMethod = GetNonAllocVersion(allocMethod, expression);
                 if (nonAllocMethod != null)
                 {
-                    consumer.AddHighlighting(new PreferNonAllocApiWarning(expression, referenceExpression, nonAllocMethod, allocMethod));
+                    consumer.AddHighlighting(new PreferNonAllocApiWarning(expression, referenceExpression, nonAllocMethod));
                 }
             }
         }
