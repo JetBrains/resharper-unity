@@ -24,6 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName Physics = new ClrTypeName("UnityEngine.Physics");
         public static readonly IClrTypeName Physics2D = new ClrTypeName("UnityEngine.Physics2D");
         
+        public static readonly IClrTypeName Animator = new ClrTypeName("UnityEngine.Animator");
+        public static readonly IClrTypeName Shader = new ClrTypeName("UnityEngine.Shader");
+        public static readonly IClrTypeName Material = new ClrTypeName("UnityEngine.Material");
+
+
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");
         public static readonly IClrTypeName SyncVarAttribute =
