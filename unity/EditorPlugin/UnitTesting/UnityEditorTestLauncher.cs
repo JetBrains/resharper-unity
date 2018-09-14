@@ -40,20 +40,23 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             "Could not find UnityEditor.TestRunner or UnityEngine.TestRunner assemblies in current AppDomain");
           return;
         }
-        
-        string testEditorAssemblyProperties =  testEditorAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b);
-        string testEngineAssemblyProperties = testEngineAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b);
 
         var launcherTypeString = myLaunch.TestMode == TestMode.Edit ? 
           "UnityEditor.TestTools.TestRunner.EditModeLauncher" : 
           "UnityEditor.TestTools.TestRunner.PlaymodeLauncher";
         var launcherType = testEditorAssembly.GetType(launcherTypeString);
         if (launcherType == null)
+        {
+          string testEditorAssemblyProperties =  testEditorAssembly.GetTypes().Select(a=>a.Name).Aggregate((a, b)=> a+ ", " + b);
           throw new NullReferenceException($"Could not find {launcherTypeString} among {testEditorAssemblyProperties}");
+        }
         
         var filterType = testEngineAssembly.GetType("UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter");
-        if (filterType==null)
+        if (filterType == null)
+        {
+          string testEngineAssemblyProperties = testEngineAssembly.GetTypes().Select(a=>a.Name).Aggregate((a, b)=> a+ ", " + b);
           throw new NullReferenceException($"Could not find \"UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter\" among {testEngineAssemblyProperties}");
+        }
         
         var filter = Activator.CreateInstance(filterType);
         var fieldInfo = filter.GetType().GetField("testNames", BindingFlags.Instance | BindingFlags.Public);
