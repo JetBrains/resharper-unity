@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace JetBrains.ReSharper.Psi.CSharp.Tree
+{
+    public class AnimatorPropertyTest
+    {
+      private static readonly int Test = Animator.StringToHash("test");
+
+      public void Method(Animator animator)
+        {
+            animator.SetFloat(Te{caret}st, 10f, 10f, 10f);
+        }
+    }
+}
