@@ -3,6 +3,7 @@
     SubShader
     {
         Pass { Blend Off }
+        Pass { Blend 2 Off }
         Pass { Blend SrcAlpha OneMinusSrcAlpha }
         Pass { Blend One One }
         Pass { Blend One One, Zero SrcColor }

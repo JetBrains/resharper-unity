@@ -1463,13 +1463,15 @@ blendCommand
 
 blendValue
 :
-  falseLiteral{FALSE_LITERAL, FalseLiteral}
-  | blendValues
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
+  (
+    falseLiteral{FALSE_LITERAL, FalseLiteral} 
+    | blendValues
+  )
 ;
 
 private blendValues
 :
-  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
   blendFactor<SRCFACTOR, SrcFactor>
   blendFactor<DSTFACTOR, DstFactor>
   (
