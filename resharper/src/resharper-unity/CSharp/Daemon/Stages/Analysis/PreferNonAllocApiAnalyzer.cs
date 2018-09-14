@@ -10,12 +10,10 @@ using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes =
-        new[] {typeof(PreferNonAllocApiWarning),})]
+    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] {typeof(PreferNonAllocApiWarning)})]
     public class PreferNonAllocApiAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        public PreferNonAllocApiAnalyzer([NotNull] UnityApi unityApi)
-            : base(unityApi)
+        public PreferNonAllocApiAnalyzer([NotNull] UnityApi unityApi) : base(unityApi)
         {
         }
 
@@ -38,68 +36,61 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
         }
 
-        private IMethod GetNonAllocVersion(IMethod method, IInvocationExpression expression)
+        private static IMethod GetNonAllocVersion(IMethod method, IInvocationExpression expression)
         {
-
             var originName = method.ShortName;
-            if (originName.Length < 3) return null;
             
-            var suffix = originName.Substring(originName.Length - 3, 3);
-            var newName = (suffix.Equals("All") ? originName.Substring(0, originName.Length - 3) : originName) + "NonAlloc";
+            string newName;
+            if (originName.EndsWith("All"))
+            {
+                newName = originName.Substring(0, originName.Length - 3);
+            }
+            else
+            {
+                newName = originName + "NonAlloc";
+            }
 
             var containingType = method.GetContainingType();
             
             if (containingType == null)
-            {
                 return null;
-            }
 
             if (!containingType.GetClrName().Equals(KnownTypes.Physics) &&
                 !containingType.GetClrName().Equals(KnownTypes.Physics2D))
-            {
                 return null;
-            }
 
             var type = TypeFactory.CreateType(containingType);
             var table = type.GetSymbolTable(expression.PsiModule).Filter(
                 new AccessRightsFilter(new DefaultAccessContext(expression)),
                 new ExactNameFilter(newName),
                 new PredicateFilter(t => MatchSignatureAllocToNonAlloc(method, t.GetDeclaredElement() as IMethod)));
-            
            
             return table.GetSymbolInfos(newName).SingleOrDefault()?.GetDeclaredElement() as IMethod;
         }
 
-        private bool MatchSignatureAllocToNonAlloc(IMethod method, IMethod nonAllocMethod)
+        private static bool MatchSignatureAllocToNonAlloc([NotNull] IMethod method, [CanBeNull] IMethod nonAllocMethod)
         {
             // try to find method with same parameters + return value as parameter
             if (nonAllocMethod == null)
-            {
                 return false;
-            }
+            
             var originReturnType = method.ReturnType;
             var originParameters = method.Parameters;
             var nonAllocMethodParameters = nonAllocMethod.Parameters;
             var originSize = originParameters.Count;
             
             if (originSize + 1 != nonAllocMethodParameters.Count)
-            {
                 return false;
-            }
 
             int curOriginParameterIdx = 0;
 
             foreach (var nonAllocParameter in nonAllocMethodParameters)
             {
                 if (nonAllocParameter.Type.Equals(originReturnType))
-                {
                     continue;
-                }
                 
                 if (curOriginParameterIdx == originSize)
-                {
                     return false;
-                }   
                 
                 if (nonAllocParameter.Type.Equals(originParameters[curOriginParameterIdx].Type))
                 {
