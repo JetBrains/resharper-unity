@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
@@ -39,13 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             var oldMethod = myExpression.Reference.Resolve().DeclaredElement as IMethod;
-            var factory = CSharpElementFactory.GetInstance(myInvocationExpression);
-
             if (oldMethod == null)
-            {
                 return null;
-            }
-
+            
+            var factory = CSharpElementFactory.GetInstance(myInvocationExpression);
             var builder = FactoryArgumentsBuilder.Create();
 
             if (myExpression.QualifierExpression != null)
@@ -63,18 +61,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var firstPositionalArgIdx = GetPositionalArgumentIndex(oldArguments);
             var curArgIdx = 0;
 
-            IArgument argument = null;
             var newParameters = myNewMethod.Parameters;
             var argumentIndex = 0;
             
-            // insert new argument to correct position. If we should you positional argument, we will check it and use.
+            // insert new argument to correct position. If we should use positional argument, we will check it and use.
             for (int i = 0; i < newParameters.Count; i++)
             {
                 var parameter = newParameters[i];
                 if (parameter.Type.Equals(returnType))
                 {
                     var referenceExpression = factory.CreateReferenceExpression(GetUniqueName(myInvocationExpression, ResultParamName));
-                    argument = curArgIdx > firstPositionalArgIdx
+                    IArgument argument = curArgIdx > firstPositionalArgIdx
                         ? factory.CreateArgument(ParameterKind.VALUE, ResultParamName, referenceExpression)
                         : factory.CreateArgument(ParameterKind.VALUE, referenceExpression);
                     builder.Argument(argument);
@@ -96,9 +93,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
             var newInvocation = factory.CreateExpression(builder.ToString(), builder.ToArguments());
             var newDeclaration = (IDeclarationStatement)factory.CreateStatement("var $0 = $1;", GetUniqueName(myInvocationExpression, "size"), newInvocation);
-          
-            var oldStatement = myInvocationExpression.GetContainingStatement();
-            Debug.Assert(oldStatement != null, nameof(oldStatement) + " != null");
+
+            var oldStatement = myInvocationExpression.GetContainingStatement().NotNull("oldStatement != null");
 
             IDeclarationStatement result = null;
             if (oldStatement is IExpressionStatement)
@@ -107,8 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             }
             else
             {
-                Debug.Assert(oldStatement is IDeclarationStatement, nameof(oldStatement) + " is not IDeclarationStatement");
-                var declaration = oldStatement as IDeclarationStatement;
+                var declaration = (oldStatement as IDeclarationStatement).NotNull(nameof(oldStatement) + " is not IDeclarationStatement");
                 
                 // if only one declaration just replace it
                 if (declaration.Declaration.Declarators.Count == 1)
@@ -118,12 +113,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 else
                 {
                     // There are several declaration, exclude our and transform it.
-
                     var expression = myInvocationExpression.GetContainingParenthesizedExpression();
                     var currentInitializer = ExpressionInitializerNavigator.GetByValue(expression);
-                    var selectedDeclarator = LocalVariableDeclarationNavigator.GetByInitial(currentInitializer);
-                   
-                    Debug.Assert(selectedDeclarator != null, nameof(selectedDeclarator) + " != null");
+                    var selectedDeclarator = LocalVariableDeclarationNavigator.GetByInitial(currentInitializer).NotNull("selectedDeclarator != null");
 
                     MultipleDeclarationUtil.SplitDeclarationBefore(selectedDeclarator);
                     MultipleDeclarationUtil.SplitDeclarationAfter(selectedDeclarator);
@@ -134,9 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             
             var actualArgument = result.Descendants<IArgumentList>().First().Arguments[argumentIndex];
             if (!actualArgument.IsValid())
-            {
                 return null;
-            }
             
             var hotspotsRegistry = new HotspotsRegistry(newInvocation.GetPsiServices());
             hotspotsRegistry.Register(new ITreeNode[] {actualArgument});
@@ -145,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         }
 
 
-        private static string GetUniqueName(IInvocationExpression invocationExpression, string baseName)
+        private static string GetUniqueName([NotNull]IInvocationExpression invocationExpression,[NotNull] string baseName)
         {
             var namingManager = invocationExpression.GetPsiServices().Naming;
 
@@ -166,9 +156,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return namesSuggestion.FirstName();
         }
 
-        private int GetPositionalArgumentIndex(in TreeNodeCollection<ICSharpArgument> invocationExpressionArguments)
-        {
-            int i = 0;
+        private int GetPositionalArgumentIndex(TreeNodeCollection<ICSharpArgument> invocationExpressionArguments)
+        {            
+            var i = 0;
             for (; i < invocationExpressionArguments.Count; i++)
             {
                 var argument = invocationExpressionArguments[i];
@@ -177,7 +167,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                     break;
                 }
             }
-
             return i;
         }
 
@@ -188,7 +177,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return ValidUtils.Valid(myInvocationExpression) && (IsExpressionStatement() || IsInvocationInitializer()) 
                                                   && !myExpression.ContainsPreprocessorDirectives();
         }
-
 
         private bool IsExpressionStatement()
         {
