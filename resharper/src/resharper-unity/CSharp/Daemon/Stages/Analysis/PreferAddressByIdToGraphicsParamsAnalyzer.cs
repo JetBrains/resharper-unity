@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.UI.Validation;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
@@ -32,7 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         protected override void Analyze(IInvocationExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             var reference = expression.Reference;
-            if (reference == null) return;
+            if (reference == null) 
+                return;
             
             var info = reference.Resolve();
             if (info.ResolveErrorType == ResolveErrorType.OK && info.DeclaredElement is IMethod stringMethod)
@@ -40,16 +43,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (HasOverloadWithIntParameter(stringMethod, expression, out var argumentIndex, out var containingType))
                 {
                     var argument = expression.Arguments[argumentIndex];
-                    
-                    var helpData = ourTypes[containingType.GetClrName()];
-                    
-                    if (argument.Expression is ILiteralExpression literal)
-                    {
-                        if (literal.ConstantValue.Value is string str)
-                        {
-                            consumer.AddHighlighting(new PreferAddressByIdToGraphicsParamsWarning(expression, argument, str, helpData.Item1.FullName, helpData.Item2));
-                        }
-                    }
+                    var (clrName, methodName) = ourTypes[containingType.GetClrName()];
+                    var literal = (argument.Expression as ILiteralExpression)?.ConstantValue.Value as string;
+                    consumer.AddHighlighting(new PreferAddressByIdToGraphicsParamsWarning(expression, argument, literal, clrName.FullName, methodName));
                 }
             }
         }
@@ -64,9 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             containingType = stringMethod.GetContainingType();
 
             if (containingType == null || !ourTypes.ContainsKey(containingType.GetClrName()))
-            {
                 return false;
-            }
             
             var type = TypeFactory.CreateType(containingType);
             var table = type.GetSymbolTable(expression.PsiModule).Filter(
@@ -111,9 +105,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 {
                     if (!intMethodParam.ShortName.ToLower().Contains("id")||
                         !stringMethodParam.ShortName.ToLower().Contains("name"))
-                    {
                         return false;
-                    }
+                    
                     isFound = true;
                 }
                 else if (!intMethodParam.Type.Equals(stringMethodParam.Type))

@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Naming.Extentions;
 using JetBrains.ReSharper.Psi.Naming.Impl;
 using JetBrains.ReSharper.Psi.Naming.Settings;
@@ -29,6 +30,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             myInvocationExpression = warning.InvocationMethod;
             myArgument = warning.Argument;
             myLiteral = warning.Literal;
+            if (myLiteral != null && !ValidityChecker.IsValidIdentifier(myLiteral))
+            {
+                myLiteral = "Property";
+            }
+            
             myMapFuntion = warning.MapFunction;
             myTypeName = warning.TypeName;
         }
@@ -142,7 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         
         public override bool IsAvailable(IUserDataHolder cache)
         {
-            return myArgument.IsValid();
+            return myLiteral != null && myArgument.IsValid();
         }
     }
 }

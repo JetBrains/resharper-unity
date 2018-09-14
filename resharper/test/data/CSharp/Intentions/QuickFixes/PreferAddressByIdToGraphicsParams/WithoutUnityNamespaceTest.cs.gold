@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class WithoutUnityNamespaceTest
+    {
+      private static readonly int Test1 = Shader.PropertyToID("test");
+
+      public void Test(UnityEngine.Material material)
+        {
+            material.SetFloat(T{caret}est1, 10.0f);
+        }
+    }
+}
