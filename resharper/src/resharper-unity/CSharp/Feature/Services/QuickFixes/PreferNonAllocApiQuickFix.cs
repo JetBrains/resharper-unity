@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
             var oldStatement = myInvocationExpression.GetContainingStatement().NotNull("oldStatement != null");
 
-            IDeclarationStatement result = null;
+            IDeclarationStatement result;
             if (oldStatement is IExpressionStatement)
             {
                 result = oldStatement.ReplaceBy(newDeclaration);
@@ -128,6 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             if (!actualArgument.IsValid())
                 return null;
             
+            // allow user to decide which array he will use
             var hotspotsRegistry = new HotspotsRegistry(newInvocation.GetPsiServices());
             hotspotsRegistry.Register(new ITreeNode[] {actualArgument});
 
