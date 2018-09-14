@@ -20,30 +20,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         protected override void Analyze(IInvocationExpression expression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            if (!(expression.InvokedExpression is IReferenceExpression referenceExpression)) return;
+            if (!(expression.InvokedExpression is IReferenceExpression referenceExpression)) 
+                return;
 
             var reference = expression.Reference;
-            if (reference == null) return;
+            if (reference == null) 
+                return;
             
             var info = reference.Resolve();
             if (info.ResolveErrorType == ResolveErrorType.OK && info.DeclaredElement is IMethod allocMethod)
             {
                 var nonAllocMethod = GetNonAllocVersion(allocMethod, expression);
                 if (nonAllocMethod != null)
-                {
                     consumer.AddHighlighting(new PreferNonAllocApiWarning(expression, referenceExpression, nonAllocMethod));
-                }
             }
         }
 
-        private static IMethod GetNonAllocVersion(IMethod method, IInvocationExpression expression)
+        private static IMethod GetNonAllocVersion([NotNull]IMethod method,[NotNull] IInvocationExpression expression)
         {
             var originName = method.ShortName;
             
-            string newName;
+            string newName; // xxx[All] -> xxxNonAlloc
             if (originName.EndsWith("All"))
             {
-                newName = originName.Substring(0, originName.Length - 3);
+                newName = originName.Substring(0, originName.Length - 3) + "NonAlloc";
             }
             else
             {
@@ -55,6 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (containingType == null)
                 return null;
 
+            // drop out all other invocation
             if (!containingType.GetClrName().Equals(KnownTypes.Physics) &&
                 !containingType.GetClrName().Equals(KnownTypes.Physics2D))
                 return null;
