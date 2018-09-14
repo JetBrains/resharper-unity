@@ -66,6 +66,9 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           ourLogger.Verbose("Could not find testNames field via reflection");
           return;
         }
+        
+        var testNameStrings = (object) myLaunch.TestNames.ToArray();
+        fieldInfo.SetValue(filter, testNameStrings);
 
         object launcher;
         if (UnityUtils.UnityVersion >= new Version(2018,1))
@@ -76,10 +79,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             ourLogger.Verbose("Could not find TestPlatform field via reflection");
             return;
           }
-          
-          var testNameStrings = (object) myLaunch.TestNames.ToArray();
-          fieldInfo.SetValue(filter, testNameStrings);
-          
+         
           var assemblyProviderType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider");
           var testPlatformVal = myLaunch.TestMode == TestMode.Edit ? 2 : 4; // All = 255, // 0xFF, EditMode = 2, PlayMode = 4,
           if (assemblyProviderType != null)
@@ -103,9 +103,6 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         }
         else
         {
-          var testNameStrings = (object) myLaunch.TestNames.ToArray();
-          fieldInfo.SetValue(filter, testNameStrings);
-
           launcher = Activator.CreateInstance(launcherType,
             BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
             null, new[] {filter},
@@ -145,7 +142,6 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       {
         ourLogger.Error(e, "Exception while launching Unity Editor tests.");
       }
-
     }
 
     private void SupportAbort(object runner)
