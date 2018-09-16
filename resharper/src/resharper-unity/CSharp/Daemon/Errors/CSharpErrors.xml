@@ -81,6 +81,12 @@
         <Title>Type with the specified name has wrong inheritance</Title>
         <Description>No type with the specified name and required superclass not found.</Description>
       </Tag>
+
+      <Tag externalName="InefficientInvocationOfGameObjectMethodsWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Invocation of this method is not efficient</Title>
+        <Description>Invocation for this method results in additional overhead. Prefer use of UnityEvent, C# event, delegates or a direct method call.</Description>
+      </Tag>
       
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</Title>
@@ -243,6 +249,13 @@
       <Argument>ParentClass</Argument>
     </Message>
     <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="InefficientInvocationOfGameObjectMethods" configurableSeverity="Unity.InefficientInvocationOfGameObjectMethods">
+    <Parameter type="IReference" name="invocation" />
+    <Message value="Invocation for this method results in additional overhead. Prefer use of UnityEvent, C# event, delegates or a direct method call."/>
+    <Range>Invocation.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
   
