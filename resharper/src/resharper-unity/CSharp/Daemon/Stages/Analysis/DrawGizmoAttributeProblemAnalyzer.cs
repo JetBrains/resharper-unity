@@ -52,8 +52,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var gizmoType = TypeFactory.CreateTypeByCLRName(KnownTypes.GizmoType, predefinedType.Module);
             var componentType = TypeFactory.CreateTypeByCLRName(KnownTypes.Component, predefinedType.Module);
           
-
-
             IType derivedType = componentType;
             string derivedName = "component";
             string gizmoName = "gizmoType";
@@ -90,18 +88,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             
             if (methodDeclaration.Params.ParameterDeclarations.Count == 2)
             {
-                var parameters = methodDeclaration.Params.ParameterDeclarations;
-
-                if (firstParamCorrect)
+                if (firstParamCorrect && secondParamCorrect)
                 {
-                    if (secondParamCorrect)
-                    {
-                        match &= ~MethodSignatureMatch.IncorrectParameters;
-                    }
+                    match &= ~MethodSignatureMatch.IncorrectParameters;
+                }
+                else if (!firstParamCorrect && match == MethodSignatureMatch.IncorrectParameters)
+                {
+                    consumer.AddHighlighting(new ParameterNotDerivedFromComponentWarning(methodDeclaration.Params.ParameterDeclarations.First()));
+                    return;
                 }
             }
             
-            base.AddMethodSignatureInspections(consumer, methodDeclaration, expectedDeclaration, match);
+            AddMethodSignatureInspections(consumer, methodDeclaration, expectedDeclaration, match);
         }
     }
 }
