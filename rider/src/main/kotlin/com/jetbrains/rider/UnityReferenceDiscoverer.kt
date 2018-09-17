@@ -43,6 +43,25 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
         }
     }
 
+    companion object {
+        fun getInstance(project: Project) = project.getComponent<UnityReferenceDiscoverer>()
+
+        private fun hasAssetsAndProjectSettingsFolders(project:Project):Boolean =
+                hasAssetsFolder(project) && hasProjectSettingsFolder(project)
+
+        private fun hasUnityFolders (project:Project):Boolean =
+                hasAssetsFolder(project) && hasLibraryFolder(project) && hasProjectSettingsFolder(project)
+
+        private fun hasAssetsFolder (project:Project):Boolean =
+                project.projectDir.findChild("Assets")?.isDirectory == true
+
+        private fun hasLibraryFolder (project:Project):Boolean =
+                project.projectDir.findChild("Library")?.isDirectory == true
+
+        private fun hasProjectSettingsFolder (project:Project):Boolean =
+                project.projectDir.findChild("ProjectSettings")?.isDirectory == true
+    }
+
     private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
         if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
             myEventDispatcher.multicaster.hasUnityReference()
@@ -63,42 +82,13 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
     fun addUnityReferenceListener(listener: UnityReferenceListener) {
         myEventDispatcher.addListener(listener)
     }
-
-    companion object {
-        private fun hasAssetsAndProjectSettingsFolders(project:Project):Boolean =
-            hasAssetsFolder(project) && hasProjectSettingsFolder(project)
-
-        private fun hasUnityFolders (project:Project):Boolean =
-                hasAssetsFolder(project) && hasLibraryFolder(project) && hasProjectSettingsFolder(project)
-
-        private fun hasAssetsFolder (project:Project):Boolean =
-                project.projectDir.findChild("Assets")?.isDirectory == true
-
-        private fun hasLibraryFolder (project:Project):Boolean =
-                project.projectDir.findChild("Library")?.isDirectory == true
-
-        private fun hasProjectSettingsFolder (project:Project):Boolean =
-                project.projectDir.findChild("ProjectSettings")?.isDirectory == true
-    }
 }
 
-fun Project.isUnityGeneratedProject(): Boolean {
-    val referenceDiscoverer = this.getComponent<UnityReferenceDiscoverer>()
-    return referenceDiscoverer.isUnityGeneratedProject
-}
+fun Project.isUnityGeneratedProject() = UnityReferenceDiscoverer.getInstance(this).isUnityGeneratedProject
 
 // Lives in the same folder as a normal Unity project, but isn't the generated one
-fun Project.isUnitySidecarProject(): Boolean {
-    val referenceDiscoverer = this.getComponent<UnityReferenceDiscoverer>()
-    return referenceDiscoverer.isUnitySidecarProject
-}
+fun Project.isUnitySidecarProject()= UnityReferenceDiscoverer.getInstance(this).isUnitySidecarProject
 
-fun Project.isUnityProject(): Boolean {
-    val referenceDiscoverer = this.getComponent<UnityReferenceDiscoverer>()
-    return referenceDiscoverer.isUnityProject
-}
+fun Project.isUnityProject()= UnityReferenceDiscoverer.getInstance(this).isUnityProject
 
-fun Project.isConnectedToEditor(): Boolean {
-    val component = this.getComponent<UnityHost>()
-    return component.sessionInitialized.valueOrDefault(false)
-}
+fun Project.isConnectedToEditor()= UnityHost.getInstance(this).sessionInitialized.valueOrDefault(false)

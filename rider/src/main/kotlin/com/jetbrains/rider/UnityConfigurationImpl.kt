@@ -13,10 +13,8 @@ class UnityConfigurationImpl(private val project: Project, unityReferenceDiscove
     init {
         if (unityReferenceDiscoverer.isUnityProject) {
             val excludePaths = ignoredDirectories
-                .map { f -> getChildAsFile(f) }
-                .filter { f -> f != null }
-                .map { f -> f!! }
-                .toHashSet()
+                    .mapNotNull(::getChildAsFile)
+                    .toHashSet()
             excludes.updateExcludes(this, excludePaths)
         }
     }
