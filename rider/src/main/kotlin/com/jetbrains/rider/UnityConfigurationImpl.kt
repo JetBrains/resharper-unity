@@ -11,12 +11,12 @@ class UnityConfigurationImpl(private val project: Project, unityReferenceDiscove
     }
 
     init {
-        val excludePaths = ignoredDirectories
-            .map { f -> getChildAsFile(f) }
-            .filter { f -> f != null }
-            .map { f -> f!! }
-            .toHashSet()
-        if (unityReferenceDiscoverer.isUnityGeneratedProject || unityReferenceDiscoverer.isUnitySidecarProject) {
+        if (unityReferenceDiscoverer.isUnityProject) {
+            val excludePaths = ignoredDirectories
+                .map { f -> getChildAsFile(f) }
+                .filter { f -> f != null }
+                .map { f -> f!! }
+                .toHashSet()
             excludes.updateExcludes(this, excludePaths)
         }
     }
