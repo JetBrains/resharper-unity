@@ -4,7 +4,7 @@ import com.intellij.javascript.nodejs.packageJson.PackageJsonNotifierConfigurati
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.jetbrains.rider.isUnityGeneratedProject
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.plugins.javascript.nodejs.RiderPackageJsonConfigurator
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.indexing.contentModel.ContentModelUserStore
@@ -22,5 +22,5 @@ class UnityPackageJsonNotifierConfiguration(private val project: Project, projec
     override fun isEssential(packageJson: VirtualFile) = originalConfigurator.isEssential(packageJson)
 
     override fun isNpmPackageJson(packageJson: VirtualFile) =
-        !project.isUnityGeneratedProject() && originalConfigurator.isNpmPackageJson(packageJson)
+        !project.isUnityProject() && originalConfigurator.isNpmPackageJson(packageJson)
 }
