@@ -24,7 +24,7 @@ class UnityReferenceDiscoverer(project: Project) : LifetimedProjectComponent(pro
 
     // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
     // lives in the same folder as generated unity project
-    val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && !solutionNameMatchesUnityProjectName(project)
+    val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
     val isUnityGeneratedProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && solutionNameMatchesUnityProjectName(project)
     val isUnitySidecarProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && !solutionNameMatchesUnityProjectName(project)
 
