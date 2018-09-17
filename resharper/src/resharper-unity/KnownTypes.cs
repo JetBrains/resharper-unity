@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName RuntimeInitializeOnLoadMethodAttribute = new ClrTypeName("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
         public static readonly IClrTypeName ScriptableObject = new ClrTypeName("UnityEngine.ScriptableObject");
         public static readonly IClrTypeName SerializeField = new ClrTypeName("UnityEngine.SerializeField");
+        public static readonly IClrTypeName Transform = new ClrTypeName("UnityEngine.Transform");
 
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");

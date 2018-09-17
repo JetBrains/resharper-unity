@@ -46,6 +46,13 @@
         <Description>Parameter should be derived from `Component`.</Description>
       </Tag>
 	  
+
+      <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Access properties of built-in component is not efficient. Cache value</Title>
+        <Description>Access properties of built-in component is not efficient due to calling native methods.</Description>
+      </Tag>
+      
       <Tag externalName="DuplicateEventFunctionWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Event function with the same name is already declared</Title>
@@ -243,6 +250,15 @@
       <Argument>ParentClass</Argument>
     </Message>
     <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="InefficientPropertyAccess" configurableSeverity="Unity.InefficientPropertyAccess">
+    <Parameter type="IReferenceExpression" name="highlightedReference"/>
+    <Parameter type="IReferenceExpression[]" name="references" isValid="skip" />
+    <Parameter type="bool" name="canApplyFix" />
+    <Message value="Access properties of built-in component is not efficient. Cache value"/>
+    <Range>HighlightedReference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
   
