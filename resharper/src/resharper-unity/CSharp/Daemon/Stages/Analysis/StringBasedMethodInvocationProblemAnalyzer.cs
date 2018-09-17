@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
@@ -10,15 +11,17 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] { typeof(InefficientInvocationOfGameObjectMethodsWarning) })]
+    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] { typeof(StringBasedMethodInvocationProblemWarning) })]
     public class StringBasedMethodInvocationProblemAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         
-        private static readonly ISet<string> ourKnownMethods = new HashSet<string>()
+        private static readonly IDictionary<string, IClrTypeName> ourKnownMethods = new Dictionary<string, IClrTypeName>()
         {
-            "SendMessage",
-            "SendMessageUpwards",
-            "BroadcastMessage",
+            {"SendMessage", KnownTypes.GameObject},
+            {"SendMessageUpwards", KnownTypes.GameObject},
+            {"BroadcastMessage", KnownTypes.GameObject},
+            {"Invoke", KnownTypes.MonoBehaviour},
+            {"InvokeRepeating", KnownTypes.MonoBehaviour}
         };
         
         public StringBasedMethodInvocationProblemAnalyzer(UnityApi unityApi)
@@ -40,16 +43,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             var method = (info.DeclaredElement as IMethod).NotNull("info.DeclaredElement as IMethod != null");
 
-            if (!ourKnownMethods.Contains(method.ShortName))
+            if (!ourKnownMethods.ContainsKey(method.ShortName))
                 return;
             
             var containingType = method.GetContainingType();
             if (containingType == null) 
                 return;
             
-            if (containingType.GetClrName().Equals(KnownTypes.GameObject))
+            if (containingType.GetClrName().Equals(ourKnownMethods[method.ShortName]))
             {
-                consumer.AddHighlighting(new InefficientInvocationOfGameObjectMethodsWarning(invocation));
+                consumer.AddHighlighting(new StringBasedMethodInvocationProblemWarning(invocation));
             }
         }
     }
