@@ -11,7 +11,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] { typeof(InefficientInvocationOfGameObjectMethodsWarning) })]
-    public class InefficientInvocationOfGameObjectMethodsAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
+    public class StringBasedMethodInvocationProblemAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         
         private static readonly ISet<string> ourKnownMethods = new HashSet<string>()
@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             "BroadcastMessage",
         };
         
-        public InefficientInvocationOfGameObjectMethodsAnalyzer(UnityApi unityApi)
+        public StringBasedMethodInvocationProblemAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
         }
