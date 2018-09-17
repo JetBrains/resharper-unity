@@ -122,7 +122,7 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
         }
     }
 
-    val switchUnitTestLauncherGroup = object : DefaultActionGroup(useUnityEditLauncher, useNunitLauncher) { //useUnityPlayLauncher,
+    val switchUnitTestLauncherGroup = object : DefaultActionGroup(useUnityEditLauncher, useUnityPlayLauncher, useNunitLauncher) {
         override fun update(e: AnActionEvent) {
 
             val currentPreference = project.solution.rdUnityModel.unitTestPreference.value
