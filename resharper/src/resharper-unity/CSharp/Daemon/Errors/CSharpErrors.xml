@@ -82,7 +82,7 @@
         <Description>No type with the specified name and required superclass not found.</Description>
       </Tag>
 
-      <Tag externalName="InefficientInvocationOfGameObjectMethodsWarning.HIGHLIGHTING_ID"
+      <Tag externalName="StringBasedMethodInvocationProblemWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Invocation of this method is not efficient</Title>
         <Description>Invocation for this method results in additional overhead. Prefer use of UnityEvent, C# event, delegates or a direct method call.</Description>
@@ -252,7 +252,7 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
-  <Warning name="InefficientInvocationOfGameObjectMethods" configurableSeverity="Unity.InefficientInvocationOfGameObjectMethods">
+  <Warning name="StringBasedMethodInvocationProblem" configurableSeverity="Unity.StringBasedMethodInvocationProblem">
     <Parameter type="IReference" name="invocation" />
     <Message value="Invocation for this method results in additional overhead. Prefer use of UnityEvent, C# event, delegates or a direct method call."/>
     <Range>Invocation.GetDocumentRange()</Range>
