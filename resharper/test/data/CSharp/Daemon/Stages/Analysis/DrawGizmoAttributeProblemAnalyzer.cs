@@ -13,7 +13,13 @@ public class TestDrawGizmoMethod
     public static void OneCorrectParameter(GameObject arg1, GizmoType arg2) { }
     
     [DrawGizmo]
+    public static void OneCorrectParameter1(Editor arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
     public static void OneCorrectParameter2(MonoBehaviour arg1, string arg2) { }
+    
+    [DrawGizmo]
+    public static void OneCorrectParameter3(Collider arg1, string arg2) { }
 	
     [DrawGizmo]
     public static void OneParameter(GizmoType arg2) { }
@@ -41,6 +47,9 @@ public class TestDrawGizmoMethod
     
     [DrawGizmo]
     private static void JustRight5(Transform arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight6(Collider arg1, GizmoType arg2) { }
     
     public class TestClass1 : MonoBehaviour
     {

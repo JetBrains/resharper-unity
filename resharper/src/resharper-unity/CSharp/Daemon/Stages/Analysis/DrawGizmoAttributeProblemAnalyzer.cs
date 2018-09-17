@@ -92,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 {
                     match &= ~MethodSignatureMatch.IncorrectParameters;
                 }
-                else if (!firstParamCorrect && match == MethodSignatureMatch.IncorrectParameters)
+                else if (!firstParamCorrect && secondParamCorrect && match == MethodSignatureMatch.IncorrectParameters)
                 {
                     consumer.AddHighlighting(new ParameterNotDerivedFromComponentWarning(methodDeclaration.Params.ParameterDeclarations.First()));
                     return;
