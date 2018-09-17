@@ -11,10 +11,12 @@ using Mono.Debugging.Soft;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.UnityComponentData
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class UnityEntitiesObjectValueChildrenProvider : IObjectValueChildrenProvider<SoftEvaluationContext, TypeMirror, Value>
+    public class
+        UnityEntitiesObjectValueChildrenProvider : IObjectValueChildrenProvider<SoftEvaluationContext, TypeMirror, Value
+        >
     {
         private readonly ILogger myLogger = Logger.GetLogger<UnityEntitiesObjectValueChildrenProvider>();
-        
+
         public ObjectValue[] GetChildren(SoftEvaluationContext ctx, IDebuggerValueOwner<Value> objectSource,
             TypeMirror type, Value obj,
             int firstItemIndex, int count, bool dereferenceProxy)
@@ -27,7 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.UnityComponentData
             Value entityManagerObject = null;
             try
             {
-                entityManagerObject = ctx.Session.DefaultEvaluator.Evaluate(ctx, "EntityManager").Value;
+                entityManagerObject = ctx.Session.DefaultEvaluator.Evaluate(ctx,
+                    "global::Unity.Entities.World.Active.GetExistingManager<Unity.Entities.EntityManager>()").Value;
             }
             catch (Exception e)
             {
