@@ -76,7 +76,7 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                     })
                 }
 
-                val pluginPath: VirtualFile? = baseDir.findFileByRelativePath("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll");
+                val pluginPath: VirtualFile? = baseDir.findFileByRelativePath("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
                 if (pluginPath == null || !pluginPath.exists()) {
                     notification.setContent( notification.content + "\r\n"+
                         " Install Rider’s Unity Editor plugin to automatically configure Rider as the default external editor and enable advanced functionality."
