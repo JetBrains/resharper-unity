@@ -15,7 +15,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.2.41'
+    id 'org.jetbrains.kotlin.jvm' version '1.3-M2'
     id 'org.jetbrains.intellij' version '0.3.2'
     id 'com.ullink.nunit' version '1.12' 
 }
@@ -29,6 +29,7 @@ configurations {
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
     maven { url "https://cache-redirector.jetbrains.com/maven-central" }
+    maven { url "https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-eap" }
 }
 
 dependencies {
