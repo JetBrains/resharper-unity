@@ -99,7 +99,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           var playModeTestsControllerTypeString = "UnityEngine.TestTools.TestRunner.PlaymodeTestsController";
           var playModeTestsControllerType = testEngineAssembly.GetType(playModeTestsControllerTypeString);
           
-          PlayModeLauncherRun(playModeLauncher, playModeTestsControllerType, runnerSettings, testEditorAssembly);
+          PlayModeLauncherRun(playModeLauncher, runnerSettings, testEditorAssembly, testEngineAssembly);
         }
         else
         {
@@ -180,8 +180,8 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
     }
 
-    private void PlayModeLauncherRun(object playModeLauncher, Type playModeTestsControllerType, object runnerSettings,
-      Assembly testEditorAssembly)
+    private void PlayModeLauncherRun(object playModeLauncher, object runnerSettings,
+      Assembly testEditorAssembly, Assembly testEngineAssembly)
     {
 //      Unity 2018.3.0b1
 //      PlaymodeLauncher.IsRunning = true;
@@ -200,14 +200,16 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 //      }
 //      EditorApplication.update += this.UpdateCallback;
       
-      var runnerSetupAction = RunnerSetupAction(playModeTestsControllerType, runnerSettings, testEditorAssembly);
+      var runnerSetupAction = RunnerSetupAction(runnerSettings, testEditorAssembly, testEngineAssembly);
       playModeLauncher.GetType().GetField("IsRunning").SetValue(null, true);
       //ConsoleWindow.SetConsoleErrorPause(false);
       Application.runInBackground = true;
       var sceneName = (string) playModeLauncher.GetType().GetMethod("CreateSceneName").Invoke(playModeLauncher, new object[]{});
-      var CreateBootstrapSceneMethodResult = playModeLauncher.GetType().GetMethod("CreateBootstrapScene")
+      var CreateBootstrapSceneMethodResult = playModeLauncher.GetType()
+        .GetMethod("CreateBootstrapScene", BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
         .Invoke(playModeLauncher, new[] {sceneName, runnerSetupAction });
-      playModeLauncher.GetType().GetField("m_Scene").SetValue(playModeLauncher, CreateBootstrapSceneMethodResult);
+      playModeLauncher.GetType().GetField("m_Scene", BindingFlags.NonPublic| BindingFlags.Instance)
+        .SetValue(playModeLauncher, CreateBootstrapSceneMethodResult);
       var sceneBased = (bool) runnerSettings.GetType().GetField("sceneBased").GetValue(runnerSettings);
       if (sceneBased)
       {
@@ -224,21 +226,39 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       EditorApplication.update += ()=> { updateCallBack.Invoke(playModeLauncher, new object[]{}); };
     }
 
-    private object RunnerSetupAction(Type playModeTestsControllerType, object runnerSettings,
-      Assembly testEditorAssembly)
+    private object RunnerSetupAction(object runnerSettings, Assembly testEditorAssembly, Assembly editorAssembly)
     {
           var action1 = new Action<object>(runner =>
           {
-            var playmodeTestsControllerExtensions = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.PlaymodeTestsControllerExtensions");
-            var PlayModeRunnerCallback = testEditorAssembly.GetType("UnityEngine.TestTools.TestRunner.Callbacks.PlayModeRunnerCallback");
-            var methods = playmodeTestsControllerExtensions.GetMethods();
-            methods.Single(a => a.Name == "AddEventHandlerMonoBehaviour").Invoke(null, new object[] { });
-            methods.Single(a => a.Name == "CallbacksDelegatorListener").Invoke(null, new object[] { });
+//            var playmodeTestsControllerExtensions = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.PlaymodeTestsControllerExtensions");
+//            var PlayModeRunnerCallbackType = editorAssembly.GetType("UnityEngine.TestTools.TestRunner.Callbacks.PlayModeRunnerCallback");
+//            var CallbacksDelegatorListenerType =
+//              testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.Api.CallbacksDelegatorListener");
+//            playmodeTestsControllerExtensions.GetMethod("AddEventHandlerMonoBehaviour",  
+//              BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+//              .MakeGenericMethod(PlayModeRunnerCallbackType).Invoke(null, new object[] { runner });
+//            playmodeTestsControllerExtensions.GetMethod("CallbacksDelegatorListener", 
+//              BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+//              .MakeGenericMethod(CallbacksDelegatorListenerType).Invoke(null, new object[] { runner });;
 
-            UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.GetType().GetField("testStartedEvent").GetValue(runner), TestStarted);
-            UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.GetType().GetField("testFinishedEvent").GetValue(runner), TestFinished);
-            //UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.runStartedEvent, RunStarted);
-            UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.GetType().GetField("runFinishedEvent").GetValue(runner), RunFinished);
+//            UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.GetType().GetField("testStartedEvent", 
+//              BindingFlags.NonPublic| BindingFlags.Instance).GetValue(runner), TestStarted);
+//            UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.GetType().GetField("testFinishedEvent",
+//              BindingFlags.NonPublic| BindingFlags.Instance).GetValue(runner), TestFinished);
+//            //UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.runStartedEvent, RunStarted);
+//            UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.GetType().GetField("runFinishedEvent",
+//              BindingFlags.NonPublic| BindingFlags.Instance).GetValue(runner), RunFinished);
+            
+            
+            if (!AdviseTestStarted(runner, "testStartedEvent"))
+              return;
+
+            if (!AdviseTestFinished(runner, "testFinishedEvent"))
+              return;
+
+            if (!AdviseSessionFinished(runner, "runFinishedEvent"))
+              return;
+
 
             runner.GetType().GetField("settings").SetValue(runner, runnerSettings);
 //            runner.AddEventHandlerMonoBehaviour<PlayModeRunnerCallback>();
