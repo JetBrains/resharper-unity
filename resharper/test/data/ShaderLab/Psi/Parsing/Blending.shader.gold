@@ -45,6 +45,24 @@ IShaderLabFile
                     ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IBlendValue
+                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              ITexturePassDef
+                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                ITexturePassValue
+                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  IBlendCommand
+                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    IBlendValue
                       IBlendFactor
                         IShaderLabIdentifier
                           Identifier(type:IDENTIFIER, text:SrcAlpha)

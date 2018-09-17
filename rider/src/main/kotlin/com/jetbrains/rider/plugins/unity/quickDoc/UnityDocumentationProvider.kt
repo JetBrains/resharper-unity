@@ -20,8 +20,8 @@ class UnityDocumentationProvider : DocumentationProvider {
 
     override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String>? {
         val context = p0?.project?.solution?.rdUnityModel?.externalDocContext?.valueOrNull
-        if (!context.isNullOrBlank())
-            return arrayListOf(getUrlForContext(context!!))
+        if (context != null && !context.isNullOrBlank())
+            return arrayListOf(getUrlForContext(context))
         return null
     }
 

@@ -12,7 +12,7 @@ import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
 
-class SaveAllTracker(project: Project, val actionManagerEx: ActionManagerEx) : LifetimedProjectComponent(project) {
+class SaveAllTracker(project: Project, private val actionManagerEx: ActionManagerEx) : LifetimedProjectComponent(project) {
     init {
         val listener = FileListenerImpl(project)
         actionManagerEx.addAnActionListener(listener)

@@ -19,7 +19,7 @@ class UnityBasicCompletionTest : CompletionTestBase() {
         }
     }
 
-    private fun doTest(test: EditorImpl.() -> Unit) {
+    private fun doTest(@Suppress("UNUSED_PARAMETER") test: EditorImpl.() -> Unit) {
 // TODO: make tests run on CI
 //        withCaret("Assets\\NewSurfaceShader.shader", "NewSurfaceShader.shader") {
 //            test()
