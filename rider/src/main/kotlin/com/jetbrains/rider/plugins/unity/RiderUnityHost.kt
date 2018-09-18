@@ -11,6 +11,7 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.getComponent
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.adviseNotNull
+import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class UnityHost(project: Project) : LifetimedProjectComponent(project) {
     val model = project.solution.rdUnityModel
@@ -38,3 +39,5 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
         fun getInstance(project: Project)= project.getComponent<UnityHost>()
     }
 }
+
+fun Project.isConnectedToEditor() = UnityHost.getInstance(this).sessionInitialized.valueOrDefault(false)
