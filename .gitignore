@@ -82,6 +82,8 @@ resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp
 
+resharper/test/JetTestPackages/
+
 
 resharper/src/resharper-unity/_Generated/
 resharper/NuGet.Config
