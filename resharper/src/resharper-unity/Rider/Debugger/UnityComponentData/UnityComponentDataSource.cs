@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.UnityComponentData
         }
 
         public IDebuggerHierarchicalObject ParentSource { get; }
-        public string Name => "Component Data";
+        public string Name => "Component data";
         public SoftEvaluationContext Context { get; }
 
         public ObjectValue[] GetChildren(ObjectPath path, int index, int count, IEvaluationOptions options)
@@ -76,10 +76,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.UnityComponentData
                         var dataManagedType = mySoftRuntimeInvocator.RuntimeInvoke(Context, getManagedTypeMethod,
                             currentComponentType,
                             currentComponent, new Value[0]).Result;
-                        var dataManagedTypeName =
+                        var dataManagedTypeFullName =
                             ((StringMirror) myAdaptor.GetMember(Context, null, dataManagedType, "FullName").Value)
                             .Value;
-                        var dataType = myAdaptor.GetType(Context, dataManagedTypeName);
+                        var dataManagedTypeShortName =
+                            ((StringMirror) myAdaptor.GetMember(Context, null, dataManagedType, "Name").Value)
+                            .Value;
+                        var dataType = myAdaptor.GetType(Context, dataManagedTypeFullName);
 
                         MethodMirror getComponentDataMethod;
                         if (componentDataType.IsAssignableFrom(dataType))
@@ -88,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.UnityComponentData
                             getComponentDataMethod = entityManagerGetSharedComponentDataMethod;
                         else
                         {
-                            myLogger.Warn("Unknown type of component data: {0}", dataManagedTypeName);
+                            myLogger.Warn("Unknown type of component data: {0}", dataManagedTypeFullName);
                             continue;
                         }
 
@@ -98,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.UnityComponentData
                             myEntityManagerType,
                             myEntityManagerObject, new[] {myEntityObject}).Result;
                         objectValues.Add(LiteralValueReference
-                            .CreateTargetObjectLiteral(myAdaptor, Context, dataManagedTypeName, result)
+                            .CreateTargetObjectLiteral(myAdaptor, Context, dataManagedTypeShortName, result)
                             .CreateObjectValue(options));
                     }
                     catch (Exception e)

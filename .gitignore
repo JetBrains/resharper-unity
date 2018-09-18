@@ -28,7 +28,7 @@ rider/.idea/**/libraries
 # NOTE: We normally include *.iml for JetBrains IDEs, but Gradle based projects auto generate
 # this on import, so we can happily ignore them. Don't do this for the Rider controlled project!
 rider/.idea/**/modules.xml
-rider/.idea/**/modules/*.iml
+rider/.idea/**/modules/**/*.iml
 rider/.idea/**/compiler.xml
 
 

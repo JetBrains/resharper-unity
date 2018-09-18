@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         maven { url "https://cache-redirector.jetbrains.com/plugins.gradle.org" }
+        maven { url "https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-eap" }
     }
 }
 
