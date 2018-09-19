@@ -7,6 +7,7 @@
   <idea-version since-build="173.3389" until-build="173.3389.*" />
 
   <depends>com.intellij.modules.rider</depends>
+  <depends optional="true" config-file="PluginAppenderPluginPart.xml">rider.intellij.plugin.appender</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />

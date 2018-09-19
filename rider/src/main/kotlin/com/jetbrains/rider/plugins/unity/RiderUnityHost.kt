@@ -8,6 +8,7 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.util.idea.getComponent
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.adviseNotNull
 
@@ -31,5 +32,9 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
             val mode = RdLogEventMode.values()[it.mode]
             logSignal.fire(RdLogEvent(it.ticks, type, mode, it.message, it.stackTrace))
         }
+    }
+
+    companion object {
+        fun getInstance(project: Project)= project.getComponent<UnityHost>()
     }
 }

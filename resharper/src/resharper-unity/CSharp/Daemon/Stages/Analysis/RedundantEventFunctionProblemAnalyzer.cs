@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Search;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -17,12 +18,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
         }
 
-        protected override void Analyze(IMethodDeclaration methodDeclaration, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Analyze(IMethodDeclaration methodDeclaration, ElementProblemAnalyzerData data,
+            IHighlightingConsumer consumer)
         {
             var method = methodDeclaration.DeclaredElement;
             if (method == null) return;
-            if (IsEventFunction(method) && HasEmptyBody(methodDeclaration))
+            if (IsEventFunction(method) && HasEmptyBody(methodDeclaration) && !IsHidingBaseMethods(method) &&
+                !method.IsOverride && !IsInheritedVirtualMethod(methodDeclaration, method, data))
+            {
                 consumer.AddHighlighting(new RedundantEventFunctionWarning(methodDeclaration));
+            }
         }
 
         private bool IsEventFunction(IMethod method)
@@ -56,6 +61,54 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             // We can't use codeBody.IsFinished, as this will also check for statements!
             return block.LBrace != null && block.RBrace != null;
+        }
+
+        private bool IsHidingBaseMethods(IMethod method)
+        {
+            return method.GetHiddenMembers().Count != 0;
+        }
+
+        private bool IsInheritedVirtualMethod(IMethodDeclaration methodDeclaration, IMethod method,
+            ElementProblemAnalyzerData data)
+        {
+            if (method.CanBeOverridden() == false)
+                return false;
+
+            var consumer = new FindFirstResultConsumer();
+            var searchDomain = SearchDomainFactory.Instance.CreateSearchDomain(data.Solution, false);
+            var finder = methodDeclaration.GetPsiServices().Finder;
+            finder.FindImmediateImplementingMembers(method, searchDomain, consumer, true,
+                new ProgressIndicatorWithInterruptChecker(() =>
+                {
+                    try
+                    {
+                        data.ThrowIfInterrupted();
+                        return false;
+                    }
+                    catch
+                    {
+                        return true;
+                    }
+                }));
+            return consumer.FoundImplementingMethod;
+        }
+
+        private class FindFirstResultConsumer : IFindResultConsumer<IDeclaredElement>
+        {
+            public bool FoundImplementingMethod { get; private set; }
+
+            public IDeclaredElement Build(FindResult result)
+            {
+                if (result is FindResultOverridableMember fr)
+                    return fr.DeclaredElement;
+                return null;
+            }
+
+            public FindExecution Merge(IDeclaredElement data)
+            {
+                FoundImplementingMethod = true;
+                return FindExecution.Stop;
+            }
         }
     }
 }

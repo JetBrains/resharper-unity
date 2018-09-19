@@ -42,5 +42,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName OnOpenAssetAttribute = new ClrTypeName("UnityEditor.Callbacks.OnOpenAssetAttribute");
         public static readonly IClrTypeName PostProcessBuildAttribute = new ClrTypeName("UnityEditor.Callbacks.PostProcessBuildAttribute");
         public static readonly IClrTypeName PostProcessSceneAttribute = new ClrTypeName("UnityEditor.Callbacks.PostProcessSceneAttribute");
+        public static readonly IClrTypeName GizmoType = new ClrTypeName("UnityEditor.GizmoType");
     }
 }
