@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         protected override bool AllowHighlightingOverlap => true;
 
         [Test] public void SimpleTest() { DoNamedTest(); }
+        [Test] public void UnderscoreNameTest() { DoNamedTest(); }
         [Test] public void NewNameTest() { DoNamedTest(); }
         [Test] public void ReuseTest() { DoNamedTest(); }
         [Test] public void ReuseFailedCreateNewTest() { DoNamedTest(); }
