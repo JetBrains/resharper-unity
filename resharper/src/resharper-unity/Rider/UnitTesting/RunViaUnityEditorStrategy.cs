@@ -38,7 +38,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
-        private RdUnityModel myRdUnityModel;
 
         public RunViaUnityEditorStrategy(ISolution solution,
             IUnitTestResultManager unitTestResultManager, 
@@ -53,7 +52,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myUnitTestProvider = unitTestProvider;
             myIDFactory = idFactory;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
-            myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
         }
 
         public bool RequiresProjectBuild(IProject project)
@@ -140,15 +138,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private void RunInternal(IUnitTestRun firstRun, Lifetime connectionLifetime, EditorPluginModel unityModel, TaskCompletionSource<bool> tcs)
         {
             mySolution.Locks.AssertMainThread();
+            var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
             
             var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
             var allNames = InitElementsMap(unitTestElements);
             var emptyList = new List<string>();
 
             var mode = TestMode.Edit;
-            if (myRdUnityModel.UnitTestPreference.HasValue())
+            if (rdUnityModel.UnitTestPreference.HasValue())
             {
-                mode = myRdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
+                mode = rdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
                     ? TestMode.Play
                     : TestMode.Edit;    
             }
