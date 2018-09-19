@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
