@@ -5,10 +5,8 @@ import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.ToolWindowImpl
-import com.jetbrains.rider.UnityReferenceDiscoverer
 import com.jetbrains.rider.build.actions.ActiveConfigurationAndPlatformAction
 import com.jetbrains.rider.util.idea.application
-import com.jetbrains.rider.util.idea.tryGetComponent
 
 class UnityUIMinimizer : StartupActivity {
     companion object {
@@ -17,7 +15,7 @@ class UnityUIMinimizer : StartupActivity {
             if (project.isDisposed)
                 return
 
-            val unityUiManager = project.tryGetComponent<UnityUIManager>() ?: return
+            val unityUiManager = UnityUIManager.tryGetInstance(project) ?: return
             unityUiManager.hasMinimizedUi.value = true
 
             IdeFocusManager.getInstance(project).doWhenFocusSettlesDown {
@@ -36,7 +34,7 @@ class UnityUIMinimizer : StartupActivity {
             if (project.isDisposed)
                 return
 
-            val unityUiManager = project.tryGetComponent<UnityUIManager>() ?: return
+            val unityUiManager = UnityUIManager.tryGetInstance(project) ?: return
             unityUiManager.hasMinimizedUi.value = false
 
             IdeFocusManager.getInstance(project).doWhenFocusSettlesDown {
@@ -51,11 +49,9 @@ class UnityUIMinimizer : StartupActivity {
     }
 
     override fun runActivity(project: Project) {
-        val unityUiManager = project.tryGetComponent<UnityUIManager>() ?: return
-        val unityReferenceDiscoverer = project.tryGetComponent<UnityReferenceDiscoverer>() ?: return
-
         application.invokeLater {
-            if (unityUiManager.hasMinimizedUi.hasTrueValue() && unityReferenceDiscoverer.isUnityGeneratedProject) {
+            val unityUIManager = UnityUIManager.tryGetInstance(project)
+            if (unityUIManager?.hasMinimizedUi?.hasTrueValue() == true) {
                 ensureMinimizedUI(project)
             }
         }
