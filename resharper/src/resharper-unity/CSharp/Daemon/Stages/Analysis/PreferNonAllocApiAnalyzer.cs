@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
@@ -13,6 +15,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] {typeof(PreferNonAllocApiWarning)})]
     public class PreferNonAllocApiAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
+        private static readonly IDictionary<IClrTypeName, ISet<string>> ourKnownMethods =
+            new Dictionary<IClrTypeName, ISet<string>>()
+            {
+                {
+                    KnownTypes.Physics, new HashSet<string>()
+                    {
+                        "CapsuleCastAll",
+                        "RaycastAll",
+                        "SphereCastAll",
+                        "BoxCastAll",
+                        "OverlapCapsule",
+                        "OverlapSphere",
+                        "OverlapBox",
+                    }
+                },
+                {
+                    KnownTypes.Physics2D, new HashSet<string>()
+                    {
+                        "LinecastAll",
+                        "RaycastAll",
+                        "CircleCastAll",
+                        "BoxCastAll",
+                        "CapsuleCastAll",
+                        "GetRayIntersectionAll",
+                        "OverlapPointAll",
+                        "OverlapCircleAll",
+                        "OverlapBoxAll",
+                        "OverlapAreaAll",
+                        "OverlapCapsuleAll",
+                        
+                    }
+                }
+            };
+        
+        
+        
         public PreferNonAllocApiAnalyzer([NotNull] UnityApi unityApi) : base(unityApi)
         {
         }
@@ -39,6 +77,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         private static IMethod GetNonAllocVersion([NotNull]IMethod method,[NotNull] IInvocationExpression expression)
         {
             var originName = method.ShortName;
+
+            // cheap check for methods. Drop out methods with other names
+            if (!ourKnownMethods[KnownTypes.Physics].Contains(originName) &&
+                !ourKnownMethods[KnownTypes.Physics2D].Contains(originName))
+                return null;
+            
+            var containingType = method.GetContainingType();
+            
+            if (containingType == null)
+                return null;
+
+            // drop out all other invocation
+            if (!containingType.GetClrName().Equals(KnownTypes.Physics) &&
+                !containingType.GetClrName().Equals(KnownTypes.Physics2D))
+                return null;
             
             string newName; // xxx[All] -> xxxNonAlloc
             if (originName.EndsWith("All"))
@@ -49,16 +102,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {
                 newName = originName + "NonAlloc";
             }
-
-            var containingType = method.GetContainingType();
-            
-            if (containingType == null)
-                return null;
-
-            // drop out all other invocation
-            if (!containingType.GetClrName().Equals(KnownTypes.Physics) &&
-                !containingType.GetClrName().Equals(KnownTypes.Physics2D))
-                return null;
 
             var type = TypeFactory.CreateType(containingType);
             var table = type.GetSymbolTable(expression.PsiModule).Filter(
