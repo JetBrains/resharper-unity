@@ -9,6 +9,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
     private val UnitTestLaunchPreference = enum {
         +"NUnit"
         +"EditMode"
+        +"PlayMode"
     }
 
     private val EditorState = enum {

@@ -1,36 +1,27 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using UnityEditor;
+using UnityEditor.Events;
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
-
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
   public class UnityEditorTestLauncher
   {
     private readonly UnitTestLaunch myLaunch;
-    private const string RunnerAddlistener = "AddListener";
-    private const string LauncherRun = "Run";
-    private const string MTeststartedevent = "m_TestStartedEvent";
-    private const string MRunfinishedevent = "m_RunFinishedEvent";
-    private const string MTestfinishedevent = "m_TestFinishedEvent";
-    private const string MEditmoderunner = "m_EditModeRunner";
-    private const string TestNames = "testNames";
-    private const string TestNames56 = "names";
-    private const string EditModeLauncher = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
-    private const string TestRunnerFilter = "UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter";
-    private const string TestPlatform = "UnityEngine.TestTools.TestPlatform";
-
-    private const string TestInEditorTestAssemblyProvider =
-      "UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider";
-
+    private const string RunnerAddListener = "AddListener";
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
 
     public UnityEditorTestLauncher(UnitTestLaunch launch)
@@ -54,137 +45,294 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             "Could not find UnityEditor.TestRunner or UnityEngine.TestRunner assemblies in current AppDomain");
           return;
         }
-        
-        string testEditorAssemblyProperties =  testEditorAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b);
-        string testEngineAssemblyProperties = testEngineAssembly.GetType().GetProperties().Select(a=>a.Name).Aggregate((a, b)=>a+ ", "+b);
 
-        var launcherType = testEditorAssembly.GetType(EditModeLauncher);
+        var launcherTypeString = myLaunch.TestMode == TestMode.Edit ? 
+          "UnityEditor.TestTools.TestRunner.EditModeLauncher" : 
+          "UnityEditor.TestTools.TestRunner.PlaymodeLauncher";
+        var launcherType = testEditorAssembly.GetType(launcherTypeString);
         if (launcherType == null)
-          throw new NullReferenceException($"Could not find {EditModeLauncher} among {testEditorAssemblyProperties}");
+        {
+          string testEditorAssemblyProperties =  testEditorAssembly.GetTypes().Select(a=>a.Name).Aggregate((a, b)=> a+ ", " + b);
+          throw new NullReferenceException($"Could not find {launcherTypeString} among {testEditorAssemblyProperties}");
+        }
         
-        var filterType = testEngineAssembly.GetType(TestRunnerFilter);
-        if (filterType==null)
-          throw new NullReferenceException($"Could not find {TestRunnerFilter} among {testEngineAssemblyProperties}");
+        var filterType = testEngineAssembly.GetType("UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter");
+        if (filterType == null)
+        {
+          string testEngineAssemblyProperties = testEngineAssembly.GetTypes().Select(a=>a.Name).Aggregate((a, b)=> a+ ", " + b);
+          throw new NullReferenceException($"Could not find \"UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter\" among {testEngineAssemblyProperties}");
+        }
         
         var filter = Activator.CreateInstance(filterType);
-        var fieldInfo = filter.GetType().GetField(TestNames, BindingFlags.Instance | BindingFlags.Public);
-        fieldInfo = fieldInfo??filter.GetType().GetField(TestNames56, BindingFlags.Instance | BindingFlags.Public);
+        var fieldInfo = filter.GetType().GetField("testNames", BindingFlags.Instance | BindingFlags.Public);
+        fieldInfo = fieldInfo??filter.GetType().GetField("names", BindingFlags.Instance | BindingFlags.Public);
         if (fieldInfo == null)
         {
           ourLogger.Verbose("Could not find testNames field via reflection");
           return;
         }
+        
+        var testNameStrings = (object) myLaunch.TestNames.ToArray();
+        fieldInfo.SetValue(filter, testNameStrings);
 
-        object launcher;
-        if (UnityUtils.UnityVersion >= new Version(2018,1))
+        if (myLaunch.TestMode == TestMode.Play)
         {
-          Type enumType = testEngineAssembly.GetType(TestPlatform);
-          if (enumType == null)
-          {
-            ourLogger.Verbose("Could not find TestPlatform field via reflection");
-            return;
-          }
+          var playmodeTestsControllerSettingsTypeString = "UnityEngine.TestTools.TestRunner.PlaymodeTestsControllerSettings";
+          var playmodeTestsControllerSettingsType = testEngineAssembly.GetType(playmodeTestsControllerSettingsTypeString);
+
+          var runnerSettings = playmodeTestsControllerSettingsType.GetMethod("CreateRunnerSettings")
+            .Invoke(null, new[] {filter});
+          var activeScene = SceneManager.GetActiveScene();
+          var bootstrapSceneInfo = runnerSettings.GetType().GetField("bootstrapScene", BindingFlags.Instance | BindingFlags.Public);
+          bootstrapSceneInfo.SetValue(runnerSettings, activeScene.path);
+          var originalSceneInfo = runnerSettings.GetType().GetField("originalScene", BindingFlags.Instance | BindingFlags.Public);
+          originalSceneInfo.SetValue(runnerSettings, activeScene.path);
           
-          var testNameStrings = (object) myLaunch.TestNames.ToArray();
-          fieldInfo.SetValue(filter, testNameStrings);
+          var playModeLauncher = Activator.CreateInstance(launcherType,
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+            null, new[] {runnerSettings},
+            null);
+
+          //var interfaceType = testEngineAssembly.GetType("UnityEngine.TestTools.TestRunner.ITestRunnerListener");
+          //playModeLauncher.GetType().GetMethod("AddEventHandler").AddEventHandler<ResultUpdater>();
           
-          var assemblyProviderType = testEditorAssembly.GetType(TestInEditorTestAssemblyProvider);
-          if (assemblyProviderType != null)
+          var playModeTestsControllerTypeString = "UnityEngine.TestTools.TestRunner.PlaymodeTestsController";
+          var playModeTestsControllerType = testEngineAssembly.GetType(playModeTestsControllerTypeString);
+          
+          PlayModeLauncherRun(playModeLauncher, runnerSettings, testEditorAssembly, testEngineAssembly);
+        }
+        else
+        {
+          object launcher;
+          if (UnityUtils.UnityVersion >= new Version(2018, 1))
           {
-            var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
-              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-              new[] {Enum.ToObject(enumType, 2)}, null); // TestPlatform.EditMode
-            ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
-            launcher = Activator.CreateInstance(launcherType,
-              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-              null, new[] {filter, assemblyProvider},
-              null);
-            
+            var enumType = testEngineAssembly.GetType("UnityEngine.TestTools.TestPlatform");
+            if (enumType == null)
+            {
+              ourLogger.Verbose("Could not find TestPlatform field via reflection");
+              return;
+            }
+
+            var assemblyProviderType =
+              testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider");
+            var testPlatformVal =
+              myLaunch.TestMode == TestMode.Edit ? 2 : 4; // All = 255, // 0xFF, EditMode = 2, PlayMode = 4,
+            if (assemblyProviderType != null)
+            {
+              var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
+                new[] {Enum.ToObject(enumType, testPlatformVal)}, null);
+              ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
+              launcher = Activator.CreateInstance(launcherType,
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+                null, new[] {filter, assemblyProvider},
+                null);
+            }
+            else
+            {
+              launcher = Activator.CreateInstance(launcherType,
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+                null, new[] {filter, Enum.ToObject(enumType, testPlatformVal)},
+                null);
+            }
           }
           else
           {
             launcher = Activator.CreateInstance(launcherType,
               BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-              null, new[] {filter, Enum.ToObject(enumType, 2)},
+              null, new[] {filter},
               null);
           }
+
+          var runnerField = launcherType.GetField("m_EditModeRunner", BindingFlags.Instance | BindingFlags.NonPublic);
+          if (runnerField == null)
+          {
+            ourLogger.Verbose("Could not find runnerField via reflection");
+            return;
+          }
+
+          var runner = runnerField.GetValue(launcher);
+          SupportAbort(runner);
+
+          if (!AdviseTestStarted(runner, "m_TestStartedEvent"))
+            return;
+
+          if (!AdviseTestFinished(runner, "m_TestFinishedEvent"))
+            return;
+
+          if (!AdviseSessionFinished(runner, "m_RunFinishedEvent"))
+            return;
+
+          var runMethod = launcherType.GetMethod("Run", BindingFlags.Instance | BindingFlags.Public);
+          if (runMethod == null)
+          {
+            ourLogger.Verbose("Could not find runMethod via reflection");
+            return;
+          }
+
+          //run!
+          runMethod.Invoke(launcher, null);
         }
-        else
-        {
-          var testNameStrings = (object) myLaunch.TestNames.ToArray();
-          fieldInfo.SetValue(filter, testNameStrings);
-
-          launcher = Activator.CreateInstance(launcherType,
-            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-            null, new[] {filter},
-            null);
-        }
-
-        var runnerField = launcherType.GetField(MEditmoderunner, BindingFlags.Instance | BindingFlags.NonPublic);
-        if (runnerField == null)
-        {
-          ourLogger.Verbose("Could not find runnerField via reflection");
-          return;
-        }
-
-        var runner = runnerField.GetValue(launcher);
-
-        if (!AdviseTestStarted(runner))
-          return;
-
-        if (!AdviseTestFinished(runner))
-          return;
-
-        if (!AdviseSessionFinished(runner))
-          return;
-
-        var runMethod = launcherType.GetMethod(LauncherRun, BindingFlags.Instance | BindingFlags.Public);
-        if (runMethod == null)
-        {
-          ourLogger.Verbose("Could not find runMethod via reflection");
-          return;
-        }
-
-        //run!
-        runMethod.Invoke(launcher, null);
       }
       catch (Exception e)
       {
         ourLogger.Error(e, "Exception while launching Unity Editor tests.");
       }
-
     }
 
-    private bool AdviseSessionFinished(object runner)
+    private void PlayModeLauncherRun(object playModeLauncher, object runnerSettings,
+      Assembly testEditorAssembly, Assembly testEngineAssembly)
     {
-      var mTestStartedEventMethodInfo = runner.GetType()
-        .GetField(MRunfinishedevent, BindingFlags.Instance | BindingFlags.NonPublic);
-
-      if (mTestStartedEventMethodInfo == null)
+//      Unity 2018.3.0b1
+//      PlaymodeLauncher.IsRunning = true;
+//      ConsoleWindow.SetConsoleErrorPause(false);
+//      Application.runInBackground = true;
+//      string sceneName = this.CreateSceneName();
+//      this.m_Scene = this.CreateBootstrapScene(sceneName, runnerSetupAction));
+//      if (this.m_Settings.sceneBased)
+//      {
+//        var buildSettingsSceneList = new List<EditorBuildSettingsScene>()
+//        {
+//          new EditorBuildSettingsScene(sceneName, true)
+//        };
+//        buildSettingsSceneList.AddRange(EditorBuildSettings.scenes);
+//        EditorBuildSettings.scenes = buildSettingsSceneList.ToArray();
+//      }
+//      EditorApplication.update += this.UpdateCallback;
+      
+      var runnerSetupAction = RunnerSetupAction(runnerSettings, testEditorAssembly, testEngineAssembly);
+      playModeLauncher.GetType().GetField("IsRunning").SetValue(null, true);
+      //ConsoleWindow.SetConsoleErrorPause(false);
+      Application.runInBackground = true;
+      var sceneName = (string) playModeLauncher.GetType().GetMethod("CreateSceneName").Invoke(playModeLauncher, new object[]{});
+      var CreateBootstrapSceneMethodResult = playModeLauncher.GetType()
+        .GetMethod("CreateBootstrapScene", BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        .Invoke(playModeLauncher, new[] {sceneName, runnerSetupAction });
+      playModeLauncher.GetType().GetField("m_Scene", BindingFlags.NonPublic| BindingFlags.Instance)
+        .SetValue(playModeLauncher, CreateBootstrapSceneMethodResult);
+      var sceneBased = (bool) runnerSettings.GetType().GetField("sceneBased").GetValue(runnerSettings);
+      if (sceneBased)
       {
-        ourLogger.Verbose("Could not find mRunFinishedEventMethodInfo via reflection");
+        var buildSettingsSceneList = new List<EditorBuildSettingsScene>()
+        {
+          new EditorBuildSettingsScene(sceneName, true)
+        };
+        buildSettingsSceneList.AddRange(EditorBuildSettings.scenes);
+        EditorBuildSettings.scenes = buildSettingsSceneList.ToArray();        
+      }
+
+      var updateCallBack = playModeLauncher.GetType().GetMethod("UpdateCallback");
+      
+      EditorApplication.update += ()=> { updateCallBack.Invoke(playModeLauncher, new object[]{}); };
+    }
+
+    private object RunnerSetupAction(object runnerSettings, Assembly testEditorAssembly, Assembly editorAssembly)
+    {
+          var action1 = new Action<object>(runner =>
+          {
+//            var playmodeTestsControllerExtensions = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.PlaymodeTestsControllerExtensions");
+//            var PlayModeRunnerCallbackType = editorAssembly.GetType("UnityEngine.TestTools.TestRunner.Callbacks.PlayModeRunnerCallback");
+//            var CallbacksDelegatorListenerType =
+//              testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.Api.CallbacksDelegatorListener");
+//            playmodeTestsControllerExtensions.GetMethod("AddEventHandlerMonoBehaviour",  
+//              BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+//              .MakeGenericMethod(PlayModeRunnerCallbackType).Invoke(null, new object[] { runner });
+//            playmodeTestsControllerExtensions.GetMethod("CallbacksDelegatorListener", 
+//              BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+//              .MakeGenericMethod(CallbacksDelegatorListenerType).Invoke(null, new object[] { runner });;
+
+//            UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.GetType().GetField("testStartedEvent", 
+//              BindingFlags.NonPublic| BindingFlags.Instance).GetValue(runner), TestStarted);
+//            UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.GetType().GetField("testFinishedEvent",
+//              BindingFlags.NonPublic| BindingFlags.Instance).GetValue(runner), TestFinished);
+//            //UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.runStartedEvent, RunStarted);
+//            UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.GetType().GetField("runFinishedEvent",
+//              BindingFlags.NonPublic| BindingFlags.Instance).GetValue(runner), RunFinished);
+            
+            
+            if (!AdviseTestStarted(runner, "testStartedEvent"))
+              return;
+
+            if (!AdviseTestFinished(runner, "testFinishedEvent"))
+              return;
+
+            if (!AdviseSessionFinished(runner, "runFinishedEvent"))
+              return;
+
+
+            runner.GetType().GetField("settings").SetValue(runner, runnerSettings);
+//            runner.AddEventHandlerMonoBehaviour<PlayModeRunnerCallback>();
+//            runner.AddEventHandlerScriptableObject<TestRunnerCallback>();
+//            runner.AddEventHandlerScriptableObject<CallbacksDelegatorListener>();
+//            
+//            UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.testStartedEvent, TestStarted);
+//            UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.testFinishedEvent, TestFinished);
+//            //UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.runStartedEvent, RunStarted);
+//            UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.runFinishedEvent, RunFinished);
+//
+//            runner.settings = runnerSettings;
+          });
+
+      return action1;
+    }
+
+    private void SupportAbort(object runner)
+    {
+      var unityTestAssemblyRunnerField =
+        runner.GetType().GetField("m_Runner", BindingFlags.Instance | BindingFlags.NonPublic);
+      if (unityTestAssemblyRunnerField != null)
+      {
+        var unityTestAssemblyRunner = unityTestAssemblyRunnerField.GetValue(runner);
+        var stopRunMethod = unityTestAssemblyRunner.GetType()
+          .GetMethod("StopRun", BindingFlags.Instance | BindingFlags.Public);
+        myLaunch.Abort.Set((lifetime, _) =>
+        {
+          ourLogger.Verbose("Call StopRun method via reflection.");
+          var task = new RdTask<bool>();
+          try
+          {
+            stopRunMethod.Invoke(unityTestAssemblyRunner, null);
+            task.Set(true);
+          }
+          catch (Exception)
+          {
+            ourLogger.Verbose("Call StopRun method failed.");
+            task.Set(false);
+          }
+          return task;
+        });
+      }
+    }
+
+    private bool AdviseSessionFinished(object runner, string fieldName)
+    {
+      var mRunFinishedEventMethodInfo= runner.GetType()
+        .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+
+      if (mRunFinishedEventMethodInfo == null)
+      {
+        ourLogger.Verbose("Could not find m_RunFinishedEvent via reflection");
         return false;
       }
 
-      var mTestStarted = mTestStartedEventMethodInfo.GetValue(runner);
-      var addListenertMethod =
-        mTestStarted.GetType().GetMethod(RunnerAddlistener, BindingFlags.Instance | BindingFlags.Public);
+      var mRunFinished = mRunFinishedEventMethodInfo.GetValue(runner);
+      var addListenerMethod = mRunFinished.GetType().GetMethod(RunnerAddListener, BindingFlags.Instance | BindingFlags.Public);
 
-      if (addListenertMethod == null)
+      if (addListenerMethod == null)
       {
-        ourLogger.Verbose("Could not find addListenertMethod via reflection");
+        ourLogger.Verbose($"Could not find {RunnerAddListener} of mRunFinished via reflection");
         return false;
       }
 
       //subscribe for tests callbacks
-      addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITestResult>(RunFinished)});
+      addListenerMethod.Invoke(mRunFinished, new object[] {new UnityAction<ITestResult>(RunFinished)});
       return true;
     }
 
-    private bool AdviseTestStarted(object runner)
+    private bool AdviseTestStarted(object runner, string fieldName)
     {
       var mTestStartedEventMethodInfo = runner.GetType()
-        .GetField(MTeststartedevent, BindingFlags.Instance | BindingFlags.NonPublic);
+        .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
 
       if (mTestStartedEventMethodInfo == null)
       {
@@ -193,43 +341,43 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       var mTestStarted = mTestStartedEventMethodInfo.GetValue(runner);
-      var addListenertMethod =
-        mTestStarted.GetType().GetMethod(RunnerAddlistener, BindingFlags.Instance | BindingFlags.Public);
+      var addListenerMethod =
+        mTestStarted.GetType().GetMethod(RunnerAddListener, BindingFlags.Instance | BindingFlags.Public);
 
-      if (addListenertMethod == null)
+      if (addListenerMethod == null)
       {
-        ourLogger.Verbose("Could not find addListenertMethod via reflection");
+        ourLogger.Verbose($"Could not find {RunnerAddListener} of mTestStarted via reflection");
         return false;
       }
 
       //subscribe for tests callbacks
-      addListenertMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITest>(TestStarted)});
+      addListenerMethod.Invoke(mTestStarted, new object[] {new UnityAction<ITest>(TestStarted)});
       return true;
     }
 
-    private bool AdviseTestFinished(object runner)
+    private bool AdviseTestFinished(object runner, string fieldName)
     {
       var mTestFinishedEventMethodInfo = runner.GetType()
-        .GetField(MTestfinishedevent, BindingFlags.Instance | BindingFlags.NonPublic);
+        .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
 
       if (mTestFinishedEventMethodInfo == null)
       {
-        ourLogger.Verbose("Could not find MTestfinishedevent via reflection");
+        ourLogger.Verbose("Could not find m_TestFinishedEvent via reflection");
         return false;
       }
 
       var mTestFinished = mTestFinishedEventMethodInfo.GetValue(runner);
-      var addListenertMethod =
-        mTestFinished.GetType().GetMethod(RunnerAddlistener, BindingFlags.Instance | BindingFlags.Public);
+      var addListenerMethod =
+        mTestFinished.GetType().GetMethod(RunnerAddListener, BindingFlags.Instance | BindingFlags.Public);
 
-      if (addListenertMethod == null)
+      if (addListenerMethod == null)
       {
-        ourLogger.Verbose("Could not find addListenertMethod via reflection");
+        ourLogger.Verbose("Could not find addListenerMethod via reflection");
         return false;
       }
 
       //subscribe for tests callbacks
-      addListenertMethod.Invoke(mTestFinished, new object[] {new UnityAction<ITestResult>(TestFinished)});
+      addListenerMethod.Invoke(mTestFinished, new object[] {new UnityAction<ITestResult>(TestFinished)});
       return true;
     }
     
