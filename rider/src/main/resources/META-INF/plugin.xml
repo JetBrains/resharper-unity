@@ -69,7 +69,7 @@
       <implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUnitTestUIService</implementation-class>
       <option name="overrides" value="true"/>
     </component>
-    <component><implementation-class>com.jetbrains.rider.UnityReferenceDiscoverer</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.UnityProjectDiscoverer</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.AutoSaveNotification</implementation-class></component>

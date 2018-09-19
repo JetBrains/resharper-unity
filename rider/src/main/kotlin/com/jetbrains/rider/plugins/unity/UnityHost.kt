@@ -36,7 +36,7 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
     }
 
     companion object {
-        fun getInstance(project: Project)= project.getComponent<UnityHost>()
+        fun getInstance(project: Project) = project.getComponent<UnityHost>()
     }
 }
 

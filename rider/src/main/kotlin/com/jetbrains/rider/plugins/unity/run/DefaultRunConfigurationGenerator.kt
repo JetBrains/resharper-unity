@@ -3,19 +3,19 @@ package com.jetbrains.rider.plugins.unity.run
 import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.UnknownConfigurationType
-import com.jetbrains.rider.UnityReferenceDiscoverer
+import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.UnityReferenceListener
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorAndPlayFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
 
-class DefaultRunConfigurationGenerator(unityReferenceDiscoverer: UnityReferenceDiscoverer, runManager: RunManager) {
+class DefaultRunConfigurationGenerator(unityProjectDiscoverer: UnityProjectDiscoverer, runManager: RunManager) {
 
     val ATTACH_CONFIGURATION_NAME = "Attach to Unity Editor"
     val ATTACH_AND_PLAY_CONFIGURATION_NAME = "Attach to Unity Editor & Play"
 
     init {
-        unityReferenceDiscoverer.addUnityReferenceListener(object: UnityReferenceListener {
+        unityProjectDiscoverer.addUnityReferenceListener(object: UnityReferenceListener {
             override fun hasUnityReference() {
                 // Clean up the renamed "attach and play" configuration from 2018.2 EAP1-3
                 // (Was changed from a separate configuration type to just another factory under "Attach to Unity")

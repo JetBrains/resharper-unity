@@ -11,7 +11,7 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.isUnityGeneratedProject
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.UnitTestLaunchPreference
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
@@ -48,7 +48,7 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
     }
 
     override fun customizeTopToolBarActionGroup(actionGroup: DefaultActionGroup) {
-        if (project.isUnityGeneratedProject()) {
+        if (project.isUnityProject()) {
             actionGroup.addSeparator()
             actionGroup.add(switchUnitTestLauncherComboBox)
 

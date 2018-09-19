@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
-import com.jetbrains.rider.UnityReferenceDiscoverer
+import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdVirtualSolution
 import com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction
@@ -19,7 +19,7 @@ import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solutionDescription
 import javax.swing.event.HyperlinkEvent
 
-class OpenUnityProjectAsFolderNotification(private val project: Project, private val unityReferenceDiscoverer: UnityReferenceDiscoverer)
+class OpenUnityProjectAsFolderNotification(private val project: Project, private val unityProjectDiscoverer: UnityProjectDiscoverer)
     : ProjectComponent {
 
     companion object {
@@ -28,7 +28,7 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
 
     override fun projectOpened() {
         // Do nothing if we're not in Unity folders, or we are, but we're a proper .sln based solution
-        if (!unityReferenceDiscoverer.isUnityProjectFolder || project.solutionDescription is RdExistingSolution) return
+        if (!unityProjectDiscoverer.isUnityProjectFolder || project.solutionDescription is RdExistingSolution) return
 
         val solutionDescription = project.solutionDescription
         if (solutionDescription is RdVirtualSolution) {
