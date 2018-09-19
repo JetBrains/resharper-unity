@@ -11,6 +11,7 @@ import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.util.refreshAndFindFile
 import com.jetbrains.rider.projectDir
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -143,7 +144,7 @@ class PackagesManager(private val project: Project) {
     }
 
     private fun getManifestJsonFile(): VirtualFile? {
-        return project.projectDir.findFileByRelativePath("Packages/manifest.json")
+        return project.refreshAndFindFile("Packages/manifest.json")
     }
 
     private fun getPackagesFromDependencies(packagesFolder: VirtualFile, registry: String, builtInPackagesFolder: Path?,
