@@ -6,15 +6,18 @@ using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Metadata.Access;
+using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.SolutionBuilder.ComponentsImpl;
+using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
+using JetBrains.Rider.Model;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
@@ -68,8 +71,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project, TargetFrameworkId targetFrameworkId)
         {
-            var targetPlaform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
-            return new UnityRuntimeEnvironment(targetPlaform);
+            var targetPlatform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
+            return new UnityRuntimeEnvironment(targetPlatform);
         }
 
         Task IUnitTestRunStrategy.Run(IUnitTestRun run)
@@ -135,12 +138,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private void RunInternal(IUnitTestRun firstRun, Lifetime connectionLifetime, EditorPluginModel unityModel, TaskCompletionSource<bool> tcs)
         {
             mySolution.Locks.AssertMainThread();
+            var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
             
             var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
             var allNames = InitElementsMap(unitTestElements);
             var emptyList = new List<string>();
 
-            var launch = new UnitTestLaunch(allNames, emptyList, emptyList);
+            var mode = TestMode.Edit;
+            if (rdUnityModel.UnitTestPreference.HasValue())
+            {
+                mode = rdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
+                    ? TestMode.Play
+                    : TestMode.Edit;    
+            }
+              
+            var launch = new UnitTestLaunch(allNames, emptyList, emptyList, mode);
 
             launch.TestResult.Advise(connectionLifetime, result =>
             {
@@ -249,13 +261,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
-            // TODO: cancel tests in Unity Editor
+            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Start(RdVoid.Instance);
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 
         public void Abort(IUnitTestRun run)
         {
-            // TODO: cancel tests in Unity Editor
+            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Start(RdVoid.Instance);
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 

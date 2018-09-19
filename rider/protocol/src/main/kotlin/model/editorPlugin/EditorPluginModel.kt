@@ -56,12 +56,19 @@ object EditorPluginModel: Root(
         field("passed", bool)
     }
 
+    val TestMode = enum {
+        +"Edit"
+        +"Play"
+    }
+
     val UnitTestLaunch = classdef {
         field("testNames", immutableList(string))
         field("testGroups", immutableList(string))
         field("testCategories", immutableList(string))
+        field("testMode", TestMode)
         sink("testResult", TestResult)
         sink("runResult", RunResult)
+        call("abort", void, bool)
     }
 
     val UnityEditorState = enum {
