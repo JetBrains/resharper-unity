@@ -3,7 +3,8 @@ package com.jetbrains.rider.plugins.unity.util
 import com.google.gson.Gson
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.projectDir
+import com.intellij.openapi.vfs.VfsUtil
+import java.io.FileNotFoundException
 
 enum class EditorInstanceJsonStatus {
     Missing,
@@ -19,19 +20,30 @@ data class EditorInstanceJson(val process_id: Int, val version: String) {
 
         fun load(project: Project): Pair<EditorInstanceJsonStatus, EditorInstanceJson?> {
 
-            val path = project.projectDir.findFileByRelativePath("Library/EditorInstance.json")
-            return if (path == null || !path.exists()) {
+            // Read from VFS, so we can make use of caching, but make sure it's up to date
+            val file = project.refreshAndFindFile("Library/EditorInstance.json")
+            return if (file == null || !file.exists()) {
                 Pair(EditorInstanceJsonStatus.Missing, null)
             }
             else {
                 val gson = Gson()
                 try {
-                    path.inputStream.reader().use {
-                        Pair(EditorInstanceJsonStatus.Valid, gson.fromJson(it, EditorInstanceJson::class.java))
+                    val text = VfsUtil.loadText(file)
+                    val json = gson.fromJson(text, EditorInstanceJson::class.java)
+                    val status = if (json == null) {
+                        logger.error("Empty EditorInstance.json")
+                        EditorInstanceJsonStatus.Error
                     }
+                    else
+                        EditorInstanceJsonStatus.Valid
+                    Pair(status, json)
+                }
+                catch (e: FileNotFoundException) {
+                    logger.error("EditorInstance.json missing, after VFS exists check passed? Continuing as though missing", e)
+                    Pair(EditorInstanceJsonStatus.Missing, null)
                 }
                 catch (t: Throwable) {
-                    logger.error("Error loading EditorInstance.json", t)
+                    logger.error("Error loading EditorInstance.json. Continuing as though missing.", t)
                     Pair(EditorInstanceJsonStatus.Error, null)
                 }
             }

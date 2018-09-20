@@ -10,7 +10,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.jetbrains.rider.icons.ReSharperSolutionAnalysisIcons
-import com.jetbrains.rider.isUnityGeneratedProject
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
@@ -46,7 +46,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         super.dispose()
     }
 
-    override fun isInitiallyVisible() = project.isUnityGeneratedProject()
+    override fun isInitiallyVisible() = project.isUnityProject()
 
     override fun getData(dataId: String): Any? {
         return when {

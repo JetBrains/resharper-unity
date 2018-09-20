@@ -8,11 +8,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.WindowManagerListener
-import com.jetbrains.rider.UnityReferenceDiscoverer
+import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.util.idea.lifetime
+import com.jetbrains.rider.util.idea.tryGetComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
 import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.util.reactive.Property
@@ -20,13 +21,18 @@ import com.jetbrains.rider.util.reactive.whenTrue
 import org.jdom.Element
 
 @State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
-class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscoverer,
+class UnityUIManager(private val unityProjectDiscoverer: UnityProjectDiscoverer,
                      private val host : UnityHost,
                      solutionLifecycleHost: SolutionLifecycleHost,
                      project: Project) : LifetimedProjectComponent(project), WindowManagerListener, PersistentStateComponent<Element> {
 
     companion object {
         const val hasMinimizedUiAttribute = "hasMinimizedUI"
+
+        // TODO: When would this ever return null?
+        fun tryGetInstance(project: Project): UnityUIManager? {
+            return project.tryGetComponent()
+        }
     }
 
     private var frameLifetime: LifetimeDefinition? = null
@@ -38,10 +44,8 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
             WindowManager.getInstance().removeListener(this)
         }
         solutionLifecycleHost.isBackendLoaded.whenTrue(componentLifetime) {
-            if (unityReferenceDiscoverer.isUnityGeneratedProject) {
-                if(hasMinimizedUi.value == null)
-                    hasMinimizedUi.set(true)
-            }
+            // Only hide UI for generated projects, so that sidecar projects can still access nuget
+            if (unityProjectDiscoverer.isUnityGeneratedProject && hasMinimizedUi.value == null) hasMinimizedUi.set(true)
         }
     }
 
@@ -60,7 +64,7 @@ class UnityUIManager(private val unityReferenceDiscoverer: UnityReferenceDiscove
     }
 
     override fun frameCreated(frame: IdeFrame) {
-        if (frame.project == project && unityReferenceDiscoverer.isUnityProject) {
+        if (frame.project == project && unityProjectDiscoverer.isUnityProject) {
             frameLifetime?.terminate()
 
             frameLifetime = Lifetime.create(project.lifetime)

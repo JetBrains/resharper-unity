@@ -37,9 +37,9 @@ class UnityCachesFinder {
             SystemInfo.isWindows -> Paths.get(System.getenv("LOCALAPPDATA")).resolve("Unity/cache/packages")
             SystemInfo.isMac -> Paths.get(SystemProperties.getUserHome()).resolve("Library/Unity/cache/packages")
             SystemInfo.isLinux -> {
-                val config = Paths.get(System.getenv("XDG_CONFIG_HOME"))
+                val configRoot = System.getenv("XDG_CONFIG_HOME")?.let { Paths.get(it) }
                         ?: Paths.get(SystemProperties.getUserHome()).resolve(".config")
-                config.resolve("unity3d/cache/packages")
+                configRoot.resolve("unity3d/cache/packages")
             }
             else -> null
         }
