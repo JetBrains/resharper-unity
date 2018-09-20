@@ -1,4 +1,5 @@
 package com.jetbrains.rider.settings
+
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.ide.ui.UISettings
@@ -14,7 +15,7 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurableGroup
 import com.intellij.openapi.options.newEditor.SettingsDialogFactory
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.isUnityGeneratedProject
+import com.jetbrains.rider.isUnityProject
 import javax.swing.event.HyperlinkEvent
 
 class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, private val project: Project)
@@ -29,7 +30,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
     }
 
     override fun projectOpened() {
-        if (project.isUnityGeneratedProject()) {
+        if (project.isUnityProject()) {
             showNotificationIfNeeded()
         }
     }

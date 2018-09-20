@@ -30,6 +30,8 @@ intellij {
 
     // Sources aren't available for Rider
     downloadSources = false
+
+    plugins = [ 'JavaScriptLanguage', 'rider-plugins-appender' ]
 }
 
 task validatePluginXml {

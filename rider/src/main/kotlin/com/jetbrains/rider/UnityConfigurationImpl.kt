@@ -4,19 +4,17 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.projectView.indexing.contentModel.ContentModelExcludes
 import java.io.File
 
-class UnityConfigurationImpl(private val project: Project, unityReferenceDiscoverer: UnityReferenceDiscoverer, excludes: ContentModelExcludes) {
+class UnityConfigurationImpl(private val project: Project, unityProjectDiscoverer: UnityProjectDiscoverer, excludes: ContentModelExcludes) {
 
     companion object {
         private val ignoredDirectories = arrayOf("Library", "Temp")
     }
 
     init {
-        val excludePaths = ignoredDirectories
-            .map { f -> getChildAsFile(f) }
-            .filter { f -> f != null }
-            .map { f -> f!! }
-            .toHashSet()
-        if (unityReferenceDiscoverer.isUnityGeneratedProject || unityReferenceDiscoverer.isUnitySidecarProject) {
+        if (unityProjectDiscoverer.isUnityProject) {
+            val excludePaths = ignoredDirectories
+                    .mapNotNull(::getChildAsFile)
+                    .toHashSet()
             excludes.updateExcludes(this, excludePaths)
         }
     }

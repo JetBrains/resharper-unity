@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605
             if (!myRdUnityModel.UnitTestPreference.HasValue() ||
-                (myRdUnityModel.UnitTestPreference.HasValue() && myRdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.EditMode))
+                (myRdUnityModel.UnitTestPreference.HasValue() && myRdUnityModel.UnitTestPreference.Value != UnitTestLaunchPreference.NUnit))
                 return myUnityEditorStrategy;
             
             return base.GetRunStrategy(element);

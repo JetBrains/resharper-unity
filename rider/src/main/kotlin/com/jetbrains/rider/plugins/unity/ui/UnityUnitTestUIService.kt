@@ -11,15 +11,14 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.isConnectedToEditor
-import com.jetbrains.rider.isUnityGeneratedProject
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.UnitTestLaunchPreference
 import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.unitTesting.RiderUnitTestUIService
 import org.jdom.Element
 import javax.swing.JComponent
-
 
 @State(name = "UnityUnitTestConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class UnityUnitTestUIService(project: Project, val propertiesComponent: PropertiesComponent) : RiderUnitTestUIService(project), PersistentStateComponent<Element> {
@@ -40,15 +39,16 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
 
         const val currentTestLauncher = "currentTestLauncher"
 
-
-        private val NUnit = "NUnit"
-        private val NUnitDescription = "Standalone NUnit Launcher"
-        private val EditMode = "EditMode"
-        private val EditModeDescription = "Unity Editor - Edit Mode"
+        private const val NUnit = "NUnit"
+        private const val NUnitDescription = "Standalone NUnit Launcher"
+        private const val EditMode = "EditMode"
+        private const val EditModeDescription = "Unity Editor - Edit Mode"
+        private const val PlayMode = "PlayMode"
+        private const val PlayModeDescription = "Unity Editor - Play Mode"
     }
 
     override fun customizeTopToolBarActionGroup(actionGroup: DefaultActionGroup) {
-        if (project.isUnityGeneratedProject()) {
+        if (project.isUnityProject()) {
             actionGroup.addSeparator()
             actionGroup.add(switchUnitTestLauncherComboBox)
 
@@ -66,9 +66,10 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
     private fun getLauncherId(currentPreference: UnitTestLaunchPreference?): String {
         val preferenceNotNull = currentPreference ?: return NUnit
 
-        when (preferenceNotNull) {
-            UnitTestLaunchPreference.EditMode -> return EditMode
-            UnitTestLaunchPreference.NUnit -> return NUnit
+        return when (preferenceNotNull) {
+            UnitTestLaunchPreference.EditMode -> EditMode
+            UnitTestLaunchPreference.PlayMode -> PlayMode
+            UnitTestLaunchPreference.NUnit -> NUnit
         }
     }
 
@@ -76,6 +77,7 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
         when (id) {
             NUnit -> return UnitTestLaunchPreference.NUnit
             EditMode -> return UnitTestLaunchPreference.EditMode
+            PlayMode -> return UnitTestLaunchPreference.PlayMode
         }
 
         return UnitTestLaunchPreference.EditMode
@@ -84,9 +86,10 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
     private fun getLauncherDescription(currentPreference: UnitTestLaunchPreference?): String {
         val preferenceNotNull = currentPreference ?: return NUnitDescription
 
-        when (preferenceNotNull) {
-            UnitTestLaunchPreference.EditMode -> return EditModeDescription
-            UnitTestLaunchPreference.NUnit -> return NUnitDescription
+        return when (preferenceNotNull) {
+            UnitTestLaunchPreference.EditMode -> EditModeDescription
+            UnitTestLaunchPreference.NUnit -> NUnitDescription
+            UnitTestLaunchPreference.PlayMode -> PlayModeDescription
         }
     }
 
@@ -107,7 +110,18 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
         }
     }
 
-    val switchUnitTestLauncherGroup = object : DefaultActionGroup(useUnityEditLauncher, useNunitLauncher) {
+    val useUnityPlayLauncher = object : DumbAwareAction(PlayModeDescription, "Run with Unity Editor in Play Mode", null) {
+        override fun actionPerformed(p0: AnActionEvent) {
+            project.solution.rdUnityModel.unitTestPreference.value = UnitTestLaunchPreference.PlayMode
+        }
+
+        override fun update(e: AnActionEvent) {
+            e.presentation.isEnabled = project.isConnectedToEditor()
+            e.presentation.isVisible = true
+        }
+    }
+
+    val switchUnitTestLauncherGroup = object : DefaultActionGroup(useUnityEditLauncher, useNunitLauncher) {//useUnityPlayLauncher
         override fun update(e: AnActionEvent) {
 
             val currentPreference = project.solution.rdUnityModel.unitTestPreference.value
@@ -145,5 +159,4 @@ class UnityUnitTestUIService(project: Project, val propertiesComponent: Properti
             return true
         }
     }
-
 }
