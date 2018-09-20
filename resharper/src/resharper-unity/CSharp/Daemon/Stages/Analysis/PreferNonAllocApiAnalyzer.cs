@@ -15,41 +15,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] {typeof(PreferNonAllocApiWarning)})]
     public class PreferNonAllocApiAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        private static readonly IDictionary<IClrTypeName, ISet<string>> ourKnownMethods =
-            new Dictionary<IClrTypeName, ISet<string>>()
+        private static readonly IDictionary<string, string> ourPhysicsKnownMethods =
+            new Dictionary<string, string>()
             {
-                {
-                    KnownTypes.Physics, new HashSet<string>()
-                    {
-                        "CapsuleCastAll",
-                        "RaycastAll",
-                        "SphereCastAll",
-                        "BoxCastAll",
-                        "OverlapCapsule",
-                        "OverlapSphere",
-                        "OverlapBox",
-                    }
-                },
-                {
-                    KnownTypes.Physics2D, new HashSet<string>()
-                    {
-                        "LinecastAll",
-                        "RaycastAll",
-                        "CircleCastAll",
-                        "BoxCastAll",
-                        "CapsuleCastAll",
-                        "GetRayIntersectionAll",
-                        "OverlapPointAll",
-                        "OverlapCircleAll",
-                        "OverlapBoxAll",
-                        "OverlapAreaAll",
-                        "OverlapCapsuleAll",
-                        
-                    }
-                }
+                {"CapsuleCastAll", "CapsuleCastNonAlloc"},
+                {"RaycastAll", "RaycastNonAlloc"},
+                {"SphereCastAll", "SphereCastNonAlloc"},
+                {"BoxCastAll", "BoxCastNonAlloc"},
+                {"OverlapCapsule", "OverlapCapsuleNonAlloc"},
+                {"OverlapSphere", "OverlapSphereNonAlloc"},
+                {"OverlapBox", "OverlapBoxNonAlloc"},
             };
         
-        
+        private static readonly IDictionary<string, string> ourPhysics2DKnownMethods =
+            new Dictionary<string, string>()
+            {
+                {"LinecastAll", "CapsuleCastNonAlloc"},
+                {"RaycastAll", "RaycastNonAlloc"},
+                {"CircleCastAll", "CircleCastNonAlloc"},
+                {"BoxCastAll", "BoxCastNonAlloc"},
+                {"CapsuleCastAll", "CapsuleCastNonAlloc"},
+                {"GetRayIntersectionAll", "GetRayIntersectionNonAlloc"},
+                {"OverlapPointAll", "OverlapPointNonAlloc"},
+                {"OverlapCircleAll", "OverlapCircleNonAlloc"},
+                {"OverlapBoxAll", "OverlapBoxNonAlloc"},
+                {"OverlapAreaAll", "OverlapAreaNonAlloc"},
+                {"OverlapCapsuleAll", "OverlapCapsuleNonAlloc"},
+            };
         
         public PreferNonAllocApiAnalyzer([NotNull] UnityApi unityApi) : base(unityApi)
         {
@@ -79,8 +71,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var originName = method.ShortName;
 
             // cheap check for methods. Drop out methods with other names
-            if (!ourKnownMethods[KnownTypes.Physics].Contains(originName) &&
-                !ourKnownMethods[KnownTypes.Physics2D].Contains(originName))
+            if (!ourPhysicsKnownMethods.ContainsKey(originName) &&
+                !ourPhysics2DKnownMethods.ContainsKey(originName))
                 return null;
             
             var containingType = method.GetContainingType();
@@ -88,21 +80,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (containingType == null)
                 return null;
 
-            // drop out all other invocation
-            if (!containingType.GetClrName().Equals(KnownTypes.Physics) &&
-                !containingType.GetClrName().Equals(KnownTypes.Physics2D))
-                return null;
-            
+            // drop out all other invocation and get name
             string newName; // xxx[All] -> xxxNonAlloc
-            if (originName.EndsWith("All"))
+            if (containingType.GetClrName().Equals(KnownTypes.Physics))
             {
-                newName = originName.Substring(0, originName.Length - 3) + "NonAlloc";
+                ourPhysicsKnownMethods.TryGetValue(originName, out newName);
+            } else if (containingType.GetClrName().Equals(KnownTypes.Physics2D))
+            {
+                ourPhysics2DKnownMethods.TryGetValue(originName, out newName);
             }
             else
             {
-                newName = originName + "NonAlloc";
+                return null;
             }
 
+            if (newName == null)
+            {
+                return null;
+            }
+            
             var type = TypeFactory.CreateType(containingType);
             var table = type.GetSymbolTable(expression.PsiModule).Filter(
                 new AccessRightsFilter(new DefaultAccessContext(expression)),
