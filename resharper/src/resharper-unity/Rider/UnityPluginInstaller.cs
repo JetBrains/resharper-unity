@@ -17,7 +17,7 @@ using JetBrains.ReSharper.Plugins.Unity.Utils;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
-    public class UnityPluginInstaller : UnityReferencesTracker.IHandler, UnresolvedUnityReferencesTracker.IHandler
+    public class UnityPluginInstaller
     {
         private readonly JetHashSet<FileSystemPath> myPluginInstallations;
         private readonly Lifetime myLifetime;
@@ -41,7 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             ISettingsStore settingsStore,
             PluginPathsProvider pluginPathsProvider,
             UnityVersionDetector unityVersionDetector,
-            UnityHost unityHost)
+            UnityHost unityHost,
+            UnitySolutionTracker unitySolutionTracker)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
@@ -68,23 +69,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     });
                 });
             });
-        }
 
-        void UnityReferencesTracker.IHandler.OnSolutionLoaded(UnityProjectsCollection solution)
-        {
-            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.OnSolutionLoaded", () => InstallPluginIfRequired(solution.UnityProjectLifetimes.Keys));
-
-            BindToInstallationSettingChange();
-        }
-
-        void UnityReferencesTracker.IHandler.OnReferenceAdded(IProject unityProject, Lifetime projectLifetime)
-        {
-            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.ResolvedReferenceAdded", () => InstallPluginIfRequired(new[] {unityProject}));
-        }
-
-        void UnresolvedUnityReferencesTracker.IHandler.OnReferenceAdded(IProject unityProject)
-        {
-            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.UnresolvedReferenceAdded", () => InstallPluginIfRequired(new[] {unityProject}));
+            unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.Change.Advise(lifetime, args =>
+            {
+                if (args.HasOld || !args.HasNew || !args.New) return;
+                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.OnSolutionLoaded", () => InstallPluginIfRequired(solution.GetTopLevelProjects()));
+                BindToInstallationSettingChange();
+            });
         }
 
         private void BindToInstallationSettingChange()
