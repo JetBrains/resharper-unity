@@ -1,5 +1,6 @@
 using JetBrains.Application;
 using JetBrains.Application.Components;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.UnitTesting;
@@ -15,7 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public HostProviderAvailability GetAvailability(IUnitTestElement element)
         {
             var solution = element.Id.Project.GetSolution();
-            if (!solution.IsAbleToEstablishProtocolConnectionWithUnity())
+            var tracker = solution.GetComponent<UnitySolutionTracker>();
+            if (tracker.IsAbleToEstablishProtocolConnectionWithUnity.HasValue() && !tracker.IsAbleToEstablishProtocolConnectionWithUnity.Value)
                 return HostProviderAvailability.Available; 
             
             var rdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();

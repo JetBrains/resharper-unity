@@ -73,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.OnSolutionLoaded", () => InstallPluginIfRequired(solution.GetTopLevelProjects()));
+                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "IsAbleToEstablishProtocolConnectionWithUnity", () => InstallPluginIfRequired(solution.GetTopLevelProjects()));
                 BindToInstallationSettingChange();
             });
         }

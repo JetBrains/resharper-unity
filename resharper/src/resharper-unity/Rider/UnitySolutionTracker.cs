@@ -6,19 +6,18 @@ using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
     public class UnitySolutionTracker
     {
         private readonly ISolution mySolution;
-        public readonly RProperty<bool> IsAbleToEstablishProtocolConnectionWithUnity;
+        public readonly RProperty<bool> IsAbleToEstablishProtocolConnectionWithUnity = new RProperty<bool>();
 
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, IShellLocks locks)
         {
             mySolution = solution;
             
-            IsAbleToEstablishProtocolConnectionWithUnity = new RProperty<bool>();
             if (locks.Dispatcher.IsAsyncBehaviorProhibited) // for tests
                 return;
 
