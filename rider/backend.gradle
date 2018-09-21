@@ -58,17 +58,15 @@ class MSBuildTask extends DefaultTask {
     @InputFile
     File buildFile
 
-    // TODO: Set msbuild verbosity based on gradle log level
-
     @TaskAction
     def build() {
         project.ci.Progress("Building $buildFile ($project.BuildConfiguration)")
 
-        def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:normal', '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
+        def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", "/v:${getVerbosity()}", '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
         arguments.addAll(project.extraMSBuildArgs)
 
         def msbuildPath = findMSBuildPath()
-        logger.lifecycle("msbuild call=$msbuildPath " + arguments.toString())
+        logger.info("msbuild call=$msbuildPath " + arguments.toString())
 
         project.exec {
             executable = msbuildPath
@@ -79,12 +77,12 @@ class MSBuildTask extends DefaultTask {
 
     def findMSBuildPath() {
         if (project.ext.has('msbuildPath')) {
-            logger.lifecycle("msbuildPath (cached): $project.msbuildPath")
+            logger.info("msbuildPath (cached): $project.msbuildPath")
             return project.msbuildPath
         }
 
         project.ext.msbuildPath = project.isWindows ? findMSBuildPathWindows() : findMSBuildPathUnix()
-        logger.lifecycle "msbuildPath: $project.msbuildPath"
+        logger.info "msbuildPath: $project.msbuildPath"
         return project.msbuildPath
     }
 
@@ -111,6 +109,16 @@ class MSBuildTask extends DefaultTask {
         }
 
         return project.file(stdout.toString().trim())
+    }
+
+    def getVerbosity() {
+        switch (project.gradle.startParameter.logLevel) {
+            case LogLevel.QUIET:        return "quiet";
+            case LogLevel.LIFECYCLE:    return "minimal";
+            case LogLevel.INFO:         return "normal";
+            case LogLevel.DEBUG:        return "detailed";
+        }
+        return "normal";
     }
 }
 
@@ -139,8 +147,7 @@ class RestorePackagesTask extends DefaultTask {
     def restore() {
         project.ci.Progress("Restoring packages for $packagesFile")
 
-        // TODO: Map verbosity to gradle logging verbosity
-        def restoreArguments = [ 'restore', '--verbosity', 'normal' ]        
+        def restoreArguments = [ 'restore', '--verbosity', "${getVerbosity()}" ]
         restoreArguments << '--source' << 'https://api.nuget.org/v3/index.json'
         restoreArguments << '--source' << project.backend.riderSdkPath
         restoreArguments << '--source' << project.backend.reSharperSdkPath
@@ -153,6 +160,16 @@ class RestorePackagesTask extends DefaultTask {
             standardOutput = System.out
         }
     }
+
+    def getVerbosity() {
+        switch (project.gradle.startParameter.logLevel) {
+            case LogLevel.QUIET:        return "quiet";
+            case LogLevel.LIFECYCLE:    return "minimal";
+            case LogLevel.INFO:         return "normal";
+            case LogLevel.DEBUG:        return "detailed";
+        }
+        return "normal";
+    }
 }
 
 class GenerateBuildPropsTask extends DefaultTask {    
@@ -164,7 +181,7 @@ class GenerateBuildPropsTask extends DefaultTask {
     def generate() {
         project.ci.Progress("Generating Build.props for $packageName")
         def packageVersion = parsePackageVersion()
-        logger.lifecycle("$msBuildParameter=$packageVersion")
+        logger.info("$msBuildParameter=$packageVersion")
 
         new File("$project.repoRoot/resharper/$packageName" + ".generated.props").text = """<Project>
   <PropertyGroup>
@@ -178,7 +195,7 @@ class GenerateBuildPropsTask extends DefaultTask {
         assert packagesDirectory.isDirectory()
         def escapedPackageName = Pattern.quote(packageName)
 
-        logger.lifecycle("Looking for package $packageName in $packagesDirectory")
+        logger.info("Looking for package $packageName in $packagesDirectory")
 
         def packageVersion = packagesDirectory.listFiles().collect { File f ->
             if (f.isFile()) {
@@ -253,7 +270,7 @@ task prepareNuGetConfig {
     </packageSources>
     </configuration>
     """
-        logger.lifecycle(nugetConfigText)
+        logger.info(nugetConfigText)
         new File("$repoRoot/resharper/NuGet.Config").text = nugetConfigText
     }
 }
