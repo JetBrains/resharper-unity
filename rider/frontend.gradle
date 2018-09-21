@@ -35,22 +35,6 @@ intellij {
 }
 
 
-task validatePluginXml {
-    def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
-    assert pluginXml.isFile()
-
-    def parsed = new XmlParser().parse(pluginXml).text()
-    assert parsed.length() > 0
-
-    def rawBytes = pluginXml.bytes
-    assert rawBytes.length > 0
-
-    def invalid = rawBytes.findAll { it < 0 }
-    assert invalid.size() == 0
-
-    logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
-}
-
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -91,7 +75,6 @@ task publishCiBuildData {
 }
 
 buildPlugin.finalizedBy publishCiBuildData
-buildPlugin.dependsOn validatePluginXml
 
 // If we're building `runIde`, only build Rider bits. We only know this once the task graph
 // has been evaluated. It's now too late to change inputs/outputs or dependencies. An alternative
@@ -178,6 +161,30 @@ prepareSandbox {
         from 'projectTemplates'
     }
 }
+
+
+task validatePluginXml {
+  def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
+  assert pluginXml.isFile()
+
+  inputs.file(pluginXml)
+  outputs.file(pluginXml)
+
+  doLast {
+    def parsed = new XmlParser().parse(pluginXml).text()
+    assert parsed.length() > 0
+
+    def rawBytes = pluginXml.bytes
+    assert rawBytes.length > 0
+
+    def invalid = rawBytes.findAll { it < 0 }
+    assert invalid.size() == 0
+
+    logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
+  }
+}
+prepareSandbox.dependsOn validatePluginXml
+
 
 test {
     useTestNG() {}
