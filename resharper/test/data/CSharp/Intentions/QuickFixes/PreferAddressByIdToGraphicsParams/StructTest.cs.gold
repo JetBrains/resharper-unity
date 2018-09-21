@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public struct StructTest
+    {
+      private static readonly int Tes = Shader.PropertyToID("tes");
+
+      public void Method(Material material)
+        {
+            material.SetFloat(Te{caret}s, 10.0f);
+        }
+    }
+}

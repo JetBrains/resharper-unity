@@ -248,6 +248,7 @@
   <Warning name="PreferAddressByIdToGraphicsParams" configurableSeverity="Unity.PreferAddressByIdToGraphicsParams">
     <Parameter type="IInvocationExpression" name="invocationMethod" />
     <Parameter type="ICSharpArgument" name="argument" />
+    <Parameter type="IExpression" name="argumentExpression" />
     <Parameter type="string" name="literal" />
     <Parameter type="string" name="typeName" />
     <Parameter type="string" name="mapFunction" />
