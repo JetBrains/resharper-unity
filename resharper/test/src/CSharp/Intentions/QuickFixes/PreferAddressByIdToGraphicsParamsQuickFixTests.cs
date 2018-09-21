@@ -27,5 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void StructTest() { DoNamedTest(); }
         [Test] public void NestedReuseTest() { DoNamedTest(); }
         [Test] public void ConstConcatCreateFieldTest() { DoNamedTest(); }
+        [Test] public void PartialClassTest() { DoNamedTest(); }
     }
 }
