@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
@@ -82,10 +81,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             // drop out all other invocation and get name
             string newName; // xxx[All] -> xxxNonAlloc
-            if (containingType.GetClrName().Equals(KnownTypes.Physics))
+            var containingTypeName = containingType.GetClrName();
+            if (containingTypeName.Equals(KnownTypes.Physics))
             {
                 ourPhysicsKnownMethods.TryGetValue(originName, out newName);
-            } else if (containingType.GetClrName().Equals(KnownTypes.Physics2D))
+            } else if (containingTypeName.Equals(KnownTypes.Physics2D))
             {
                 ourPhysics2DKnownMethods.TryGetValue(originName, out newName);
             }
@@ -95,9 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
 
             if (newName == null)
-            {
                 return null;
-            }
             
             var type = TypeFactory.CreateType(containingType);
             var table = type.GetSymbolTable(expression.PsiModule).Filter(
