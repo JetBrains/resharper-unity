@@ -1,3 +1,15 @@
+task publishCiBuildNumber {
+    doLast {
+        ci.SetBuildNumber(version)
+    }
+}
+
+task publishCiBuildData {
+    dependsOn publishCiBuildNumber
+}
+
+
+
 if (System.env['TEAMCITY_VERSION'] != null) {
     ext.ci = new TeamCityService()
     ext.isBuildingUnderCi = true
@@ -10,6 +22,14 @@ if (System.env['TEAMCITY_VERSION'] != null) {
     ext.ci = new NullService()
     ext.isBuildingUnderCi = false
 }
+
+
+if (ext.isBuildingUnderCi) {
+    buildPlugin.finalizedBy publishCiBuildData
+}
+
+
+
 
 interface CIService {
     void Progress(String message)

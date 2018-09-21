@@ -7,10 +7,6 @@ import java.util.regex.Pattern
 
 ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.localRiderSdkRoot, logger, ext.productVersion)
 
-def teamcityVersion = System.env['TEAMCITY_VERSION']
-project.ci.Progress("teamcityVersion = $teamcityVersion")
-ext.isTeamcity = teamcityVersion != null
-
 // Used to provide a package version to both msbuild and dotnet restore
 ext.extraMSBuildArgs = []
 
@@ -385,3 +381,4 @@ task publishCiBackendArtifacts {
         ci.PublishArtifact(packReSharperPlugin.outputs.files.singleFile)
     }
 }
+publishCiBuildData.dependsOn publishCiBackendArtifacts

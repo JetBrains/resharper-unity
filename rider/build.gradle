@@ -79,6 +79,23 @@ apply from: 'frontend.gradle'
 apply from: 'model.gradle'
 
 
+// Tasks:
+//
+// When running in CI, we call `gradle buildPlugin`
+// When running interactively, we call `gradle runIde`
+// We can pass `-PdotNetUpToDate=true` to skip building dotnet things, as the no-op build is REALLY slow
+//
+// `buildPlugin` depends on `prepareSandbox` and then zips up the sandbox dir and puts the file in rider/build/distributions
+// `runIde` depends on `prepareSandbox` and then executes IJ inside the sandbox dir
+// `prepareSandbox` depends on the standard Java `jar` task and then copies everything into the sandbox dir
+//
+// `buildPlugin`, `runIde` and `prepareSandbox` are provided by the intellij gradle plugin
+//
+// When running in CI, the CI tasks will publish build version and the ReSharper artifacts
+// When calling `buildPlugin`, the CI tasks force building the ReSharper artifacts
+// When calling `runIde`, we only need to build Rider, debugger and Unity editor bits
+
+
 task resolveDependencies {
   description 'Resolves all projects dependencies from the repository'
   group 'Build Server'
