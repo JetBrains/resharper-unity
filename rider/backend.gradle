@@ -220,7 +220,6 @@ task unzipReSharperSdk(type: Sync){
     group backendGroup
     onlyIf { !project.shouldBuildRiderOnly }    
     dependsOn configurations.reSharper
-
     
     if (backend.reSharperSdkPath.isDirectory()) {
         logger.lifecycle("R# SDK bundle found: $backend.reSharperSdkPath.canonicalPath")
@@ -230,10 +229,13 @@ task unzipReSharperSdk(type: Sync){
         logger.lifecycle("R# SDK is not bundled")
         backend.reSharperSdkPath = new File(repoRoot, "rider/build/DownloadedReSharperSDK")
     }
-    
-    ci.Progress("Downloading/unzipping ReSharper SDK to $backend.reSharperSdkPath")
+
     from { configurations.reSharper.collect { zipTree(it) } }
     into backend.reSharperSdkPath
+
+    doFirst {
+      ci.Progress("Unzipping ReSharper SDK to $backend.reSharperSdkPath")
+    }
 }
 
 task prepareRiderBuildProps(type: GenerateBuildPropsTask) {
