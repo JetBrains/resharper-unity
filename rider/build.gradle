@@ -20,7 +20,32 @@ plugins {
     id 'com.ullink.nunit' version '1.12' 
 }
 
+apply plugin: 'com.jetbrains.rdgen'
+apply from: 'ci.gradle'
+
+
+ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
 ext.productVersion = "2018.3"
+ext.repoRoot = new File("..").canonicalFile
+ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+ext.dependenciesDir = new File("dependencies")
+ext.shouldBuildRiderOnly = false
+
+if (!ext.has("BuildCounter"))
+    ext.BuildCounter = 9999
+
+if (!ext.has("BuildConfiguration")) {
+    ext.BuildConfiguration = ext.isBuildingUnderCi ? "Release" : "Debug"
+}
+
+if (!ext.has('dotNetUpToDate') || ext.dotNetUpToDate ==~ "(?i)False")
+    ext.dotNetUpToDate = false
+
+/* done as an optional step so that we can reuse the build artifacts */
+if (!ext.has("RunTests") || ext.RunTests ==~ "(?i)False")
+    ext.RunTests = false
+
+
 
 configurations {
     reSharper
@@ -36,56 +61,21 @@ dependencies {
     reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "${productVersion}-SNAPSHOT", ext: "zip"
 }
 
-apply plugin: 'com.jetbrains.rdgen'
-
-ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
-
-ext.repoRoot = new File("..").canonicalFile
-ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-ext.dependenciesDir = new File("dependencies")
-
 wrapper {
     gradleVersion = '4.7'
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
-if (System.env['TEAMCITY_VERSION'] != null) {
-    ext.ci = new TeamCityService()
-    ext.isBuildingUnderCi = true
-    gradle.taskGraph.addTaskExecutionListener(new TeamCityEventLogger(ci))
-} else if (System.env['TRAVIS'] != null) {
-    ext.ci = new TravisService()
-    ext.isBuildingUnderCi = true
-    gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger(ci))
-} else {
-    ext.ci = new NullService()
-    ext.isBuildingUnderCi = false
-}
-
-if (!ext.has("BuildCounter"))
-    ext.BuildCounter = 9999
-
-if (!ext.has("BuildConfiguration")) {
-    ext.BuildConfiguration = ext.isBuildingUnderCi ? "Release" : "Debug"
-}
-
-if (!ext.has('dotNetUpToDate') || ext.dotNetUpToDate ==~ "(?i)False")
-    ext.dotNetUpToDate = false
-
-/* done as an optional step so that we can reuse the build artifacts */
-if (!ext.has("RunTests") || ext.RunTests ==~ "(?i)False")
-    ext.RunTests = false
-logger.lifecycle("RunTests=$RunTests")
-
-ext.shouldBuildRiderOnly = false
-
 version "${productVersion}.0.$BuildCounter"
+
 
 logger.lifecycle("version=$version")
 logger.lifecycle("Configuration=$BuildConfiguration")
 
+
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
+
 
 task resolveDependencies {
   description 'Resolves all projects dependencies from the repository'
@@ -106,113 +96,5 @@ task resolveDependencies {
       }
     }
   }
-}
-
-interface CIService {
-    void Progress(String message)
-    void OpenBlock(String name, String description)
-    void CloseBlock(String name)
-    void PublishArtifact(File path)
-}
-
-class NullService implements CIService {
-
-    void Progress(String message) {
-        println message
-    }
-
-    void OpenBlock(String name, String description) { }
-    void CloseBlock(String name) { }
-
-    void PublishArtifact(File path) {
-        println "Publish: $path.absolutePath"
-    }
-
-    void SetBuildNumber(String version) {
-        println "Build: $version"
-    }
-}
-
-class TeamCityService implements CIService {
-
-    // TODO: These values should be escaped
-    void Progress(String message) {
-        println "##teamcity[progressMessage '$message']"
-    }
-
-    void OpenBlock(String name, String description) {
-        println "##teamcity[blockOpened name='$name' description='$description']"
-    }
-
-    void CloseBlock(String name) {
-        println "##teamcity[blockClosed name='$name']"
-    }
-
-    void PublishArtifact(File path) {
-        println "##teamcity[publishArtifacts '$path.absolutePath']"
-    }
-
-    void SetBuildNumber(String version) {
-        println "##teamcity[buildNumber '$version']"
-    }
-}
-
-class TeamCityEventLogger extends BuildAdapter implements TaskExecutionListener {
-
-    private CIService ci
-
-    TeamCityEventLogger(CIService ci) {
-        this.ci = ci
-    }
-
-    void beforeExecute(Task task) {
-        ci.Progress("gradle:$task.name")
-        ci.OpenBlock("gradle:$task.name", "gradle:$task.name")
-    }
-
-    void afterExecute(Task task, TaskState state) {
-        ci.CloseBlock("gradle:$task.name")
-    }
-}
-
-
-class TravisService implements CIService {
-
-    void Progress(String message) {
-        println message
-    }
-
-    void OpenBlock(String name, String description) {
-        println "travis_fold:start:$name\033[33;1m:$description\033[0m"
-    }
-
-    void CloseBlock(String name) {
-        println "\ntravis_fold:end:$name\r"
-    }
-
-    void PublishArtifact(File path) {
-        println "Artifact: $path.absolutePath"
-    }
-
-    void SetBuildNumber(String version) {
-        println "Build number: $version"
-    }
-}
-
-class TravisEventLogger extends BuildAdapter implements TaskExecutionListener {
-
-    private CIService ci
-
-    TravisEventLogger(CIService ci) {
-        this.ci = ci
-    }
-
-    void beforeExecute(Task task) {
-        ci.OpenBlock(task.name, task.name)
-    }
-
-    void afterExecute(Task task, TaskState state) {
-        ci.CloseBlock(task.name)
-    }
 }
 
