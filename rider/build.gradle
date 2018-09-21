@@ -75,6 +75,7 @@ logger.lifecycle("Configuration=$BuildConfiguration")
 
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
+apply from: 'model.gradle'
 
 
 task resolveDependencies {

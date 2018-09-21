@@ -1,0 +1,57 @@
+ext.modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
+
+// TODO: Add an msbuild task for this, too?
+// Because we sometimes skip building the C# solutions (calling runIde from the C# IDE), we might
+// get into the situation where we rebuild the protocol for .kt, but not .cs
+// Maybe we should have an msbuild task to run rdgen if the input model .kt is newer than the output
+// .cs. Or make sure we don't skip the msbuild tasks if this task runs
+
+task generateRiderModel(type: RdGen) {
+    def csOutput = new File(repoRoot, "resharper/src/resharper-unity/Rider/RdUnityProtocol")
+    def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
+
+    params {
+        verbose = true
+        classpath "$rdLibDirectory/rider-model.jar"
+        sources "$modelDir/rider"
+        hashFolder = 'build/rdgen/rider'
+        packages = "model.rider"
+
+        generator {
+            language = "kotlin"
+            transform = "asis"
+            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
+            namespace = "com.jetbrains.rider.model"
+            directory = "$ktOutput"
+        }
+
+        generator {
+            language = "csharp"
+            transform = "reversed"
+            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
+            namespace = "JetBrains.Rider.Model"
+            directory = "$csOutput"
+        }
+
+    }
+}
+
+task generateEditorPluginModel(type: RdGen) {
+    params {
+        verbose = true
+        classpath "$rdLibDirectory/rider-model.jar"
+        hashFolder = "build/rdgen/editorPlugin"
+        sources "$modelDir/editorPlugin"
+        packages = "model.editorPlugin"
+    }
+}
+
+task generateModel {
+    group = 'protocol'
+    description = 'Generates protocol models.'
+    dependsOn generateRiderModel, generateEditorPluginModel
+}
+
+// TODO: The dotnet world should depend on this, too
+jar.dependsOn generateModel
+buildPlugin.dependsOn generateModel
