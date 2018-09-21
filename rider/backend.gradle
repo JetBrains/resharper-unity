@@ -62,10 +62,6 @@ class MSBuildTask extends DefaultTask {
     @InputFile
     File buildFile
 
-    MSBuildTask() {
-        onlyIf { !project.dotNetUpToDate }
-    }
-
     // TODO: Set msbuild verbosity based on gradle log level
 
     @TaskAction
@@ -142,10 +138,6 @@ class MonoExecTask extends AbstractExecTask {
 class RestorePackagesTask extends DefaultTask {
     @InputFile
     File packagesFile
-
-    RestorePackagesTask() {
-        onlyIf { !project.dotNetUpToDate }
-    }
 
     @TaskAction
     def restore() {
