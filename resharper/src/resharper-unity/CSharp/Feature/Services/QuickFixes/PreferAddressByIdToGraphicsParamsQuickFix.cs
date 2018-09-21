@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
@@ -91,13 +92,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return null;
         } 
 
+        [CanBeNull]
         private static IDeclaredElement TryFindIdDeclarationInClassLikeDeclaration(IClassLikeDeclaration declaration, string propertyName,
             string requiredTypeName, string requiredMethodName, out string name)
         {
             name = null;
-            foreach (var member in declaration.ClassMemberDeclarations)
+            
+            var classDeclaredElement = declaration.DeclaredElement;
+            if (classDeclaredElement == null)
+                return null;
+            
+            var members = classDeclaredElement.GetMembers().Where(x => x is IField || x is IProperty)
+                .SelectNotNull(x => x.GetDeclarations().SingleOrDefault());
+            
+            foreach (var member in members)
             {
-
                 switch (member)
                 {
                     case IFieldDeclaration field:
