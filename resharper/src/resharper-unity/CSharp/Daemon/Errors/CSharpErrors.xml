@@ -66,7 +66,7 @@
 
       <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Use overload with transform parameter instead of set transform parent later</Title>
+        <Title>Inefficient setting of the parent property</Title>
         <Description>Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code.</Description>
       </Tag>
 
@@ -229,7 +229,7 @@
   </Warning>
 
   <Warning name="InstantiateWithoutParent" configurableSeverity="Unity.InstantiateWithoutParent">
-    <Parameter type="IReference" name="reference" />
+    <Parameter type="IReferenceExpression" name="reference" />
     <Parameter type="IInvocationExpression" name="invocation"/>
     <Parameter type="ICSharpExpression" name="newArgument" isValid="skip"/>
     <Parameter type="bool" name="stayInWorldCoords" isValid="skip"/>
