@@ -5,7 +5,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.dependenciesDir, logger, ext.productVersion)
+ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.localRiderSdkRoot, logger, ext.productVersion)
 
 def teamcityVersion = System.env['TEAMCITY_VERSION']
 project.ci.Progress("teamcityVersion = $teamcityVersion")
@@ -25,7 +25,7 @@ class BackendHelper {
     File riderSdkPath
     File reSharperSdkPath
 
-    BackendHelper(File repoRoot, File buildDir, File dependenciesDir, Logger logger, String productVersion) {
+    BackendHelper(File repoRoot, File buildDir, File localRiderSdkRoot, Logger logger, String productVersion) {
         repositoryRoot = repoRoot
         assert repositoryRoot.isDirectory()
 
@@ -42,8 +42,8 @@ class BackendHelper {
         riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
         assert riderTestsProject.isFile()
 
-        if (dependenciesDir.isDirectory()) {            
-            riderSdkPath = new File(dependenciesDir.canonicalPath, "lib/ReSharperHostSdk")
+        if (localRiderSdkRoot.isDirectory()) {            
+            riderSdkPath = new File(localRiderSdkRoot.canonicalPath, "lib/ReSharperHostSdk")
             assert riderSdkPath.isDirectory()
 
             logger.lifecycle("Rider SDK bundle found: $riderSdkPath.canonicalPath")

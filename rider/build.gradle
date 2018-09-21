@@ -28,7 +28,8 @@ ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
 ext.productVersion = "2018.3"
 ext.repoRoot = new File("..").canonicalFile
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-ext.dependenciesDir = new File("dependencies")
+ext.localRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
+ext.rdLibDirectory = getRdLibDirectory()  // Note that this is also used by the protocol project
 ext.shouldBuildRiderOnly = false
 
 if (!ext.has("BuildCounter"))
@@ -99,3 +100,14 @@ task resolveDependencies {
   }
 }
 
+
+def getRdLibDirectory() {
+  def root = localRiderSdkRoot
+  if (root.exists() && root.isDirectory()) {
+    logger.lifecycle("'dependencies' dir found, using as Rider SDK root")
+  }
+  else {
+    root = new File(repoRoot, "rider/build/riderRD-${productVersion}-SNAPSHOT")
+  }
+  return new File(root, "lib/rd").canonicalFile
+}

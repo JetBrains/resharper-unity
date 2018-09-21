@@ -20,8 +20,8 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "F:\\RiderSDK"
 
-    if (dependenciesDir.exists()) {
-        localPath = dependenciesDir.canonicalPath
+    if (localRiderSdkRoot.exists()) {
+        localPath = localRiderSdkRoot.canonicalPath
     } else {
         version = "${productVersion}-SNAPSHOT"
     }
@@ -33,6 +33,7 @@ intellij {
 
     plugins = [ 'JavaScriptLanguage', 'rider-plugins-appender' ]
 }
+
 
 task validatePluginXml {
     def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
@@ -50,30 +51,6 @@ task validatePluginXml {
     logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
 }
 
-def frontendSdkRoot = dependenciesDir
-// bundled build configuration on TC
-if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
-    logger.lifecycle("dependencies dir found, using as frontend SDK root")    
-}
-else {
-    def frontendSdkVersion = "${productVersion}-SNAPSHOT"
-    def frontendSdkDirs = []
-    def frontendSdkSearchPath = new File(repoRoot, "rider/build")
-
-    if (frontendSdkDirs.size() > 0) {
-        assert frontendSdkDirs.size() == 1
-
-        def frontendSdkSingleDir = frontendSdkDirs.first()
-        def match = frontendSdkSingleDir.name =~ /riderRD-(.+)/
-        assert match.matches()
-
-        frontendSdkVersion = match[0][1]
-    }
-
-    frontendSdkRoot = new File(frontendSdkSearchPath, "riderRD-$frontendSdkVersion")
-}
-
-ext.rdLibDirectory = new File(frontendSdkRoot, "lib/rd").canonicalFile
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
