@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -85,65 +86,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (usage is IReferenceExpression referenceExpression)
                 {
                     var fullReferenceExpression = ReferenceExpressionNavigator.GetTopByQualifierExpression(referenceExpression);
-                    if (fullReferenceExpression == referenceExpression)
+                    if (IsUsageSetTransformParent(fullReferenceExpression, out var stayInWorldCoords, out var transform))
                     {
-                        var argument = CSharpArgumentNavigator.GetByValue(fullReferenceExpression.GetContainingParenthesizedExpression());
-                        var invocation = InvocationExpressionNavigator.GetByArgument(argument);
-                        var invocationMethodDeclaration = invocation?.Reference?.Resolve().DeclaredElement?
-                            .GetDeclarations().FirstOrDefault() as IMethodDeclaration;
-                        
-                        if (invocationMethodDeclaration != null)
-                        {
-                            var element = argument.MatchingParameter?.Element;
-                            if (element == null)
-                                continue;
-                            if (IsMethodSetTransformParent(invocationMethodDeclaration, usageProvider, element.ShortName))
-                            {
-                                consumer.AddHighlighting(new InstantiateWithoutParentWarning(reference, expression, null, false));
-                                return;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (IsUsageSetTransformParent(fullReferenceExpression, out var stayInWorldCoords, out var transform))
-                        {
-                            consumer.AddHighlighting(new InstantiateWithoutParentWarning(reference, expression, transform, stayInWorldCoords));
-                            return;
-                        }
+                        consumer.AddHighlighting(new InstantiateWithoutParentWarning(fullReferenceExpression, expression, transform, stayInWorldCoords));
+                        return;
                     }
                 }
             }
-        }
+        } 
 
-        private bool IsMethodSetTransformParent(IMethodDeclaration methodDeclaration, IUsagesProvider usageService, string elementShortName)
-        {
-            var body = methodDeclaration.Body;
-            
-            if (body == null)
-                return false;
-            
-            var de = methodDeclaration.Params.ParameterDeclarations.Single(t => t.NameIdentifier?.Name == elementShortName).DeclaredElement;
-            
-            if (de == null)
-                return false;
-            
-            var usages = usageService.GetUsages(de, body);
-
-            foreach (var usage in usages)
-            {
-                if (usage is IReferenceExpression reference)
-                {
-                    var fullReferenceExpression = ReferenceExpressionNavigator.GetTopByQualifierExpression(reference);
-                    if (IsUsageSetTransformParent(fullReferenceExpression, out var _, out var _))
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
-        private bool IsUsageSetTransformParent(IReferenceExpression referenceExpression, out bool stayInWorldCoords, out ICSharpExpression expression)
+        private bool IsUsageSetTransformParent([NotNull]IReferenceExpression referenceExpression, out bool stayInWorldCoords,[CanBeNull] out ICSharpExpression expression)
         {
             stayInWorldCoords = true;
             expression = null;
