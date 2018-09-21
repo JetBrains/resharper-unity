@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class PreferAddressByIdToGraphicsParamsAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         
+        // The map from IClrTypeName to help method and his IClrTypeName
         private static readonly IDictionary<IClrTypeName, (IClrTypeName, string)> ourTypes = new Dictionary<IClrTypeName, (IClrTypeName, string)>()
         {
             {KnownTypes.Animator, (KnownTypes.Animator, "StringToHash")},
@@ -36,26 +37,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var reference = expression.Reference;
             if (reference == null) 
                 return;
+
+            var arguments = expression.Arguments;
+            
+            // cheap check for uninteresting methods
+            if (expression.TypeArguments.Count != 0)
+                return;
+
+            if (arguments.Count == 0)
+                return;
             
             var info = reference.Resolve();
             if (info.ResolveErrorType == ResolveErrorType.OK && info.DeclaredElement is IMethod stringMethod)
             {
                 if (HasOverloadWithIntParameter(stringMethod, expression, out var argumentIndex, out var containingType))
                 {
+                    // extract argument for replace
                     var argument = expression.Arguments[argumentIndex];
                     var (clrName, methodName) = ourTypes[containingType.GetClrName()];
-                    var literal = (argument.Expression as ILiteralExpression)?.ConstantValue.Value as string;
-                    consumer.AddHighlighting(new PreferAddressByIdToGraphicsParamsWarning(expression, argument, literal, clrName.FullName, methodName));
+                    var literal = argument.Expression?.ConstantValue.Value as string;
+                    if (literal == null) 
+                        return;
+ 
+                    consumer.AddHighlighting(new PreferAddressByIdToGraphicsParamsWarning(expression, argument, argument.Expression, literal, clrName.FullName, methodName));
                 }
             }
         }
 
         private bool HasOverloadWithIntParameter(IMethod stringMethod, IInvocationExpression expression, out int index, out ITypeElement containingType)
         {
-            index = 0;
+            index = stringMethod.Parameters.Count;
             containingType = null;
+            var stringMethodName = stringMethod.ShortName;
             
-            if (!stringMethod.ShortName.StartsWith("Get") && !stringMethod.ShortName.StartsWith("Set")) return false;
+            if (!stringMethodName.StartsWith("Get") && !stringMethodName.StartsWith("Set")) return false;
             
             containingType = stringMethod.GetContainingType();
 
@@ -65,29 +80,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var type = TypeFactory.CreateType(containingType);
             var table = type.GetSymbolTable(expression.PsiModule).Filter(
                 new AccessRightsFilter(new DefaultAccessContext(expression)),
-                new ExactNameFilter(stringMethod.ShortName),
-                new PredicateFilter(t => MatchSignatureStringToIntMethod(stringMethod, t.GetDeclaredElement() as IMethod)));
+                new ExactNameFilter(stringMethodName)
+            );
 
-
-            if (table.GetSymbolInfos(stringMethod.ShortName).SingleOrDefault()?.GetDeclaredElement() is IMethod result)
+            bool isFound = false;
+            foreach (var symbol in table.GetSymbolInfos(stringMethodName))
             {
-                var parameters = result.Parameters;
-                var stringMethodParameters = stringMethod.Parameters;
-                for (int i = 0; i < parameters.Count; i++)
+                if (!(symbol.GetDeclaredElement() is IMethod candidate))
+                    continue;
+                if (MatchSignatureStringToIntMethod(stringMethod, candidate, out index))
                 {
-                    if (parameters[i].Type.IsInt() && stringMethodParameters[i].Type.IsString())
+                    if (isFound)
                     {
-                        index = i;
-                        return true;
+                        index = stringMethod.Parameters.Count;
+                        return false;
                     }
-                }
-            }
 
-            return false;
+                    isFound = true;
+                } 
+            } 
+
+            return isFound;
         }
 
-        private bool MatchSignatureStringToIntMethod(IMethod stringMethod, IMethod intMethod)
+        private bool MatchSignatureStringToIntMethod([NotNull]IMethod stringMethod, [NotNull]IMethod intMethod, out int index)
         {
+            index = stringMethod.Parameters.Count;
+         
+            // Heuristics:
+            // try to find method with same parameters excluding one pair where string method has string parameter and
+            // intMethod has int parameter. If several pairs found we will reject candidate
+
+            if (stringMethod.TypeParameters.Count != intMethod.TypeParameters.Count)
+                return false;
+            
             if (!stringMethod.ReturnType.Equals(intMethod.ReturnType)) return false;
 
             var stringMethodParameters = stringMethod.Parameters;
@@ -106,8 +132,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     if (!intMethodParam.ShortName.ToLower().Contains("id")||
                         !stringMethodParam.ShortName.ToLower().Contains("name"))
                         return false;
-                    
+
+                    // Do not handle cases with strange pairs of name. 
+                    if (isFound)
+                    {
+                        index = stringMethod.Parameters.Count;
+                        return false;
+                    }
+
                     isFound = true;
+                    index = i;
                 }
                 else if (!intMethodParam.Type.Equals(stringMethodParam.Type))
                 {
