@@ -8,7 +8,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
-using JetBrains.ReSharper.Psi.JavaScript.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
@@ -40,7 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             
             var first = myInvocation.Arguments[0];
             var second = myInvocation.AddArgumentAfter(factory.CreateArgument(ParameterKind.VALUE, myNewArgument.Copy()), first);
-            myInvocation.AddArgumentAfter(factory.CreateArgument(ParameterKind.VALUE, factory.CreateExpression(myStayInWorldCoords.ToString())), second);
+            var boolLiteral = factory.CreateExpression(myStayInWorldCoords.ToString().ToLower());
+            myInvocation.AddArgumentAfter(factory.CreateArgument(ParameterKind.VALUE, boolLiteral), second);
 
             using (WriteLockCookie.Create())
             {
@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return null;
         }
 
-        public override string Text => "Pass transform parameter";
+        public override string Text => "Combine with object creation";
 
         public override bool IsAvailable(IUserDataHolder cache)
         {
