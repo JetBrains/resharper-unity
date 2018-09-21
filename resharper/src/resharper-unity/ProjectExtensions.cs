@@ -39,12 +39,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var tracker = solution.GetComponent<UnityReferencesTracker>();
             return tracker.IsUnitySolution.Value;
         }
-        
-        public static bool IsAbleToEstablishProtocolConnectionWithUnity([NotNull] this ISolution solution)
-        {
-            var tracker = solution.GetComponent<UnitySolutionTracker>();
-            return tracker.IsAbleToEstablishProtocolConnectionWithUnity.Value;
-        }
 
         public static bool IsUnityProject([CanBeNull] this IProject project)
         {
