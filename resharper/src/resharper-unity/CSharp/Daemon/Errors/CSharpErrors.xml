@@ -70,6 +70,12 @@
         <Description>Using the string for the component type variants results in additional overhead that should not be incurred.</Description>
       </Tag>
 
+      <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Inefficient setting of the parent property</Title>
+        <Description>Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code.</Description>
+      </Tag>
+
       <Tag externalName="AmbiguousTypeInStringLiteralWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Several types with the same name, this can result in unexpected behaviour at runtime</Title>
@@ -236,6 +242,16 @@
     <Parameter type="ITypeElement[]" name="availableTypes" isValid="skip"/>
     <Message value="Generic method overload is preferred. Using the string parameter results in additional overhead."/>
     <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="InstantiateWithoutParent" configurableSeverity="Unity.InstantiateWithoutParent">
+    <Parameter type="IReferenceExpression" name="reference" />
+    <Parameter type="IInvocationExpression" name="invocation"/>
+    <Parameter type="ICSharpExpression" name="newArgument" isValid="skip"/>
+    <Parameter type="bool" name="stayInWorldCoords" isValid="skip"/>
+    <Message value="Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code."/>
+    <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
