@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Reflection;
 using JetBrains.DataFlow;
 using JetBrains.Platform.Unity.EditorPluginModel;
-using UnityEditor;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -57,18 +55,17 @@ namespace JetBrains.Rider.Unity.Editor
           break;
       }
 
+      RdLogEventMode mode = RdLogEventMode.Play;
+      if (PluginEntryPoint.PlayModeSavedState == PluginEntryPoint.PlayModeState.Stopped)
+        mode = RdLogEventMode.Edit;
+
       var ticks = DateTime.UtcNow.Ticks;
-      MainThreadDispatcher.Instance.Queue(() =>
-      {
-        var eventMode = EditorApplication.isPlaying ? RdLogEventMode.Play : RdLogEventMode.Edit;
+      var evt = new RdLogEvent(ticks, eventType, mode, message, stackTrace);
+      DelayedLogEvents.AddLast(evt);
+      if (DelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
+        DelayedLogEvents.RemoveFirst(); // limit max size
 
-        var evt = new RdLogEvent(ticks, eventType, eventMode, message, stackTrace);
-        DelayedLogEvents.AddLast(evt);
-        if (DelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
-          DelayedLogEvents.RemoveFirst(); // limit max size
-
-        OnAddEvent(new EventArgs());
-      });
+      OnAddEvent(new EventArgs());
     }
 
     public event EventHandler AddEvent;
