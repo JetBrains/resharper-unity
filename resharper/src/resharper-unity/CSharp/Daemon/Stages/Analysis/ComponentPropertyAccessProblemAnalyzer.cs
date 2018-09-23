@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
+using JetBrains.ReSharper.Feature.Services.CSharp.Util;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
@@ -10,6 +12,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.PsiGen.Util;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
@@ -19,13 +22,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         HighlightingTypes = new[] {typeof(InefficientPropertyAccessWarning)})]
     public class ComponentPropertyAccessProblemAnalyzer : UnityElementProblemAnalyzer<ITreeNode>
     {
+
+        private delegate bool TreeNodeFilter(ITreeNode toFilter, IReferenceExpression cachedExpression);
+        
+        private static readonly IDictionary<IClrTypeName, TreeNodeFilter> ourFilters 
+            = new Dictionary<IClrTypeName, TreeNodeFilter>()
+            {
+                {KnownTypes.Transform, TransformFilter}
+            };
+        
         public ComponentPropertyAccessProblemAnalyzer([NotNull] UnityApi unityApi)
             : base(unityApi)
         {
         }
-
+        
         protected override void Analyze(ITreeNode node, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-        {
+        {   
             var container = new PropertiesAccessContainer(consumer);
             var visitor = new PropertyAccessProblemVisitor(container);
             IBlock block = null;
@@ -61,17 +73,138 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private void AnalyzeStatements(IBlock block, TreeNodeVisitor visitor)
         {
-            foreach (var statement in block.Statements)
+            var referenceInvalidateBarriers = new Dictionary<string, IEnumerator<ITreeNode>>();
+            var referencesContainer = new OneToListMap<string, IReferenceExpression>();
+
+            var nodeIterator = block.Descendants();
+
+            while (nodeIterator.MoveNext())
             {
-                if (statement is IBlock innerBlock)
+                switch (nodeIterator.Current)
                 {
-                    AnalyzeStatements(innerBlock, visitor);
+                    case ICSharpClosure _:
+                        nodeIterator.SkipThisNode();
+                        break;
+                    case IReferenceExpression referenceExpression:
+                        if (!IsUnityComponentProperty(referenceExpression))
+                            break;
+
+                        var referenceExpressionAsString = QualifierToString(referenceExpression);
+                        if (!referenceInvalidateBarriers.ContainsKey(referenceExpressionAsString))
+                        {
+                            var checker = ExpressionWriteAccessChecker.CreateAccessCheckerForExpression(referenceExpression);
+                            var relatedExpressions = FilterWrongRelatedExpression(checker.FindRelatedExpressions(block), referenceExpression);
+                            var relatedExpressionsEnumerator = relatedExpressions.GetEnumerator();
+                            
+                            if (relatedExpressionsEnumerator.MoveNext())
+                                referenceInvalidateBarriers[referenceExpressionAsString] = relatedExpressionsEnumerator;
+                        }
+                        referencesContainer[referenceExpressionAsString].Add(referenceExpression);
+                        
+                        goto default;
+                        break;
+                    default:
+                        var toRemove = new List<string>();
+                        foreach (var (referenceString, enumerator) in referenceInvalidateBarriers)
+                        {
+                            var current = enumerator.Current;
+                            if (nodeIterator.Current == current)
+                            {
+                                var hasNext = enumerator.MoveNext();
+                                if (!hasNext)
+                                    toRemove.Add(referenceString);
+                                InvalidateCache(referencesContainer, referenceString);
+                            }
+                        }
+                        toRemove.ForEach(t => referenceInvalidateBarriers.Remove(t));
+                        break;
                 }
-                else
-                {
-                    statement.Accept(visitor);
-                }
+
+                InvalidateCache(referencesContainer);
             }
+        }
+
+        private void InvalidateCache(OneToListMap<string, IReferenceExpression> referencesContainer, string toInvalidateCacheReferenceName)
+        {
+            //throw new System.NotImplementedException();
+        }
+
+        
+        private void InvalidateCache(OneToListMap<string, IReferenceExpression> referencesContainer)
+        {
+            //    throw new System.NotImplementedException();
+        }
+
+        private bool IsUnityComponentProperty(IReferenceExpression referenceExpression)
+        {
+            var info = referenceExpression.Reference.Resolve();
+            if (info.ResolveErrorType != ResolveErrorType.OK)
+                return false;
+    
+            var property = info.DeclaredElement as IProperty;
+            var containingType = property?.GetContainingType();
+            if (containingType == null) 
+                return false;
+
+            return containingType.GetSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.Component));
+        }
+
+        private IEnumerable<ICSharpTreeNode> FilterWrongRelatedExpression(IEnumerable<ICSharpTreeNode> findRelatedExpressions, IReferenceExpression expression)
+        {
+            var declaredElement = (expression.Reference.Resolve().DeclaredElement as IClrDeclaredElement).NotNull("declaredElement != null");
+            var clrType = declaredElement.GetContainingType().NotNull("declaredElement.GetContainingType() != null").GetClrName();
+            
+            TreeNodeFilter filter;
+            if (ourFilters.ContainsKey(clrType))
+            {
+                filter = ourFilters[clrType];
+            }
+            else
+            {
+                filter = CommonFilter;
+            }
+
+            foreach (var relatedExpression in findRelatedExpressions)
+            {
+                if (filter(relatedExpression, expression))
+                    continue;
+
+                yield return relatedExpression;
+            }
+        }
+
+        private bool CommonFilter(ITreeNode node, IReferenceExpression cachedExpression)
+        {
+            var reLikeString = QualifierToString(cachedExpression);
+            if (!(node is IReferenceExpression relatedReferenceExpression))
+            {
+                return false;
+            }
+
+            return reLikeString.Equals(QualifierToString(relatedReferenceExpression));
+        }
+
+        private static bool TransformFilter(ITreeNode node, IReferenceExpression cachedExpression)
+        {
+            var cachedPropertyName = cachedExpression.Reference.Resolve().DeclaredElement.NotNull().ShortName;
+            
+            switch (node)
+            {
+                case IInvocationExpression invocation:
+                    var method = invocation.Reference?.Resolve().DeclaredElement as IMethod;
+                    if (method == null)
+                        return false;
+
+                    var shortName = method.ShortName;
+                    
+                    break;
+                case IReferenceExpression referenceExpression:
+                    break;
+                default:
+                    return true;
+            }
+
+            return false;
         }
 
         private class PropertyAccessProblemVisitor : TreeNodeVisitor
