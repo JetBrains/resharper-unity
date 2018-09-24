@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.UnityComponentData
                     }
                     catch (Exception e)
                     {
-                        myLogger.Error("Failed to fetch parameter {0} of entity {1}", currentIndex, myEntityObject);
+                        myLogger.Error(e, "Failed to fetch parameter {0} of entity {1}", currentIndex, myEntityObject);
                     }
                 }
 

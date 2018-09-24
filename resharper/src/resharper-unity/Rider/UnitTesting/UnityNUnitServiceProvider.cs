@@ -20,7 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     [SolutionComponent]
     public class UnityNUnitServiceProvider : NUnitServiceProvider
     {
-        private readonly UnityEditorProtocol myUnityEditorProtocol;
         private readonly RunViaUnityEditorStrategy myUnityEditorStrategy;
         private readonly RdUnityModel myRdUnityModel;
         private readonly IProperty<EditorPluginModel> myUnityEditorModel;
