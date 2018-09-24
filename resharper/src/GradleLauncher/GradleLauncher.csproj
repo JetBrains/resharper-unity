@@ -34,7 +34,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -45,14 +44,17 @@
     <ProjectReference Include="..\..\..\unity\EditorPlugin\EditorPlugin.csproj">
       <Project>{67cfb019-ce94-4251-8c3a-4dc70e4e4a52}</Project>
       <Name>EditorPlugin</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\unity\EditorPlugin\EditorPluginFull.csproj">
       <Project>{51b82b3c-294f-4751-8754-223c660172e4}</Project>
       <Name>EditorPluginFull</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\resharper-unity\resharper-unity.rider.csproj">
       <Project>{d8a177c3-8adf-4b53-aa48-bb5dc1150869}</Project>
       <Name>resharper-unity.rider</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
