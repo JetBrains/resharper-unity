@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.LinqTools;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
@@ -23,15 +24,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
     {
         private readonly IReferenceExpression[] myReferences;
         private readonly IReferenceExpression myHighlightedReference;
-        private readonly bool myHasRead;
-        private readonly bool myHasWrite;
+        private readonly bool myInlineCache;
+        private readonly bool myInlineRestore;
+        private ICSharpStatement myCacheAnchor;
+        private ICSharpStatement myRestoreAnchor;
         
         public CachePropertyValueQuickFix(InefficientPropertyAccessWarning warning)
         {
             myReferences = warning.References;
             myHighlightedReference = warning.HighlightedReference;
-            myHasRead = warning.HasRead;
-            myHasWrite = warning.HasWrite;
+            myInlineCache = warning.InlineCacheValue;
+            myInlineRestore = warning.InlineRestoreValue;
+            myCacheAnchor = warning.CacheAnchor;
+            myRestoreAnchor = warning.RestoreAnchor;
         }
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
@@ -57,31 +62,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             if (declaration is ICSharpClosure closure && closure is ILambdaExpression lambda && lambda.BodyExpression != null)
             {
 
-                if (myHasRead)
-                {
-                    var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());
-                    var expression = firstReference.GetContainingNode<ILambdaExpression>()
-                        .NotNull("Expression should be under lambda").BodyExpression;
-
-                    var block = factory.CreateBlock("{$0return $1;}", cacheStatement, expression);
-                    lambda.SetBodyBlock(block);
-                }
+//                if (myHasRead)
+//                {
+//                    var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());
+//                    var expression = firstReference.GetContainingNode<ILambdaExpression>()
+//                        .NotNull("Expression should be under lambda").BodyExpression;
+//
+//                    var block = factory.CreateBlock("{$0return $1;}", cacheStatement, expression);
+//                    lambda.SetBodyBlock(block);
+//                }
             }
             else
             {
-                if (myHasRead)
+                if (myCacheAnchor != null)
                 {
-                    var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());
-                    var firstStatement = myReferences[0].GetContainingStatement();
-                    StatementUtil.InsertStatement(cacheStatement, ref firstStatement, true);
-                
-                }
+                    if (myInlineCache) // replace first read with assignment expression
+                    {
+                        foreach (var reference in myReferences)
+                        {
+                            if (reference.GetContainingStatement() != myCacheAnchor) 
+                                continue;
+                            reference.ReplaceBy(factory.CreateExpression("($0 = $1)", name, originValue.Copy()));
+                            break;
+                        }
 
-                if (myHasWrite)
+                        var cacheStatement = factory.CreateStatement("$0 $1;", type ,name);    
+                        StatementUtil.InsertStatement(cacheStatement, ref myCacheAnchor, true);
+                    }
+                    else
+                    {
+                        var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());    
+                        StatementUtil.InsertStatement(cacheStatement, ref myCacheAnchor, true);
+                    }
+                } 
+
+                if (myRestoreAnchor != null)
                 {
-                    var restoreStatement = factory.CreateStatement("$0 = $1;", originValue, name);
-                    var lastStatement = myReferences.Last().GetContainingStatement();
-                    StatementUtil.InsertStatement(restoreStatement, ref lastStatement, false);
+                    if (myInlineRestore)
+                    {
+                        foreach (var reference in myReferences.Reverse())
+                        {
+                            if (reference.GetContainingStatement() == myCacheAnchor)
+                            {
+                                reference.ReplaceBy(factory.CreateReferenceExpression("$0", name));
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var restoreStatement = factory.CreateStatement("$0 = $1;", originValue, name);
+                        StatementUtil.InsertStatement(restoreStatement, ref myRestoreAnchor, false);
+                    }
                 }
             }
 

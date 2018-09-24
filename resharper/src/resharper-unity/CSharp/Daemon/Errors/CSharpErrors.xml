@@ -256,8 +256,10 @@
   <Warning name="InefficientPropertyAccess" configurableSeverity="Unity.InefficientPropertyAccess">
     <Parameter type="IReferenceExpression" name="highlightedReference"/>
     <Parameter type="IReferenceExpression[]" name="references" isValid="skip" />
-    <Parameter type="bool" name="hasRead" />
-    <Parameter type="bool" name="hasWrite" />
+    <Parameter type="ICSharpStatement" name="cacheAnchor" />
+    <Parameter type="bool" name = "inlineCacheValue" />
+    <Parameter type="ICSharpStatement" name="restoreAnchor" />
+    <Parameter type="bool" name="inlineRestoreValue" />
     <Message value="Access properties of built-in component is not efficient. Cache value"/>
     <Range>HighlightedReference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
@@ -265,7 +267,7 @@
   
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
-    <Message value="MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
+    <Message value="MonoBehaviours must be instantiated with 'GameObject.Addf&lt;T&gt;()' instead of 'new'" />
     <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
