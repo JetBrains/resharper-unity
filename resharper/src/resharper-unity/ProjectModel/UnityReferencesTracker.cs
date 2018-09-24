@@ -4,6 +4,8 @@ using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.Platform.RdFramework.Base;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
@@ -30,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ICollection<IHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
 
-        public readonly IProperty<bool> IsUnitySolution;
+        public readonly RProperty<bool> HasUnityReference = new RProperty<bool>(false);
 
         public UnityReferencesTracker(
             Lifetime lifetime,
@@ -58,7 +60,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             myChangeManager = changeManager;
             myProjects = projects;
 
-            IsUnitySolution = new Property<bool>(lifetime, "IsUnitySolution");
             scheduler.EnqueueTask(new SolutionLoadTask("Checking for Unity projects", SolutionLoadTaskKinds.Done, Register));
         }
 
@@ -81,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 var unityProjects = new UnityProjectsCollection(unityProjectLifetimes, mySolution.SolutionFilePath);
                 if (unityProjects.UnityProjectLifetimes.Any())
                 {
-                    IsUnitySolution.SetValue(true);
+                    HasUnityReference.SetValue(true);
                 }
 
                 foreach (var handler in myHandlers)
@@ -96,8 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
         private void Handle(IProject project)
         {
-            Lifetime projectLifetime;
-            if (!myProjectLifetimes.TryGetValue(project, out projectLifetime))
+            if (!myProjectLifetimes.TryGetValue(project, out var projectLifetime))
                 return;
 
             var exceptions = new LocalList<Exception>();
@@ -108,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                     handler.OnReferenceAdded(project, projectLifetime);
                     if (project.IsUnityProject())
                     {
-                        IsUnitySolution.SetValue(true);
+                        HasUnityReference.SetValue(true);
                     }
                 }
                 catch (Exception e)
