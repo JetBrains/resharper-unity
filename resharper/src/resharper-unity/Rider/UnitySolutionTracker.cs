@@ -1,4 +1,3 @@
-using System;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Threading;
@@ -6,7 +5,6 @@ using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -19,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public readonly RProperty<bool> IsUnityGeneratedProject = new RProperty<bool>();
         public readonly RProperty<bool> IsUnityProject = new RProperty<bool>();
 
-        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, IShellLocks locks, UnityHost unityHost, UnityReferencesTracker unityReferencesTracker)
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, IShellLocks locks)
         {
             mySolution = solution;
             if (locks.Dispatcher.IsAsyncBehaviorProhibited) // for tests
@@ -31,14 +29,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 OnChangeAction);
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder), true,
                 OnChangeActionProjectSettingsFolder);
-            
-            unityHost.PerformModelAction(model =>
-            {
-                IsUnityProjectFolder.Advise(lifetime, res => { model.IsUnityProjectFolder.SetValue(res); });
-                IsUnityGeneratedProject.Advise(lifetime, res => { model.IsUnityGeneratedProject.SetValue(res); });
-                IsUnityProject.Advise(lifetime, res => { model.IsUnityProject.SetValue(res); });
-                unityReferencesTracker.HasUnityReference.Advise(lifetime, res => { model.HasUnityReference.SetValue(res); });
-            });
         }
 
         private void SetValues()

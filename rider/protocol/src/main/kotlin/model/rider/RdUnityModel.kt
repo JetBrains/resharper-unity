@@ -54,14 +54,5 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         })
 
         source("installEditorPlugin", void)
-
-        // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
-        property("isUnityProjectFolder", bool)
-        // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
-        // lives in the same folder as generated unity project (not the same as a class library project, which could live
-        // anywhere)
-        property("isUnityProject", bool)
-        property("isUnityGeneratedProject", bool)
-        property("hasUnityReference", bool)
     }
 }
