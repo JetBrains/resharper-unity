@@ -256,7 +256,8 @@
   <Warning name="InefficientPropertyAccess" configurableSeverity="Unity.InefficientPropertyAccess">
     <Parameter type="IReferenceExpression" name="highlightedReference"/>
     <Parameter type="IReferenceExpression[]" name="references" isValid="skip" />
-    <Parameter type="bool" name="canApplyFix" />
+    <Parameter type="bool" name="hasRead" />
+    <Parameter type="bool" name="hasWrite" />
     <Message value="Access properties of built-in component is not efficient. Cache value"/>
     <Range>HighlightedReference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />

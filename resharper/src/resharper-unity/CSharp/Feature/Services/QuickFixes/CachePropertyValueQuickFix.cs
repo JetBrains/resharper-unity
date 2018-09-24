@@ -23,11 +23,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
     {
         private readonly IReferenceExpression[] myReferences;
         private readonly IReferenceExpression myHighlightedReference;
-
+        private readonly bool myHasRead;
+        private readonly bool myHasWrite;
+        
         public CachePropertyValueQuickFix(InefficientPropertyAccessWarning warning)
         {
             myReferences = warning.References;
             myHighlightedReference = warning.HighlightedReference;
+            myHasRead = warning.HasRead;
+            myHasWrite = warning.HasWrite;
         }
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
@@ -41,63 +45,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
             var name = GetUniqueName(myHighlightedReference, property.ShortName);
 
-            ICSharpStatement cacheValue = null;
             IReferenceExpression originValue = myHighlightedReference.Copy();
+            
             for (var i = 0; i < myReferences.Length; i++)
             {
                 var reference = myReferences[i];
-                if (i == 0)
-                {
-                    if (IsAssignDestination(reference))
-                    {
-                        cacheValue = factory.CreateStatement("var $0 = $1;", name, reference.Copy());
-                    }
-                    else
-                    {
-                        cacheValue = factory.CreateStatement("$0 $1;", type, name);
-                        var node = (IAssignmentExpression)reference
-                            .ReplaceBy(factory.CreateExpression("($0 = $1)", name, myHighlightedReference.Copy()))
-                            .GetOperandThroughParenthesis();
-                        myReferences[0] = (node.Source as IReferenceExpression).NotNull("node.Source as IReferenceExpression != null");
-                        continue;
-                    }
-                }
                 myReferences[i] = reference.ReplaceBy(factory.CreateReferenceExpression("$0", name));
             }
             
-            Assertion.Assert(cacheValue != null, "cacheValue != null");
             var firstReference = myReferences[0];
-            
-            
-                       
-            // handle case when lambda does not have body
             if (declaration is ICSharpClosure closure && closure is ILambdaExpression lambda && lambda.BodyExpression != null)
             {
-                var expression = firstReference.GetContainingNode<ILambdaExpression>().NotNull("Expression should be under lambda").BodyExpression;
-                var block = factory.CreateBlock("{$0return $1;}", cacheValue, expression);
-                lambda.SetBodyBlock(block);
+
+                if (myHasRead)
+                {
+                    var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());
+                    var expression = firstReference.GetContainingNode<ILambdaExpression>()
+                        .NotNull("Expression should be under lambda").BodyExpression;
+
+                    var block = factory.CreateBlock("{$0return $1;}", cacheStatement, expression);
+                    lambda.SetBodyBlock(block);
+                }
             }
             else
             {
-                var loadAnchor = firstReference.GetContainingStatement();
-                StatementUtil.InsertStatement(cacheValue, ref loadAnchor, true);
-
-                var lastStatementAssignment = myReferences.LastOrDefault(IsAssignDestination);
-
-                if (lastStatementAssignment != null)
+                if (myHasRead)
                 {
-                    var restoreValue = factory.CreateStatement("$0 = $1;", originValue, name);
-                    var saveAnchor = lastStatementAssignment.GetContainingStatement();
-                    StatementUtil.InsertStatement(restoreValue, ref saveAnchor, false);
+                    var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());
+                    var firstStatement = myReferences[0].GetContainingStatement();
+                    StatementUtil.InsertStatement(cacheStatement, ref firstStatement, true);
+                
+                }
+
+                if (myHasWrite)
+                {
+                    var restoreStatement = factory.CreateStatement("$0 = $1;", originValue, name);
+                    var lastStatement = myReferences.Last().GetContainingStatement();
+                    StatementUtil.InsertStatement(restoreStatement, ref lastStatement, false);
                 }
             }
-            
+
             return null;
         }
         
         private static bool IsAssignDestination(IReferenceExpression expr)
         {
-            var assignment = AssignmentExpressionNavigator.GetByDest(expr.GetContainingParenthesizedExpression());
+            var fullReference = ReferenceExpressionNavigator.GetTopByQualifierExpression(expr);
+            var assignment = AssignmentExpressionNavigator.GetByDest(fullReference.GetContainingParenthesizedExpression());
             return ExpressionStatementNavigator.GetByExpression(assignment) != null;
         }
         private static string GetUniqueName([NotNull]IReferenceExpression referenceExpression,[NotNull] string baseName)
