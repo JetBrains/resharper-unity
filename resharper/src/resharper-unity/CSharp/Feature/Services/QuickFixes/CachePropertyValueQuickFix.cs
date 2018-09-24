@@ -61,41 +61,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var firstReference = myReferences[0];
             if (declaration is ICSharpClosure closure && closure is ILambdaExpression lambda && lambda.BodyExpression != null)
             {
+                var cacheStatement = factory.CreateStatement("$0 $1;",type, name);
+                
+                // inline caching
+                var cacheExpression = firstReference.ReplaceBy(factory.CreateExpression("($0 = $1)", name, originValue.Copy()));
+                var expression = cacheExpression.GetContainingNode<ILambdaExpression>()
+                    .NotNull("Expression should be under lambda").BodyExpression;
 
-//                if (myHasRead)
-//                {
-//                    var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());
-//                    var expression = firstReference.GetContainingNode<ILambdaExpression>()
-//                        .NotNull("Expression should be under lambda").BodyExpression;
-//
-//                    var block = factory.CreateBlock("{$0return $1;}", cacheStatement, expression);
-//                    lambda.SetBodyBlock(block);
-//                }
+                var block = factory.CreateBlock("{$0return $1;}", cacheStatement, expression);
+                lambda.SetBodyBlock(block);
             }
             else
             {
-                if (myCacheAnchor != null)
+                if (myInlineCache) // replace first read with assignment expression
                 {
-                    if (myInlineCache) // replace first read with assignment expression
+                    foreach (var reference in myReferences)
                     {
-                        foreach (var reference in myReferences)
+                        if (reference.GetContainingStatement() != myCacheAnchor) 
+                            continue;
+                        
+                        // is write first???
+                        // example: var x = (transform.position = Vector3.Up) + transform.position + transform.position ...
+                        // if yes, we have already save our variable in cycle above, if no use inline to cache.
+                        if (AssignmentExpressionNavigator.GetByDest(reference.GetContainingParenthesizedExpression()) == null)
                         {
-                            if (reference.GetContainingStatement() != myCacheAnchor) 
-                                continue;
                             reference.ReplaceBy(factory.CreateExpression("($0 = $1)", name, originValue.Copy()));
-                            break;
                         }
-
-                        var cacheStatement = factory.CreateStatement("$0 $1;", type ,name);    
-                        StatementUtil.InsertStatement(cacheStatement, ref myCacheAnchor, true);
+                        break;
                     }
-                    else
-                    {
-                        var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());    
-                        StatementUtil.InsertStatement(cacheStatement, ref myCacheAnchor, true);
-                    }
-                } 
 
+                    var cacheStatement = factory.CreateStatement("$0 $1;", type ,name);    
+                    StatementUtil.InsertStatement(cacheStatement, ref myCacheAnchor, true);
+                }
+                else
+                {
+                    var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());    
+                    StatementUtil.InsertStatement(cacheStatement, ref myCacheAnchor, true);
+                }
+                
                 if (myRestoreAnchor != null)
                 {
                     if (myInlineRestore)
