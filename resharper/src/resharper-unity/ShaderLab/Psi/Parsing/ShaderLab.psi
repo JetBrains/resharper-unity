@@ -723,6 +723,9 @@ private trueLiteral{ROLE, Getter}
   | ON_KEYWORD<@ROLE, @Getter>
 ;
 
+// NOTE NOTE NOTE
+// This private terminal is expanded inline a couple of places, to workaround
+// a warning in generating setters. Please search for falseLiteral when modifying
 private falseLiteral{ROLE, Getter}
 :
   FALSE_KEYWORD<@ROLE, @Getter>
@@ -1375,7 +1378,10 @@ cullCommand
 
 cullValue
 :
-  falseLiteral{FALSE_LITERAL, FalseLiteral}
+  // Expand falseLiteral to remove the warning "Generation of setters for complex alternatives is not fully supported yet"
+  // falseLiteral{FALSE_LITERAL, FalseLiteral}
+  FALSE_KEYWORD<FALSE_LITERAL, FalseLiteral>
+  | OFF_KEYWORD<FALSE_LITERAL, FalseLiteral>
   | cullOrientation<ORIENTATION, Orientation>
 ;
 
@@ -1434,7 +1440,10 @@ colorMaskValue
 :
   (
     // Order is important. `False` could get parsed as an identifier
-    falseLiteral{FALSE_LITERAL, FalseLiteral}
+    // Expand falseLiteral to remove the warning "Generation of setters for complex alternatives is not fully supported yet"
+    // falseLiteral{FALSE_LITERAL, FalseLiteral}
+    FALSE_KEYWORD<FALSE_LITERAL, FalseLiteral>
+    | OFF_KEYWORD<FALSE_LITERAL, FalseLiteral>
     | colorMaskRgbaFlags<RGBA_FLAGS, RgbaFlags>
     | variableReference<SHADER_LAB_REFERENCE, VariableReference>
   )
