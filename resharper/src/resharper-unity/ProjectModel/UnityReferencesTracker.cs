@@ -39,10 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             IEnumerable<IHandler> handlers,
             ISolution solution,
-
             ISolutionLoadTasksScheduler scheduler,
             IShellLocks shellLocks,
-
             ModuleReferenceResolveSync moduleReferenceResolveSync,
             ChangeManager changeManager,
             IViewableProjectsCollection projects,

@@ -1,21 +1,13 @@
 package com.jetbrains.rider
 
 import com.intellij.openapi.project.Project
-import com.intellij.util.EventDispatcher
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.model.RdAssemblyReferenceDescriptor
 import com.jetbrains.rider.model.RdExistingSolution
-import com.jetbrains.rider.model.RdProjectModelItemDescriptor
-import com.jetbrains.rider.model.projectModelView
-import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionFile
-import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
 
 class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(project) {
-    private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
-
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
     val isUnityProjectFolder = hasUnityFileStructure(project)
 
@@ -25,20 +17,6 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(proje
     val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
     val isUnityGeneratedProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && solutionNameMatchesUnityProjectName(project)
     val isUnitySidecarProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && !solutionNameMatchesUnityProjectName(project)
-
-    init {
-        application.invokeLater {
-            val projectModelView = project.solution.projectModelView
-            projectModelView.items.advise(componentLifetime) { item ->
-                // We don't care about the scenario where someone removes a Unity reference. That's only likely in a
-                // class library project
-                val itemData = item.newValueOpt
-                if (itemData != null) {
-                    itemAddedOrUpdated(itemData.descriptor)
-                }
-            }
-        }
-    }
 
     companion object {
         fun getInstance(project: Project) = project.getComponent<UnityProjectDiscoverer>()
@@ -64,12 +42,6 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(proje
         }
     }
 
-    private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
-        if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
-            myEventDispatcher.multicaster.hasUnityReference()
-        }
-    }
-
     // Returns false when opening a Unity project as a plain folder
     private fun isCorrectlyLoadedSolution(project: Project): Boolean {
         val solutionFile = project.solutionFile
@@ -79,10 +51,6 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(proje
     private fun solutionNameMatchesUnityProjectName(project: Project): Boolean {
         val solutionFile = project.solutionFile
         return solutionFile.nameWithoutExtension == project.projectDir.name
-    }
-
-    fun addUnityReferenceListener(listener: UnityReferenceListener) {
-        myEventDispatcher.addListener(listener)
     }
 }
 
