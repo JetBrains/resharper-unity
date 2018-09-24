@@ -1,5 +1,4 @@
-﻿<Project>
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
@@ -117,5 +116,4 @@
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
