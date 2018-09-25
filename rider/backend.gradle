@@ -106,13 +106,17 @@ class MSBuildTask extends DefaultTask {
     }
 
     def getVerbosity() {
-        switch (project.gradle.startParameter.logLevel) {
-            case LogLevel.QUIET:        return "quiet";
-            case LogLevel.LIFECYCLE:    return "minimal";
-            case LogLevel.INFO:         return "normal";
-            case LogLevel.DEBUG:        return "detailed";
+        // TODO: Remove this when changing project build config to call gradle with --info
+        if (project.ext.isBuildingUnderCi) {
+            return "normal"
         }
-        return "normal";
+        switch (project.gradle.startParameter.logLevel) {
+            case LogLevel.QUIET:        return "quiet"
+            case LogLevel.LIFECYCLE:    return "minimal"
+            case LogLevel.INFO:         return "normal"
+            case LogLevel.DEBUG:        return "detailed"
+        }
+        return "normal"
     }
 }
 
