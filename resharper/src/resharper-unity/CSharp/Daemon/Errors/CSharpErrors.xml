@@ -49,8 +49,8 @@
 
       <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Access properties of built-in component is not efficient. Cache value</Title>
-        <Description>Access properties of built-in component is not efficient due to calling native methods.</Description>
+        <Title>Repeatable property access of a built-in component is inefficient</Title>
+        <Description>Built-in component property access results in native method calls and should be cached.</Description>
       </Tag>
       
       <Tag externalName="DuplicateEventFunctionWarning.HIGHLIGHTING_ID"
@@ -316,7 +316,7 @@
     <Parameter type="bool" name = "inlineCacheValue" />
     <Parameter type="ICSharpStatement" name="restoreAnchor" />
     <Parameter type="bool" name="inlineRestoreValue" />
-    <Message value="Access properties of built-in component is not efficient. Cache value"/>
+    <Message value="Built-in component property access results in native method calls and should be cached"/>
     <Range>HighlightedReference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
