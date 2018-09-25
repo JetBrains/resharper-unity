@@ -1,14 +1,9 @@
 def backendGroup = 'backend'
 
-import org.apache.tools.ant.taskdefs.condition.Os
 
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.localRiderSdkRoot, logger, ext.productVersion)
-
-// Used to provide a package version to both msbuild and dotnet restore
-ext.extraMSBuildArgs = []
 
 class BackendHelper {
     File repositoryRoot
@@ -63,7 +58,6 @@ class MSBuildTask extends DefaultTask {
         project.ci.Progress("Building $buildFile ($project.BuildConfiguration)")
 
         def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", "/v:${getVerbosity()}", '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
-        arguments.addAll(project.extraMSBuildArgs)
 
         def msbuildPath = findMSBuildPath()
         logger.info("msbuild call=$msbuildPath " + arguments.toString())
@@ -139,40 +133,7 @@ class MonoExecTask extends AbstractExecTask {
     }
 }
 
-class RestorePackagesTask extends DefaultTask {
-    @InputFile
-    File packagesFile
-
-    @TaskAction
-    def restore() {
-        project.ci.Progress("Restoring packages for $packagesFile")
-
-        def restoreArguments = [ 'restore', '--verbosity', "${getVerbosity()}" ]
-        restoreArguments << '--source' << 'https://api.nuget.org/v3/index.json'
-        restoreArguments << '--source' << project.backend.riderSdkPath
-        restoreArguments << '--source' << project.backend.reSharperSdkPath
-
-        restoreArguments.addAll project.extraMSBuildArgs
-        restoreArguments << packagesFile
-        project.exec {
-            executable = 'dotnet'
-            args = restoreArguments
-            standardOutput = System.out
-        }
-    }
-
-    def getVerbosity() {
-        switch (project.gradle.startParameter.logLevel) {
-            case LogLevel.QUIET:        return "quiet";
-            case LogLevel.LIFECYCLE:    return "minimal";
-            case LogLevel.INFO:         return "normal";
-            case LogLevel.DEBUG:        return "detailed";
-        }
-        return "normal";
-    }
-}
-
-class GenerateBuildPropsTask extends DefaultTask {    
+class GenerateBuildPropsTask extends DefaultTask {
     File packagesDirectory
     String packageName
     String msBuildParameter
@@ -213,6 +174,18 @@ class GenerateBuildPropsTask extends DefaultTask {
         assert packageVersion != null : 'No files found matching the package version regex'
         return packageVersion
     }
+}
+
+
+nuget {
+    version = "4.4.1"
+}
+
+// Workaround for https://github.com/Ullink/gradle-nuget-plugin/issues/66
+nugetSources {
+    operation = 'add'
+    sourceName = 'foo'
+    sourceUrl = '/tmp'
 }
 
 // if there's no bundled SDK and we have to build R#, we download & unzip it, changing SDK path
@@ -277,23 +250,26 @@ task prepareNuGetConfig {
     }
 }
 
-task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
-    group backendGroup
-    description 'Restores packages for Unity Editor plugin'    
-    packagesFile backend.unityPluginSolution
+nugetRestore {
+    dependsOn prepareNuGetConfig
+
+    solutionFile = new File(repoRoot, 'resharper/src/resharper-unity.sln').absolutePath
+    sources = [
+            'https://api.nuget.org/v3/index.json',
+            project.backend.riderSdkPath,
+            project.backend.reSharperSdkPath
+    ]
+    doFirst {
+        project.ci.Progress("Restoring packages for $solutionFile")
+    }
 }
 
-task restoreReSharperHostPluginPackages(type: RestorePackagesTask) {
-    group backendGroup
-    description 'Restores packages for backend plugin'
-    dependsOn prepareRiderBuildProps, prepareReSharperBuildProps, prepareNuGetConfig
-    packagesFile backend.resharperHostPluginSolution
-}
+
 
 task buildFullReSharperPlugin(type: MSBuildTask) {
     group backendGroup
     description 'Builds the fill ReSharper backend plugin solution'
-    dependsOn restoreReSharperHostPluginPackages
+    dependsOn nugetRestore
 
     onlyIf { !project.shouldBuildRiderOnly }
 
@@ -303,7 +279,7 @@ task buildFullReSharperPlugin(type: MSBuildTask) {
 task buildRiderOnlyPlugin(type: MSBuildTask) {
     group backendGroup
     description 'Builds the Rider plugin project'
-    dependsOn restoreReSharperHostPluginPackages
+    dependsOn nugetRestore
 
     onlyIf { project.shouldBuildRiderOnly }
 
@@ -313,7 +289,7 @@ task buildRiderOnlyPlugin(type: MSBuildTask) {
 task buildUnityEditorPluginFull(type: MSBuildTask) {
     group backendGroup
     description 'Builds full Unity editor plugin solution'
-    dependsOn restoreUnityEditorPluginPackages
+    dependsOn nugetRestore
 
     onlyIf { !project.shouldBuildRiderOnly }
 
@@ -323,7 +299,7 @@ task buildUnityEditorPluginFull(type: MSBuildTask) {
 task buildUnityEditorPluginLight(type: MSBuildTask) {
     group backendGroup
     description 'Builds the Unity editor plugin project'
-    dependsOn restoreUnityEditorPluginPackages
+    dependsOn nugetRestore
 
     onlyIf { project.shouldBuildRiderOnly }
 
@@ -392,6 +368,25 @@ task packReSharperPlugin(type: MonoExecTask) {
         ci.Progress("Packing: $nuspecFile.name")
     }
 }
+
+// This doesn't work right now. See https://github.com/Ullink/gradle-nuget-plugin/pull/69
+//task packReSharperPlugin(type: nugetPack.class) {
+//    dependsOn buildReSharperHostPlugin
+//    group = backendGroup
+//    description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
+//
+//    nuspecFile = new File(backend.backendRoot, 'src/resharper-unity/resharper-unity.resharper.nuspec')
+//    destinationDir = new File(backend.backendRoot, "build/resharper-unity.resharper/bin/$BuildConfiguration")
+//    packageAnalysis = false
+//    packageVersion = version
+//    properties = [
+//            'Configuration': BuildConfiguration
+//    ]
+//
+//    doFirst {
+//        ci.Progress("Packing: $nuspecFile.name")
+//    }
+//}
 
 task publishCiBackendArtifacts {
     inputs.file(packReSharperPlugin.outputs)
