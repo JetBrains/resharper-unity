@@ -5,19 +5,19 @@ import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.UnknownConfigurationType
 import com.intellij.openapi.project.Project
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorAndPlayFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
 import com.jetbrains.rider.util.reactive.whenTrue
 
-class DefaultRunConfigurationGenerator(project: Project, runManager: RunManager, unityHost: UnityHost) : LifetimedProjectComponent(project) {
+class DefaultRunConfigurationGenerator(project: Project, runManager: RunManager, unityProjectDiscoverer: UnityProjectDiscoverer) : LifetimedProjectComponent(project) {
 
     val ATTACH_CONFIGURATION_NAME = "Attach to Unity Editor"
     val ATTACH_AND_PLAY_CONFIGURATION_NAME = "Attach to Unity Editor & Play"
 
     init {
-        unityHost.model.hasUnityReference.whenTrue(componentLifetime) {
+        unityProjectDiscoverer.hasUnityReference.whenTrue(componentLifetime) {
             // Clean up the renamed "attach and play" configuration from 2018.2 EAP1-3
             // (Was changed from a separate configuration type to just another factory under "Attach to Unity")
             val toRemove = runManager.allSettings.filter {

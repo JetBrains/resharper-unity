@@ -29,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false,
                 OnChangeAction);
+            // track not only folder itself, but also files inside
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder), true,
                 OnChangeActionProjectSettingsFolder);
             

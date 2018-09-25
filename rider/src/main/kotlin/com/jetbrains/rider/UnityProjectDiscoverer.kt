@@ -3,11 +3,14 @@ package com.jetbrains.rider
 import com.intellij.openapi.project.Project
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.RdExistingSolution
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionFile
 import com.jetbrains.rider.util.idea.getComponent
 
-class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(project) {
+class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : LifetimedProjectComponent(project) {
+    val hasUnityReference = unityHost.model.hasUnityReference
+
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
     val isUnityProjectFolder = hasUnityFileStructure(project)
 
