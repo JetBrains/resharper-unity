@@ -95,7 +95,7 @@
       </Tag>
 
       <Tag externalName="StringBasedMethodInvocationProblemWarning.HIGHLIGHTING_ID"
-           default="WARNING">
+           default="HINT">
         <Title>Invocation of this method is not efficient</Title>
         <Description>Invocation for this method results in additional overhead. Prefer use of UnityEvent, C# event, delegates or a direct method call.</Description>
       </Tag>
