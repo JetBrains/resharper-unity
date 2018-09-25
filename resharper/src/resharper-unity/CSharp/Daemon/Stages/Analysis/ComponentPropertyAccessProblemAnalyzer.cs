@@ -330,12 +330,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 }
 
                 myContainer.AddProperty(referenceExpressionAsString, referenceExpression);
-            }
-
-            public override void VisitSwitchSection(ISwitchSection switchSectionParam)
-            {
-                myContainer.InvalidateCachedValues();
-            }
+            } 
 
             public override void VisitPreprocessorDirective(IPreprocessorDirective preprocessorDirectiveParam)
             {
@@ -349,14 +344,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 var thenBody = ifStatement.Then;
                 if (thenBody != null)
                 {
-                    thenBody.ProcessDescendants(this);
+                    thenBody.ProcessThisAndDescendants(this);
                     myContainer.InvalidateCachedValues();
                 }
 
                 var elseBody = ifStatement.Else;
                 if (elseBody != null)
                 {
-                    elseBody.ProcessDescendants(this);
+                    elseBody.ProcessThisAndDescendants(this);
                     myContainer.InvalidateCachedValues();
                 }
             }
@@ -370,6 +365,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     case IIfStatement _:
                         return false;
                     case ILoopStatement _:
+                        return false;
+                    case ISwitchSection _:
                         return false;
                     default:
                         return true;
@@ -408,12 +405,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 {
                     case ILoopStatement loopStatement:
                         myContainer.InvalidateCachedValues();
-                        loopStatement.ProcessDescendants(this);
+                        loopStatement.Body.ProcessThisAndDescendants(this);
                         myContainer.InvalidateCachedValues();
                         break;
-                    case ICSharpTreeNode node:
+                    case ISwitchSection switchSection:
+                        myContainer.InvalidateCachedValues();
+                        switchSection.ProcessDescendants(this);
+                        myContainer.InvalidateCachedValues();
                         break;
-                    
                 }
                 
                 if (element is ICSharpTreeNode sharpNode)
@@ -514,7 +513,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {"rotation", new HashSet<string>()
                 {
                     "eulerAngles",
-                    "eulerAngles",
+                    "localEulerAngles",
                     "localRotation",
                     "parent",
                     "SetParent",
@@ -528,7 +527,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {"localRotation", new HashSet<string>()
                 {
                     "eulerAngles",
-                    "eulerAngles",
+                    "localEulerAngles",
                     "rotation",
                     "parent",
                     "SetParent",
@@ -552,7 +551,68 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     "SetParent",
                     "scale"
                 }
-            }
+            },
+            {"right", new HashSet<string>()
+                {
+                    "eulerAngles",
+                    "localEulerAngles",
+                    "rotation",
+                    "localRotation",
+                    "parent",
+                    "SetParent",
+                    "SetPositionAndRotation",
+                    "Rotate",
+                    "RotateAround",
+                    "LookAt",
+                    "RotateAroundLocal"
+                }
+            },
+            {"up", new HashSet<string>()
+                {
+                    "eulerAngles",
+                    "localEulerAngles",
+                    "rotation",
+                    "localRotation",
+                    "parent",
+                    "SetParent",
+                    "SetPositionAndRotation",
+                    "Rotate",
+                    "RotateAround",
+                    "LookAt",
+                    "RotateAroundLocal"
+                }
+            },
+            {"forward", new HashSet<string>()
+                {
+                    "eulerAngles",
+                    "localEulerAngles",
+                    "rotation",
+                    "localRotation",
+                    "parent",
+                    "SetParent",
+                    "SetPositionAndRotation",
+                    "Rotate",
+                    "RotateAround",
+                    "LookAt",
+                    "RotateAroundLocal"
+                }
+            } ,
+            {"parent", new HashSet<string>()
+                {
+                    "eulerAngles",
+                    "localEulerAngles",
+                    "rotation",
+                    "localRotation",
+                    "SetPositionAndRotation",
+                    "Rotate",
+                    "RotateAround",
+                    "LookAt",
+                    "RotateAroundLocal",
+                    "position",
+                    "localPosition",
+                    "Translate",
+                }
+            } 
         };
 
         #endregion
