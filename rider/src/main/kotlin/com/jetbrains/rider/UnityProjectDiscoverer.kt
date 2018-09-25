@@ -18,8 +18,8 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
     val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
-    val isUnityGeneratedProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && solutionNameMatchesUnityProjectName(project)
-    val isUnitySidecarProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && !solutionNameMatchesUnityProjectName(project)
+    val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
+    val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
 
     companion object {
         fun getInstance(project: Project) = project.getComponent<UnityProjectDiscoverer>()
