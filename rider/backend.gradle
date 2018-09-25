@@ -14,7 +14,7 @@ class BackendHelper {
     File unityPluginSingleProject   // For "rider only" configuration
     File riderTestsProject  // For "rider only" configuration
     File riderSdkPath
-    File reSharperSdkPath
+    File resharperSdkPath
 
     BackendHelper(File repoRoot, File buildDir, File localRiderSdkRoot, Logger logger, String productVersion) {
         repositoryRoot = repoRoot
@@ -45,7 +45,7 @@ class BackendHelper {
         }
 
         // bundled SDK, if there isn't one we'll patch the path and download an SDK in the unzip task
-        reSharperSdkPath = new File(repositoryRoot, "rider/build/JetBrains.ReSharperUltimate.Packages")
+        resharperSdkPath = new File(repositoryRoot, "rider/build/JetBrains.ReSharperUltimate.Packages")
     }
 }
 
@@ -196,22 +196,24 @@ nugetSources {
 task unzipReSharperSdk(type: Sync){
     group backendGroup
     onlyIf { !project.shouldBuildRiderOnly }    
-    dependsOn configurations.reSharper
-    
-    if (backend.reSharperSdkPath.isDirectory()) {
-        logger.lifecycle("R# SDK bundle found: $backend.reSharperSdkPath.canonicalPath")
+
+    if (backend.resharperSdkPath.isDirectory()) {
+        logger.lifecycle("R# SDK bundle found: $backend.resharperSdkPath.canonicalPath")
         return
     }
     else {
         logger.lifecycle("R# SDK is not bundled")
-        backend.reSharperSdkPath = new File(repoRoot, "rider/build/DownloadedReSharperSDK")
+
+        dependsOn configurations.resharper
+        def zipFile = configurations.resharper.singleFile
+        backend.resharperSdkPath = new File(zipFile.parentFile, "JetBrains.ReSharper.SDK")
     }
 
-    from { configurations.reSharper.collect { zipTree(it) } }
-    into backend.reSharperSdkPath
+    from { configurations.resharper.collect { zipTree(it) } }
+    into backend.resharperSdkPath
 
     doFirst {
-      ci.Progress("Unzipping ReSharper SDK to $backend.reSharperSdkPath")
+      ci.Progress("Unzipping ReSharper SDK to $backend.resharperSdkPath")
     }
 }
 
@@ -227,7 +229,7 @@ task prepareReSharperBuildProps(type: GenerateBuildPropsTask) {
     group backendGroup
     dependsOn unzipReSharperSdk
 
-    packagesDirectory backend.reSharperSdkPath
+    packagesDirectory backend.resharperSdkPath
     packageName "JetBrains.ReSharper.SDK"
     msBuildParameter "ReSharperSDKVersion"
 }
@@ -241,7 +243,7 @@ task prepareNuGetConfig {
 
     doLast {
         assert backend.riderSdkPath.isDirectory()
-        assert backend.reSharperSdkPath.isDirectory()
+        assert backend.resharperSdkPath.isDirectory()
 
         ci.Progress("Preparing NuGet.Config")
 
@@ -249,7 +251,7 @@ task prepareNuGetConfig {
     <configuration>
     <packageSources>
         <add key="local-rider-sdk" value="$backend.riderSdkPath" />
-        <add key="local-resharper-sdk" value="$backend.reSharperSdkPath" />
+        <add key="local-resharper-sdk" value="$backend.resharperSdkPath" />
     </packageSources>
     </configuration>
     """
@@ -266,7 +268,7 @@ task restoreUnityEditorPluginPackages(type: nugetRestore.class) {
     sources = [
             'https://api.nuget.org/v3/index.json',
             project.backend.riderSdkPath,
-            project.backend.reSharperSdkPath
+            project.backend.resharperSdkPath
     ]
     doFirst {
         project.ci.Progress("Restoring packages for $solutionFile")
@@ -282,7 +284,7 @@ task restoreReSharperHostPluginPackages(type: nugetRestore.class) {
     sources = [
             'https://api.nuget.org/v3/index.json',
             project.backend.riderSdkPath,
-            project.backend.reSharperSdkPath
+            project.backend.resharperSdkPath
     ]
     doFirst {
         project.ci.Progress("Restoring packages for $solutionFile")

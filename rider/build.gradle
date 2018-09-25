@@ -50,18 +50,18 @@ if (!ext.has("RunTests") || ext.RunTests ==~ "(?i)False")
 
 
 
-configurations {
-    reSharper
-}
-
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
     maven { url "https://cache-redirector.jetbrains.com/maven-central" }
     maven { url "https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-eap" }
 }
 
+configurations {
+    resharper
+}
+
 dependencies {
-    reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "${productVersion}-SNAPSHOT", ext: "zip"
+    resharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "${productVersion}-SNAPSHOT", ext: "zip"
 }
 
 wrapper {
