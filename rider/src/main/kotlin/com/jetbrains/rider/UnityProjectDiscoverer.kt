@@ -17,9 +17,9 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
     // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
-    val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
-    val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
-    val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
+    val isLikeUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
+    val isLikeUnityGeneratedProject = isLikeUnityProject && solutionNameMatchesUnityProjectName(project)
+    val isUnitySidecarProject = isLikeUnityProject && !solutionNameMatchesUnityProjectName(project)
 
     companion object {
         fun getInstance(project: Project) = project.getComponent<UnityProjectDiscoverer>()
@@ -57,5 +57,5 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
     }
 }
 
-fun Project.isUnityGeneratedProject() = UnityProjectDiscoverer.getInstance(this).isUnityGeneratedProject
-fun Project.isUnityProject()= UnityProjectDiscoverer.getInstance(this).isUnityProject
+fun Project.isLikeUnityGeneratedProject() = UnityProjectDiscoverer.getInstance(this).isLikeUnityGeneratedProject
+fun Project.isLikeUnityProject()= UnityProjectDiscoverer.getInstance(this).isLikeUnityProject
