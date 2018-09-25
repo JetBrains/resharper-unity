@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             var solution = element.Id.Project.GetSolution();
             var tracker = solution.GetComponent<UnitySolutionTracker>();
-            if (tracker.IsAbleToEstablishProtocolConnectionWithUnity.HasValue() && !tracker.IsAbleToEstablishProtocolConnectionWithUnity.Value)
+            if (tracker.IsUnityProject.HasValue() && !tracker.IsUnityProject.Value)
                 return HostProviderAvailability.Available; 
             
             var rdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();

@@ -45,7 +45,7 @@ class UnityUIManager(private val unityProjectDiscoverer: UnityProjectDiscoverer,
         }
         solutionLifecycleHost.isBackendLoaded.whenTrue(componentLifetime) {
             // Only hide UI for generated projects, so that sidecar projects can still access nuget
-            if (unityProjectDiscoverer.isUnityGeneratedProject && hasMinimizedUi.value == null) hasMinimizedUi.set(true)
+            if (unityProjectDiscoverer.isLikeUnityGeneratedProject && hasMinimizedUi.value == null) hasMinimizedUi.set(true)
         }
     }
 
@@ -64,7 +64,7 @@ class UnityUIManager(private val unityProjectDiscoverer: UnityProjectDiscoverer,
     }
 
     override fun frameCreated(frame: IdeFrame) {
-        if (frame.project == project && unityProjectDiscoverer.isUnityProject) {
+        if (frame.project == project && unityProjectDiscoverer.isLikeUnityProject) {
             frameLifetime?.terminate()
 
             frameLifetime = Lifetime.create(project.lifetime)

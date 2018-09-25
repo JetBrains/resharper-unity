@@ -15,7 +15,7 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurableGroup
 import com.intellij.openapi.options.newEditor.SettingsDialogFactory
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.isUnityProject
+import com.jetbrains.rider.isLikeUnityProject
 import javax.swing.event.HyperlinkEvent
 
 class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, private val project: Project)
@@ -30,7 +30,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
     }
 
     override fun projectOpened() {
-        if (project.isUnityProject()) {
+        if (project.isLikeUnityProject()) {
             showNotificationIfNeeded()
         }
     }

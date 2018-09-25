@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
     {
         public IEnumerable<ITemplateScopePoint> ProvideScopePoints(TemplateAcceptanceContext context)
         {
-            if (!context.Solution.IsUnitySolution())
+            if (!context.Solution.HasUnityReference())
                 yield break;
 
             var project = context.GetProject();

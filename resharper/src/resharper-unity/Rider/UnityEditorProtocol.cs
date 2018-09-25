@@ -73,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.ViewNotNull(lifetime, (lf, args) => 
+            unitySolutionTracker.IsUnityProject.ViewNotNull(lifetime, (lf, args) => 
             {
                 if (!args) return;
 

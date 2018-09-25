@@ -6,7 +6,6 @@ using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
@@ -70,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 });
             });
 
-            unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.AdviseOnce(lifetime, args =>
+            unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
                 myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "IsAbleToEstablishProtocolConnectionWithUnity", () => InstallPluginIfRequired(solution.GetTopLevelProjects()));

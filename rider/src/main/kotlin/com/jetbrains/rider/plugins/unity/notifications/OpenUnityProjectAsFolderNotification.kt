@@ -12,7 +12,6 @@ import com.intellij.util.ui.EdtInvocationManager
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdVirtualSolution
-import com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
@@ -72,19 +71,6 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                             val projectView = ProjectView.getInstance(newProject)
                             projectView.changeView(UnityExplorer.ID)
                         }
-                    }
-                })
-            }
-
-            val pluginPath: VirtualFile? = baseDir.findFileByRelativePath("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
-            if (pluginPath == null || !pluginPath.exists()) {
-                notification.setContent(notification.content + "\r\n" +
-                        "Install Rider’s Unity Editor plugin to automatically configure Rider as the default external editor and enable advanced functionality."
-                )
-                notification.addAction(object : InstallEditorPluginAction() {
-                    override fun actionPerformed(e: AnActionEvent) {
-                        super.actionPerformed(e)
-                        notification.hideBalloon()
                     }
                 })
             }
