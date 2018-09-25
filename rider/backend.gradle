@@ -232,6 +232,10 @@ task prepareReSharperBuildProps(type: GenerateBuildPropsTask) {
     msBuildParameter "ReSharperSDKVersion"
 }
 
+task prepareBuildProps {
+    dependsOn prepareRiderBuildProps, prepareReSharperBuildProps
+}
+
 task prepareNuGetConfig {
     dependsOn unzipReSharperSdk
 
@@ -255,7 +259,7 @@ task prepareNuGetConfig {
 }
 
 nugetRestore {
-    dependsOn prepareNuGetConfig
+    dependsOn prepareNuGetConfig, prepareBuildProps
 
     solutionFile = new File(repoRoot, 'resharper/src/resharper-unity.sln').absolutePath
     sources = [
