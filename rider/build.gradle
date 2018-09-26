@@ -28,13 +28,12 @@ apply from: 'ci.gradle'
 
 ext.repoRoot = new File("..").canonicalFile
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-ext.localRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
-ext.rdLibDirectory = getRdLibDirectory()  // Note that this is also used by the protocol project
+ext.bundledRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
 
 
 
 
-// TODO: Get rid of this, it's nasty. Restructure the dotnet buidl tasks instead
+// TODO: Get rid of this, it's nasty. Restructure the dotnet build tasks instead
 ext.shouldBuildRiderOnly = false
 
 
@@ -109,14 +108,3 @@ task resolveDependencies {
   }
 }
 
-
-def getRdLibDirectory() {
-  def root = localRiderSdkRoot
-  if (root.exists() && root.isDirectory()) {
-    logger.lifecycle("'dependencies' dir found, using as Rider SDK root")
-  }
-  else {
-    root = new File(repoRoot, "rider/build/riderRD-${productVersion}-SNAPSHOT")
-  }
-  return new File(root, "lib/rd").canonicalFile
-}

@@ -13,6 +13,20 @@ repositories {
     maven { url "https://cache-redirector.jetbrains.com/maven-central" }
     maven { url "https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-eap" }
     flatDir {
-        dirs rdLibDirectory.absolutePath
+        dir({ ->
+            // This needs to be a closure to allow intellij.ideaDependency a chance to get resolved
+            // TODO: Move this into buildSrc
+            // This duplicates logic in model.gradle
+            def root = bundledRiderSdkRoot
+            if (!root.exists() || !root.isDirectory()) {
+                root= new File(intellij.ideaDependencyCachePath)
+                if (!root.exists() || !root.isDirectory()) {
+                    root = new File(intellij.ideaDependency.classes.absolutePath)
+                }
+            }
+            def rdLibDir = new File(root, "lib/rd")
+            assert rdLibDir.isDirectory()
+            return rdLibDir
+        })
     }
 }
