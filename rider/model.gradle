@@ -1,12 +1,8 @@
 ext.modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
 
-// TODO: Add an msbuild task for this, too?
-// Because we sometimes skip building the C# solutions (calling runIde from the C# IDE), we might
-// get into the situation where we rebuild the protocol for .kt, but not .cs
-// Maybe we should have an msbuild task to run rdgen if the input model .kt is newer than the output
-// .cs. Or make sure we don't skip the msbuild tasks if this task runs
+// TODO: Think about adding an msbuild task for rdgen
 
-task generateRiderModel(type: RdGen) {
+task generateRiderModel(type: tasks.getByName('rdgen').class) {
     def csOutput = new File(repoRoot, "resharper/src/resharper-unity/Rider/RdUnityProtocol")
     def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
 
@@ -36,7 +32,7 @@ task generateRiderModel(type: RdGen) {
     }
 }
 
-task generateEditorPluginModel(type: RdGen) {
+task generateEditorPluginModel(type: tasks.getByName('rdgen').class) {
     params {
         verbose = true
         classpath "$rdLibDirectory/rider-model.jar"

@@ -23,8 +23,9 @@ if (System.env['TEAMCITY_VERSION'] != null) {
     ext.isBuildingUnderCi = false
 }
 
-
 if (ext.isBuildingUnderCi) {
+    BuildConfiguration="Release"
+
     buildPlugin.finalizedBy publishCiBuildData
 }
 

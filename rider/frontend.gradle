@@ -72,11 +72,19 @@ def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Un
 prepareSandbox {
     // Default dependsOn includes the standard Java build/jar task
 
-    if (!project.dotNetUpToDate)
+    // "skipDotnet" is easier to type (and remember), but "dotNetUpToDate" is already in use
+    if (skipDotnet.equalsIgnoreCase("false") &&
+        dotNetUpToDate.equalsIgnoreCase("false")) {
         dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
+    }
 
-    if (project.RunTests)
+    // TODO: Move this dependency
+    // It doesn't really fit with prepareSandbox. It's a better fit for buildPlugin,
+    // or as a top-level task that is called separately, e.g. gradle buildPlugin nunit
+    // (and we could get rid of RunTests then, too)
+    if (RunTests.equalsIgnoreCase("true")) {
         dependsOn nunit
+    }
 
     // Have dependent tasks use uptodateWhen { project.isRunningUnderCi etc. }
     //inputs.files(buildRiderPlugin.outputs)

@@ -26,27 +26,17 @@ apply plugin: 'com.jetbrains.rdgen'
 apply from: 'ci.gradle'
 
 
-ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
-ext.productVersion = "2018.3"
 ext.repoRoot = new File("..").canonicalFile
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 ext.localRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
 ext.rdLibDirectory = getRdLibDirectory()  // Note that this is also used by the protocol project
+
+
+
+
+// TODO: Get rid of this, it's nasty. Restructure the dotnet buidl tasks instead
 ext.shouldBuildRiderOnly = false
 
-if (!ext.has("BuildCounter"))
-    ext.BuildCounter = 9999
-
-if (!ext.has("BuildConfiguration")) {
-    ext.BuildConfiguration = ext.isBuildingUnderCi ? "Release" : "Debug"
-}
-
-if (!ext.has('dotNetUpToDate') || ext.dotNetUpToDate ==~ "(?i)False")
-    ext.dotNetUpToDate = false
-
-/* done as an optional step so that we can reuse the build artifacts */
-if (!ext.has("RunTests") || ext.RunTests ==~ "(?i)False")
-    ext.RunTests = false
 
 
 
