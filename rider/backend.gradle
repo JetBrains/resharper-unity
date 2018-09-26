@@ -309,12 +309,14 @@ task restoreUnityEditorPluginPackages(type: nugetRestore.class) {
 
     solutionFile backend.unityPluginSolution
     sources = [
-            'https://api.nuget.org/v3/index.json',
-            { project.backend.getRiderSdkPath() },
-            { project.backend.getReSharperSdkPath() }
+            'https://api.nuget.org/v3/index.json'
     ]
     doFirst {
         project.ci.Progress("Restoring packages for $solutionFile")
+
+        // Add in doFirst, so we get a chance to download the SDKs
+        sources.add(project.backend.getRiderSdkPath())
+        sources.add(project.backend.getReSharperSdkPath())
     }
 }
 
@@ -325,12 +327,14 @@ task restoreReSharperHostPluginPackages(type: nugetRestore.class) {
 
     solutionFile backend.resharperHostPluginSolution
     sources = [
-            'https://api.nuget.org/v3/index.json',
-            { project.backend.getRiderSdkPath() },
-            { project.backend.getReSharperSdkPath() }
+            'https://api.nuget.org/v3/index.json'
     ]
     doFirst {
         project.ci.Progress("Restoring packages for $solutionFile")
+
+        // Add in doFirst, so we get a chance to download the SDKs
+        sources.add(project.backend.getRiderSdkPath())
+        sources.add(project.backend.getReSharperSdkPath())
     }
 }
 
