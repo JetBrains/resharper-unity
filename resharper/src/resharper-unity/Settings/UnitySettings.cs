@@ -21,5 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(false, "Enables syntax error highlighting of CG blocks in ShaderLab files.")]
         public bool EnableCgErrorHighlighting;
+        
+        [SettingsEntry(true, "Enables underscore highlighting of costly methods and indirect calls of these methods.")]
+        public bool EnablePerformanceCriticalCodeHighlighting;
     }
 }

@@ -187,11 +187,6 @@
         </Description>
         <CompoundItemName>Possible unintended bypass of lifetime check of underlying Unity engine object</CompoundItemName>
       </Tag>
-      
-      <Tag externalName="CostlyMethodReachableWarning.HIGHLIGHTING_ID" default="SUGGESTION">
-        <Title>Method with costly operation is reachable from this invocation</Title>
-        <Description>TODO</Description>
-      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -468,13 +463,6 @@
     <Message value="'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />
     <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
-  </Warning>
-
-  <Warning name="CostlyMethodReachable" configurableSeverity="Unity.CostlyMethodReachable">
-    <Parameter type="IReference" name="reference" />
-    <Message value="Method with costly operation is reachable from this invocation" />
-    <Range>Reference.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
   
 </Errors>
