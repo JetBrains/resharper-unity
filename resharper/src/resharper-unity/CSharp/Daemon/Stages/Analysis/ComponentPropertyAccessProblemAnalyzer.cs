@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Psi.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.PsiGen.Util;
 using JetBrains.Util;
+using QualifierEqualityComparer = JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlow.ControlFlowWeakVariableInfo.QualifierEqualityComparer;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -23,14 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         HighlightingTypes = new[] {typeof(InefficientPropertyAccessWarning)})]
     public class ComponentPropertyAccessProblemAnalyzer : UnityElementProblemAnalyzer<ITreeNode>
     {
-
-        private delegate bool TreeNodeFilter(ITreeNode toFilter, IReferenceExpression cachedExpression);
-        
-        private static readonly IDictionary<IClrTypeName, TreeNodeFilter> ourFilters 
-            = new Dictionary<IClrTypeName, TreeNodeFilter>()
-            {
-                {KnownTypes.Transform, TransformFilter}
-            };
+        private static readonly QualifierEqualityComparer ourComparer = new QualifierEqualityComparer();
         
         public ComponentPropertyAccessProblemAnalyzer([NotNull] UnityApi unityApi)
             : base(unityApi)
@@ -73,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private void AnalyzeStatements(ICSharpTreeNode scope, PropertiesAccessContainer referencesContainer)
         {
-            var visitor = new PropertiesAnalyzerVisitor(referencesContainer, scope, new Dictionary<string, IEnumerator<ITreeNode>>());
+            var visitor = new PropertiesAnalyzerVisitor(referencesContainer, scope, new Dictionary<IReferenceExpression, IEnumerator<ITreeNode>>(ourComparer));
             scope.ProcessThisAndDescendants(visitor);
         }
 
@@ -88,113 +82,62 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (containingType == null) 
                 return false;
 
-            // TODO: Which components we should support too?  Uncomment line below to support different components. Do not forget to provide addition filters for new components
-            //return containingType.GetSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.Component));
-            return containingType.GetClrName().Equals(KnownTypes.Transform);
+            return containingType.GetSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.Component));
         }
+        
 
-        private static IEnumerable<ICSharpTreeNode> FilterWrongRelatedExpression(IEnumerable<ICSharpTreeNode> findRelatedExpressions, IReferenceExpression expression)
+        private static bool IsReferenceExpressionOnly(IReferenceExpression referenceExpression)
         {
-            var declaredElement = (expression.Reference.Resolve().DeclaredElement as IClrDeclaredElement).NotNull("declaredElement != null");
-            var clrType = declaredElement.GetContainingType().NotNull("declaredElement.GetContainingType() != null").GetClrName();
-            
-            TreeNodeFilter filter;
-            if (ourFilters.ContainsKey(clrType))
+            var qualifier = referenceExpression.QualifierExpression.GetContainingParenthesizedExpression();
+            while (qualifier != null)
             {
-                filter = ourFilters[clrType];
-            }
-            else
-            {
-                filter = CommonFilter;
-            }
-
-            foreach (var relatedExpression in findRelatedExpressions)
-            {
-                if (!(relatedExpression is IReferenceExpression relatedReferenceExpression))
+                if (qualifier is IReferenceExpression next)
                 {
-                    yield return relatedExpression;
-                    continue;
+                    qualifier = next.QualifierExpression.GetContainingParenthesizedExpression();
                 }
-                var fullRelatedReferenceExpression = ReferenceExpressionNavigator.GetTopByQualifierExpression(relatedReferenceExpression);
-                if (filter(fullRelatedReferenceExpression, expression))
-                    continue;
-
-                yield return relatedExpression;
-            }
-        }
-
-        private static bool CommonFilter(ITreeNode node, IReferenceExpression cachedExpression)
-        {
-            var reLikeString = QualifierToString(cachedExpression);
-
-            IReferenceExpression relatedReferenceExpression = null;
-            switch (node)
-            {
-                case IReferenceExpression referenceExpression:
-                    relatedReferenceExpression = referenceExpression;
-                    break;
-                case IInvocationExpression invocationExpression:
-                    relatedReferenceExpression = invocationExpression.InvokedExpression as IReferenceExpression;
-                    break;
-                default:
+                else
+                {
                     return false;
-            }
-            return reLikeString.Equals(QualifierToString(relatedReferenceExpression));
-        }
-
-        private static bool TransformFilter(ITreeNode node, IReferenceExpression cachedExpression)
-        {
-            var cachedPropertyName = cachedExpression.Reference.Resolve().DeclaredElement.NotNull().ShortName;
-
-            IClrDeclaredElement declaredElement = null;
-            if (node is IReferenceExpression nodeReferenceExpression)
-            {
-                declaredElement = nodeReferenceExpression.Reference.Resolve().DeclaredElement as IClrDeclaredElement; 
-            }
-            else
-            {
-                return false;
-            }
-
-            var containingType = declaredElement?.GetContainingType();
-            if (containingType == null)
-                return false;
-
-            if (!containingType.GetClrName().Equals(KnownTypes.Transform))
-                return true;
-            
-            if (ourTransformConflicts.ContainsKey(cachedPropertyName))
-            {
-                var conflicts = ourTransformConflicts[cachedPropertyName];
-                return !conflicts.Contains(declaredElement.ShortName);
+                }
             }
 
             return true;
         }
 
+        private static UnityComponentRelatedReferenceExpressionFinder GetFinder(IReferenceExpression referenceExpression)
+        {
+            var declaredElement = (referenceExpression.Reference.Resolve().DeclaredElement as IClrDeclaredElement).NotNull("declaredElement != null");
+            var containingType = declaredElement.GetContainingType().NotNull("declaredElement.GetContainingType() != null");
+
+            if (containingType.GetClrName().Equals(KnownTypes.Transform))
+                return new TransformRelatedReferenceFinder(referenceExpression);
+            
+            return new UnityComponentRelatedReferenceExpressionFinder(referenceExpression);
+        }
+        
         private class PropertiesAccessContainer
         {
             private readonly IHighlightingConsumer myConsumer;
-            private readonly IDictionary<string, List<IReferenceExpression>> myPropertiesMap = new Dictionary<string, List<IReferenceExpression>>();
+            private readonly IDictionary<IReferenceExpression, List<IReferenceExpression>> myPropertiesMap = new Dictionary<IReferenceExpression, List<IReferenceExpression>>(ourComparer);
 
             public PropertiesAccessContainer(IHighlightingConsumer consumer)
             {
                 myConsumer = consumer;
             }
 
-            public void AddProperty(string name, IReferenceExpression referenceExpression)
+            public void AddProperty(IReferenceExpression referenceExpression)
             {
-                if (!myPropertiesMap.ContainsKey(name)) 
-                    myPropertiesMap[name] = new List<IReferenceExpression>();
-                myPropertiesMap[name].Add(referenceExpression);
+                if (!myPropertiesMap.ContainsKey(referenceExpression)) 
+                    myPropertiesMap[referenceExpression] = new List<IReferenceExpression>();
+                myPropertiesMap[referenceExpression].Add(referenceExpression);
             }
 
-            public void InvalidateCachedValues(string name)
+            public void InvalidateCachedValues(IReferenceExpression key)
             {
-                if (!myPropertiesMap.ContainsKey(name)) 
+                if (!myPropertiesMap.ContainsKey(key)) 
                     return;
                 
-                var highlighitingElements = myPropertiesMap[name].ToArray();
+                var highlighitingElements = myPropertiesMap[key].ToArray();
                 Assertion.Assert(highlighitingElements.Length > 0, "highlighitingElements.Length > 0");
                 
                 // calculate read/write operations for property
@@ -217,11 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     if (read == 0 && write == 0)
                     {
                         readAnchor = referenceExpression.GetContainingStatement().NotNull("readAnchor != null");
-                        var checker =
-                            ExpressionWriteAccessChecker.CreateAccessCheckerForExpression(referenceExpression);
-                        var relatedExpressions =
-                            FilterWrongRelatedExpression(checker.FindRelatedExpressions(readAnchor),
-                                referenceExpression);
+                        var relatedExpressions = GetFinder(referenceExpression).GetRelatedExpressions(readAnchor);
                         // if we have related expression before considered reference expression, we can only inline reading into statement
                         // Example:
                         // transform.Position = (transform.localPosition = Vector3.Up) + transform.position + transform.position;
@@ -262,8 +201,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     {
                         inlineRestoreValue = true;
                     } else {
-                        var checker = ExpressionWriteAccessChecker.CreateAccessCheckerForExpression(lastWriteExpression);
-                        var relatedExpressions = FilterWrongRelatedExpression(checker.FindRelatedExpressions(writeAnchor), lastWriteExpression);
+                        var relatedExpressions = GetFinder(lastWriteExpression).GetRelatedExpressions(writeAnchor);
                         var last = relatedExpressions.LastOrDefault();
                         if (last != null)
                         {
@@ -282,7 +220,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     }
                 }
 
-                myPropertiesMap.Remove(name);
+                myPropertiesMap.Remove(key);
             }
             
             public void InvalidateCachedValues()
@@ -299,9 +237,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             private readonly PropertiesAccessContainer myContainer;
             private readonly ICSharpTreeNode myScope;
-            private readonly Dictionary<string, IEnumerator<ITreeNode>> myReferenceInvalidateBarriers;
+            private readonly Dictionary<IReferenceExpression, IEnumerator<ITreeNode>> myReferenceInvalidateBarriers;
 
-            public PropertiesAnalyzerVisitor(PropertiesAccessContainer container, ICSharpTreeNode scope, Dictionary<string, IEnumerator<ITreeNode>> referenceInvalidateBarriers)
+            public PropertiesAnalyzerVisitor(PropertiesAccessContainer container, ICSharpTreeNode scope, Dictionary<IReferenceExpression, IEnumerator<ITreeNode>> referenceInvalidateBarriers)
             {
                 myContainer = container;
                 myScope = scope;
@@ -314,23 +252,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
                 if (!IsUnityComponentProperty(referenceExpression))
                     return;
-                
-                var referenceExpressionAsString = QualifierToString(referenceExpression);
-                if (referenceExpressionAsString == null)
+
+                if (!IsReferenceExpressionOnly(referenceExpression))
                     return;
                 
-                if (!myReferenceInvalidateBarriers.ContainsKey(referenceExpressionAsString))
+                if (!myReferenceInvalidateBarriers.ContainsKey(referenceExpression))
                 {
-                    var checker = ExpressionWriteAccessChecker.CreateAccessCheckerForExpression(referenceExpression);
-                    var relatedExpressions = FilterWrongRelatedExpression(checker.FindRelatedExpressions(myScope), referenceExpression);
-                    var relatedExpressionsEnumerator = relatedExpressions.GetEnumerator();
+                    var relatedExpressionsEnumerator = GetFinder(referenceExpression).GetRelatedExpressions(myScope).GetEnumerator();
 
                     if (relatedExpressionsEnumerator.MoveNext())
-                        myReferenceInvalidateBarriers[referenceExpressionAsString] = relatedExpressionsEnumerator;
+                        myReferenceInvalidateBarriers[referenceExpression] = relatedExpressionsEnumerator;
                 }
 
-                myContainer.AddProperty(referenceExpressionAsString, referenceExpression);
-            } 
+                myContainer.AddProperty(referenceExpression);
+            }
 
             public override void VisitPreprocessorDirective(IPreprocessorDirective preprocessorDirectiveParam)
             {
@@ -375,8 +310,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             public void ProcessBeforeInterior(ITreeNode element)
             {
-                var toRemove = new List<string>();
-                foreach (var (referenceString, enumerator) in myReferenceInvalidateBarriers)
+                var toRemove = new List<IReferenceExpression>();
+                foreach (var (referenceExpression, enumerator) in myReferenceInvalidateBarriers)
                 {
                     var current = enumerator.Current.NotNull("current != null");
                     while (current.GetTreeStartOffset() < element.GetTreeStartOffset())
@@ -384,7 +319,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         var hasNext = enumerator.MoveNext();
                         if (!hasNext)
                         {
-                            toRemove.Add(referenceString);
+                            toRemove.Add(referenceExpression);
                             break;
                         }
 
@@ -395,8 +330,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     {
                         var hasNext = enumerator.MoveNext();
                         if (!hasNext)
-                            toRemove.Add(referenceString);
-                        myContainer.InvalidateCachedValues(referenceString);
+                            toRemove.Add(referenceExpression);
+                        myContainer.InvalidateCachedValues(referenceExpression);
                     }
                 }
                 toRemove.ForEach(t => myReferenceInvalidateBarriers.Remove(t));
@@ -427,194 +362,284 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             public bool ProcessingIsFinished => false;
         }
-        
-        private static string QualifierToString(IReferenceExpression referenceExpression)
+
+        // Note: this class is heuristic for finding related expression for unity component and do not 
+        // consider all cases (e.g. ICSharpClosure is ignored, if user assigned reference expression to variable,
+        // this variable will not take participate in analysis)
+        public class UnityComponentRelatedReferenceExpressionFinder
         {
-            var sb = new StringBuilder();
-
-            var elements = new Stack<IReference>();
-            elements.Push(referenceExpression.Reference);
-
-            var qualifier = referenceExpression.QualifierExpression;
-            while (qualifier != null)
+            protected static readonly QualifierEqualityComparer ReComparer = new QualifierEqualityComparer();
+            protected readonly IReferenceExpression ReferenceExpression;
+            private readonly bool myIgnoreNotComponentInvocations;
+            protected readonly IReferenceExpression ComponentReferenceExpression;
+            protected readonly ITypeElement ContainingType;
+            protected readonly IClrDeclaredElement DeclaredElement;
+            
+            
+            public UnityComponentRelatedReferenceExpressionFinder([NotNull]IReferenceExpression referenceExpression, bool ignoreNotComponentInvocations = false)
             {
-                if (!(qualifier is IReferenceExpression re))
+                ReferenceExpression = referenceExpression;
+                myIgnoreNotComponentInvocations = ignoreNotComponentInvocations;
+
+                DeclaredElement = ReferenceExpression.Reference.Resolve().DeclaredElement as IClrDeclaredElement;
+                Assertion.Assert(DeclaredElement != null, "DeclaredElement != null");
+                    
+                ContainingType = DeclaredElement.GetContainingType();
+                Assertion.Assert(ContainingType != null, "ContainingType != null");
+                
+                ComponentReferenceExpression = referenceExpression.QualifierExpression as IReferenceExpression;
+                Assertion.Assert(ComponentReferenceExpression != null, "ComponentReferenceExpression != null");
+            }
+
+            public IEnumerable<IReferenceExpression> GetRelatedExpressions([NotNull]ITreeNode scope)
+            {
+                var descendants = scope.Descendants();
+
+                while (descendants.MoveNext())
                 {
-                    return null;
+                    var current = descendants.Current;
+
+                    switch (current)
+                    {
+                        case ICSharpClosure _:
+                            descendants.SkipThisNode();
+                            break;
+                        case IReferenceExpression referenceExpression:
+                            var currentNodeDeclaredElement = referenceExpression.Reference?.Resolve().DeclaredElement as IClrDeclaredElement;
+                            var currentNodeContainingType = currentNodeDeclaredElement?.GetContainingType();
+                            switch (currentNodeDeclaredElement)
+                            {
+                                case IField _:
+                                case IProperty _:
+                                    var qualifier = referenceExpression.QualifierExpression as IReferenceExpression;
+                                    if (qualifier == null)
+                                        continue;
+                                    
+                                    if (currentNodeContainingType == null)
+                                        continue;
+
+                                    if (!ContainingType.Equals(currentNodeContainingType))
+                                        continue;
+                                    
+                                    if (!ReComparer.Equals(ComponentReferenceExpression, qualifier))
+                                        continue;
+                                    
+                                    break;
+                                case IMethod method:
+                                    if (currentNodeContainingType == null ||
+                                        !ContainingType.Equals(currentNodeContainingType))
+                                    {
+                                        if (!myIgnoreNotComponentInvocations)
+                                        {
+                                            yield return referenceExpression;
+                                        } 
+                                        continue;
+                                    }
+                                    break;
+                                default:
+                                    continue;
+                            }
+                            
+                            if (!IsReferenceExpressionNotRelated(referenceExpression, currentNodeDeclaredElement, currentNodeContainingType))
+                                yield return referenceExpression;
+                            
+                            break;
+                    }
                 }
-
-                qualifier = re.QualifierExpression;
-                elements.Push(re.Reference);
             }
 
-            foreach (var e in elements)
+            protected virtual bool IsReferenceExpressionNotRelated([NotNull]IReferenceExpression currentReference, 
+                IClrDeclaredElement currentElement, ITypeElement currentContainingType)
             {
-                sb.Append(e.GetName());
-                sb.Append(".");
+                return ReComparer.Equals(currentReference, ReferenceExpression);
             }
-
-            sb.Remove(sb.Length - 1, 1);
-
-            return sb.ToString();
         }
 
-        #region TransformPropertiesConflicts
-
-        // Short name of transform property to short name of method or properties which get change source property.
-        // If this map do not contain transform property, there is no conflicts for this property
-        private static readonly Dictionary<string, ISet<string>> ourTransformConflicts = new Dictionary<string, ISet<string>>()
+        public class TransformRelatedReferenceFinder : UnityComponentRelatedReferenceExpressionFinder
         {
-            {"position", new HashSet<string>()
-                {
-                    "localPosition",
-                    "parent",
-                    "SetParent",
-                    "SetPositionAndRotation",
-                    "Translate",
-                }
-            },
-            {"localPosition", new HashSet<string>()
-                {
-                    "position",
-                    "parent",
-                    "SetParent",
-                    "SetPositionAndRotation",
-                    "Translate",
-                }
-            },
-            {"eulerAngles", new HashSet<string>()
-                {
-                    "localEulerAngles",
-                    "rotation",
-                    "localRotation",
-                    "parent",
-                    "SetParent",
-                    "SetPositionAndRotation",
-                    "Rotate",
-                    "RotateAround",
-                    "LookAt",
-                    "RotateAroundLocal"
-                }
-            },
-            {"localEulerAngles", new HashSet<string>()
-                {
-                    "eulerAngles",
-                    "rotation",
-                    "localRotation",
-                    "parent",
-                    "SetParent",
-                    "SetPositionAndRotation",
-                    "Rotate",
-                    "RotateAround",
-                    "LookAt",
-                    "RotateAroundLocal"
-                }
-            },
-            {"rotation", new HashSet<string>()
-                {
-                    "eulerAngles",
-                    "localEulerAngles",
-                    "localRotation",
-                    "parent",
-                    "SetParent",
-                    "SetPositionAndRotation",
-                    "Rotate",
-                    "RotateAround",
-                    "LookAt",
-                    "RotateAroundLocal"
-                }
-            },
-            {"localRotation", new HashSet<string>()
-                {
-                    "eulerAngles",
-                    "localEulerAngles",
-                    "rotation",
-                    "parent",
-                    "SetParent",
-                    "SetPositionAndRotation",
-                    "Rotate",
-                    "RotateAround",
-                    "LookAt",
-                    "RotateAroundLocal"
-                }
-            },
-            {"localScale", new HashSet<string>()
-                {
-                    "parent",
-                    "SetParent",
-                    "lossyScale"
-                }
-            },
-            {"lossyScale", new HashSet<string>()
-                {
-                    "parent",
-                    "SetParent",
-                    "scale"
-                }
-            },
-            {"right", new HashSet<string>()
-                {
-                    "eulerAngles",
-                    "localEulerAngles",
-                    "rotation",
-                    "localRotation",
-                    "parent",
-                    "SetParent",
-                    "SetPositionAndRotation",
-                    "Rotate",
-                    "RotateAround",
-                    "LookAt",
-                    "RotateAroundLocal"
-                }
-            },
-            {"up", new HashSet<string>()
-                {
-                    "eulerAngles",
-                    "localEulerAngles",
-                    "rotation",
-                    "localRotation",
-                    "parent",
-                    "SetParent",
-                    "SetPositionAndRotation",
-                    "Rotate",
-                    "RotateAround",
-                    "LookAt",
-                    "RotateAroundLocal"
-                }
-            },
-            {"forward", new HashSet<string>()
-                {
-                    "eulerAngles",
-                    "localEulerAngles",
-                    "rotation",
-                    "localRotation",
-                    "parent",
-                    "SetParent",
-                    "SetPositionAndRotation",
-                    "Rotate",
-                    "RotateAround",
-                    "LookAt",
-                    "RotateAroundLocal"
-                }
-            } ,
-            {"parent", new HashSet<string>()
-                {
-                    "eulerAngles",
-                    "localEulerAngles",
-                    "rotation",
-                    "localRotation",
-                    "SetPositionAndRotation",
-                    "Rotate",
-                    "RotateAround",
-                    "LookAt",
-                    "RotateAroundLocal",
-                    "position",
-                    "localPosition",
-                    "Translate",
-                }
-            } 
-        };
+            public TransformRelatedReferenceFinder([NotNull] IReferenceExpression referenceExpression)
+                : base(referenceExpression, true)
+            {
+            }
 
-        #endregion
+            protected override bool IsReferenceExpressionNotRelated([NotNull] IReferenceExpression currentReference, 
+                IClrDeclaredElement currentElement, ITypeElement currentContainingType)
+            {
+                if (base.IsReferenceExpressionNotRelated(currentReference, currentElement, currentContainingType))
+                    return true;
+
+                if (!currentContainingType.GetClrName().Equals(KnownTypes.Transform))
+                    return true;
+            
+                if (ourTransformConflicts.ContainsKey(DeclaredElement.ShortName))
+                {
+                    var conflicts = ourTransformConflicts[DeclaredElement.ShortName];
+                    return !conflicts.Contains(currentElement.ShortName);
+                }
+
+                return true;
+            }
+            
+            #region TransformPropertiesConflicts
+
+            // Short name of transform property to short name of method or properties which get change source property.
+            // If this map do not contain transform property, there is no conflicts for this property
+            private static readonly Dictionary<string, ISet<string>> ourTransformConflicts = new Dictionary<string, ISet<string>>()
+            {
+                {"position", new HashSet<string>()
+                    {
+                        "localPosition",
+                        "parent",
+                        "SetParent",
+                        "SetPositionAndRotation",
+                        "Translate",
+                    }
+                },
+                {"localPosition", new HashSet<string>()
+                    {
+                        "position",
+                        "parent",
+                        "SetParent",
+                        "SetPositionAndRotation",
+                        "Translate",
+                    }
+                },
+                {"eulerAngles", new HashSet<string>()
+                    {
+                        "localEulerAngles",
+                        "rotation",
+                        "localRotation",
+                        "parent",
+                        "SetParent",
+                        "SetPositionAndRotation",
+                        "Rotate",
+                        "RotateAround",
+                        "LookAt",
+                        "RotateAroundLocal"
+                    }
+                },
+                {"localEulerAngles", new HashSet<string>()
+                    {
+                        "eulerAngles",
+                        "rotation",
+                        "localRotation",
+                        "parent",
+                        "SetParent",
+                        "SetPositionAndRotation",
+                        "Rotate",
+                        "RotateAround",
+                        "LookAt",
+                        "RotateAroundLocal"
+                    }
+                },
+                {"rotation", new HashSet<string>()
+                    {
+                        "eulerAngles",
+                        "localEulerAngles",
+                        "localRotation",
+                        "parent",
+                        "SetParent",
+                        "SetPositionAndRotation",
+                        "Rotate",
+                        "RotateAround",
+                        "LookAt",
+                        "RotateAroundLocal"
+                    }
+                },
+                {"localRotation", new HashSet<string>()
+                    {
+                        "eulerAngles",
+                        "localEulerAngles",
+                        "rotation",
+                        "parent",
+                        "SetParent",
+                        "SetPositionAndRotation",
+                        "Rotate",
+                        "RotateAround",
+                        "LookAt",
+                        "RotateAroundLocal"
+                    }
+                },
+                {"localScale", new HashSet<string>()
+                    {
+                        "parent",
+                        "SetParent",
+                        "lossyScale"
+                    }
+                },
+                {"lossyScale", new HashSet<string>()
+                    {
+                        "parent",
+                        "SetParent",
+                        "scale"
+                    }
+                },
+                {"right", new HashSet<string>()
+                    {
+                        "eulerAngles",
+                        "localEulerAngles",
+                        "rotation",
+                        "localRotation",
+                        "parent",
+                        "SetParent",
+                        "SetPositionAndRotation",
+                        "Rotate",
+                        "RotateAround",
+                        "LookAt",
+                        "RotateAroundLocal"
+                    }
+                },
+                {"up", new HashSet<string>()
+                    {
+                        "eulerAngles",
+                        "localEulerAngles",
+                        "rotation",
+                        "localRotation",
+                        "parent",
+                        "SetParent",
+                        "SetPositionAndRotation",
+                        "Rotate",
+                        "RotateAround",
+                        "LookAt",
+                        "RotateAroundLocal"
+                    }
+                },
+                {"forward", new HashSet<string>()
+                    {
+                        "eulerAngles",
+                        "localEulerAngles",
+                        "rotation",
+                        "localRotation",
+                        "parent",
+                        "SetParent",
+                        "SetPositionAndRotation",
+                        "Rotate",
+                        "RotateAround",
+                        "LookAt",
+                        "RotateAroundLocal"
+                    }
+                } ,
+                {"parent", new HashSet<string>()
+                    {
+                        "eulerAngles",
+                        "localEulerAngles",
+                        "rotation",
+                        "localRotation",
+                        "SetPositionAndRotation",
+                        "Rotate",
+                        "RotateAround",
+                        "LookAt",
+                        "RotateAroundLocal",
+                        "position",
+                        "localPosition",
+                        "Translate",
+                    }
+                } 
+            };
+    
+            #endregion
+        }
+        
+      
     }
 }
