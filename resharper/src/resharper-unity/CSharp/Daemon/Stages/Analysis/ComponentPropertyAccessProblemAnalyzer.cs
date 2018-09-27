@@ -166,7 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     if (read == 0 && write == 0)
                     {
                         readAnchor = referenceExpression.GetContainingStatement().NotNull("readAnchor != null");
-                        var relatedExpressions = GetFinder(referenceExpression).GetRelatedExpressions(readAnchor);
+                        var previousRelatedExpression = GetPreviousRelatedExpression(referenceExpression, readAnchor);
                         // if we have related expression before considered reference expression, we can only inline reading into statement
                         // Example:
                         // transform.Position = (transform.localPosition = Vector3.Up) + transform.position + transform.position;
@@ -176,11 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         // var cache = transform.position;
                         // transform.position = (transform.localPosition = Vector3.Up) + (cache = transform.position) + cache;
 
-                        var first = relatedExpressions.FirstOrDefault();
-                        if (first != null)
-                        {
-                            inlineCacheValue = first.GetTreeStartOffset() < referenceExpression.GetTreeStartOffset();
-                        }
+                        inlineCacheValue = previousRelatedExpression != null;
                     }
                     
                     if (assignmentExpression != null)
@@ -207,12 +203,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     {
                         inlineRestoreValue = true;
                     } else {
-                        var relatedExpressions = GetFinder(lastWriteExpression).GetRelatedExpressions(writeAnchor);
-                        var last = relatedExpressions.LastOrDefault();
-                        if (last != null)
-                        {
-                            inlineRestoreValue = last.GetTreeStartOffset() > lastWriteExpression .GetTreeStartOffset();
-                        }
+                        var relatedExpressions = GetFinder(lastWriteExpression).GetRelatedExpressions(writeAnchor, lastWriteExpression);
+                        inlineRestoreValue = relatedExpressions.Count() > 0;
                     }
                 }
 
@@ -228,7 +220,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
                 myPropertiesMap.Remove(key);
             }
-            
+
+            private ITreeNode GetPreviousRelatedExpression(IReferenceExpression referenceExpression, ICSharpStatement readAnchor)
+            {
+                var finder = GetFinder(referenceExpression);
+                var stopElement = finder.GetRelatedExpressions(readAnchor).FirstOrDefault();
+                var fromSequence = finder.GetRelatedExpressions(readAnchor, referenceExpression);
+
+                ITreeNode prev = null;
+                foreach (var expression in fromSequence)
+                {
+                    if (expression == stopElement)
+                        return prev;
+                    prev = expression;
+                }
+
+                return null;
+            }
+
             public void InvalidateCachedValues()
             {
                 var keys = myPropertiesMap.Keys.ToArray();
@@ -274,25 +283,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             public override void VisitPreprocessorDirective(IPreprocessorDirective preprocessorDirectiveParam)
             {
-                myContainer.InvalidateCachedValues();
+                InvalidateAll();
             }
 
             public override void VisitIfStatement(IIfStatement ifStatement)
             {
-                myContainer.InvalidateCachedValues();
+                InvalidateAll();
                 
                 var thenBody = ifStatement.Then;
                 if (thenBody != null)
                 {
                     thenBody.ProcessThisAndDescendants(this);
-                    myContainer.InvalidateCachedValues();
+                    InvalidateAll();
                 }
 
                 var elseBody = ifStatement.Else;
                 if (elseBody != null)
                 {
                     elseBody.ProcessThisAndDescendants(this);
-                    myContainer.InvalidateCachedValues();
+                    InvalidateAll();
                 }
             }
 
@@ -301,11 +310,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 switch (element)
                 {
                     case ICSharpClosure _:
-                        return false;
+                    case IInvocationExpression _:
+                    case IAssignmentExpression _:
                     case IIfStatement _:
-                        return false;
                     case ILoopStatement _:
-                        return false;
                     case ISwitchSection _:
                         return false;
                     default:
@@ -319,24 +327,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 foreach (var (referenceExpression, enumerator) in myReferenceInvalidateBarriers)
                 {
                     var current = enumerator.Current.NotNull("current != null");
-                    while (current.GetTreeStartOffset() < element.GetTreeStartOffset())
-                    {
-                        var hasNext = enumerator.MoveNext();
-                        if (!hasNext)
-                        {
-                            toRemove.Add(referenceExpression);
-                            break;
-                        }
-
-                        current = enumerator.Current.NotNull("current != null");
-                    }
                     
                     if (element == current)
                     {
                         var hasNext = enumerator.MoveNext();
                         if (!hasNext)
                             toRemove.Add(referenceExpression);
-                        myContainer.InvalidateCachedValues(referenceExpression);
+                        Invalidate(referenceExpression);
                     }
                 }
                 toRemove.ForEach(t => myReferenceInvalidateBarriers.Remove(t));
@@ -344,14 +341,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 switch (element)
                 {
                     case ILoopStatement loopStatement:
-                        myContainer.InvalidateCachedValues();
+                        InvalidateAll();
                         loopStatement.Body.ProcessThisAndDescendants(this);
-                        myContainer.InvalidateCachedValues();
+                        InvalidateAll();
                         break;
                     case ISwitchSection switchSection:
-                        myContainer.InvalidateCachedValues();
+                        InvalidateAll();
                         switchSection.ProcessDescendants(this);
-                        myContainer.InvalidateCachedValues();
+                        InvalidateAll();
                         break;
                 }
                 
@@ -361,10 +358,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 }
             }
 
+            public override void VisitAssignmentExpression(IAssignmentExpression assignmentExpressionParam)
+            {
+                assignmentExpressionParam.Source.ProcessThisAndDescendants(this);
+                assignmentExpressionParam.Dest.ProcessThisAndDescendants(this);
+            }
+
+            public override void VisitInvocationExpression(IInvocationExpression invocationExpressionParam)
+            {
+                invocationExpressionParam.ArgumentList.ProcessThisAndDescendants(this);
+                invocationExpressionParam.InvokedExpression.ProcessThisAndDescendants(this);
+            }
+
             public void ProcessAfterInterior(ITreeNode element)
             {
             }
 
+            private void Invalidate(IReferenceExpression referenceExpression)
+            {
+                myContainer.InvalidateCachedValues(referenceExpression);
+                myReferenceInvalidateBarriers.Remove(referenceExpression);
+            }
+
+            private void InvalidateAll()
+            {
+                myReferenceInvalidateBarriers.Clear();
+                myContainer.InvalidateCachedValues();
+            }
+            
             public bool ProcessingIsFinished => false;
         } 
     }
