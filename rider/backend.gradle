@@ -251,7 +251,14 @@ task unzipReSharperSdk(type: Sync){
     if (!backend.bundledReSharperSdkPath.isDirectory()) {
         dependsOn configurations.resharper
         def zipFile = configurations.resharper.singleFile
-        backend.downloadedReSharperSdkPath = new File(zipFile.parentFile, "JetBrains.ReSharper.SDK")
+
+        // Unzip to the gradle cache folder, unless we're on Windows, where doing that hits the file path length limit
+        if (isWindows) {
+            backend.downloadedReSharperSdkPath = new File(repoRoot, "resharper/build/JetBrains.ReSharper.SDK")
+        }
+        else {
+            backend.downloadedReSharperSdkPath = new File(zipFile.parentFile, "JetBrains.ReSharper.SDK")
+        }
 
         from { configurations.resharper.collect { zipTree(it) } }
         into backend.downloadedReSharperSdkPath
