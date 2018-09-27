@@ -7,9 +7,11 @@ using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Metadata.Access;
 using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Features.XamlRendererHost.Preview;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -122,14 +124,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     return;
                 }
                 
-                var currentConnectionLifetime = Lifetimes.Define(run.Lifetime);
-                myUnityEditorProtocol.UnityModel.Change.Advise_NoAcknowledgement(currentConnectionLifetime.Lifetime, args =>
+                myUnityEditorProtocol.UnityModel.View(run.Lifetime, (lifetime, model) =>
                 {
-                    if (args.HasNew && args.New == null)
-                        currentConnectionLifetime.Terminate();
+                    // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
+                    if (model != null)
+                        RunInternal(run, lifetime, model, tcs);
                 });
-            
-                RunInternal(run, currentConnectionLifetime.Lifetime, myUnityEditorProtocol.UnityModel.Value, tcs);
             });
 
             return tcs.Task;
@@ -219,7 +219,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 tcs.SetResult(true);
             });
 
-            unityModel.UnitTestLaunch.Value = launch;
+            unityModel.UnitTestLaunch.SetValue(launch);
         }
 
         private IEnumerable<IUnitTestElement> CollectElementsToRunInUnityEditor(IUnitTestRun firstRun)

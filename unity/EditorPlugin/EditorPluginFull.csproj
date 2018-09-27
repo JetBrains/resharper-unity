@@ -3,7 +3,7 @@
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Full</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>UNITY_2017_3</DefineConstants>
   </PropertyGroup>
