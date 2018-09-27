@@ -1,0 +1,15 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class ReturnTest
+    {
+        public Vector3 Test(Transform t)
+        {
+          var position = t.position;
+          position = position + posi{caret}tion;
+          t.position = position;
+          return position;
+        }
+    }
+}

@@ -105,9 +105,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                     {
                         foreach (var reference in myReferences.Reverse())
                         {
-                            if (reference.GetContainingStatement() == myCacheAnchor)
+                            if (reference.GetContainingStatement() == myRestoreAnchor)
                             {
-                                reference.ReplaceBy(factory.CreateReferenceExpression("$0", name));
+                                reference.ReplaceBy(factory.CreateExpression("($0 = $1)", originValue, name));
                                 break;
                             }
                         }

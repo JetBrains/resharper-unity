@@ -1,0 +1,21 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class IfTest
+    {
+        public void Test(Transform t)
+        {
+            if (true)
+            {
+                t.position = t.position + t.position;
+            }
+            else
+            {
+              var position = t.position;
+              position = position + posi{caret}tion;
+              t.position = position;
+            }
+        }
+    }
+}
