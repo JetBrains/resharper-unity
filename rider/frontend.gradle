@@ -42,7 +42,10 @@ intellij {
     // takes precedence to the Rider special handling. If we set it to an invalid path, we get the default IntelliJ SDK
     // handling of unzipping inside the gradle cache folder. We'll prefer this to the build folder, so we don't get
     // multiple copies if we have multiple working directories
-    ideaDependencyCachePath = "/this/is/not/a/valid/path"
+    // BUT... using the default gradle cache means we hit Windows path length limit. Sigh
+    if (!isWindows) {
+        ideaDependencyCachePath = "/this/is/not/a/valid/path"
+    }
 
     // Sources aren't available for Rider
     downloadSources = false

@@ -3,7 +3,7 @@ def backendGroup = 'backend'
 
 import java.util.regex.Pattern
 
-ext.backend = new BackendHelper(ext.repoRoot, buildDir, logger, project)
+ext.backend = new BackendHelper(ext.repoRoot, buildDir, logger, project, ext.productVersion)
 
 class BackendHelper {
     File repositoryRoot
@@ -16,13 +16,16 @@ class BackendHelper {
     File bundledReSharperSdkPath
     File downloadedReSharperSdkPath
     File bundledRiderSdkPath
-    Project project
 
-    BackendHelper(File repoRoot, File buildDir, Logger logger, Project project) {
+    private Project project
+    private String productVersion
+
+    BackendHelper(File repoRoot, File buildDir, Logger logger, Project project, String productVersion) {
         repositoryRoot = repoRoot
         assert repositoryRoot.isDirectory()
 
         this.project = project
+        this.productVersion = productVersion
 
         backendRoot = new File(repositoryRoot, 'resharper')
         assert backendRoot.isDirectory()
@@ -56,18 +59,20 @@ class BackendHelper {
         }
 
         // TODO: This has common logic with getRdLibDirectory
-        assert project.intellij != null
 
-        // TODO: What if ideaDependencyCachePath is null? (When we've fixed gradle intellij plugin)
-        assert project.intellij.ideaDependencyCachePath != null
-        def root = new File(project.intellij.ideaDependencyCachePath)
-        if (!root.isDirectory()) {
+        File root = new File(repositoryRoot, "rider/build/riderRD-$productVersion-SNAPSHOT")
+        if (project.intellij.ideaDependencyCachePath != null) {
+            root = new File(project.intellij.ideaDependencyCachePath)
+        }
+        if (root == null || !root.isDirectory()) {
             // If this assert fires, then you've likely called getRiderSdkPath during configuration
             // Try to wrap this call in a closure, so that it's evaluated at execution time, once the
             // intellij dependencies have been downloaded
             assert project.intellij.ideaDependency != null
             root = new File(project.intellij.ideaDependency.classes.absolutePath)
         }
+
+        assert root != null
 
         def sdkRoot = new File(root, "lib/ReSharperHostSdk")
         assert sdkRoot.isDirectory()
