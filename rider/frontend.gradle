@@ -96,7 +96,7 @@ prepareSandbox {
         dependsOn nunit
     }
 
-    // Have dependent tasks use uptodateWhen { project.isRunningUnderCi etc. }
+    // Have dependent tasks use uptodateWhen { project.buildServer.automatedBuild etc. }
     //inputs.files(buildRiderPlugin.outputs)
     //inputs.files(buildUnityEditorPlugin.packedPath)
 

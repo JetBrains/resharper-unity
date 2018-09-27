@@ -1,6 +1,8 @@
+import com.jetbrains.rider.plugins.gradle.buildServer.BuildServerKt
+
 task publishCiBuildNumber {
     doLast {
-        ci.SetBuildNumber(version)
+        buildServer.buildNumber = version
     }
 }
 
@@ -8,135 +10,10 @@ task publishCiBuildData {
     dependsOn publishCiBuildNumber
 }
 
+ext.buildServer = BuildServerKt.initBuildServer(gradle)
 
-
-if (System.env['TEAMCITY_VERSION'] != null) {
-    ext.ci = new TeamCityService()
-    ext.isBuildingUnderCi = true
-    gradle.taskGraph.addTaskExecutionListener(new TeamCityEventLogger(ci))
-} else if (System.env['TRAVIS'] != null) {
-    ext.ci = new TravisService()
-    ext.isBuildingUnderCi = true
-    gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger(ci))
-} else {
-    ext.ci = new NullService()
-    ext.isBuildingUnderCi = false
-}
-
-if (ext.isBuildingUnderCi) {
+if (buildServer.automatedBuild) {
     BuildConfiguration="Release"
 
     buildPlugin.finalizedBy publishCiBuildData
 }
-
-
-
-
-interface CIService {
-    void Progress(String message)
-    void OpenBlock(String name, String description)
-    void CloseBlock(String name)
-    void PublishArtifact(File path)
-}
-
-class NullService implements CIService {
-
-    void Progress(String message) {
-        println message
-    }
-
-    void OpenBlock(String name, String description) { }
-    void CloseBlock(String name) { }
-
-    void PublishArtifact(File path) {
-        println "Publish: $path.absolutePath"
-    }
-
-    void SetBuildNumber(String version) {
-        println "Build: $version"
-    }
-}
-
-class TeamCityService implements CIService {
-
-    // TODO: These values should be escaped
-    void Progress(String message) {
-        println "##teamcity[progressMessage '$message']"
-    }
-
-    void OpenBlock(String name, String description) {
-        println "##teamcity[blockOpened name='$name' description='$description']"
-    }
-
-    void CloseBlock(String name) {
-        println "##teamcity[blockClosed name='$name']"
-    }
-
-    void PublishArtifact(File path) {
-        println "##teamcity[publishArtifacts '$path.absolutePath']"
-    }
-
-    void SetBuildNumber(String version) {
-        println "##teamcity[buildNumber '$version']"
-    }
-}
-
-class TeamCityEventLogger extends BuildAdapter implements TaskExecutionListener {
-
-    private CIService ci
-
-    TeamCityEventLogger(CIService ci) {
-        this.ci = ci
-    }
-
-    void beforeExecute(Task task) {
-        ci.Progress("gradle:$task.name")
-        ci.OpenBlock("gradle:$task.name", "gradle:$task.name")
-    }
-
-    void afterExecute(Task task, TaskState state) {
-        ci.CloseBlock("gradle:$task.name")
-    }
-}
-
-
-class TravisService implements CIService {
-
-    void Progress(String message) {
-        println message
-    }
-
-    void OpenBlock(String name, String description) {
-        println "travis_fold:start:$name\033[33;1m:$description\033[0m"
-    }
-
-    void CloseBlock(String name) {
-        println "\ntravis_fold:end:$name\r"
-    }
-
-    void PublishArtifact(File path) {
-        println "Artifact: $path.absolutePath"
-    }
-
-    void SetBuildNumber(String version) {
-        println "Build number: $version"
-    }
-}
-
-class TravisEventLogger extends BuildAdapter implements TaskExecutionListener {
-
-    private CIService ci
-
-    TravisEventLogger(CIService ci) {
-        this.ci = ci
-    }
-
-    void beforeExecute(Task task) {
-        ci.OpenBlock(task.name, task.name)
-    }
-
-    void afterExecute(Task task, TaskState state) {
-        ci.CloseBlock(task.name)
-    }
-}
-

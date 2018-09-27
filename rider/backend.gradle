@@ -93,7 +93,7 @@ class MSBuildTask extends DefaultTask {
 
     @TaskAction
     def build() {
-        project.ci.Progress("Building $buildFile ($project.BuildConfiguration)")
+        project.buildServer.progress("Building $buildFile ($project.BuildConfiguration)")
 
         def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", "/v:${getVerbosity()}", '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
 
@@ -145,7 +145,7 @@ class MSBuildTask extends DefaultTask {
 
     def getVerbosity() {
         // TODO: Remove this when changing project build config to call gradle with --info
-        if (project.ext.isBuildingUnderCi) {
+        if (project.buildServer.automatedBuild) {
             return "normal"
         }
         switch (project.gradle.startParameter.logLevel) {
@@ -189,7 +189,7 @@ class GenerateBuildPropsTask extends DefaultTask {
 
     @TaskAction
     def generate() {
-        project.ci.Progress("Generating Build.props for $packageName")
+        project.buildServer.progress("Generating Build.props for $packageName")
         def version = packageVersion.get()
         logger.info("$msBuildParameter=$version")
 
@@ -264,7 +264,7 @@ task unzipReSharperSdk(type: Sync){
         into backend.downloadedReSharperSdkPath
 
         doFirst {
-          ci.Progress("Unzipping ReSharper SDK to $backend.downloadedReSharperSdkPath")
+          buildServer.progress("Unzipping ReSharper SDK to $backend.downloadedReSharperSdkPath")
         }
     }
 }
@@ -300,7 +300,7 @@ task prepareNuGetConfig {
         assert riderSdkPath.isDirectory()
         assert resharperSdkPath.isDirectory()
 
-        ci.Progress("Preparing NuGet.Config")
+        buildServer.progress("Preparing NuGet.Config")
 
         def nugetConfigText = """<?xml version="1.0" encoding="utf-8"?>
     <configuration>
@@ -324,7 +324,7 @@ task restoreUnityEditorPluginPackages(type: nugetRestore.class) {
             'https://api.nuget.org/v3/index.json'
     ]
     doFirst {
-        project.ci.Progress("Restoring packages for $solutionFile")
+        project.buildServer.progress("Restoring packages for $solutionFile")
 
         // Add in doFirst, so we get a chance to download the SDKs
         sources.add(project.backend.getRiderSdkPath())
@@ -342,7 +342,7 @@ task restoreReSharperHostPluginPackages(type: nugetRestore.class) {
             'https://api.nuget.org/v3/index.json'
     ]
     doFirst {
-        project.ci.Progress("Restoring packages for $solutionFile")
+        project.buildServer.progress("Restoring packages for $solutionFile")
 
         // Add in doFirst, so we get a chance to download the SDKs
         sources.add(project.backend.getRiderSdkPath())
@@ -450,7 +450,7 @@ task packReSharperPlugin(type: MonoExecTask) {
     args = arguments
 
     doFirst {
-        ci.Progress("Packing: $nuspecFile.name")
+        buildServer.progress("Packing: $nuspecFile.name")
     }
 }
 
@@ -469,7 +469,7 @@ task packReSharperPlugin(type: MonoExecTask) {
 //    ]
 //
 //    doFirst {
-//        ci.Progress("Packing: $nuspecFile.name")
+//        buildServer.progress("Packing: $nuspecFile.name")
 //    }
 //}
 
@@ -477,7 +477,7 @@ task publishCiBackendArtifacts {
     inputs.file(packReSharperPlugin.outputs)
 
     doLast {
-        ci.PublishArtifact(packReSharperPlugin.outputs.files.singleFile)
+        buildServer.publishArtifact(packReSharperPlugin.outputs.files.singleFile)
     }
 }
 publishCiBuildData.dependsOn publishCiBackendArtifacts
