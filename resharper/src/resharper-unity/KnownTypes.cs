@@ -22,7 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName ScriptableObject = new ClrTypeName("UnityEngine.ScriptableObject");
         public static readonly IClrTypeName SerializeField = new ClrTypeName("UnityEngine.SerializeField");
         public static readonly IClrTypeName Transform = new ClrTypeName("UnityEngine.Transform");
-
+        public static readonly IClrTypeName Physics = new ClrTypeName("UnityEngine.Physics");
+        public static readonly IClrTypeName Physics2D = new ClrTypeName("UnityEngine.Physics2D");
+        
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");
         public static readonly IClrTypeName SyncVarAttribute =

@@ -65,6 +65,12 @@
         <Description>Explicit string comparison with 'GameObject.tag' or 'Component.tag' is inefficient. Use the 'CompareTag' method instead.</Description>
       </Tag>
 
+      <Tag externalName="PreferNonAllocApiWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Use 'NonAlloc' api instead of methods which allocate memory</Title>
+        <Description>Reusing your buffer instead of new allocation will increase performance.</Description>
+      </Tag>
+      
       <Tag externalName="PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Use generic method overload instead of a string one</Title>
@@ -216,6 +222,17 @@
     <Parameter type="bool" name="leftOperandIsTagReference" />
     <Message value="Explicit string comparison is inefficient, use 'CompareTag' instead" />
     <Range>EqualityExpression.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="PreferNonAllocApi" configurableSeverity="Unity.PreferNonAllocApi">
+    <Parameter type="IInvocationExpression" name="invocationExpression" />
+    <Parameter type="IReferenceExpression" name="invokedExpression" />
+    <Parameter type="IMethod" name="nonAllocMethod" />
+    <Message value="Allocating method will decrease performance. Use '{0}' and reuse buffer for return value">
+      <Argument>NonAllocMethod.ShortName</Argument>
+    </Message>
+    <Range>InvokedExpression.Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
   

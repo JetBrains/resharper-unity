@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descri
         protected override void DoTest(IProject testProject)
         {
             testProject.GetSolution().GetPsiServices().Files.CommitAllDocuments();
-            using (ITextControl textControl = OpenTextControl(testProject))
+            using (var textControl = OpenTextControl(testProject))
             {
                 var document = textControl.Document;
                 var psiSourceFile = document.GetPsiSourceFile(Solution);
