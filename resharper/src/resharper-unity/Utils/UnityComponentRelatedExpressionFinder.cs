@@ -332,4 +332,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
     
             #endregion
         }
+    
+        public class TransformParentRelatedReferenceFinder : TransformRelatedReferenceFinder
+        {
+            public TransformParentRelatedReferenceFinder([NotNull] IReferenceExpression referenceExpression)
+                : base(referenceExpression)
+            {
+            }
+
+            protected override bool IsReferenceExpressionNotRelated([NotNull] IReferenceExpression currentReference, 
+                IClrDeclaredElement currentElement, ITypeElement currentContainingType)
+            {
+                return !ourTransformConflicts.Contains(currentElement.ShortName);
+            }
+            
+            #region TransformPropertiesConflicts
+
+            // Short name of transform property to short name of method or properties which get change source property.
+            // If this map do not contain transform property, there is no conflicts for this property
+            private static readonly ISet<string> ourTransformConflicts = new HashSet<string>()
+            {
+                "eulerAngles",
+                "localEulerAngles",
+                "rotation",
+                "localRotation",
+                "SetPositionAndRotation",
+                "Rotate",
+                "RotateAround",
+                "LookAt",
+                "RotateAroundLocal",
+                "position",
+                "localPosition",
+                "Translate",
+                "SetParent"
+            };
+
+            #endregion
+        }
 }

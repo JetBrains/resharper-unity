@@ -89,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     var fullReferenceExpression = ReferenceExpressionNavigator.GetTopByQualifierExpression(referenceExpression);
                     if (IsUsageSetTransformParent(fullReferenceExpression, out var stayInWorldCoords, out var transform))
                     {
-                        var finder = new TransformRelatedReferenceFinder(referenceExpression);
+                        var finder = new TransformParentRelatedReferenceFinder(referenceExpression);
                         var relatedExpressions = finder.GetRelatedExpressions(scope, expression).FirstOrDefault();
                         if (relatedExpressions == null || relatedExpressions.GetTreeStartOffset() >= fullReferenceExpression.GetTreeStartOffset())
                             consumer.AddHighlighting(new InstantiateWithoutParentWarning(fullReferenceExpression, expression, transform, stayInWorldCoords));
