@@ -107,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                         {
                             if (reference.GetContainingStatement() == myRestoreAnchor)
                             {
-                                reference.ReplaceBy(factory.CreateExpression("($0 = $1)", originValue, name));
+                                reference.ReplaceBy(factory.CreateReferenceExpression("$0", originValue));
                                 break;
                             }
                         }
