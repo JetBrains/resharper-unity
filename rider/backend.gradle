@@ -1,67 +1,9 @@
 def backendGroup = 'backend'
 
-import java.util.regex.Pattern
 import com.jetbrains.rider.plugins.gradle.BackendPaths
 import com.jetbrains.rider.plugins.gradle.tasks.*
 
 ext.backend = new BackendPaths(project, logger, ext.repoRoot, ext.productVersion)
-
-class GenerateBuildPropsTask extends DefaultTask {
-    @Input
-    def packagesDirectory
-    String packageName
-    String msBuildParameter
-
-    @Input
-    def Provider<String> packageVersion = project.providers.provider({ parsePackageVersion() })
-
-    @OutputFile
-    def Provider<File> propsFile = project.providers.provider({ new File("$project.repoRoot/resharper/${packageName}.generated.props") })
-
-    @TaskAction
-    def generate() {
-        project.buildServer.progress("Generating Build.props for $packageName")
-        def version = packageVersion.get()
-        logger.info("$msBuildParameter=$version")
-
-        project.file(propsFile).text = """<Project>
-  <PropertyGroup>
-    <$msBuildParameter>[$version]</$msBuildParameter>    
-  </PropertyGroup>
-</Project>
-"""
-    }
-
-    private String parsedPackageVersion = null
-    def parsePackageVersion() {
-        if (parsedPackageVersion != null) {
-            return parsedPackageVersion
-        }
-
-        def packagesDir = project.file(packagesDirectory)
-        assert packagesDir.isDirectory()
-        def escapedPackageName = Pattern.quote(packageName)
-
-        logger.info("Looking for package $packageName in $packagesDir")
-
-        parsedPackageVersion = packagesDir.listFiles().collect { File f ->
-            if (f.isFile()) {
-                logger.trace(f.name)
-
-                def match = (f.name =~ /^(?i)$escapedPackageName\.((\d+\.)+\d+((-eap|-snapshot)\d+(d?)(pre|internal)?)?)\.nupkg\u0024/)
-                if (match.matches()) {
-                    return match[0][1]
-                }
-            }
-
-            return null
-        }.find { String s -> s != null }
-
-        assert packageVersion != null : 'No files found matching the package version regex'
-        return packageVersion
-    }
-}
-
 
 nuget {
     version = "4.4.1"
