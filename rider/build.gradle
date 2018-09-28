@@ -1,28 +1,15 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-buildscript {
-    ext.rd_version = '0.183.47'
-
-    repositories {
-        maven { url "https://cache-redirector.jetbrains.com/myget.org.rd-snapshots.maven" }
-        maven { url "https://cache-redirector.jetbrains.com/maven-central" }
-    }
-
-    dependencies {
-        classpath "com.jetbrains.rd:rd-gen:${rd_version}"
-    }
-}
-
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.3-M2'
     id 'org.jetbrains.intellij' // Version comes from buildSrc
+    id 'com.jetbrains.rdgen' version '0.183.47'
     id 'com.ullink.nuget' version '2.17'
     id 'com.ullink.nunit' version '1.12'
 }
 
 
-apply plugin: 'com.jetbrains.rdgen'
 apply from: 'ci.gradle'
 
 

@@ -65,7 +65,6 @@ task generateRiderModel(type: tasks.getByName('rdgen').class) {
             namespace = "JetBrains.Rider.Model"
             directory = "$csOutput"
         }
-
     }
 }
 
