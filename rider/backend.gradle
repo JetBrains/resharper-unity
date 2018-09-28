@@ -1,91 +1,9 @@
 def backendGroup = 'backend'
 
-
 import java.util.regex.Pattern
+import com.jetbrains.rider.plugins.gradle.BackendPaths
 
-ext.backend = new BackendHelper(ext.repoRoot, buildDir, logger, project, ext.productVersion)
-
-class BackendHelper {
-    File repositoryRoot
-    File unityRoot
-    File backendRoot
-    File resharperHostPluginSolution
-    File unityPluginSolution
-    File unityPluginSingleProject   // For "rider only" configuration
-    File riderTestsProject  // For "rider only" configuration
-    File bundledReSharperSdkPath
-    File downloadedReSharperSdkPath
-    File bundledRiderSdkPath
-
-    private Project project
-    private String productVersion
-
-    BackendHelper(File repoRoot, File buildDir, Logger logger, Project project, String productVersion) {
-        repositoryRoot = repoRoot
-        assert repositoryRoot.isDirectory()
-
-        this.project = project
-        this.productVersion = productVersion
-
-        backendRoot = new File(repositoryRoot, 'resharper')
-        assert backendRoot.isDirectory()
-
-        unityRoot = new File(repositoryRoot, 'unity')
-        unityPluginSolution = new File(unityRoot, 'JetBrains.Rider.Unity.Editor.sln')
-        unityPluginSingleProject = new File(unityRoot, 'EditorPlugin/EditorPlugin.csproj')
-
-        resharperHostPluginSolution = new File(backendRoot, 'src/resharper-unity.sln')
-        assert resharperHostPluginSolution.isFile()
-
-        riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
-        assert riderTestsProject.isFile()
-
-        bundledRiderSdkPath = new File(repositoryRoot, "rider/dependencies")
-        if (bundledRiderSdkPath.isDirectory()) {
-            def riderSdkPath = new File(bundledRiderSdkPath.canonicalPath, "lib/ReSharperHostSdk")
-            assert riderSdkPath.isDirectory()
-            logger.lifecycle("Rider SDK bundle found: $riderSdkPath.canonicalPath")
-        }
-
-        bundledReSharperSdkPath = new File(repositoryRoot, "rider/build/JetBrains.ReSharperUltimate.Packages")
-        if (bundledReSharperSdkPath.isDirectory()) {
-            logger.lifecycle("ReSharper SDK bundle found: $bundledReSharperSdkPath.canonicalPath")
-        }
-    }
-
-    def getRiderSdkPath() {
-        if (bundledRiderSdkPath.isDirectory()) {
-            return bundledRiderSdkPath
-        }
-
-        // TODO: This has common logic with getRdLibDirectory
-
-        File root = new File(repositoryRoot, "rider/build/riderRD-$productVersion-SNAPSHOT")
-        if (project.intellij.ideaDependencyCachePath != null) {
-            root = new File(project.intellij.ideaDependencyCachePath)
-        }
-        if (root == null || !root.isDirectory()) {
-            // If this assert fires, then you've likely called getRiderSdkPath during configuration
-            // Try to wrap this call in a closure, so that it's evaluated at execution time, once the
-            // intellij dependencies have been downloaded
-            assert project.intellij.ideaDependency != null
-            root = new File(project.intellij.ideaDependency.classes.absolutePath)
-        }
-
-        assert root != null
-
-        def sdkRoot = new File(root, "lib/ReSharperHostSdk")
-        assert sdkRoot.isDirectory()
-        return sdkRoot
-    }
-
-    def getReSharperSdkPath() {
-        if (bundledReSharperSdkPath.isDirectory()) {
-            return bundledReSharperSdkPath
-        }
-        return downloadedReSharperSdkPath
-    }
-}
+ext.backend = new BackendPaths(project, logger, ext.repoRoot, ext.productVersion)
 
 class MSBuildTask extends DefaultTask {
     @InputFile
@@ -408,20 +326,6 @@ task buildReSharperHostPlugin {
     dependsOn buildRiderOnlyPlugin, buildFullReSharperPlugin
 }
 
-nunit {
-    onlyIf { !project.shouldBuildRiderOnly }
-    dependsOn buildFullReSharperPlugin
-    nunitVersion "2.6.4"
-    framework "net-4.6.1"
-    shadowCopy false
-    outputs.upToDateWhen { false } // we should always run unit tests when RunTests are true
-
-    def buildDir = new File(backend.repositoryRoot, "resharper/build")
-    def riderTestsDll = new File(buildDir, "tests.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
-    def resharperTestsDll = new File(buildDir, "tests.resharper/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")    
-    testAssemblies = [riderTestsDll, resharperTestsDll]
-}
-
 task buildUnityEditorPlugin {
     group = backendGroup
     description = 'Build the Unity editor plugin'
@@ -472,6 +376,20 @@ task packReSharperPlugin(type: MonoExecTask) {
 //        buildServer.progress("Packing: $nuspecFile.name")
 //    }
 //}
+
+nunit {
+    onlyIf { !project.shouldBuildRiderOnly }
+    dependsOn buildFullReSharperPlugin
+    nunitVersion "2.6.4"
+    framework "net-4.6.1"
+    shadowCopy false
+    outputs.upToDateWhen { false } // we should always run unit tests when RunTests are true
+
+    def buildDir = new File(backend.repositoryRoot, "resharper/build")
+    def riderTestsDll = new File(buildDir, "tests.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
+    def resharperTestsDll = new File(buildDir, "tests.resharper/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")
+    testAssemblies = [riderTestsDll, resharperTestsDll]
+}
 
 task publishCiBackendArtifacts {
     inputs.file(packReSharperPlugin.outputs)

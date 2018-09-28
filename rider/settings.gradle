@@ -1,3 +1,4 @@
+// Use these repositories to resolve plugins applied with the plugins { } block
 pluginManagement {
     repositories {
         maven { url "https://cache-redirector.jetbrains.com/plugins.gradle.org" }
