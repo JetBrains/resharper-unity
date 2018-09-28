@@ -2,80 +2,9 @@ def backendGroup = 'backend'
 
 import java.util.regex.Pattern
 import com.jetbrains.rider.plugins.gradle.BackendPaths
-import com.jetbrains.rider.plugins.gradle.tasks.MonoExecTask
+import com.jetbrains.rider.plugins.gradle.tasks.*
 
 ext.backend = new BackendPaths(project, logger, ext.repoRoot, ext.productVersion)
-
-class MSBuildTask extends DefaultTask {
-    @InputFile
-    File buildFile
-
-    @TaskAction
-    def build() {
-        project.buildServer.progress("Building $buildFile ($project.BuildConfiguration)")
-
-        def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", "/v:${getVerbosity()}", '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
-
-        def msbuildPath = findMSBuildPath()
-        logger.info("msbuild call=$msbuildPath " + arguments.toString())
-
-        project.exec {
-            executable = msbuildPath
-            args = arguments
-            standardOutput = System.out
-        }
-    }
-
-    def findMSBuildPath() {
-        if (project.ext.has('msbuildPath')) {
-            logger.info("msbuildPath (cached): $project.msbuildPath")
-            return project.msbuildPath
-        }
-
-        project.ext.msbuildPath = project.isWindows ? findMSBuildPathWindows() : findMSBuildPathUnix()
-        logger.info "msbuildPath: $project.msbuildPath"
-        return project.msbuildPath
-    }
-
-    def findMSBuildPathWindows() {
-        def stdout = new ByteArrayOutputStream()
-        project.exec {
-            executable = project.file(new File(project.backend.repositoryRoot, 'tools/vswhere.exe'))
-            args = [ "-latest", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-property", "installationPath" ]
-            standardOutput = stdout
-        }
-
-        def buildToolsDir = project.file(stdout.toString().trim())
-        assert buildToolsDir.isDirectory()
-
-        return project.file(new File(buildToolsDir, 'MSBuild/15.0/Bin/MSBuild.exe'))
-    }
-
-    def findMSBuildPathUnix() {
-        def stdout = new ByteArrayOutputStream()
-        project.exec {
-            executable = 'which'
-            args = [ 'msbuild' ]
-            standardOutput = stdout
-        }
-
-        return project.file(stdout.toString().trim())
-    }
-
-    def getVerbosity() {
-        // TODO: Remove this when changing project build config to call gradle with --info
-        if (project.buildServer.automatedBuild) {
-            return "normal"
-        }
-        switch (project.gradle.startParameter.logLevel) {
-            case LogLevel.QUIET:        return "quiet"
-            case LogLevel.LIFECYCLE:    return "minimal"
-            case LogLevel.INFO:         return "normal"
-            case LogLevel.DEBUG:        return "detailed"
-        }
-        return "normal"
-    }
-}
 
 class GenerateBuildPropsTask extends DefaultTask {
     @Input
