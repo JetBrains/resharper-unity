@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -49,8 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (parameters.Count != 1) 
                 return;
 
-            var containingMethodDeclaration = expression.GetContainingNode<IMethodDeclaration>();
-            if (containingMethodDeclaration == null)
+            var scope = GetScope(expression);
+            if (scope == null)
                 return;
             
             IEnumerable<ITreeNode> usages = null;
@@ -64,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var usageProvider = data.GetUsagesProvider();
             if (declaration != null)
             {
-                usages = usageProvider.GetUsages(declaration.DeclaredElement, containingMethodDeclaration.Body);
+                usages = usageProvider.GetUsages(declaration.DeclaredElement, scope);
             }
             else
             {
@@ -73,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 var destInfo = dest?.Reference.Resolve();
                 if (destInfo != null && destInfo.ResolveErrorType == ResolveErrorType.OK)
                 {
-                    usages = usageProvider.GetUsages(destInfo.DeclaredElement.NotNull(), containingMethodDeclaration.Body);
+                    usages = usageProvider.GetUsages(destInfo.DeclaredElement.NotNull(), scope);
                 }
                 else
                 {
@@ -88,12 +89,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     var fullReferenceExpression = ReferenceExpressionNavigator.GetTopByQualifierExpression(referenceExpression);
                     if (IsUsageSetTransformParent(fullReferenceExpression, out var stayInWorldCoords, out var transform))
                     {
-                        consumer.AddHighlighting(new InstantiateWithoutParentWarning(fullReferenceExpression, expression, transform, stayInWorldCoords));
+                        var finder = new TransformRelatedReferenceFinder(referenceExpression);
+                        var relatedExpressions = finder.GetRelatedExpressions(scope, expression).FirstOrDefault();
+                        if (relatedExpressions == null || relatedExpressions.GetTreeStartOffset() >= fullReferenceExpression.GetTreeStartOffset())
+                            consumer.AddHighlighting(new InstantiateWithoutParentWarning(fullReferenceExpression, expression, transform, stayInWorldCoords));
                         return;
                     }
                 }
             }
-        } 
+        }
+
+        private ITreeNode GetScope(ITreeNode expression)
+        {
+            ITreeNode parent = expression.Parent;
+            while (parent != null)
+            {
+                ICSharpDeclaration declaration = null;
+                if (parent is ICSharpClosure closure)
+                    declaration = closure;
+                if (parent is IMethodDeclaration md)
+                    declaration = md;
+                
+                if (declaration != null)
+                    return (ITreeNode) declaration.GetCodeBody().BlockBody ?? declaration.GetCodeBody().ExpressionBody;
+                parent = parent.Parent;
+            }
+
+            return null;
+        }
 
         private bool IsUsageSetTransformParent([NotNull]IReferenceExpression referenceExpression, out bool stayInWorldCoords,[CanBeNull] out ICSharpExpression expression)
         {
