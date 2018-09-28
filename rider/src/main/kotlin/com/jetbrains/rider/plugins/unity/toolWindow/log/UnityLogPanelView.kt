@@ -44,7 +44,7 @@ import javax.swing.event.DocumentEvent
 class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
-        .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME, project))
+        .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME.name, project))
         .console as ConsoleViewImpl
 
     private val eventList = UnityLogPanelEventList().apply {
