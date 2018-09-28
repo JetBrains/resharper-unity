@@ -1,0 +1,20 @@
+﻿using UnityEngine;
+
+public class AvailablePrePreprocessorDirectivesTest : MonoBehaviour
+{
+    public void Method()
+    {
+        Physics.|RaycastAll|(0)(new Ray(
+            #if true
+            Vector3.zero
+            #else
+            Vector3.back
+            #endif
+            , Vector3.zero));   
+    }
+}
+
+------------------------------------------------
+0: Allocating method will decrease performance. Use 'RaycastNonAlloc' and reuse buffer for return value
+QUICKFIXES:
+Convert to RaycastNonAlloc

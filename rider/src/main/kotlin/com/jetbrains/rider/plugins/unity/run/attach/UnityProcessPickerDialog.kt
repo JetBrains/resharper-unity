@@ -4,16 +4,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.VerticalFlowLayout
-import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.PortField
-import com.intellij.ui.ScrollPaneFactory
-import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.dialog
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Insets
+import java.awt.event.MouseEvent
 import javax.swing.*
 
 class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
@@ -36,6 +34,16 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 isOKActionEnabled = list.selectedValue.allowDebugging
             }
         }
+
+        object: DoubleClickListener() {
+            override fun onDoubleClick(p0: MouseEvent?): Boolean {
+                if (list.selectedIndex != -1) {
+                    doOKAction()
+                }
+                return true
+            }
+        }.installOn(list)
+
         init()
         setResizable(false)
     }

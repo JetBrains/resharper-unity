@@ -6,7 +6,6 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.SystemProperties
 import com.intellij.util.io.exists
 import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -64,9 +63,9 @@ class UnityInstallationFinder(private val project: Project) {
     }
 
     private fun tryGetApplicationPathFromEditorInstanceJson(): Path? {
-        // Get the version from Library/EditorInstance.json and try and heuristically try to find the application.
-        // Later versions of Unity will write this file, and it will only exist while the project is open. The protocol
-        // is more accurate, as it will give us the actual application path
+        // Get the version from Library/EditorInstance.json and try to heuristically find the application. The plugin
+        // and later  versions of Unity will write this file, and it will only exist while the project is open. The
+        // protocol is more accurate, as it will give us the actual application path
         val (status, editorInstanceJson) = EditorInstanceJson.load(project)
         if (status == EditorInstanceJsonStatus.Valid) {
             return tryGetApplicationPathFromVersion(editorInstanceJson!!.version)
@@ -78,7 +77,7 @@ class UnityInstallationFinder(private val project: Project) {
         // Get the version from ProjectSettings/ProjectVersion.txt, and heuristically try to find the application.
         // This is a best effort attempt to find the application, as the version is the version of Unity that last saved
         // the project, rather than last opened it, and we're guessing where the application folder is
-        val projectVersionTxt = project.projectDir.findFileByRelativePath("ProjectSettings/ProjectVersion.txt") ?: return null
+        val projectVersionTxt = project.refreshAndFindFile("ProjectSettings/ProjectVersion.txt") ?: return null
         val text = VfsUtil.loadText(projectVersionTxt)
         val result = Regex("""m_EditorVersion: (?<version>.*$)""").find(text)
         return result?.let { it.groups["version"]?.value }?.let { tryGetApplicationPathFromVersion(it) }
