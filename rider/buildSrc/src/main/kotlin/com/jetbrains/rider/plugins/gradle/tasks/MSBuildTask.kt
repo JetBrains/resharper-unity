@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.gradle.tasks
 
 import com.jetbrains.rider.plugins.gradle.buildServer.BuildServer
+import com.jetbrains.rider.plugins.gradle.buildServer.buildServer
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
@@ -21,9 +22,8 @@ open class MSBuildTask: DefaultTask() {
     @TaskAction
     fun build() {
         val buildConfiguration = project.extra["BuildConfiguration"] as String
-        val buildServer = project.extra["buildServer"] as BuildServer
         val file = buildFile.asFile.get()
-        buildServer.progress("Building $file ($buildConfiguration)")
+        project.buildServer.progress("Building $file ($buildConfiguration)")
 
         val arguments = listOf(file.absolutePath,
                 "/p:Configuration=$buildConfiguration",

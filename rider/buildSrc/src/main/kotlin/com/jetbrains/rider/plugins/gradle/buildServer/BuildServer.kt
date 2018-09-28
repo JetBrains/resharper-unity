@@ -1,9 +1,11 @@
 package com.jetbrains.rider.plugins.gradle.buildServer
 
+import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionListener
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.tasks.TaskState
+import org.gradle.kotlin.dsl.extra
 import java.io.File
 
 fun initBuildServer(gradle: Gradle): BuildServer {
@@ -57,3 +59,6 @@ class BuildServerEventLogger(private val server: BuildServer): TaskExecutionList
         server.closeBlock("gradle-${task.name}")
     }
 }
+
+val Project.buildServer : BuildServer
+    get() { return this.extra["buildServer"] as BuildServer }

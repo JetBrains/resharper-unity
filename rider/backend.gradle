@@ -253,4 +253,3 @@ task publishCiBackendArtifacts {
         buildServer.publishArtifact(packReSharperPlugin.outputs.files.singleFile)
     }
 }
-publishCiBuildData.dependsOn publishCiBackendArtifacts

@@ -1,4 +1,5 @@
 import org.apache.tools.ant.taskdefs.condition.Os
+import com.jetbrains.rider.plugins.gradle.buildServer.BuildServerKt
 
 plugins {
     id 'java'
@@ -8,9 +9,6 @@ plugins {
     id 'com.ullink.nuget' version '2.17'
     id 'com.ullink.nunit' version '1.12'
 }
-
-
-apply from: 'ci.gradle'
 
 
 ext.repoRoot = new File("..").canonicalFile
@@ -47,9 +45,14 @@ wrapper {
 
 version "${productVersion}.0.$BuildCounter"
 
-
 logger.lifecycle("version=$version")
 logger.lifecycle("Configuration=$BuildConfiguration")
+
+
+ext.buildServer = BuildServerKt.initBuildServer(gradle)
+if (buildServer.automatedBuild) {
+    BuildConfiguration = "Release"
+}
 
 
 apply from: 'backend.gradle'
@@ -97,3 +100,16 @@ task resolveDependencies {
   }
 }
 
+task publishCiBuildNumber {
+    doLast {
+        buildServer.buildNumber = version
+    }
+}
+
+task publishCiBuildData {
+    dependsOn publishCiBuildNumber, publishCiBackendArtifacts
+}
+
+if (buildServer.automatedBuild) {
+    buildPlugin.finalizedBy publishCiBuildData
+}

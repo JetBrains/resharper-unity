@@ -1,12 +1,11 @@
 package com.jetbrains.rider.plugins.gradle.tasks
 
-import com.jetbrains.rider.plugins.gradle.buildServer.BuildServer
+import com.jetbrains.rider.plugins.gradle.buildServer.buildServer
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.extra
 import java.io.File
 import java.util.regex.Pattern
 
@@ -26,8 +25,7 @@ open class GenerateBuildPropsTask: DefaultTask() {
 
     @TaskAction
     fun generate() {
-        val buildServer = project.extra["buildServer"] as BuildServer
-        buildServer.progress("Generating build.props for $packageName")
+        project.buildServer.progress("Generating build.props for $packageName")
 
         val version = packageVersion.get()
         logger.info("$msBuildParameter=$version")
