@@ -2,6 +2,7 @@ def backendGroup = 'backend'
 
 import java.util.regex.Pattern
 import com.jetbrains.rider.plugins.gradle.BackendPaths
+import com.jetbrains.rider.plugins.gradle.tasks.MonoExecTask
 
 ext.backend = new BackendPaths(project, logger, ext.repoRoot, ext.productVersion)
 
@@ -73,23 +74,6 @@ class MSBuildTask extends DefaultTask {
             case LogLevel.DEBUG:        return "detailed"
         }
         return "normal"
-    }
-}
-
-class MonoExecTask extends AbstractExecTask {
-    MonoExecTask() {
-        super(MonoExecTask.class)
-    }
-
-    @TaskAction
-    protected void exec() {
-        if (!project.isWindows) {
-            def newCommandLine = [ 'mono' ]
-            newCommandLine.addAll(commandLine)
-            commandLine = newCommandLine
-        }
-
-        super.exec()
     }
 }
 
