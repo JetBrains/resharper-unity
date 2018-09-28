@@ -19,7 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             protected readonly IReferenceExpression ComponentReferenceExpression;
             protected readonly ITypeElement ContainingType;
             protected readonly IClrDeclaredElement DeclaredElement;
-            
+
+            private bool isFound = false;
             
             public UnityComponentRelatedReferenceExpressionFinder([NotNull]IReferenceExpression referenceExpression, bool ignoreNotComponentInvocations = false)
             {
@@ -33,24 +34,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                 Assertion.Assert(ContainingType != null, "ContainingType != null");
                 
                 ComponentReferenceExpression = referenceExpression.QualifierExpression as IReferenceExpression;
-                Assertion.Assert(ComponentReferenceExpression != null, "ComponentReferenceExpression != null");
             }
 
             public IEnumerable<IReferenceExpression> GetRelatedExpressions([NotNull]ITreeNode scope, [CanBeNull] ITreeNode from = null)
             {
-                return GetRelatedExpressions(scope, from, from == null);
+                isFound = from == null;
+                return GetRelatedExpressionsInner(scope, from);
             }
-
-            private IEnumerable<IReferenceExpression> GetRelatedExpressions([NotNull] ITreeNode scope,
-                [CanBeNull] ITreeNode from, bool isFound)
+            
+            private IEnumerable<IReferenceExpression> GetRelatedExpressionsInner([NotNull] ITreeNode scope, [CanBeNull] ITreeNode from = null)
             {
-                var descendants = scope.Descendants();
-
+                var descendants = scope.ThisAndDescendants();
                 while (descendants.MoveNext())
                 {
                     var current = descendants.Current;
                     if (current == from)
                         isFound = true;
+                    
                     switch (current)
                     {
                         case ICSharpClosure _:
@@ -58,13 +58,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                             break;
                         case IInvocationExpression invocationExpression:
                             descendants.SkipThisNode();
-                            foreach (var re in GetRelatedExpressions(invocationExpression.ArgumentList, from))
+                            var argumentList = invocationExpression.ArgumentList;
+                            if (argumentList != null)
                             {
-                                if (isFound)
-                                    yield return re;
+                                foreach (var re in GetRelatedExpressionsInner(argumentList, from))
+                                {
+                                    if (isFound)
+                                        yield return re;
+                                }
                             }
-                            
-                            foreach (var re in GetRelatedExpressions(invocationExpression.InvokedExpression, from))
+
+                            var invokedExpression = invocationExpression.InvokedExpression; 
+                            foreach (var re in GetRelatedExpressionsInner(invokedExpression, from))
                             {
                                 if (isFound)
                                     yield return re;
@@ -72,19 +77,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                             
                             continue;
                         case IAssignmentExpression assignmentExpression:
-                           descendants.SkipThisNode();
-                            foreach (var re in GetRelatedExpressions(assignmentExpression.Dest, from))
+                            descendants.SkipThisNode();
+                            var source = assignmentExpression.Source;
+                            if (source != null)
                             {
-                                if (isFound)
-                                    yield return re;
+                                foreach (var re in GetRelatedExpressionsInner(source, from))
+                                {
+                                    if (isFound)
+                                        yield return re;
+                                }
                             }
-                            
-                            foreach (var re in GetRelatedExpressions(assignmentExpression.Source, from))
+
+                            var dest = assignmentExpression.Dest;
+                            if (dest != null)
                             {
-                                if (isFound)
-                                    yield return re;
+                                foreach (var re in GetRelatedExpressionsInner(dest, from))
+                                {
+                                    if (isFound)
+                                        yield return re;
+                                }
                             }
-                            
+
                             continue;
                         case IReferenceExpression referenceExpression:
                             var currentNodeDeclaredElement = referenceExpression.Reference.Resolve().DeclaredElement as IClrDeclaredElement;
@@ -94,16 +107,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                                 case IField _:
                                 case IProperty _:
                                     var qualifier = referenceExpression.QualifierExpression as IReferenceExpression;
-                                    if (qualifier == null)
+                                    if (!ReComparer.Equals(ComponentReferenceExpression, qualifier))
                                         continue;
                                     
                                     if (currentNodeContainingType == null)
                                         continue;
 
                                     if (!ContainingType.Equals(currentNodeContainingType))
-                                        continue;
-                                    
-                                    if (!ReComparer.Equals(ComponentReferenceExpression, qualifier))
                                         continue;
                                     
                                     break;

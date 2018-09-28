@@ -204,7 +204,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         inlineRestoreValue = true;
                     } else {
                         var relatedExpressions = GetFinder(lastWriteExpression).GetRelatedExpressions(writeAnchor, lastWriteExpression);
-                        inlineRestoreValue = relatedExpressions.Count() > 0;
+                        inlineRestoreValue = relatedExpressions.Any();
                     }
                 }
 
@@ -224,18 +224,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             private ITreeNode GetPreviousRelatedExpression(IReferenceExpression referenceExpression, ICSharpStatement readAnchor)
             {
                 var finder = GetFinder(referenceExpression);
-                var stopElement = finder.GetRelatedExpressions(readAnchor).FirstOrDefault();
+                var allSequence = finder.GetRelatedExpressions(readAnchor);
                 var fromSequence = finder.GetRelatedExpressions(readAnchor, referenceExpression);
+                var stopElement = fromSequence.FirstOrDefault();
 
                 ITreeNode prev = null;
-                foreach (var expression in fromSequence)
+                foreach (var expression in allSequence)
                 {
                     if (expression == stopElement)
-                        return prev;
+                        break;
                     prev = expression;
                 }
 
-                return null;
+                return prev;
             }
 
             public void InvalidateCachedValues()
@@ -272,7 +273,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 // first encounter of reference. Create group and find related expressions.
                 if (!myReferenceInvalidateBarriers.ContainsKey(referenceExpression))
                 {
-                    var relatedExpressionsEnumerator = GetFinder(referenceExpression).GetRelatedExpressions(myScope).GetEnumerator();
+                    var relatedExpressionsEnumerator = GetFinder(referenceExpression).GetRelatedExpressions(myScope, referenceExpression).GetEnumerator();
 
                     if (relatedExpressionsEnumerator.MoveNext())
                         myReferenceInvalidateBarriers[referenceExpression] = relatedExpressionsEnumerator;
@@ -330,10 +331,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     
                     if (element == current)
                     {
-                        var hasNext = enumerator.MoveNext();
-                        if (!hasNext)
-                            toRemove.Add(referenceExpression);
-                        Invalidate(referenceExpression);
+                        toRemove.Add(referenceExpression);
+                        myContainer.InvalidateCachedValues(referenceExpression);
                     }
                 }
                 toRemove.ForEach(t => myReferenceInvalidateBarriers.Remove(t));
@@ -360,24 +359,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             public override void VisitAssignmentExpression(IAssignmentExpression assignmentExpressionParam)
             {
-                assignmentExpressionParam.Source.ProcessThisAndDescendants(this);
-                assignmentExpressionParam.Dest.ProcessThisAndDescendants(this);
+                assignmentExpressionParam.Source?.ProcessThisAndDescendants(this);
+                assignmentExpressionParam.Dest?.ProcessThisAndDescendants(this);
             }
 
             public override void VisitInvocationExpression(IInvocationExpression invocationExpressionParam)
             {
-                invocationExpressionParam.ArgumentList.ProcessThisAndDescendants(this);
-                invocationExpressionParam.InvokedExpression.ProcessThisAndDescendants(this);
+                invocationExpressionParam.ArgumentList?.ProcessThisAndDescendants(this);
+                invocationExpressionParam.InvokedExpression?.ProcessThisAndDescendants(this);
             }
 
             public void ProcessAfterInterior(ITreeNode element)
             {
-            }
-
-            private void Invalidate(IReferenceExpression referenceExpression)
-            {
-                myContainer.InvalidateCachedValues(referenceExpression);
-                myReferenceInvalidateBarriers.Remove(referenceExpression);
             }
 
             private void InvalidateAll()

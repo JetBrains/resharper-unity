@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class InlinedRestoreTest
+    {
+        public void Test(Transform t)
+        {
+          var position = t.position;
+          position = position + pos{caret}ition;
+            t.position = position + position + (t.position = Vector3.Back) + t.localPosition;
+        }
+    }
+}

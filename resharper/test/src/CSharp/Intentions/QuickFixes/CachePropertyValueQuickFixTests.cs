@@ -21,5 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
          [Test] public void SwitchTest() { DoNamedTest(); }
          [Test] public void LoopTest() { DoNamedTest(); }
          [Test] public void ReturnTest() { DoNamedTest(); }
+         [Test] public void InlinedRestoreTest() { DoNamedTest(); }
      }
  }
