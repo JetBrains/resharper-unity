@@ -96,8 +96,8 @@
 
       <Tag externalName="StringBasedMethodInvocationProblemWarning.HIGHLIGHTING_ID"
            default="HINT">
-        <Title>Invocation of this method is not efficient</Title>
-        <Description>Invocation for this method results in additional overhead. Prefer use of UnityEvent, C# event, delegates or a direct method call.</Description>
+        <Title>String-based method invocation is inefficient</Title>
+        <Description>Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call.</Description>
       </Tag>
       
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
@@ -289,7 +289,7 @@
 
   <Warning name="StringBasedMethodInvocationProblem" configurableSeverity="Unity.StringBasedMethodInvocationProblem">
     <Parameter type="IReference" name="invocation" />
-    <Message value="Invocation for this method results in additional overhead. Prefer use of UnityEvent, C# event, delegates or a direct method call."/>
+    <Message value="Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call."/>
     <Range>Invocation.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
