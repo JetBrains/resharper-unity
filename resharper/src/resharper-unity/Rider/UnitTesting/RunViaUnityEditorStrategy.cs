@@ -115,7 +115,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 //                    await myUnityRefresher.Refresh(true);    
 //                }); 
 //            });
-            
+
+            var launch = SetupLaunch(run);
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
             {
                 if (myUnityEditorProtocol.UnityModel.Value == null)
@@ -124,20 +125,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     return;
                 }
                 
-                myUnityEditorProtocol.UnityModel.View(run.Lifetime, (lifetime, model) =>
+                myUnityEditorProtocol.UnityModel.View(run.Lifetime, (lifetime, m) =>
                 {
                     // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
-                    if (model != null)
-                        RunInternal(run, lifetime, model, tcs);
+                    if (m != null)
+                        SubscribeResults(run, lifetime, tcs, launch);
                 });
+                
+                var model = myUnityEditorProtocol.UnityModel.Value;
+                model.UnitTestLaunch.SetValue(launch);
             });
 
             return tcs.Task;
         }
 
-        private void RunInternal(IUnitTestRun firstRun, Lifetime connectionLifetime, EditorPluginModel unityModel, TaskCompletionSource<bool> tcs)
+        private UnitTestLaunch SetupLaunch(IUnitTestRun firstRun)
         {
-            mySolution.Locks.AssertMainThread();
             var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
             
             var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
@@ -153,7 +156,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             }
               
             var launch = new UnitTestLaunch(allNames, emptyList, emptyList, mode);
-
+            return launch;
+        }
+        
+        private void SubscribeResults(IUnitTestRun firstRun, Lifetime connectionLifetime, TaskCompletionSource<bool> tcs, UnitTestLaunch launch)
+        {
+            mySolution.Locks.AssertMainThread();
+        
             launch.TestResult.Advise(connectionLifetime, result =>
             {
                 var unitTestElement = GetElementById(result.TestId);
@@ -218,9 +227,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 tcs.SetResult(true);
             });
-
-            unityModel.UnitTestLaunch.SetValue(launch);
         }
+
 
         private IEnumerable<IUnitTestElement> CollectElementsToRunInUnityEditor(IUnitTestRun firstRun)
         {
