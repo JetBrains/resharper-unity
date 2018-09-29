@@ -70,6 +70,12 @@
         <Description>Using the string for the component type variants results in additional overhead that should not be incurred.</Description>
       </Tag>
 
+      <Tag externalName="PreferAddressByIdToGraphicsParamsWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Use int overload to access properties instead of string</Title>
+        <Description>Using the string to address graphics properties results in additional overhead that should not be incurred.</Description>
+      </Tag>
+      
       <Tag externalName="AmbiguousTypeInStringLiteralWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Several types with the same name, this can result in unexpected behaviour at runtime</Title>
@@ -239,6 +245,18 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
+  <Warning name="PreferAddressByIdToGraphicsParams" configurableSeverity="Unity.PreferAddressByIdToGraphicsParams">
+    <Parameter type="IInvocationExpression" name="invocationMethod" />
+    <Parameter type="ICSharpArgument" name="argument" />
+    <Parameter type="IExpression" name="argumentExpression" />
+    <Parameter type="string" name="literal" />
+    <Parameter type="string" name="typeName" />
+    <Parameter type="string" name="mapFunction" />
+    <Message value="Int method overload is preferred. Using the string parameter results in additional overhead."/>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+ 
   <Warning name="AmbiguousTypeInStringLiteral" configurableSeverity="Unity.AmbiguousTypeInStringLiteral">
     <Parameter type="ILiteralExpression" name="argument" />
     <Message value="There are several types with the same name, this can result in an unexpected behaviour at the runtime."/>
