@@ -9,17 +9,16 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
-import com.jetbrains.rider.UnityReferenceDiscoverer
+import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdVirtualSolution
-import com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solutionDescription
 import javax.swing.event.HyperlinkEvent
 
-class OpenUnityProjectAsFolderNotification(private val project: Project, private val unityReferenceDiscoverer: UnityReferenceDiscoverer)
+class OpenUnityProjectAsFolderNotification(private val project: Project, private val unityProjectDiscoverer: UnityProjectDiscoverer)
     : ProjectComponent {
 
     companion object {
@@ -28,7 +27,7 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
 
     override fun projectOpened() {
         // Do nothing if we're not in Unity folders, or we are, but we're a proper .sln based solution
-        if (!unityReferenceDiscoverer.isUnityLikeProjectFolder || project.solutionDescription is RdExistingSolution) return
+        if (!unityProjectDiscoverer.isUnityProjectFolder || project.solutionDescription is RdExistingSolution) return
 
         val solutionDescription = project.solutionDescription
         if (solutionDescription is RdVirtualSolution) {
@@ -55,7 +54,7 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
             val baseDir: VirtualFile = project.projectDir
             val solutionFile = baseDir.findChild(baseDir.name + ".sln")
             if (solutionFile != null && solutionFile.exists()) {
-                notification.addAction(object: NotificationAction("Reopen as Unity project") {
+                notification.addAction(object : NotificationAction("Reopen as Unity project") {
                     override fun actionPerformed(e: AnActionEvent, n: Notification) {
                         // SolutionManager doesn't close the current project if focusOpenInNewFrame is set to true,
                         // and if it's set to false, we get prompted if we want to open in new or same frame. We
@@ -72,19 +71,6 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                             val projectView = ProjectView.getInstance(newProject)
                             projectView.changeView(UnityExplorer.ID)
                         }
-                        }
-                    })
-                }
-
-                val pluginPath: VirtualFile? = baseDir.findFileByRelativePath("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
-                if (pluginPath == null || !pluginPath.exists()) {
-                    notification.setContent( notification.content + "\r\n"+
-                        " Install Rider’s Unity Editor plugin to automatically configure Rider as the default external editor and enable advanced functionality."
-                    )
-                    notification.addAction(object: InstallEditorPluginAction() {
-                        override fun actionPerformed(e: AnActionEvent) {
-                            super.actionPerformed(e)
-                            notification.hideBalloon()
                     }
                 })
             }

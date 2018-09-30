@@ -44,7 +44,7 @@ import javax.swing.event.DocumentEvent
 class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
-        .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME, project))
+        .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME.name, project))
         .console as ConsoleViewImpl
 
     private val eventList = UnityLogPanelEventList().apply {
@@ -193,6 +193,9 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 //        if (logModel.selectedItem == null) {
 //            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
 //        }
+        // since we do not follow new items which appear, it makes sence to auto-select first one. RIDER-19937
+        if (eventList.itemsCount == 1)
+            eventList.selectedIndex = 0
     }
 
     // TODO: optimize

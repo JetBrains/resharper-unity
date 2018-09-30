@@ -44,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             AddToQuickList(mountPoint, myProjectMainPoint, "UnlitShader", ++pos, "fdbd3ad2-8db2-466a-a934-4ce25cb40564");
             AddToQuickList(mountPoint, myProjectMainPoint, "ImageEffectShader", ++pos, "7b10542b-0a61-4bd8-ba91-e5bad4d39f5b");
             AddToQuickList(mountPoint, myProjectMainPoint, "AsmDef", ++pos, "bf263f0d-4315-42f7-8813-d7afe13fcdeb");
+            AddToQuickList(mountPoint, myProjectMainPoint, "EditorEntryPoint", ++pos, "DA24767F-E6BB-4463-ACB4-799D7CE68822");
         }
 
         private void InitialiseQuickList(ISettingsStorageMountPoint mountPoint, IMainScopePoint quickList)

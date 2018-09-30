@@ -3,11 +3,9 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
-import com.jetbrains.rider.isUnityGeneratedProject
-import com.jetbrains.rider.isUnitySidecarProject
+import com.jetbrains.rider.isLikeUnityProject
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
-import com.jetbrains.rider.util.idea.tryGetComponent
 import com.jetbrains.rider.util.reactive.fire
 import com.jetbrains.rider.util.reactive.valueOrDefault
 
@@ -80,10 +78,10 @@ class StepInUnityAction : AnAction("Step", "Perform a single frame step.", Unity
 
 fun AnActionEvent.getHost(): UnityHost? {
     val project = project?: return null
-    return project.tryGetComponent()
+    return UnityHost.getInstance(project)
 }
 
 fun AnActionEvent.isUnityProject(): Boolean {
     val project = this.project ?: return false
-    return project.isUnityGeneratedProject() || project.isUnitySidecarProject()
+    return project.isLikeUnityProject()
 }

@@ -13,6 +13,7 @@ Description |
 [Assembly Definition File](File/AsmDef.md) |
 [Behaviour C# Script](File/MonoBehaviour.md) |
 [Edit Mode Test](File/EditModeTest.md) |
+[Editor EntryPoint C# script.](File/EditorEntryPoint.md) |
 [Image Effect Shader](File/ImageEffectShader.md) |
 [Play Mode Test](File/PlayModeTest.md) |
 [Standard Surface Shader](File/StandardSurfaceShader.md) |
@@ -35,6 +36,7 @@ Description |
 ------------|
 [Behaviour C# Script](File/MonoBehaviour.md) |
 [Edit Mode Test](File/EditModeTest.md) |
+[Editor EntryPoint C# script.](File/EditorEntryPoint.md) |
 [Image Effect Shader](File/ImageEffectShader.md) |
 [Play Mode Test](File/PlayModeTest.md) |
 [Standard Surface Shader](File/StandardSurfaceShader.md) |

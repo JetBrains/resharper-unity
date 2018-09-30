@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.changes;
+using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
@@ -18,7 +19,6 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
@@ -49,14 +49,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IProperty<EditorPluginModel> myUnityModel;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
-
         [NotNull]
         public IProperty<EditorPluginModel> UnityModel => myUnityModel;
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
             ISettingsStore settingsStore, Application.ActivityTrackingNew.UsageStatistics usageStatistics,
-            UnitySolutionTracker unitySolutionTracker)
+            UnitySolutionTracker unitySolutionTracker, IFileSystemTracker fileSystemTracker)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
@@ -66,50 +65,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myPluginPathsProvider = pluginPathsProvider;
             myUsageStatistics = usageStatistics;
             myHost = host;
-            myBoundSettingsStore =
-                settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
+            myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
             myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null)
                 .EnsureReadonly(myReadonlyToken).EnsureThisThread();
 
-            if (!unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.Value)
-                return;
-
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            var solFolder = mySolution.SolutionFilePath.Directory;
-            AdviseModelData(lifetime);
+            unitySolutionTracker.IsUnityProject.ViewNotNull(lifetime, (lf, args) => 
+            {
+                if (!args) return;
 
-            // todo: consider non-Unity Solution with Unity-generated projects
-            var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
+                var solFolder = mySolution.SolutionFilePath.Directory;
+                AdviseModelData(lifetime);
 
-            protocolInstancePath.Directory.CreateDirectory();
-
-            var watcher = new FileSystemWatcher();
-            watcher.Path = protocolInstancePath.Directory.FullPath;
-            watcher.NotifyFilter =
-                NotifyFilters.LastAccess |
-                NotifyFilters.LastWrite; //Watch for changes in LastAccess and LastWrite times
-            watcher.Filter = protocolInstancePath.Name;
-
-            // Add event handlers.
-            watcher.Changed += OnChanged;
-            watcher.Created += OnChanged;
-
-            watcher.EnableRaisingEvents = true; // Begin watching.
-
-            // connect on start of Rider
-            CreateProtocols(protocolInstancePath);
+                // todo: consider non-Unity Solution with Unity-generated projects
+                var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
+                fileSystemTracker.AdviseFileChanges(lf, protocolInstancePath, OnChangeAction);
+                // connect on start of Rider
+                CreateProtocols(protocolInstancePath);
+            });
         }
 
-        private void OnChanged(object sender, FileSystemEventArgs e)
+        private void OnChangeAction(FileSystemChangeDelta delta)
         {
-            var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
             // connect on reload of server
+            if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
             if (!myComponentLifetime.IsTerminated)
-              myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
-                () => CreateProtocols(protocolInstancePath));
+                myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
+                    () => CreateProtocols(delta.NewPath));
         }
 
         private void AdviseModelData(Lifetime lifetime)

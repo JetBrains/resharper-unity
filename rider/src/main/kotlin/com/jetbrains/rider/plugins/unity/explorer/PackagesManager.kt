@@ -7,9 +7,11 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.isDirectory
+import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.util.refreshAndFindFile
 import com.jetbrains.rider.projectDir
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -54,17 +56,7 @@ class PackagesManager(private val project: Project) {
         private val key: Key<PackagesManager> = Key("UnityExplorer::PackagesManager")
         private val logger = Logger.getInstance(PackagesManager::class.java)
 
-        fun getInstance(project: Project): PackagesManager {
-            // We can't use the UserDataHolderEx.getOrCreateUserData extension function, because the compiler tries to
-            // inline it, but the scrambler has inserted references to a private static field
-            // This should be fixed in IDEA/Rider. Please test again!
-            var packagesManager = project.getUserData(key)
-            if (packagesManager == null) {
-                packagesManager = PackagesManager(project)
-                project.putUserData(key, packagesManager)
-            }
-            return packagesManager
-        }
+        fun getInstance(project: Project) = project.getOrCreateUserData(key) { PackagesManager(project) }
     }
 
     private val gson = Gson()
@@ -152,7 +144,7 @@ class PackagesManager(private val project: Project) {
     }
 
     private fun getManifestJsonFile(): VirtualFile? {
-        return project.projectDir.findFileByRelativePath("Packages/manifest.json")
+        return project.refreshAndFindFile("Packages/manifest.json")
     }
 
     private fun getPackagesFromDependencies(packagesFolder: VirtualFile, registry: String, builtInPackagesFolder: Path?,

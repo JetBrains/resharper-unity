@@ -40,6 +40,12 @@
        -->
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.Unity">
+      <Tag externalName="ParameterNotDerivedFromComponentWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Parameter should be derived from `Component`</Title>
+        <Description>Parameter should be derived from `Component`.</Description>
+      </Tag>
+	  
       <Tag externalName="DuplicateEventFunctionWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Event function with the same name is already declared</Title>
@@ -52,12 +58,24 @@
         <Description>Explicit string comparison with 'GameObject.tag' or 'Component.tag' is inefficient. Use the 'CompareTag' method instead.</Description>
       </Tag>
 
+      <Tag externalName="PreferNonAllocApiWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Use 'NonAlloc' api instead of methods which allocate memory</Title>
+        <Description>Reusing your buffer instead of new allocation will increase performance.</Description>
+      </Tag>
+      
       <Tag externalName="PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Use generic method overload instead of a string one</Title>
         <Description>Using the string for the component type variants results in additional overhead that should not be incurred.</Description>
       </Tag>
 
+      <Tag externalName="PreferAddressByIdToGraphicsParamsWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Use int overload to access properties instead of string</Title>
+        <Description>Using the string to address graphics properties results in additional overhead that should not be incurred.</Description>
+      </Tag>
+      
       <Tag externalName="AmbiguousTypeInStringLiteralWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Several types with the same name, this can result in unexpected behaviour at runtime</Title>
@@ -190,6 +208,7 @@
          for this highlight. Only used when the file is processed in QUICKFIX mode (default is
          to use ERROR mode)
        -->
+  
   <Warning name="DuplicateEventFunction" configurableSeverity="Unity.DuplicateEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Message value="Event function with the same name is already declared" />
@@ -204,6 +223,17 @@
     <Range>EqualityExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
+
+  <Warning name="PreferNonAllocApi" configurableSeverity="Unity.PreferNonAllocApi">
+    <Parameter type="IInvocationExpression" name="invocationExpression" />
+    <Parameter type="IReferenceExpression" name="invokedExpression" />
+    <Parameter type="IMethod" name="nonAllocMethod" />
+    <Message value="Allocating method will decrease performance. Use '{0}' and reuse buffer for return value">
+      <Argument>NonAllocMethod.ShortName</Argument>
+    </Message>
+    <Range>InvokedExpression.Reference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
   
   <Warning name="PreferGenericMethodOverload" configurableSeverity="Unity.PreferGenericMethodOverload">
     <Parameter type="IInvocationExpression" name="invocationMethod" />
@@ -215,6 +245,18 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
+  <Warning name="PreferAddressByIdToGraphicsParams" configurableSeverity="Unity.PreferAddressByIdToGraphicsParams">
+    <Parameter type="IInvocationExpression" name="invocationMethod" />
+    <Parameter type="ICSharpArgument" name="argument" />
+    <Parameter type="IExpression" name="argumentExpression" />
+    <Parameter type="string" name="literal" />
+    <Parameter type="string" name="typeName" />
+    <Parameter type="string" name="mapFunction" />
+    <Message value="Int method overload is preferred. Using the string parameter results in additional overhead."/>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+ 
   <Warning name="AmbiguousTypeInStringLiteral" configurableSeverity="Unity.AmbiguousTypeInStringLiteral">
     <Parameter type="ILiteralExpression" name="argument" />
     <Message value="There are several types with the same name, this can result in an unexpected behaviour at the runtime."/>
@@ -261,6 +303,15 @@
       <Argument>ExpectedMethodSignature.FormatSignature(MethodDeclaration.DeclaredName)</Argument>
     </Message>
     <Range>MethodDeclaration.GetNameDocumentRange()</Range>
+  </Warning>
+  
+  <Warning name="ParameterNotDerivedFromComponent" configurableSeverity="Unity.ParameterNotDerivedFromComponent">
+    <Parameter type="ICSharpParameterDeclaration" name="paramaterDeclaration" />
+    <Message value="Parameter '{0}' should be derived from 'Component'">
+      <Argument>ParamaterDeclaration.DeclaredName</Argument>
+	  </Message>
+    <Range>ParamaterDeclaration.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="InefficientCameraMainUsage" configurableSeverity="Unity.InefficientCameraMainUsage">

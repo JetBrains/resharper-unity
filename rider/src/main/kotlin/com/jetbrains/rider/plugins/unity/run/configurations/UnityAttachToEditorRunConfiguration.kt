@@ -1,8 +1,10 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
-import com.google.gson.JsonParser
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.*
+import com.intellij.execution.configurations.RunConfiguration
+import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.configurations.RuntimeConfigurationError
+import com.intellij.execution.configurations.WithoutOwnBeforeRunSteps
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
@@ -10,13 +12,12 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
+import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
+import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
+import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
-import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
-import com.jetbrains.rider.projectDir
-import com.jetbrains.rider.use2
-import org.apache.commons.logging.LogFactory
 import org.jdom.Element
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
@@ -82,18 +83,9 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     }
 
     private fun findUnityEditorInstanceFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
-        project.projectDir.findFileByRelativePath("Library/EditorInstance.json")?.let { file ->
-            try {
-                // Not a RuntimeConfigurationError, mainly because we can recover
-                return file.inputStream.reader().use2 { reader ->
-                    val jsonObject = JsonParser().parse(reader).asJsonObject
-                    val processId = jsonObject["process_id"].asInt
-
-                    return@use2 checkValidEditorInstance(processId, processList)
-                }
-            } catch (e: Throwable) {
-                LogFactory.getLog("catch").warn("Error reading EditorInstance.json", e)
-            }
+        val (status, editorInstanceJson) = EditorInstanceJson.load(project)
+        if (status == EditorInstanceJsonStatus.Valid && editorInstanceJson != null) {
+            return checkValidEditorInstance(editorInstanceJson.process_id, processList)
         }
 
         return null
