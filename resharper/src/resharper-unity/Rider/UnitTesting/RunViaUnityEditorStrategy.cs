@@ -277,8 +277,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Abort(IUnitTestRun run)
         {
-            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Start(RdVoid.Instance);
-            run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
+            Cancel(run);
         }
 
         private class UnityRuntimeEnvironment : IRuntimeEnvironment
