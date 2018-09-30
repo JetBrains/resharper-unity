@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
@@ -11,11 +12,13 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   {
     private static readonly ILog ourLogger = Log.GetLog("UnitTesting.EntryPoint");
     private static object myPlayModeTestsController;
+    private static readonly TestEventsCollector ourCollector;
 
     static EntryPoint()
     {
       if (!PluginEntryPoint.Enabled)
         return;
+      ourLogger.Verbose("EntryPoint");
       
       var assemblies = AppDomain.CurrentDomain.GetAssemblies();
       var testEngineAssembly = assemblies
@@ -25,8 +28,8 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       var playModeTestsControllerType = testEngineAssembly.GetType(playModeTestsControllerTypeString);
       var codeBasedTestsRunner = GameObject.Find("Code-based tests runner");
       myPlayModeTestsController =  codeBasedTestsRunner?.GetComponent(playModeTestsControllerType);
+      ourCollector = new TestEventsCollector(myPlayModeTestsController);
       
-      ourLogger.Verbose("EntryPoint");
       PluginEntryPoint.OnModelInitialization += AdviseUnitTestLaunch;
       AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
       {
@@ -39,11 +42,9 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       ourLogger.Verbose("AdviseUnitTestLaunch");
       var modelValue = modelAndLifetime.Model;
       var connectionLifetime = modelAndLifetime.Lifetime;
-      modelValue.UnitTestLaunch.Advise(connectionLifetime, launch =>
-      {
-        new TestListenersStarter(launch, myPlayModeTestsController);
-      });
-      
+      modelValue.UnitTestLaunch.AdviseNotNull(connectionLifetime,
+        launch => { new TestEventsSender(ourCollector, launch); });
+
       modelValue.UnitTestLaunch.Change.Advise(connectionLifetime, launch =>
       {
         var unityEditorTestLauncher = new UnityEditorTestLauncher(launch);

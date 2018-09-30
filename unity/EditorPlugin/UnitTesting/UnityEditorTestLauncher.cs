@@ -148,13 +148,22 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           var runner = runnerField.GetValue(launcher);
           SupportAbort(runner);
 
-          if (!TestListenersStarter.AdviseTestStarted(runner, "m_TestStartedEvent"))
+          if (!TestEventsCollector.AdviseTestStarted(runner, "m_TestStartedEvent", result =>
+          {
+           TestEventsSender.TestStarted(myLaunch, result);
+          }))
             return;
 
-          if (!TestListenersStarter.AdviseTestFinished(runner, "m_TestFinishedEvent"))
+          if (!TestEventsCollector.AdviseTestFinished(runner, "m_TestFinishedEvent", result =>
+          {
+            TestEventsSender.TestFinished(myLaunch, result);
+          }))
             return;
 
-          if (!TestListenersStarter.AdviseSessionFinished(runner, "m_RunFinishedEvent"))
+          if (!TestEventsCollector.AdviseSessionFinished(runner, "m_RunFinishedEvent", result =>
+          {
+            TestEventsSender.RunFinished(myLaunch, result);
+          }))
             return;
 
           var runMethod = launcherType.GetMethod("Run", BindingFlags.Instance | BindingFlags.Public);
