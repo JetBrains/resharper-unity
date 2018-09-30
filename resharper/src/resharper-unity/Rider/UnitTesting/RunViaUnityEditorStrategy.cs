@@ -269,7 +269,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
-            myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch.Value?.Abort.Start(RdVoid.Instance);
+            var launchProperty = myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch;
+            if (launchProperty != null && launchProperty.HasValue())
+              launchProperty.Value?.Abort.Start(RdVoid.Instance);
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 
