@@ -196,6 +196,7 @@ def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 
 def unityeditorplugin_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
 def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Full/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
+def unitydotsettings_path = "$projectDir/../resharper/src/resharper-unity/Unity.DotSettings"
 
 prepareSandbox {
     // Already depends on the standard Java build/jar task
@@ -219,6 +220,7 @@ prepareSandbox {
     doLast {
         assert file(unityeditorplugin_path).exists()
         assert file(unityeditorplugin_full_path).exists()
+        assert file(unitydotsettings_path).exists()
 
         dllFiles.forEach({ f ->
             def file = file("$f")
@@ -236,6 +238,10 @@ prepareSandbox {
     })
 
     from(unityeditorplugin_full_path, {
+        into "$intellij.pluginName/EditorPlugin"
+    })
+
+    from(unitydotsettings_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
 

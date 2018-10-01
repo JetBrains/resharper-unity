@@ -21,5 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(false, "Enables syntax error highlighting of CG blocks in ShaderLab files.")]
         public bool EnableCgErrorHighlighting;
+        
+        [SettingsEntry(true, "Enables default Unity code-style.")]
+        public bool EnableDefaultUnityCodeStyle;
     }
 }
