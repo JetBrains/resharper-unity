@@ -125,15 +125,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     return;
                 }
                 
-                myUnityEditorProtocol.UnityModel.View(run.Lifetime, (lifetime, m) =>
+                myUnityEditorProtocol.UnityModel.View(run.Lifetime, (lifetime, editorPluginModel) =>
                 {
                     // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
-                    if (m != null)
+                    if (editorPluginModel != null)
+                    {
+                        editorPluginModel.UnitTestLaunch.SetValue(launch);
                         SubscribeResults(run, lifetime, tcs, launch);
+                    }
                 });
                 
-                var model = myUnityEditorProtocol.UnityModel.Value;
-                model.UnitTestLaunch.SetValue(launch);
+                myUnityEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(RdVoid.Instance);
             });
 
             return tcs.Task;

@@ -100,6 +100,7 @@ object EditorPluginModel: Root(
         call("refresh", bool, void)
 
         property("unitTestLaunch", UnitTestLaunch)
+        source("runUnitTestLaunch", void)
 
         property("fullPluginPath", string)
 

@@ -32,25 +32,43 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       if (!collector.DelayedEvents.Any())
         return;
 
-      var head = collector.DelayedEvents.First;
-      while (head != null)
+//      var head = collector.DelayedEvents.First;
+//      while (head != null)
+//      {
+//        var res = head.Value;
+//        switch (res.myType)
+//        {
+//          case EventType.RunFinished:
+//            RunFinished(myUnitTestLaunch, (ITestResult) res.myTestEvent);
+//            break;
+//          case EventType.TestFinished:
+//            TestFinished(myUnitTestLaunch, (ITestResult) res.myTestEvent);
+//            break;
+//          case EventType.TestStarted:
+//            TestStarted(myUnitTestLaunch, (ITest) res.myTestEvent);
+//            break;
+//        }
+//
+//        head = head.Next;
+//      }
+
+      foreach (var myEvent in collector.DelayedEvents)
       {
-        var res = head.Value;
-        switch (res.myType)
+        switch (myEvent.myType)
         {
           case EventType.RunFinished:
-            RunFinished(myUnitTestLaunch, (ITestResult) res.myTestEvent);
+            RunFinished(myUnitTestLaunch, (ITestResult) myEvent.myTestEvent);
             break;
           case EventType.TestFinished:
-            TestFinished(myUnitTestLaunch, (ITestResult) res.myTestEvent);
+            TestFinished(myUnitTestLaunch, (ITestResult) myEvent.myTestEvent);
             break;
           case EventType.TestStarted:
-            TestStarted(myUnitTestLaunch, (ITest) res.myTestEvent);
+            TestStarted(myUnitTestLaunch, (ITest) myEvent.myTestEvent);
             break;
         }
-
-        head = head.Next;
+        
       }
+      
       collector.DelayedEvents.Clear();
     }
     
