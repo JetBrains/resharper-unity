@@ -1,0 +1,27 @@
+﻿using UnityEngine;
+using System.Collections;
+
+namespace DefaultNamespace
+{
+    public class CoroutineTest : MonoBehaviour
+    {
+        public void Start()
+        {
+            StartCoroutine("HotMethod");
+            StartCoroutine(HotMethod2());
+        }
+
+        public void HotMethod()
+        {
+            var x = gameObject.|GetComponent|(0)<Transform>();
+        }
+        
+        public IEnumerator HotMethod2()
+        {
+            var x = |GetComponent|(1)<Transform>();
+        }
+    }
+}
+---------------------------------------------------------
+(0): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
+(1): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
