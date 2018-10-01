@@ -145,25 +145,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                                         declarations.ForEach(t => hotRootMethods.Add((IMethodDeclaration)t));
                                     }
                                 }
+                            }
+                            
+                            // argument is IEnumerator which return from invocation, so get invocation expression declaration and add to container
+                            if (firstArgument is IInvocationExpression coroutineInvocation)
+                            {
+                                var invocationReference = (coroutineInvocation.InvokedExpression as IReferenceExpression)?.Reference;
+                                if (invocationReference == null)
+                                    return;
 
-                                // argument is IEnumerator which return from invocation, so get invocation expression declaration and add to container
-                                if (firstArgument is IInvocationExpression coroutineInvocation)
-                                {
-                                    var invocationReference = (coroutineInvocation.InvokedExpression as IReferenceExpression)?.Reference;
-                                    if (invocationReference == null)
-                                        return;
+                                info = invocationReference.Resolve();
+                                if (info.ResolveErrorType != ResolveErrorType.OK)
+                                    break;
 
-                                    info = invocationReference.Resolve();
-                                    if (info.ResolveErrorType != ResolveErrorType.OK)
-                                        break;
+                                var method = info.DeclaredElement as IMethod;
+                                if (method == null)
+                                    break;
 
-                                    var method = info.DeclaredElement as IMethod;
-                                    if (method == null)
-                                        break;
-
-                                    var declarations = method.GetDeclarationsIn(sourceFile).Where(t => t.GetSourceFile() == sourceFile);
-                                    declarations.ForEach(t => hotRootMethods.Add((IMethodDeclaration)t));
-                                }
+                                var declarations = method.GetDeclarationsIn(sourceFile).Where(t => t.GetSourceFile() == sourceFile);
+                                declarations.ForEach(t => hotRootMethods.Add((IMethodDeclaration)t));
                             }
                         }
                         
@@ -173,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             // sharing context for each hot root.
             var context = new HotMethodAnalyzerContext();
-
+ 
             
             foreach (var methodDeclaration in hotRootMethods)
             {
@@ -276,13 +276,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                     return;
                 
                 context.RegisterInvocationInMethod(declaredElement, reference);
+                context.MarkCurrentAsVisited();
 
-                // Do not visit methods twice
-                if (context.IsDeclaredElementVisited(declaredElement))
-                {
-                    return;
-                }
-                    
                 // find all declarations in current file
                 var declarations = declaredElement.GetDeclarationsIn(mySourceFile).Where(t => t.GetSourceFile() == mySourceFile);
 
@@ -291,9 +286,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 context.CurrentDeclaredElement = declaredElement;
                 foreach (var declaration in declarations)
                 {
-                    declaration.ProcessDescendants(this, context);
+                    // Do not visit methods twice
+                    if (!context.IsCurrentElementVisited())
+                    {
+                        declaration.ProcessDescendants(this, context);
+                    }
                 }
-
                 context.CurrentDeclaredElement = originDeclaredElement;
 
                 // propagate costly reachable methods back
@@ -303,7 +301,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 {
                     context.MarkCurrentAsCostlyReachable();
                 }
-                context.MarkCurrentAsVisited();
             }
 
             private void AnalyzeInvocationExpression(IInvocationExpression invocationExpressionParam, HotMethodAnalyzerContext context)
@@ -437,6 +434,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 "GetComponentInChildren",
                 "GetComponentInParent",
                 "GetComponentsInChildren",
+                "GetComponent",
+                "GetComponents",
             };
             
             private static readonly ISet<string> ourKnownGameObjectCostlyMethods = new HashSet<string>()
@@ -447,7 +446,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 "FindWithTag",
                 "GetComponent",
                 "GetComponents",
-                "GetComponentsInParent"
+                "GetComponentInChildren",
+                "GetComponentInParent",
+                "GetComponentsInChildren",
             };
             
             private static readonly ISet<string> ourKnownTransformCostlyMethods = new HashSet<string>()
@@ -499,10 +500,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             {
                 return myVisited.Contains(element);
             }
+            
+            public bool IsCurrentElementVisited()
+            {
+                return myVisited.Contains(CurrentDeclaredElement);
+            }
 
             public void MarkCurrentAsVisited()
             {
                 myVisited.Add(CurrentDeclaredElement);
+            }
+            
+            public void MarkElementAsVisited(IDeclaredElement element)
+            {
+                myVisited.Add(element);
             }
 
             public void MarkCurrentAsCostlyReachable()

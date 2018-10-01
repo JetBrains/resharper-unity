@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class SimpleTest : MonoBehaviour
+    {
+        private RigidBody2D myRigidBody2D;
+        public void Update()
+        {
+            if (myRigidBody2D == null)
+            {
+                myRigidBody2D = |GetComponent|(0)<RigidBody2D>();
+            }
+        }
+    }
+}
+---------------------------------------------------------
+(0): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context

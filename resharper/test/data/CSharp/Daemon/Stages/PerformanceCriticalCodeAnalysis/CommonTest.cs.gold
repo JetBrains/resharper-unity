@@ -1,0 +1,51 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class CommonTest : MonoBehaviour
+    {
+        private RigidBody2D myRigidBody2D;
+
+        public void Test()
+        {
+            |Update|(0)();
+        }
+            
+        public void Update()
+        {
+            if (myRigidBody2D == null)
+            {
+                myRigidBody2D = |GetComponent|(1)<RigidBody2D>();
+            }
+
+            |Test|(2)();
+            |IndirectCostly|(3)();
+
+            |Test2|(4)();
+            |Test2|(5)();
+            |Test2|(6)();
+            |Test2|(7)();
+        }
+        
+        private void IndirectCostly()
+        {
+            var temp = gameObject.|GetComponent|(8)<RigidBody2D>();
+        }
+
+        private void Test2()
+        {
+            |IndirectCostly|(9)();
+        }
+    }
+}
+---------------------------------------------------------
+(0): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(1): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
+(2): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(3): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(4): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(5): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(6): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(7): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(8): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
+(9): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
