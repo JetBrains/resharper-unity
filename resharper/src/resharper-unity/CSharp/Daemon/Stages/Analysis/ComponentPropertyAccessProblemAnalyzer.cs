@@ -10,13 +10,18 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
+using IGotoStatement = JetBrains.ReSharper.Psi.CSharp.Tree.IGotoStatement;
+using IIfStatement = JetBrains.ReSharper.Psi.CSharp.Tree.IIfStatement;
+using ILoopStatement = JetBrains.ReSharper.Psi.CSharp.Tree.ILoopStatement;
+using IReturnStatement = JetBrains.ReSharper.Psi.CSharp.Tree.IReturnStatement;
 using QualifierEqualityComparer = JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlow.ControlFlowWeakVariableInfo.QualifierEqualityComparer;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(
-        ElementTypes: new [] {typeof(IMethodDeclaration), typeof(ICSharpClosure)}, 
+        ElementTypes: new [] { typeof(IParametersOwnerDeclaration), typeof(IPropertyDeclaration)}, 
         HighlightingTypes = new[] {typeof(InefficientPropertyAccessWarning)})]
     public class ComponentPropertyAccessProblemAnalyzer : UnityElementProblemAnalyzer<ITreeNode>
     {
@@ -32,45 +37,59 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
         
         protected override void Analyze(ITreeNode node, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-        {   
+        {
             // container to collect groups of IReferenceExpressions which can be cached
             var container = new PropertiesAccessContainer(consumer);
-            IBlock block = null;
-            
+
+            ICSharpTreeNode scope = null;
             switch (node)
             {
-                case IMethodDeclaration methodDeclaration:
-                    block = methodDeclaration.Body;
+                case ICSharpParametersOwnerDeclaration parametersOwnerDeclaration:
+                    var codeBody = parametersOwnerDeclaration.GetCodeBody();
+                    scope = codeBody.BlockBody ?? (ICSharpTreeNode)codeBody.ExpressionBody;
                     break;
-                case ICSharpClosure closure:
-                    var body = closure.GetCodeBody();
-                    var exprBody = body.ExpressionBody;
-                    if (exprBody != null)
+                case ILambdaExpression lambdaExpression:
+                    codeBody = lambdaExpression.GetCodeBody();
+                    scope = codeBody.BlockBody ?? (ICSharpTreeNode)codeBody.ExpressionBody;
+                    break;
+                case IPropertyDeclaration propertyDeclaration:
+                    var initial = propertyDeclaration.Initial;
+                    if (initial != null)
                     {
-                        AnalyzeStatements(exprBody, container);
+                        scope = initial;
                     }
                     else
                     {
-                        block = body.BlockBody;
+                        foreach (var accessorDeclaration in propertyDeclaration.AccessorDeclarationsEnumerable)
+                        {
+                            codeBody = accessorDeclaration.GetCodeBody();
+                            var body = codeBody.BlockBody ?? (ICSharpTreeNode)codeBody.ExpressionBody;
+                            if (body != null)
+                            {
+                                AnalyzeStatements(body, container);
+                                container.InvalidateCachedValues();
+                            }
+                        }
                     }
                     break;
+                default:
+                    return;
             }
             
-            if (block != null)
-            {
-                if (block.Descendants<IGotoStatement>().Any())
-                    return;
-                    
-                AnalyzeStatements(block, container);
-            }
+            if (scope == null)
+                return;
+            
+            AnalyzeStatements(scope, container);
             
             // cache all references which is not invalidated dut to no related expression was found
             container.InvalidateCachedValues();
         }
 
-        private void AnalyzeStatements(ICSharpTreeNode scope, PropertiesAccessContainer referencesContainer)
+        private void AnalyzeStatements([NotNull] ICSharpTreeNode scope, [NotNull] PropertiesAccessContainer referencesContainer)
         {
-            var visitor = new PropertiesAnalyzerVisitor(referencesContainer, scope, new Dictionary<IReferenceExpression, IEnumerator<ITreeNode>>(ourComparer));
+            var visitor = new PropertiesAnalyzerVisitor(referencesContainer, scope, 
+                new Dictionary<IReferenceExpression, IEnumerator<ITreeNode>>(ourComparer),
+                new HashSet<IReferenceExpression>(ourComparer));
             scope.ProcessThisAndDescendants(visitor);
         }
 
@@ -85,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (containingType == null) 
                 return false;
 
-            return containingType.GetSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.Component));
+            return containingType.GetAllSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.Component));
         }
         
         private static bool IsReferenceExpressionOnly(IReferenceExpression referenceExpression)
@@ -97,6 +116,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 {
                     qualifier = next.QualifierExpression.GetContainingParenthesizedExpression();
                 }
+                else if (qualifier is IThisExpression)
+                {
+                    return true;
+                } 
                 else
                 {
                     return false;
@@ -141,31 +164,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {
                 if (!myPropertiesMap.ContainsKey(key)) 
                     return;
-                
-                var highlighitingElements = myPropertiesMap[key].ToArray();
-                Assertion.Assert(highlighitingElements.Length > 0, "highlighitingElements.Length > 0");
+
+                var highlighitingElements = myPropertiesMap[key];
+                Assertion.Assert(highlighitingElements.Count > 0, "highlighitingElements.Length > 0");
                 
                 // calculate read/write operations for property
                 int write = 0;
                 int read = 0;
                 int startHighlightIndex = -1;
 
-                ICSharpStatement readAnchor = null;
+                ICSharpTreeNode readAnchor = null;
                 bool inlineCacheValue = false;
-                ICSharpStatement writeAnchor = null;
+                ICSharpTreeNode writeAnchor = null;
                 IReferenceExpression lastWriteExpression = null;
                 bool inlineRestoreValue = false;
                 
-                for (int i = 0; i < highlighitingElements.Length; i++)
+                for (int i = 0; i < highlighitingElements.Count; i++)
                 {
                     var referenceExpression = highlighitingElements[i];
-                    var fullReferenceExpression = ReferenceExpressionNavigator.GetTopByQualifierExpression(highlighitingElements[i])
-                        .NotNull("referenceExpression != null");
-                    var assignmentExpression = AssignmentExpressionNavigator.GetByDest(fullReferenceExpression.GetOperandThroughParenthesis());
+
+                    var accessType = referenceExpression.GetAccessType();
                     
                     if (read == 0 && write == 0)
                     {
-                        readAnchor = referenceExpression.GetContainingStatement().NotNull("readAnchor != null");
+                        readAnchor = referenceExpression.GetContainingStatementLike().NotNull("readAnchor != null");
                         var previousRelatedExpression = GetPreviousRelatedExpression(referenceExpression, readAnchor);
                         // if we have related expression before considered reference expression, we can only inline reading into statement
                         // Example:
@@ -179,17 +201,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         inlineCacheValue = previousRelatedExpression != null;
                     }
                     
-                    if (assignmentExpression != null)
+                    if (accessType.HasFlag(ExpressionAccessType.Write))
                     {
                         write++;
                         lastWriteExpression = referenceExpression;
-                        writeAnchor = assignmentExpression.GetContainingStatement().NotNull("writeAnchor != null");
                     }
-                    if (assignmentExpression != null && assignmentExpression.IsCompoundAssignment || assignmentExpression == null)
+                    if (accessType.HasFlag(ExpressionAccessType.Read))
                     {
                         read++;
                     }
-
 
                     if (startHighlightIndex == -1 && (read == 2|| write == 2 | read + write == 3))
                     {
@@ -197,9 +217,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     }
                 }
 
-                if (writeAnchor != null)
+                if (lastWriteExpression != null)
                 {
-                    if (writeAnchor is IReturnStatement)
+                    writeAnchor = lastWriteExpression.GetContainingStatementLike().NotNull("writeAnchor != null");
+                    if (writeAnchor is IReturnStatement ||
+                        writeAnchor is IYieldStatement yieldStatement && yieldStatement.StatementType == YieldStatementType.YIELD_RETURN)
                     {
                         inlineRestoreValue = true;
                     } else {
@@ -210,7 +232,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
                 if (startHighlightIndex != -1)
                 {
-                    for (int i = startHighlightIndex; i < highlighitingElements.Length; i++)
+                    for (int i = startHighlightIndex; i < highlighitingElements.Count; i++)
                     {
                         var warning = new InefficientPropertyAccessWarning(highlighitingElements[i], highlighitingElements, 
                             readAnchor, inlineCacheValue, writeAnchor, inlineRestoreValue);
@@ -221,7 +243,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 myPropertiesMap.Remove(key);
             }
 
-            private ITreeNode GetPreviousRelatedExpression(IReferenceExpression referenceExpression, ICSharpStatement readAnchor)
+            private ITreeNode GetPreviousRelatedExpression(IReferenceExpression referenceExpression, ICSharpTreeNode readAnchor)
             {
                 var finder = GetFinder(referenceExpression);
                 var allSequence = finder.GetRelatedExpressions(readAnchor);
@@ -254,12 +276,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             private readonly PropertiesAccessContainer myContainer;
             private readonly ICSharpTreeNode myScope;
             private readonly Dictionary<IReferenceExpression, IEnumerator<ITreeNode>> myReferenceInvalidateBarriers;
+            private readonly HashSet<IReferenceExpression> myWithoutRelatedExpression;
 
-            public PropertiesAnalyzerVisitor(PropertiesAccessContainer container, ICSharpTreeNode scope, Dictionary<IReferenceExpression, IEnumerator<ITreeNode>> referenceInvalidateBarriers)
+            public PropertiesAnalyzerVisitor(PropertiesAccessContainer container, ICSharpTreeNode scope,
+                Dictionary<IReferenceExpression, IEnumerator<ITreeNode>> referenceInvalidateBarriers,
+                HashSet<IReferenceExpression> withoutRelatedExpression)
             {
                 myContainer = container;
                 myScope = scope;
                 myReferenceInvalidateBarriers = referenceInvalidateBarriers;
+                myWithoutRelatedExpression = withoutRelatedExpression;
             }
 
             public override void VisitReferenceExpression([NotNull] IReferenceExpression referenceExpression)
@@ -271,12 +297,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     return;
                 
                 // first encounter of reference. Create group and find related expressions.
-                if (!myReferenceInvalidateBarriers.ContainsKey(referenceExpression))
+                if (!myReferenceInvalidateBarriers.ContainsKey(referenceExpression) && !myWithoutRelatedExpression.Contains(referenceExpression))
                 {
                     var relatedExpressionsEnumerator = GetFinder(referenceExpression).GetRelatedExpressions(myScope, referenceExpression).GetEnumerator();
 
                     if (relatedExpressionsEnumerator.MoveNext())
+                    {
                         myReferenceInvalidateBarriers[referenceExpression] = relatedExpressionsEnumerator;
+                    }
+                    else
+                    {
+                        myWithoutRelatedExpression.Add(referenceExpression);
+                    }
                 }
 
                 myContainer.AddProperty(referenceExpression);
@@ -324,18 +356,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             public void ProcessBeforeInterior(ITreeNode element)
             {
-                var toRemove = new List<IReferenceExpression>();
+                var toRemove = new LocalList <IReferenceExpression>();
                 foreach (var (referenceExpression, enumerator) in myReferenceInvalidateBarriers)
                 {
                     var current = enumerator.Current.NotNull("current != null");
                     
                     if (element == current)
                     {
-                        toRemove.Add(referenceExpression);
+                        if (!enumerator.MoveNext())
+                        {
+                            toRemove.Add(referenceExpression);
+                        }
+
                         myContainer.InvalidateCachedValues(referenceExpression);
                     }
                 }
-                toRemove.ForEach(t => myReferenceInvalidateBarriers.Remove(t));
+
+                foreach (var re in toRemove)
+                {
+                    myReferenceInvalidateBarriers.Remove(re);
+                }
 
                 switch (element)
                 {
@@ -349,8 +389,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         switchSection.ProcessDescendants(this);
                         InvalidateAll();
                         break;
+                    case ISwitchCaseLabel _:
+                        InvalidateAll();
+                        break;
+                    case IGotoStatement _:
+                        InvalidateAll();
+                        break;
+                    case ILabelStatement _:
+                        InvalidateAll();
+                        break;
                 }
-                
+
                 if (element is ICSharpTreeNode sharpNode)
                 {
                     sharpNode.Accept(this);

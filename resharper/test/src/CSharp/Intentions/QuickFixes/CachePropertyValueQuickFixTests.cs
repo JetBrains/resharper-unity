@@ -14,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
          [Test] public void SimpleNewNameTest() { DoNamedTest(); }
          [Test] public void MultiLineCacheTest() { DoNamedTest(); }
          [Test] public void MultiLineCacheConflictTest() { DoNamedTest(); }
+         [Test] public void MultiLineCacheConflictTest2() { DoNamedTest(); }
          [Test] public void LambdaTest() { DoNamedTest(); }
          [Test] public void InlinedCacheTest() { DoNamedTest(); }
          [Test] public void OnlyCacheTest() { DoNamedTest(); }

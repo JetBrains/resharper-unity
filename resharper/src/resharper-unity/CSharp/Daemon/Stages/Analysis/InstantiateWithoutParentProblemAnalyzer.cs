@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+using QualifierEqualityComparer = JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlow.ControlFlowWeakVariableInfo.QualifierEqualityComparer;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -19,7 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class InstantiateWithoutParentProblemAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private static readonly string ourKnownMethod = "Instantiate";
-        
+        private static readonly QualifierEqualityComparer ourComparer = new QualifierEqualityComparer();
+
         public InstantiateWithoutParentProblemAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
@@ -50,11 +52,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (parameters.Count != 1) 
                 return;
 
-            var scope = GetScope(expression);
+            var scope = expression.GetContainingFunctionLikeDeclarationOrClosure().GetCodeBody().GetAnyTreeNode();
             if (scope == null)
                 return;
             
             IEnumerable<ITreeNode> usages = null;
+            ITreeNode storage = null;
             var containingParenthesizedExpression = expression.GetContainingParenthesizedExpression();
             var castExpression = CastExpressionNavigator.GetByOp(containingParenthesizedExpression);
             var asExpression = AsExpressionNavigator.GetByOperand(containingParenthesizedExpression);
@@ -65,7 +68,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var usageProvider = data.GetUsagesProvider();
             if (declaration != null)
             {
-                usages = usageProvider.GetUsages(declaration.DeclaredElement, scope);
+                usages = usageProvider.GetUsages(declaration.DeclaredElement, scope).Where(t => t is IReferenceExpression);
+                storage = declaration;
             }
             else
             {
@@ -74,7 +78,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 var destInfo = dest?.Reference.Resolve();
                 if (destInfo != null && destInfo.ResolveErrorType == ResolveErrorType.OK)
                 {
-                    usages = usageProvider.GetUsages(destInfo.DeclaredElement.NotNull(), scope);
+                    usages = usageProvider.GetUsages(destInfo.DeclaredElement.NotNull(), scope).Where(t => IsSameReferenceUsed(t, dest));
+                    storage = dest;
                 }
                 else
                 {
@@ -89,6 +94,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     var fullReferenceExpression = ReferenceExpressionNavigator.GetTopByQualifierExpression(referenceExpression);
                     if (IsUsageSetTransformParent(fullReferenceExpression, out var stayInWorldCoords, out var transform))
                     {
+                        if (!InSameBlock(fullReferenceExpression, storage))
+                        {
+                            return;
+                        }
                         var finder = new TransformParentRelatedReferenceFinder(referenceExpression);
                         var relatedExpressions = finder.GetRelatedExpressions(scope, expression).FirstOrDefault();
                         if (relatedExpressions == null || relatedExpressions.GetTreeStartOffset() >= fullReferenceExpression.GetTreeStartOffset())
@@ -99,23 +108,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
         }
 
-        private ITreeNode GetScope(ITreeNode expression)
+        private bool IsSameReferenceUsed(ITreeNode treeNode, IReferenceExpression dest)
         {
-            ITreeNode parent = expression.Parent;
-            while (parent != null)
-            {
-                ICSharpDeclaration declaration = null;
-                if (parent is ICSharpClosure closure)
-                    declaration = closure;
-                if (parent is IMethodDeclaration md)
-                    declaration = md;
-                
-                if (declaration != null)
-                    return (ITreeNode) declaration.GetCodeBody().BlockBody ?? declaration.GetCodeBody().ExpressionBody;
-                parent = parent.Parent;
-            }
+            if (!(treeNode is IReferenceExpression referenceExpression))
+                return false;
 
-            return null;
+            while (true)
+            {
+                var firstDeclaredElement = referenceExpression.Reference.Resolve().DeclaredElement;
+                if (firstDeclaredElement == null)
+                    return false;
+                
+                var secondDeclaredElement = dest.Reference.Resolve().DeclaredElement;
+                if (secondDeclaredElement == null)
+                    return false;
+
+                if (!firstDeclaredElement.Equals(secondDeclaredElement))
+                    return false;
+
+                var firstParent = referenceExpression.QualifierExpression;
+                var secondParent = dest.QualifierExpression;
+                
+                if (firstParent == null && secondParent == null)
+                    return true;
+                
+                if (firstParent is IThisExpression && !(secondParent is IThisExpression) ||
+                    !(firstParent is IThisExpression) && secondParent is IThisExpression)
+                {
+                    return false;
+                }
+                
+                referenceExpression = firstParent as IReferenceExpression;
+                dest = secondParent as IReferenceExpression;
+                if (referenceExpression == null || dest == null)
+                    return false;
+            }
+        }
+
+        private bool InSameBlock(IReferenceExpression fullReferenceExpression, ITreeNode storage)
+        {
+            var firstStatement = fullReferenceExpression.GetContainingStatement();
+            var secondStatement = storage.GetContainingNode<IStatement>();
+            if (firstStatement == null || secondStatement == null)
+                return false;
+            return firstStatement.Parent == secondStatement.Parent;
         }
 
         private bool IsUsageSetTransformParent([NotNull]IReferenceExpression referenceExpression, out bool stayInWorldCoords,[CanBeNull] out ICSharpExpression expression)

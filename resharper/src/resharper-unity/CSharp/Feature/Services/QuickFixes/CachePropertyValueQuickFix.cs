@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
@@ -22,12 +23,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
     [QuickFix]
     public class CachePropertyValueQuickFix : QuickFixBase
     {
-        private readonly IReferenceExpression[] myReferences;
+        private readonly List<IReferenceExpression> myReferences;
         private readonly IReferenceExpression myHighlightedReference;
         private readonly bool myInlineCache;
         private readonly bool myInlineRestore;
-        private ICSharpStatement myCacheAnchor;
-        private ICSharpStatement myRestoreAnchor;
+        private readonly ICSharpTreeNode myCacheAnchor;
+        private readonly ICSharpTreeNode myRestoreAnchor;
         
         public CachePropertyValueQuickFix(InefficientPropertyAccessWarning warning)
         {
@@ -52,77 +53,103 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
             IReferenceExpression originValue = myHighlightedReference.Copy();
             
-            for (var i = 0; i < myReferences.Length; i++)
+            for (var i = 0; i < myReferences.Count; i++)
             {
                 var reference = myReferences[i];
                 myReferences[i] = reference.ReplaceBy(factory.CreateReferenceExpression("$0", name));
             }
             
             var firstReference = myReferences[0];
-            if (declaration is ICSharpClosure closure && closure is ILambdaExpression lambda && lambda.BodyExpression != null)
-            {
-                var cacheStatement = factory.CreateStatement("$0 $1;",type, name);
-                
-                // inline caching
-                var cacheExpression = firstReference.ReplaceBy(factory.CreateExpression("($0 = $1)", name, originValue.Copy()));
-                var expression = cacheExpression.GetContainingNode<ILambdaExpression>()
-                    .NotNull("Expression should be under lambda").BodyExpression;
 
-                var block = factory.CreateBlock("{$0return $1;}", cacheStatement, expression);
-                lambda.SetBodyBlock(block);
+            if (declaration is IExpressionBodyOwnerDeclaration expressionBodyOwnerDeclaration 
+                && expressionBodyOwnerDeclaration.GetCodeBody().ExpressionBody != null)
+            {
+                using (var marker = new DisposableMarker<IReferenceExpression>(firstReference))
+                {
+                    var body = expressionBodyOwnerDeclaration.EnsureStatementMemberBody();
+                    HandleExpressionBody(body, factory, type, name, marker, originValue);
+                }
+
+                return null;
+            }
+            
+            if (declaration is ILambdaExpression lambdaExpression 
+                && lambdaExpression.GetCodeBody().ExpressionBody != null)
+            {
+                using (var marker = new DisposableMarker<IReferenceExpression>(firstReference))
+                {
+                    var body = lambdaExpression.EnsureStatementLambda();
+                    HandleExpressionBody(body, factory, type, name, marker, originValue);
+                }
+                return null;
+            }
+            
+            Assertion.Assert(myCacheAnchor is ICSharpStatement, "myInlineCache is IStatement");
+            var statementCacheAnchor = (ICSharpStatement) myCacheAnchor;
+
+            if (myInlineCache) // replace first read with assignment expression
+            {
+                foreach (var reference in myReferences)
+                {
+                    if (reference.GetContainingStatement() != myCacheAnchor) 
+                        continue;
+                    
+                    // is write first???
+                    // example: var x = (transform.position = Vector3.Up) + transform.position + transform.position ...
+                    // if yes, we have already save our variable in cycle above, if no use inline to cache.
+                    if (AssignmentExpressionNavigator.GetByDest(reference.GetContainingParenthesizedExpression()) == null)
+                    {
+                        reference.ReplaceBy(factory.CreateExpression("($0 = $1)", name, originValue.Copy()));
+                    }
+                    break;
+                }
+
+                var cacheStatement = factory.CreateStatement("$0 $1;", type ,name);
+                StatementUtil.InsertStatement(cacheStatement, ref statementCacheAnchor, true);
             }
             else
             {
-                if (myInlineCache) // replace first read with assignment expression
+                var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());   
+                StatementUtil.InsertStatement(cacheStatement, ref statementCacheAnchor, true);
+            }
+            
+            if (myRestoreAnchor != null)
+            {
+                Assertion.Assert(myRestoreAnchor is ICSharpStatement, "myRestoreAnchor is IStatement");
+                var statementRestoreAnchor = (ICSharpStatement) myRestoreAnchor;
+                if (myInlineRestore)
                 {
-                    foreach (var reference in myReferences)
+                    var size = myReferences.Count;
+                    for (int i = size - 1; i >= 0; i--)
                     {
-                        if (reference.GetContainingStatement() != myCacheAnchor) 
-                            continue;
-                        
-                        // is write first???
-                        // example: var x = (transform.position = Vector3.Up) + transform.position + transform.position ...
-                        // if yes, we have already save our variable in cycle above, if no use inline to cache.
-                        if (AssignmentExpressionNavigator.GetByDest(reference.GetContainingParenthesizedExpression()) == null)
+                        var reference = myReferences[i];
+                        if (reference.GetContainingStatement() == myRestoreAnchor)
                         {
-                            reference.ReplaceBy(factory.CreateExpression("($0 = $1)", name, originValue.Copy()));
+                            reference.ReplaceBy(factory.CreateReferenceExpression("$0", originValue));
+                            break;
                         }
-                        break;
                     }
-
-                    var cacheStatement = factory.CreateStatement("$0 $1;", type ,name);    
-                    StatementUtil.InsertStatement(cacheStatement, ref myCacheAnchor, true);
                 }
                 else
                 {
-                    var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());    
-                    StatementUtil.InsertStatement(cacheStatement, ref myCacheAnchor, true);
-                }
-                
-                if (myRestoreAnchor != null)
-                {
-                    if (myInlineRestore)
-                    {
-                        foreach (var reference in myReferences.Reverse())
-                        {
-                            if (reference.GetContainingStatement() == myRestoreAnchor)
-                            {
-                                reference.ReplaceBy(factory.CreateReferenceExpression("$0", originValue));
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var restoreStatement = factory.CreateStatement("$0 = $1;", originValue, name);
-                        StatementUtil.InsertStatement(restoreStatement, ref myRestoreAnchor, false);
-                    }
+                    var restoreStatement = factory.CreateStatement("$0 = $1;", originValue, name);
+                    StatementUtil.InsertStatement(restoreStatement, ref statementRestoreAnchor, false);
                 }
             }
 
             return null;
         }
-        
+
+        private static void HandleExpressionBody(IBlock body, CSharpElementFactory factory, IType type, string name,
+            DisposableMarker<IReferenceExpression> marker, IReferenceExpression originValue)
+        {
+            var statement = body.Statements.First().NotNull("body.Statements.First() != null");
+            StatementUtil.InsertStatement(factory.CreateStatement("$0 $1;", type, name), ref statement, true);
+
+            var updatedReference = marker.Find(body).NotNull("marker.Find(body) != null");
+            updatedReference.ReplaceBy(factory.CreateExpression("($0 = $1)", name, originValue.Copy()));
+        }
+
         private static bool IsAssignDestination(IReferenceExpression expr)
         {
             var fullReference = ReferenceExpressionNavigator.GetTopByQualifierExpression(expr);
