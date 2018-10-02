@@ -44,7 +44,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(runner),
         result =>
         {
-          var internalEvent = TestEventsSender.GetTestResult(result); 
+          var internalEvent = new TestInternalEvent("", "", 0, Status.Success, ""); 
           TestEventReceived(new TestEvent(EventType.RunFinished, internalEvent));
         });
     }
