@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Application.Settings;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -80,130 +82,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (sourceFile == null)
                 return;
 
-            var hotRootMethods = new List<IMethodDeclaration>();
-
             // find hot methods in derived from MonoBehaviour classes.
-            var descendantsEnumerator = file.Descendants();
-            while (descendantsEnumerator.MoveNext())
-            {
-                switch (descendantsEnumerator.Current)
-                {
-                    // skip class declaration because all derived sym
-                    case IClassLikeDeclaration classLikeDeclaration:
-                        var declaredSymbol = classLikeDeclaration.DeclaredElement;
-                        if (declaredSymbol == null ||
-                            !declaredSymbol.GetAllSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour)))
-                        {
-                            descendantsEnumerator.SkipThisNode();
-                        }
-                        break;
-                    case IMethodDeclaration methodDeclaration:
-                        // check that method is hot and add it to container                        
-                        var name = methodDeclaration.DeclaredElement?.ShortName;
-                        if (name != null && ourKnownHotMonoBehaviourMethods.Contains(name))
-                            hotRootMethods.Add(methodDeclaration);                                
-                        break;
-                    case IInvocationExpression invocationExpression:
-                        // we should find 'StartCoroutine' method, because passed symbol will be hot too
-                        var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
-                        if (reference == null)
-                            break;
+            var hotRootMethods = FindHotRootMethods(file, sourceFile);
+            if (hotRootMethods.Count == 0) return;
 
-                        var info = reference.Resolve();
-                        if (info.ResolveErrorType != ResolveErrorType.OK) 
-                            break;
-
-                        var declaredElement = info.DeclaredElement as IMethod;
-                        if (declaredElement == null)
-                            break;
-                        
-                        var containingType = declaredElement.GetContainingType();
-
-                        if (containingType == null || containingType.GetClrName().Equals(KnownTypes.MonoBehaviour) &&
-                            declaredElement.ShortName.Equals("StartCoroutine"))
-                        {
-                            var arguments = invocationExpression.Arguments;
-                            if (arguments.Count == 0 || arguments.Count > 2)
-                                break;
-
-                            var firstArgument = arguments[0].Value;
-
-                            // 'StartCoroutine' has overload with string. We have already attached reference, so get symbol from 
-                            // reference
-                            if (firstArgument.ConstantValue.IsString())
-                            {
-                                if (firstArgument is ILiteralExpression literalExpression)
-                                {
-                                    var coroutineMethodReference = literalExpression.GetReferences<UnityEventFunctionReference>().FirstOrDefault();
-                                    if (coroutineMethodReference != null)
-                                    {
-                                        var method = coroutineMethodReference.Resolve().DeclaredElement as IMethod;
-                                        if (method == null)
-                                            break;
-                                        
-                                        var declarations = method.GetDeclarationsIn(sourceFile).Where(t => t.GetSourceFile() == sourceFile);
-                                        declarations.ForEach(t => hotRootMethods.Add((IMethodDeclaration)t));
-                                    }
-                                }
-                            }
-                            
-                            // argument is IEnumerator which return from invocation, so get invocation expression declaration and add to container
-                            if (firstArgument is IInvocationExpression coroutineInvocation)
-                            {
-                                var invocationReference = (coroutineInvocation.InvokedExpression as IReferenceExpression)?.Reference;
-                                if (invocationReference == null)
-                                    return;
-
-                                info = invocationReference.Resolve();
-                                if (info.ResolveErrorType != ResolveErrorType.OK)
-                                    break;
-
-                                var method = info.DeclaredElement as IMethod;
-                                if (method == null)
-                                    break;
-
-                                var declarations = method.GetDeclarationsIn(sourceFile).Where(t => t.GetSourceFile() == sourceFile);
-                                declarations.ForEach(t => hotRootMethods.Add((IMethodDeclaration)t));
-                            }
-                        }
-                        
-                        break;
-                }
-            }
-
-            // sharing context for each hot root.
-            var context = new HotMethodAnalyzerContext();
- 
-            
-            foreach (var methodDeclaration in hotRootMethods)
-            {
-                var declaredElement = methodDeclaration.DeclaredElement.NotNull("declaredElement != null");
-                context.CurrentDeclaredElement = declaredElement;
-                
-                var visitor = new HotMethodAnalyzer(sourceFile, consumer, ourMaxAnalysisDepth);
-                methodDeclaration.ProcessDescendants(visitor, context);
-            }
+            var context = GetHotMethodAnalyzerContext(consumer, hotRootMethods, sourceFile);
 
             // Second step of propagation 'costly reachable mark'. Handles cycles in call graph
-            var callGraph = context.InvertedCallGraph;
-            var nodes = new HashSet<IDeclaredElement>();
-            
-            callGraph.ForEach(kvp =>
-            {
-                if (context.IsDeclaredElementCostlyReachable(kvp.Key))
-                    nodes.Add(kvp.Key);
-                
-                nodes.AddRange(kvp.Value.Where(t => context.IsDeclaredElementCostlyReachable(t)));
-            });
-
-            var visited = new HashSet<IDeclaredElement>();
-            foreach (var node in nodes)
-            {
-                PropagateCostlyMark(node, callGraph, context, visited);
-            }
+            PropagateCostlyReachableMark(context);
 
             // highlight all invocation which indirectly calls costly methods.
             // it is fast, because we have already calculated all data
+            HighlightCostlyReachableInvocation(consumer, context);
+        }
+
+        private static void HighlightCostlyReachableInvocation(IHighlightingConsumer consumer, HotMethodAnalyzerContext context)
+        {
             foreach (var kvp in context.InvocationsInMethods)
             {
                 var method = kvp.Key;
@@ -224,6 +118,141 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                     }
                 }
             }
+        }
+
+        private void PropagateCostlyReachableMark(HotMethodAnalyzerContext context)
+        {
+            var callGraph = context.InvertedCallGraph;
+            var nodes = new HashSet<IDeclaredElement>();
+
+            foreach (var (from, toVertices) in callGraph)
+            {
+                if (context.IsDeclaredElementCostlyReachable(from))
+                    nodes.Add(from);
+                foreach (var to in toVertices)
+                {
+                    if (context.IsDeclaredElementCostlyReachable(to))
+                        nodes.Add(to);
+                }
+            }
+
+            var visited = new HashSet<IDeclaredElement>();
+            foreach (var node in nodes)
+            {
+                PropagateCostlyMark(node, callGraph, context, visited);
+            }
+        }
+
+        private static HotMethodAnalyzerContext GetHotMethodAnalyzerContext(IHighlightingConsumer consumer, List<IMethodDeclaration> hotRootMethods,
+            IPsiSourceFile sourceFile)
+        {
+            // sharing context for each hot root.
+            var context = new HotMethodAnalyzerContext();
+
+            foreach (var methodDeclaration in hotRootMethods)
+            {
+                var declaredElement = methodDeclaration.DeclaredElement.NotNull("declaredElement != null");
+                context.CurrentDeclaredElement = declaredElement;
+
+                var visitor = new HotMethodAnalyzer(sourceFile, consumer, ourMaxAnalysisDepth);
+                methodDeclaration.ProcessDescendants(visitor, context);
+            }
+
+            return context;
+        }
+
+        private static List<IMethodDeclaration> FindHotRootMethods([NotNull]ICSharpFile file,[NotNull] IPsiSourceFile sourceFile)
+        {
+            var result = new List<IMethodDeclaration>();
+                
+            var descendantsEnumerator = file.Descendants();
+            while (descendantsEnumerator.MoveNext())
+            {
+                var checkForInterrupt = InterruptableActivityCookie.GetCheck().NotNull("checkForInterrupt != null");
+                if (checkForInterrupt()) 
+                    throw new OperationCanceledException();
+                switch (descendantsEnumerator.Current)
+                {
+                    case IClassLikeDeclaration classLikeDeclaration:
+                        var declaredSymbol = classLikeDeclaration.DeclaredElement;
+                        if (declaredSymbol == null ||
+                            !declaredSymbol.GetAllSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour)))
+                        {
+                            descendantsEnumerator.SkipThisNode();
+                        }
+
+                        break;
+                    case IMethodDeclaration methodDeclaration:
+                        // check that method is hot and add it to container                        
+                        var name = methodDeclaration.DeclaredElement?.ShortName;
+                        if (name != null && ourKnownHotMonoBehaviourMethods.Contains(name))
+                            result.Add(methodDeclaration);
+                        break;
+                    case IInvocationExpression invocationExpression:
+                        // we should find 'StartCoroutine' method, because passed symbol will be hot too
+                        var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
+                        if (reference == null)
+                            break;
+
+                        var info = reference.Resolve();
+                        if (info.ResolveErrorType != ResolveErrorType.OK)
+                            break;
+
+                        var declaredElement = info.DeclaredElement as IMethod;
+                        if (declaredElement == null)
+                            break;
+
+                        var containingType = declaredElement.GetContainingType();
+
+                        if (containingType == null || containingType.GetClrName().Equals(KnownTypes.MonoBehaviour) &&
+                            declaredElement.ShortName.Equals("StartCoroutine"))
+                        {
+                            var arguments = invocationExpression.Arguments;
+                            if (arguments.Count == 0 || arguments.Count > 2)
+                                break;
+
+                            var firstArgument = arguments[0].Value;
+                            if (firstArgument == null)
+                                break;
+
+                            var coroutineMethodDeclaration = ExtractMethodDeclarationFromStartCoroutine(firstArgument);
+                            
+                            var declarations = coroutineMethodDeclaration.GetDeclarationsIn(sourceFile).Where(t => t.GetSourceFile() == sourceFile);
+                            foreach (var declaration in declarations)
+                            {
+                                result.Add((IMethodDeclaration)declaration);
+                            }
+                        }
+
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        private static IMethod ExtractMethodDeclarationFromStartCoroutine([NotNull]ICSharpExpression firstArgument)
+        {
+            // 'StartCoroutine' has overload with string. We have already attached reference, so get declaration from 
+            // reference
+            if (firstArgument is ILiteralExpression literalExpression)
+            {
+                var coroutineMethodReference = literalExpression.GetReferences<UnityEventFunctionReference>().FirstOrDefault();
+                if (coroutineMethodReference != null)
+                {
+                    return coroutineMethodReference.Resolve().DeclaredElement as IMethod;
+                }
+            }
+
+            // argument is IEnumerator which is returned from invocation, so get invocation declaration
+            if (firstArgument is IInvocationExpression coroutineInvocation)
+            {
+                var invocationReference = (coroutineInvocation.InvokedExpression as IReferenceExpression)?.Reference;
+                var info = invocationReference?.Resolve();
+                return info?.DeclaredElement as IMethod;
+            }
+
+            return null;
         }
 
         private void PropagateCostlyMark(IDeclaredElement node, IReadOnlyDictionary<IDeclaredElement, HashSet<IDeclaredElement>> callGraph,
@@ -306,98 +335,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             private void AnalyzeInvocationExpression(IInvocationExpression invocationExpressionParam, HotMethodAnalyzerContext context)
             {
                 var reference = (invocationExpressionParam.InvokedExpression as IReferenceExpression)?.Reference;
-
-                var declaredElement = reference?.Resolve().DeclaredElement as IMethod;
-                if (declaredElement == null)
+                if (reference == null)
                     return;
 
-                var containingType = declaredElement.GetContainingType();
+                var declaredElement = reference.Resolve().DeclaredElement as IMethod;
+
+                var containingType = declaredElement?.GetContainingType();
                 if (containingType == null)
                     return;
+                
+                CheckCommonCostlyMethods(invocationExpressionParam, context, declaredElement, containingType, reference);
+                CheckAddComponent(invocationExpressionParam, context, declaredElement, containingType.GetClrName(), reference);
 
-                #region CostlyMethodInvocationInspection
-
-                ISet<string> knownCostlyMethods = null;
-                if (containingType.GetClrName().Equals(KnownTypes.Component))
-                    knownCostlyMethods = ourKnownComponentCostlyMethods;
-
-                if (containingType.GetClrName().Equals(KnownTypes.GameObject))
-                    knownCostlyMethods = ourKnownGameObjectCostlyMethods;
-                
-                if (containingType.GetClrName().Equals(KnownTypes.Resources))
-                    knownCostlyMethods = ourKnownResourcesCostlyMethods;
-                
-                if (containingType.GetClrName().Equals(KnownTypes.Object))
-                    knownCostlyMethods = ourKnownObjectCostlyMethods;
-                
-                if (containingType.GetClrName().Equals(KnownTypes.Transform))
-                    knownCostlyMethods = ourKnownTransformCostlyMethods;
-                
-                if (knownCostlyMethods == null)
-                    return;
-                
-                var shortName = declaredElement.ShortName;
-
-                if (knownCostlyMethods.Contains(shortName))
-                {
-                    context.MarkCurrentAsCostlyReachable();
-                    myConsumer.AddHighlighting(new PerformanceCriticalCodeInvocationHighlighting(reference));
-                }
-                #endregion
-                
-                #region AddMonoBehaviourInspection
-                
-                if (containingType.GetClrName().Equals(KnownTypes.GameObject))
-                {
-                    if (shortName.Equals("AddComponent") && invocationExpressionParam.TypeArguments.Count == 1)
-                    {
-                        context.MarkCurrentAsCostlyReachable();
-                        myConsumer.AddHighlighting(new PerformanceCriticalCodeInvocationHighlighting(reference));
-                    }
-                }
-                
-                #endregion
             }
 
 
             public override void VisitEqualityExpression(IEqualityExpression equalityExpressionParam, HotMethodAnalyzerContext context)
-            {
-                #region NullComprasionUnityObjectInspection
-                var reference = equalityExpressionParam.Reference;
-                if (reference == null)
-                    return;
-                
-                var isNullFound = false;
-                var leftOperand = equalityExpressionParam.LeftOperand;
-                var rightOperand = equalityExpressionParam.RightOperand;
-                
-                if (leftOperand == null || rightOperand == null)
-                    return;
-                
-                IExpressionType expressionType = null;
-                
-                if (leftOperand.ConstantValue(new UniversalContext(equalityExpressionParam)).IsNull())
-                {
-                    isNullFound = true;
-                    expressionType = rightOperand.GetExpressionType();
-                  
-                }
-                else if (rightOperand.ConstantValue(new UniversalContext(equalityExpressionParam)).IsNull())
-                {
-                    isNullFound = true;
-                    expressionType = leftOperand.GetExpressionType();
-                }
-
-                if (!isNullFound)
-                    return;
-                
-                var typeElement = expressionType.ToIType()?.GetTypeElement();
-                if (typeElement == null)
-                    return;
-
-                if (typeElement.GetAllSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.Object)))
-                    myConsumer.AddHighlighting(new PerformanceCriticalCodeInvocationHighlighting(reference));
-                #endregion
+            { 
+                CheckNullComparisonWithUnityObject(equalityExpressionParam, context); 
             }
 
             public bool InteriorShouldBeProcessed(ITreeNode element, HotMethodAnalyzerContext context)
@@ -426,6 +381,100 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 if (element is IInvocationExpression)
                     context.Depth--;
             }
+
+            #region inspections
+
+            private void CheckCommonCostlyMethods([NotNull]IInvocationExpression invocationExpressionParam, [NotNull] HotMethodAnalyzerContext context,
+                [NotNull] IClrDeclaredElement declaredElement, [NotNull] ITypeElement containingType, [NotNull] IReference reference)
+            {
+
+                ISet<string> knownCostlyMethods = null;
+                var clrTypeName = containingType.GetClrName();
+                if (clrTypeName.Equals(KnownTypes.Component))
+                    knownCostlyMethods = ourKnownComponentCostlyMethods;
+
+                if (clrTypeName.Equals(KnownTypes.GameObject))
+                    knownCostlyMethods = ourKnownGameObjectCostlyMethods;
+                
+                if (clrTypeName.Equals(KnownTypes.Resources))
+                    knownCostlyMethods = ourKnownResourcesCostlyMethods;
+                
+                if (clrTypeName.Equals(KnownTypes.Object))
+                    knownCostlyMethods = ourKnownObjectCostlyMethods;
+                
+                if (clrTypeName.Equals(KnownTypes.Transform))
+                    knownCostlyMethods = ourKnownTransformCostlyMethods;
+                
+                if (knownCostlyMethods == null)
+                    return;
+                
+                var shortName = declaredElement.ShortName;
+
+                if (knownCostlyMethods.Contains(shortName))
+                {
+                    context.MarkCurrentAsCostlyReachable();
+                    myConsumer.AddHighlighting(new PerformanceCriticalCodeInvocationHighlighting(reference));
+                }
+            }
+            
+            private void CheckAddComponent([NotNull] IInvocationExpression invocationExpressionParam, HotMethodAnalyzerContext context, [NotNull] IClrDeclaredElement declaredElement, 
+                [NotNull] IClrTypeName clrTypeName,[NotNull] IReference reference)
+            {
+                
+                if (clrTypeName.Equals(KnownTypes.GameObject))
+                {
+                    if (declaredElement.ShortName.Equals("AddComponent") && invocationExpressionParam.TypeArguments.Count == 1)
+                    {
+                        context.MarkCurrentAsCostlyReachable();
+                        myConsumer.AddHighlighting(new PerformanceCriticalCodeInvocationHighlighting(reference));
+                    }
+                }
+            }
+            
+            private void CheckNullComparisonWithUnityObject([NotNull]IEqualityExpression equalityExpressionParam, HotMethodAnalyzerContext context)
+            {
+                var reference = equalityExpressionParam.Reference;
+                if (reference == null)
+                    return;
+                
+                var isNullFound = false;
+                var leftOperand = equalityExpressionParam.LeftOperand;
+                var rightOperand = equalityExpressionParam.RightOperand;
+                
+                if (leftOperand == null || rightOperand == null)
+                    return;
+                
+                IExpressionType expressionType = null;
+                
+                if (leftOperand.ConstantValue.IsNull())
+                {
+                    isNullFound = true;
+                    expressionType = rightOperand.GetExpressionType();
+                  
+                }
+                else if (rightOperand.ConstantValue.IsNull())
+                {
+                    isNullFound = true;
+                    expressionType = leftOperand.GetExpressionType();
+                }
+
+                if (!isNullFound)
+                    return;
+                
+                var typeElement = expressionType.ToIType()?.GetTypeElement();
+                if (typeElement == null)
+                    return;
+
+                if (typeElement.GetAllSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.Object)))
+                {
+                    context.MarkCurrentAsCostlyReachable();
+                    myConsumer.AddHighlighting(new PerformanceCriticalCodeInvocationHighlighting(reference));
+                }
+            }
+            
+            #endregion
+            
+            
             
             #region data
             
@@ -476,10 +525,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             // Current depth of analysis
             public int Depth { get; set; }
             
-            // Inverted call graph for costly reachable mark propagation after visit AST
-            public IReadOnlyDictionary<IDeclaredElement, HashSet<IDeclaredElement>> InvertedCallGraph 
-                => new ReadOnlyDictionary<IDeclaredElement, HashSet<IDeclaredElement>>(myInvertedCallGraph);
-            
+            // Inverted call graph for costly reachable mark propagation after visit AST 
+            public readonly Dictionary<IDeclaredElement, HashSet<IDeclaredElement>> InvertedCallGraph = new Dictionary<IDeclaredElement, HashSet<IDeclaredElement>>();
+
             
             // Container of all invoked method for specified method with node elements. Helper for highlighting after 
             // propagation of costly reachable mark is done
@@ -491,7 +539,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             
             // Helper for answer question : Is declared element has costly reachable mark?
             private readonly HashSet<IDeclaredElement> myCostlyMethods = new HashSet<IDeclaredElement>();
-            private readonly Dictionary<IDeclaredElement, HashSet<IDeclaredElement>> myInvertedCallGraph = new Dictionary<IDeclaredElement, HashSet<IDeclaredElement>>();
 
             
             public IDeclaredElement CurrentDeclaredElement { get; set; }
@@ -551,9 +598,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 group.Add(reference);
 
                 // add edge to inverted call graph
-                if (!myInvertedCallGraph.ContainsKey(invokedMethod))
-                    myInvertedCallGraph[invokedMethod] = new HashSet<IDeclaredElement>();
-                myInvertedCallGraph[invokedMethod].Add(method);
+                if (!InvertedCallGraph.ContainsKey(invokedMethod))
+                    InvertedCallGraph[invokedMethod] = new HashSet<IDeclaredElement>();
+                InvertedCallGraph[invokedMethod].Add(method);
             }
         } 
     }
