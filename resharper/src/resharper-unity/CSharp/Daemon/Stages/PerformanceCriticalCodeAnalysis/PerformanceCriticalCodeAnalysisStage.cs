@@ -57,12 +57,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         private readonly DaemonProcessKind myProcessKind;
         [NotNull] private readonly IContextBoundSettingsStore mySettingsStore;
+        private static Func<bool> ourCheckForInterrupt;
 
         public PerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, DaemonProcessKind processKind, [NotNull] IContextBoundSettingsStore settingsStore, [NotNull] ICSharpFile file)
             : base(process, file)
         {
             myProcessKind = processKind;
-            mySettingsStore = settingsStore;            
+            mySettingsStore = settingsStore;
+            ourCheckForInterrupt = InterruptableActivityCookie.GetCheck().NotNull();
         }
 
         public override void Execute(Action<DaemonStageResult> committer)
@@ -85,11 +87,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             // find hot methods in derived from MonoBehaviour classes.
             var hotRootMethods = FindHotRootMethods(file, sourceFile);
             if (hotRootMethods.Count == 0) return;
-
+            ourCheckForInterrupt();
+            
             var context = GetHotMethodAnalyzerContext(consumer, hotRootMethods, sourceFile);
+            ourCheckForInterrupt();
 
             // Second step of propagation 'costly reachable mark'. Handles cycles in call graph
             PropagateCostlyReachableMark(context);
+            ourCheckForInterrupt();
 
             // highlight all invocation which indirectly calls costly methods.
             // it is fast, because we have already calculated all data
@@ -143,7 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             }
         }
 
-        private static HotMethodAnalyzerContext GetHotMethodAnalyzerContext(IHighlightingConsumer consumer, List<IMethodDeclaration> hotRootMethods,
+        private static HotMethodAnalyzerContext GetHotMethodAnalyzerContext(IHighlightingConsumer consumer, LocalList<IMethodDeclaration> hotRootMethods,
             IPsiSourceFile sourceFile)
         {
             // sharing context for each hot root.
@@ -161,16 +166,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return context;
         }
 
-        private static List<IMethodDeclaration> FindHotRootMethods([NotNull]ICSharpFile file,[NotNull] IPsiSourceFile sourceFile)
+        private static LocalList<IMethodDeclaration> FindHotRootMethods([NotNull]ICSharpFile file,[NotNull] IPsiSourceFile sourceFile)
         {
-            var result = new List<IMethodDeclaration>();
+            var result = new LocalList<IMethodDeclaration>();
                 
             var descendantsEnumerator = file.Descendants();
             while (descendantsEnumerator.MoveNext())
             {
-                var checkForInterrupt = InterruptableActivityCookie.GetCheck().NotNull("checkForInterrupt != null");
-                if (checkForInterrupt()) 
-                    throw new OperationCanceledException();
                 switch (descendantsEnumerator.Current)
                 {
                     case IClassLikeDeclaration classLikeDeclaration:
@@ -318,6 +320,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                     // Do not visit methods twice
                     if (!context.IsCurrentElementVisited())
                     {
+                        ourCheckForInterrupt();
                         declaration.ProcessDescendants(this, context);
                     }
                 }
@@ -542,11 +545,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             
             public IDeclaredElement CurrentDeclaredElement { get; set; }
-            
-            public bool IsDeclaredElementVisited(IDeclaredElement element)
-            {
-                return myVisited.Contains(element);
-            }
+             
             
             public bool IsCurrentElementVisited()
             {
@@ -556,12 +555,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             public void MarkCurrentAsVisited()
             {
                 myVisited.Add(CurrentDeclaredElement);
-            }
-            
-            public void MarkElementAsVisited(IDeclaredElement element)
-            {
-                myVisited.Add(element);
-            }
+            } 
 
             public void MarkCurrentAsCostlyReachable()
             {
@@ -571,12 +565,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             public void MarkElementAsCostlyReachable(IDeclaredElement element)
             {
                 myCostlyMethods.Add(element);
-            }
-
-            public bool IsCurrentDeclaredElementCostlyReachable()
-            {
-                return myCostlyMethods.Contains(CurrentDeclaredElement);
-            }
+            } 
             
             public bool IsDeclaredElementCostlyReachable(IDeclaredElement element)
             {

@@ -10,16 +10,16 @@ using JetBrains.ReSharper.Psi.Resolve;
         PerformanceCriticalCodeInvocationHighlighting.SEVERITY_ID, 
         null, 
         PerformanceCriticalCodeHighlightingAttributeIds.GroupID,
-        "Invocation of costly method from performance context",
-        "Invocation of costly method from performance context", 
+        "Expensive method call in frequently called method",
+        "Expensive method call in frequently called method", 
         Severity.INFO
         ),
     RegisterConfigurableSeverity(
         PerformanceCriticalCodeInvocationReachableHighlighting.SEVERITY_ID, 
         null, 
         PerformanceCriticalCodeHighlightingAttributeIds.GroupID,
-        "Invocation of this method indirectly calls costly method",
-        "Invocation of this method indirectly calls costly method",
+        "Expensive method is indirectly invoked from the frequently called method",
+        "Expensive method is indirectly invoked from the frequently called method",
         Severity.INFO
         ),
 ]
