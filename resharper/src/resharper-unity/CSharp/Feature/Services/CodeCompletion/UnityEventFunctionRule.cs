@@ -20,6 +20,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExpectedTypes;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.PsiGen.Util;
 using JetBrains.Text;
 using JetBrains.TextControl;
 using JetBrains.UI.RichText;
@@ -80,12 +81,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var project = context.BasicContext.File.GetProject();
             var actualVersion = unityVersionApi.GetActualVersion(project);
             var existingMethods = typeElement.Methods.ToList();
-
+            
+            var addedFunctions = new HashSet<string>();
+            
             foreach (var function in unityApi.GetEventFunctions(typeElement, actualVersion))
             {
                 if (HasAnyPartiallyMatchingExistingMethods(existingMethods, function))
                     continue;
 
+                if (addedFunctions.Contains(function.Name))
+                    continue;
+                
                 // TODO: Decide what to do with e.g. `void OnAnima{caret}`
                 // If we want to insert a visibility modifier, it has to go *before* the `void`,
                 // which means adding a behaviour here that will remove it
@@ -97,6 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 item = SetRelevanceSortPriority(item, function);
                 item = SetLexicographicalSortPriority(item, function);
 
+                addedFunctions.Add(function.Name);
                 collector.Add(item);
             }
 
