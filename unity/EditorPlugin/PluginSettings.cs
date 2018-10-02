@@ -326,9 +326,8 @@ namespace JetBrains.Rider.Unity.Editor
       GUILayout.BeginHorizontal();
       
       GUILayout.FlexibleSpace();
-      Assembly assembly = Assembly.GetExecutingAssembly();
-      FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-      GUILayout.Label("Plugin version: " + versionInfo.FileVersion, "PR DisabledLabel");
+      var version = Assembly.GetExecutingAssembly().GetName().Version;
+      GUILayout.Label("Plugin version: " + version, "PR DisabledLabel");
       
       GUILayout.EndHorizontal();
       
