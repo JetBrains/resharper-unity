@@ -31,9 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
-            var statement = myNewArgument.GetContainingStatement();
-            if (statement == null)
-                return null;
+            var statement = myNewArgument.GetContainingStatement().NotNull("myNewArgument.GetContainingStatement() != null");
             
             var factory = CSharpElementFactory.GetInstance(myInvocation);
             
@@ -42,10 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var boolLiteral = factory.CreateExpression(myStayInWorldCoords.ToString().ToLower());
             myInvocation.AddArgumentAfter(factory.CreateArgument(ParameterKind.VALUE, boolLiteral), second);
 
-            using (WriteLockCookie.Create())
-            {
-                ModificationUtil.DeleteChild(statement);           
-            }
+            statement.RemoveOrReplaceByEmptyStatement();
 
             return null;
         }
