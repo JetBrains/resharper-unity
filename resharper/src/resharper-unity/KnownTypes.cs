@@ -9,7 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName AddComponentMenu = new ClrTypeName("UnityEngine.AddComponentMenu");
         public static readonly IClrTypeName Camera = new ClrTypeName("UnityEngine.Camera");
         public static readonly IClrTypeName Component = new ClrTypeName("UnityEngine.Component");
-        public static readonly IClrTypeName Transform = new ClrTypeName("UnityEngine.Transform");
         public static readonly IClrTypeName ExecuteInEditMode = new ClrTypeName("UnityEngine.ExecuteInEditMode");
         public static readonly IClrTypeName GameObject = new ClrTypeName("UnityEngine.GameObject");
         public static readonly IClrTypeName HideInInspector = new ClrTypeName("UnityEngine.HideInInspector");
