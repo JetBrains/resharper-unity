@@ -14,7 +14,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     private readonly UnitTestLaunch myUnitTestLaunch;
     private static readonly ILog ourLogger = Log.GetLog(typeof(TestEventsSender).Name);
 
-    public TestEventsSender(TestEventsCollector collector, UnitTestLaunch unitTestLaunch)
+    internal TestEventsSender(TestEventsCollector collector, UnitTestLaunch unitTestLaunch)
     {
       myUnitTestLaunch = unitTestLaunch;
       ProcessQueue(collector);
@@ -51,51 +51,50 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 //
 //        head = head.Next;
 //      }
-
       foreach (var myEvent in collector.DelayedEvents)
       {
         switch (myEvent.myType)
         {
           case EventType.RunFinished:
-            RunFinished(myUnitTestLaunch, (ITestResult) myEvent.myTestEvent);
+            RunFinished(myUnitTestLaunch);
             break;
           case EventType.TestFinished:
-            TestFinished(myUnitTestLaunch, (ITestResult) myEvent.myTestEvent);
+            TestFinished(myUnitTestLaunch, GetTestResult(myEvent.Event));
             break;
           case EventType.TestStarted:
-            TestStarted(myUnitTestLaunch, (ITest) myEvent.myTestEvent);
+            var tResult = new TestResult(myEvent.Event.myID, string.Empty, 0, Status.Running, myEvent.Event.myParentID);
+            TestStarted(myUnitTestLaunch, tResult);
             break;
-        }
-        
+        }        
       }
-      
+
       collector.DelayedEvents.Clear();
     }
     
-    public static void RunFinished(UnitTestLaunch launch, ITestResult test)
+    public static void RunFinished(UnitTestLaunch launch)
     {
       launch.RunResult.Fire(new RunResult(true));
     }
     
-    public static void TestStarted(UnitTestLaunch launch, ITest test)
+    public static void TestStarted(UnitTestLaunch launch, TestResult testResult)
     {
-      if (!(test is TestMethod))
-        return;
-
-      ourLogger.Verbose("TestStarted : {0}", test.FullName);
-      var id = GetIdFromNUnitTest(test);
-
-      launch.TestResult.Fire(new TestResult(id, string.Empty, 0, Status.Running, GetIdFromNUnitTest(test.Parent)));
+      launch.TestResult.Fire(testResult);
     }
 
-    public static void TestFinished(UnitTestLaunch launch, ITestResult testResult)
+    public static void TestFinished(UnitTestLaunch launch, TestResult testResult)
     {
-      var test = testResult.Test;
-      if (!(test is TestMethod))
-        return;
+      launch.TestResult.Fire(testResult);
+    }
 
-      ourLogger.Verbose("TestFinished : {0}, result : {1}", test.FullName, testResult.ResultState);
-      var id = GetIdFromNUnitTest(test);
+    internal static TestResult GetTestResult(TestInternalEvent tEvent)
+    {
+      return new TestResult(tEvent.myID, tEvent.myOutput, tEvent.myDuration, tEvent.myStatus, tEvent.myParentID);
+    }
+
+    internal static TestInternalEvent GetTestResult(ITestResult testResult)
+    {
+      //ourLogger.Verbose("TestFinished : {0}, result : {1}", test.FullName, testResult.ResultState);
+      var id = GetIdFromNUnitTest(testResult.Test);
 
       var output = ExtractOutput(testResult);
       Status status;
@@ -103,17 +102,17 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         status = Status.Success;
       else if (Equals(testResult.ResultState, ResultState.Ignored))
         status = Status.Ignored;
-      else if (Equals(testResult.ResultState, ResultState.Inconclusive) || Equals(testResult.ResultState, ResultState.Skipped))
+      else if (Equals(testResult.ResultState, ResultState.Inconclusive) ||
+               Equals(testResult.ResultState, ResultState.Skipped))
         status = Status.Inconclusive;
       else
         status = Status.Failure;
-          
-      launch.TestResult.Fire(new TestResult(id, output,
+      return new TestInternalEvent(id, output,
         (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
-        status, GetIdFromNUnitTest(test.Parent)));
+        status, GetIdFromNUnitTest(testResult.Test.Parent));
     }
 
-    private static string ExtractOutput(ITestResult testResult)
+    internal static string ExtractOutput(ITestResult testResult)
     {
       var stringBuilder = new StringBuilder();
       if (testResult.Message != null)
@@ -141,7 +140,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       return testResult.Output ?? String.Empty;
     }
 
-    private static string GetIdFromNUnitTest(ITest test)
+    internal static string GetIdFromNUnitTest(ITest test)
     {
       var testMethod = test as TestMethod;
       if (testMethod == null)

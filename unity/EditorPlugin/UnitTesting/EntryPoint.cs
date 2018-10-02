@@ -38,7 +38,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       
       modelValue.UnitTestLaunch.Advise(connectionLifetime, launch =>
       {
-        var collector = ScriptableObject.FindObjectOfType<TestEventsCollector>();
+        var collector = TestEventsCollector.Instance;
         if (collector != null)
         {
           ourLogger.Verbose("TestEventsCollectorInstance: " + collector.GetInstanceID()+" DelayedEvents.Count:"+ collector.DelayedEvents.Count);

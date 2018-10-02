@@ -80,7 +80,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
 
     private static void CreateAndLoad()
     {
-      Debug.Assert(instance == null);
+//      Debug.Assert(instance == null);
 
       string filePath = GetFilePath();
       if (!string.IsNullOrEmpty(filePath))
@@ -120,7 +120,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
       var attr = typeof(T).GetCustomAttributes(true)
         .OfType<LocationAttribute>()
         .FirstOrDefault();
-      ourLogger.Verbose("FilePath {0}", attr?.Filepath);
+      //ourLogger.Verbose("FilePath {0}", attr?.Filepath);
       return attr?.Filepath;
     }
   }

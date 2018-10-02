@@ -7,10 +7,12 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
@@ -151,21 +153,27 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           var runner = runnerField.GetValue(launcher);
           SupportAbort(runner);
 
-          if (!AdviseTestStarted(runner, "m_TestStartedEvent", result =>
+          if (!AdviseTestStarted(runner, "m_TestStartedEvent", test =>
           {
-           TestEventsSender.TestStarted(myLaunch, result);
+            if (!(test is TestMethod)) return;
+            ourLogger.Verbose("TestStarted : {0}", test.FullName);
+            var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), string.Empty, 0, Status.Running,
+              TestEventsSender.GetIdFromNUnitTest(test.Parent));
+            TestEventsSender.TestStarted(myLaunch, tResult);
           }))
             return;
 
           if (!AdviseTestFinished(runner, "m_TestFinishedEvent", result =>
           {
-            TestEventsSender.TestFinished(myLaunch, result);
+            if (!(result.Test is TestMethod)) return;
+            var res = TestEventsSender.GetTestResult(result);
+            TestEventsSender.TestFinished(myLaunch, TestEventsSender.GetTestResult(res));
           }))
             return;
 
           if (!AdviseSessionFinished(runner, "m_RunFinishedEvent", result =>
           {
-            TestEventsSender.RunFinished(myLaunch, result);
+            TestEventsSender.RunFinished(myLaunch);
           }))
             return;
 
@@ -345,7 +353,8 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
                 .Single(a => a.Name=="AddEventHandlerScriptableObject" && a.IsGenericMethod);
             method.MakeGenericMethod(testRunnerCallbackType).Invoke(null, new [] { runner });;
             method.MakeGenericMethod(callbacksDelegatorListenerType).Invoke(null, new [] { runner });
-            var collector = ScriptableObject.CreateInstance<TestEventsCollector>();
+            var collector = TestEventsCollector.Instance;
+            collector.hideFlags = HideFlags.DontUnloadUnusedAsset;
             collector.SetupPersistentListeners(runner);
 
 //            runner.settings = runnerSettings;
