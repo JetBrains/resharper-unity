@@ -7,12 +7,12 @@ namespace DefaultNamespace
         private GameObject gameObject = null;
         public void Update()
         {
-            IndirectCostly();
+            |IndirectCostly|(0)();
         }
 
         private void IndirectCostly()
         {
-            if (gameObject |==|(0) null)
+            if (gameObject |==|(1) null)
             {
                 // smth..
             }
@@ -20,4 +20,5 @@ namespace DefaultNamespace
     }
 }
 ---------------------------------------------------------
-(0): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
+(0): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(1): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
