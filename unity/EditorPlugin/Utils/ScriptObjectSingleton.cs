@@ -89,7 +89,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
       if (instance == null)
       {
         var inst = CreateInstance<T>() as ScriptObjectSingleton<T>;
-        inst.hideFlags = HideFlags.HideAndDontSave;
+        inst.hideFlags = HideFlags.DontUnloadUnusedAsset;
         inst.Save(true);
       }
 

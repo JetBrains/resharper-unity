@@ -14,9 +14,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   public static class EntryPoint
   {
     private static readonly ILog ourLogger = Log.GetLog("UnitTesting.EntryPoint");
-    private static object myPlayModeTestsController;
-    //private static readonly TestEventsCollector ourCollector;
-
+    
     static EntryPoint()
     {
       if (!PluginEntryPoint.Enabled)
@@ -39,11 +37,8 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       modelValue.UnitTestLaunch.Advise(connectionLifetime, launch =>
       {
         var collector = TestEventsCollector.Instance;
-        if (collector != null)
-        {
-          ourLogger.Verbose("TestEventsCollectorInstance: " + collector.GetInstanceID()+" DelayedEvents.Count:"+ collector.DelayedEvents.Count);
-          new TestEventsSender(collector, launch);
-        }
+        ourLogger.Verbose("TestEventsCollectorInstance: " + collector.GetInstanceID()+" DelayedEvents.Count:"+ collector.DelayedEvents.Count);
+        new TestEventsSender(collector, launch);
       });
       
       modelValue.RunUnitTestLaunch.Advise(connectionLifetime, () =>

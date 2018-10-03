@@ -364,7 +364,6 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             }
             
             var collector = TestEventsCollector.Instance;
-            collector.hideFlags = HideFlags.DontUnloadUnusedAsset;
             collector.SetupPersistentListeners(runner);
 
 //            runner.settings = runnerSettings;
