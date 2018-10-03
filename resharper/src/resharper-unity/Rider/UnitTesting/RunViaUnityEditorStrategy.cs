@@ -11,7 +11,6 @@ using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Features.XamlRendererHost.Preview;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -119,20 +118,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var launch = SetupLaunch(run);
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
             {
-                if (myUnityEditorProtocol.UnityModel.Value == null)
+                if (!myUnityEditorProtocol.UnityModel.HasValue())
                 {
                     tcs.SetException(new Exception("Unity Editor connection unavailable."));
                     return;
                 }
                 
-                myUnityEditorProtocol.UnityModel.View(run.Lifetime, (lifetime, editorPluginModel) =>
+                myUnityEditorProtocol.UnityModel.ViewNotNull(run.Lifetime, (lt, model) =>
                 {
                     // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
-                    if (editorPluginModel != null)
-                    {
-                        editorPluginModel.UnitTestLaunch.SetValue(launch);
-                        SubscribeResults(run, lifetime, tcs, launch);
-                    }
+                    model.UnitTestLaunch.SetValue(launch);
+                    SubscribeResults(run, lt, tcs, launch);
                 });
                 
                 myUnityEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(RdVoid.Instance);
@@ -271,9 +267,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
-            var launchProperty = myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch;
-            if (launchProperty != null && launchProperty.HasValue())
-              launchProperty.Value?.Abort.Start(RdVoid.Instance);
+            if (myUnityEditorProtocol.UnityModel.HasValue())
+            {
+                var launchProperty = myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch;
+                if (launchProperty != null && launchProperty.HasValue())
+                    launchProperty.Value?.Abort.Start(RdVoid.Instance);    
+            }
+            
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }
 

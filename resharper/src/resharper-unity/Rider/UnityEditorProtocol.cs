@@ -43,14 +43,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
 
-        private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
         public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
 
-        private readonly IProperty<EditorPluginModel> myUnityModel;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
-        public IProperty<EditorPluginModel> UnityModel => myUnityModel;
+        public readonly RProperty<EditorPluginModel> UnityModel = new RProperty<EditorPluginModel>();
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
@@ -67,8 +65,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myHost = host;
             myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
-            myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null)
-                .EnsureReadonly(myReadonlyToken).EnsureThisThread();
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -99,6 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseModelData(Lifetime lifetime)
         {   
+            if (!UnityModel.HasValue()) return;
             myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
             myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
             myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
@@ -176,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel",
-                            () => { myUnityModel.SetValue(editor, myReadonlyToken); });
+                            () => { UnityModel.SetValue(editor); });
 
                     lf.AddAction(() =>
                     {
@@ -185,7 +182,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             {
                                 myLogger.Info("Wire disconnected.");
                                 myHost.PerformModelAction(m => m.SessionInitialized.Value = false);
-                                myUnityModel.SetValue(null, myReadonlyToken);
+                                UnityModel.SetValue(null);
                             });
                     });
                 });
