@@ -165,7 +165,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             mySolution.Locks.AssertMainThread();
         
-            launch.TestResult.Advise(connectionLifetime, result =>
+            launch.TestResult.AdviseNotNull(connectionLifetime, result =>
             {
                 var unitTestElement = GetElementById(result.TestId);
                 if (unitTestElement == null) //https://youtrack.jetbrains.com/issue/RIDER-15849

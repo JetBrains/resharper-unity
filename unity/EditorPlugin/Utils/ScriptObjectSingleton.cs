@@ -80,8 +80,6 @@ namespace JetBrains.Rider.Unity.Editor.Utils
 
     private static void CreateAndLoad()
     {
-//      Debug.Assert(instance == null);
-
       string filePath = GetFilePath();
       if (!string.IsNullOrEmpty(filePath))
       {

@@ -18,7 +18,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     {
       myUnitTestLaunch = unitTestLaunch;
       ProcessQueue(collector);
-      collector.DelayedEvents.Clear();
+      collector.Clear();
 
       collector.ClearEvent();
       collector.AddEvent += (col, _) =>
@@ -68,7 +68,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         }        
       }
 
-      collector.DelayedEvents.Clear();
+      collector.Clear();
     }
     
     public static void RunFinished(UnitTestLaunch launch)

@@ -48,12 +48,18 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           TestEventReceived(new TestEvent(EventType.RunFinished, internalEvent));
         });
     }
+
+    public void Clear()
+    {
+      DelayedEvents.Clear();
+      Save(true);
+    }
         
     public void TestEventReceived(TestEvent testEvent)
     {
       ourLogger.Verbose($"TestEventReceived: {testEvent.myType}");
       DelayedEvents.Add(testEvent);
-      Save(true);
+      Save(true); // todo: save once on changing playmode
       OnAddEvent(new EventArgs());
     }
     
