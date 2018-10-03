@@ -55,6 +55,7 @@ apiParser/.idea/**/contentModel.xml
 # Gradle output
 
 rider/build/
+rider/buildSrc/build/
 resharper/build/
 
 
