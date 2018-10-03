@@ -9,6 +9,8 @@ using NUnit.Framework.Internal;
 using UnityEditor.Events;
 using UnityEngine;
 using UnityEngine.Events;
+// removing "redundant" new UnityAction<ITestResult> causes events not fire in PlayMode tests
+// ReSharper disable RedundantDelegateCreation
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
@@ -23,30 +25,29 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     public void SetupPersistentListeners(object runner)
     {
       UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.GetType().GetField("testStartedEvent",
-          BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(runner),
-        test =>
+          BindingFlags.NonPublic | BindingFlags.Instance).GetValue(runner), new UnityAction<ITest>(test =>
         {
           if (!(test is TestMethod)) return;
           ourLogger.Verbose("TestStarted : {0}", test.FullName);
           var internalEvent = new TestInternalEvent(TestEventsSender.GetIdFromNUnitTest(test), "", 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
           TestEventReceived(new TestEvent(EventType.TestStarted, internalEvent));
-        });
+        })
+        );
       UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.GetType().GetField("testFinishedEvent",
-          BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(runner),
-        result =>
+          BindingFlags.NonPublic | BindingFlags.Instance).GetValue(runner), new UnityAction<ITestResult>(result =>
         {
           if (!(result.Test is TestMethod)) return;
           
           var internalEvent = TestEventsSender.GetTestResult(result);
           TestEventReceived(new TestEvent(EventType.TestFinished, internalEvent));
-        });
+        }));
       UnityEventTools.AddPersistentListener((UnityEvent<ITestResult>) runner.GetType().GetField("runFinishedEvent",
-          BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(runner),
-        result =>
+          BindingFlags.NonPublic | BindingFlags.Instance).GetValue(runner),
+        new UnityAction<ITestResult>(result =>
         {
           var internalEvent = new TestInternalEvent("", "", 0, Status.Success, ""); 
           TestEventReceived(new TestEvent(EventType.RunFinished, internalEvent));
-        });
+        }));
     }
 
     public void Clear()
