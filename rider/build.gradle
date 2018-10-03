@@ -17,13 +17,6 @@ ext.bundledRiderSdkRoot = new File("dependencies")  // SDK from TC configuration
 
 
 
-
-// TODO: Get rid of this, it's nasty. Restructure the dotnet build tasks instead
-ext.shouldBuildRiderOnly = false
-
-
-
-
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
     maven { url "https://cache-redirector.jetbrains.com/maven-central" }
@@ -55,9 +48,9 @@ if (buildServer.automatedBuild) {
 }
 
 
+apply from: 'model.gradle'
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
-apply from: 'model.gradle'
 
 
 // Tasks:

@@ -49,6 +49,5 @@ task generateModel {
     dependsOn generateRiderModel, generateEditorPluginModel
 }
 
-// TODO: The dotnet world should depend on this, too
 jar.dependsOn generateModel
-buildPlugin.dependsOn generateModel
+// Make sure the dotnet build tasks depend on model, too

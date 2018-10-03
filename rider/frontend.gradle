@@ -56,14 +56,6 @@ intellij {
 
 
 
-// If we're building `runIde`, only build Rider bits. We only know this once the task graph
-// has been evaluated. It's now too late to change inputs/outputs or dependencies. An alternative
-// approach would be to set the appropriate tasks `enabled` flag
-gradle.taskGraph.whenReady { taskGraph ->
-    project.shouldBuildRiderOnly = (taskGraph.hasTask(runIde) && !taskGraph.hasTask(buildPlugin)) || (taskGraph.hasTask(buildRiderOnlyPlugin) && !taskGraph.hasTask(buildFullReSharperPlugin))
-    logger.lifecycle("project.shouldBuildRiderOnly=$project.shouldBuildRiderOnly")
-}
-
 def dllFiles = [
     "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
