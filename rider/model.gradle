@@ -2,50 +2,15 @@ def modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
 
 // TODO: Think about adding an msbuild task for rdgen
 
-// TODO: Move this to buildSrc
-// The logic is duplicated in the protocol project
-def getRdLibDirectory() {
-    def root = bundledRiderSdkRoot
-    if (root.isDirectory()) {
-        logger.lifecycle("'dependencies' dir found, using as Rider SDK root")
-    }
-    else {
-        root = new File(repoRoot, "rider/build/riderRD-$productVersion-SNAPSHOT")
-        if (intellij.ideaDependencyCachePath != null) {
-            root = new File(intellij.ideaDependencyCachePath)
-        }
-
-        assert root != null
-
-        if (!root.isDirectory()) {
-            root = new File(intellij.ideaDependency.classes.absolutePath)
-        }
-    }
-    def rdLibDirectory = new File(root, "lib/rd")
-    assert rdLibDirectory.isDirectory()
-    return rdLibDirectory
-}
-
-def getRiderModelJar() {
-    def root = getRdLibDirectory()
-    def riderModelJarFile = new File(root, "rider-model.jar").canonicalFile
-    assert riderModelJarFile.isFile()
-    return riderModelJarFile
-}
-
-def getLazilyEvaluatedRiderModelJarClasspath() {
-    // This needs to be a closure, so it will be evaluated lazily, post project configuration/evaluation. This allows
-    // us to use intellij.ideaDependency, which is only downloaded and set after project evaluation
-    return { getRiderModelJar() }
-}
-
 task generateRiderModel(type: tasks.getByName('rdgen').class) {
     def csOutput = new File(repoRoot, "resharper/src/resharper-unity/Rider/RdUnityProtocol")
     def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
 
+    // NOTE: classpath is evaluated lazily, at execution time, because it comes from the unzipped
+    // intellij SDK, which is extracted in afterEvaluate
     params {
         verbose = true
-        classpath getLazilyEvaluatedRiderModelJarClasspath()
+        classpath { backend.getRiderModelJar() }
         sources "$modelDir/rider"
         hashFolder = 'build/rdgen/rider'
         packages = "model.rider"
@@ -71,7 +36,7 @@ task generateRiderModel(type: tasks.getByName('rdgen').class) {
 task generateEditorPluginModel(type: tasks.getByName('rdgen').class) {
     params {
         verbose = true
-        classpath getLazilyEvaluatedRiderModelJarClasspath()
+        classpath { backend.getRiderModelJar() }
         hashFolder = "build/rdgen/editorPlugin"
         sources "$modelDir/editorPlugin"
         packages = "model.editorPlugin"

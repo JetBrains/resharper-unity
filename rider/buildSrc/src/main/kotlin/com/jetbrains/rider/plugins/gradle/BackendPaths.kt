@@ -5,7 +5,7 @@ import org.gradle.api.logging.Logger
 import org.jetbrains.intellij.IntelliJPluginExtension
 import java.io.File
 
-class BackendPaths(private val project: Project, private val logger: Logger, val repositoryRoot: File, private val productVersion: String) {
+class BackendPaths(private val project: Project, logger: Logger, val repositoryRoot: File, private val productVersion: String) {
     val unityRoot: File
     val backendRoot: File
     val resharperHostPluginSolution: File
@@ -45,12 +45,10 @@ class BackendPaths(private val project: Project, private val logger: Logger, val
         }
     }
 
-    fun getRiderSdkPath(): File {
+    fun getRiderSdkRoot(): File {
         if (bundledRiderSdkPath.isDirectory) {
             return bundledRiderSdkPath
         }
-
-        // TODO: This has common logic with getRdLibDirectory
 
         val intellij = project.extensions.findByType(IntelliJPluginExtension::class.java)!!
 
@@ -66,7 +64,11 @@ class BackendPaths(private val project: Project, private val logger: Logger, val
             root = File(intellij.ideaDependency.classes.absolutePath)
         }
 
-        val sdkRoot = File(root, "lib/ReSharperHostSdk")
+        return root
+    }
+
+    fun getRiderSdkPath(): File {
+        val sdkRoot = File(getRiderSdkRoot(), "lib/ReSharperHostSdk")
         assert(sdkRoot.isDirectory)
         return sdkRoot
     }
@@ -77,5 +79,17 @@ class BackendPaths(private val project: Project, private val logger: Logger, val
         }
         assert(downloadedReSharperSdkPath != null)
         return downloadedReSharperSdkPath!!
+    }
+
+    private fun getRdLibDirectory(): File {
+        val rdlib = File(getRiderSdkRoot(),"lib/rd")
+        assert(rdlib.isDirectory)
+        return rdlib
+    }
+
+    fun getRiderModelJar(): File {
+        val jarFile = File(getRdLibDirectory(), "rider-model.jar").canonicalFile
+        assert(jarFile.isFile)
+        return jarFile
     }
 }
