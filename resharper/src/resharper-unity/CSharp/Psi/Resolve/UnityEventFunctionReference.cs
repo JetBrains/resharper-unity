@@ -62,6 +62,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
+            if (!myTargetType.IsValid())
+                return EmptySymbolTable.INSTANCE;
+
             // Just resolve to the method. ReSharper will use GetSymbolFilters to filter
             // candidates for errors
             var symbolTable =
