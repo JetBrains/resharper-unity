@@ -1,13 +1,8 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.CSharp.Util;
-using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
@@ -16,8 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
     // Referenced method must be void, with one parameter equal to the type of the decorated field.
     // Can be public or private, static or instance. Unity treats an incorrect value as a compile error.
     // See also StringLiteralReferenceIncorrectSignatureError
-    public class SyncVarHookReference : CheckedReferenceBase<ILiteralExpression>, ICompletableReference,
-        IUnityReferenceFromStringLiteral
+    public class SyncVarHookReference : StringLiteralReferenceBase, ICompletableReference
     {
         private readonly ITypeElement myOwningType;
         private readonly ISymbolFilter myIsMethodFilter;
@@ -46,21 +40,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             return new MethodSignature(@void, null, new[] {fieldType}, new[] {"value"});
         }
 
-        public override ResolveResultWithInfo ResolveWithoutCache()
-        {
-            var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
-            if (!resolveResultWithInfo.Result.IsEmpty)
-                return resolveResultWithInfo;
-            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
-        }
-
-        public override string GetName()
-        {
-            return myOwner.ConstantValue.Value as string ?? SharedImplUtil.MISSING_DECLARATION_NAME;
-        }
-
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
+            // This symbol table is used for both resolve and completion, so provide all the candidates (all methods)
+            // here. The filters from GetSymbolFilters will be applied during resolve, and GetCompletionSymbolTable can
+            // apply its own if it needs to
             var symbolTable = ResolveUtil.GetOwnMembersSymbolTable(myOwningType, SymbolTableMode.FULL)
                 .Filter(myIsMethodFilter);
 
@@ -72,52 +56,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             return symbolTable;
         }
 
-        public override TreeTextRange GetTreeTextRange()
+        // Applied to GetReferenceSymbolTable() during resolve
+        public override ISymbolFilter[] GetSymbolFilters()
         {
-            if (myOwner is ICSharpLiteralExpression cSharpLiteral)
-            {
-                var range = cSharpLiteral.GetStringLiteralContentTreeRange();
-                if (range.Length != 0)
-                    return range;
-            }
-
-            return TreeTextRange.InvalidRange;
-        }
-
-        public override IReference BindTo(IDeclaredElement element)
-        {
-            var literalAlterer = StringLiteralAltererUtil.CreateStringLiteralByExpression(myOwner);
-            var constantValue = (string)myOwner.ConstantValue.Value;
-            Assertion.AssertNotNull(constantValue, "constantValue != null");
-            literalAlterer.Replace(constantValue, element.ShortName);
-            var newOwner = literalAlterer.Expression;
-            if (!myOwner.Equals(newOwner))
-                return newOwner.FindReference<SyncVarHookReference>() ?? this;
-            return this;
-        }
-
-        public override IReference BindTo(IDeclaredElement element, ISubstitution substitution)
-        {
-            return BindTo(element);
-        }
-
-        public override IAccessContext GetAccessContext()
-        {
-            return new DefaultAccessContext(myOwner);
+            return new[] {myMethodSignatureFilter};
         }
 
         public ISymbolTable GetCompletionSymbolTable()
         {
+            // No filters, just show all methods. We'll show a resolve error if the method signatures don't match
             return GetReferenceSymbolTable(false);
-        }
-
-        public override ISymbolFilter[] GetSymbolFilters()
-        {
-            return new[]
-            {
-                myIsMethodFilter,
-                myMethodSignatureFilter
-            };
         }
     }
 }

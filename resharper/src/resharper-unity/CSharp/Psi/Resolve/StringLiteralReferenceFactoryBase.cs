@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -14,6 +16,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             if (element is ILiteralExpression literal && literal.ConstantValue.IsString())
                 return names.Contains((string) literal.ConstantValue.Value);
             return false;
+        }
+
+        [CanBeNull]
+        protected ICSharpLiteralExpression GetValidStringLiteralExpression(ITreeNode element)
+        {
+            var literal = element as ICSharpLiteralExpression;
+            if (literal == null || !literal.ConstantValue.IsString())
+                return null;
+
+            return literal;
         }
     }
 }
