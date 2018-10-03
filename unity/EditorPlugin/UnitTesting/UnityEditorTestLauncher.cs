@@ -321,6 +321,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       var updateCallBack = playModeLauncher.GetType().GetMethod("UpdateCallback");
       
       EditorApplication.update += ()=> { updateCallBack.Invoke(playModeLauncher, new object[]{}); };
+      playModeLauncher.GetType().GetField("m_InitPlaying", BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(playModeLauncher, 3); // Unity 2018.2
     }
 
     private Action<object> PlayModeRunnerSetupAction(object runnerSettings, Assembly testEditorAssembly, Assembly editorAssembly)
@@ -351,8 +352,17 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             var method = playmodeTestsControllerExtensions
                 .GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Single(a => a.Name=="AddEventHandlerScriptableObject" && a.IsGenericMethod);
-            method.MakeGenericMethod(testRunnerCallbackType).Invoke(null, new [] { runner });;
-            method.MakeGenericMethod(callbacksDelegatorListenerType).Invoke(null, new [] { runner });
+            method.MakeGenericMethod(testRunnerCallbackType).Invoke(null, new [] { runner });
+            // exists in Unity 2018.3.x
+            try
+            {
+              method.MakeGenericMethod(callbacksDelegatorListenerType).Invoke(null, new [] { runner });
+            }
+            catch (Exception e)
+            {
+              ourLogger.Warn(e);
+            }
+            
             var collector = TestEventsCollector.Instance;
             collector.hideFlags = HideFlags.DontUnloadUnusedAsset;
             collector.SetupPersistentListeners(runner);
