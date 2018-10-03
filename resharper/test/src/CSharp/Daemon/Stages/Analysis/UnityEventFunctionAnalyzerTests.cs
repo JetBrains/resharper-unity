@@ -8,8 +8,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-        [Ignore("Broken by SDK change 2018-10-02, investigation required")]
-        [Test]
-        public void TestUnityEventFunctionAnalyzer() { DoNamedTest2(); }
+        [Test] public void TestUnityEventFunctionAnalyzer() { DoNamedTest2(); }
     }
 }
