@@ -82,13 +82,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           var runnerSettings = playmodeTestsControllerSettingsType.GetMethod("CreateRunnerSettings")
             .Invoke(null, new[] {filter});
           var activeScene = SceneManager.GetActiveScene();
-          if (PluginEntryPoint.PlayModeSavedState == PluginEntryPoint.PlayModeState.Playing)
-          {
-            var bootstrapSceneInfo = runnerSettings.GetType().GetField("bootstrapScene", BindingFlags.Instance | BindingFlags.Public);
-            bootstrapSceneInfo.SetValue(runnerSettings, activeScene.path);
-            var originalSceneInfo = runnerSettings.GetType().GetField("originalScene", BindingFlags.Instance | BindingFlags.Public);
-            originalSceneInfo.SetValue(runnerSettings, activeScene.path);
-          }
+          var bootstrapSceneInfo = runnerSettings.GetType().GetField("bootstrapScene", BindingFlags.Instance | BindingFlags.Public);
+          bootstrapSceneInfo.SetValue(runnerSettings, activeScene.path);
+          var originalSceneInfo = runnerSettings.GetType().GetField("originalScene", BindingFlags.Instance | BindingFlags.Public);
+          originalSceneInfo.SetValue(runnerSettings, activeScene.path);
           
           var playModeLauncher = Activator.CreateInstance(launcherType,
             BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
@@ -297,8 +294,17 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       //var runnerSetupAction = Convert.ChangeType(runnerSetupActionObject, runnerSetupActionType);
       //var converter = TypeDescriptor.GetConverter(runnerSetupActionType);
       //var runnerSetupAction = converter.ConvertFrom(runnerSetupActionObject);   
+
+      try
+      {
+        // doesn't exist in Unity 5.6
+        playModeLauncher.GetType().GetField("IsRunning").SetValue(null, true);
+      }
+      catch (Exception e)
+      {
+        ourLogger.Warn(e);
+      }
       
-      playModeLauncher.GetType().GetField("IsRunning").SetValue(null, true);
       //ConsoleWindow.SetConsoleErrorPause(false);
       Application.runInBackground = true;
       var sceneName = (string) playModeLauncher.GetType().GetMethod("CreateSceneName").Invoke(playModeLauncher, new object[]{});
