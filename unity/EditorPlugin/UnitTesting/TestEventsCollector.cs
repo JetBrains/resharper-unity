@@ -17,6 +17,11 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   [Location("JetBrainsRiderTestEventsCollectorCache.txt", LocationAttribute.Location.LibraryFolder)]
   internal class TestEventsCollector : ScriptObjectSingleton<TestEventsCollector>
   {
+    private void OnEnable()
+    {
+      hideFlags = HideFlags.DontUnloadUnusedAsset;
+    }
+
     public List<TestEvent> DelayedEvents = new List<TestEvent>();
 
     private static readonly ILog ourLogger = Log.GetLog("TestEventsCollector");
