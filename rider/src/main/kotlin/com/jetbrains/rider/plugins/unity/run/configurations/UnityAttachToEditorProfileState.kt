@@ -32,7 +32,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                     lifetime.bracket(opening = {
                         // pass value to backend, which will push Unity to enter play mode.
                         executionEnvironment.project.solution.rdUnityModel.play.set(true)
-                    }, closing = {
+                    }, terminationAction = {
                         executionEnvironment.project.solution.rdUnityModel.play.set(false)
                     })
                 }

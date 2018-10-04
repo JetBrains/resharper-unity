@@ -1,0 +1,24 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class SwitchTest
+    {
+        public void Test(Transform t)
+        {
+            int x = 0;
+            t.position = t.position + t.position;
+            switch (x)
+            {
+                case 0:
+                  var position = t.position;
+                  position = position + posi{caret}tion;
+                  t.position = position;
+                  break;
+                case 1:
+                    t.position = t.position + t.position;
+                    break
+            }
+        }
+    }
+}

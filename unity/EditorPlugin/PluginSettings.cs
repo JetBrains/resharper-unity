@@ -1,6 +1,9 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using JetBrains.DataFlow;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -318,7 +321,16 @@ namespace JetBrains.Rider.Unity.Editor
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
       var caption = $"<color=#0000FF>{githubRepo}</color>";
       LinkButton(caption: caption, url: githubRepo);
-
+      
+      GUILayout.FlexibleSpace();
+      GUILayout.BeginHorizontal();
+      
+      GUILayout.FlexibleSpace();
+      var version = Assembly.GetExecutingAssembly().GetName().Version;
+      GUILayout.Label("Plugin version: " + version, "PR DisabledLabel");
+      
+      GUILayout.EndHorizontal();
+      
       // left for testing purposes
 /*      if (GUILayout.Button("reset RiderInitializedOnce = false"))
       {

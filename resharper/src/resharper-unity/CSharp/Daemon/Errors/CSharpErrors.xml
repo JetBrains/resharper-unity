@@ -8,6 +8,7 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
+    System.Collections.Generic;
   </Usings>
   
   <!-- Register the static severity groups. This is mostly used in grouping items in SWEA results.
@@ -46,6 +47,13 @@
         <Description>Parameter should be derived from `Component`.</Description>
       </Tag>
 	  
+
+      <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Repeatable property access of a built-in component is inefficient</Title>
+        <Description>Built-in component property access results in native method calls and should be cached.</Description>
+      </Tag>
+      
       <Tag externalName="DuplicateEventFunctionWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Event function with the same name is already declared</Title>
@@ -76,6 +84,11 @@
         <Description>Using the string to address graphics properties results in additional overhead that should not be incurred.</Description>
       </Tag>
       
+      <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Inefficient setting of the parent property</Title>
+        <Description>Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code.</Description>
+      </Tag>
       <Tag externalName="AmbiguousTypeInStringLiteralWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Several types with the same name, this can result in unexpected behaviour at runtime</Title>
@@ -92,6 +105,12 @@
            default="WARNING">
         <Title>Type with the specified name has wrong inheritance</Title>
         <Description>No type with the specified name and required superclass not found.</Description>
+      </Tag>
+
+      <Tag externalName="StringBasedMethodInvocationProblemWarning.HIGHLIGHTING_ID"
+           default="HINT">
+        <Title>String-based method invocation is inefficient</Title>
+        <Description>Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call.</Description>
       </Tag>
       
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
@@ -245,6 +264,16 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
+  <Warning name="InstantiateWithoutParent" configurableSeverity="Unity.InstantiateWithoutParent">
+    <Parameter type="IReferenceExpression" name="reference" />
+    <Parameter type="IInvocationExpression" name="invocation"/>
+    <Parameter type="ICSharpExpression" name="newArgument" isValid="skip"/>
+    <Parameter type="bool" name="stayInWorldCoords" isValid="skip"/>
+    <Message value="Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code."/>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
   <Warning name="PreferAddressByIdToGraphicsParams" configurableSeverity="Unity.PreferAddressByIdToGraphicsParams">
     <Parameter type="IInvocationExpression" name="invocationMethod" />
     <Parameter type="ICSharpArgument" name="argument" />
@@ -278,6 +307,26 @@
       <Argument>ParentClass</Argument>
     </Message>
     <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="InefficientPropertyAccess" configurableSeverity="Unity.InefficientPropertyAccess">
+    <Parameter type="IReferenceExpression" name="highlightedReference"/>
+    <Parameter type="List&lt;IReferenceExpression&gt;" name="references" isValid="skip" />
+    <Parameter type="ICSharpTreeNode" name="cacheAnchor" />
+    <Parameter type="bool" name = "inlineCacheValue" />
+    <Parameter type="ICSharpTreeNode" name="restoreAnchor" />
+    <Parameter type="bool" name="inlineRestoreValue" />
+    <Message value="Built-in component property access results in native method calls and should be cached"/>
+    <Range>HighlightedReference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+  
+
+  <Warning name="StringBasedMethodInvocationProblem" configurableSeverity="Unity.StringBasedMethodInvocationProblem">
+    <Parameter type="IReference" name="invocation" />
+    <Message value="Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call."/>
+    <Range>Invocation.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
   
@@ -464,4 +513,5 @@
     <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
+  
 </Errors>

@@ -1,0 +1,24 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class IndirectCostlyTest : MonoBehaviour
+    {
+        private Object[] container = null;
+        public void Update()
+        {
+            |IndirectCostly|(0)();
+        }
+
+        private void IndirectCostly()
+        {
+            if (container == null)
+            {
+                container = Object.|FindObjectsOfType|(1)<SimpleTest>();
+            }
+        }
+    }
+}
+---------------------------------------------------------
+(0): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(1): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
