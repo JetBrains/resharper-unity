@@ -7,6 +7,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Tasks;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
@@ -24,18 +25,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
-        private readonly UnityEditorProtocol myPluginProtocolController;
+        private readonly UnityEditorProtocol myEditorProtocol;
         private readonly ILogger myLogger;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, 
-            UnityEditorProtocol pluginProtocolController, ISettingsStore settingsStore,
+            UnityEditorProtocol editorProtocol, ISettingsStore settingsStore,
             ILogger logger)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
-            myPluginProtocolController = pluginProtocolController;
+            myEditorProtocol = editorProtocol;
             myLogger = logger;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
@@ -43,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             
-            myPluginProtocolController.Refresh.Advise(lifetime, b => { Refresh(b); });
+            myEditorProtocol.Refresh.Advise(lifetime, b => { Refresh(b); });
         }
 
         private Task CurrentTask;
@@ -54,14 +55,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (CurrentTask != null)
                 return CurrentTask;
 
-            if (myPluginProtocolController.UnityModel.Value == null)
+            if (!myEditorProtocol.UnityModel.HasValue() || myEditorProtocol.UnityModel.HasValue() && myEditorProtocol.UnityModel.Value == null)
                 return new Task(()=>{});
 
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && !force)
                 return new Task(()=>{});
 
             myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force}");
-            var task = myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask(force);
+            var task = myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
             CurrentTask = task;
             
             var lifetimeDef = Lifetimes.Define(myLifetime);
@@ -98,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly GroupingEvent myGroupingEvent;
 
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, 
-            UnityEditorProtocol protocolController,
+            UnityEditorProtocol editorProtocol,
             ILogger logger,
             IFileSystemTracker fileSystemTracker)
         {
@@ -114,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var protocolSolution = solution.GetProtocolSolution();
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
             {
-                if (protocolController.UnityModel.Value == null)
+                if (!editorProtocol.UnityModel.HasValue() || editorProtocol.UnityModel.HasValue() && editorProtocol.UnityModel.Value == null)
                     return;
                 
                 myLogger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");

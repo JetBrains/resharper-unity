@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         
         private readonly ISolution mySolution;
         private readonly IUnitTestResultManager myUnitTestResultManager;
-        private readonly UnityEditorProtocol myUnityEditorProtocol;
+        private readonly UnityEditorProtocol myEditorProtocol;
         private readonly NUnitTestProvider myUnitTestProvider;
         private readonly IUnitTestElementIdFactory myIDFactory;
 
@@ -42,14 +42,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public RunViaUnityEditorStrategy(ISolution solution,
             IUnitTestResultManager unitTestResultManager, 
-            UnityEditorProtocol unityEditorProtocol,
+            UnityEditorProtocol editorProtocol,
             NUnitTestProvider unitTestProvider, 
             IUnitTestElementIdFactory idFactory
             )
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
-            myUnityEditorProtocol = unityEditorProtocol;
+            myEditorProtocol = editorProtocol;
             myUnitTestProvider = unitTestProvider;
             myIDFactory = idFactory;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
@@ -118,20 +118,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var launch = SetupLaunch(run);
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
             {
-                if (!myUnityEditorProtocol.UnityModel.HasValue())
+                if (!myEditorProtocol.UnityModel.HasValue() || myEditorProtocol.UnityModel.HasValue() && myEditorProtocol.UnityModel.Value == null)
                 {
                     tcs.SetException(new Exception("Unity Editor connection unavailable."));
                     return;
                 }
                 
-                myUnityEditorProtocol.UnityModel.ViewNotNull(run.Lifetime, (lt, model) =>
+                myEditorProtocol.UnityModel.ViewNotNull(run.Lifetime, (lt, model) =>
                 {
                     // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                     model.UnitTestLaunch.SetValue(launch);
                     SubscribeResults(run, lt, tcs, launch);
                 });
                 
-                myUnityEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(RdVoid.Instance);
+                myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(RdVoid.Instance);
             });
 
             return tcs.Task;
@@ -267,9 +267,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
-            if (myUnityEditorProtocol.UnityModel.HasValue())
+            if (myEditorProtocol.UnityModel.HasValue())
             {
-                var launchProperty = myUnityEditorProtocol.UnityModel.Value?.UnitTestLaunch;
+                var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
                 if (launchProperty != null && launchProperty.HasValue())
                     launchProperty.Value?.Abort.Start(RdVoid.Instance);    
             }

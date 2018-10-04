@@ -2,6 +2,7 @@
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.Rider.Model;
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private UnityEditorState myLastCheckResult = UnityEditorState.Disconnected;
         
-        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol unityEditorProtocolController, IShellLocks locks)
+        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol, IShellLocks locks)
         {
             // TODO: this shouldn't be up in tests until we figure out how to test unity-editor requiring features
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)
@@ -24,13 +25,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             //check connection between backend and unity editor
             locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
             {
-                if (unityEditorProtocolController.UnityModel.Value == null)
+                if (!editorProtocol.UnityModel.HasValue() || editorProtocol.UnityModel.HasValue() && editorProtocol.UnityModel.Value == null)
                 {
                     myLastCheckResult = UnityEditorState.Disconnected;
                 }
                 else
                 {
-                    var rdTask = unityEditorProtocolController.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
+                    var rdTask = editorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
                     rdTask?.Result.Advise(lifetime, result =>
                     {
                         myLastCheckResult = result.Result;
