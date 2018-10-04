@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util;
@@ -292,12 +294,11 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       var playModeTestsControllerTypeString = "UnityEngine.TestTools.TestRunner.PlaymodeTestsController";
       var playModeTestsControllerType = testEngineAssembly.GetType(playModeTestsControllerTypeString);
       
-      var runnerSetupAction = PlayModeRunnerSetupAction(runnerSettings, testEditorAssembly, testEngineAssembly, playModeTestsControllerType);
-      // todo: for old mono runtime it is required to convert Action<object> to exactly Action<PlayModeTestsController>
-//      var runnerSetupActionType = typeof(Action<>).MakeGenericType(playModeTestsControllerType);
-//      var runnerSetupAction = Convert.ChangeType(runnerSetupActionObject, runnerSetupActionType);
-//      var converter = TypeDescriptor.GetConverter(runnerSetupActionType);
-//      var runnerSetupAction = converter.ConvertFrom(runnerSetupActionObject);   
+      var runnerSetupActionObject = PlayModeRunnerSetupAction(runnerSettings, testEditorAssembly, testEngineAssembly, playModeTestsControllerType);
+      var runnerSetupActionType = typeof(Action<>).MakeGenericType(playModeTestsControllerType);
+      ourLogger.Verbose("ConvertType");
+      var runnerSetupAction = ConvertType(runnerSetupActionObject, runnerSetupActionType);
+      ourLogger.Verbose("AfterConvertType");
 
       try
       {
@@ -334,12 +335,23 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       playModeLauncher.GetType().GetField("m_InitPlaying", BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(playModeLauncher, 3); // Unity 2018.2
     }
 
+    private static object ConvertType(object runnerObject, Type targetType)
+    {
+      var method = new DynamicMethod("DynamicConvert", targetType, new Type[] {runnerObject.GetType()});
+      var ilGenerator = method.GetILGenerator();
+      ilGenerator.Emit(OpCodes.Ldarg_0);
+      ilGenerator.Emit(OpCodes.Ldftn, runnerObject.GetType().GetMethod("Invoke"));
+      ilGenerator.Emit(OpCodes.Newobj, targetType.GetConstructors().Single());
+      ilGenerator.Emit(OpCodes.Ret);
+      var runnerSetupAction = method.Invoke(null, new[] {runnerObject});
+      return runnerSetupAction;
+    }
+
     private Action<object> PlayModeRunnerSetupAction(object runnerSettings, Assembly testEditorAssembly, Assembly editorAssembly, Type playModeTestsControllerType)
     {
           var action = new Action<object>(r =>
           {
             var runner = Convert.ChangeType(r, playModeTestsControllerType);
-            //var runner = r;
             
 //            runner.AddEventHandlerMonoBehaviour<PlayModeRunnerCallback>();
 //            runner.AddEventHandlerScriptableObject<TestRunnerCallback>();
