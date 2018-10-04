@@ -1,12 +1,9 @@
-using System;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
-using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -47,16 +44,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             if (methodDeclaration == null)
                 return;
-            
+
             var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
             var gizmoType = TypeFactory.CreateTypeByCLRName(KnownTypes.GizmoType, predefinedType.Module);
             var componentType = TypeFactory.CreateTypeByCLRName(KnownTypes.Component, predefinedType.Module);
-          
+
             IType derivedType = componentType;
-            string derivedName = "component";
-            string gizmoName = "gizmoType";
-            bool firstParamCorrect = false;
-            bool secondParamCorrect = false;
+            var derivedName = "component";
+            var gizmoName = "gizmoType";
+            var firstParamCorrect = false;
+            var secondParamCorrect = false;
 
             for (var i = 0; i < methodDeclaration.Params.ParameterDeclarations.Count; i++)
             {
@@ -70,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     derivedType = param.Type;
                     derivedName = param.DeclaredName;
                 }
-                
+
                 if (param.Type.GetTypeElement()
                         ?.Equals(gizmoType?.GetTypeElement()) == true)
                 {
@@ -85,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 new[] {derivedType, gizmoType},
                 new[] {derivedName, gizmoName});
             var match = expectedDeclaration.Match(methodDeclaration);
-            
+
             if (methodDeclaration.Params.ParameterDeclarations.Count == 2)
             {
                 if (firstParamCorrect && secondParamCorrect)
@@ -98,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     return;
                 }
             }
-            
+
             AddMethodSignatureInspections(consumer, methodDeclaration, expectedDeclaration, match);
         }
     }
