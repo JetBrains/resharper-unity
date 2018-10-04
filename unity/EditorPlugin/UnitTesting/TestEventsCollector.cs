@@ -19,6 +19,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   {
     private void OnEnable()
     {
+      // required for Unity 2017.x
       hideFlags = HideFlags.DontUnloadUnusedAsset;
     }
 
