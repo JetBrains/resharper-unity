@@ -297,7 +297,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       var runnerSetupActionObject = PlayModeRunnerSetupAction(runnerSettings, testEditorAssembly, testEngineAssembly, playModeTestsControllerType);
       var runnerSetupActionType = typeof(Action<>).MakeGenericType(playModeTestsControllerType);
       ourLogger.Verbose("ConvertType");
-      var runnerSetupAction = ConvertType(runnerSetupActionObject, runnerSetupActionType);
+      var runnerSetupAction = ConvertDelegateType(runnerSetupActionObject, runnerSetupActionType);
       ourLogger.Verbose("AfterConvertType");
 
       try
@@ -335,16 +335,11 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       playModeLauncher.GetType().GetField("m_InitPlaying", BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(playModeLauncher, 3); // Unity 2018.2
     }
 
-    private static object ConvertType(object runnerObject, Type targetType)
+    private static object ConvertDelegateType(Action<object> action, Type targetType)
     {
-      var method = new DynamicMethod("DynamicConvert", targetType, new Type[] {runnerObject.GetType()});
-      var ilGenerator = method.GetILGenerator();
-      ilGenerator.Emit(OpCodes.Ldarg_0);
-      ilGenerator.Emit(OpCodes.Ldftn, runnerObject.GetType().GetMethod("Invoke"));
-      ilGenerator.Emit(OpCodes.Newobj, targetType.GetConstructors().Single());
-      ilGenerator.Emit(OpCodes.Ret);
-      var runnerSetupAction = method.Invoke(null, new[] {runnerObject});
-      return runnerSetupAction;
+      var ctor = targetType.GetConstructors().Single();
+      var invoke = action.GetType().GetMethod("Invoke");
+      return ctor.Invoke(new object[] { action, invoke.MethodHandle.GetFunctionPointer() });
     }
 
     private Action<object> PlayModeRunnerSetupAction(object runnerSettings, Assembly testEditorAssembly, Assembly editorAssembly, Type playModeTestsControllerType)
