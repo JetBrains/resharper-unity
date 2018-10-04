@@ -9,7 +9,7 @@ using NUnit.Framework.Internal;
 using UnityEditor.Events;
 using UnityEngine;
 using UnityEngine.Events;
-// removing "redundant" new UnityAction<ITestResult> causes events not fire in PlayMode tests
+// removing "redundant" new UnityAction<ITestResult> causes events not fire in PlayMode tests in Unity 2017.x
 // ReSharper disable RedundantDelegateCreation
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting

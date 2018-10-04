@@ -289,11 +289,15 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 //      }
 //      EditorApplication.update += this.UpdateCallback;
       
-      var runnerSetupAction = PlayModeRunnerSetupAction(runnerSettings, testEditorAssembly, testEngineAssembly);
-//      var runnerSetupActionType = typeof(Action<>).MakeGenericType(EntryPoint.ourPlayModeTestsControllerType);
-      //var runnerSetupAction = Convert.ChangeType(runnerSetupActionObject, runnerSetupActionType);
-      //var converter = TypeDescriptor.GetConverter(runnerSetupActionType);
-      //var runnerSetupAction = converter.ConvertFrom(runnerSetupActionObject);   
+      var playModeTestsControllerTypeString = "UnityEngine.TestTools.TestRunner.PlaymodeTestsController";
+      var playModeTestsControllerType = testEngineAssembly.GetType(playModeTestsControllerTypeString);
+      
+      var runnerSetupAction = PlayModeRunnerSetupAction(runnerSettings, testEditorAssembly, testEngineAssembly, playModeTestsControllerType);
+      // todo: for old mono runtime it is required to convert Action<object> to exactly Action<PlayModeTestsController>
+//      var runnerSetupActionType = typeof(Action<>).MakeGenericType(playModeTestsControllerType);
+//      var runnerSetupAction = Convert.ChangeType(runnerSetupActionObject, runnerSetupActionType);
+//      var converter = TypeDescriptor.GetConverter(runnerSetupActionType);
+//      var runnerSetupAction = converter.ConvertFrom(runnerSetupActionObject);   
 
       try
       {
@@ -330,16 +334,10 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       playModeLauncher.GetType().GetField("m_InitPlaying", BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(playModeLauncher, 3); // Unity 2018.2
     }
 
-    private Action<object> PlayModeRunnerSetupAction(object runnerSettings, Assembly testEditorAssembly, Assembly editorAssembly)
+    private Action<object> PlayModeRunnerSetupAction(object runnerSettings, Assembly testEditorAssembly, Assembly editorAssembly, Type playModeTestsControllerType)
     {
-          var action1 = new Action<object>(r =>
+          var action = new Action<object>(r =>
           {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var testEngineAssembly = assemblies
-              .FirstOrDefault(assembly => assembly.GetName().Name.Equals("UnityEngine.TestRunner"));
-            var ourPlayModeTestsControllerTypeString = "UnityEngine.TestTools.TestRunner.PlaymodeTestsController";
-            var playModeTestsControllerType = testEngineAssembly.GetType(ourPlayModeTestsControllerTypeString);
-            
             var runner = Convert.ChangeType(r, playModeTestsControllerType);
             //var runner = r;
             
@@ -376,7 +374,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             runner.GetType().GetField("settings").SetValue(runner, runnerSettings);
           });
 
-      return action1;
+      return action;
     }
 
     private void SupportAbort(object runner)
