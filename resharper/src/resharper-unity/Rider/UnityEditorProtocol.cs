@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.DataFlow.StandardPreconditions;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Platform.RdFramework;
