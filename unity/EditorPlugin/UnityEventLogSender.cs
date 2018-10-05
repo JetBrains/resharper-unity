@@ -40,35 +40,32 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
-      MainThreadDispatcher.Instance.Queue(() =>
+      RdLogEventType eventType;
+      switch (type)
       {
-        RdLogEventType eventType;
-        switch (type)
-        {
-          case LogType.Error:
-          case LogType.Exception:
-            eventType = RdLogEventType.Error;
-            break;
-          case LogType.Warning:
-            eventType = RdLogEventType.Warning;
-            break;
-          default:
-            eventType = RdLogEventType.Message;
-            break;
-        }
+        case LogType.Error:
+        case LogType.Exception:
+          eventType = RdLogEventType.Error;
+          break;
+        case LogType.Warning:
+          eventType = RdLogEventType.Warning;
+          break;
+        default:
+          eventType = RdLogEventType.Message;
+          break;
+      }
 
-        RdLogEventMode mode = RdLogEventMode.Play;
-        if (PluginEntryPoint.PlayModeSavedState == PluginEntryPoint.PlayModeState.Stopped)
-          mode = RdLogEventMode.Edit;
+      RdLogEventMode mode = RdLogEventMode.Play;
+      if (PluginEntryPoint.PlayModeSavedState == PluginEntryPoint.PlayModeState.Stopped)
+        mode = RdLogEventMode.Edit;
 
-        var ticks = DateTime.UtcNow.Ticks;
-        var evt = new RdLogEvent(ticks, eventType, mode, message, stackTrace);
-        DelayedLogEvents.AddLast(evt);
-        if (DelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
-          DelayedLogEvents.RemoveFirst(); // limit max size
+      var ticks = DateTime.UtcNow.Ticks;
+      var evt = new RdLogEvent(ticks, eventType, mode, message, stackTrace);
+      DelayedLogEvents.AddLast(evt);
+      if (DelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
+        DelayedLogEvents.RemoveFirst(); // limit max size
 
-        OnAddEvent(new EventArgs());  
-      });
+      OnAddEvent(new EventArgs());
     }
 
     public event EventHandler AddEvent;
@@ -111,16 +108,19 @@ namespace JetBrains.Rider.Unity.Editor
       }
       collector.DelayedLogEvents.Clear();
     }
-
+    
     private void SendLogEvent(RdLogEvent logEvent)
     {
-      foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
+      MainThreadDispatcher.Instance.Queue(() =>
       {
-        if (!modelWithLifetime.Lifetime.IsTerminated)
+        foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
         {
-          modelWithLifetime.Model.Log.Fire(logEvent);
+          if (!modelWithLifetime.Lifetime.IsTerminated)
+          {
+            modelWithLifetime.Model.Log.Fire(logEvent);
+          }
         }
-      }
+      });      
     }
   }
 }
