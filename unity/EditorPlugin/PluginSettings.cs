@@ -150,6 +150,12 @@ namespace JetBrains.Rider.Unity.Editor
       get { return EditorPrefs.GetString("Rider_RiderPath", null); }
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
+    
+    public static bool LogEventsCollectorEnabled
+    {
+      get { return EditorPrefs.GetBool("Rider_LogEventsCollectorEnabled", true); }
+      private set { EditorPrefs.SetBool("Rider_LogEventsCollectorEnabled", value); }
+    }
 
     // The default "Open C# Project" menu item will use the external script editor to load the .sln
     // file, but unless Unity knows the external script editor can properly load solutions, it will
@@ -297,6 +303,9 @@ namespace JetBrains.Rider.Unity.Editor
           SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
+      EditorGUI.EndChangeCheck();
+      LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider"), LogEventsCollectorEnabled);
+      EditorGUI.BeginChangeCheck();
       
       EditorGUI.EndChangeCheck();
 

@@ -13,6 +13,9 @@ namespace JetBrains.Rider.Unity.Editor
 
     public UnityEventCollector()
     {
+      if (!PluginSettings.LogEventsCollectorEnabled)
+        return;
+      
       var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public); // Unity 2017.x+
       if (eventInfo == null)
         eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
