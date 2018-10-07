@@ -91,6 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 }
                 else if (!firstParamCorrect && secondParamCorrect && match == MethodSignatureMatch.IncorrectParameters)
                 {
+                    // TODO: Should this be ExpectedComponentWarning?
                     consumer.AddHighlighting(new ParameterNotDerivedFromComponentWarning(methodDeclaration.Params.ParameterDeclarations.First()));
                     return;
                 }

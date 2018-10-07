@@ -11,7 +11,7 @@ namespace DefaultNamespace
     {
         public void Test(GameObject go)
         {
-            go.|AddComponent|(1)(|"Foo"|(2));
+            go.|AddComponent|(1)("|Foo|(2)");
         }
     }
 }
@@ -21,5 +21,5 @@ QUICKFIXES:
 Remove redundant type parameter T
 1: Method 'UnityEngine.GameObject.AddComponent' is obsolete: GameObject.AddComponent with string argument has been deprecated. Use GameObject.AddComponent<T>() instead. (UnityUpgradable).
 NO QUICKFIXES
-2: No types found with the specified name.
+2: Incorrect number of type parameters in reference to class 'DefaultNamespace.Foo<T>'
 NO QUICKFIXES

@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
     {
         public abstract ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences);
 
-        public bool HasReference(ITreeNode element, IReferenceNameContainer names)
+        public virtual bool HasReference(ITreeNode element, IReferenceNameContainer names)
         {
             if (element is ILiteralExpression literal && literal.ConstantValue.IsString())
                 return names.Contains((string) literal.ConstantValue.Value);
