@@ -55,8 +55,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private ITypeElement GetTypeElement()
         {
-            return myUnitTestingCachingService.GetTypeElement(myProject,
-                myProject.GetCurrentTargetFrameworkId(), myClrTypeName, true, false);
+            if (myProject.IsValid())
+                return myUnitTestingCachingService.GetTypeElement(myProject,
+                    myProject.GetCurrentTargetFrameworkId(), myClrTypeName, true, false);
+            return null;
         }
 
         public UnitTestElementDisposition GetDisposition()
