@@ -341,8 +341,8 @@ task buildReSharperHostPlugin {
 }
 
 nunit {
-    onlyIf { project.RunTests && !project.shouldBuildRiderOnly }
-    dependsOn buildFullReSharperPlugin
+    onlyIf { project.RunTests }
+    dependsOn buildReSharperHostPlugin
     nunitVersion "2.6.4"
     framework "net-4.6.1"
     shadowCopy false
