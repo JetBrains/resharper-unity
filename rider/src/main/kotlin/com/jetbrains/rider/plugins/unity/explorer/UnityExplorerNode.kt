@@ -42,7 +42,8 @@ class UnityExplorerRootNode(project: Project, private val packagesManager: Packa
 
 open class UnityExplorerNode(project: Project,
                              virtualFile: VirtualFile,
-                             nestedFiles: List<VirtualFile>)
+                             nestedFiles: List<VirtualFile>,
+                             private val isUnderAssets: Boolean)
     : FileSystemNodeBase(project, virtualFile, nestedFiles) {
 
     val nodes: Array<IProjectModelNode>
@@ -81,28 +82,36 @@ open class UnityExplorerNode(project: Project,
     }
 
     private fun calculateIcon(): Icon? {
-        val globalSpecialIcon = when (name) {
-            "Editor" -> UnityIcons.Explorer.EditorFolder
-            "Resources" -> UnityIcons.Explorer.ResourcesFolder
-            else -> null
-        }
-        if (globalSpecialIcon != null && !underAssemblyDefinition()) {
-            return globalSpecialIcon
+        // Under Packages, the only special folder is "Resources". As per Maxime @ Unity:
+        // "Resources folders work the same in packages as under Assets, but that's mostly it. Editor folders have no
+        // special semantics, Gizmos don't work, there's no StreamingAssets, no Plugins"
+        if (name == "Resources") {
+            return UnityIcons.Explorer.ResourcesFolder
         }
 
-        if (parent is AssetsRoot) {
-            val rootSpecialIcon = when (name) {
-                "Editor Default Resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
-                "Gizmos" -> UnityIcons.Explorer.GizmosFolder
-                "Plugins" -> UnityIcons.Explorer.PluginsFolder
-                "Standard Assets" -> UnityIcons.Explorer.AssetsFolder
-                "Pro Standard Assets" -> UnityIcons.Explorer.AssetsFolder
-                "StreamingAssets" -> UnityIcons.Explorer.StreamingAssetsFolder
-                else -> null
+        if (isUnderAssets) {
+            if (name == "Editor" && !underAssemblyDefinition()) {
+                return UnityIcons.Explorer.EditorFolder
             }
-            if (rootSpecialIcon != null) {
-                return rootSpecialIcon
+
+            if (parent is AssetsRoot) {
+                val rootSpecialIcon = when (name) {
+                    "Editor Default Resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
+                    "Gizmos" -> UnityIcons.Explorer.GizmosFolder
+                    "Plugins" -> UnityIcons.Explorer.PluginsFolder
+                    "Standard Assets" -> UnityIcons.Explorer.AssetsFolder
+                    "Pro Standard Assets" -> UnityIcons.Explorer.AssetsFolder
+                    "StreamingAssets" -> UnityIcons.Explorer.StreamingAssetsFolder
+                    else -> null
+                }
+                if (rootSpecialIcon != null) {
+                    return rootSpecialIcon
+                }
             }
+        }
+
+        if (hasAssemblyDefinitionFile()) {
+            return UnityIcons.Explorer.AsmdefFolder
         }
 
         return virtualFile.calculateFileSystemIcon(project!!)
@@ -121,8 +130,12 @@ open class UnityExplorerNode(project: Project,
         return false
     }
 
+    private fun hasAssemblyDefinitionFile(): Boolean {
+        return virtualFile.children.any { it.extension.equals("asmdef", true) }
+    }
+
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
-        return UnityExplorerNode(project!!, virtualFile, nestedFiles)
+        return UnityExplorerNode(project!!, virtualFile, nestedFiles, isUnderAssets)
     }
 
     override fun getVirtualFileChildren(): List<VirtualFile> {
@@ -149,7 +162,7 @@ open class UnityExplorerNode(project: Project,
     }
 
     class AssetsRoot(project: Project, virtualFile: VirtualFile)
-        : UnityExplorerNode(project, virtualFile, listOf()) {
+        : UnityExplorerNode(project, virtualFile, listOf(), true) {
 
         private val referenceRoot = ReferenceRoot(project)
         private val solutionNode = ProjectModelViewHost.getInstance(project).solutionNode
