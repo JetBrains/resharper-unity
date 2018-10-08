@@ -84,6 +84,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             if (typeElement == null)
                 return null;
 
+            if (!myProject.IsValid())
+                return null;
+            
             using (CompilationContextCookie.GetOrCreate(myProject.GetResolveContext()))
             {
                 foreach (var member in typeElement.EnumerateMembers(myMethodName, typeElement.CaseSensitiveName))
