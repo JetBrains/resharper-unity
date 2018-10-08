@@ -5,7 +5,6 @@ import com.intellij.ide.projectView.ViewSettings
 import com.intellij.ide.scratch.ScratchProjectViewPane
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
@@ -83,8 +82,8 @@ open class UnityExplorerNode(project: Project,
 
     private fun calculateIcon(): Icon? {
         val globalSpecialIcon = when (name) {
-            "Editor" -> IconLoader.getIcon("/Icons/Explorer/FolderEditor.svg")
-            "Resources" -> IconLoader.getIcon("/Icons/Explorer/FolderResources.svg")
+            "Editor" -> UnityIcons.Explorer.EditorFolder
+            "Resources" -> UnityIcons.Explorer.ResourcesFolder
             else -> null
         }
         if (globalSpecialIcon != null && !underAssemblyDefinition()) {
@@ -93,12 +92,12 @@ open class UnityExplorerNode(project: Project,
 
         if (parent is AssetsRoot) {
             val rootSpecialIcon = when (name) {
-                "Editor Default Resources" -> IconLoader.getIcon("/Icons/Explorer/FolderEditorResources.svg")
-                "Gizmos" -> IconLoader.getIcon("/Icons/Explorer/FolderGizmos.svg")
-                "Plugins" -> IconLoader.getIcon("/Icons/Explorer/FolderPlugins.svg")
-                "Standard Assets" -> IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg")
-                "Pro Standard Assets" -> IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg")
-                "StreamingAssets" -> IconLoader.getIcon("/Icons/Explorer/FolderStreamingAssets.svg")
+                "Editor Default Resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
+                "Gizmos" -> UnityIcons.Explorer.GizmosFolder
+                "Plugins" -> UnityIcons.Explorer.PluginsFolder
+                "Standard Assets" -> UnityIcons.Explorer.AssetsFolder
+                "Pro Standard Assets" -> UnityIcons.Explorer.AssetsFolder
+                "StreamingAssets" -> UnityIcons.Explorer.StreamingAssetsFolder
                 else -> null
             }
             if (rootSpecialIcon != null) {
