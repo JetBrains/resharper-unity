@@ -62,7 +62,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       var ticks = DateTime.UtcNow.Ticks;
       var evt = new RdLogEvent(ticks, eventType, mode, message, stackTrace);
-      DelayedLogEvents.Queue(evt);
+      DelayedLogEvents.Enqueue(evt);
       OnAddEvent(new EventArgs());
     }
 

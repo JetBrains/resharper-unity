@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
@@ -10,6 +11,9 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     private readonly object myLockObject = new object();
     public BoundSynchronizedQueue(int maxSize)
     {
+      if (maxSize < 0)         
+        throw new ArgumentOutOfRangeException(nameof (maxSize), "ArgumentOutOfRange_NeedNonNegNum");
+      
       myMaxSize = maxSize;
       myLinkedList = new LinkedList<T>();
     }
@@ -27,7 +31,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
       }
     }
 
-    public void Queue([NotNull]T input)
+    public void Enqueue([NotNull]T input)
     {
       lock (myLockObject)
       {
