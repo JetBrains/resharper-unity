@@ -9,7 +9,7 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public class UnityEventCollector
   {
-    public readonly BoundSynchronizedQueue<RdLogEvent> DelayedLogEvents = new BoundSynchronizedQueue<RdLogEvent>(10000);
+    public readonly BoundSynchronizedQueue<RdLogEvent> DelayedLogEvents = new BoundSynchronizedQueue<RdLogEvent>(1000);
 
     public UnityEventCollector()
     {
