@@ -157,6 +157,16 @@ namespace JetBrains.Rider.Unity.Editor
       private set { EditorPrefs.SetBool("Rider_LogEventsCollectorEnabled", value); }
     }
 
+
+    private static GUIStyle ourVersionInfoStyle = new GUIStyle()
+    {
+      normal = new GUIStyleState()
+      {
+        textColor = new Color(0, 0, 0, .6f),
+      }, 
+      margin = new RectOffset(4, 4, 4, 4),
+    };
+    
     // The default "Open C# Project" menu item will use the external script editor to load the .sln
     // file, but unless Unity knows the external script editor can properly load solutions, it will
     // also launch MonoDevelop (or the OS registered app for .sln files). This menu item side steps
@@ -336,7 +346,7 @@ namespace JetBrains.Rider.Unity.Editor
       
       GUILayout.FlexibleSpace();
       var version = Assembly.GetExecutingAssembly().GetName().Version;
-      GUILayout.Label("Plugin version: " + version, "PR DisabledLabel");
+      GUILayout.Label("Plugin version: " + version, ourVersionInfoStyle);
       
       GUILayout.EndHorizontal();
       
