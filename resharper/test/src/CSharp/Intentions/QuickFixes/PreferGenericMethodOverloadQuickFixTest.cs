@@ -16,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void ScriptableObjectAvailableTest() { DoNamedTest(); }
         [Test] public void GetComponentUnavailableDueToGenericClass() { DoNamedTest(); }
         [Test] public void GetComponentWithNamespaceUnavailableTest() { DoNamedTest(); }
+        [Test] public void GetComponentWithPreprocessorDirectives() { DoNamedTest(); }
     }
 
     [TestUnity]
