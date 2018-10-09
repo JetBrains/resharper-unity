@@ -42,6 +42,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\debugger\src\debugger.csproj">
+      <Project>{4b54084a-6f70-43e1-883f-8a69ed7ce64a}</Project>
+      <Name>debugger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\unity\EditorPlugin\EditorPlugin.csproj">
       <Project>{67cfb019-ce94-4251-8c3a-4dc70e4e4a52}</Project>
       <Name>EditorPlugin</Name>
