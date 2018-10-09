@@ -4,7 +4,6 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.reactive.valueOrDefault

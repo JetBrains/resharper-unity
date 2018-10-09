@@ -1,20 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using JetBrains.DataFlow;
 using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
   public class UnityEventCollector
   {
-    private readonly int myDelayedLogEventsMaxSize = 1000;
-    public readonly LinkedList<RdLogEvent> DelayedLogEvents = new LinkedList<RdLogEvent>();
+    public readonly BoundedSynchronizedQueue<RdLogEvent> DelayedLogEvents = new BoundedSynchronizedQueue<RdLogEvent>(1000);
 
     public UnityEventCollector()
     {
+      if (!PluginSettings.LogEventsCollectorEnabled)
+        return;
+      
       var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public); // Unity 2017.x+
       if (eventInfo == null)
         eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
@@ -61,10 +62,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       var ticks = DateTime.UtcNow.Ticks;
       var evt = new RdLogEvent(ticks, eventType, mode, message, stackTrace);
-      DelayedLogEvents.AddLast(evt);
-      if (DelayedLogEvents.Count >= myDelayedLogEventsMaxSize)
-        DelayedLogEvents.RemoveFirst(); // limit max size
-
+      DelayedLogEvents.Enqueue(evt);
       OnAddEvent(new EventArgs());
     }
 
@@ -86,7 +84,6 @@ namespace JetBrains.Rider.Unity.Editor
     public UnityEventLogSender(UnityEventCollector collector)
     {
       ProcessQueue(collector);
-      collector.DelayedLogEvents.Clear();
 
       collector.ClearEvent();
       collector.AddEvent += (col, _) =>
@@ -94,19 +91,14 @@ namespace JetBrains.Rider.Unity.Editor
         ProcessQueue((UnityEventCollector)col);
       };
     }
-
+    
     private void ProcessQueue(UnityEventCollector collector)
     {
-      if (!collector.DelayedLogEvents.Any())
-        return;
-
-      var head = collector.DelayedLogEvents.First;
-      while (head != null)
+      RdLogEvent element;;
+      while ((element  = collector.DelayedLogEvents.Dequeue()) != null)
       {
-        SendLogEvent(head.Value);
-        head = head.Next;
+        SendLogEvent(element);
       }
-      collector.DelayedLogEvents.Clear();
     }
     
     private void SendLogEvent(RdLogEvent logEvent)
@@ -120,7 +112,7 @@ namespace JetBrains.Rider.Unity.Editor
             modelWithLifetime.Model.Log.Fire(logEvent);
           }
         }
-      });      
+      });  
     }
   }
 }

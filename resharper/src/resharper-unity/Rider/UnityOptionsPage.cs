@@ -48,7 +48,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     "Parse Cg files for syntax errors. Only works in internal mode.");
                 AddText("Requires solution reopen.");
             }
-
+            
+            Header("C# code analysis");
+            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
+                "Enable highlighting of costly methods and indirect calls for these methods in performance critical code sections");
+            
             FinishPage();
         }
 

@@ -18,7 +18,6 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
@@ -49,7 +48,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IProperty<EditorPluginModel> myUnityModel;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
-
         [NotNull]
         public IProperty<EditorPluginModel> UnityModel => myUnityModel;
 
@@ -66,50 +64,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myPluginPathsProvider = pluginPathsProvider;
             myUsageStatistics = usageStatistics;
             myHost = host;
-            myBoundSettingsStore =
-                settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
+            myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
             myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null)
                 .EnsureReadonly(myReadonlyToken).EnsureThisThread();
 
-            if (!unitySolutionTracker.IsAbleToEstablishProtocolConnectionWithUnity.Value)
-                return;
-
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            var solFolder = mySolution.SolutionFilePath.Directory;
-            AdviseModelData(lifetime);
+            unitySolutionTracker.IsUnityProject.ViewNotNull(lifetime, (lf, args) => 
+            {
+                if (!args) return;
 
-            // todo: consider non-Unity Solution with Unity-generated projects
-            var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
+                var solFolder = mySolution.SolutionFilePath.Directory;
+                AdviseModelData(lifetime);
 
-            protocolInstancePath.Directory.CreateDirectory();
+                // todo: consider non-Unity Solution with Unity-generated projects
+                var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
+                protocolInstancePath.Directory.CreateDirectory();
 
-            var watcher = new FileSystemWatcher();
-            watcher.Path = protocolInstancePath.Directory.FullPath;
-            watcher.NotifyFilter =
-                NotifyFilters.LastAccess |
-                NotifyFilters.LastWrite; //Watch for changes in LastAccess and LastWrite times
-            watcher.Filter = protocolInstancePath.Name;
+                var watcher = new FileSystemWatcher();
+                watcher.Path = protocolInstancePath.Directory.FullPath;
+                watcher.NotifyFilter =
+                    NotifyFilters.LastAccess |
+                    NotifyFilters.LastWrite; //Watch for changes in LastAccess and LastWrite times
+                watcher.Filter = protocolInstancePath.Name;
 
-            // Add event handlers.
-            watcher.Changed += OnChanged;
-            watcher.Created += OnChanged;
+                // Add event handlers.
+                watcher.Changed += OnChanged;
+                watcher.Created += OnChanged;
 
-            watcher.EnableRaisingEvents = true; // Begin watching.
-
-            // connect on start of Rider
-            CreateProtocols(protocolInstancePath);
+                watcher.EnableRaisingEvents = true; // Begin watching.
+                // connect on start of Rider
+                CreateProtocols(protocolInstancePath);
+            });
         }
-
+        
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
             // connect on reload of server
             if (!myComponentLifetime.IsTerminated)
-              myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
-                () => CreateProtocols(protocolInstancePath));
+                myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
+                    () => CreateProtocols(protocolInstancePath));
         }
 
         private void AdviseModelData(Lifetime lifetime)

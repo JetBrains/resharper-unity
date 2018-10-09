@@ -40,12 +40,6 @@
        -->
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.Unity">
-      <Tag externalName="ParameterNotDerivedFromComponentWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Parameter should be derived from `Component`</Title>
-        <Description>Parameter should be derived from `Component`.</Description>
-      </Tag>
-	  
       <Tag externalName="DuplicateEventFunctionWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Event function with the same name is already declared</Title>
@@ -58,30 +52,22 @@
         <Description>Explicit string comparison with 'GameObject.tag' or 'Component.tag' is inefficient. Use the 'CompareTag' method instead.</Description>
       </Tag>
 
-      <Tag externalName="PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Use generic method overload instead of a string one</Title>
-        <Description>Using the string for the component type variants results in additional overhead that should not be incurred.</Description>
+      <Tag externalName="ExpectedComponentWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Expected type deriving from 'Component' or 'MonoBehaviour'</Title>
+        <Description>Expected built in type deriving from 'Component', or user type deriving from 'MonoBehaviour'.</Description>
       </Tag>
 
-      <Tag externalName="AmbiguousTypeInStringLiteralWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Several types with the same name, this can result in unexpected behaviour at runtime</Title>
-        <Description>There are no guarantees on the object returned if there are several with the same name.</Description>
+      <Tag externalName="ExpectedScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Expected type deriving from 'ScriptableObject'</Title>
+        <Description>Expected type deriving from 'ScriptableObject'.</Description>
       </Tag>
 
-      <Tag externalName="UnknownTypeInStringLiteralWarning.HIGHLIGHTING_ID" 
+      <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Type with the specified name not found</Title>
-        <Description>Type with the specified name not found.</Description>
+        <Title>Repeatable property access of a built-in component is inefficient</Title>
+        <Description>Built-in component property access results in native method calls and should be cached.</Description>
       </Tag>
 
-      <Tag externalName="TypeWithWrongInheritanceInStringLiteralWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Type with the specified name has wrong inheritance</Title>
-        <Description>No type with the specified name and required superclass not found.</Description>
-      </Tag>
-      
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</Title>
         <Description>Instantiating a MonoBehaviour based class with 'new' does not attach it to a GameObject, and Unity will not invoke any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;().</Description>
@@ -103,9 +89,39 @@
         <Description>Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()</Description>
       </Tag>
 
+      <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Inefficient setting of the parent property</Title>
+        <Description>Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code.</Description>
+      </Tag>
+
+      <Tag externalName="ParameterNotDerivedFromComponentWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Parameter should be derived from `Component`</Title>
+        <Description>Parameter should be derived from `Component`.</Description>
+      </Tag>
+
       <Tag externalName="PossibleMisapplicationOfAttributeToMultipleFieldsWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>Possible mis-application of attribute to multiple fields</Title>
         <Description>Applying an attribute to a single declaration containing multiple fields will apply the attribute to each field. The highlighted attribute (e.g. 'FormerlySerializedAs') is intended to be applied only to a single field. Prefer an explicit application to a single field in a single declaration.</Description>
+      </Tag>
+
+      <Tag externalName="PreferAddressByIdToGraphicsParamsWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Use int overload to access properties instead of string</Title>
+        <Description>Using the string to address graphics properties results in additional overhead that should not be incurred.</Description>
+      </Tag>
+
+      <Tag externalName="PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Use generic method overload instead of a string one</Title>
+        <Description>Using the string for the component type variants results in additional overhead that should not be incurred.</Description>
+      </Tag>
+
+      <Tag externalName="PreferNonAllocApiWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Use 'NonAlloc' api instead of methods which allocate memory</Title>
+        <Description>Reusing your buffer instead of new allocation will increase performance.</Description>
       </Tag>
 
       <Tag externalName="RedundantAttributeOnTargetWarning.HIGHLIGHTING_ID"
@@ -127,6 +143,13 @@
         <Description>The 'FormerlySerializedAs' attribute is only valid on Unity serialized field. It is also redundant if the name argument matches the current name of the field.</Description>
       </Tag>
 
+      <Tag externalName="RedundantHideInInspectorAttributeWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Redundant 'HideInInspector' attribute</Title>
+        <Description>The 'HideInInspector' attribute only applies to serialised fields.</Description>
+        <CompoundItemName>Redundant attribute usage</CompoundItemName>
+      </Tag>
+
       <Tag externalName="RedundantInitializeOnLoadAttributeWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Redundant 'InitializeOnLoad' attribute</Title>
@@ -141,21 +164,20 @@
         <CompoundItemName>Redundant attribute usage</CompoundItemName>
       </Tag>
 
-      <Tag externalName="RedundantHideInInspectorAttributeWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Redundant 'HideInInspector' attribute</Title>
-        <Description>The 'HideInInspector' attribute only applies to serialised fields.</Description>
-        <CompoundItemName>Redundant attribute usage</CompoundItemName>
+      <Tag externalName="StringBasedMethodInvocationProblemWarning.HIGHLIGHTING_ID"
+           default="HINT">
+        <Title>String-based method invocation is inefficient</Title>
+        <Description>Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call.</Description>
       </Tag>
-      
+
       <Tag externalName="StringLiteralReferenceIncorrectSignatureWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Method referenced in string literal does not have the expected signature</Title>
         <Description>Method referenced in string literal does not have the expected signature.</Description>
       </Tag>
-      
+
       <Tag externalName="UnityObjectNullCoalescingWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>'??' on a type deriving from 'UnityEngine.Object' bypasses the liftetime check on the underlying Unity engine object</Title>
+        <Title>'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</Title>
         <Description>
           The null coalescing operator does not call the custom equality operators defined on 'UnityEngine.Object',
           which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
@@ -166,7 +188,7 @@
       </Tag>
       
       <Tag externalName="UnityObjectNullPropagationWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>'?.' on a type deriving from 'UnityEngine.Object' bypasses the liftetime check on the underlying Unity engine object</Title>
+        <Title>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</Title>
         <Description>
           The null propagating operator does not call the custom equality operators defined on 'UnityEngine.Object',
           which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
@@ -196,11 +218,27 @@
          for this highlight. Only used when the file is processed in QUICKFIX mode (default is
          to use ERROR mode)
        -->
-  
+
   <Warning name="DuplicateEventFunction" configurableSeverity="Unity.DuplicateEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Message value="Event function with the same name is already declared" />
     <Range>CSharpErrorUtil.GetMethodNameAndParametersHighlightingRange(MethodDeclaration)</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="ExpectedComponent" configurableSeverity="Unity.ExpectedComponent">
+    <Parameter type="IReference" name="reference" />
+    <Parameter type="string" name="requiredBaseType" />
+    <Message value="Expected type derived from '{0}'">
+      <Argument>RequiredBaseType</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+  </Warning>
+  
+  <Warning name="ExpectedScriptableObject" configurableSeverity="Unity.ExpectedScriptableObject">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Expected type derived from 'UnityEngine.ScriptableObject'" />
+    <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
   
@@ -211,55 +249,21 @@
     <Range>EqualityExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
-  <Warning name="PreferGenericMethodOverload" configurableSeverity="Unity.PreferGenericMethodOverload">
-    <Parameter type="IInvocationExpression" name="invocationMethod" />
-    <Parameter type="string" name="methodName" isValid="skip"/>
-    <Parameter type="ILiteralExpression" name="argument" />
-    <Parameter type="ITypeElement[]" name="availableTypes" isValid="skip"/>
-    <Message value="Generic method overload is preferred. Using the string parameter results in additional overhead."/>
-    <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
 
-  <Warning name="AmbiguousTypeInStringLiteral" configurableSeverity="Unity.AmbiguousTypeInStringLiteral">
-    <Parameter type="ILiteralExpression" name="argument" />
-    <Message value="There are several types with the same name, this can result in an unexpected behaviour at the runtime."/>
-    <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
-  <Warning name="UnknownTypeInStringLiteral" configurableSeverity="Unity.UnknownTypeInStringLiteral">
-    <Parameter type="ILiteralExpression" name="argument" />
-    <Message value="No types found with the specified name."/>
-    <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
-  <Warning name="TypeWithWrongInheritanceInStringLiteral" configurableSeverity="Unity.TypeWithWrongInheritanceInStringLiteral">
-    <Parameter type="ILiteralExpression" name="argument" />
-    <Parameter type="string" name="parentClass" />
-    <Message value="No types found with the specified name and correct inheritance. Type should be inherited from '{0}'">
-      <Argument>ParentClass</Argument>
-    </Message>
-    <Range>Argument.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-  
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
     <Message value="MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
     <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="IncorrectScriptableObjectInstantiation" configurableSeverity="Unity.IncorrectScriptableObjectInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
     <Message value="ScriptableObjects must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'" />
     <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="IncorrectSignature" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
@@ -269,21 +273,34 @@
     </Message>
     <Range>MethodDeclaration.GetNameDocumentRange()</Range>
   </Warning>
-  
-  <Warning name="ParameterNotDerivedFromComponent" configurableSeverity="Unity.ParameterNotDerivedFromComponent">
-    <Parameter type="ICSharpParameterDeclaration" name="paramaterDeclaration" />
-    <Message value="Parameter '{0}' should be derived from 'Component'">
-      <Argument>ParamaterDeclaration.DeclaredName</Argument>
-	  </Message>
-    <Range>ParamaterDeclaration.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
-  </Warning>
 
   <Warning name="InefficientCameraMainUsage" configurableSeverity="Unity.InefficientCameraMainUsage">
     <Parameter type="IReferenceExpression" name="referenceExpression" />
     <Message value="Camera.main is inefficient in frequently called methods" />
     <Range>ReferenceExpression.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="InefficientPropertyAccess" configurableSeverity="Unity.InefficientPropertyAccess">
+    <Parameter type="IReferenceExpression" name="highlightedReference"/>
+    <Parameter type="List&lt;IReferenceExpression&gt;" name="references" isValid="skip" />
+    <Parameter type="ICSharpTreeNode" name="cacheAnchor" />
+    <Parameter type="bool" name = "inlineCacheValue" />
+    <Parameter type="ICSharpTreeNode" name="restoreAnchor" />
+    <Parameter type="bool" name="inlineRestoreValue" />
+    <Message value="Built-in component property access results in native method calls and should be cached"/>
+    <Range>HighlightedReference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="InstantiateWithoutParent" configurableSeverity="Unity.InstantiateWithoutParent">
+    <Parameter type="IReferenceExpression" name="reference" />
+    <Parameter type="IInvocationExpression" name="invocation"/>
+    <Parameter type="ICSharpExpression" name="newArgument" isValid="skip"/>
+    <Parameter type="bool" name="stayInWorldCoords" isValid="skip"/>
+    <Message value="Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code."/>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="InvalidParameters" configurableSeverity="Unity.IncorrectMethodSignature">
@@ -315,7 +332,7 @@
     <Range>CSharpErrorUtil.GetStaticModifierOrMethodNameHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="InvalidTypeParameters" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
@@ -323,7 +340,49 @@
     <Range>CSharpErrorUtil.GetTypeParametersOrMethodNameHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
+
+  <Warning name="ParameterNotDerivedFromComponent" configurableSeverity="Unity.ParameterNotDerivedFromComponent">
+    <Parameter type="ICSharpParameterDeclaration" name="parameterDeclaration" />
+    <Message value="Parameter '{0}' should be derived from 'Component'">
+      <Argument>ParameterDeclaration.DeclaredName</Argument>
+    </Message>
+    <Range>ParameterDeclaration.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="PreferAddressByIdToGraphicsParams" configurableSeverity="Unity.PreferAddressByIdToGraphicsParams">
+    <Parameter type="IInvocationExpression" name="invocationMethod" />
+    <Parameter type="ICSharpArgument" name="argument" />
+    <Parameter type="IExpression" name="argumentExpression" />
+    <Parameter type="string" name="literal" />
+    <Parameter type="string" name="typeName" />
+    <Parameter type="string" name="mapFunction" />
+    <Message value="Int method overload is preferred. Using the string parameter results in additional overhead."/>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
   
+  <Warning name="PreferGenericMethodOverload" configurableSeverity="Unity.PreferGenericMethodOverload">
+    <Parameter type="IInvocationExpression" name="invocationMethod" />
+    <Parameter type="string" name="methodName" isValid="skip"/>
+    <Parameter type="ILiteralExpression" name="argument" />
+    <Parameter type="ITypeElement" name="typeElement" isValid="skip"/>
+    <Message value="Generic method overload is preferred. Using the string parameter results in additional overhead."/>
+    <Range>Argument.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="PreferNonAllocApi" configurableSeverity="Unity.PreferNonAllocApi">
+    <Parameter type="IInvocationExpression" name="invocationExpression" />
+    <Parameter type="IReferenceExpression" name="invokedExpression" />
+    <Parameter type="IMethod" name="nonAllocMethod" />
+    <Message value="Allocating method will decrease performance. Use '{0}' and reuse buffer for return value">
+      <Argument>NonAllocMethod.ShortName</Argument>
+    </Message>
+    <Range>InvokedExpression.Reference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
   <Warning name="PossibleMisapplicationOfAttributeToMultipleFields" configurableSeverity="Unity.PossibleMisapplicationOfAttributeToMultipleFields">
     <Parameter type="IAttribute" name="attribute" />
     <Message value="Possible mis-application of 'FormerlySerializedAs' attribute to multiple fields" />
@@ -360,6 +419,13 @@
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
+  <Warning name="RedundantHideInInspectorAttribute" configurableSeverity="Unity.RedundantHideInInspectorAttribute">
+    <Parameter type="IAttribute" name="attribute" />
+    <Message value="Redundant 'HideInInspector' attribute" />
+    <Range>Attribute.GetHighlightingRange()</Range>
+    <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
+  </Warning>
+
   <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute">
     <Parameter type="IAttribute" name="attribute" />
     <Message value="'InitializeOnLoad' attribute is redundant when static constructor is missing" />
@@ -374,11 +440,11 @@
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
 
-  <Warning name="RedundantHideInInspectorAttribute" configurableSeverity="Unity.RedundantHideInInspectorAttribute">
-    <Parameter type="IAttribute" name="attribute" />
-    <Message value="Redundant 'HideInInspector' attribute" />
-    <Range>Attribute.GetHighlightingRange()</Range>
-    <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
+  <Warning name="StringBasedMethodInvocationProblem" configurableSeverity="Unity.StringBasedMethodInvocationProblem">
+    <Parameter type="IReference" name="invocation" />
+    <Message value="Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call."/>
+    <Range>Invocation.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Error name="StringLiteralReferenceIncorrectSignature" staticGroup="UnityErrors">
@@ -406,7 +472,7 @@
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="ERROR" />
   </Error>
-  
+
   <Info name="UnityGutterMark" staticGroup="UnityGutterMarks">
     <Parameter type="IDeclaration" name="declaration" />
     <Parameter type="string" name="text" />

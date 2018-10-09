@@ -106,9 +106,6 @@
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="**/Rider/Debugger/**" />
-  </ItemGroup>
   <!-- References -->
   <ItemGroup>
     <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />

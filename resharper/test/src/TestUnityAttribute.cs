@@ -4,11 +4,8 @@ using JetBrains.Application.platforms;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.TestFramework;
-using NuGet;
-
-
-
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
+using NuGet;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
@@ -18,9 +15,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         Unity55,
         Unity56,
         Unity20171,
-        Unity20172
+        Unity20172,
+        Unity20173,
+        Unity20174,
+        Unity20181,
+        Unity20182,
     }
 
+    //use Utils.CleanupOldUnityReferences API to correctly cleanup outofdated unity references 
+    //todo call this API automatically from the test framework
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class TestUnityAttribute : TestPackagesAttribute, ITestFlavoursProvider, ITestPlatformProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute
     {
@@ -49,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             foreach (var package in base.GetPackages(targetFrameworkId))
                 yield return package;
         }
-        
+
         private IEnumerable<PackageDependency> GetPackagesCommon()
         {
             // There isn't an official nuget for Unity, sadly, so add this feed to test/data/nuget.config
@@ -85,6 +88,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                     case UnityVersion.Unity56: return "UNITY_5_6";
                     case UnityVersion.Unity20171: return "UNITY_2017_1";
                     case UnityVersion.Unity20172: return "UNITY_2017_2";
+                    case UnityVersion.Unity20173: return "UNITY_2017_3";
+                    case UnityVersion.Unity20174: return "UNITY_2017_4";
+                    case UnityVersion.Unity20181: return "UNITY_2018_1";
+                    case UnityVersion.Unity20182: return "UNITY_2018_2";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -100,6 +107,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                 case UnityVersion.Unity56: return "5.6.0";
                 case UnityVersion.Unity20171: return "2017.1.0";
                 case UnityVersion.Unity20172: return "2017.2.0";
+                case UnityVersion.Unity20173: return "2017.3.0";
+                case UnityVersion.Unity20174: return "2017.4.0";
+                case UnityVersion.Unity20181: return "2018.1.0";
+                case UnityVersion.Unity20182: return "2018.2.0";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unityVersion), unityVersion, null);
             }

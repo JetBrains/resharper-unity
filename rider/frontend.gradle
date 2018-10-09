@@ -62,8 +62,8 @@ def dllFiles = [
 ]
 
 def debuggerDllFiles = [
-    "../resharper/build/resharper-unity.rider.debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
-    "../resharper/build/resharper-unity.rider.debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
+    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
+    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
 ]
 
 def annotationsFrom = '../resharper/src/resharper-unity/annotations'

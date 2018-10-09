@@ -1,0 +1,15 @@
+﻿using UnityEngine;
+namespace DefaultNamespace
+{
+    public class BroadcastMessageTest
+    {
+        public void Test(GameObject go)
+        {
+            go.|BroadcastMessage|(0)("Message");
+            go.|BroadcastMessage|(1)("Message2", SendMessageOptions.RequireReceiver);
+        }
+    }
+}
+---------------------------------------------------------
+(0): ReSharper Hint: Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call.
+(1): ReSharper Hint: Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call.

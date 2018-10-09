@@ -73,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 var containingType = typeMember.GetContainingType();
                 if (containingType != null)
                 {
-                    var typeName = containingType.GetClrName();
+                    var typeName = containingType.GetClrName().GetPersistent();
                     var id = string.Format("{0}.{1}{2}", typeName,
                         !containingType.GetClrName().Equals(typeName) ? containingType.ShortName + "." : string.Empty,
                         typeMember.ShortName);

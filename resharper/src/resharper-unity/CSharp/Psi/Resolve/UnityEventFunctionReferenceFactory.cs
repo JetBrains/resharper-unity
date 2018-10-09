@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
     {
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
 
-        private static readonly HashSet<string> InvokeMethodNames = new HashSet<string>
+        private static readonly HashSet<string> ourInvokeMethodNames = new HashSet<string>
         {
             "Invoke", "InvokeRepeating", "CancelInvoke", "IsInvoking"
         };
@@ -25,15 +25,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
         public override ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
             if (ResolveUtil.CheckThatAllReferencesBelongToElement<UnityEventFunctionReference>(oldReferences, element))
-            {
                 return oldReferences;
-            }
 
-            var literal = element as ILiteralExpression;
-            if (literal == null || !literal.ConstantValue.IsString())
+            var literal = GetValidStringLiteralExpression(element);
+            if (literal == null)
                 return ReferenceCollection.Empty;
 
-            if (!IsStringLiteralFirstArgument(literal))
+            if (!IsFirstArgumentInMethod(literal))
                 return ReferenceCollection.Empty;
 
             var invocationExpression = literal.GetContainingNode<IInvocationExpression>();
@@ -42,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             if (invokedMethod == null)
                 return ReferenceCollection.Empty;
 
-            var isInvokedFunction = InvokeMethodNames.Contains(invokedMethod.ShortName);
+            var isInvokedFunction = ourInvokeMethodNames.Contains(invokedMethod.ShortName);
             var isCoroutine = IsCoroutine(invokedMethod);
 
             if (isInvokedFunction || isCoroutine)
@@ -68,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             return ReferenceCollection.Empty;
         }
 
-        private static bool IsStringLiteralFirstArgument(ILiteralExpression literal)
+        private static bool IsFirstArgumentInMethod(ILiteralExpression literal)
         {
             var argument = CSharpArgumentNavigator.GetByValue(literal as ICSharpExpression);
             var argumentsOwner = CSharpArgumentsOwnerNavigator.GetByArgument(argument);

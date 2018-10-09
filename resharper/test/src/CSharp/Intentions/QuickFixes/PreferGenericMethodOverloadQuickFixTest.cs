@@ -11,14 +11,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 
         [Test] public void GetComponentAvailableTest() { DoNamedTest(); }
         [Test] public void GetComponentBuiltInComponentTest() { DoNamedTest(); }
-        [Test] public void GetComponentUnavailableDueToBadInheritanceTest() { DoNamedTest(); }
         [Test] public void GetComponentUnavailableDueToBadSyntaxTest() { DoNamedTest(); }
         [Test] public void GetComponentUnavailableTest() { DoNamedTest(); }
         [Test] public void ScriptableObjectAvailableTest() { DoNamedTest(); }
         [Test] public void GetComponentUnavailableDueToGenericClass() { DoNamedTest(); }
         [Test] public void GetComponentWithNamespaceUnavailableTest() { DoNamedTest(); }
+        [Test] public void GetComponentWithPreprocessorDirectives() { DoNamedTest(); }
     }
-    
+
     [TestUnity]
     public class PreferGenericMethodOverloadQuickFixTest : QuickFixTestBase<PreferGenericMethodOverloadQuickFix>
     {
@@ -30,10 +30,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void GetComponentInScriptTransformationTest() { DoNamedTest(); }
         [Test] public void GetComponentTransformationTest() { DoNamedTest(); }
         [Test] public void ScriptableObjectTest() { DoNamedTest(); }
-        [Test] public void TransformWithOptionsTest01() { DoNamedTest(); }
-        [Test] public void TransformWithOptionsTest02() { DoNamedTest(); }
-        [Test] public void TransformWithOptionsTest03() { DoNamedTest(); }
-        [Test] public void TransformWithOptionsTest04() { DoNamedTest(); } 
         [Test] public void GetComponentWithNamespaceTest01() { DoNamedTest(); }
         [Test] public void GetComponentWithNamespaceTest02() { DoNamedTest(); }
     }

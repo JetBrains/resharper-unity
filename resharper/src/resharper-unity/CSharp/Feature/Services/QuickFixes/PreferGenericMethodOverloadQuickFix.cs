@@ -1,31 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using JetBrains.Annotations;
-using JetBrains.Application;
 using JetBrains.Application.Progress;
-using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
-using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Intentions.CreateFromUsage;
-using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
-using JetBrains.ReSharper.Intentions.QuickFixes;
-using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
-using JetBrains.ReSharper.Psi.CSharp.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
-using JetBrains.ReSharper.Psi.Files;
-using JetBrains.ReSharper.Psi.Modules;
-using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
@@ -34,40 +17,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
     [QuickFix]
     public class PreferGenericMethodOverloadQuickFix : IQuickFix
     {
-        [NotNull] public static readonly InvisibleAnchor IntentionAnchor =
-            new InvisibleAnchor(IntentionsAnchors.QuickFixesAnchor);
-
         private readonly IInvocationExpression myInvocationExpression;
         private readonly string myMethodName;
-        private readonly ITypeElement[] myAvailableTypes;
+        private readonly ITypeElement myTypeElement;
 
         public PreferGenericMethodOverloadQuickFix(PreferGenericMethodOverloadWarning warning)
         {
             myInvocationExpression = warning.InvocationMethod;
             myMethodName = warning.MethodName;
-            myAvailableTypes = warning.AvailableTypes;
+            myTypeElement = warning.TypeElement;
         }
 
         public bool IsAvailable(IUserDataHolder cache)
         {
-            return myAvailableTypes.Length > 0 && myInvocationExpression.IsValid();
-        }
-
-
-        private IReadOnlyList<IBulbAction> GetItems()
-        {
-            return myAvailableTypes.Select(t =>
-                    new UseExplicitTypeInsteadOfStringAction(t, myInvocationExpression, myMethodName))
-                .ToList();
+            return myTypeElement.IsValid() && myInvocationExpression.IsValid();
         }
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
-            foreach (var action in GetItems())
-            {
-                var anchor = new SubmenuAnchor(IntentionAnchor, SubmenuBehavior.Executable);
-                yield return new IntentionAction(action, null, anchor);
-            }
+            yield return new IntentionAction(
+                new UseExplicitTypeInsteadOfStringAction(myTypeElement, myInvocationExpression, myMethodName), null,
+                IntentionsAnchors.QuickFixesAnchor);
         }
 
 
@@ -102,12 +72,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                     builder.Append(myMethodName);
                     builder.Append("<");
                     builder.Argument(TypeFactory.CreateType(myType));
-                    builder.Append(">");
-                    builder.Append("()");
+                    builder.Append(">()");
 
                     var newInvocation = factory.CreateExpression(builder.ToString(), builder.ToArguments());
                     myOldInvocation.ReplaceBy(newInvocation);
-
                 }
 
                 return null;

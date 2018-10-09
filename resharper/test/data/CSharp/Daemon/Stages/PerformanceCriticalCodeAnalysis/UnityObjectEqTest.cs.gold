@@ -1,0 +1,24 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class UnityObjectEqTest : MonoBehaviour
+    {
+        private GameObject gameObject = null;
+        public void Update()
+        {
+            |IndirectCostly|(0)();
+        }
+
+        private void IndirectCostly()
+        {
+            if (gameObject |==|(1) null)
+            {
+                // smth..
+            }
+        }
+    }
+}
+---------------------------------------------------------
+(0): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(1): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context

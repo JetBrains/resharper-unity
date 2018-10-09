@@ -1,0 +1,13 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class OnlyCacheTest
+    {
+        public void Test(Transform t)
+        {
+          var position = t.position;
+          var x = position + positi{caret}on;
+        }
+    }
+}

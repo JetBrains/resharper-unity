@@ -1,0 +1,13 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class InlinedCacheTest
+    {
+        public void Test(Transform t)
+        {
+          Vector3 position;
+          var x = (t.localPosition = Vector3.back) + (position = t.position) + positi{caret}on;
+        }
+    }
+}

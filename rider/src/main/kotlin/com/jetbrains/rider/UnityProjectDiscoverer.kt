@@ -1,20 +1,15 @@
 package com.jetbrains.rider
 
 import com.intellij.openapi.project.Project
-import com.intellij.util.EventDispatcher
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.model.RdAssemblyReferenceDescriptor
 import com.jetbrains.rider.model.RdExistingSolution
-import com.jetbrains.rider.model.RdProjectModelItemDescriptor
-import com.jetbrains.rider.model.projectModelView
-import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionFile
-import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
 
-class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(project) {
-    private val myEventDispatcher = EventDispatcher.create(UnityReferenceListener::class.java)
+class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : LifetimedProjectComponent(project) {
+    val hasUnityReference = unityHost.model.hasUnityReference
 
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
     val isUnityProjectFolder = hasUnityFileStructure(project)
@@ -22,23 +17,9 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(proje
     // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
-    val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
-    val isUnityGeneratedProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && solutionNameMatchesUnityProjectName(project)
-    val isUnitySidecarProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && !solutionNameMatchesUnityProjectName(project)
-
-    init {
-        application.invokeLater {
-            val projectModelView = project.solution.projectModelView
-            projectModelView.items.advise(componentLifetime) { item ->
-                // We don't care about the scenario where someone removes a Unity reference. That's only likely in a
-                // class library project
-                val itemData = item.newValueOpt
-                if (itemData != null) {
-                    itemAddedOrUpdated(itemData.descriptor)
-                }
-            }
-        }
-    }
+    val isLikeUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
+    val isLikeUnityGeneratedProject = isLikeUnityProject && solutionNameMatchesUnityProjectName(project)
+    val isUnitySidecarProject = isLikeUnityProject && !solutionNameMatchesUnityProjectName(project)
 
     companion object {
         fun getInstance(project: Project) = project.getComponent<UnityProjectDiscoverer>()
@@ -64,12 +45,6 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(proje
         }
     }
 
-    private fun itemAddedOrUpdated(descriptor: RdProjectModelItemDescriptor) {
-        if (descriptor is RdAssemblyReferenceDescriptor && descriptor.name == "UnityEngine") {
-            myEventDispatcher.multicaster.hasUnityReference()
-        }
-    }
-
     // Returns false when opening a Unity project as a plain folder
     private fun isCorrectlyLoadedSolution(project: Project): Boolean {
         val solutionFile = project.solutionFile
@@ -80,11 +55,7 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(proje
         val solutionFile = project.solutionFile
         return solutionFile.nameWithoutExtension == project.projectDir.name
     }
-
-    fun addUnityReferenceListener(listener: UnityReferenceListener) {
-        myEventDispatcher.addListener(listener)
-    }
 }
 
-fun Project.isUnityGeneratedProject() = UnityProjectDiscoverer.getInstance(this).isUnityGeneratedProject
-fun Project.isUnityProject()= UnityProjectDiscoverer.getInstance(this).isUnityProject
+fun Project.isLikeUnityGeneratedProject() = UnityProjectDiscoverer.getInstance(this).isLikeUnityGeneratedProject
+fun Project.isLikeUnityProject()= UnityProjectDiscoverer.getInstance(this).isLikeUnityProject

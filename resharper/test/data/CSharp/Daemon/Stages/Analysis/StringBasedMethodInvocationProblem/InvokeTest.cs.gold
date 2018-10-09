@@ -1,0 +1,13 @@
+﻿using UnityEngine;
+namespace DefaultNamespace
+{
+    public class InvokeTest
+    {
+        public void Test(MonoBehaviour mb)
+        {
+            mb.|Invoke|(0)("Message", 5f);
+        }
+    }
+}
+---------------------------------------------------------
+(0): ReSharper Hint: Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call.

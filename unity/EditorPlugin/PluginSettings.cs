@@ -1,6 +1,9 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using JetBrains.DataFlow;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -147,7 +150,23 @@ namespace JetBrains.Rider.Unity.Editor
       get { return EditorPrefs.GetString("Rider_RiderPath", null); }
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
+    
+    public static bool LogEventsCollectorEnabled
+    {
+      get { return EditorPrefs.GetBool("Rider_LogEventsCollectorEnabled", true); }
+      private set { EditorPrefs.SetBool("Rider_LogEventsCollectorEnabled", value); }
+    }
 
+
+    private static GUIStyle ourVersionInfoStyle = new GUIStyle()
+    {
+      normal = new GUIStyleState()
+      {
+        textColor = new Color(0, 0, 0, .6f),
+      }, 
+      margin = new RectOffset(4, 4, 4, 4),
+    };
+    
     // The default "Open C# Project" menu item will use the external script editor to load the .sln
     // file, but unless Unity knows the external script editor can properly load solutions, it will
     // also launch MonoDevelop (or the OS registered app for .sln files). This menu item side steps
@@ -294,6 +313,9 @@ namespace JetBrains.Rider.Unity.Editor
           SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
+      EditorGUI.EndChangeCheck();
+      LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider"), LogEventsCollectorEnabled);
+      EditorGUI.BeginChangeCheck();
       
       EditorGUI.EndChangeCheck();
 
@@ -318,7 +340,16 @@ namespace JetBrains.Rider.Unity.Editor
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
       var caption = $"<color=#0000FF>{githubRepo}</color>";
       LinkButton(caption: caption, url: githubRepo);
-
+      
+      GUILayout.FlexibleSpace();
+      GUILayout.BeginHorizontal();
+      
+      GUILayout.FlexibleSpace();
+      var version = Assembly.GetExecutingAssembly().GetName().Version;
+      GUILayout.Label("Plugin version: " + version, ourVersionInfoStyle);
+      
+      GUILayout.EndHorizontal();
+      
       // left for testing purposes
 /*      if (GUILayout.Button("reset RiderInitializedOnce = false"))
       {

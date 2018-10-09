@@ -5,7 +5,6 @@ import com.intellij.ide.projectView.ViewSettings
 import com.intellij.ide.scratch.ScratchProjectViewPane
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
@@ -43,7 +42,8 @@ class UnityExplorerRootNode(project: Project, private val packagesManager: Packa
 
 open class UnityExplorerNode(project: Project,
                              virtualFile: VirtualFile,
-                             nestedFiles: List<VirtualFile>)
+                             nestedFiles: List<VirtualFile>,
+                             private val isUnderAssets: Boolean)
     : FileSystemNodeBase(project, virtualFile, nestedFiles) {
 
     val nodes: Array<IProjectModelNode>
@@ -82,28 +82,36 @@ open class UnityExplorerNode(project: Project,
     }
 
     private fun calculateIcon(): Icon? {
-        val globalSpecialIcon = when (name) {
-            "Editor" -> IconLoader.getIcon("/Icons/Explorer/FolderEditor.svg")
-            "Resources" -> IconLoader.getIcon("/Icons/Explorer/FolderResources.svg")
-            else -> null
-        }
-        if (globalSpecialIcon != null && !underAssemblyDefinition()) {
-            return globalSpecialIcon
+        // Under Packages, the only special folder is "Resources". As per Maxime @ Unity:
+        // "Resources folders work the same in packages as under Assets, but that's mostly it. Editor folders have no
+        // special semantics, Gizmos don't work, there's no StreamingAssets, no Plugins"
+        if (name == "Resources") {
+            return UnityIcons.Explorer.ResourcesFolder
         }
 
-        if (parent is AssetsRoot) {
-            val rootSpecialIcon = when (name) {
-                "Editor Default Resources" -> IconLoader.getIcon("/Icons/Explorer/FolderEditorResources.svg")
-                "Gizmos" -> IconLoader.getIcon("/Icons/Explorer/FolderGizmos.svg")
-                "Plugins" -> IconLoader.getIcon("/Icons/Explorer/FolderPlugins.svg")
-                "Standard Assets" -> IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg")
-                "Pro Standard Assets" -> IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg")
-                "StreamingAssets" -> IconLoader.getIcon("/Icons/Explorer/FolderStreamingAssets.svg")
-                else -> null
+        if (isUnderAssets) {
+            if (name == "Editor" && !underAssemblyDefinition()) {
+                return UnityIcons.Explorer.EditorFolder
             }
-            if (rootSpecialIcon != null) {
-                return rootSpecialIcon
+
+            if (parent is AssetsRoot) {
+                val rootSpecialIcon = when (name) {
+                    "Editor Default Resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
+                    "Gizmos" -> UnityIcons.Explorer.GizmosFolder
+                    "Plugins" -> UnityIcons.Explorer.PluginsFolder
+                    "Standard Assets" -> UnityIcons.Explorer.AssetsFolder
+                    "Pro Standard Assets" -> UnityIcons.Explorer.AssetsFolder
+                    "StreamingAssets" -> UnityIcons.Explorer.StreamingAssetsFolder
+                    else -> null
+                }
+                if (rootSpecialIcon != null) {
+                    return rootSpecialIcon
+                }
             }
+        }
+
+        if (hasAssemblyDefinitionFile()) {
+            return UnityIcons.Explorer.AsmdefFolder
         }
 
         return virtualFile.calculateFileSystemIcon(project!!)
@@ -122,8 +130,12 @@ open class UnityExplorerNode(project: Project,
         return false
     }
 
+    private fun hasAssemblyDefinitionFile(): Boolean {
+        return virtualFile.children.any { it.extension.equals("asmdef", true) }
+    }
+
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
-        return UnityExplorerNode(project!!, virtualFile, nestedFiles)
+        return UnityExplorerNode(project!!, virtualFile, nestedFiles, isUnderAssets)
     }
 
     override fun getVirtualFileChildren(): List<VirtualFile> {
@@ -150,7 +162,7 @@ open class UnityExplorerNode(project: Project,
     }
 
     class AssetsRoot(project: Project, virtualFile: VirtualFile)
-        : UnityExplorerNode(project, virtualFile, listOf()) {
+        : UnityExplorerNode(project, virtualFile, listOf(), true) {
 
         private val referenceRoot = ReferenceRoot(project)
         private val solutionNode = ProjectModelViewHost.getInstance(project).solutionNode
