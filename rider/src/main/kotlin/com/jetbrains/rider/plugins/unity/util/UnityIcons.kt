@@ -2,8 +2,6 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
-import com.intellij.ui.LayeredIcon
-import com.jetbrains.rider.icons.ReSharperAssemblyExplorerIcons
 import com.jetbrains.rider.icons.ReSharperCommonIcons
 import com.jetbrains.rider.icons.ReSharperProjectModelIcons
 import com.jetbrains.rider.icons.ReSharperPsiJavaScriptIcons
@@ -88,21 +86,32 @@ class UnityIcons {
         companion object {
 
             val AssetsRoot = IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg")
+            val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/UnityPackages.svg")
             val ReferencesRoot = ReSharperCommonIcons.CompositeElement
+            val ReadOnlyPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderReadOnly.svg")
+            val DependenciesRoot = IconLoader.getIcon("/Icons/Explorer/FolderDependencies.svg")
+            val BuiltInPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderModules.svg")
+
+            val BuiltInPackage = IconLoader.getIcon("/Icons/Explorer/UnityModule.svg")
+            val ReferencedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageReferenced.svg")
+            val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageEmbedded.svg")
+            val LocalPackage: Icon = IconLoader.getIcon("/Icons/Explorer/FolderPackageLocal.svg")
+            val UnknownPackage = IconLoader.getIcon("/Icons/Explorer/UnityPackageUnresolved.svg")
+            val PackageDependency = IconLoader.getIcon("/Icons/Explorer/UnityPackageDependency.svg")
             val Reference = ReSharperProjectModelIcons.Assembly
 
-            // TODO: Proper icons!
-            val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
-            val ReadOnlyPackagesRoot = ReSharperCommonIcons.CompositeElement
-            val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
-            val LocalPackage: Icon = LayeredIcon.create(EmbeddedPackage, ReSharperProjectModelIcons.ShortcutOverlay)
-            val ReferencedPackage = EmbeddedPackage
-            val GitPackage = ReferencedPackage
-            val BuiltInPackagesRoot = ReSharperCommonIcons.CompositeElement
-            val BuiltInPackage = ReSharperProjectModelIcons.Assembly
-            val UnknownPackage = ReSharperAssemblyExplorerIcons.AssemblyBroken
-            val DependenciesRoot = ReSharperProjectModelIcons.Assemblies
-            val PackageDependency = ReSharperProjectModelIcons.AssemblyReference    // Assembly with shortcut arrow
+
+            // Not yet supported by Unity, but we're ready! Except it could probably do with it's own icon...
+            val GitPackage = LocalPackage
+
+            val AsmdefFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
+            val AssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg")
+            val EditorDefaultResourcesFolder = IconLoader.getIcon("/Icons/Explorer/FolderEditorResources.svg")
+            val EditorFolder = IconLoader.getIcon("/Icons/Explorer/FolderEditor.svg")
+            val GizmosFolder = IconLoader.getIcon("/Icons/Explorer/FolderGizmos.svg")
+            val PluginsFolder = IconLoader.getIcon("/Icons/Explorer/FolderPlugins.svg")
+            val ResourcesFolder = IconLoader.getIcon("/Icons/Explorer/FolderResources.svg")
+            val StreamingAssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderStreamingAssets.svg")
         }
     }
 
