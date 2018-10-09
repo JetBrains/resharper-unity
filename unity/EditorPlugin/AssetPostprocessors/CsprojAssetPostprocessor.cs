@@ -130,16 +130,16 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       
       return changed;
     }
+    
     // Computer may not have specific TargetFramework, msbuild will resolve System from different TargetFramework
-    // If we set hintpaths together with DisableHandlePackageFileConflicts we help msbuild to resolve libs from Unity installation
+    // If we set HintPaths together with DisableHandlePackageFileConflicts we help msbuild to resolve libs from Unity installation
     // Unity 2018+ already have HintPaths by default
     private static bool TrySetHintPathsForSystemAssemblies(XElement projectContentElement, XNamespace xmlns)
     {
       var elementsToUpdate = projectContentElement
         .Elements(xmlns+"ItemGroup")
         .Elements(xmlns+"Reference")
-        .Where(a => a.Attribute("Include") != null)
-        .Where(b => b.HasAttributes && b.Elements(xmlns + "HintPath").SingleOrDefault() == null)
+        .Where(a => a.Attribute("Include") != null && a.Elements(xmlns + "HintPath").SingleOrDefault() == null)
         .ToArray();
       foreach (var element in elementsToUpdate)
       {
