@@ -120,6 +120,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetLangVersion(projectContentElement, xmlns);
       changed |= SetProjectFlavour(projectContentElement, xmlns);
       changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
+      changed |= TrySetHintPathsForSystemAssemblies(projectContentElement, xmlns);
       changed |= AddMicrosoftCSharpReference(projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
@@ -128,6 +129,32 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
       
       return changed;
+    }
+    
+    // Computer may not have specific TargetFramework, msbuild will resolve System from different TargetFramework
+    // If we set HintPaths together with DisableHandlePackageFileConflicts we help msbuild to resolve libs from Unity installation
+    // Unity 2018+ already have HintPaths by default
+    private static bool TrySetHintPathsForSystemAssemblies(XElement projectContentElement, XNamespace xmlns)
+    {
+      var elementsToUpdate = projectContentElement
+        .Elements(xmlns+"ItemGroup")
+        .Elements(xmlns+"Reference")
+        .Where(a => a.Attribute("Include") != null && a.Elements(xmlns + "HintPath").SingleOrDefault() == null)
+        .ToArray();
+      foreach (var element in elementsToUpdate)
+      {
+        var referenceName = element.Attribute("Include").Value + ".dll";
+        var hintPath = GetHintPath(referenceName);
+        AddCustomReference(referenceName, projectContentElement, xmlns, hintPath);
+      }
+
+      if (elementsToUpdate.Any())
+      {
+        elementsToUpdate.Remove();
+        return true;
+      }
+
+      return false;
     }
 
     private static bool SetGenerateTargetFrameworkAttribute(XElement projectContentElement, XNamespace xmlns)
