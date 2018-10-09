@@ -30,6 +30,9 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
 
     public void Enqueue([NotNull]T input)
     {
+      if (input == null)
+        throw new ArgumentNullException("input is null.");
+      
       lock (myLockObject)
       {
         myQueue.Enqueue(input);
