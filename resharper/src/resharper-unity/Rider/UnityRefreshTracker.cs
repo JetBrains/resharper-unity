@@ -43,8 +43,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
                         
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
-            
-            myEditorProtocol.Refresh.Advise(lifetime, b => { Refresh(b); });
         }
 
         private Task CurrentTask;
@@ -98,15 +96,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
         private readonly GroupingEvent myGroupingEvent;
 
-        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher, 
-            UnityEditorProtocol editorProtocol,
+        public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher,
             ILogger logger,
-            IFileSystemTracker fileSystemTracker)
+            IFileSystemTracker fileSystemTracker, 
+            UnityHost host,
+            UnitySolutionTracker unitySolutionTracker)
         {
             myLogger = logger;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
+
+            unitySolutionTracker.IsUnityProject.ViewNotNull(lifetime, (lf, args) =>
+            {
+                if (!args) return;
+                host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => { refresher.Refresh(force); }));
+            });
             
             // Rgc.Guarded - beware RIDER-15577
             myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
@@ -115,9 +120,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var protocolSolution = solution.GetProtocolSolution();
             protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
             {
-                if (!editorProtocol.UnityModel.HasValue() || editorProtocol.UnityModel.HasValue() && editorProtocol.UnityModel.Value == null)
-                    return;
-                
                 myLogger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
                 myGroupingEvent.FireIncoming();
             });

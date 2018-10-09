@@ -40,9 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
-
-        public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
-
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
@@ -106,11 +103,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseModelData(Lifetime lifetime)
         {   
-            if (!UnityModel.HasValue()) return;
-            myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
-            myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
-            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
-            myHost.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => UnityModel.Value.IfNotNull(editor => editor.Refresh.Start(force))));
+            myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p =>
+            {
+                if (UnityModel.HasValue())
+                    UnityModel.Value.IfNotNull(editor => editor.Play.Value = p);
+            }));
+            myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p =>
+            {
+                if (UnityModel.HasValue())
+                    UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p);
+            }));
+            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () =>
+            {
+                if (UnityModel.HasValue())
+                    UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire());
+            }));
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
