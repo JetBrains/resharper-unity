@@ -130,7 +130,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       
       return changed;
     }
-
+    // Computer may not have specific TargetFramework, msbuild will resolve System from different TargetFramework
+    // If we set hintpaths together with DisableHandlePackageFileConflicts we help msbuild to resolve libs from Unity installation
+    // Unity 2018+ already have HintPaths by default
     private static bool TrySetHintPathsForSystemAssemblies(XElement projectContentElement, XNamespace xmlns)
     {
       var elementsToUpdate = projectContentElement
