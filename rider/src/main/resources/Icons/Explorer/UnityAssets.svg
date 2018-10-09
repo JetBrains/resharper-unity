@@ -1,11 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <title>UnityResources(Gray)</title>
+  <title>UnityAssets(Gray)</title>
   <g>
     <rect width="16" height="16" fill="#ffe3ff" opacity="0"/>
     <g>
       <polygon points="16 7.675 16 7.325 13.343 0 12.555 0 5.601 1.219 1 7.158 1 7.842 5.601 13.781 12.555 15 13.343 15 16 7.675" fill="#f4f4f4"/>
       <polygon points="2 7.5 6.154 12.863 12.641 14 15 7.5 12.641 1 6.154 2.137 2 7.5" fill="#323232"/>
-      <polygon points="9.862 7.5 12.275 1.647 8.686 6.817 2.713 7.5 8.686 8.183 12.275 13.353 9.862 7.5" fill="#ebebeb"/>
+      <polygon points="6.708 11.945 3.265 7.5 6.708 3.055 11.987 2.13 13.936 7.5 11.987 12.87 6.708 11.945" fill="#ebebeb"/>
+      <polygon points="9.605 7.5 11.216 3.591 8.819 7.044 4.83 7.5 8.819 7.956 11.216 11.409 9.605 7.5" fill="#323232"/>
     </g>
   </g>
 </svg>

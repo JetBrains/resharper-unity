@@ -1,5 +1,4 @@
-﻿<Project>
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
@@ -105,9 +104,6 @@
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="**/Rider/Debugger/**" />
-  </ItemGroup>
   <!-- References -->
   <ItemGroup>
     <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />
@@ -117,5 +113,4 @@
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
