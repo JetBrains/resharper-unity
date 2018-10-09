@@ -55,9 +55,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         private ObjectValue[] GetChildrenForGameObject(SoftEvaluationContext ctx,
                                                        IDebuggerValueOwner<Value> parentSource, Value gameObject)
         {
-            var objectValueSource = new GameObjectComponentsSource(ctx, parentSource, gameObject);
-            objectValueSource.Connect();
-            return InitialiseObjectValues(objectValueSource);
+            var componentsSource = new GameObjectComponentsSource(ctx, parentSource, gameObject);
+            componentsSource.Connect();
+            var componentsObjectValue = InitialiseObjectValues(componentsSource);
+
+            var childrenSource = new GameObjectChildrenSource(ctx, parentSource, gameObject);
+            childrenSource.Connect();
+            var childrenObjectValue = InitialiseObjectValues(childrenSource);
+
+            return new[] {componentsObjectValue, childrenObjectValue};
         }
 
         private ObjectValue[] GetChildrenForEntity(SoftEvaluationContext ctx, IDebuggerValueOwner<Value> parentSource,
@@ -70,10 +76,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 
             var objectValueSource = new EntityComponentDataSource(ctx, parentSource, entity, entityManager);
             objectValueSource.Connect();
-            return InitialiseObjectValues(objectValueSource);
+            var objectValue = InitialiseObjectValues(objectValueSource);
+
+            return new[] {objectValue};
         }
 
-        private static ObjectValue[] InitialiseObjectValues(IObjectValueSource objectValueSource)
+        private static ObjectValue InitialiseObjectValues(IObjectValueSource objectValueSource)
         {
             // ReSharper disable ArgumentsStyleNamedExpression
             // Displayed in the debugger as "objectValueSource.Name = {typeName} value"
@@ -81,8 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                 typeName: string.Empty, value: string.Empty,
                 ObjectValueFlags.Group | ObjectValueFlags.ReadOnly | ObjectValueFlags.NoRefresh, null);
             objectValue.ChildSelector = string.Empty;
-
-            return new[] {objectValue};
+            return objectValue;
         }
     }
 }

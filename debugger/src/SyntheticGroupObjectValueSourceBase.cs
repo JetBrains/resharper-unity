@@ -79,19 +79,71 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         [CanBeNull]
         protected TypeMirror GetType(string typename)
         {
-            return Adaptor.GetType(Context, typename);
+            var typeMirror = Adaptor.GetType(Context, typename);
+            if (typeMirror == null)
+            {
+                myLogger.Warn("Unable to get type {0}", typename);
+                return null;
+            }
+
+            return typeMirror;
         }
 
         [CanBeNull]
         protected Value InvokeInstanceMethod([NotNull] Value target, string methodName, params Value[] parameters)
         {
-            return Adaptor.Invocator.InvokeInstanceMethod(Context, target, methodName, parameters)?.Result;
+            var result = Adaptor.Invocator.InvokeInstanceMethod(Context, target, methodName, parameters);
+            if (result == null)
+            {
+                var args = new string[2 + parameters.Length];
+                args[0] = target.ToString();
+                args[1] = methodName;
+                Array.Copy(parameters, 0, args, 2, parameters.Length);
+                // ReSharper disable FormatStringProblem
+                myLogger.Warn("InvokeStaticMethod returned null for {0}.{1}({2})", args);
+                // ReSharper restore FormatStringProblem
+                return null;
+            }
+
+            return result.Result;
         }
 
         [CanBeNull]
         protected Value InvokeStaticMethod([NotNull] TypeMirror type, string methodName, params Value[] parameters)
         {
-            return Adaptor.Invocator.InvokeStaticMethod(Context, type, methodName, parameters)?.Result;
+            var result = Adaptor.Invocator.InvokeStaticMethod(Context, type, methodName, parameters);
+            if (result == null)
+            {
+                var args = new string[2 + parameters.Length];
+                args[0] = type.FullName;
+                args[1] = methodName;
+                Array.Copy(parameters, 0, args, 2, parameters.Length);
+                // ReSharper disable FormatStringProblem
+                myLogger.Warn("InvokeStaticMethod returned null for {0}.{1}({2})", args);
+                // ReSharper restore FormatStringProblem
+                return null;
+            }
+
+            return result.Result;
+        }
+
+        [CanBeNull]
+        protected Value GetMember([NotNull] Value value, string memberName)
+        {
+            var member = Adaptor.GetMember(Context, null, value, memberName);
+            if (member == null)
+            {
+                myLogger.Warn("Unable to get member {0} from {1}", memberName, value.Type.FullName);
+                return null;
+            }
+
+            return member.Value;
+        }
+
+        protected ObjectValue CreateObjectValue(string name, Value value, IEvaluationOptions options)
+        {
+            return LiteralValueReference.CreateTargetObjectLiteral(Adaptor, Context, name, value)
+                .CreateObjectValue(options);
         }
     }
 }

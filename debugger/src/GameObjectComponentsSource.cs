@@ -7,7 +7,6 @@ using Mono.Debugger.Soft;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
-using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
@@ -49,10 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                 try
                 {
                     var name = GetComponentName(objectNamesType, componentValue);
-                    objectValues.Add(LiteralValueReference
-                        .CreateTargetObjectLiteral(Adaptor, Context, name, componentValue)
-                        .CreateObjectValue(options));
-
+                    objectValues.Add(CreateObjectValue(name, componentValue, options));
                 }
                 catch (Exception e)
                 {
