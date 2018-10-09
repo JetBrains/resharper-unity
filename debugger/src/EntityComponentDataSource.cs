@@ -8,56 +8,42 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
-using Mono.Debugging.Soft.RuntimeInvocation;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 {
-    public class EntityComponentDataSource : RemoteFrameObject, IObjectValueSource<SoftEvaluationContext>
+    public class EntityComponentDataSource : SyntheticGroupObjectValueSourceBase
     {
+        private static readonly ILogger ourLogger = Logger.GetLogger<EntityComponentDataSource>();
+
         private readonly Value myEntityObject;
         private readonly Value myEntityManagerObject;
-        private readonly SoftDebuggerAdaptor myAdaptor;
-        private readonly ExpressionEvaluator<SoftEvaluationContext, TypeMirror, Value> myExpressionEvaluator;
-        private readonly SoftRuntimeInvocator mySoftRuntimeInvocator;
-        private readonly ILogger myLogger = Logger.GetLogger<EntityComponentDataSource>();
         private readonly TypeMirror myEntityManagerType;
 
         public EntityComponentDataSource(SoftEvaluationContext context, IDebuggerHierarchicalObject parentSource,
             Value entityObject, Value entityManagerObject)
+            : base(context, parentSource, "Component Data", ourLogger)
         {
             myEntityObject = entityObject;
-            myEntityManagerType = entityManagerObject.Type;
             myEntityManagerObject = entityManagerObject;
-            Context = context;
-            ParentSource = parentSource;
-            var softDebuggerSession = context.Session;
-            myAdaptor = softDebuggerSession.Adapter;
-            myExpressionEvaluator = softDebuggerSession.DefaultEvaluator;
-            mySoftRuntimeInvocator = myAdaptor.Invocator;
+            myEntityManagerType = entityManagerObject.Type;
         }
 
-        public IDebuggerHierarchicalObject ParentSource { get; }
-        public string Name => "Component data";
-        public SoftEvaluationContext Context { get; }
-
-        public ObjectValue[] GetChildren(ObjectPath path, int index, int count, IEvaluationOptions options)
+        public override ObjectValue[] GetChildren(ObjectPath path, int index, int count, IEvaluationOptions options)
         {
             try
             {
-                var allocatorTempObject =
-                    myExpressionEvaluator.Evaluate(Context, "global::Unity.Collections.Allocator.Temp");
-                var componentDataType = myAdaptor.GetType(Context, "Unity.Entities.IComponentData");
-                var sharedComponentDataType = myAdaptor.GetType(Context, "Unity.Entities.ISharedComponentData");
+                var allocatorTempObject = Evaluate("global::Unity.Collections.Allocator.Temp");
+                var componentDataType = GetType("Unity.Entities.IComponentData");
+                var sharedComponentDataType = GetType("Unity.Entities.ISharedComponentData");
 
                 var entityManagerGetComponentTypesMethod = myEntityManagerType.GetMethod("GetComponentTypes");
                 var entityManagerGetSharedComponentDataMethod = myEntityManagerType.GetMethod("GetSharedComponentData");
                 var entityManagerGetComponentDataMethod = myEntityManagerType.GetMethod("GetComponentData");
 
-                var componentTypesArray = mySoftRuntimeInvocator.RuntimeInvoke(Context,
-                    entityManagerGetComponentTypesMethod, myEntityManagerType,
-                    myEntityManagerObject, new[] {myEntityObject, allocatorTempObject.Value}).Result;
+                var componentTypesArray = Invoke(entityManagerGetComponentTypesMethod, myEntityManagerType,
+                    myEntityManagerObject, myEntityObject, allocatorTempObject.Value);
                 var componentTypesArrayLength =
-                    (PrimitiveValue) myAdaptor.GetMember(Context, null, componentTypesArray, "Length").Value;
+                    (PrimitiveValue) Adaptor.GetMember(Context, null, componentTypesArray, "Length").Value;
 
                 var numberOfComponentTypes = (int) componentTypesArrayLength.Value;
 
@@ -66,23 +52,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                 {
                     try
                     {
-                        var currentIndexValue = myAdaptor.CreateValue(Context, currentIndex);
-                        var currentComponent =
-                            myAdaptor.GetIndexerReference(Context, componentTypesArray, new[] {currentIndexValue})
-                                .Value;
+                        var currentIndexValue = Adaptor.CreateValue(Context, currentIndex);
+                        var currentComponent = Adaptor
+                            .GetIndexerReference(Context, componentTypesArray, new[] {currentIndexValue}).Value;
                         var currentComponentType = currentComponent.Type;
 
                         var getManagedTypeMethod = currentComponentType.GetMethod("GetManagedType");
-                        var dataManagedType = mySoftRuntimeInvocator.RuntimeInvoke(Context, getManagedTypeMethod,
-                            currentComponentType,
-                            currentComponent, new Value[0]).Result;
+                        var dataManagedType = Invoke(getManagedTypeMethod, currentComponentType, currentComponent);
                         var dataManagedTypeFullName =
-                            ((StringMirror) myAdaptor.GetMember(Context, null, dataManagedType, "FullName").Value)
-                            .Value;
+                            ((StringMirror) Adaptor.GetMember(Context, null, dataManagedType, "FullName").Value).Value;
                         var dataManagedTypeShortName =
-                            ((StringMirror) myAdaptor.GetMember(Context, null, dataManagedType, "Name").Value)
-                            .Value;
-                        var dataType = myAdaptor.GetType(Context, dataManagedTypeFullName);
+                            ((StringMirror) Adaptor.GetMember(Context, null, dataManagedType, "Name").Value).Value;
+                        var dataType = GetType(dataManagedTypeFullName);
 
                         MethodMirror getComponentDataMethod;
                         if (componentDataType.IsAssignableFrom(dataType))
@@ -91,22 +72,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                             getComponentDataMethod = entityManagerGetSharedComponentDataMethod;
                         else
                         {
-                            myLogger.Warn("Unknown type of component data: {0}", dataManagedTypeFullName);
+                            ourLogger.Warn("Unknown type of component data: {0}", dataManagedTypeFullName);
                             continue;
                         }
 
                         var getComponentDataMethodWithTypeArgs =
                             getComponentDataMethod.MakeGenericMethod(new[] {dataType});
-                        var result = mySoftRuntimeInvocator.RuntimeInvoke(Context, getComponentDataMethodWithTypeArgs,
-                            myEntityManagerType,
-                            myEntityManagerObject, new[] {myEntityObject}).Result;
+                        var result = Invoke(getComponentDataMethodWithTypeArgs, myEntityManagerType,
+                            myEntityManagerObject, myEntityObject);
                         objectValues.Add(LiteralValueReference
-                            .CreateTargetObjectLiteral(myAdaptor, Context, dataManagedTypeShortName, result)
+                            .CreateTargetObjectLiteral(Adaptor, Context, dataManagedTypeShortName, result)
                             .CreateObjectValue(options));
                     }
                     catch (Exception e)
                     {
-                        myLogger.Error("Failed to fetch parameter {0} of entity {1}", currentIndex, myEntityObject);
+                        ourLogger.Error(e, "Failed to fetch parameter {0} of entity {1}", currentIndex, myEntityObject);
                     }
                 }
 
@@ -114,30 +94,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             }
             catch (Exception e)
             {
-                myLogger.Error(e);
+                ourLogger.Error(e);
             }
 
             return new ObjectValue[0];
-        }
-
-        public ObjectValue GetValue(ObjectPath path, IEvaluationOptions options)
-        {
-            throw new NotSupportedException();
-        }
-
-        public IRawValue GetRawValue(ObjectPath path, IEvaluationOptions options)
-        {
-            throw new NotSupportedException();
-        }
-
-        public ValuePresentation SetValue(ObjectPath path, string value, IEvaluationOptions options)
-        {
-            throw new NotSupportedException();
-        }
-
-        public void SetRawValue(ObjectPath path, IRawValue value, IEvaluationOptions options)
-        {
-            throw new NotSupportedException();
         }
     }
 }
