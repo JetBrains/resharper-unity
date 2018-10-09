@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using Mono.Debugger.Soft;
@@ -20,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         private readonly TypeMirror myEntityManagerType;
 
         public EntityComponentDataSource(SoftEvaluationContext context, IDebuggerHierarchicalObject parentSource,
-            Value entityObject, Value entityManagerObject)
+                                         Value entityObject, Value entityManagerObject)
             : base(context, parentSource, "Component Data", ourLogger)
         {
             myEntityObject = entityObject;
@@ -28,76 +29,74 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             myEntityManagerType = entityManagerObject.Type;
         }
 
-        public override ObjectValue[] GetChildren(ObjectPath path, int index, int count, IEvaluationOptions options)
+        protected override ObjectValue[] GetChildrenSafe(ObjectPath path, int index, int count,
+                                                         IEvaluationOptions options)
         {
-            try
+            var allocatorTempObject = Evaluate("global::Unity.Collections.Allocator.Temp");
+            var componentDataType = GetType("Unity.Entities.IComponentData").NotNull();
+            var sharedComponentDataType = GetType("Unity.Entities.ISharedComponentData").NotNull();
+
+            var entityManagerGetComponentTypesMethod = myEntityManagerType.GetMethod("GetComponentTypes");
+            var entityManagerGetSharedComponentDataMethod = myEntityManagerType.GetMethod("GetSharedComponentData");
+            var entityManagerGetComponentDataMethod = myEntityManagerType.GetMethod("GetComponentData");
+
+            var componentTypesArray = Invoke(entityManagerGetComponentTypesMethod, myEntityManagerType,
+                myEntityManagerObject, myEntityObject, allocatorTempObject.Value).NotNull();
+            var componentTypesArrayLength =
+                (PrimitiveValue) Adaptor.GetMember(Context, null, componentTypesArray, "Length").Value;
+
+            var numberOfComponentTypes = (int) componentTypesArrayLength.Value;
+
+            var objectValues = new List<ObjectValue>();
+            for (var currentIndex = 0; currentIndex < numberOfComponentTypes; currentIndex++)
             {
-                var allocatorTempObject = Evaluate("global::Unity.Collections.Allocator.Temp");
-                var componentDataType = GetType("Unity.Entities.IComponentData");
-                var sharedComponentDataType = GetType("Unity.Entities.ISharedComponentData");
-
-                var entityManagerGetComponentTypesMethod = myEntityManagerType.GetMethod("GetComponentTypes");
-                var entityManagerGetSharedComponentDataMethod = myEntityManagerType.GetMethod("GetSharedComponentData");
-                var entityManagerGetComponentDataMethod = myEntityManagerType.GetMethod("GetComponentData");
-
-                var componentTypesArray = Invoke(entityManagerGetComponentTypesMethod, myEntityManagerType,
-                    myEntityManagerObject, myEntityObject, allocatorTempObject.Value);
-                var componentTypesArrayLength =
-                    (PrimitiveValue) Adaptor.GetMember(Context, null, componentTypesArray, "Length").Value;
-
-                var numberOfComponentTypes = (int) componentTypesArrayLength.Value;
-
-                var objectValues = new List<ObjectValue>();
-                for (var currentIndex = 0; currentIndex < numberOfComponentTypes; currentIndex++)
+                try
                 {
-                    try
+                    var currentIndexValue = Adaptor.CreateValue(Context, currentIndex);
+                    var currentComponent = Adaptor
+                        .GetIndexerReference(Context, componentTypesArray, new[] {currentIndexValue}).Value;
+                    var currentComponentType = currentComponent.Type;
+
+                    var getManagedTypeMethod = currentComponentType.GetMethod("GetManagedType");
+                    var dataManagedType = Invoke(getManagedTypeMethod, currentComponentType, currentComponent);
+                    var dataManagedTypeFullName =
+                        ((StringMirror) Adaptor.GetMember(Context, null, dataManagedType, "FullName").Value).Value;
+                    var dataManagedTypeShortName =
+                        ((StringMirror) Adaptor.GetMember(Context, null, dataManagedType, "Name").Value).Value;
+                    var dataType = GetType(dataManagedTypeFullName);
+
+                    MethodMirror getComponentDataMethod;
+                    if (componentDataType.IsAssignableFrom(dataType))
+                        getComponentDataMethod = entityManagerGetComponentDataMethod;
+                    else if (sharedComponentDataType.IsAssignableFrom(dataType))
+                        getComponentDataMethod = entityManagerGetSharedComponentDataMethod;
+                    else
                     {
-                        var currentIndexValue = Adaptor.CreateValue(Context, currentIndex);
-                        var currentComponent = Adaptor
-                            .GetIndexerReference(Context, componentTypesArray, new[] {currentIndexValue}).Value;
-                        var currentComponentType = currentComponent.Type;
-
-                        var getManagedTypeMethod = currentComponentType.GetMethod("GetManagedType");
-                        var dataManagedType = Invoke(getManagedTypeMethod, currentComponentType, currentComponent);
-                        var dataManagedTypeFullName =
-                            ((StringMirror) Adaptor.GetMember(Context, null, dataManagedType, "FullName").Value).Value;
-                        var dataManagedTypeShortName =
-                            ((StringMirror) Adaptor.GetMember(Context, null, dataManagedType, "Name").Value).Value;
-                        var dataType = GetType(dataManagedTypeFullName);
-
-                        MethodMirror getComponentDataMethod;
-                        if (componentDataType.IsAssignableFrom(dataType))
-                            getComponentDataMethod = entityManagerGetComponentDataMethod;
-                        else if (sharedComponentDataType.IsAssignableFrom(dataType))
-                            getComponentDataMethod = entityManagerGetSharedComponentDataMethod;
-                        else
-                        {
-                            ourLogger.Warn("Unknown type of component data: {0}", dataManagedTypeFullName);
-                            continue;
-                        }
-
-                        var getComponentDataMethodWithTypeArgs =
-                            getComponentDataMethod.MakeGenericMethod(new[] {dataType});
-                        var result = Invoke(getComponentDataMethodWithTypeArgs, myEntityManagerType,
-                            myEntityManagerObject, myEntityObject);
-                        objectValues.Add(LiteralValueReference
-                            .CreateTargetObjectLiteral(Adaptor, Context, dataManagedTypeShortName, result)
-                            .CreateObjectValue(options));
+                        ourLogger.Warn("Unknown type of component data: {0}", dataManagedTypeFullName);
+                        continue;
                     }
-                    catch (Exception e)
-                    {
-                        ourLogger.Error(e, "Failed to fetch parameter {0} of entity {1}", currentIndex, myEntityObject);
-                    }
+
+                    var getComponentDataMethodWithTypeArgs =
+                        getComponentDataMethod.MakeGenericMethod(new[] {dataType});
+                    var result = Invoke(getComponentDataMethodWithTypeArgs, myEntityManagerType,
+                        myEntityManagerObject, myEntityObject);
+                    objectValues.Add(LiteralValueReference
+                        .CreateTargetObjectLiteral(Adaptor, Context, dataManagedTypeShortName, result)
+                        .CreateObjectValue(options));
                 }
-
-                return objectValues.ToArray();
-            }
-            catch (Exception e)
-            {
-                ourLogger.Error(e);
+                catch (Exception e)
+                {
+                    ourLogger.Error(e, "Failed to fetch parameter {0} of entity {1}", currentIndex, myEntityObject);
+                }
             }
 
-            return new ObjectValue[0];
+            return objectValues.ToArray();
+        }
+
+        [CanBeNull]
+        protected Value Invoke(MethodMirror method, TypeMirror type, Value instance, params Value[] parameters)
+        {
+            return Adaptor.Invocator.RuntimeInvoke(Context, method, type, instance, parameters).Result;
         }
     }
 }

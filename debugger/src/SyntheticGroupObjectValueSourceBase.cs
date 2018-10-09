@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Backend;
@@ -6,7 +7,6 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
-using Mono.Debugging.Soft.RuntimeInvocation;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 {
@@ -14,7 +14,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
     {
         private readonly ILogger myLogger;
         private readonly ExpressionEvaluator<SoftEvaluationContext, TypeMirror, Value> myExpressionEvaluator;
-        private readonly SoftRuntimeInvocator mySoftRuntimeInvocator;
 
         protected SyntheticGroupObjectValueSourceBase(SoftEvaluationContext context,
                                                       IDebuggerHierarchicalObject parentSource, string name,
@@ -27,7 +26,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 
             Adaptor = context.Session.Adapter;
             myExpressionEvaluator = context.Session.DefaultEvaluator;
-            mySoftRuntimeInvocator = Adaptor.Invocator;
         }
 
         public SoftEvaluationContext Context { get; }
@@ -36,7 +34,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 
         protected SoftDebuggerAdaptor Adaptor { get; }
 
-        public abstract ObjectValue[] GetChildren(ObjectPath path, int index, int count, IEvaluationOptions options);
+        public ObjectValue[] GetChildren(ObjectPath path, int index, int count, IEvaluationOptions options)
+        {
+            try
+            {
+                return GetChildrenSafe(path, index, count, options);
+            }
+            catch (Exception e)
+            {
+                myLogger.Error(e);
+            }
+
+            return EmptyArray<ObjectValue>.Instance;
+        }
+
+        protected abstract ObjectValue[] GetChildrenSafe(ObjectPath path, int index, int count,
+                                                         IEvaluationOptions options);
 
         public ValuePresentation SetValue(ObjectPath path, string value, IEvaluationOptions options)
         {
@@ -63,14 +76,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             return myExpressionEvaluator.Evaluate(Context, expression);
         }
 
+        [CanBeNull]
         protected TypeMirror GetType(string typename)
         {
             return Adaptor.GetType(Context, typename);
         }
 
-        protected Value Invoke(MethodMirror method, TypeMirror type, Value instance, params Value[] parameters)
+        [CanBeNull]
+        protected Value InvokeInstanceMethod([NotNull] Value target, string methodName, params Value[] parameters)
         {
-            return mySoftRuntimeInvocator.RuntimeInvoke(Context, method, type, instance, parameters).Result;
+            return Adaptor.Invocator.InvokeInstanceMethod(Context, target, methodName, parameters)?.Result;
+        }
+
+        [CanBeNull]
+        protected Value InvokeStaticMethod([NotNull] TypeMirror type, string methodName, params Value[] parameters)
+        {
+            return Adaptor.Invocator.InvokeStaticMethod(Context, type, methodName, parameters)?.Result;
         }
     }
 }
