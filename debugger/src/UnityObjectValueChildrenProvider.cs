@@ -27,6 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 
             if (IsExpectedType(type, "UnityEngine.GameObject"))
                 return GetChildrenForGameObject(ctx, objectSource, obj);
+            if (IsExpectedType(type, "UnityEngine.SceneManagement.Scene"))
+                return GetChildrenForScene(ctx, objectSource, obj);
             if (IsExpectedType(type, "Unity.Entities.Entity"))
                 return GetChildrenForEntity(ctx, objectSource, obj);
 
@@ -64,6 +66,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             var childrenObjectValue = InitialiseObjectValues(childrenSource);
 
             return new[] {componentsObjectValue, childrenObjectValue};
+        }
+
+        private ObjectValue[] GetChildrenForScene(SoftEvaluationContext ctx, IDebuggerValueOwner<Value> parentSource,
+                                                  Value scene)
+        {
+            var rootObjectsSource = new SceneRootObjectsSource(ctx, parentSource, scene);
+            rootObjectsSource.Connect();
+            var rootObjectsValue = InitialiseObjectValues(rootObjectsSource);
+            return new[] {rootObjectsValue};
         }
 
         private ObjectValue[] GetChildrenForEntity(SoftEvaluationContext ctx, IDebuggerValueOwner<Value> parentSource,
