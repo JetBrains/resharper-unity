@@ -10,19 +10,19 @@ using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
 using Mono.Debugging.Soft.RuntimeInvocation;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.UnityComponentData
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 {
-    public class UnityComponentDataSource : RemoteFrameObject, IObjectValueSource<SoftEvaluationContext>
+    public class EntityComponentDataSource : RemoteFrameObject, IObjectValueSource<SoftEvaluationContext>
     {
         private readonly Value myEntityObject;
         private readonly Value myEntityManagerObject;
         private readonly SoftDebuggerAdaptor myAdaptor;
         private readonly ExpressionEvaluator<SoftEvaluationContext, TypeMirror, Value> myExpressionEvaluator;
         private readonly SoftRuntimeInvocator mySoftRuntimeInvocator;
-        private readonly ILogger myLogger = Logger.GetLogger<UnityComponentDataSource>();
+        private readonly ILogger myLogger = Logger.GetLogger<EntityComponentDataSource>();
         private readonly TypeMirror myEntityManagerType;
 
-        public UnityComponentDataSource(SoftEvaluationContext context, IDebuggerHierarchicalObject parentSource,
+        public EntityComponentDataSource(SoftEvaluationContext context, IDebuggerHierarchicalObject parentSource,
             Value entityObject, Value entityManagerObject)
         {
             myEntityObject = entityObject;
