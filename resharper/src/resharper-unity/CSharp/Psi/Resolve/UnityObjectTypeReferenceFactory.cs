@@ -1,6 +1,7 @@
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
@@ -23,13 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 
         public override ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
-            // TODO: Can we ever return oldReferences?
-            // This check works when the reference covers the entire element, as resolving it will work as expected.
-            // I'm not sure if it works for a collection of references that cover specific ranges of an element. Are
-            // cached values cleared correctly if the element changes?
-            // if (ResolveUtil.CheckThatAllReferencesBelongToElement<ComponentTypeReference2>(oldReferences, element))
-            //    return oldReferences;
-
             var literal = GetValidStringLiteralExpression(element);
             if (literal == null)
                 return ReferenceCollection.Empty;
@@ -45,9 +39,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
                 return ReferenceCollection.Empty;
 
             var kind = GetExpectedReferenceKind(invokedMethod);
-            return kind == ExpectedObjectTypeReferenceKind.None
+            var newReferences = kind == ExpectedObjectTypeReferenceKind.None
                 ? ReferenceCollection.Empty
                 : CreateTypeNameReferences(literal, kind);
+
+            return ResolveUtil.ReferenceSetsAreEqual(newReferences, oldReferences) ? oldReferences : newReferences;
         }
 
         private static bool IsFirstArgumentInMethod(ILiteralExpression literal)
