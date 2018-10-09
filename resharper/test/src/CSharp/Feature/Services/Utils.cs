@@ -19,8 +19,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services
                 {
                     if (targetFrameworkScope is ProjectTargetFrameworkScope projectScope)
                     {
+#pragma warning disable 618
                         projectScope.RemoveAllProjectReferences();
                         projectScope.RemoveAllResolveResults();
+#pragma warning restore 618
                     }
                 }
             }
