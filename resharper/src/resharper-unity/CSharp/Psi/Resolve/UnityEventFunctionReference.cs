@@ -1,20 +1,17 @@
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
-using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
     // Needs to be a void method without parameters. Can be public or private. Must be instance
     // Not a compile time error - output to log as an informational message
     // Actually doesn't care about return value
-    public class UnityEventFunctionReference : CheckedReferenceBase<ILiteralExpression>, ICompletableReference, IUnityReferenceFromStringLiteral
+    public class UnityEventFunctionReference : StringLiteralReferenceBase, ICompletableReference
     {
         private readonly ITypeElement myTargetType;
         private readonly IAccessContext myAccessContext;
@@ -47,29 +44,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 
         public MethodSignature MethodSignature { get; }
 
-        public override ResolveResultWithInfo ResolveWithoutCache()
-        {
-            var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
-            if (!resolveResultWithInfo.Result.IsEmpty)
-                return resolveResultWithInfo;
-            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
-        }
-
-        public override string GetName()
-        {
-            return myOwner.ConstantValue.Value as string ?? SharedImplUtil.MISSING_DECLARATION_NAME;
-        }
-
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
             if (!myTargetType.IsValid())
                 return EmptySymbolTable.INSTANCE;
 
-            // Just resolve to the method. ReSharper will use GetSymbolFilters to filter
-            // candidates for errors
-            var symbolTable =
-                ResolveUtil.GetSymbolTableByTypeElement(myTargetType, SymbolTableMode.FULL, myTargetType.Module)
-                    .Filter(myMethodFilter);
+            // This symbol table is used for both resolve and completion. Return all possible candidates, and then
+            // filter appropriately for resolve (via GetSymbolFilters) and completion (via GetCompletionSymbolTable).
+            // Resolve will have stricter filtering - it's better for completion to show ALL methods and then show a
+            // resolve error for invalid signature than to confuse the user with missing methods in completion.
+            var symbolTable = ResolveUtil
+                .GetSymbolTableByTypeElement(myTargetType, SymbolTableMode.FULL, myTargetType.Module)
+                .Filter(myMethodFilter);
 
             if (useReferenceName)
             {
@@ -79,57 +65,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             return symbolTable;
         }
 
-        public override TreeTextRange GetTreeTextRange()
-        {
-            if (myOwner is ICSharpLiteralExpression csharpLiteral)
-            {
-                var range = csharpLiteral.GetStringLiteralContentTreeRange();
-                if (range.Length != 0)
-                    return range;
-            }
-
-            return TreeTextRange.InvalidRange;
-        }
-
-        public override IReference BindTo(IDeclaredElement element)
-        {
-            var literalAlterer = StringLiteralAltererUtil.CreateStringLiteralByExpression(myOwner);
-            var constantValue = (string)myOwner.ConstantValue.Value;
-            Assertion.AssertNotNull(constantValue, "constantValue != null");
-            literalAlterer.Replace(constantValue, element.ShortName);
-            var newOwner = literalAlterer.Expression;
-            if (!myOwner.Equals(newOwner))
-                return newOwner.FindReference<UnityEventFunctionReference>() ?? this;
-            return this;
-        }
-
-        public override IReference BindTo(IDeclaredElement element, ISubstitution substitution)
-        {
-            return BindTo(element);
-        }
-
-        public override IAccessContext GetAccessContext()
-        {
-            return myAccessContext;
-        }
+        public override IAccessContext GetAccessContext() => myAccessContext;
 
         public ISymbolTable GetCompletionSymbolTable()
         {
-            // Symbol table used for completion, not resolving. Show only methods from user
-            // code (naively defined as anything other than classes in UnityEngine). We'll
-            // still resolve even if the user types something not in this symbol table
-            return GetReferenceSymbolTable(false).Filter(myMethodFilter, myUserCodeCompletionFilter);
+            // Completion should show all methods, even if the signatures are incorrect. It's better to accept an
+            // invalid method and show a resolve error that allows the user to fix the signature than it is to not show
+            // the method in completion at all. The only filter we do apply is to hide non-user code methods, to remove
+            // methods that we're not likely to call. We'll still resolve them though.
+            return GetReferenceSymbolTable(false).Filter(myUserCodeCompletionFilter);
         }
 
         public override ISymbolFilter[] GetSymbolFilters()
         {
-            // Note. Do not include the user code filter. It's not a good idea to
-            // call a Unity base method, or to define your own code inside the
-            // UnityEngine namespace, but let's still resolve
+            // Note that we don't include the user code filter here - it's only for completion. It's not illegal to call
+            // Unity base class methods, but unlikely, so let's not clutter up completion with it.
             return new[]
             {
-                new ExactNameFilter(GetName()),
-                myMethodFilter,
                 myStaticFilter,
                 myMethodSignatureFilter
             };

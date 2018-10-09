@@ -9,10 +9,10 @@ public class Test02
 {
     public void Method(GameObject o)
     {
-        o.GetComponent(|"Whatever"|(0));
+        o.GetComponent("|Whatever|(0)");
     }
 }
 
 ------------------------------------------------
-0: No types found with the specified name and correct inheritance. Type should be inherited from 'UnityEngine.MonoBehaviour'
+0: Expected type derived from 'UnityEngine.MonoBehaviour'
 NO QUICKFIXES

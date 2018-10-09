@@ -11,12 +11,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
         public override ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
             if (ResolveUtil.CheckThatAllReferencesBelongToElement<SyncVarHookReference>(oldReferences, element))
-            {
                 return oldReferences;
-            }
 
-            var literal = element as ILiteralExpression;
-            if (literal == null || !literal.ConstantValue.IsString())
+            var literal = GetValidStringLiteralExpression(element);
+            if (literal == null)
                 return ReferenceCollection.Empty;
 
             var propertyAssignment = literal.GetContainingNode<IPropertyAssignment>();
