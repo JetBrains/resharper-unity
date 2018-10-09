@@ -22,6 +22,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         Unity20182,
     }
 
+    //use Utils.CleanupOldUnityReferences API to correctly cleanup outofdated unity references 
+    //todo call this API automatically from the test framework
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class TestUnityAttribute : TestPackagesAttribute, ITestFlavoursProvider, ITestPlatformProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute
     {

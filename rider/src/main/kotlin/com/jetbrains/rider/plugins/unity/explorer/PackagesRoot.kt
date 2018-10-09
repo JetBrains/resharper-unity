@@ -44,7 +44,7 @@ import com.jetbrains.rider.projectView.views.navigateToSolutionView
 // b) Right click on a referenced package to convert to embedded - simply copy into the project's Packages folder
 
 class PackagesRoot(project: Project, private val packagesManager: PackagesManager)
-    : UnityExplorerNode(project, packagesManager.packagesFolder, listOf()) {
+    : UnityExplorerNode(project, packagesManager.packagesFolder, listOf(), false) {
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -91,7 +91,7 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
 }
 
 class PackageNode(project: Project, private val packagesManager: PackagesManager, packageFolder: VirtualFile, private val packageData: PackageData)
-    : UnityExplorerNode(project, packageFolder, listOf()), Comparable<AbstractTreeNode<*>> {
+    : UnityExplorerNode(project, packageFolder, listOf(), false), Comparable<AbstractTreeNode<*>> {
 
     init {
         icon = when (packageData.source) {
