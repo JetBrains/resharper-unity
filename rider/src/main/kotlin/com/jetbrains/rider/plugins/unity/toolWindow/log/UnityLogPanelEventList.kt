@@ -4,6 +4,8 @@ import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -19,7 +21,7 @@ import java.io.File
 import javax.swing.DefaultListModel
 import javax.swing.ListSelectionModel
 
-class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, CopyProvider {
+class UnityLogPanelEventList(project:Project) : JBList<LogPanelItem>(emptyList()), DataProvider, CopyProvider {
     val riderModel: DefaultListModel<LogPanelItem>
         get() = model as DefaultListModel<LogPanelItem>
 
@@ -28,7 +30,16 @@ class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, 
         selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
         emptyText.text = "Log is empty"
         TreeUIHelper.getInstance().installListSpeedSearch(this)
-        font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN)
+
+        ApplicationManager.getApplication().messageBus.connect(project).subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
+            UpdateFont();
+        })
+        UpdateFont();
+    }
+
+    private fun UpdateFont() {
+        val sc = EditorColorsManager.getInstance().globalScheme
+        font = Font(sc.consoleFontName, Font.PLAIN, sc.consoleFontSize)
     }
 
     fun getNavigatableForSelected(list: UnityLogPanelEventList, project: Project): Navigatable? {
