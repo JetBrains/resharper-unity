@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
@@ -27,8 +28,7 @@ class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, 
         selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
         emptyText.text = "Log is empty"
         TreeUIHelper.getInstance().installListSpeedSearch(this)
-        val scheme = EditorColorsManager.getInstance().globalScheme;
-        font = Font(scheme.editorFontName, Font.PLAIN, scheme.editorFontSize);
+        font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN)
     }
 
     fun getNavigatableForSelected(list: UnityLogPanelEventList, project: Project): Navigatable? {
