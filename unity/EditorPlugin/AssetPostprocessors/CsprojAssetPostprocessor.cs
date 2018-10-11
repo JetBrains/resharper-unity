@@ -328,7 +328,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       
       AddCustomReference(Path.GetFileNameWithoutExtension(xcodeDllPath), projectContentElement, xmlns, xcodeDllPath);
       return true;
-
     }
 
     private static bool FixUnityEngineReference(XElement projectContentElement, XNamespace xmlns)
