@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 {
     [TestUnity]
-    public class PreferAddressByIdToGraphicsParamsQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
+    public class PreferAddressByIdToGraphicsParamsQuickFixAvailabilityTests : CSharpHighlightingTestBase<PreferGenericMethodOverloadWarning>
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\PreferAddressByIdToGraphicsParams\Availability";
 

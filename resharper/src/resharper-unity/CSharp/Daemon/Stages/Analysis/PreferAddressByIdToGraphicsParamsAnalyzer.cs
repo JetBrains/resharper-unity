@@ -71,7 +71,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     {
                         // prevent extract local values, e.g local constant.
                         var declaration = referenceExpression.Reference.Resolve().DeclaredElement?.GetDeclarationsIn(sourceFile).FirstOrDefault();
-                        if (declaration == null || declaration.GetContainingNode<IParametersOwnerDeclaration>() != null)
+                        if (declaration == null || declaration.GetContainingNode<IParametersOwnerDeclaration>() != null
+                            || declaration.GetContainingNode<IAccessorOwnerDeclaration>() != null)
                             return;
                     }
  
