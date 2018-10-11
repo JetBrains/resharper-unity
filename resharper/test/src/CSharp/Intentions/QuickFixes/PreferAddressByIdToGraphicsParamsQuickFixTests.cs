@@ -1,9 +1,20 @@
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 {
+    [TestUnity]
+    public class PreferAddressByIdToGraphicsParamsQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
+    {
+        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\PreferAddressByIdToGraphicsParams\Availability";
+
+        [Test] public void NameOfTest() { DoNamedTest(); }
+        [Test] public void LocalConstantTest() { DoNamedTest(); }
+    }
+    
     [TestUnity]
     public class PreferAddressByIdToGraphicsParamsQuickFixTests : QuickFixTestBase<PreferAddressByIdToGraphicsParamsQuickFix>
     {
