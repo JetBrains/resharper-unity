@@ -34,6 +34,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         protected override void Analyze(IInvocationExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
+            var sourceFile = expression.GetSourceFile();
+            if (sourceFile == null)
+                return;
+            
             var reference = expression.Reference;
             if (reference == null) 
                 return;
@@ -53,11 +57,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (HasOverloadWithIntParameter(stringMethod, expression, out var argumentIndex, out var containingType))
                 {
                     // extract argument for replace
-                    var argument = expression.Arguments[argumentIndex];
+                    var argument = arguments[argumentIndex];
+                    var argumentValue = argument.Value;
                     var (clrName, methodName) = ourTypes[containingType.GetClrName()];
                     var literal = argument.Expression?.ConstantValue.Value as string;
                     if (literal == null) 
                         return;
+
+                    if (argumentValue is IInvocationExpression) //nameof
+                        return;
+                    
+                    if (argumentValue is IReferenceExpression referenceExpression) 
+                    {
+                        // prevent extract local values, e.g local constant.
+                        var declaration = referenceExpression.Reference.Resolve().DeclaredElement?.GetDeclarationsIn(sourceFile).FirstOrDefault();
+                        if (declaration == null || declaration.GetContainingNode<IParametersOwnerDeclaration>() != null)
+                            return;
+                    }
  
                     consumer.AddHighlighting(new PreferAddressByIdToGraphicsParamsWarning(expression, argument, argument.Expression, literal, clrName.FullName, methodName));
                 }
@@ -84,11 +100,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             );
 
             bool isFound = false;
+            
             foreach (var symbol in table.GetSymbolInfos(stringMethodName))
             {
                 if (!(symbol.GetDeclaredElement() is IMethod candidate))
                     continue;
-                if (MatchSignatureStringToIntMethod(stringMethod, candidate, out index))
+                if (MatchSignatureStringToIntMethod(stringMethod, candidate, out var newIndex))
                 {
                     if (isFound)
                     {
@@ -97,6 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     }
 
                     isFound = true;
+                    index = newIndex;
                 } 
             } 
 
