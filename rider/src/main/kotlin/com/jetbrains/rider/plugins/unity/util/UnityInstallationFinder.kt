@@ -48,7 +48,7 @@ class UnityInstallationFinder(private val project: Project) {
     // E.g. Mac: /Applications/Unity/Hub/Editor/2018.2.0f2/Unity.app
     // Windows: C:\Program Files\Unity\Hub\Editor\2018.2.1f1\Editor\Unity.exe
     // Linux: /home/ivan/Unity-2018.1.0f2/Editor/Unity
-    private fun getApplicationPath(): Path? {
+    fun getApplicationPath(): Path? {
         return tryGetApplicationPathFromProtocol()
             ?: tryGetApplicationPathFromEditorInstanceJson()
             ?: tryGetApplicationPathFromProjectVersion()
