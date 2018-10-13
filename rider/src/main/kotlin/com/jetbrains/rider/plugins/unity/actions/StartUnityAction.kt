@@ -7,7 +7,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.microsoft.alm.helpers.Path
-import org.jetbrains.annotations.Nullable
+
 
 open class StartUnityAction : DumbAwareAction("Start Unity", "Start Unity with current project.", UnityIcons.Actions.ImportantActions) {
     override fun actionPerformed(e: AnActionEvent) {
@@ -17,15 +17,17 @@ open class StartUnityAction : DumbAwareAction("Start Unity", "Start Unity with c
     }
 
     companion object {
-         fun StartUnity(project: @Nullable Project) {
+         fun StartUnity(project: Project, vararg args: String) {
              val appPath = UnityInstallationFinder.getInstance(project).getApplicationPath()
              if (appPath == null) return
 
              var path = appPath.toString()
              if (SystemInfo.isMac)
                  path = Path.combine(path, "Contents/MacOS/Unity")
+             val processBuilderArgs = mutableListOf<String>(path, "-projectPath", project.basePath.toString())
+             args.forEach { processBuilderArgs.add(it)}
 
-             ProcessBuilder(path, "-projectPath", project.basePath).start()
+             ProcessBuilder(processBuilderArgs).start()
          }
     }
 }
