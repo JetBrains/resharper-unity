@@ -12,7 +12,10 @@ import com.intellij.util.ui.EdtInvocationManager
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdVirtualSolution
+import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
+import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
+import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solutionDescription
@@ -31,14 +34,19 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
 
         val solutionDescription = project.solutionDescription
         if (solutionDescription is RdVirtualSolution) {
-
+var reopenText = "<a href=\"reopen\">reopen</a>"
+            val (status, editorInstanceJson) = EditorInstanceJson.load(project)
+            if (status == EditorInstanceJsonStatus.Valid) {
+                 // do not show Action
+                reopenText = "reopen"
+            }
             val content = if (solutionDescription.projectFilePaths.isEmpty()) {
                 "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
-                    " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
+                    " Please <a href=\"close\">close</a> and "+reopenText+" through the Unity editor, or by opening a .sln file."
             }
             else
                 "This looks like a Unity project. C# and Unity specific functionality is not available when only a single project is opened." +
-                    " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
+                    " Please <a href=\"close\">close</a> and "+reopenText+" through the Unity editor, or by opening a .sln file."
             val title = "Unity functionality unavailable"
             val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
             notification.setListener { _, hyperlinkEvent ->
@@ -48,6 +56,9 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                 if (hyperlinkEvent.description == "close") {
                     ProjectUtil.closeAndDispose(project)
                     WelcomeFrame.showIfNoProjectOpened()
+                }
+                if (hyperlinkEvent.description == "reopen") {
+                    StartUnityAction.StartUnity(project)
                 }
             }
 
