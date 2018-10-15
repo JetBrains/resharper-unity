@@ -1,17 +1,20 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="runIde" type="DotNetProject" factoryName=".NET Project">
-    <option name="EXE_PATH" value="$PROJECT_DIR$/GradleLauncher/bin/Debug/GradleLauncher.exe" />
-    <option name="PROGRAM_PARAMETERS" value="../../../../../rider/ runIde -P dotNetUpToDate=true" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/GradleLauncher/bin/Debug" />
+    <option name="EXE_PATH" value="$PROJECT_DIR$/../build/gradle-launcher/bin/Debug/net461/gradle-launcher.exe" />
+    <option name="PROGRAM_PARAMETERS" value="../../rider runIde -P dotNetUpToDate=true" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../gradle-launcher" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="USE_MONO" value="0" />
-    <option name="PROJECT_PATH" value="$PROJECT_DIR$/GradleLauncher/GradleLauncher.csproj" />
+    <option name="RUNTIME_ARGUMENTS" value="" />
+    <option name="PROJECT_PATH" value="$PROJECT_DIR$/../gradle-launcher/gradle-launcher.csproj" />
     <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
     <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
     <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
-    <option name="PROJECT_KIND" value="Console" />
-    <option name="PROJECT_TFM" value=".NETFramework,Version=v4.5.2" />
-    <method />
+    <option name="PROJECT_KIND" value="DotNetCore" />
+    <option name="PROJECT_TFM" value=".NETFramework,Version=v4.6.1" />
+    <method v="2">
+      <option name="Build" enabled="true" />
+    </method>
   </configuration>
 </component>
