@@ -279,6 +279,8 @@ namespace JetBrains.Rider.Unity.Editor
       return paths;
     }
 
+    // Disable the "field is never assigned" compiler warning. We never assign it, but Unity does.
+    // Note that Unity disable this warning in the generated C# projects
 #pragma warning disable 0649
 
     // ReSharper disable once ClassNeverInstantiated.Global
