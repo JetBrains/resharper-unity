@@ -41,10 +41,10 @@ rider/.idea/**/compiler.xml
 # modules.xml and .iml files
 # contentModel.xml
 # (indexLayout.xml should be committed if you add existing folder)
-resharper/src/.idea/**/.name
-resharper/src/.idea/**/modules.xml
-resharper/src/.idea/**/*.iml
-resharper/src/.idea/**/contentModel.xml
+resharper/**/.idea/**/.name
+resharper/**/.idea/**/modules.xml
+resharper/**/.idea/**/*.iml
+resharper/**/.idea/**/contentModel.xml
 
 apiParser/.idea/**/.name
 apiParser/.idea/**/modules.xml
@@ -57,6 +57,7 @@ apiParser/.idea/**/contentModel.xml
 rider/build/
 rider/buildSrc/build/
 resharper/build/
+unity/build/
 
 
 # IntelliJ build output (shouldn't really see these if we're using gradle projects)
@@ -83,17 +84,7 @@ resharper/src/**/*_lex.cs
 resharper/src/**/*_lex.depends
 resharper/test/data/**/*.tmp
 
-
-resharper/src/resharper-unity/_Generated/
 resharper/NuGet.Config
-
-resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
-resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove
-resharper/src/resharper-unity/Unity3dRider/Packages/manifest.json
-resharper/test/Unity3dRiderCompileTest/.idea/*
-resharper/test/Unity3dRiderCompileTest/packages/*
-
-unity/build/**
 
 # Backup & report files from converting an old project file to a newer Visual Studio version
 _UpgradeReport_Files/

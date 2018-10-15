@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ContentModelUserStore">
     <attachedFolders>
-      <Path>../test/data</Path>
+      <Path>test/data</Path>
     </attachedFolders>
     <explicitIncludes />
     <explicitExcludes />

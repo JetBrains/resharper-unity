@@ -3,31 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity.resharper", "resharper-unity\resharper-unity.resharper.csproj", "{DF42F23E-46F3-4798-8B16-024619FA5E46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity.resharper", "src\resharper-unity\resharper-unity.resharper.csproj", "{DF42F23E-46F3-4798-8B16-024619FA5E46}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.resharper", "..\test\src\tests.resharper.csproj", "{849CDA2E-35FC-49A8-A755-C3216B72BAB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.resharper", "test\src\tests.resharper.csproj", "{849CDA2E-35FC-49A8-A755-C3216B72BAB9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity.rider", "resharper-unity\resharper-unity.rider.csproj", "{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity.rider", "src\resharper-unity\resharper-unity.rider.csproj", "{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.rider", "..\test\src\tests.rider.csproj", "{31338488-0C08-43C2-884F-A38485E2FA2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.rider", "test\src\tests.rider.csproj", "{31338488-0C08-43C2-884F-A38485E2FA2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin", "..\..\unity\EditorPlugin\EditorPlugin.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin", "..\unity\EditorPlugin\EditorPlugin.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.Tests", "..\..\unity\EditorPlugin.Tests\EditorPlugin.Tests.csproj", "{0E4211DB-DA60-416B-A13C-14D45410F768}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.Tests", "..\unity\EditorPlugin.Tests\EditorPlugin.Tests.csproj", "{0E4211DB-DA60-416B-A13C-14D45410F768}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnityEditor", "UnityEditor", "{27FAB5DF-2272-44E7-9BCE-41508F24C07B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReSharper", "ReSharper", "{9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginFull", "..\..\unity\EditorPlugin\EditorPluginFull.csproj", "{51B82B3C-294F-4751-8754-223C660172E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginFull", "..\unity\EditorPlugin\EditorPluginFull.csproj", "{51B82B3C-294F-4751-8754-223C660172E4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_gradle-launcher", "_gradle-launcher", "{6A0FE4B5-F856-4881-8B5D-D4F8990CC26A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gradle-launcher", "..\gradle-launcher\gradle-launcher.csproj", "{A94DBF29-8006-47D2-AEB6-8DCD6BD86A76}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gradle-launcher", "gradle-launcher\gradle-launcher.csproj", "{A94DBF29-8006-47D2-AEB6-8DCD6BD86A76}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{D61F53F1-F209-4313-9FF2-B1DBD286BE11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "debugger", "..\..\debugger\src\debugger.csproj", "{4B54084A-6F70-43E1-883F-8A69ED7CE64A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "debugger", "..\debugger\src\debugger.csproj", "{4B54084A-6F70-43E1-883F-8A69ED7CE64A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -26,7 +26,7 @@ class BackendPaths(private val project: Project, logger: Logger, val repositoryR
         unityPluginSolution = File(unityRoot, "JetBrains.Rider.Unity.Editor.sln")
         unityPluginSingleProject = File(unityRoot, "EditorPlugin/EditorPlugin.csproj")
 
-        resharperHostPluginSolution = File(backendRoot, "src/resharper-unity.sln")
+        resharperHostPluginSolution = File(backendRoot, "resharper-unity.sln")
         assert(resharperHostPluginSolution.isFile)
 
         riderTestsProject = File(backendRoot, "test/src/tests.rider.csproj")
