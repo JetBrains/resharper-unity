@@ -9,12 +9,4 @@
     <ItemGroup>
         <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />
     </ItemGroup>
-    <ItemGroup>
-        <Compile Remove="**" />
-        <EmbeddedResource Remove="**" />
-        <None Remove="**" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="**/Rider/Debugger/**" />
-    </ItemGroup>
 </Project>
