@@ -145,7 +145,7 @@ task packReSharperPlugin(type: MonoExecTask) {
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
-    def nuspecFile = file(new File(backend.backendRoot, 'src/resharper-unity/resharper-unity.resharper.nuspec'))
+    def nuspecFile = file(new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec'))
     def outputDir = file(new File(backend.backendRoot, "build/resharper-unity.resharper/bin/$BuildConfiguration"))
     def nupkgFile = file(new File(outputDir, "JetBrains.Unity.${version}.nupkg"))
 
@@ -170,7 +170,7 @@ task packReSharperPlugin(type: MonoExecTask) {
 //    group = backendGroup
 //    description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 //
-//    nuspecFile = new File(backend.backendRoot, 'src/resharper-unity/resharper-unity.resharper.nuspec')
+//    nuspecFile = new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec')
 //    destinationDir = new File(backend.backendRoot, "build/resharper-unity.resharper/bin/$BuildConfiguration")
 //    packageAnalysis = false
 //    packageVersion = version

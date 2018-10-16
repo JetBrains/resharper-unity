@@ -80,8 +80,8 @@ rider/**/out/*
 **/*.generated.xaml
 **/*.generated.props
 
-resharper/src/**/*_lex.cs
-resharper/src/**/*_lex.depends
+resharper/**/*_lex.cs
+resharper/**/*_lex.depends
 resharper/test/data/**/*.tmp
 
 resharper/NuGet.Config

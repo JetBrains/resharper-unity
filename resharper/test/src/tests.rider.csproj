@@ -18,6 +18,6 @@
     <PackageReference Include="JetBrains.Rider.SDK.Tests" Version="$(RiderSDKVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(MSBuildThisFileDirectory)..\..\src\resharper-unity\resharper-unity.rider.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\..\resharper-unity\src\resharper-unity.rider.csproj" />
   </ItemGroup>
 </Project>

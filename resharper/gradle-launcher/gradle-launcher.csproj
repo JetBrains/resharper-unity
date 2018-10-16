@@ -14,7 +14,7 @@
     <ProjectReference Include="..\..\unity\EditorPlugin\EditorPluginFull.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\src\resharper-unity\resharper-unity.rider.csproj">
+    <ProjectReference Include="..\resharper-unity\src\resharper-unity.rider.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

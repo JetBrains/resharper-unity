@@ -3,7 +3,7 @@ def modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
 // TODO: Think about adding an msbuild task for rdgen
 
 task generateRiderModel(type: tasks.getByName('rdgen').class) {
-    def csOutput = new File(repoRoot, "resharper/src/resharper-unity/Rider/RdUnityProtocol")
+    def csOutput = new File(repoRoot, "resharper/resharper-unity/src/Rider/RdUnityProtocol")
     def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
 
     // NOTE: classpath is evaluated lazily, at execution time, because it comes from the unzipped
