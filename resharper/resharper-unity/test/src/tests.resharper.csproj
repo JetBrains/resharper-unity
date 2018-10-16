@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests.Rider</AssemblyName>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Tests</RootNamespace>
     <LangVersion>7.2</LangVersion>
     <!-- This is needed for ReferenceAssemblyRedirects to pick up app.config -->
@@ -9,15 +9,20 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RIDER;$(CommandLineConstants)</DefineConstants>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RIDER;$(CommandLineConstants)</DefineConstants>
+    <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Rider.SDK.Tests" Version="$(RiderSDKVersion)" />
+    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(ReSharperSDKVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(MSBuildThisFileDirectory)..\..\resharper-unity\src\resharper-unity.rider.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\..\src\resharper-unity.resharper.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ShaderLab\Host\**" />
+    <EmbeddedResource Remove="ShaderLab\Host\**" />
+    <None Remove="ShaderLab\Host\**" />
   </ItemGroup>
 </Project>

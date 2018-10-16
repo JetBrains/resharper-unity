@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity.resharper", "resharper-unity\src\resharper-unity.resharper.csproj", "{DF42F23E-46F3-4798-8B16-024619FA5E46}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.resharper", "test\src\tests.resharper.csproj", "{849CDA2E-35FC-49A8-A755-C3216B72BAB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.resharper", "resharper-unity\test\src\tests.resharper.csproj", "{849CDA2E-35FC-49A8-A755-C3216B72BAB9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity.rider", "resharper-unity\src\resharper-unity.rider.csproj", "{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.rider", "test\src\tests.rider.csproj", "{31338488-0C08-43C2-884F-A38485E2FA2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.rider", "resharper-unity\test\src\tests.rider.csproj", "{31338488-0C08-43C2-884F-A38485E2FA2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin", "..\unity\EditorPlugin\EditorPlugin.csproj", "{67CFB019-CE94-4251-8C3A-4DC70E4E4A52}"
 EndProject
