@@ -28,7 +28,9 @@ public class Test
         go.GetComponent("HingeJoint");
 
         // TODO: What about trailing dots?
-        go.GetComponent("Other.MonoBehaviourInOtherNamesapce.");
+        go.GetComponent("Other.MonoBehaviourInOtherNamespace.");
+
+        new GameObject("Fake").GetComponent("Grid");
     }
 }
 

@@ -30,7 +30,9 @@ public class Test
         go.AddComponent("|HingeJoint|(31)");
 
         // TODO: What about trailing dots?
-        go.AddComponent("|Other|(32).|MonoBehaviourInOtherNamesapce|(33).||(34)");
+        go.AddComponent("|Other|(32).|MonoBehaviourInOtherNamespace|(33).||(34)");
+
+        new GameObject("Fake").AddComponent("|Grid|(35)");
     }
 }
 
@@ -131,5 +133,10 @@ Candidates:
 30: result=EXPECTED_COMPONENT declaredElem=UnityEngine.Caching
 31: result=OK declaredElem=UnityEngine.HingeJoint
 32: result=OK declaredElem=Other
-33: result=NOT_RESOLVED declaredElem=null
+33: result=OK declaredElem=Other.MonoBehaviourInOtherNamespace
 34: result=NOT_RESOLVED declaredElem=null
+35: result=MULTIPLE_CANDIDATES declaredElem=null
+Candidates:
+  Grid
+  Other.Grid
+  UnityEngine.Grid

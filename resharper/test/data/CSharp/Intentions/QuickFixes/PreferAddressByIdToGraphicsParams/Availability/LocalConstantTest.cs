@@ -1,0 +1,25 @@
+using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class LocalConstantTest
+    {
+        private Animator animator;
+
+        private int test
+        {
+            get
+            {
+                const string x = "x";
+                animator.SetBool(x, true);
+                return 0;
+            } 
+        }
+        
+        public void test()
+        {
+            const string x = "x";
+            animator.SetBool(x, true);
+        }
+    }
+}

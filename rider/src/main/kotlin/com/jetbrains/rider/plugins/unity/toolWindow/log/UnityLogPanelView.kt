@@ -47,7 +47,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME.name, project))
         .console as ConsoleViewImpl
 
-    private val eventList = UnityLogPanelEventList().apply {
+    private val eventList = UnityLogPanelEventList(project).apply {
         addListSelectionListener {
             if (selectedValue != null && logModel.selectedItem != selectedValue) {
                 logModel.selectedItem = selectedValue
