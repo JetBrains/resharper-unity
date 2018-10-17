@@ -6,12 +6,8 @@ param (
   [switch]$Verbose
 )
 
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
-
 Set-StrictMode -Version Latest
 [System.IO.Directory]::SetCurrentDirectory($PSScriptRoot)
-
-$isUnix = [System.Environment]::OSVersion.Platform -eq "Unix"
 
 $gradleArgs = @()
 
@@ -36,15 +32,6 @@ Write-Host "gradleArgs=$gradleArgs"
 
 Push-Location -Path rider
 Try {
-
-    # rdgen currently complains about Kotlin stdlib problems. AppVeyor will capture that and stop the build
-    # We'll temporarily tell the powershell host to continue, invoke rdgen and then reset. Calling buildPlugin
-    # will invoke the generateModel task again, but it will be up to date and AppVeyor's powershell implementation
-    # won't see the warning and treat it as an error. This is a temporary workaround until rdgen can build without
-    # any warnings
-    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Continue
-    .\gradlew "generateModel" $gradleArgs
-    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
     .\gradlew "buildPlugin" $gradleArgs
 
