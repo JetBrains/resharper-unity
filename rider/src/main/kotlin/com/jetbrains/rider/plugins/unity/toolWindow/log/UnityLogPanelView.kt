@@ -47,7 +47,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
         .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME.name, project))
         .console as ConsoleViewImpl
 
-    private val eventList = UnityLogPanelEventList().apply {
+    private val eventList = UnityLogPanelEventList(project).apply {
         addListSelectionListener {
             if (selectedValue != null && logModel.selectedItem != selectedValue) {
                 logModel.selectedItem = selectedValue
@@ -228,7 +228,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
 
             if (logModel.mergeSimilarItems.value)
             {
-                var list = it
+                val list = it
                     .groupBy() { LogItem(it.type, it.mode, it.message, it.stackTrace) }
                     .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
                     .values.toList()
@@ -236,7 +236,7 @@ class UnityLogPanelView(project: Project, private val logModel: UnityLogPanelMod
             }
             else
             {
-                var list = it.map { LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace,1) }
+                val list = it.map { LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace,1) }
                 refreshList(list)
             }
         }

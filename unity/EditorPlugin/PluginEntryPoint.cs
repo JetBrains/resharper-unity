@@ -298,7 +298,13 @@ namespace JetBrains.Rider.Unity.Editor
         MainThreadDispatcher.Instance.Queue(() =>
         {
           if (!EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || force)
+          {
+            if (force)
+            {
+              UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
+            }
             UnityUtils.SyncSolution();
+          }
           else
             ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
           task.Set(RdVoid.Instance);

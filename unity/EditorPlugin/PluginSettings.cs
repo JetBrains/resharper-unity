@@ -150,6 +150,12 @@ namespace JetBrains.Rider.Unity.Editor
       get { return EditorPrefs.GetString("Rider_RiderPath", null); }
       set { EditorPrefs.SetString("Rider_RiderPath", value); }
     }
+    
+    public static bool LogEventsCollectorEnabled
+    {
+      get { return EditorPrefs.GetBool("Rider_LogEventsCollectorEnabled", true); }
+      private set { EditorPrefs.SetBool("Rider_LogEventsCollectorEnabled", value); }
+    }
 
 
     private static GUIStyle ourVersionInfoStyle = new GUIStyle()
@@ -307,6 +313,9 @@ namespace JetBrains.Rider.Unity.Editor
           SelectedLoggingLevel);
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
+      EditorGUI.EndChangeCheck();
+      LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider"), LogEventsCollectorEnabled);
+      EditorGUI.BeginChangeCheck();
       
       EditorGUI.EndChangeCheck();
 

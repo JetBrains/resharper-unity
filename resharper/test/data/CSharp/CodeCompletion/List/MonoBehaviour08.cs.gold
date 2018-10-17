@@ -2,12 +2,12 @@
 
 + OnAnimatorIK(int) { ... }
 OnAnimatorMove() { ... }
-OnAnimaVoid
 OnDidApplyAnimationProperties() { ... }
+myOnAnima
 # AUTOMATIC #
 # 4 ITEMS #
 
 + OnAnimatorIK(int) { ... }
 OnAnimatorMove() { ... }
-OnAnimaVoid
 OnDidApplyAnimationProperties() { ... }
+myOnAnima

@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+
+public class Test
+{
+    public void Method(GameObject go)
+    {
+        // Built in components must derive from Component
+        go.AddComponent("|Caching|(0)");
+        go.GetComponent("|Caching|(1)");
+
+        go.AddComponent("Grid");
+        go.GetComponent("Grid");
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Expected type derived from 'UnityEngine.Component'
+(1): ReSharper Warning: Expected type derived from 'UnityEngine.Component'

@@ -20,10 +20,10 @@ namespace DefaultNamespace
     {
         public void TestMethod(GameObject go)
         {
-            go.GetComponent(|"B.C.TestMono"|(0));
+            go.GetComponent("|B|(0).C.TestMono");
         }
     }
 }
 ------------------------------------------------
-0: No types found with the specified name.
+0: Cannot resolve symbol 'B'
 NO QUICKFIXES
