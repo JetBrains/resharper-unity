@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
             string str1 = lexer.GetCurrTokenText().Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t");
             string str2 = string.Format("{0:D4}: {1} '{2}'", lexer.TokenStart, lexer.TokenType, str1);
             writer.WriteLine(str2);
-            Console.WriteLine(str2);
+//            Console.WriteLine(str2);
         }
 
         [TestCase("Everything")]
