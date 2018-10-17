@@ -58,7 +58,7 @@ var reopenText = "<a href=\"reopen\">reopen</a>"
                     WelcomeFrame.showIfNoProjectOpened()
                 }
                 if (hyperlinkEvent.description == "reopen") {
-                    StartUnityAction.StartUnity(project, "-executeMethod", "JetBrains.Rider.Unity.Editor.RiderMenu.MenuOpenProject")
+                    StartUnityAction.StartUnityAndRider(project)
                 }
             }
 
