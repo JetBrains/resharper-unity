@@ -28,13 +28,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             if (literal == null)
                 return ReferenceCollection.Empty;
 
-            // GameObject.AddComponent, GameObject.GetComponent and ScriptableObject.CreateInstance all have the string
-            // literal as the first argument
-            if (!IsFirstArgumentInMethod(literal))
+            var argument = CSharpArgumentNavigator.GetByValue(literal);
+            var invocationExpression = InvocationExpressionNavigator.GetByArgument(argument);
+            if (invocationExpression == null)
                 return ReferenceCollection.Empty;
 
-            var invocationExpression = literal.GetContainingNode<IInvocationExpression>();
-            var invocationReference = invocationExpression?.Reference;
+            // GameObject.AddComponent, GameObject.GetComponent and ScriptableObject.CreateInstance all have the string
+            // literal as the first argument
+            if (invocationExpression.ArgumentsEnumerable.FirstOrDefault() != argument)
+                return ReferenceCollection.Empty;
+
+            var invocationReference = invocationExpression.Reference;
             if (!(invocationReference?.Resolve().DeclaredElement is IMethod invokedMethod))
                 return ReferenceCollection.Empty;
 
@@ -44,13 +48,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
                 : CreateTypeNameReferences(literal, kind);
 
             return ResolveUtil.ReferenceSetsAreEqual(newReferences, oldReferences) ? oldReferences : newReferences;
-        }
-
-        private static bool IsFirstArgumentInMethod(ILiteralExpression literal)
-        {
-            var argument = CSharpArgumentNavigator.GetByValue(literal as ICSharpExpression);
-            var argumentsOwner = CSharpArgumentsOwnerNavigator.GetByArgument(argument);
-            return argumentsOwner != null && argumentsOwner.ArgumentsEnumerable.FirstOrDefault() == argument;
         }
 
         private ExpectedObjectTypeReferenceKind GetExpectedReferenceKind(IMethod invokedMethod)
