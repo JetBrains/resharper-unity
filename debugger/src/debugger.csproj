@@ -4,6 +4,7 @@
         <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Debugger</AssemblyName>
         <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider.Debugger</RootNamespace>
         <LangVersion>7.2</LangVersion>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />

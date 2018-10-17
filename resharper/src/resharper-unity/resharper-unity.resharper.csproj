@@ -6,12 +6,16 @@
     <!-- TODO: Fix up the .psi files so we don't get the obsolete warnings -->
     <NoWarn>0618</NoWarn>
     <LangVersion>7.2</LangVersion>
+    <!-- This is needed for ReferenceAssemblyRedirects to pick up app.config -->
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER;$(CommandLineConstants)</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <!-- C# -->
@@ -94,10 +98,6 @@
     <EmbeddedResource Include="Templates\templates.generated.dotSettings">
       <LogicalName>JetBrains.ReSharper.Plugins.Unity.Templates.templates.dotSettings</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-  <!-- TODO: remove after ClrChangeSignatureParameters stops using ListEvents -->
-  <ItemGroup Condition=" '$(OS)' == 'Unix' ">
-    <Compile Remove="CSharp\Feature\Services\QuickFixes\IncorrectMethodSignatureQuickFix.cs" />
   </ItemGroup>
   <ItemGroup>
     <!-- This requires WPF and PresentationFramework to build -->

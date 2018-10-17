@@ -19,8 +19,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services
                 {
                     if (targetFrameworkScope is ProjectTargetFrameworkScope projectScope)
                     {
+                        // These methods are marked as obsolete to make sure they're only used from tests. We have
+                        // warnings as errors on, so disable the warning
+#pragma warning disable 618
                         projectScope.RemoveAllProjectReferences();
                         projectScope.RemoveAllResolveResults();
+#pragma warning restore 618
                     }
                 }
             }
