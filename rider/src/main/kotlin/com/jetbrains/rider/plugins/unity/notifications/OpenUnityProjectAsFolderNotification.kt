@@ -16,6 +16,7 @@ import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solutionDescription
@@ -34,19 +35,20 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
 
         val solutionDescription = project.solutionDescription
         if (solutionDescription is RdVirtualSolution) {
-var reopenText = "<a href=\"reopen\">reopen</a>"
-            val (status, editorInstanceJson) = EditorInstanceJson.load(project)
-            if (status == EditorInstanceJsonStatus.Valid) {
-                 // do not show Action
-                reopenText = "reopen"
+
+            //var reopenText = "<a href=\"reopen\">reopen</a>"
+            var adviceText = " Please <a href=\"reopen\">click here</a> to start Unity, generate a solution file and reopen the project."
+            val (status, _) = EditorInstanceJson.load(project)
+            if (status == EditorInstanceJsonStatus.Valid || UnityInstallationFinder(project).getApplicationPath() == null) {
+                adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
             }
             val content = if (solutionDescription.projectFilePaths.isEmpty()) {
                 "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
-                    " Please <a href=\"close\">close</a> and "+reopenText+" through the Unity editor, or by opening a .sln file."
+                    adviceText
             }
             else
                 "This looks like a Unity project. C# and Unity specific functionality is not available when only a single project is opened." +
-                    " Please <a href=\"close\">close</a> and "+reopenText+" through the Unity editor, or by opening a .sln file."
+                    adviceText
             val title = "Unity functionality unavailable"
             val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
             notification.setListener { _, hyperlinkEvent ->
