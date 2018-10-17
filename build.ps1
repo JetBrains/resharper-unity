@@ -6,7 +6,9 @@ param (
   [switch]$Verbose
 )
 
-Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+Set-StrictMode -Version Latest
 [System.IO.Directory]::SetCurrentDirectory($PSScriptRoot)
 
 $isUnix = [System.Environment]::OSVersion.Platform -eq "Unix"
@@ -32,14 +34,22 @@ if ($Verbose) {
 
 Write-Host "gradleArgs=$gradleArgs"
 
-# Use --info and --stacktrace to get logs
 Push-Location -Path rider
-if ($isUnix){
-  .\gradlew "buildPlugin" $gradleArgs
-}
-else{
-  .\gradlew.bat "buildPlugin" $gradleArgs
-}
+Try {
 
-if ($LastExitCode -ne 0) { throw "Exec: Unable to build plugin: exit code $LastExitCode" }
-Pop-Location
+    # rdgen currently complains about Kotlin stdlib problems. AppVeyor will capture that and stop the build
+    # We'll temporarily tell the powershell host to continue, invoke rdgen and then reset. Calling buildPlugin
+    # will invoke the generateModel task again, but it will be up to date and AppVeyor's powershell implementation
+    # won't see the warning and treat it as an error. This is a temporary workaround until rdgen can build without
+    # any warnings
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Continue
+    .\gradlew "generateModel" $gradleArgs
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    .\gradlew "buildPlugin" $gradleArgs
+
+    if ($LastExitCode -ne 0) { throw "Exec: Unable to build plugin: exit code $LastExitCode" }
+}
+Finally {
+    Pop-Location
+}
