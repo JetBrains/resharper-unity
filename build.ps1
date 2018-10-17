@@ -48,7 +48,10 @@ Try {
 
     .\gradlew "buildPlugin" $gradleArgs
 
-    if ($LastExitCode -ne 0) { throw "Exec: Unable to build plugin: exit code $LastExitCode" }
+    $code = $LastExitCode
+    Write-Host "Gradle finished: $code"
+
+    if ($code -ne 0) { throw "Exec: Unable to build plugin: exit code $LastExitCode" }
 }
 Finally {
     Pop-Location
