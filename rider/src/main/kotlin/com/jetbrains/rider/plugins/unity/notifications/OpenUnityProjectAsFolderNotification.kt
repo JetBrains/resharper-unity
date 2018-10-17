@@ -61,6 +61,8 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                 }
                 if (hyperlinkEvent.description == "reopen") {
                     StartUnityAction.StartUnityAndRider(project)
+                    ProjectUtil.closeAndDispose(project)
+                    WelcomeFrame.showIfNoProjectOpened()
                 }
             }
 
