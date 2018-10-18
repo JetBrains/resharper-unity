@@ -20,11 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Genera
         [Test] public void ListElements09() { DoNamedTest(); }
         // ListElements10 uses a type that's moved namespace in other versions
         [Test, TestUnity(UnityVersion.Unity54)]
-        public void ListElements10()
-        {
-            DoNamedTest();
-            Utils.CleanupOldUnityReferences(Solution);
-        }
+        public void ListElements10() { DoNamedTest(); }
         [Test] public void ListElements11() { DoNamedTest(); }
         [Test] public void ListElements12() { DoNamedTest(); }
         [Test] public void ListElements13() { DoNamedTest(); }

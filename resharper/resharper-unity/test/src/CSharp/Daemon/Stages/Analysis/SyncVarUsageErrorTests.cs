@@ -9,10 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
         [Test]
-        public void TestSyncVarUsageError()
-        {
-            DoNamedTest2();
-            Feature.Services.Utils.CleanupOldUnityReferences(Solution);
-        }
+        public void TestSyncVarUsageError() { DoNamedTest2(); }
     }
 }

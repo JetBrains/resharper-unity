@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
             myAnnotations = new OneToSetMap<string, FileSystemPath>(StringComparer.OrdinalIgnoreCase);
             var testDataPathBase = TestUtil.GetTestDataPathBase(GetType().Assembly);
-            var annotationsPath = testDataPathBase.Parent.Parent / "src" / "resharper-unity" / "annotations";
+            var annotationsPath = testDataPathBase.Parent.Parent / "src" / "annotations";
             Assertion.Assert(annotationsPath.ExistsDirectory, $"Cannot find annotations: {annotationsPath}");
             var annotationFiles = annotationsPath.GetChildFiles();
             foreach (var annotationFile in annotationFiles)
