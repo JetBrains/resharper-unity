@@ -94,9 +94,6 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             null, new[] {runnerSettings},
             null);
 
-          //var interfaceType = testEngineAssembly.GetType("UnityEngine.TestTools.TestRunner.ITestRunnerListener");
-          //playModeLauncher.GetType().GetMethod("AddEventHandler").AddEventHandler<ResultUpdater>();
-
           PlayModeLauncherRun(playModeLauncher, runnerSettings, testEditorAssembly, testEngineAssembly);
         }
         else
