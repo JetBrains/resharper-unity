@@ -18,11 +18,11 @@
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(ReSharperSDKVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(MSBuildThisFileDirectory)..\..\src\resharper-unity.resharper.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Remove="ShaderLab\Host\**" />
     <EmbeddedResource Remove="ShaderLab\Host\**" />
     <None Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\unity.resharper.csproj" />
   </ItemGroup>
 </Project>
