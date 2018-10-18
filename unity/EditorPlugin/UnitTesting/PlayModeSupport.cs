@@ -5,6 +5,7 @@ using System.Reflection;
 using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
@@ -12,9 +13,24 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   {
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     
-    internal static void PlayModeLauncherRun(object playModeLauncher, object runnerSettings,
-      Assembly testEditorAssembly, Assembly testEngineAssembly)
+    public static void PlayModeLauncherRun(object filter, Type launcherType, Assembly testEditorAssembly, Assembly testEngineAssembly)
     {
+      var playmodeTestsControllerSettingsTypeString = "UnityEngine.TestTools.TestRunner.PlaymodeTestsControllerSettings";
+      var playmodeTestsControllerSettingsType = testEngineAssembly.GetType(playmodeTestsControllerSettingsTypeString);
+
+      var runnerSettings = playmodeTestsControllerSettingsType.GetMethod("CreateRunnerSettings")
+        .Invoke(null, new[] {filter});
+      var activeScene = SceneManager.GetActiveScene();
+      var bootstrapSceneInfo = runnerSettings.GetType().GetField("bootstrapScene", BindingFlags.Instance | BindingFlags.Public);
+      bootstrapSceneInfo.SetValue(runnerSettings, activeScene.path);
+      var originalSceneInfo = runnerSettings.GetType().GetField("originalScene", BindingFlags.Instance | BindingFlags.Public);
+      originalSceneInfo.SetValue(runnerSettings, activeScene.path);
+          
+      var playModeLauncher = Activator.CreateInstance(launcherType,
+        BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+        null, new[] {runnerSettings},
+        null);
+      
 //      Unity 2018.3.0b1
 //      PlaymodeLauncher.IsRunning = true;
 //      ConsoleWindow.SetConsoleErrorPause(false);

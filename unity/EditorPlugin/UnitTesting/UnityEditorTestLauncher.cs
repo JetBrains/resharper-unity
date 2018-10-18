@@ -13,7 +13,7 @@ using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
-  public partial class UnityEditorTestLauncher
+  public class UnityEditorTestLauncher
   {
     private readonly UnitTestLaunch myLaunch;
     
@@ -73,23 +73,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
         if (myLaunch.TestMode == TestMode.Play)
         {
-          var playmodeTestsControllerSettingsTypeString = "UnityEngine.TestTools.TestRunner.PlaymodeTestsControllerSettings";
-          var playmodeTestsControllerSettingsType = testEngineAssembly.GetType(playmodeTestsControllerSettingsTypeString);
-
-          var runnerSettings = playmodeTestsControllerSettingsType.GetMethod("CreateRunnerSettings")
-            .Invoke(null, new[] {filter});
-          var activeScene = SceneManager.GetActiveScene();
-          var bootstrapSceneInfo = runnerSettings.GetType().GetField("bootstrapScene", BindingFlags.Instance | BindingFlags.Public);
-          bootstrapSceneInfo.SetValue(runnerSettings, activeScene.path);
-          var originalSceneInfo = runnerSettings.GetType().GetField("originalScene", BindingFlags.Instance | BindingFlags.Public);
-          originalSceneInfo.SetValue(runnerSettings, activeScene.path);
-          
-          var playModeLauncher = Activator.CreateInstance(launcherType,
-            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-            null, new[] {runnerSettings},
-            null);
-
-          PlayModeSupport.PlayModeLauncherRun(playModeLauncher, runnerSettings, testEditorAssembly, testEngineAssembly);
+          PlayModeSupport.PlayModeLauncherRun(filter, launcherType, testEditorAssembly, testEngineAssembly);
         }
         else
         {
@@ -185,8 +169,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
     private static bool AdviseSessionFinished(object runner, string fieldName, Action<ITestResult> callback)
     {
-      var mRunFinishedEventMethodInfo= runner.GetType()
-        .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+      var mRunFinishedEventMethodInfo= runner.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
 
       if (mRunFinishedEventMethodInfo == null)
       {
@@ -210,8 +193,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
     private static bool AdviseTestStarted(object runner, string fieldName, Action<ITest> callback)
     {
-      var mTestStartedEventMethodInfo = runner.GetType()
-        .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+      var mTestStartedEventMethodInfo = runner.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
 
       if (mTestStartedEventMethodInfo == null)
       {
@@ -236,9 +218,8 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
     private static bool AdviseTestFinished(object runner, string fieldName, Action<ITestResult> callback)
     {
-      var mTestFinishedEventMethodInfo = runner.GetType()
-        .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-
+      var mTestFinishedEventMethodInfo = runner.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+      
       if (mTestFinishedEventMethodInfo == null)
       {
         ourLogger.Verbose("Could not find m_TestFinishedEvent via reflection");
@@ -246,8 +227,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       }
 
       var mTestFinished = mTestFinishedEventMethodInfo.GetValue(runner);
-      var addListenerMethod =
-        mTestFinished.GetType().GetMethod(RunnerAddListener, BindingFlags.Instance | BindingFlags.Public);
+      var addListenerMethod = mTestFinished.GetType().GetMethod(RunnerAddListener, BindingFlags.Instance | BindingFlags.Public);
 
       if (addListenerMethod == null)
       {
