@@ -1,24 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Emit;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
-using UnityEditor;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
-  public class UnityEditorTestLauncher
+  public partial class UnityEditorTestLauncher
   {
     private readonly UnitTestLaunch myLaunch;
     
@@ -94,7 +89,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             null, new[] {runnerSettings},
             null);
 
-          PlayModeLauncherRun(playModeLauncher, runnerSettings, testEditorAssembly, testEngineAssembly);
+          PlayModeSupport.PlayModeLauncherRun(playModeLauncher, runnerSettings, testEditorAssembly, testEngineAssembly);
         }
         else
         {
@@ -108,10 +103,8 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
               return;
             }
 
-            var assemblyProviderType =
-              testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider");
-            var testPlatformVal =
-              myLaunch.TestMode == TestMode.Edit ? 2 : 4; // All = 255, // 0xFF, EditMode = 2, PlayMode = 4,
+            var assemblyProviderType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider");
+            var testPlatformVal = 2; // All = 255, // 0xFF, EditMode = 2, PlayMode = 4,
             if (assemblyProviderType != null)
             {
               var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
@@ -267,120 +260,6 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       return true;
     }
     
-
-    private void PlayModeLauncherRun(object playModeLauncher, object runnerSettings,
-      Assembly testEditorAssembly, Assembly testEngineAssembly)
-    {
-//      Unity 2018.3.0b1
-//      PlaymodeLauncher.IsRunning = true;
-//      ConsoleWindow.SetConsoleErrorPause(false);
-//      Application.runInBackground = true;
-//      string sceneName = this.CreateSceneName();
-//      this.m_Scene = this.CreateBootstrapScene(sceneName, runnerSetupAction));
-//      if (this.m_Settings.sceneBased)
-//      {
-//        var buildSettingsSceneList = new List<EditorBuildSettingsScene>()
-//        {
-//          new EditorBuildSettingsScene(sceneName, true)
-//        };
-//        buildSettingsSceneList.AddRange(EditorBuildSettings.scenes);
-//        EditorBuildSettings.scenes = buildSettingsSceneList.ToArray();
-//      }
-//      EditorApplication.update += this.UpdateCallback;
-      
-      var playModeTestsControllerTypeString = "UnityEngine.TestTools.TestRunner.PlaymodeTestsController";
-      var playModeTestsControllerType = testEngineAssembly.GetType(playModeTestsControllerTypeString);
-      
-      var runnerSetupActionObject = PlayModeRunnerSetupAction(runnerSettings, testEditorAssembly, testEngineAssembly, playModeTestsControllerType);
-      var runnerSetupActionType = typeof(Action<>).MakeGenericType(playModeTestsControllerType);
-      ourLogger.Verbose("ConvertType");
-      var runnerSetupAction = ConvertDelegateType(runnerSetupActionObject, runnerSetupActionType);
-      ourLogger.Verbose("AfterConvertType");
-
-      try
-      {
-        // doesn't exist in Unity 5.6
-        playModeLauncher.GetType().GetField("IsRunning").SetValue(null, true);
-      }
-      catch (Exception e)
-      {
-        ourLogger.Warn(e);
-      }
-      
-      //ConsoleWindow.SetConsoleErrorPause(false);
-      Application.runInBackground = true;
-      var sceneName = (string) playModeLauncher.GetType().GetMethod("CreateSceneName").Invoke(playModeLauncher, new object[]{});
-      var createBootstrapSceneMethod = playModeLauncher.GetType()
-        .GetMethod("CreateBootstrapScene", BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-      var createBootstrapSceneMethodResult = createBootstrapSceneMethod.Invoke(playModeLauncher, new[] {sceneName, (object)runnerSetupAction });
-      playModeLauncher.GetType().GetField("m_Scene", BindingFlags.NonPublic| BindingFlags.Instance)
-        .SetValue(playModeLauncher, createBootstrapSceneMethodResult);
-      var sceneBased = (bool) runnerSettings.GetType().GetField("sceneBased").GetValue(runnerSettings);
-      if (sceneBased)
-      {
-        var buildSettingsSceneList = new List<EditorBuildSettingsScene>()
-        {
-          new EditorBuildSettingsScene(sceneName, true)
-        };
-        buildSettingsSceneList.AddRange(EditorBuildSettings.scenes);
-        EditorBuildSettings.scenes = buildSettingsSceneList.ToArray();        
-      }
-
-      var updateCallBack = playModeLauncher.GetType().GetMethod("UpdateCallback");
-      
-      EditorApplication.update += ()=> { updateCallBack.Invoke(playModeLauncher, new object[]{}); };
-      playModeLauncher.GetType().GetField("m_InitPlaying", BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(playModeLauncher, 3); // Unity 2018.2
-    }
-
-    private static object ConvertDelegateType(Action<object> action, Type targetType)
-    {
-      var ctor = targetType.GetConstructors().Single();
-      var invoke = action.GetType().GetMethod("Invoke");
-      return ctor.Invoke(new object[] { action, invoke.MethodHandle.GetFunctionPointer() });
-    }
-
-    private Action<object> PlayModeRunnerSetupAction(object runnerSettings, Assembly testEditorAssembly, Assembly editorAssembly, Type playModeTestsControllerType)
-    {
-          var action = new Action<object>(r =>
-          {
-            var runner = Convert.ChangeType(r, playModeTestsControllerType);
-            
-//            runner.AddEventHandlerMonoBehaviour<PlayModeRunnerCallback>();
-//            runner.AddEventHandlerScriptableObject<TestRunnerCallback>();
-//            runner.AddEventHandlerScriptableObject<CallbacksDelegatorListener>();
-            var playmodeTestsControllerExtensions = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.PlaymodeTestsControllerExtensions");
-            var playModeRunnerCallbackType = editorAssembly.GetType("UnityEngine.TestTools.TestRunner.Callbacks.PlayModeRunnerCallback");
-            var callbacksDelegatorListenerType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.Api.CallbacksDelegatorListener");
-            // stops Play after tests
-            var testRunnerCallbackType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestRunnerCallback");
-            
-            playmodeTestsControllerExtensions.GetMethod("AddEventHandlerMonoBehaviour",  
-              BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-              .MakeGenericMethod(playModeRunnerCallbackType).Invoke(null, new [] { runner });
-            var method = playmodeTestsControllerExtensions
-                .GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .Single(a => a.Name=="AddEventHandlerScriptableObject" && a.IsGenericMethod);
-            method.MakeGenericMethod(testRunnerCallbackType).Invoke(null, new [] { runner });
-            // exists in Unity 2018.3.x
-            try
-            {
-              method.MakeGenericMethod(callbacksDelegatorListenerType).Invoke(null, new [] { runner });
-            }
-            catch (Exception e)
-            {
-              ourLogger.Warn(e);
-            }
-            
-            var collector = TestEventsCollector.Instance;
-            collector.SetupPersistentListeners(runner);
-
-//            runner.settings = runnerSettings;
-            runner.GetType().GetField("settings").SetValue(runner, runnerSettings);
-          });
-
-      return action;
-    }
-
     private void SupportAbort(object runner)
     {
       var unityTestAssemblyRunnerField =
