@@ -29,7 +29,7 @@ class BackendPaths(private val project: Project, logger: Logger, val repositoryR
         resharperHostPluginSolution = File(backendRoot, "resharper-unity.sln")
         assert(resharperHostPluginSolution.isFile)
 
-        riderTestsProject = File(backendRoot, "test/src/tests.rider.csproj")
+        riderTestsProject = File(backendRoot, "resharper-unity/test/src/unity.tests.rider.csproj")
         assert(riderTestsProject.isFile)
 
         bundledRiderSdkPath = File(repositoryRoot, "rider/dependencies")
