@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application;
@@ -14,9 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
@@ -148,7 +145,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             }
         }
 
-        private static HotMethodAnalyzerContext GetHotMethodAnalyzerContext(IHighlightingConsumer consumer, LocalList<IMethodDeclaration> hotRootMethods,
+        private static HotMethodAnalyzerContext GetHotMethodAnalyzerContext(IHighlightingConsumer consumer, HashSet<IMethodDeclaration> hotRootMethods,
             IPsiSourceFile sourceFile)
         {
             // sharing context for each hot root.
@@ -166,9 +163,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return context;
         }
 
-        private static LocalList<IMethodDeclaration> FindHotRootMethods([NotNull]ICSharpFile file,[NotNull] IPsiSourceFile sourceFile)
+        private static HashSet<IMethodDeclaration> FindHotRootMethods([NotNull]ICSharpFile file,[NotNull] IPsiSourceFile sourceFile)
         {
-            var result = new LocalList<IMethodDeclaration>();
+            var result = new HashSet<IMethodDeclaration>();
                 
             var descendantsEnumerator = file.Descendants();
             while (descendantsEnumerator.MoveNext())
@@ -218,6 +215,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                                 break;
 
                             var coroutineMethodDeclaration = ExtractMethodDeclarationFromStartCoroutine(firstArgument);
+                            if (coroutineMethodDeclaration == null)
+                                break;
                             
                             var declarations = coroutineMethodDeclaration.GetDeclarationsIn(sourceFile).Where(t => t.GetSourceFile() == sourceFile);
                             foreach (var declaration in declarations)
