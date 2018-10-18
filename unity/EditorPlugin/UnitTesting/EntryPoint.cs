@@ -46,8 +46,8 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         if (!modelValue.UnitTestLaunch.HasValue())
           return;
         
-        var unityEditorTestLauncher = new UnityEditorTestLauncher(modelValue.UnitTestLaunch.Value);
-        unityEditorTestLauncher.TryLaunchUnitTests();
+        var testLauncher = new UnityEditorTestLauncher(modelValue.UnitTestLaunch.Value);
+        testLauncher.TryLaunchUnitTests();
       });
     }
   }
