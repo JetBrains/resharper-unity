@@ -129,4 +129,7 @@
     <EmbeddedResource Remove="ShaderLab\Host\**" />
     <None Remove="ShaderLab\Host\**" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\resharper-yaml\src\resharper-yaml.csproj" />
+  </ItemGroup>
 </Project>
