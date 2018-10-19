@@ -11,10 +11,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class UnityVersion
     {
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
+        private readonly ISolution mySolution;
 
-        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache)
+        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, ISolution solution)
         {
             myUnityProjectFileCache = unityProjectFileCache;
+            mySolution = solution;
         }
 
         [NotNull]
@@ -24,13 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (project == null)
                 return new Version(0, 0);
             var version = myUnityProjectFileCache.GetUnityVersion(project);
-            return version ?? GetActualVersion(project.GetSolution());
+            return version ?? GetActualVersionForSolution();
         }
 
         [NotNull]
-        private Version GetActualVersion([NotNull] ISolution solution)
+        public Version GetActualVersionForSolution()
         {
-            foreach (var project in solution.GetTopLevelProjects())
+            foreach (var project in mySolution.GetTopLevelProjects())
             {
                 if (project.IsUnityProject())
                 {
@@ -40,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
             }
 
-            return GetVersionForTests(solution);
+            return GetVersionForTests(mySolution);
         }
 
         private static Version GetVersionForTests(ISolution solution)

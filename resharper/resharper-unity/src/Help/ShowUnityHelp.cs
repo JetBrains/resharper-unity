@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using JetBrains.Application;
 using JetBrains.Application.StdApplicationUI;
 using JetBrains.Application.UI.Help;
@@ -13,11 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
     {
         private readonly OpensUri myUriOpener;
         private readonly UnityInstallationFinder myInstallationFinder;
+        private readonly SolutionsManager mySolutionsManager;
 
-        public ShowUnityHelp(OpensUri uriOpener, UnityInstallationFinder installationFinder)
+        public ShowUnityHelp(OpensUri uriOpener, UnityInstallationFinder installationFinder, SolutionsManager solutionsManager)
         {
             myUriOpener = uriOpener;
             myInstallationFinder = installationFinder;
+            mySolutionsManager = solutionsManager;
         }
 
         public bool ShowHelp(string keyword, HelpSystem.HelpKind kind)
@@ -59,8 +60,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
         
         private FileSystemPath GetDocumentationRoot()
         {
-            var contentsPath = myInstallationFinder.GetApplicationContentsPaths().LastOrDefault();
+            var version = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualVersionForSolution();
+            var contentsPath = myInstallationFinder.GetApplicationContentsPath(version);
             return contentsPath == null ? FileSystemPath.Empty : contentsPath.Combine(@"Documentation/en");
+        
         }
 
         private static Uri GetFileUri(FileSystemPath documentationRoot, string htmlPath)

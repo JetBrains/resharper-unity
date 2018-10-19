@@ -21,27 +21,42 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myLogger = logger;
         }
 
-//        public FileSystemPath GetApplicationPath(Version version)
-//        {
-//            
-//        }
+        public FileSystemPath GetApplicationPath(Version version)
+        {
+            var possible = GetPossibleInstallationInfos();
+            
+            var bestChoice = possible.FirstOrDefault(a =>
+                a.Version.Major == version.Major && a.Version.Minor == version.Minor &&
+                a.Version.Build == version.Build);
+            if (bestChoice != null)
+                return bestChoice.Path;
+            var secondChoice = possible.FirstOrDefault(a =>
+                a.Version.Major == version.Major && a.Version.Minor == version.Minor);
+            if (secondChoice != null)
+                return secondChoice.Path;
+            var worstChoice =  possible.FirstOrDefault(a =>
+                a.Version.Major == version.Major);
+            if (worstChoice != null)
+                return worstChoice.Path;
+            return FileSystemPath.Empty;
+        }
         
-//        public FileSystemPath GetApplicationContentsPath(Version version)
-//        {
-//            var applicationPath = GetApplicationPath(version);
-//            if (applicationPath == null)
-//                return null;
-//            switch (PlatformUtil.RuntimePlatform)
-//            {
-//                    case PlatformUtil.Platform.MacOsX:
-//                        return applicationPath.Combine("Contents");
-//                    case PlatformUtil.Platform.Linux:
-//                    case PlatformUtil.Platform.Windows:
-//                        return applicationPath.Directory.Combine("Data");
-//            }
-//            myLogger.Error("Unknown runtime platform");
-//            return null;
-//        }
+        public FileSystemPath GetApplicationContentsPath(Version version)
+        {
+            var applicationPath = GetApplicationPath(version);
+            if (applicationPath == null)
+                return null;
+            switch (PlatformUtil.RuntimePlatform)
+            {
+                    case PlatformUtil.Platform.MacOsX:
+                        return applicationPath.Combine("Contents");
+                    case PlatformUtil.Platform.Linux:
+                    case PlatformUtil.Platform.Windows:
+                        return applicationPath.Directory.Combine("Data");
+            }
+            myLogger.Error("Unknown runtime platform");
+            return null;
+        }
 
         public List<FileSystemPath> GetApplicationContentsPaths()
         {
@@ -61,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }).WhereNotNull().ToList();
         }
 
-        public List<UnityInstallationInfo> GetPossibleInstallations()
+        public List<UnityInstallationInfo> GetPossibleInstallationInfos()
         {
             var installations = GetPossibleApplicationPaths();
             return installations.Select(a =>
