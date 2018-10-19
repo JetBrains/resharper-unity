@@ -11,7 +11,13 @@ namespace JetBrains.ReSharper.Plugins.Yaml.ProjectModel
     public new static readonly YamlProjectFileType Instance = null;
 
     public YamlProjectFileType()
+#if RIDER
+      // Rider has YAML support on the front end. We don't register by default for any file types. If another plugin
+      // (e.g. Unity) wishes to have files treated as YAML, then it can register its own file types
+      : base(Name, "YAML")
+#else
       : base(Name, "YAML", new[] {YAML_EXTENSION})
+#endif
     {
     }
   }

@@ -1,5 +1,6 @@
 ﻿using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Resources;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -11,8 +12,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
   [ProjectFileType(typeof(YamlProjectFileType))]
   public class YamlProjectFileLanguageService : ProjectFileLanguageService
   {
-    public YamlProjectFileLanguageService(ProjectFileType projectFileType) : base(projectFileType)
+    private readonly YamlSupport myYamlSupport;
+
+    public YamlProjectFileLanguageService(YamlSupport yamlSupport)
+      : base(YamlProjectFileType.Instance)
     {
+      myYamlSupport = yamlSupport;
     }
 
     public override ILexerFactory GetMixedLexerFactory(ISolution solution, IBuffer buffer, IPsiSourceFile sourceFile = null)
@@ -21,7 +26,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       return languageService?.GetPrimaryLexerFactory();
     }
 
-    protected override PsiLanguageType PsiLanguageType => (PsiLanguageType) YamlLanguage.Instance ?? UnknownLanguage.Instance;
+    protected override PsiLanguageType PsiLanguageType
+    {
+      get
+      {
+        var yamlLanguage = (PsiLanguageType) YamlLanguage.Instance ?? UnknownLanguage.Instance;
+        return myYamlSupport.IsParsingEnabled.Value ? yamlLanguage : UnknownLanguage.Instance;
+      }
+    }
 
     // TODO: Proper icon!
     public override IconId Icon => PsiCSharpThemedIcons.Csharp.Id;
