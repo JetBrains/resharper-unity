@@ -146,7 +146,7 @@ task packReSharperPlugin(type: MonoExecTask) {
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
     def nuspecFile = file(new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec'))
-    def outputDir = file(new File(backend.backendRoot, "build/unity.resharper/bin/$BuildConfiguration"))
+    def outputDir = file(new File(backend.backendRoot, "build/distributions/$BuildConfiguration"))
     def nupkgFile = file(new File(outputDir, "JetBrains.Unity.${version}.nupkg"))
 
     // TODO: Make the output of the compile step the inputs of this step, as well as the nuspec

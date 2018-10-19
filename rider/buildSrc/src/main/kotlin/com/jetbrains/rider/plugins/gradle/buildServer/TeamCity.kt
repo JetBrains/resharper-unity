@@ -21,7 +21,7 @@ class TeamCity: BuildServer {
     }
 
     override fun publishArtifact(path: File) {
-        println("##teamcity[publishArtifacts '$path.absolutePath']")
+        println("##teamcity[publishArtifacts '${path.absolutePath}']")
     }
 
     override fun setBuildNumber(version: String) {
