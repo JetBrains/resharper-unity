@@ -1,0 +1,55 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IBlockSequenceNode
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        IEmptyScalarNode
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      Comment(type:COMMENT, text:# Empty) spaces: "# Empty"
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        ILiteralScalarNode
+          YamlTokenType+FixedTokenElement(type:PIPE, text:|)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text: )
+          YamlTokenType+GenericTokenElement(type:SCALAR_TEXT, text:block node)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IBlockSequenceNode
+          ISequenceEntry
+            YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:one)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          Comment(type:COMMENT, text:# Compact) spaces: "# Compact"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          ISequenceEntry
+            YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:two)
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      Comment(type:COMMENT, text:# sequence) spaces: "# sequence"
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IBlockMappingNode
+          IBlockMappingEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:one)
+            YamlTokenType+FixedTokenElement(type:COLON, text::)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:two)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    Comment(type:COMMENT, text:# Compact mapping) spaces: "# Compact mapping"
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+
