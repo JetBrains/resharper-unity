@@ -145,8 +145,8 @@ task packReSharperPlugin(type: MonoExecTask) {
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
-    def nuspecFile = file(new File(backend.backendRoot, 'src/resharper-unity/resharper-unity.resharper.nuspec'))
-    def outputDir = file(new File(backend.backendRoot, "build/resharper-unity.resharper/bin/$BuildConfiguration"))
+    def nuspecFile = file(new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec'))
+    def outputDir = file(new File(backend.backendRoot, "build/distributions/$BuildConfiguration"))
     def nupkgFile = file(new File(outputDir, "JetBrains.Unity.${version}.nupkg"))
 
     // TODO: Make the output of the compile step the inputs of this step, as well as the nuspec
@@ -170,7 +170,7 @@ task packReSharperPlugin(type: MonoExecTask) {
 //    group = backendGroup
 //    description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 //
-//    nuspecFile = new File(backend.backendRoot, 'src/resharper-unity/resharper-unity.resharper.nuspec')
+//    nuspecFile = new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec')
 //    destinationDir = new File(backend.backendRoot, "build/resharper-unity.resharper/bin/$BuildConfiguration")
 //    packageAnalysis = false
 //    packageVersion = version
@@ -191,8 +191,8 @@ nunit {
     outputs.upToDateWhen { false } // we should always run unit tests when RunTests are true
 
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
-    def riderTestsDll = new File(buildDir, "tests.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
-    def resharperTestsDll = new File(buildDir, "tests.resharper/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")
+    def riderTestsDll = new File(buildDir, "tests.rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
+    def resharperTestsDll = new File(buildDir, "tests.resharper-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")
     testAssemblies = [riderTestsDll, resharperTestsDll]
 }
 

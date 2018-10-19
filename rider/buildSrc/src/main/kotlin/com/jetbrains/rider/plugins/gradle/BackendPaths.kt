@@ -6,15 +6,13 @@ import org.jetbrains.intellij.IntelliJPluginExtension
 import java.io.File
 
 class BackendPaths(private val project: Project, logger: Logger, val repositoryRoot: File, private val productVersion: String) {
-    val unityRoot: File
+    private val unityRoot: File
     val backendRoot: File
     val resharperHostPluginSolution: File
     val unityPluginSolution: File
-    val unityPluginSingleProject: File   // For "rider only" configuration
-    val riderTestsProject: File  // For "rider only" configuration
     val bundledReSharperSdkPath: File
     var downloadedReSharperSdkPath: File? = null
-    val bundledRiderSdkPath: File
+    private val bundledRiderSdkPath: File
 
     init {
         assert(repositoryRoot.isDirectory)
@@ -24,13 +22,9 @@ class BackendPaths(private val project: Project, logger: Logger, val repositoryR
 
         unityRoot = File(repositoryRoot, "unity")
         unityPluginSolution = File(unityRoot, "JetBrains.Rider.Unity.Editor.sln")
-        unityPluginSingleProject = File(unityRoot, "EditorPlugin/EditorPlugin.csproj")
 
-        resharperHostPluginSolution = File(backendRoot, "src/resharper-unity.sln")
+        resharperHostPluginSolution = File(backendRoot, "resharper-unity.sln")
         assert(resharperHostPluginSolution.isFile)
-
-        riderTestsProject = File(backendRoot, "test/src/tests.rider.csproj")
-        assert(riderTestsProject.isFile)
 
         bundledRiderSdkPath = File(repositoryRoot, "rider/dependencies")
         if (bundledRiderSdkPath.isDirectory) {
