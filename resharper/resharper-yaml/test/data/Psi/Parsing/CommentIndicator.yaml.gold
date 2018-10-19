@@ -1,0 +1,5 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  Comment(type:COMMENT, text:# Comment only.) spaces: "# Comment only."
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

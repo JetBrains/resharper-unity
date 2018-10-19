@@ -1,0 +1,6 @@
+{caret}- # Empty
+- |
+ block node
+- - one # Compact
+  - two # sequence
+- one: two # Compact mapping

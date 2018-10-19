@@ -1,0 +1,48 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IFlowSequenceNode
+      YamlTokenType+FixedTokenElement(type:LBRACK, text:[)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IFlowSequenceEntry
+        IDoubleQuotedScalarNode
+          YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_MULTILINE, text:"double\n quoted")
+      YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      IFlowSequenceEntry
+        ISingleQuotedScalarNode
+          YamlTokenType+GenericTokenElement(type:C_SINGLE_QUOTED_MULTILINE, text:'single\n           quoted')
+      YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IFlowSequenceEntry
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:plain)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text: )
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:text)
+      YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      IFlowSequenceEntry
+        IFlowSequenceNode
+          YamlTokenType+FixedTokenElement(type:LBRACK, text:[)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IFlowSequenceEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:nested)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          YamlTokenType+FixedTokenElement(type:RBRACK, text:])
+      YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IFlowSequenceEntry
+        IFlowPair
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:single)
+          YamlTokenType+FixedTokenElement(type:COLON, text::)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:pair)
+      YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(type:RBRACK, text:])
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

@@ -1,0 +1,34 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IBlockSequenceNode
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IBlockMappingNode
+          IBlockMappingEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:foo)
+            YamlTokenType+FixedTokenElement(type:COLON, text::)
+            Whitespace(type:WHITESPACE, text:	 ) spaces: "	 "
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:bar)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IBlockSequenceNode
+          ISequenceEntry
+            YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          ISequenceEntry
+            YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+            Whitespace(type:WHITESPACE, text:	) spaces: "	"
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+
