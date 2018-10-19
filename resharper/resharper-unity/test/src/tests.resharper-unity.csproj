@@ -23,6 +23,6 @@
     <None Remove="ShaderLab\Host\**" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\unity.resharper.csproj" />
+    <ProjectReference Include="..\..\src\resharper-unity.csproj" />
   </ItemGroup>
 </Project>

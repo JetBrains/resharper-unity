@@ -57,8 +57,8 @@ intellij {
 
 
 def dllFiles = [
-    "../resharper/build/unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
-    "../resharper/build/unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
 ]
 
 def debuggerDllFiles = [
