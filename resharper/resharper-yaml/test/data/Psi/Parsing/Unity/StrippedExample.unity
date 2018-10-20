@@ -1,0 +1,5 @@
+{caret}
+--- !u!4 &154806035 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 400000, guid: 08563ec9bc5724f43a79b8a80c275cd3, type: 2}
+  m_PrefabInternal: {fileID: 325319426}

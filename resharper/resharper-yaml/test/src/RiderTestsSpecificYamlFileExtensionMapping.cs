@@ -9,12 +9,19 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Tests
 {
-#if RIDER
-  // Rider doesn't register .yaml, as the frontend already provides support for it. But we need it for tests...
   [ShellComponent]
   public class RiderTestsSpecificYamlFileExtensionMapping : IFileExtensionMapping
   {
-    private static readonly string[] ourFileExtensions = {".yaml"};
+    private static readonly string[] ourFileExtensions =
+    {
+#if RIDER
+      // Rider doesn't register .yaml, as the frontend already provides support for it. But we need it for tests...
+      ".yaml",
+#endif
+      ".meta",
+      ".asset",
+      ".unity"
+    };
 
     public RiderTestsSpecificYamlFileExtensionMapping(Lifetime lifetime)
     {
@@ -38,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests
     public ISimpleSignal Changed { get; }
   }
 
+#if RIDER
   [ShellComponent]
   public class EnsureEnabledForTests
   {
