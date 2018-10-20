@@ -654,6 +654,19 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         ParseTagProperty(expectedIndent);
       }
 
+      // Unity scene files are sometimes invalid, with an extra keyword after the node properties and before a block 
+      // mapping. We'll silently eat it.
+      // E.g.:
+      // --- !u!4 &154806035 stripped
+      // Transform:
+      //   m_PrefabParentObject: ...
+      if (GetTokenTypeNoSkipWhitespace().IsWhitespace && IsPlainScalarToken(LookAheadNoSkipWhitespaces(1)) &&
+          LookAheadText(1) == "stripped")
+      {
+        Advance();  // <whitespace>
+        Advance();  // stripped
+      }
+
       DoneBeforeWhitespaces(mark, ElementType.NODE_PROPERTIES);
       return true;
     }
@@ -1175,6 +1188,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       while (tt == YamlTokenType.INDENT)
         tt = LookAheadNoSkipWhitespaces(i++);
       return tt;
+    }
+
+
+    private string LookAheadText(int index)
+    {
+      return Builder.GetTokenText(Builder.GetCurrentLexeme() + index);
     }
 
 
