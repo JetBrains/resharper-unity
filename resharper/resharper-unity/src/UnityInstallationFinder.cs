@@ -58,24 +58,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return null;
         }
 
-        public List<FileSystemPath> GetApplicationContentsPaths()
-        {
-            var applicationPaths = GetPossibleApplicationPaths();
-            return applicationPaths.Select(a =>
-            {
-                switch (PlatformUtil.RuntimePlatform)
-                {
-                    case PlatformUtil.Platform.MacOsX:
-                        return a.Combine("Contents");
-                    case PlatformUtil.Platform.Linux:
-                    case PlatformUtil.Platform.Windows:
-                        return a.Directory.Combine("Data");
-                }
-                myLogger.Error("Unknown runtime platform");
-                return null;
-            }).WhereNotNull().ToList();
-        }
-
         public List<UnityInstallationInfo> GetPossibleInstallationInfos()
         {
             var installations = GetPossibleApplicationPaths();
