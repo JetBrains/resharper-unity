@@ -36,9 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 return secondChoice.Path;
             var worstChoice =  possible.FirstOrDefault(a =>
                 a.Version.Major == version.Major);
-            if (worstChoice != null)
-                return worstChoice.Path;
-            return FileSystemPath.Empty;
+            return worstChoice?.Path;
         }
         
         public FileSystemPath GetApplicationContentsPath(Version version)
@@ -73,10 +71,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}");
                 }
                 
-                // todo: also possible for Mac
                 if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                 {
                     version = new Version(new Version(FileVersionInfo.GetVersionInfo(a.FullPath).FileVersion).ToString(3));        
+                }
+                else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+                {
+                    // todo: also possible for Mac
                 }
                 
                 return new UnityInstallationInfo(version, versionPath, a);
