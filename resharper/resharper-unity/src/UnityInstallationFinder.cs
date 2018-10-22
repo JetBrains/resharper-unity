@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using JetBrains.Application;
 using JetBrains.Util;
 using JetBrains.Util.Interop;
@@ -14,7 +13,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class UnityInstallationFinder
     {
         private readonly ILogger myLogger;
-        private string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
 
         public UnityInstallationFinder(ILogger logger)
         {
@@ -61,15 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var installations = GetPossibleApplicationPaths();
             return installations.Select(a =>
             {
-                var match = Regex.Match(a.FullPath, pattern);
-                var groups = match.Groups;
-                Version version = null;
-                string versionPath = null;
-                if (match.Success)
-                {
-                    versionPath = match.Value;
-                    version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}");
-                }
+                var version = UnityVersion.Parse(a.FullPath);
                 
                 if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                 {
@@ -80,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     // todo: also possible for Mac
                 }
                 
-                return new UnityInstallationInfo(version, versionPath, a);
+                return new UnityInstallationInfo(version, a);
             }).ToList();
         }
         
@@ -199,13 +189,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class UnityInstallationInfo
     {
         public Version Version { get; }
-        public string PathVersion { get; }
         public FileSystemPath Path { get; }
 
-        public UnityInstallationInfo(Version version, string pathVersion, FileSystemPath path)
+        public UnityInstallationInfo(Version version, FileSystemPath path)
         {
             Version = version;
-            PathVersion = pathVersion;
             Path = path;
         }
     }

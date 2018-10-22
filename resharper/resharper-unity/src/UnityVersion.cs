@@ -1,6 +1,8 @@
 using System;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
+using JetBrains.Application.FileSystemTracker;
+using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
@@ -14,11 +16,20 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private readonly ISolution mySolution;
+        private Version myVersionFromProjectVersion;
+        private static string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
 
-        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, ISolution solution)
+        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
         {
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
+
+            var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+            fileSystemTracker.AdviseFileChanges(lifetime,
+                projectVersionTxtPath,
+                _ => { myVersionFromProjectVersion = TryGetVersionFromProjectVersion(projectVersionTxtPath); });
+            
+            myVersionFromProjectVersion = TryGetVersionFromProjectVersion(projectVersionTxtPath);
         }
 
         [NotNull]
@@ -34,6 +45,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull]
         public Version GetActualVersionForSolution()
         {
+            if (myVersionFromProjectVersion != null)
+                return myVersionFromProjectVersion;
+            
             foreach (var project in mySolution.GetTopLevelProjects())
             {
                 if (project.IsUnityProject())
@@ -48,16 +62,15 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
         
         [CanBeNull]
-        private Version TryGetVersionFromProjectVersion()
+        private Version TryGetVersionFromProjectVersion(FileSystemPath projectVersionTxt)
         {
             // Get the version from ProjectSettings/ProjectVersion.txt
-            var projectVersionTxt = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
             if (!projectVersionTxt.ExistsFile)
                 return null;
             var text = projectVersionTxt.ReadAllText2().Text;
             var match = Regex.Match(text, "m_EditorVersion: (?<version>.*$)");
             var groups = match.Groups;
-            return match.Success ? Version.Parse(groups["version"].Value) : null;
+            return match.Success ? Parse(groups["version"].Value) : null;
         }
 
         private static Version GetVersionForTests(ISolution solution)
@@ -83,6 +96,19 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             return unityVersion;
+        }
+
+        public static Version Parse(string input)
+        {
+            var match = Regex.Match(input, pattern);
+            var groups = match.Groups;
+            Version version = null;
+            if (match.Success)
+            {
+                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}");
+            }
+
+            return version;
         }
     }
 }
