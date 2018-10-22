@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using JetBrains.Annotations;
@@ -91,6 +93,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             var explicitLangVersion = false;
             var unityVersion = new Version(0, 0);
 
+            var versionFromDll = TryGetUnityVersionFromDll(documentElement);
+
             foreach (XmlNode propertyGroup in documentElement.GetElementsByTagName("PropertyGroup"))
             {
                 var xmlElement = propertyGroup as XmlElement;
@@ -102,6 +106,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                     explicitLangVersion = true;
                 }
 
+                if (versionFromDll != null) 
+                    continue;
+                
                 // Ideally, we could get the defines through the project model
                 // (see IManagedProjectConfiguration), but that only seems to
                 // give us the currently active project settings, and Unity's
@@ -111,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                     unityVersion = GetVersionFromDefines(defines.InnerText, unityVersion);
             }
 
-            return new UnityProjectDataCache(unityVersion, explicitLangVersion);
+            return new UnityProjectDataCache(versionFromDll ?? unityVersion, explicitLangVersion);
         }
 
         public static Version GetVersionFromDefines(string defines, [NotNull] Version unityVersion)
@@ -135,6 +142,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                 }
             }
             return unityVersion;
+        }
+        
+        [CanBeNull]
+        private static Version TryGetUnityVersionFromDll(XmlElement documentElement)
+        {
+            var referencePathElement = documentElement.ChildElements()
+                .Where(a => a.Name == "ItemGroup").SelectMany(b => b.ChildElements())
+                .Where(c => c.Name == "Reference" && c.GetAttribute("Include").StartsWith("UnityEngine") || c.GetAttribute("Include").Equals("UnityEditor"))
+                .SelectMany(d => d.ChildElements())
+                .FirstOrDefault(c => c.Name == "HintPath");
+            
+            if (referencePathElement == null || string.IsNullOrEmpty(referencePathElement.InnerText)) 
+                return null;
+            
+            var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
+            if (filePath.ExistsFile)
+            {
+                // todo: find exe and get its version
+                //new Version(new Version(FileVersionInfo.GetVersionInfo(filePath.FullPath).FileVersion).ToString(3));  
+            } 
+
+            return null;
         }
 
         public Action OnDataChanged(FileSystemPath projectFileLocation, UnityProjectDataCache oldData, UnityProjectDataCache newData)

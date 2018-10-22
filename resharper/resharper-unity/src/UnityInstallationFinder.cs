@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 
                 if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                 {
-                    version = new Version(new Version(FileVersionInfo.GetVersionInfo(a.FullPath).FileVersion).ToString(3));        
+                    version = new Version(new Version(FileVersionInfo.GetVersionInfo(a.FullPath).FileVersion).ToString(3));
                 }
                 else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 {
