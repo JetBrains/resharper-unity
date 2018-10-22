@@ -176,7 +176,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var filePath = appData.Combine("UnityHub/secondaryInstallPath.json");
             if (filePath.ExistsFile)
             {
-                var customHubLocation = FileSystemPath.Parse(filePath.ReadAllText2().Text);
+                var text = filePath.ReadAllText2().Text.TrimStart('"').TrimEnd('"');
+                var customHubLocation = FileSystemPath.Parse(text);
                 if (customHubLocation.ExistsDirectory)
                     return customHubLocation;
             }

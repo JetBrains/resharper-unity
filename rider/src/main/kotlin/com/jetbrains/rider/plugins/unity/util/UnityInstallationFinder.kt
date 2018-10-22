@@ -19,6 +19,10 @@ class UnityInstallationFinder(private val project: Project) {
         return getApplicationContentsPath()?.resolve("Resources/PackageManager/BuiltInPackages")
     }
 
+    fun getDocumentationRoot(): Path? {
+        return getApplicationContentsPath()?.resolve("Documentation/en")
+    }
+
     // The same as EditorApplication.applicationContentsPath
     // E.g. Mac: /Applications/Unity/Hub/Editor/2018.2.0f2/Unity.app/Contents
     // Windows: C:\Program Files\Unity\Hub\Editor\2018.2.1f1\Editor\Data
