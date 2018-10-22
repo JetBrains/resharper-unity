@@ -1,9 +1,11 @@
 using System;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -43,6 +45,19 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             return GetVersionForTests(mySolution);
+        }
+        
+        [CanBeNull]
+        private Version TryGetVersionFromProjectVersion()
+        {
+            // Get the version from ProjectSettings/ProjectVersion.txt
+            var projectVersionTxt = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+            if (!projectVersionTxt.ExistsFile)
+                return null;
+            var text = projectVersionTxt.ReadAllText2().Text;
+            var match = Regex.Match(text, "m_EditorVersion: (?<version>.*$)");
+            var groups = match.Groups;
+            return match.Success ? Version.Parse(groups["version"].Value) : null;
         }
 
         private static Version GetVersionForTests(ISolution solution)
