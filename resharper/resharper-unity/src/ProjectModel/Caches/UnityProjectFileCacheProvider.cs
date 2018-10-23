@@ -159,10 +159,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
             if (filePath.ExistsFile)
             {
-                // todo: find exe and get its version
-                //new Version(new Version(FileVersionInfo.GetVersionInfo(filePath.FullPath).FileVersion).ToString(3));  
+                if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
+                {
+                    var exePath = filePath.Parent.Parent.Parent.Combine("Unity.exe"); // Editor\Data\Managed\UnityEngine.dll
+                    if (!exePath.ExistsFile)
+                        exePath = filePath.Parent.Parent.Parent.Parent.Combine("Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
+                    if (exePath.ExistsFile)
+                        return new Version(new Version(FileVersionInfo.GetVersionInfo(exePath.FullPath).FileVersion).ToString(3));    
+                }
+                else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+                {
+                    // todo: support MAC
+                }
             } 
-
+            
             return null;
         }
 
