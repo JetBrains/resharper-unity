@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
                         unityDir.Combine(@"Unity.app"))));
 
-                    return unityApps.Where(a=>a.ExistsDirectory).ToList();
+                    return unityApps.Where(a=>a.ExistsDirectory).Distinct().OrderBy(b=>b.FullPath).ToList();
                 }
                 case PlatformUtil.Platform.Linux:
                 {
@@ -126,7 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
                         unityDir.Combine(@"Editor/Unity"))));
                     
-                    return unityApps.Where(a=>a.ExistsFile).ToList();
+                    return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
                 }
 
                 case PlatformUtil.Platform.Windows:
@@ -163,7 +163,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         .Select(ShellLinkHelper.ResolveLinkTarget)
                         .OrderBy(c => new FileInfo(c.FullPath).CreationTime));
 
-                    return unityApps.Where(a=>a.ExistsFile).ToList();
+                    return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
                 }
             }
             myLogger.Error("Unknown runtime platform");
