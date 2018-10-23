@@ -161,15 +161,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             {
                 if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                 {
-                    var exePath = filePath.Parent.Parent.Parent.Combine("Unity.exe"); // Editor\Data\Managed\UnityEngine.dll
+                    var exePath = filePath.Combine("../../../Unity.exe"); // Editor\Data\Managed\UnityEngine.dll
                     if (!exePath.ExistsFile)
-                        exePath = filePath.Parent.Parent.Parent.Parent.Combine("Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
+                        exePath = filePath.Combine("../../../../Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
                     if (exePath.ExistsFile)
                         return new Version(new Version(FileVersionInfo.GetVersionInfo(exePath.FullPath).FileVersion).ToString(3));    
                 }
                 else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 {
-                    // todo: support MAC
+                    var infoPlistPath = filePath.Combine("../../Info.plist");
+                    if (!infoPlistPath.ExistsFile)
+                        infoPlistPath = filePath.Combine("../../../Info.plist");
+                    if (!infoPlistPath.ExistsFile)
+                        return null;
+                    var fullVersion = UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
+                    return UnityVersion.Parse(fullVersion);
                 }
             } 
             

@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.DataFlow;
@@ -109,6 +111,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             return version;
+        }
+
+        public static string GetVersionFromInfoPlist(FileSystemPath infoPlistPath)
+        {
+            var docs = XDocument.Load(infoPlistPath.FullPath);
+            var keyValuePairs = docs.Descendants("dict")
+                .SelectMany(d => d.Elements("key").Zip(d.Elements().Where(e => e.Name != "key"), (k, v) => new { Key = k, Value = v }))
+                .ToDictionary(i => i.Key.Value, i => i.Value.Value);
+            var fullVersion = keyValuePairs["CFBundleVersion"];
+            return fullVersion;
         }
     }
 }

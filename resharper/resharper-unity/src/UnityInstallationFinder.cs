@@ -67,7 +67,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
                 else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 {
-                    // todo: also possible for Mac
+                    var infoPlistPath = a.Combine("Contents/Info.plist");
+                    var fullVersion = UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
+                    version = UnityVersion.Parse(fullVersion);
                 }
                 
                 return new UnityInstallationInfo(version, a);
@@ -88,7 +90,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     
                     // Hub custom location
                     var appData = FileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-                    hubLocations.Add(GetCustomHubInstallPath(appData));
+                    var hubCustomLocation = GetCustomHubInstallPath(appData);
+                    if (!hubCustomLocation.IsEmpty)
+                        hubLocations.Add(hubCustomLocation);
 
                     // /Applications/Unity/Hub/Editor/2018.1.0b4/Unity.app
                     unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
@@ -115,7 +119,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     var hubLocations = new List<FileSystemPath> {defaultHubLocation};
                     // Hub custom location
                     var configPath = home.Combine(".config");
-                    hubLocations.Add(GetCustomHubInstallPath(configPath));
+                    var customHubInstallPath = GetCustomHubInstallPath(configPath);
+                    if (!customHubInstallPath.IsEmpty)
+                        hubLocations.Add(customHubInstallPath);
 
                     unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
                         unityDir.Combine(@"Editor/Unity"))));
@@ -143,10 +149,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     // custom Hub location
                     var appData = FileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
                     var customHubInstallPath = GetCustomHubInstallPath(appData);
-                    unityApps.AddRange(
-                        customHubInstallPath.GetChildDirectories()
-                            .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
-                    );
+                    if (!customHubInstallPath.IsEmpty)
+                    {
+                        unityApps.AddRange(
+                            customHubInstallPath.GetChildDirectories()
+                                .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
+                        );
+                    }
                     
                     var lnks = FileSystemPath.Parse(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs")
                         .GetChildDirectories("Unity*").SelectMany(a => a.GetChildFiles("Unity.lnk")).ToArray();
