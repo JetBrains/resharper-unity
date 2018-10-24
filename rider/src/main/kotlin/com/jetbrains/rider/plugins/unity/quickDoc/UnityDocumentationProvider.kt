@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.quickDoc
 
 import com.intellij.lang.documentation.DocumentationProvider
-import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
@@ -11,14 +10,13 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
 
-class UnityDocumentationProvider(private val project: Project) : DocumentationProvider, ProjectComponent {
-
-    private val documentationRoot by lazy(this::getLocalDocumentationRoot)
+class UnityDocumentationProvider() : DocumentationProvider {
 
     override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String>? {
-        val context = p0?.project?.solution?.rdUnityModel?.externalDocContext?.valueOrNull
+        val project = p0?.project
+        val context = project?.solution?.rdUnityModel?.externalDocContext?.valueOrNull
         if (context != null && !context.isNullOrBlank())
-            return arrayListOf(getUrlForContext(context))
+            return arrayListOf(getUrlForContext(context, project))
         return null
     }
 
@@ -27,12 +25,13 @@ class UnityDocumentationProvider(private val project: Project) : DocumentationPr
     override fun generateDoc(p0: PsiElement?, p1: PsiElement?): String? = null
     override fun getDocumentationElementForLink(p0: PsiManager?, p1: String?, p2: PsiElement?): PsiElement? = null
 
-    private fun getUrlForContext(context: String): String {
+    private fun getUrlForContext(context: String, project: Project): String {
         // We know context will be a fully qualified type or method name, starting
         // with either `UnityEngine.` or `UnityEditor.`
         // TODO: Use the current version for the fallback online search
         // E.g. https://docs.unity3d.com/2017.4/Documentation/ScriptReference/30_search.html?q=...
         val keyword = stripPrefix(context)
+        val documentationRoot = getLocalDocumentationRoot(project)
         return getFileUri(documentationRoot, "ScriptReference/$keyword.html")
             ?: getFileUri(documentationRoot, "ScriptReference/${keyword.replace('.', '-')}.html")
             ?: "https://docs.unity3d.com/ScriptReference/30_search.html?q=$keyword"
@@ -53,7 +52,7 @@ class UnityDocumentationProvider(private val project: Project) : DocumentationPr
         return null
     }
 
-    private fun getLocalDocumentationRoot(): Path? {
+    private fun getLocalDocumentationRoot(project:Project): Path? {
         return UnityInstallationFinder.getInstance(project).getDocumentationRoot()
     }
 }
