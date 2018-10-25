@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
@@ -41,7 +42,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (info.ResolveErrorType != ResolveErrorType.OK)
                 return;
 
-            var method = (info.DeclaredElement as IMethod).NotNull("info.DeclaredElement as IMethod != null");
+
+            var method = info.DeclaredElement as IMethod; // e.g. localfunction declared element, (when removing `}` and method below is parsed like local function)
+            if (method == null)
+                return;
+            
 
             if (!ourKnownMethods.ContainsKey(method.ShortName))
                 return;
