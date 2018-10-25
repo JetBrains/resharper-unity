@@ -2,6 +2,7 @@
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.Explanatory;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
 {
@@ -18,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
                 },
                 // "Camera.main is inefficient in frequently called methods"
                 {
-                    InefficientCameraMainUsageWarning.HIGHLIGHTING_ID,
+                    PerformanceCriticalCodeCameraMainHighlighting.SEVERITY_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/Camera.main-is-inefficient-in-frequently-called-methods"
                 },
                 // "MonoBehaviours must be instantiated with GameObject.AddComponent instead of new"

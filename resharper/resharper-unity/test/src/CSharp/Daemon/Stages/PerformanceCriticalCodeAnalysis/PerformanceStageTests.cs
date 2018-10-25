@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
 {
 
     [TestUnity]
-    public class PerformanceStageTest : PerformanceStageHiglightingTestBase
+    public class PerformanceStageTest : CSharpHighlightingTestBase
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\PerformanceCriticalCodeAnalysis";
 
@@ -19,17 +19,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
         [Test] public void CoroutineTest() { DoNamedTest(); }
         [Test] public void UnityObjectEqTest() { DoNamedTest(); }
         [Test] public void IndirectCostlyTest() { DoNamedTest(); }
-      
-    }
-    
-      
-    public class PerformanceStageHiglightingTestBase : CSharpHighlightingTestBase
-    {
+     
         protected sealed override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {
-            return highlighting is PerformanceCriticalCodeInvocationReachableHighlighting ||
-                   highlighting is PerformanceCriticalCodeInvocationHighlighting;
+            return highlighting is PerformanceCriticalCodeHighlightingBase;
         }
     }
 }

@@ -83,12 +83,7 @@
         <Title>Incorrect method signature</Title>
         <Description>Method does not match expected signature.</Description>
       </Tag>
-
-      <Tag externalName="InefficientCameraMainUsageWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Inefficient usage of Camera.main</Title>
-        <Description>Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()</Description>
-      </Tag>
-
+ 
       <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Inefficient setting of the parent property</Title>
@@ -272,13 +267,6 @@
       <Argument>ExpectedMethodSignature.FormatSignature(MethodDeclaration.DeclaredName)</Argument>
     </Message>
     <Range>MethodDeclaration.GetNameDocumentRange()</Range>
-  </Warning>
-
-  <Warning name="InefficientCameraMainUsage" configurableSeverity="Unity.InefficientCameraMainUsage">
-    <Parameter type="IReferenceExpression" name="referenceExpression" />
-    <Message value="Camera.main is inefficient in frequently called methods" />
-    <Range>ReferenceExpression.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="InefficientPropertyAccess" configurableSeverity="Unity.InefficientPropertyAccess">
