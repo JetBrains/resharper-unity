@@ -18,8 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     {
         public interface IHandler
         {
-            void OnReferenceAdded(IProject unityProject, Lifetime projectLifetime);
-            void OnSolutionLoaded(UnityProjectsCollection solution);
+            void OnUnityProject(Lifetime projectLifetime, IProject project);
         }
 
         private readonly Lifetime myLifetime;
@@ -85,7 +84,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
                 foreach (var handler in myHandlers)
                 {
-                    handler.OnSolutionLoaded(unityProjects);
+                    foreach (var (project, lifetime) in unityProjectLifetimes)
+                        handler.OnUnityProject(lifetime, project);
                 }
 
                 myChangeManager.RegisterChangeProvider(myLifetime, this);
@@ -103,11 +103,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 try
                 {
-                    handler.OnReferenceAdded(project, projectLifetime);
+                    handler.OnUnityProject(projectLifetime, project);
                     if (project.IsUnityProject())
-                    {
                         HasUnityReference.SetValue(true);
-                    }
                 }
                 catch (Exception e)
                 {

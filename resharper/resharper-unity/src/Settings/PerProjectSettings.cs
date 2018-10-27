@@ -47,17 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
         }
 
-        public void OnSolutionLoaded(UnityProjectsCollection solution)
+        public void OnUnityProject(Lifetime projectLifetime, IProject project)
         {
-            foreach (var kv in solution.UnityProjectLifetimes)
-            {
-                OnReferenceAdded(kv.Key, kv.Value);
-            }
-        }
-
-        public void OnReferenceAdded(IProject unityProject, Lifetime projectLifetime)
-        {
-            InitialiseProjectSettings(projectLifetime, unityProject);
+            InitialiseProjectSettings(projectLifetime, project);
         }
 
         private void InitialiseProjectSettings(Lifetime projectLifetime, IProject project)
