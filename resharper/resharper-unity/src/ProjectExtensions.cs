@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
-using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using JetBrains.Util.Reflection;
 
@@ -51,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             return project != null && project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
-        
+
         private static bool ReferencesUnity(IProject project)
         {
             var targetFrameworkId = project.GetCurrentTargetFrameworkId();
@@ -62,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         private static bool ReferencesAssembly(IProject project, TargetFrameworkId targetFrameworkId, AssemblyNameInfo name)
-        {            
+        {
             return ReferencedAssembliesService.IsProjectReferencingAssemblyByName(project,
                 targetFrameworkId, name, out _);
         }

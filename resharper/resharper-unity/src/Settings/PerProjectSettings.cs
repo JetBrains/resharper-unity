@@ -21,7 +21,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class PerProjectSettings : UnityReferencesTracker.IHandler
+    public class PerProjectSettings : IUnityReferenceChangeHandler
     {
         private static readonly Version ourVersion46 = new Version(4, 6);
 
@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
         }
 
-        public void OnUnityProject(Lifetime projectLifetime, IProject project)
+        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
             InitialiseProjectSettings(projectLifetime, project);
         }
