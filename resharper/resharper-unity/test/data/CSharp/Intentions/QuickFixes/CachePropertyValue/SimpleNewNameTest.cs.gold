@@ -7,9 +7,9 @@ namespace DefaultNamespace
         public void Test(Transform t)
         {
             Vector3 position = Vector3.Back;
-          var position1 = t.position;
-          position1 = position1 + position1 + posit{caret}ion1;
-          t.position = position1;
+            var position1 = t.position;
+            position1 = position1 + position1 + posit{caret}ion1;
+            t.position = position1;
         }
     }
 }
