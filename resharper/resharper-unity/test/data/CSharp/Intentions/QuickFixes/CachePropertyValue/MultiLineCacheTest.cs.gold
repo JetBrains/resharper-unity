@@ -13,7 +13,7 @@ namespace DefaultNamespace
             x += new Vector3(0, 10, 10);
             
             position = position + position;
-          t.position = position;
+            t.position = position;
         }
     }
 }

@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             literalAlterer.Replace(constantValue, element.ShortName);
             var newOwner = literalAlterer.Expression;
             if (!myOwner.Equals(newOwner))
-                return newOwner.FindReference<SyncVarHookReference>() ?? this;
+                return newOwner.FindReference<StringLiteralReferenceBase>(r => r.GetType() == GetType()) ?? this;
             return this;
         }
 
