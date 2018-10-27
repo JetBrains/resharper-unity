@@ -13,9 +13,9 @@ namespace DefaultNamespace
 
             t.localPosition = x;
 
-          var position = t.position;
-          position = position + posi{caret}tion;
-          t.position = position;
+            var position = t.position;
+            position = position + posi{caret}tion;
+            t.position = position;
         }
     }
 }
