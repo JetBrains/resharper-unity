@@ -167,13 +167,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             // * Unity3dRider can set `TargetFrameworkVersion` to `v4.5` on non-Windows machines to fix
             //   an issue resolving System.Linq
 
-            var languageLevel = ReSharperSettingsCSharpLanguageLevel.Default;
+            var languageLevel = ReSharperSettingsCSharpLanguageLevel.CSharp40;
             if (IsLangVersionMissing(project) || IsLangVersionDefault(project))
             {
+                const ReSharperSettingsCSharpLanguageLevel csharp70 = ReSharperSettingsCSharpLanguageLevel.CSharp70;
+
                 // Support for https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration
                 // See also https://github.com/JetBrains/resharper-unity/issues/50#issuecomment-257611218
                 if (project.Location.CombineWithShortName("CSharp70Support").ExistsDirectory)
-                    languageLevel = ReSharperSettingsCSharpLanguageLevel.CSharp70;
+                    languageLevel = csharp70;
                 else if (project.Location.CombineWithShortName("CSharp60Support").ExistsDirectory)
                     languageLevel = ReSharperSettingsCSharpLanguageLevel.CSharp60;
                 else

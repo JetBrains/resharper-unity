@@ -8,7 +8,6 @@ import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.jetbrains.rdclient.daemon.HighlighterRegistrationHost
 import com.jetbrains.rdclient.daemon.IProtocolHighlighterModelHandler
 import com.jetbrains.rdclient.daemon.util.HighlighterModelAgnosticComparator
-import com.jetbrains.rider.daemon.highlighters.lineMarkers.RiderSimpleLineMarkerRenderer
 import com.jetbrains.rider.model.HighlighterModel
 import com.jetbrains.rider.model.UnityPerformanceHiglighterModel
 import java.awt.Color
