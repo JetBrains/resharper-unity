@@ -4,6 +4,7 @@ using JetBrains.Application;
 using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetExtensions;
 using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetTemplates;
 using JetBrains.Rider.Model;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -25,12 +26,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 return content;
             }
+            
+            var possiblePaths = myUnityMonoPathProvider.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).Where(b => b.ExistsFile).ToArray();
+            if (possiblePaths.IsEmpty())
+            {
+                return new RdProjectTemplateInvalidParameter(Name, "Unity installation is not found", null, null, null, content);
+            }
+            
+            var options = new List<RdProjectTemplateGroupOption>();
+            foreach (var path in possiblePaths)
+            {
+                var optionContext = new Dictionary<string, string>(context) {{Name, path.FullPath}};
+                var content1 = factory.CreateNextParameters(new[] {expander}, index + 1, optionContext);
+                options.Add(new RdProjectTemplateGroupOption(path.FullPath, path.FullPath, content1));
+            }
 
-            var defaultPath = "";
-            var possiblePath = myUnityMonoPathProvider.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).FirstOrDefault(b => b.ExistsFile);
-            if (possiblePath != null)
-                defaultPath = possiblePath.FullPath;
-            return new RdProjectTemplateTextParameter(Name, defaultPath, Tooltip, RdTextParameterStyle.FileChooser, content);
+            options.Add(new RdProjectTemplateGroupOption("Custom", "Custom",
+                new RdProjectTemplateTextParameter(Name, "", Tooltip, RdTextParameterStyle.FileChooser, content)));
+            
+            return new RdProjectTemplateGroupParameter(Name, possiblePaths.Last().FullPath, Tooltip, options);
         }
     }
 

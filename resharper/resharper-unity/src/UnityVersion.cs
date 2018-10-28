@@ -1,9 +1,16 @@
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Threading;
+using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -11,10 +18,26 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class UnityVersion
     {
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
+        private readonly ISolution mySolution;
+        private Version myVersionFromProjectVersion;
+        private static string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
 
-        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache)
+        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, 
+            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
+            IShellLocks locks)
         {
             myUnityProjectFileCache = unityProjectFileCache;
+            mySolution = solution;
+            
+            if (locks.Dispatcher.IsAsyncBehaviorProhibited) // for tests
+                return;
+
+            var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+            fileSystemTracker.AdviseFileChanges(lifetime,
+                projectVersionTxtPath,
+                _ => { myVersionFromProjectVersion = TryGetVersionFromProjectVersion(projectVersionTxtPath); });
+            
+            myVersionFromProjectVersion = TryGetVersionFromProjectVersion(projectVersionTxtPath);
         }
 
         [NotNull]
@@ -24,13 +47,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (project == null)
                 return new Version(0, 0);
             var version = myUnityProjectFileCache.GetUnityVersion(project);
-            return version ?? GetActualVersion(project.GetSolution());
+            return version ?? GetActualVersionForSolution();
         }
 
         [NotNull]
-        private Version GetActualVersion([NotNull] ISolution solution)
+        public Version GetActualVersionForSolution()
         {
-            foreach (var project in solution.GetTopLevelProjects())
+            if (myVersionFromProjectVersion != null)
+                return myVersionFromProjectVersion;
+            
+            foreach (var project in mySolution.GetTopLevelProjects())
             {
                 if (project.IsUnityProject())
                 {
@@ -40,7 +66,19 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
             }
 
-            return GetVersionForTests(solution);
+            return GetVersionForTests(mySolution);
+        }
+        
+        [CanBeNull]
+        private Version TryGetVersionFromProjectVersion(FileSystemPath projectVersionTxt)
+        {
+            // Get the version from ProjectSettings/ProjectVersion.txt
+            if (!projectVersionTxt.ExistsFile)
+                return null;
+            var text = projectVersionTxt.ReadAllText2().Text;
+            var match = Regex.Match(text, "m_EditorVersion: (?<version>.*$)");
+            var groups = match.Groups;
+            return match.Success ? Parse(groups["version"].Value) : null;
         }
 
         private static Version GetVersionForTests(ISolution solution)
@@ -66,6 +104,29 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             return unityVersion;
+        }
+
+        public static Version Parse(string input)
+        {
+            var match = Regex.Match(input, pattern);
+            var groups = match.Groups;
+            Version version = null;
+            if (match.Success)
+            {
+                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}");
+            }
+
+            return version;
+        }
+
+        public static string GetVersionFromInfoPlist(FileSystemPath infoPlistPath)
+        {
+            var docs = XDocument.Load(infoPlistPath.FullPath);
+            var keyValuePairs = docs.Descendants("dict")
+                .SelectMany(d => d.Elements("key").Zip(d.Elements().Where(e => e.Name != "key"), (k, v) => new { Key = k, Value = v }))
+                .ToDictionary(i => i.Key.Value, i => i.Value.Value);
+            var fullVersion = keyValuePairs["CFBundleVersion"];
+            return fullVersion;
         }
     }
 }
