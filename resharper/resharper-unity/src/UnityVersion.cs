@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
@@ -21,10 +22,15 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private Version myVersionFromProjectVersion;
         private static string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
 
-        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
+        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, 
+            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
+            IShellLocks locks)
         {
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
+            
+            if (locks.Dispatcher.IsAsyncBehaviorProhibited) // for tests
+                return;
 
             var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
             fileSystemTracker.AdviseFileChanges(lifetime,
