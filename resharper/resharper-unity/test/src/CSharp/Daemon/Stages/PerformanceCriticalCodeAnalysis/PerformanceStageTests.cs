@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
         [Test] public void CoroutineTest() { DoNamedTest(); }
         [Test] public void UnityObjectEqTest() { DoNamedTest(); }
         [Test] public void IndirectCostlyTest() { DoNamedTest(); }
+        [Test] public void InefficientCameraMainUsageWarningTest() {DoNamedTest();}
      
         protected sealed override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)

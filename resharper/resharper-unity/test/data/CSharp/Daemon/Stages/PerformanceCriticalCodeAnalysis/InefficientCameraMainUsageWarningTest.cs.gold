@@ -1,0 +1,47 @@
+﻿using UnityEngine;
+
+public class Test : MonoBehaviour
+{
+    private Camera myMainCamera;
+
+    public void Start()
+    {
+        myMainCamera = Camera.main;
+        var fov = Camera.main.fieldOfView;
+    }
+
+    public void FixedUpdate()
+    {
+        var x = |Camera.main|(0);
+        var fov = |Camera.main|(1).fieldOfView;
+    }
+
+    public void Update()
+    {
+        var x = |Camera.main|(2);
+        var fov = |Camera.main|(3).fieldOfView;
+    }
+
+    public void LateUpdate()
+    {
+        var x = |Camera.main|(4);
+        var fov = |Camera.main|(5).fieldOfView;
+    }
+}
+
+public class Boring
+{
+    public void Update()
+    {
+        var x = Camera.main;
+        var fov = Camera.main.fieldOfView;
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
+(1): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
+(2): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
+(3): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
+(4): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
+(5): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
