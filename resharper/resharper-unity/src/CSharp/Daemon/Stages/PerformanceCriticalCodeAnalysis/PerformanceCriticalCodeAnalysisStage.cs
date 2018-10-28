@@ -469,7 +469,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 if (typeElement.GetAllSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.Object)))
                 {
                     context.MarkCurrentAsCostly();
-                    myConsumer.AddHighlighting(new PerformanceCriticalCodeNullComparisonHighlighting(reference));
+                    
+                    var suffix = equalityExpressionParam.EqualityType == EqualityExpressionType.NE ? "NotNull" : "Null";
+                    var variableName = "is" + expressionType.GetLongPresentableName(CSharpLanguage.Instance) + suffix;
+                    myConsumer.AddHighlighting(new PerformanceCriticalCodeNullComparisonHighlighting(equalityExpressionParam, variableName, reference));
                 }
             }  
         }
