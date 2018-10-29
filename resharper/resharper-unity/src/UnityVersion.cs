@@ -19,8 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private readonly ISolution mySolution;
-        private Version myVersionFromProjectVersion;
-        private static string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
+        private Version myVersionFromProjectVersionTxt;
+        private Version myVersionFromEditorInstanceJson;
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, 
             ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
@@ -35,9 +35,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
             fileSystemTracker.AdviseFileChanges(lifetime,
                 projectVersionTxtPath,
-                _ => { myVersionFromProjectVersion = TryGetVersionFromProjectVersion(projectVersionTxtPath); });
+                _ => { myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath); });
+            myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
             
-            myVersionFromProjectVersion = TryGetVersionFromProjectVersion(projectVersionTxtPath);
+            var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
+            fileSystemTracker.AdviseFileChanges(lifetime,
+                editorInstanceJsonPath,
+                _ => { myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath); });
+            myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
         }
 
         [NotNull]
@@ -53,8 +58,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull]
         public Version GetActualVersionForSolution()
         {
-            if (myVersionFromProjectVersion != null)
-                return myVersionFromProjectVersion;
+            if (myVersionFromEditorInstanceJson != null)
+                return myVersionFromEditorInstanceJson;
+            if (myVersionFromProjectVersionTxt != null)
+                return myVersionFromProjectVersionTxt;
             
             foreach (var project in mySolution.GetTopLevelProjects())
             {
@@ -68,14 +75,25 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return GetVersionForTests(mySolution);
         }
+
+        [CanBeNull]
+        private Version TryGetApplicationPathFromEditorInstanceJson(FileSystemPath editorInstanceJsonPath)
+        {
+            if (!editorInstanceJsonPath.ExistsFile)
+                return null;
+            var text = editorInstanceJsonPath.ReadAllText2().Text;
+            var match = Regex.Match(text, "\"version\" : \"(?<version>.*)\"");
+            var groups = match.Groups;
+            return match.Success ? Parse(groups["version"].Value) : null;
+        }
         
         [CanBeNull]
-        private Version TryGetVersionFromProjectVersion(FileSystemPath projectVersionTxt)
+        private Version TryGetVersionFromProjectVersion(FileSystemPath projectVersionTxtPath)
         {
             // Get the version from ProjectSettings/ProjectVersion.txt
-            if (!projectVersionTxt.ExistsFile)
+            if (!projectVersionTxtPath.ExistsFile)
                 return null;
-            var text = projectVersionTxt.ReadAllText2().Text;
+            var text = projectVersionTxtPath.ReadAllText2().Text;
             var match = Regex.Match(text, "m_EditorVersion: (?<version>.*$)");
             var groups = match.Groups;
             return match.Success ? Parse(groups["version"].Value) : null;
@@ -108,6 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static Version Parse(string input)
         {
+            const string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
             var match = Regex.Match(input, pattern);
             var groups = match.Groups;
             Version version = null;
