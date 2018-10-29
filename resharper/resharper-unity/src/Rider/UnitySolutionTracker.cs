@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // track not only folder itself, but also files inside
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder), true,
                 OnChangeActionProjectSettingsFolder);
-            
+
             unityHost.PerformModelAction(model =>
             {
                 unityReferencesTracker.HasUnityReference.Advise(lifetime, res => { model.HasUnityReference.SetValue(res); });
@@ -57,10 +57,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void OnChangeActionProjectSettingsFolder (FileSystemChangeDelta delta)
         {
-            if (delta.NewPath.Name == "ProjectSettings" || delta.NewPath.Name == "ProjectVersion.txt" || delta.NewPath.ExtensionNoDot=="asset" 
-                || 
+            if (delta.NewPath.Name == "ProjectSettings" || delta.NewPath.Name == "ProjectVersion.txt" || delta.NewPath.ExtensionNoDot=="asset"
+                ||
                 delta.OldPath.Name == "ProjectSettings" || delta.OldPath.Name == "ProjectVersion.txt" || delta.OldPath.ExtensionNoDot=="asset")
-            { 
+            {
                 OnChangeAction(delta);
             }
         }

@@ -10,36 +10,17 @@ using JetBrains.Rider.Model;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
-    public class UnitySettingsSynchronizer : UnityReferencesTracker.IHandler
+    public class UnitySettingsSynchronizer
     {
-        private readonly Lifetime myLifetime;
-        private readonly UnityHost myHost;
-        private readonly IContextBoundSettingsStoreLive myBoundStore;
-
-        public UnitySettingsSynchronizer(
-            Lifetime lifetime,
-            ISolution solution,
-            UnityHost host,
-            ISettingsStore settingsStore)
+        public UnitySettingsSynchronizer(Lifetime lifetime, ISolution solution, UnityHost host,
+                                         ISettingsStore settingsStore)
         {
-            myLifetime = lifetime;
-            myHost = host;
-            myBoundStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
-        }
-
-        public void OnReferenceAdded(IProject unityProject, Lifetime projectLifetime)
-        {
-        }
-
-        public void OnSolutionLoaded(UnityProjectsCollection solution)
-        {
-            var entry = myBoundStore.Schema.GetScalarEntry((UnitySettings s) => s.EnableShaderLabHippieCompletion);            
-            myBoundStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise(myLifetime, pcea =>
+            var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
+            var entry = boundStore.Schema.GetScalarEntry((UnitySettings s) => s.EnableShaderLabHippieCompletion);
+            boundStore.GetValueProperty<bool>(lifetime, entry, null).Change.Advise(lifetime, args =>
             {
-                if (pcea.HasNew)
-                {
-                    myHost.PerformModelAction(rd => rd.EnableShaderLabHippieCompletion.Value = pcea.New);
-                }
+                if (args.HasNew)
+                    host.PerformModelAction(rd => rd.EnableShaderLabHippieCompletion.Value = args.New);
             });
         }
     }
