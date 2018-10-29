@@ -1,5 +1,6 @@
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Base;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 
@@ -33,8 +34,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             myHost.PerformModelAction(rd =>
             {
-                rd.ApplicationPath.SetValue(path.FullPath);
-                rd.ApplicationContentsPath.SetValue(contentPath.FullPath);
+                // ApplicationPath may be already set via UnityEditorProtocol, which is more accurate
+                if (!rd.ApplicationPath.HasValue())
+                    rd.ApplicationPath.SetValue(path.FullPath);
+                if (!rd.ApplicationContentsPath.HasValue())
+                    rd.ApplicationContentsPath.SetValue(contentPath.FullPath);
             });
         }
     }
