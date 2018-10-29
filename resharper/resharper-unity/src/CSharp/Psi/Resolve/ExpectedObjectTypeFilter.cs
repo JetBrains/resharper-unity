@@ -40,21 +40,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
                 // one of the UnityEngine assemblies, or UnityEditor.dll. Another check might be that the referenced
                 // module lives in Assets, but packages makes a mess of that (referenced packages are compiled and
                 // referenced from Library or local packages can include a dll as an asset, external to the project)
-                if (typeElement is CompiledTypeElement compiledTypeElement &&
-                    compiledTypeElement.Module is IAssemblyPsiModule assemblyPsiModule)
-                {
-                    var name = assemblyPsiModule.Assembly.AssemblyName.Name;
-                    if (name.StartsWith("UnityEngine") || name.StartsWith("UnityEditor"))
-                    {
-                        myIsBuiltin = true;
-                        return DerivesFrom(typeElement, KnownTypes.Component);
-                    }
-                }
+                myIsBuiltin = typeElement.IsBuiltInUnityClass();
+                if (myIsBuiltin)
+                    return typeElement.DerivesFrom(KnownTypes.Component);
 
-                return DerivesFrom(typeElement, KnownTypes.MonoBehaviour);
+                return typeElement.DerivesFrom(KnownTypes.MonoBehaviour);
             }
 
-            return DerivesFrom(typeElement, KnownTypes.ScriptableObject);
+            return typeElement.DerivesFrom(KnownTypes.ScriptableObject);
         }
 
         public override ResolveErrorType ErrorType
@@ -72,21 +65,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
                     default:
                         return ResolveErrorType.IGNORABLE;
                 }
-            }
-        }
-
-        private bool DerivesFrom(ITypeElement candidate, IClrTypeName baseTypeName)
-        {
-            var baseType = GetTypeElement(baseTypeName, candidate.Module);
-            return candidate.IsDescendantOf(baseType);
-        }
-
-        private ITypeElement GetTypeElement(IClrTypeName typeName, IPsiModule module)
-        {
-            using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-            {
-                var type = TypeFactory.CreateTypeByCLRName(typeName, module);
-                return type.GetTypeElement();
             }
         }
     }
