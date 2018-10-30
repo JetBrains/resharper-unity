@@ -85,6 +85,8 @@
   <actions>
 
     <group id="UnityToolbarActions">
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
+
       <separator/>
       <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
         <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
@@ -100,8 +102,6 @@
       <action id="TriggerPauseInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"  />
       <action id="TriggerStepInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" />
       <separator/>
-
-      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
     </group>
 
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction">
@@ -111,13 +111,6 @@
     <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties...">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
     </action>
-
-    <group id="UnityLogPanelViewToolbar" text="Unity log panel">
-      <action id="RefreshInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Refresh" description="Starts refresh in Unity" />
-      <action id="PlayInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction" text="Play/Edit" description="Change Play/Edit mode in Unity" />
-      <action id="PauseInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction" text="Pause/Resume" description="Pause/Resume play in Unity" />
-      <action id="StepInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" text="Step" description="Perform a single frame step in Unity" />
-    </group>
   </actions>
 
   <description><![CDATA[
