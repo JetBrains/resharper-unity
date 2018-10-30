@@ -26,8 +26,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     public List<TestEvent> DelayedEvents = new List<TestEvent>();
 
     private static readonly ILog ourLogger = Log.GetLog("TestEventsCollector");
-    private Component Controller;
-   
+    
     public void SetupPersistentListeners(object runner)
     {
       UnityEventTools.AddPersistentListener((UnityEvent<ITest>) runner.GetType().GetField("testStartedEvent",
