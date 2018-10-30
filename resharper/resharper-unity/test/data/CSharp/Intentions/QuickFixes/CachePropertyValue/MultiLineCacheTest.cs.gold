@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class MultiLineCacheTest
+    {
+        public void Test(Transform t)
+        {
+          var position = t.position;
+          position = position + position + posit{caret}ion;
+
+            var x = new Vector3(10, 0, 0);
+            x += new Vector3(0, 10, 10);
+            
+            position = position + position;
+            t.position = position;
+        }
+    }
+}

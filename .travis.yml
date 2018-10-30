@@ -15,7 +15,7 @@ before_script:
   - ./gradlew resolveDependencies
   - popd
 script:
-  - ./build.sh
+  - ./build.sh --info --stacktrace
 os:
   - linux
 notifications:
