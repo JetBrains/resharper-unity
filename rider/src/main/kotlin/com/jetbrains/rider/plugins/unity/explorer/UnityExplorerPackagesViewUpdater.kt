@@ -1,32 +1,28 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.util.treeView.AbstractTreeNode
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileEvent
 import com.intellij.openapi.vfs.VirtualFileListener
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.ui.tree.TreeVisitor
+import com.jetbrains.rdclient.util.idea.createNestedDisposable
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
 import com.jetbrains.rider.util.lifetime.Lifetime
 
-class UnityExplorerPackagesViewUpdater(project: Project, private val pane: UnityExplorer, private val packagesManager: PackagesManager): Disposable {
-
-    private val lifetimeDefinition = Lifetime.create(Lifetime.Eternal)
+class UnityExplorerPackagesViewUpdater(lifetime: Lifetime, project: Project, private val pane: UnityExplorer, private val packagesManager: PackagesManager) {
 
     init {
         // Set up a file listener for Packages/manifest.json. If it's added, deleted or modified, refresh all
         val listener = FileListener(project)
-        val manager = VirtualFileManager.getInstance()
-        manager.addVirtualFileListener(listener)
-        lifetimeDefinition.lifetime.add { manager.removeVirtualFileListener(listener) }
+        VirtualFileManager.getInstance().addVirtualFileListener(listener, lifetime.createNestedDisposable())
 
         // Update the modules node whenever the Unity editor's application path changes
-        project.solution.rdUnityModel.applicationPath.advise(lifetimeDefinition.lifetime) {
+        project.solution.rdUnityModel.applicationPath.advise(lifetime) {
             // Refresh the package managers cached view of the packages and refresh the built in packages node
             // We have to refresh the packages because the package data for built in packages is resolved as either
             // known or unknown, based on the built in package root
@@ -45,10 +41,6 @@ class UnityExplorerPackagesViewUpdater(project: Project, private val pane: Unity
                 }
             }, false, true)
         }
-    }
-
-    override fun dispose() {
-        lifetimeDefinition.terminate()
     }
 
     private fun updateUnityExplorerRoot() {

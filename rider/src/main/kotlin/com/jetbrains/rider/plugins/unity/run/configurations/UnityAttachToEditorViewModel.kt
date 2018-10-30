@@ -12,6 +12,7 @@ import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.ViewableList
 
 class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
+
     val editorInstanceJsonStatus: EditorInstanceJsonStatus
     val editorProcesses: ViewableList<EditorProcessInfo> = ViewableList()
     val pid: IProperty<Int?> = Property(null)
@@ -28,7 +29,7 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
             editorProcesses[0].pid
         }
         else {
-            editorInstanceJson?.let { it.process_id }
+            editorInstanceJson?.process_id
         }
     }
 
