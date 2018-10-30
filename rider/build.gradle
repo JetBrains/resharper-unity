@@ -11,7 +11,7 @@ plugins {
 }
 
 
-ext.repoRoot = new File("..").canonicalFile
+ext.repoRoot = project.file("..")
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 ext.bundledRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
 

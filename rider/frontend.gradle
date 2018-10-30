@@ -1,11 +1,3 @@
-sourceSets {
-    // Default is `rider/src/test/java` and `rider/src/test/resources`
-    test {
-        java.srcDir 'testSrc'
-        resources.srcDir 'testData'
-    }
-}
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 

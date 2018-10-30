@@ -21,7 +21,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class PerProjectSettings : UnityReferencesTracker.IHandler
+    public class PerProjectSettings : IUnityReferenceChangeHandler
     {
         private static readonly Version ourVersion46 = new Version(4, 6);
 
@@ -47,17 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
         }
 
-        public void OnSolutionLoaded(UnityProjectsCollection solution)
+        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
-            foreach (var kv in solution.UnityProjectLifetimes)
-            {
-                OnReferenceAdded(kv.Key, kv.Value);
-            }
-        }
-
-        public void OnReferenceAdded(IProject unityProject, Lifetime projectLifetime)
-        {
-            InitialiseProjectSettings(projectLifetime, unityProject);
+            InitialiseProjectSettings(projectLifetime, project);
         }
 
         private void InitialiseProjectSettings(Lifetime projectLifetime, IProject project)
@@ -170,22 +162,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             // * Unity3dRider can set `TargetFrameworkVersion` to `v4.5` on non-Windows machines to fix
             //   an issue resolving System.Linq
 
-            var languageLevel = CSharpLanguageLevel.Default;
+            var languageLevel = ReSharperSettingsCSharpLanguageLevel.Default;
             if (IsLangVersionMissing(project) || IsLangVersionDefault(project))
             {
-                const CSharpLanguageLevel csharp70 = CSharpLanguageLevel.Experimental;
-
                 // Support for https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration
                 // See also https://github.com/JetBrains/resharper-unity/issues/50#issuecomment-257611218
                 if (project.Location.CombineWithShortName("CSharp70Support").ExistsDirectory)
-                    languageLevel = csharp70;
+                    languageLevel = ReSharperSettingsCSharpLanguageLevel.CSharp70;
                 else if (project.Location.CombineWithShortName("CSharp60Support").ExistsDirectory)
-                    languageLevel = CSharpLanguageLevel.CSharp60;
+                    languageLevel = ReSharperSettingsCSharpLanguageLevel.CSharp60;
                 else
                 {
                     languageLevel = IsTargetFrameworkAtLeast46(project)
-                        ? CSharpLanguageLevel.CSharp60
-                        : CSharpLanguageLevel.CSharp40;
+                        ? ReSharperSettingsCSharpLanguageLevel.CSharp60
+                        : ReSharperSettingsCSharpLanguageLevel.CSharp40;
                 }
             }
             SetValue(mountPoint, (CSharpLanguageProjectSettings s) => s.LanguageLevel, languageLevel);

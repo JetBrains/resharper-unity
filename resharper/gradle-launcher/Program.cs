@@ -17,14 +17,14 @@ namespace GradleLauncher
             Environment.CurrentDirectory = args[0];
             Console.WriteLine("Current directory: {0}", Environment.CurrentDirectory);
 
-            var args2 = args.ToList();
-            args2.RemoveAt(0);
-            var arguments = args2.ToArray();
+            // Don't perform an online dependency check every time we try to run. We've already done this when initially
+            // building the project, and it's just dead annoying when you're on a plane
+            args[0] = "--offline";
 
             if (IsWindows())
-                ExecuteBatchFile("gradlew.bat", arguments);
+                ExecuteBatchFile("gradlew.bat", args);
             else
-                ExecuteShellScript("./gradlew", arguments);
+                ExecuteShellScript("./gradlew", args);
         }
 
         private static bool IsWindows()
