@@ -15,7 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [PsiComponent]
     public class MetaFileGuidCache : SimpleICache<MetaFileCacheItem>
     {
-        private readonly CompactOneToListMap<string, FileSystemPath> myAssetGuidToAssetFilePaths = new CompactOneToListMap<string, FileSystemPath>();
+        // We expect to only get one asset with a given guid, but copy/pasting .meta files could break that.
+        // CompactOneToListMap is optimised for the typical use case of only one item per key
+        private readonly CompactOneToListMap<string, FileSystemPath> myAssetGuidToAssetFilePaths =
+            new CompactOneToListMap<string, FileSystemPath>();
 
         public MetaFileGuidCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager)
             : base(lifetime, persistentIndexManager, MetaFileCacheItem.Marshaller)
