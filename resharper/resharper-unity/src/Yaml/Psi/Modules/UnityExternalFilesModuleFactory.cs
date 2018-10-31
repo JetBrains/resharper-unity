@@ -25,9 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             // 2) It doesn't let us add a module reference, which might cause problems when we add a reference from a
             //    .unity file (in this module) to a method in a C# project module
 
-            // TODO: Conditionally create the module
-            // I think we can do this by adding it, then doing changeBuilder.AddAssemblyChange(module, ADDED). See the
-            // ExternalAnnotationsModuleFactory
+            // NOTE2: It would be nice to conditionally create this, but UnityExternalFilesModuleProcessor, and more
+            // importantly its base class AdditionalFilesModuleFactoryBase require an IPsiModuleOnFileSystemPaths as a
+            // constructor parameter. Otherwise, changeBuilder.AddAssemblyChange(module, ADDED) would do the trick.
+
             PsiModule = new PsiModuleOnFileSystemPaths(solution, "Unity external files", "UnityExternalFilesPsiModule",
                 TargetFrameworkId.Default, fileSystemTracker, lifetime);
             Modules = new HybridCollection<IPsiModule>(PsiModule);
