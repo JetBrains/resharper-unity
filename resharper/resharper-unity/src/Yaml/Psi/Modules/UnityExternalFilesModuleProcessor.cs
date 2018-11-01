@@ -130,6 +130,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             if (added.Count > 0)
                 FlushChanges(added, EmptyList<FileSystemPath>.Instance, true);
+
+            AddModuleReference(project);
         }
 
         private void ProcessAssets(List<FileSystemPath> added)
@@ -211,7 +213,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 ProcessFileSystemDelta(child, ref added, ref removed);
         }
 
-        private bool IsInterestingFile(FileSystemPath path)
+        // We need to add a module reference to the C# project so that searching for method usages will include this
+        // module in the search scope. This makes sense - this module is conceptually the same as the Unity project
+        // (i.e. Assets + Packages) and it needs to take a dependency on the C# projects in order to correctly see the
+        // methods
+        private void AddModuleReference(IProject project)
+        {
+            var thisModule = (UnityExternalFilesPsiModule) PsiModule;
+            foreach (var module in project.GetPsiModules())
+                thisModule.AddModuleReference(module);
+
+            var builder = new PsiModuleChangeBuilder();
+            builder.AddModuleChange(thisModule, PsiModuleChange.ChangeType.Modified);
+
+            myLocks.ExecuteOrQueueEx(myLifetime, GetType().Name + ".FlushModuleChanges",
+                () => PropagateChanges(builder, true));
+        }
+
+        private static bool IsInterestingFile(IPath path)
         {
             // TODO: Only process .unity if the project is set to text serialisation
             // TODO: Should we check for .cs.meta instead of just .meta?
