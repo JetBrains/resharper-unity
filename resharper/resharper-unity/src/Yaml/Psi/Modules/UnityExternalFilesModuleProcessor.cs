@@ -39,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly IPsiSourceFileProperties myPsiSourceFileProperties;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly GroupingEvent myGroupingEvent;
+        private readonly FileSystemPath mySolutionDirectory;
         private JetHashSet<FileSystemPath> myFileChanges = new JetHashSet<FileSystemPath>();
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ISolution solution, ChangeManager changeManager,
@@ -53,6 +54,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myFileSystemTracker = fileSystemTracker;
             myPsiSourceFileProperties = new UnityExternalFileProperties();
             myRootPaths = new JetHashSet<FileSystemPath>();
+
+            // SolutionDirectory isn't absolute in tests, so resolve it. If it's not absolute and we call Exists, we'll
+            // get an exception (and break ALL the tests)
+            mySolutionDirectory = solution.SolutionDirectory;
+            if (!mySolutionDirectory.IsAbsolute)
+                mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory());
 
             myGroupingEvent = locks.GroupingEvents.CreateEvent(lifetime, GetType().Name + ".FileChanges",
                 TimeSpan.FromMilliseconds(50.0), Rgc.Guarded, FlushFileChanges);
@@ -124,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 // This assumes that all of the files in a project are in the same folder
                 // TODO: Is this a reasonable assumption?
                 var projectDirectory = project.Location;
-                if (!Solution.SolutionDirectory.IsPrefixOf(projectDirectory))
+                if (!mySolutionDirectory.IsPrefixOf(projectDirectory))
                     ProcessFolder(projectDirectory, added);
             }
 
@@ -136,14 +143,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private void ProcessAssets(List<FileSystemPath> added)
         {
-            var assetsPath = Solution.SolutionDirectory.Combine("Assets");
+            var assetsPath = mySolutionDirectory.Combine("Assets");
             if (assetsPath.ExistsDirectory)
                 ProcessFolder(assetsPath, added);
         }
 
         private void ProcessPackages(List<FileSystemPath> added)
         {
-            var packagesPath = Solution.SolutionDirectory.Combine("Packages");
+            var packagesPath = mySolutionDirectory.Combine("Packages");
             if (packagesPath.ExistsDirectory)
                 ProcessFolder(packagesPath, added);
         }
@@ -151,7 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private void ProcessProjectSettings(List<FileSystemPath> added)
         {
             // This doesn't handle ProjectSettings/ProjectVersion.txt, but I don't think we really care about that
-            var projectSettingsPath = Solution.SolutionDirectory.Combine("ProjectSettings");
+            var projectSettingsPath = mySolutionDirectory.Combine("ProjectSettings");
             if (projectSettingsPath.ExistsDirectory)
                 ProcessFolder(projectSettingsPath, added);
         }
