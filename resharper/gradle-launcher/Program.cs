@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -17,14 +18,14 @@ namespace GradleLauncher
             Environment.CurrentDirectory = args[0];
             Console.WriteLine("Current directory: {0}", Environment.CurrentDirectory);
 
-            // Don't perform an online dependency check every time we try to run. We've already done this when initially
-            // building the project, and it's just dead annoying when you're on a plane
-            args[0] = "--offline";
+            var arguments = args.ToList();
+            arguments.RemoveAt(0);
 
+            // Note: Pass --offline to run gradle in offline mode
             if (IsWindows())
-                ExecuteBatchFile("gradlew.bat", args);
+                ExecuteBatchFile("gradlew.bat", arguments);
             else
-                ExecuteShellScript("./gradlew", args);
+                ExecuteShellScript("./gradlew", arguments);
         }
 
         private static bool IsWindows()
@@ -33,7 +34,7 @@ namespace GradleLauncher
             return platform == PlatformID.Win32Windows || platform == PlatformID.Win32NT;
         }
 
-        private static void ExecuteBatchFile(string batchFile, string[] args)
+        private static void ExecuteBatchFile(string batchFile, IEnumerable<string> args)
         {
             var commandline = args.FormatArgs();
 
@@ -64,7 +65,7 @@ namespace GradleLauncher
             }
         }
 
-        static void ExecuteShellScript(string command, string[] args)
+        static void ExecuteShellScript(string command, IEnumerable<string> args)
         {
             var commandline = $"-c \"{command} {string.Join(" ", args)}\"";
 
@@ -76,10 +77,15 @@ namespace GradleLauncher
             };
 
             using (var process = Process.Start(processInfo))
+            {
+                if (process == null)
+                    throw new InvalidOperationException("Woah, process is null!");
+
                 process.WaitForExit();
+            }
         }
 
-        static string FormatArgs(this string[] args)
+        private static string FormatArgs(this IEnumerable<string> args)
         {
             return string.Join(" ", args);
         }
