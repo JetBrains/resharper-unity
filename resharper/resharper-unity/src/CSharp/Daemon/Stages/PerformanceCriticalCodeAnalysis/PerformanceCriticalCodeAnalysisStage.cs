@@ -8,6 +8,7 @@ using JetBrains.DocumentModel;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
+using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
@@ -25,7 +26,7 @@ using JetBrains.Util.dataStructures.TypedIntrinsics;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
-    [DaemonStage(StagesBefore = new[] {typeof(CSharpErrorStage)})]
+    [DaemonStage(StagesBefore = new[] {typeof(CSharpErrorStage), typeof(GlobalFileStructureCollectorStage)})]
     public class PerformanceCriticalCodeAnalysisStage : CSharpDaemonStageBase
     { 
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
@@ -70,9 +71,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             myCheckForInterrupt = InterruptableActivityCookie.GetCheck().NotNull();
         }
 
+        
         public override void Execute(Action<DaemonStageResult> committer)
         {
-            HighlightInFile(AnalyzeFile, committer, mySettingsStore);
+            var highlightingConsumer = new FilteringHighlightingConsumer(new PerformanceHighlightingConsumer(DaemonProcess.SourceFile, File),DaemonProcess.SourceFile, File, DaemonProcess.ContextBoundSettingsStore);
+            AnalyzeFile(File, highlightingConsumer);
+            committer(new DaemonStageResult(highlightingConsumer.Highlightings));
         }
 
         private void AnalyzeFile(ICSharpFile file, IHighlightingConsumer consumer)
@@ -129,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         continue;
 
                     var references = invocationElement.Value;
-                    foreach (var reference in references)
+                    foreach (var reference in references)    
                     {
                         consumer.AddHighlighting(new PerformanceCriticalCodeInvocationHighlighting(null, reference, false));
                     }
@@ -444,25 +448,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 
                 if (leftOperand == null || rightOperand == null)
                     return;
-                
-                IExpressionType expressionType = null;
+
+                ICSharpExpression expression = null;
                 
                 if (leftOperand.ConstantValue.IsNull())
                 {
                     isNullFound = true;
-                    expressionType = rightOperand.GetExpressionType();
+                    expression = rightOperand;
                   
                 }
                 else if (rightOperand.ConstantValue.IsNull())
                 {
                     isNullFound = true;
-                    expressionType = leftOperand.GetExpressionType();
+                    expression = leftOperand;
                 }
 
                 if (!isNullFound)
                     return;
                 
-                var typeElement = expressionType.ToIType()?.GetTypeElement();
+                var typeElement = expression.GetExpressionType().ToIType()?.GetTypeElement();
                 if (typeElement == null)
                     return;
 
@@ -471,7 +475,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                     context.MarkCurrentAsCostly();
                     
                     var suffix = equalityExpressionParam.EqualityType == EqualityExpressionType.NE ? "NotNull" : "Null";
-                    var variableName = "is" + expressionType.GetLongPresentableName(CSharpLanguage.Instance) + suffix;
+
+                    string baseName = null;
+                    if (expression is IReferenceExpression referenceExpression)
+                    {
+                        baseName = referenceExpression.NameIdentifier.Name;
+                    }
+                    else
+                    {
+                        baseName = typeElement.ShortName;
+                    }
+                    
+                    var variableName = "is" + baseName + suffix;
                     myConsumer.AddHighlighting(new PerformanceCriticalCodeNullComparisonHighlighting(equalityExpressionParam, variableName, reference));
                 }
             }  

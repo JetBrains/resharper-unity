@@ -9,6 +9,8 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.TextControl.DocumentMarkup.LineMarkers;
+
 [assembly:
     RegisterConfigurableSeverity(
         PerformanceCriticalCodeInvocationHighlighting.SEVERITY_ID, 
@@ -42,12 +44,14 @@ using JetBrains.ReSharper.Psi.Resolve;
         PerformanceCriticalCodeCameraMainHighlighting.MESSAGE,
         Severity.INFO
     ),
+    
+    RegisterConfigurableHighlightingsGroup(PerformanceCriticalCodeHighlightingAttributeIds.GroupID, "Unity performance analysis")
 ]
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
-    [StaticSeverityHighlighting(
-        Severity.INFO, CSharpLanguage.Name,
+    [ConfigurableSeverityHighlighting(
+        PerformanceCriticalCodeInvocationHighlighting.SEVERITY_ID, CSharpLanguage.Name, Languages = "CSHARP",
         AttributeId = PerformanceCriticalCodeHighlightingAttributeIds.COSTLY_METHOD_INVOCATION,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
@@ -61,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public const string MESSAGE = "Costly method is invoked from performance context";
 
         public PerformanceCriticalCodeInvocationHighlighting([CanBeNull] IInvocationExpression invocationExpression, [NotNull] IReference reference, bool isMoveToStartAvailable) : 
-            base(PerformanceCriticalCodeHighlightingAttributeIds.COSTLY_METHOD_INVOCATION, MESSAGE)
+            base(SEVERITY_ID, PerformanceCriticalCodeHighlightingAttributeIds.COSTLY_METHOD_INVOCATION, MESSAGE)
         {
             InvocationExpression = invocationExpression;
             Reference = reference;
@@ -73,9 +77,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override DocumentRange CalculateRange() => Reference.GetDocumentRange();
     }
     
-    [StaticSeverityHighlighting(
-        Severity.INFO, CSharpLanguage.Name,
-        AttributeId = PerformanceCriticalCodeHighlightingAttributeIds.COSTLY_METHOD_INVOCATION,
+    [ConfigurableSeverityHighlighting(
+        PerformanceCriticalCodeNullComparisonHighlighting.SEVERITY_ID, CSharpLanguage.Name, Languages = "CSHARP",
+        AttributeId = PerformanceCriticalCodeHighlightingAttributeIds.NULL_COMPARISON,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
     public class PerformanceCriticalCodeNullComparisonHighlighting : PerformanceCriticalCodeHighlightingBase
@@ -88,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public const string MESSAGE = "Null comparisons against UnityEngine.Object subclasses is expensive";
 
         public PerformanceCriticalCodeNullComparisonHighlighting([NotNull] ICSharpExpression expression, [NotNull] string fieldName, [NotNull] IReference reference) :
-            base(PerformanceCriticalCodeHighlightingAttributeIds.COSTLY_METHOD_INVOCATION, MESSAGE)
+            base(SEVERITY_ID, PerformanceCriticalCodeHighlightingAttributeIds.NULL_COMPARISON, MESSAGE)
         {
             Expression = expression;
             FieldName = fieldName;
@@ -100,8 +104,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override DocumentRange CalculateRange() => myReference.GetDocumentRange();
     }
     
-    [StaticSeverityHighlighting(
-        Severity.INFO, CSharpLanguage.Name,
+    [ConfigurableSeverityHighlighting(
+        PerformanceCriticalCodeCameraMainHighlighting.SEVERITY_ID, CSharpLanguage.Name, Languages = "CSHARP",
         AttributeId = PerformanceCriticalCodeHighlightingAttributeIds.CAMERA_MAIN,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
@@ -113,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public const string MESSAGE = "Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()";
 
         public PerformanceCriticalCodeCameraMainHighlighting([NotNull] IReferenceExpression referenceExpression) :
-            base(PerformanceCriticalCodeHighlightingAttributeIds.CAMERA_MAIN, MESSAGE)
+            base(SEVERITY_ID, PerformanceCriticalCodeHighlightingAttributeIds.CAMERA_MAIN, MESSAGE)
         {
             ReferenceExpression = referenceExpression;
         }
@@ -123,13 +127,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override DocumentRange CalculateRange() => ReferenceExpression.GetHighlightingRange();
     }
     
-    [StaticSeverityHighlighting(
-        Severity.INFO, CSharpLanguage.Name,
+    [StaticSeverityHighlighting(Severity.INFO, CSharpLanguage.Name, Languages = "CSHARP",
         AttributeId = PerformanceCriticalCodeHighlightingAttributeIds.COSTLY_METHOD_HIGHLIGHTER,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
     [DaemonTooltipProvider(typeof(PerformanceCriticalCodeHighlightingTooltipProvider))]
-    public class PerformanceCriticalCodeHighlighting: ICustomAttributeIdHighlighting
+    public class PerformanceCriticalCodeHighlighting: PerformanceCriticalCodeHighlightingBase, ILineMarkerInfo
     {
         private readonly DocumentRange myRange;
         public const string SEVERITY_ID = "Unity.PerformanceCriticalCodeHighlighting";
@@ -137,24 +140,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public const string MESSAGE = "";
 
         public PerformanceCriticalCodeHighlighting(DocumentRange range)
+            : base(SEVERITY_ID, PerformanceCriticalCodeHighlightingAttributeIds.COSTLY_METHOD_HIGHLIGHTER, MESSAGE)
         {
             myRange = range;
         }
 
-        public bool IsValid() => true;
+        public override bool IsValid() => true;
+        public override DocumentRange CalculateRange() => myRange;
 
-        public DocumentRange CalculateRange() => myRange;
-
-        public string ToolTip => string.Empty;
-        public string ErrorStripeToolTip => string.Empty;
-        public string AttributeId => PerformanceCriticalCodeHighlightingAttributeIds.COSTLY_METHOD_HIGHLIGHTER;
+        public string RendererId => null;
+        public int Thickness => 3;
+        public LineMarkerPosition Position => LineMarkerPosition.LEFT;
     }
     
     
     public abstract class PerformanceCriticalCodeHighlightingBase : ICustomAttributeIdHighlighting
     {
-        protected PerformanceCriticalCodeHighlightingBase([NotNull] string attributeId, [NotNull] string message)
+        [NotNull] public readonly string SeverityId;
+
+        protected PerformanceCriticalCodeHighlightingBase([NotNull] string severityId, [NotNull] string attributeId, [NotNull] string message)
         {
+            SeverityId = severityId;
             ToolTip = message;
             AttributeId = attributeId;
         }

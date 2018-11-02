@@ -73,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
 
             if (previousLoop != null)
             {
-                return new IntentionAction(new MoveFromLoopAction(ToMove, previousLoop), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor);
+                return new IntentionAction(new MoveFromLoopAction(toMove, previousLoop, FieldName), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor);
             }
             
             return null;
@@ -127,8 +127,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
-                var statement = myToMove.GetContainingStatement();
-                Assertion.AssertNotNull(statement, "statement != null");
                 var anchor = myLoopStatement as ICSharpStatement;
 
                 var declaredElement = MonoBehaviourMoveUtil.GetDeclaredElementFromParentDeclaration(myToMove);
@@ -140,8 +138,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 ICSharpStatement declaration = factory.CreateStatement("var $0 = $1;", name, myToMove.Copy());
                 StatementUtil.InsertStatement(declaration, ref anchor, true);
                 myToMove.ReplaceBy(factory.CreateReferenceExpression(name));
-                
-                statement.RemoveOrReplaceByEmptyStatement();
                 return null;
             }
 
