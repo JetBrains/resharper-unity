@@ -156,6 +156,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                 return null;
 
             var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
+            if (!filePath.IsAbsolute)
+                return null;
+            
             if (filePath.ExistsFile)
             {
                 if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
