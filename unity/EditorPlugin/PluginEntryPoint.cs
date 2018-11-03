@@ -115,7 +115,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
       {
         ourLogger.Verbose("Call OnGeneratedCSProjectFiles once per Unity process.");
-        UnityUtils.SyncSolution(); // On first opening Unity doesn't regenerate csproj https://youtrack.jetbrains.com/issue/RIDER-21035
+        CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
         RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
       }
 
