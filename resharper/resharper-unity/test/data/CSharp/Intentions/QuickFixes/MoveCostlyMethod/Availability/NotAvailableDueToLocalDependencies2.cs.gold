@@ -1,0 +1,29 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class EveryThingAvailable : MonoBehaviour
+    {
+        |public GameObject MyGetComponent(int i)
+        {
+            return |GetComponent|(1)<Transform>();
+        }|(0)
+        
+        |public void Update()
+        {
+            int i = 0;
+            var transform = |MyGetComponent|(3)(i);
+        }|(2)
+    }
+}
+------------------------------------------------
+0: 
+NO QUICKFIXES
+1: Costly method is invoked from performance context
+QUICKFIXES:
+Move to Start
+Move to Awake
+2: 
+NO QUICKFIXES
+3: Costly method is invoked from performance context
+NO QUICKFIXES

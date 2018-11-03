@@ -6,11 +6,11 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.MoveQuickFixes
 {
     [QuickFix]
-    public class MoveCostlyInvocationToStartQuickFix : AbstractMoveQuickFix
+    public class MoveCostlyInvocationtQuickFix : AbstractMoveQuickFix
     {
         private readonly bool myWarningIsMoveToStartAvailable;
 
-        public MoveCostlyInvocationToStartQuickFix(PerformanceCriticalCodeInvocationHighlighting warning) :
+        public MoveCostlyInvocationtQuickFix(PerformanceCriticalCodeInvocationHighlighting warning) :
             base(warning.InvocationExpression?.GetContainingNode<IClassDeclaration>(), warning.InvocationExpression)
         {
             myWarningIsMoveToStartAvailable = warning.IsMoveToStartAvailable;
