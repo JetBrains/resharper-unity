@@ -156,7 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                 return null;
 
             var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
-            if (!filePath.IsAbsolute)
+            if (!filePath.IsAbsolute) // RIDER-21237
                 return null;
             
             if (filePath.ExistsFile)
