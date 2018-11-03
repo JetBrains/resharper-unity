@@ -5,9 +5,9 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.MoveQuickFixes
 {
     [QuickFix]
-    public class MoveCameraMainToStartQuickFix : AbstractMoveQuickFix
+    public class MoveCameraMainQuickFix : AbstractMoveQuickFix
     {
-        public MoveCameraMainToStartQuickFix(PerformanceCriticalCodeCameraMainHighlighting warning) : 
+        public MoveCameraMainQuickFix(PerformanceCriticalCodeCameraMainHighlighting warning) : 
             base(warning.ReferenceExpression.GetContainingNode<IClassDeclaration>(), warning.ReferenceExpression)
         {
         }

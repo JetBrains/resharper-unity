@@ -11,17 +11,19 @@ namespace DefaultNamespace
             StartCoroutine(HotMethod2());
         }
 
-        public void HotMethod()
+        |public void HotMethod()
         {
-            var x = gameObject.|GetComponent|(0)<Transform>();
-        }
+            var x = gameObject.|GetComponent|(1)<Transform>();
+        }|(0)
         
-        public IEnumerator HotMethod2()
+        |public IEnumerator HotMethod2()
         {
-            var x = |GetComponent|(1)<Transform>();
-        }
+            var x = |GetComponent|(3)<Transform>();
+        }|(2)
     }
 }
 ---------------------------------------------------------
-(0): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
-(1): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
+(0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(1): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(2): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(3): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context

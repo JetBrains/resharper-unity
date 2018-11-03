@@ -1,0 +1,19 @@
+﻿//${RUN:0}
+using UnityEngine;
+
+namespace Test
+{
+    public class TestClass : MonoBehaviour
+    {
+      private Transform myTransform;
+
+      private void Start()
+      {
+        myTransform = GetComponent<Transform>();
+      }
+
+      public void Update()
+        {{caret}
+        }
+    }
+}

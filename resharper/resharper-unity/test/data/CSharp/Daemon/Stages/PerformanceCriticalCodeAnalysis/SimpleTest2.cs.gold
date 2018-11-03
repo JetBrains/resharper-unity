@@ -5,14 +5,15 @@ namespace DefaultNamespace
     public class SimpleTest : MonoBehaviour
     {
         private RigidBody2D myRigidBody2D;
-        public void FixedUpdate()
+        |public void FixedUpdate()
         {
             if (myRigidBody2D == null)
             {
-                myRigidBody2D = |GetComponent|(0)<RigidBody2D>();
+                myRigidBody2D = |GetComponent|(1)<RigidBody2D>();
             }
-        }
+        }|(0)
     }
 }
 ---------------------------------------------------------
-(0): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
+(0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(1): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
