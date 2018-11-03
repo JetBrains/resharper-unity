@@ -168,10 +168,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             if (myRootPaths.Contains(folder))
                 return;
 
-            // TODO: Only process .unity if the project is set to text serialisation
             AddFiles(folder, added, "*.cs.meta");
-            AddFiles(folder, added, "*.unity");
-            AddFiles(folder, added, "*.asset");
+            // TODO: Only process assets if the project is set to text serialisation
+            foreach (var pattern in UnityYamlFileExtensions.AssetWildCards)
+                AddFiles(folder, added, pattern);
 
             myFileSystemTracker.AdviseDirectoryChanges(myLifetime, folder, true, OnProjectDirectoryChanged);
 
@@ -241,10 +241,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             // TODO: Only process .unity if the project is set to text serialisation
             // TODO: Should we check for .cs.meta instead of just .meta?
-            var extension = path.ExtensionNoDot;
-            return string.Equals(extension, "unity", StringComparison.InvariantCultureIgnoreCase)
-                   || string.Equals(extension, "meta", StringComparison.InvariantCultureIgnoreCase)
-                   || string.Equals(extension, "asset", StringComparison.InvariantCultureIgnoreCase);
+            return UnityYamlFileExtensions.Contains(path.ExtensionWithDot);
         }
     }
 }

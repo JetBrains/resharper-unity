@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.DataFlow;
@@ -11,9 +10,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
     [ShellComponent]
     public class UnityYamlFileExtensionMapping : IFileExtensionMapping
     {
-        // TODO: What else?
-        private static readonly string[] ourFileExtensions = {".meta", ".unity", ".asset"};
-
         public UnityYamlFileExtensionMapping(Lifetime lifetime)
         {
             Changed = new SimpleSignal(lifetime, GetType().Name + "::Changed");
@@ -21,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
 
         public IEnumerable<ProjectFileType> GetFileTypes(string extension)
         {
-            if (ourFileExtensions.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
+            if (UnityYamlFileExtensions.Contains(extension))
                 return new[] {YamlProjectFileType.Instance};
             return EmptyList<ProjectFileType>.Enumerable;
         }
@@ -29,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
         public IEnumerable<string> GetExtensions(ProjectFileType projectFileType)
         {
             if (Equals(projectFileType, YamlProjectFileType.Instance))
-                return ourFileExtensions;
+                return UnityYamlFileExtensions.AllFileExtensionsWithDot;
             return EmptyList<string>.Enumerable;
         }
 
