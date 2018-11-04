@@ -53,42 +53,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             if (statement == null)
                 return false;
 
-// Should we allow to extract under conditions? ifstatement and cycles            
-//            if (statement.Parent != expression.GetContainingNode<IMethodDeclaration>()?.Body)
-//                return false;
-
             var classDeclaration = expression.GetContainingNode<IClassDeclaration>();
             if (classDeclaration == null)
                 return false;
 
-            if (expression is IThisExpression) 
-                return true;
-            
-            
-            IReferenceExpression forAccessCheck;
-            switch (expression)
-            {
-                case IReferenceExpression qualifierReferenceExpression:
-                    forAccessCheck = qualifierReferenceExpression;
-                    break;
-                case IInvocationExpression invocation:
-                    forAccessCheck = invocation.InvokedExpression as IReferenceExpression;
-                    break;
-                default:
-                    return false;
-            }
-                
-                            
-            var declaredElement = forAccessCheck?.Reference.Resolve().DeclaredElement;
-
-            var typeMember = declaredElement as ITypeMember;
-            if (typeMember == null)
-                return false;
-            
-            if (!AccessUtil.IsSymbolAccessible(typeMember, new ElementAccessContext(classDeclaration)))
-                return false;
-
-            // costly check
             return IsAvailableToMoveFromScope(expression, methodDeclaration);
         }
 
@@ -107,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                     return false;
             }
             return true;
-        }
+            }
 
         private static IEnumerable<IDeclaration> GetLocalDeclaration(ITreeNode scope, ITreeNode stopBarrier)
         {
