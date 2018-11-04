@@ -39,8 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             var result = new List<IntentionAction>();
             if (MonoBehaviourMoveUtil.IsExpressionAccessibleInScript(ToMove))
             {
-                result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Start"), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor ));
-                result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Awake"), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor ));
+                result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Start", FieldName), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor ));
+                result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Awake", FieldName), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor ));
             }
 
             var loopAction = TryCreateMoveFromLoopAction(ToMove);

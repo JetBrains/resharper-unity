@@ -9,32 +9,34 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 {
     [TestUnity]
-    public class MoveCostlyMethodQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
+    public class MoveNullComparisonQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCostlyMethod\Availability";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveNullComparison\Availability";
 
         [Test] public void EveryThingAvailable() { DoNamedTest(); }
         [Test] public void NotAvailableDueToLocalDependencies1() { DoNamedTest(); }
         [Test] public void NotAvailableDueToLocalDependencies2() { DoNamedTest(); }
+        [Test] public void NotAvailableDueToMissedTypeArgument() {DoNamedTest(); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
         {
             IHighlightingTestBehaviour highlightingTestBehaviour = highlighting as IHighlightingTestBehaviour;
-            return (highlightingTestBehaviour == null || !highlightingTestBehaviour.IsSuppressed) && highlighting is PerformanceCriticalCodeHighlightingBase;
+            return (highlightingTestBehaviour == null || !highlightingTestBehaviour.IsSuppressed) && highlighting is PerformanceCriticalCodeNullComparisonHighlighting;
         }
     }
 
     
     [TestUnity]
-    public class MoveCostlyMethodQuickFixTests : CSharpQuickFixTestBase<MoveCostlyInvocationtQuickFix>
+    public class MoveNullComparisonQuickFixTests : CSharpQuickFixTestBase<MoveNullComparisonQuickFix>
     {
-        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCostlyMethod";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveNullComparison";
 
         [Test] public void MoveToStart() { DoNamedTest(); }
         [Test] public void MoveToAwake() { DoNamedTest(); }
         [Test] public void MoveOutsideTheLoop() { DoNamedTest(); }
-        [Test] public void FieldGenerationWithRespectToCodeStyleTest() {DoNamedTest(); }
-        [Test] public void MultiReplace() { DoNamedTest();}
+        [Test] public void CorrectNameGeneration() {DoNamedTest(); }
+        [Test] public void CorrectNameGeneration1() {DoNamedTest(); }
+        [Test] public void CorrectNameGeneration2() {DoNamedTest(); }
     }
 }

@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class FieldGenerationWithRespectToCodeStyleTest : MonoBehaviour
+    {
+      private Transform myGameobjectTransform;
+
+      private void Start()
+      {
+        myGameobjectTransform = GetComponent<Transform>();
+      }
+
+      public void Update()
+        {{caret}
+        }
+    }
+}
