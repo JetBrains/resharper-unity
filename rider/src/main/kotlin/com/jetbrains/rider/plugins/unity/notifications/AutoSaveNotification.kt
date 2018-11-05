@@ -34,7 +34,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
         if (propertiesComponent.getBoolean(settingName)) return
 
         val message = "Auto save is enabled in Rider. This can cause unwanted recompilation and the loss of current state during play mode." +
-            "Consider changing the <i>Script Changes While Playing</i> in Unity Preferences $tabName tab." +
+            "<br/>* Consider changing the <i>Script Changes While Playing</i> in Unity Preferences $tabName tab." +
             "<br/>* <a href=\"doNotShow\">Do not show</a> this notification for this solution."
 
         val generalSettings = GeneralSettings.getInstance()
