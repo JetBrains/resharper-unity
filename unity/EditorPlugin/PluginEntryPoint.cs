@@ -12,7 +12,6 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
-using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
@@ -114,9 +113,7 @@ namespace JetBrains.Rider.Unity.Editor
       // process csproj files once per Unity process
       if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
       {
-        ourLogger.Verbose("Call OnGeneratedCSProjectFiles once per Unity process.");
-        CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
-        RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
+        EditorApplication.update += SyncSolutionOnceCallBack;
       }
 
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
@@ -160,6 +157,14 @@ namespace JetBrains.Rider.Unity.Editor
       SetupAssemblyReloadEvents();
 
       ourInitialized = true;
+    }
+
+    private static void SyncSolutionOnceCallBack()
+    {
+      ourLogger.Verbose("Call SyncSolution once per Unity process.");
+      UnityUtils.SyncSolution();
+      RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
+      EditorApplication.update -= SyncSolutionOnceCallBack;
     }
 
     // Unity 2017.3 added "asmdef" to the default list of file extensions used to generate the C# projects, but only for
@@ -258,7 +263,7 @@ namespace JetBrains.Rider.Unity.Editor
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
           model.ApplicationVersion.SetValue(Application.unityVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
-
+          
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.AddAction(() => { UnityModels.Remove(pair); });

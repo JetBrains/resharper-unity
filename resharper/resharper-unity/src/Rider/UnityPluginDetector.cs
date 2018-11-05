@@ -62,6 +62,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 // Check the default location
                 if (TryFindExistingPluginOnDisk(defaultDir, newVersion, out installationInfo))
                     return installationInfo;
+                
+                // dll is there, but was not referenced by any project, for example - only Assenbly-SCharp project is present
+                if (TryFindExistingPluginOnDiskInFolderRecursive(assetsDir, newVersion, out var installationInfo1))
+                {
+                    return installationInfo1;
+                }
 
                 // not fresh install, but nothing in previously installed dir on in solution
                 if (!previousInstallationDir.IsNullOrEmpty())
@@ -112,6 +118,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return true;
         }
 
+        private bool TryFindExistingPluginOnDiskInFolderRecursive(FileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
+        {
+            myLogger.Verbose("Looking for plugin on disk: '{0}'", directory);
+            
+            var pluginFiles = directory
+                .GetChildFiles("*.dll", PathSearchFlags.RecurseIntoSubdirectories)
+                .Where(f => f.Name == PluginPathsProvider.BasicPluginDllFile)
+                .ToList();
+
+            if (pluginFiles.Count == 0)
+            {
+                result = InstallationInfo.DoNotInstall;
+                return false;
+            }
+
+            result = GetInstallationInfoFromFoundInstallation(pluginFiles, newVersion);
+            return true;
+        }
+        
         private bool TryFindExistingPluginOnDisk(FileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
         {
             myLogger.Verbose("Looking for plugin on disk: '{0}'", directory);
