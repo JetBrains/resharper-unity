@@ -106,6 +106,6 @@ object EditorPluginModel: Root(
         property("editorLogPath", string)
         property("playerLogPath", string)
 
-        property("isRecompileAndContinuePlaying", bool)
+        sink("notifyIsRecompileAndContinuePlaying", string)
     }
 }

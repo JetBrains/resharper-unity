@@ -263,9 +263,10 @@ namespace JetBrains.Rider.Unity.Editor
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
           model.ApplicationVersion.SetValue(Application.unityVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
-          model.IsRecompileAndContinuePlaying.SetValue(
-            UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0 
-            || UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying);
+          if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
+            model.NotifyIsRecompileAndContinuePlaying.Fire("General");
+          else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
+            model.NotifyIsRecompileAndContinuePlaying.Fire("Rider");
           
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
