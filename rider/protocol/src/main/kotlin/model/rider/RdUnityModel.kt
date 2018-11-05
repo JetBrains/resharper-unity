@@ -56,5 +56,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         source("installEditorPlugin", void)
 
         property("hasUnityReference", bool)
+
+        property("isRecompileAndContinuePlaying", bool)
     }
 }
