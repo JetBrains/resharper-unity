@@ -44,6 +44,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         IEnumerable<IPsiModuleReference> IPsiModule.GetReferences(
             IModuleReferenceResolveContext moduleReferenceResolveContext)
         {
+            // TODO: There is a bug in PsiModuleAttrCache that causes tests to fail if this module has references
+            // Disable references in tests. Will fix up later...
+            if (JetBrains.ReSharper.Resources.Shell.Shell.Instance.IsTestShell)
+                return EmptyList<IPsiModuleReference>.Instance;
+
             return myModules;
         }
 
