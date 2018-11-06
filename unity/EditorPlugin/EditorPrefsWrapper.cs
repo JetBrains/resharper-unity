@@ -16,5 +16,11 @@ namespace JetBrains.Rider.Unity.Editor
       set { EditorPrefs.SetBool("kAutoRefresh", value); }
     }
     
+    public static int ScriptChangesDuringPlayOptions
+    {
+      // https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/PreferencesWindow/PreferencesSettingsProviders.cs#L1180
+      get { return EditorPrefs.GetInt("ScriptCompilationDuringPlay", 0); }
+      set { EditorPrefs.SetInt("ScriptCompilationDuringPlay", value); }
+    }
   }
 }
