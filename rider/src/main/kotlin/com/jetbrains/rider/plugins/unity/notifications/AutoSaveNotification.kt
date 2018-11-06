@@ -39,13 +39,13 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
             Change Unity to:
             <ul>
             <li>
-            <a href=\"recompileAfterFinishedPlaying\">Recompile After Finished Playing</a>
+            <a href="recompileAfterFinishedPlaying">Recompile After Finished Playing</a>
             </li>
             <li>
-            <a href=\"stopPlayingAndRecompile\">Stop Playing And Recompile</a>
+            <a href="stopPlayingAndRecompile">Stop Playing And Recompile</a>
             </li>
             </ul>
-            <a href=\"doNotShow\">Do not show</a> this notification for this solution. <a href=\"learnMore\">Learn more</a>
+            <a href="doNotShow">Do not show</a> this notification for this solution. <a href="learnMore">Learn more</a>
             """
 
         val generalSettings = GeneralSettings.getInstance()
