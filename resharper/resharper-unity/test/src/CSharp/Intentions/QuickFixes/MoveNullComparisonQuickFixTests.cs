@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
             IContextBoundSettingsStore boundSettingsStore)
         {
             IHighlightingTestBehaviour highlightingTestBehaviour = highlighting as IHighlightingTestBehaviour;
-            return (highlightingTestBehaviour == null || !highlightingTestBehaviour.IsSuppressed) && highlighting is PerformanceCriticalCodeNullComparisonHighlighting;
+            return (highlightingTestBehaviour == null || !highlightingTestBehaviour.IsSuppressed) && highlighting is PerformanceNullComparisonHighlighting;
         }
     }
 

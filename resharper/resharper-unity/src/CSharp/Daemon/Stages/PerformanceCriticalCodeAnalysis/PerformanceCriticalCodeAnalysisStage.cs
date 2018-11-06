@@ -135,7 +135,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                     var references = invocationElement.Value;
                     foreach (var reference in references)    
                     {
-                        consumer.AddHighlighting(new PerformanceCriticalCodeInvocationHighlighting(null, reference, false));
+                        consumer.AddHighlighting(new PerformanceInvocationHighlighting(reference,
+                            (reference.InvokedExpression as IReferenceExpression).Reference.NotNull("(reference.InvokedExpression as IReferenceExpression).Reference != null")));
                     }
                 }
             }
@@ -178,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         private void HighlightHotMethod(IDeclaration node, IPsiSourceFile sourceFile, IHighlightingConsumer consumer)
         {
-            consumer.AddHighlighting(new PerformanceCriticalCodeHighlighting(node.GetDocumentRange()));
+            consumer.AddHighlighting(new PerformanceHighlighting(node.GetDocumentRange()));
         }
         
         private HotMethodAnalyzerContext GetHotMethodAnalyzerContext(IHighlightingConsumer consumer, HashSet<IMethodDeclaration> hotRootMethods,
@@ -274,7 +275,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return result;
         }
 
-        private IMethod ExtractMethodDeclarationFromStartCoroutine([NotNull]ICSharpExpression firstArgument)
+        private IDeclaredElement ExtractMethodDeclarationFromStartCoroutine([NotNull]ICSharpExpression firstArgument)
         {
             // 'StartCoroutine' has overload with string. We have already attached reference, so get declaration from 
             // reference
@@ -283,7 +284,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 var coroutineMethodReference = literalExpression.GetReferences<UnityEventFunctionReference>().FirstOrDefault();
                 if (coroutineMethodReference != null)
                 {
-                    return coroutineMethodReference.Resolve().DeclaredElement as IMethod;
+                    return coroutineMethodReference.Resolve().DeclaredElement;
                 }
             }
 
@@ -292,7 +293,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             {
                 var invocationReference = (coroutineInvocation.InvokedExpression as IReferenceExpression)?.Reference;
                 var info = invocationReference?.Resolve();
-                return info?.DeclaredElement as IMethod;
+                return info?.DeclaredElement;
             }
 
             return null;
@@ -330,11 +331,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
                 var reference = (invocationExpressionParam.InvokedExpression as IReferenceExpression)?.Reference;
 
-                var declaredElement = reference?.Resolve().DeclaredElement as IMethod;
+                var declaredElement = reference?.Resolve().DeclaredElement;
                 if (declaredElement == null)
                     return;
                 
-                context.RegisterInvocationInMethod(declaredElement, reference);
+                context.RegisterInvocationInMethod(declaredElement, invocationExpressionParam);
 
                 // find all declarations in current file
                 var declaration = declaredElement.GetDeclarationsIn(mySourceFile).FirstOrDefault(t => t.GetSourceFile() == mySourceFile);
@@ -382,7 +383,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 if (PerformanceCriticalCodeStageUtil.IsInvocationExpensive(invocationExpressionParam))
                 {
                     context.MarkCurrentAsCostly();
-                    myConsumer.AddHighlighting(new PerformanceCriticalCodeInvocationHighlighting(invocationExpressionParam, reference, true));
+                    myConsumer.AddHighlighting(new PerformanceInvocationHighlighting(invocationExpressionParam, reference));
                 } 
             }
 
@@ -398,7 +399,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         if (containingType != null && KnownTypes.Camera.Equals(containingType.GetClrName()))
                         {
                             context.MarkCurrentAsCostly();
-                            myConsumer.AddHighlighting(new PerformanceCriticalCodeCameraMainHighlighting(expression));
+                            myConsumer.AddHighlighting(new PerformanceCameraMainHighlighting(expression));
                         }
                     }
                 }
@@ -411,7 +412,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             public bool InteriorShouldBeProcessed(ITreeNode element, HotMethodAnalyzerContext context)
             {
-                return !(element is ICSharpClosure);
+                if (element is ICSharpClosure closure)
+                    return Equals(closure.DeclaredElement, context.CurrentDeclaredElement);
+
+                return true;
             }
 
             public bool IsProcessingFinished(HotMethodAnalyzerContext context)
@@ -487,7 +491,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                     }
                     
                     var variableName = "is" + baseName + suffix;
-                    myConsumer.AddHighlighting(new PerformanceCriticalCodeNullComparisonHighlighting(equalityExpressionParam, variableName, reference));
+                    myConsumer.AddHighlighting(new PerformanceNullComparisonHighlighting(equalityExpressionParam, variableName, reference));
                 }
             }  
         }
@@ -504,8 +508,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             // Container of all invoked method for specified method with node elements. Helper for highlighting after 
             // propagation of costly reachable mark is done
-            public readonly Dictionary<IDeclaredElement, Dictionary<IDeclaredElement, List<IReference>>> InvocationsInMethods 
-                = new Dictionary<IDeclaredElement, Dictionary<IDeclaredElement, List<IReference>>>(); 
+            public readonly Dictionary<IDeclaredElement, Dictionary<IDeclaredElement, List<IInvocationExpression>>> InvocationsInMethods 
+                = new Dictionary<IDeclaredElement, Dictionary<IDeclaredElement, List<IInvocationExpression>>>(); 
             
             // Visited nodes
             private readonly ISet<IDeclaredElement> myVisited = new HashSet<IDeclaredElement>();
@@ -546,19 +550,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 return CostlyMethods.Contains(element);
             }
 
-            public void RegisterInvocationInMethod(IDeclaredElement invokedMethod, IReference reference)
+            public void RegisterInvocationInMethod(IDeclaredElement invokedMethod, IInvocationExpression invocation)
             {
                 var method = CurrentDeclaredElement;
                 // remember which methods was invoked from `method`. We will highlight them at the end of analysis if they are marked as `costly reachable`
                 if (!InvocationsInMethods.ContainsKey(method))
-                    InvocationsInMethods[method] = new Dictionary<IDeclaredElement, List<IReference>>();
+                    InvocationsInMethods[method] = new Dictionary<IDeclaredElement, List<IInvocationExpression>>();
 
                 var invocationsGroupedByDeclaredElement = InvocationsInMethods[method];
                 if (!invocationsGroupedByDeclaredElement.ContainsKey(invokedMethod)) 
-                    invocationsGroupedByDeclaredElement[invokedMethod] = new List<IReference>();
+                    invocationsGroupedByDeclaredElement[invokedMethod] = new List<IInvocationExpression>();
 
                 var group = invocationsGroupedByDeclaredElement[invokedMethod];
-                group.Add(reference);
+                group.Add(invocation);
 
                 // add edge to inverted call graph
                 if (!InvertedCallGraph.ContainsKey(invokedMethod))

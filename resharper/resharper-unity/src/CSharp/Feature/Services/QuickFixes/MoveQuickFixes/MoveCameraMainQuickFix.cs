@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
     [QuickFix]
     public class MoveCameraMainQuickFix : AbstractMoveQuickFix
     {
-        public MoveCameraMainQuickFix(PerformanceCriticalCodeCameraMainHighlighting warning) : 
+        public MoveCameraMainQuickFix(PerformanceCameraMainHighlighting warning) : 
             base(warning.ReferenceExpression.GetContainingNode<IClassDeclaration>(), warning.ReferenceExpression)
         {
         }
