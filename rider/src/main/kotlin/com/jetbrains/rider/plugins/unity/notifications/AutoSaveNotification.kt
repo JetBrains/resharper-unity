@@ -57,10 +57,12 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
 
                 if (hyperlinkEvent.description == "recompileAfterFinishedPlaying"){
                     unityHost.model.setScriptCompilationDuringPlay.fire(ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying)
+                    notification.hideBalloon()
                 }
 
                 if (hyperlinkEvent.description == "stopPlayingAndRecompile"){
                     unityHost.model.setScriptCompilationDuringPlay.fire(ScriptCompilationDuringPlay.StopPlayingAndRecompile)
+                    notification.hideBalloon()
                 }
 
                 if (hyperlinkEvent.description == "doNotShow"){
