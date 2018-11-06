@@ -23,9 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override void ConsumeHighlighting(HighlightingInfo highlightingInfo)
         {
             var highlighting = highlightingInfo.Highlighting;
-            Assertion.Assert(highlighting is PerformanceCriticalCodeHighlightingBase, "highlightingInfo is PerformanceCriticalCodeHighlightingBase");
+            Assertion.Assert(highlighting is PerformanceHighlightingBase, "highlightingInfo is PerformanceCriticalCodeHighlightingBase");
 
-            var performanceHighlighting = highlighting as PerformanceCriticalCodeHighlightingBase;
+            var performanceHighlighting = highlighting as PerformanceHighlightingBase;
             if (myRegionsInfo != null)
             {
                 if (myRegionsInfo.ShouldIgnoreWarningHighlighting(performanceHighlighting.SeverityId, highlightingInfo, false, out var _))

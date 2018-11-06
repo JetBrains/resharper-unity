@@ -1,4 +1,4 @@
-﻿//${RUN:2}
+//${RUN:0}
 using UnityEngine;
 
 namespace Test
@@ -7,9 +7,9 @@ namespace Test
     {
         public void Update()
         {
-          var transform1 = GetComponent<Transform>();
-          for (int i = 0; i < 100; i++) 
-            {{caret}
+            if (Camera.m{caret}ain) 
+            {
+            
             }
         }
     }

@@ -54,13 +54,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         {
             ITreeNode currentExpression = toMove;
             ILoopStatement previousLoop = null;
+
+            int closureStartOffset = currentExpression.GetContainingNode<ICSharpClosure>()?.GetTreeStartOffset().Offset ?? 0;
             while (true)
             {
                 var loop = currentExpression.GetContainingNode<ILoopStatement>();
                 if (loop == null)
                     break;
+                
+                if (closureStartOffset > loop.GetTreeStartOffset().Offset)
+                    break;
 
-                if (MonoBehaviourMoveUtil.IsAvailableToMoveFromScope(toMove, loop, previousLoop))
+                if (MonoBehaviourMoveUtil.IsAvailableToMoveFromLoop(toMove, loop))
                 {
                     previousLoop = loop;
                     currentExpression = loop;
@@ -72,9 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             }
 
             if (previousLoop != null)
-            {
                 return new IntentionAction(new MoveFromLoopAction(toMove, previousLoop, FieldName), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor);
-            }
             
             return null;
         }
@@ -134,10 +137,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 var name = NamingUtil.GetUniqueName(myToMove, baseName, NamedElementKinds.Locals, de => !de.Equals(declaredElement));
                 
                 var factory = CSharpElementFactory.GetInstance(myToMove);
+                var originMyToMove = myToMove.Copy();
+                MonoBehaviourMoveUtil.RenameOldUsages(myToMove, declaredElement, name, factory);
                 
-                ICSharpStatement declaration = factory.CreateStatement("var $0 = $1;", name, myToMove.Copy());
+                ICSharpStatement declaration = factory.CreateStatement("var $0 = $1;", name, originMyToMove);
                 StatementUtil.InsertStatement(declaration, ref anchor, true);
-                myToMove.ReplaceBy(factory.CreateReferenceExpression(name));
                 return null;
             }
 

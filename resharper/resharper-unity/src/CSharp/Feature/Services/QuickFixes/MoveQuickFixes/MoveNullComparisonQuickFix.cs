@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
     [QuickFix]
     public class MoveNullComparisonQuickFix : AbstractMoveQuickFix
     {
-        public MoveNullComparisonQuickFix(PerformanceCriticalCodeNullComparisonHighlighting warning)
+        public MoveNullComparisonQuickFix(PerformanceNullComparisonHighlighting warning)
             : base(warning.Expression.GetContainingNode<IClassDeclaration>(), warning.Expression, warning.FieldName)
         {
         }

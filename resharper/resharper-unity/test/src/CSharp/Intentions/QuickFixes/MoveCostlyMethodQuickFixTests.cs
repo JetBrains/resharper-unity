@@ -21,20 +21,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
             IContextBoundSettingsStore boundSettingsStore)
         {
             IHighlightingTestBehaviour highlightingTestBehaviour = highlighting as IHighlightingTestBehaviour;
-            return (highlightingTestBehaviour == null || !highlightingTestBehaviour.IsSuppressed) && highlighting is PerformanceCriticalCodeHighlightingBase;
+            return (highlightingTestBehaviour == null || !highlightingTestBehaviour.IsSuppressed) && highlighting is PerformanceHighlightingBase;
         }
     }
 
     
     [TestUnity]
-    public class MoveCostlyMethodQuickFixTests : CSharpQuickFixTestBase<MoveCostlyInvocationtQuickFix>
+    public class MoveCostlyMethodQuickFixTests : CSharpQuickFixTestBase<MoveCostlyInvocationQuickFix>
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCostlyMethod";
 
         [Test] public void MoveToStart() { DoNamedTest(); }
         [Test] public void MoveToAwake() { DoNamedTest(); }
         [Test] public void MoveOutsideTheLoop() { DoNamedTest(); }
+        [Test] public void MoveOutsideTheLoop2() { DoNamedTest(); }
+        [Test] public void MoveOutsideTheLoop3() { DoNamedTest(); }
+        [Test] public void MoveOutsideTheLoop4() { DoNamedTest(); }
         [Test] public void FieldGenerationWithRespectToCodeStyleTest() {DoNamedTest(); }
         [Test] public void MultiReplace() { DoNamedTest();}
+        [Test] public void MoveCostlyVoid() {DoNamedTest();}
     }
 }

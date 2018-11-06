@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
         protected sealed override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {
-            return highlighting is PerformanceCriticalCodeHighlightingBase;
+            return highlighting is PerformanceHighlightingBase;
         }
     }
 }
