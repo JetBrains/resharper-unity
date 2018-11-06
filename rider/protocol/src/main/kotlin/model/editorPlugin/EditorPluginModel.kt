@@ -78,6 +78,13 @@ object EditorPluginModel: Root(
         +"Refresh"
     }
 
+
+    private val ScriptCompilationDuringPlay = enum {
+        +"RecompileAndContinuePlaying"
+        +"RecompileAfterFinishedPlaying"
+        +"StopPlayingAndRecompile"
+    }
+
     init {
         property("play", bool)
         property("pause", bool)
@@ -107,6 +114,6 @@ object EditorPluginModel: Root(
         property("playerLogPath", string)
 
         sink("notifyIsRecompileAndContinuePlaying", string)
-        source("setScriptCompilationDuringPlay", int)
+        source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
     }
 }
