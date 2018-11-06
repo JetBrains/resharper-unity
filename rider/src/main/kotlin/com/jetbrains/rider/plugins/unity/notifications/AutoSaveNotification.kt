@@ -35,22 +35,18 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
 
         if (propertiesComponent.getBoolean(settingName)) return
 
-        val message = """Unity is configured to compile scripts during play mode (Unity preferences $tabName tab), and Rider's auto save is enabled. This can cause unwanted loss of state in the running game.
+        val message = """Unity is configured to compile scripts in play mode (Unity preferences $tabName tab). Rider's auto save may cause loss of state in the running game.
             Change Unity to:
-            <ul>
-            <li>
-            <a href="recompileAfterFinishedPlaying">Recompile After Finished Playing</a>
-            </li>
-            <li>
-            <a href="stopPlayingAndRecompile">Stop Playing And Recompile</a>
-            </li>
+            <ul style="margin-left:10px">
+              <li><a href="recompileAfterFinishedPlaying">Recompile After Finished Playing</a></li>
+              <li><a href="stopPlayingAndRecompile">Stop Playing And Recompile</a></li>
             </ul>
             <a href="doNotShow">Do not show</a> this notification for this solution. <a href="learnMore">Learn more</a>
             """
 
         val generalSettings = GeneralSettings.getInstance()
         if (generalSettings.isAutoSaveIfInactive || generalSettings.isSaveOnFrameDeactivation){
-            val autoSaveNotification = Notification(notificationGroupId.displayId, "Unity play mode script compilation", message, NotificationType.WARNING)
+            val autoSaveNotification = Notification(notificationGroupId.displayId, "Unity configuration issue", message, NotificationType.WARNING)
             autoSaveNotification.setListener { notification, hyperlinkEvent ->
                 if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
                     return@setListener
