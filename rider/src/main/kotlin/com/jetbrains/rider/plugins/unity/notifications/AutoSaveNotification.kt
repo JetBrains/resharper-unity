@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.notifications
 
+import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.Notification
@@ -12,7 +13,7 @@ import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.util.reactive.adviseNotNullOnce
 import javax.swing.event.HyperlinkEvent
 
-class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, project: Project, unityHost: UnityHost): LifetimedProjectComponent(project) {
+class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, project: Project, private val unityHost: UnityHost): LifetimedProjectComponent(project) {
 
     private var firstRun = true
 
@@ -33,20 +34,41 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
 
         if (propertiesComponent.getBoolean(settingName)) return
 
-        val message = "Auto save is enabled in Rider. This can cause unwanted recompilation and the loss of current state during play mode." +
-            "<br/>* Consider changing the <i>Script Changes While Playing</i> in Unity Preferences $tabName tab." +
-            "<br/>* <a href=\"doNotShow\">Do not show</a> this notification for this solution."
+        val message = """Unity is configured to compile scripts during play mode (Unity preferences $tabName tab), and Rider's auto save is enabled. This can cause unwanted loss of state in the running game.
+            Change Unity to:
+            <ul>
+            <li>
+            <a href=\"recompileAfterFinishedPlaying\">Recompile After Finished Playing</a>
+            </li>
+            <li>
+            <a href=\"stopPlayingAndRecompile\">Stop Playing And Recompile</a>
+            </li>
+            </ul>
+            <a href=\"doNotShow\">Do not show</a> this notification for this solution. <a href=\"learnMore\">Learn more</a>
+            """
 
         val generalSettings = GeneralSettings.getInstance()
         if (generalSettings.isAutoSaveIfInactive || generalSettings.isSaveOnFrameDeactivation){
-            val autoSaveNotification = Notification(notificationGroupId.displayId, "Unity: scripts reload while Playing", message, NotificationType.WARNING)
+            val autoSaveNotification = Notification(notificationGroupId.displayId, "Unity play mode script compilation", message, NotificationType.WARNING)
             autoSaveNotification.setListener { notification, hyperlinkEvent ->
                 if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
                     return@setListener
 
+                if (hyperlinkEvent.description == "recompileAfterFinishedPlaying"){
+                    //unityHost
+                }
+
+                if (hyperlinkEvent.description == "stopPlayingAndRecompile"){
+
+                }
+
                 if (hyperlinkEvent.description == "doNotShow"){
                     propertiesComponent.setValue(settingName, true)
                     notification.hideBalloon()
+                }
+
+                if (hyperlinkEvent.description == "learnMore"){
+                    BrowserUtil.browse("https://github.com/JetBrains/resharper-unity/issues/707")
                 }
             }
 
