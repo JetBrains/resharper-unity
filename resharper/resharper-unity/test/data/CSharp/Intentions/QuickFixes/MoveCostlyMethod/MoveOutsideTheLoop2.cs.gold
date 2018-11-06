@@ -9,7 +9,10 @@ namespace Test
         {
           var transform1 = GetComponent<Transform>();
           for (int i = 0; i < 100; i++) 
-            {{caret}
+            {
+                for (int j = 0; j < 100; j++) 
+                {{caret}
+                }
             }
         }
     }

@@ -1,0 +1,25 @@
+﻿using UnityEngine;
+
+namespace Test
+{
+    public class TestClass : MonoBehaviour
+    {
+      private Camera myCamera;
+
+      private void Start()
+      {
+        myCamera = Camera.main;
+      }
+
+      public void Update()
+        {
+            var transform = GetComponent<Transform>();
+            for (int i = 0; i < 100; i++) 
+            {
+                if (myCamera{caret}) {
+                
+                }
+            }
+        }
+    }
+}
