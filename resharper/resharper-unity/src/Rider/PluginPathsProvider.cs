@@ -13,6 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         
         public static readonly string BasicPluginDllFile = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
         public static readonly string FullPluginDllFile = "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll";
+        public static readonly string UnityDotSettings = "Unity.DotSettings";
 
         public PluginPathsProvider(ApplicationPackages applicationPackages, IDeployedPackagesExpandLocationResolver resolver)
         {
