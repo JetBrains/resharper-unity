@@ -58,5 +58,6 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("hasUnityReference", bool)
 
         sink("notifyIsRecompileAndContinuePlaying", string)
+        source("setScriptCompilationDuringPlay", int)
     }
 }
