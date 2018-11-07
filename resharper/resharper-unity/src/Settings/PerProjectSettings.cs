@@ -125,6 +125,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             //   It can be recognised by a folder called `CSharp60Support` or `CSharp70Support`
             //   in the root of the project
             //   (https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration)
+            // * Note that since Unity 2017.2, we've been special-cased in the Unity csproj generation
+            //   and we've been getting v4.5 for old runtime and default values (4.7.1) for new. So where
+            //   it says 3.5 below, that depends on the version of Unity. Older versions will give us 3.5,
+            //   newer versions 4.5. We don't need this special case, so hopefully it will be removed in 2018.3
             //
             // Scenarios:
             // * No VSTU installed (including Unity 5.5)
@@ -133,12 +137,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             //   .csproj has NO `LangVersion`. `TargetFrameworkVersion` will be `v3.5`
             // * Later versions of VSTU
             //   `LangVersion` is correctly set to "4". `TargetFrameworkVersion` will be `v3.5`
+            //   OR `LangVersion` is set to "6" or "latest". `TargetFrameworkVersion` will be `v4.7.1`
             // * VSTU for 5.5
             //   `LangVersion` is set to "default". `TargetFrameworkVersion` will be `v3.5` or `v4.6`
             //   Note that "default" for VS"15" or Rider will be C# 7.0!
             // * Unity3dRider is installed
             //   Uses Unity's own generation and adds correct `LangVersion`
-            //   `TargetFrameworkVersion` will be `v3.5` or `v4.6`
+            //   `TargetFrameworkVersion` will be correct for the selected runtime
             // * CSharp60Support is installed
             //   .csproj has NO `LangVersion`
             //   `TargetFrameworkVersion` is NOT accurate (support for C# 6 is not dependent on/trigger by .net 4.6)
@@ -188,15 +193,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         private bool IsLangVersionDefault(IProject project)
         {
-            // VSTU sets LangVersion to default. Would make life so much
-            // easier if it just specified the actual language version.
-            // This is stored per-configuration, gotta check 'em all
+            // Older VSTU sets LangVersion to "default", which means a higher version than the expected C# 4 or 6
             foreach (var configuration in project.ProjectProperties.ActiveConfigurations.Configurations)
             {
-                var csharpConfiguration = configuration as ICSharpProjectConfiguration;
-                if (csharpConfiguration != null)
+                if (configuration is ICSharpProjectConfiguration csharpConfiguration)
                 {
-                    if (csharpConfiguration.LanguageVersion != CSharpLanguageVersion.Latest)
+                    // LatestMajor is what "default" means. Latest maps to "latest" and means actual latest
+                    if (csharpConfiguration.LanguageVersion != CSharpLanguageVersion.LatestMajor)
                         return false;
                 }
             }

@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             //check connection between backend and unity editor
             locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
             {
-                if (!editorProtocol.UnityModel.HasValue() || editorProtocol.UnityModel.HasValue() && editorProtocol.UnityModel.Value == null)
+                if (editorProtocol.UnityModel.Value == null)
                 {
                     myLastCheckResult = UnityEditorState.Disconnected;
                 }

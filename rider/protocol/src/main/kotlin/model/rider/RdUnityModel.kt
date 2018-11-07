@@ -19,6 +19,12 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"ConnectedRefresh"
     }
 
+    private val ScriptCompilationDuringPlay = enum{
+        +"RecompileAndContinuePlaying"
+        +"RecompileAfterFinishedPlaying"
+        +"StopPlayingAndRecompile"
+    }
+
     init {
         sink("activateRider", void)
 
@@ -56,5 +62,8 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         source("installEditorPlugin", void)
 
         property("hasUnityReference", bool)
+
+        sink("notifyIsRecompileAndContinuePlaying", string)
+        source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
     }
 }

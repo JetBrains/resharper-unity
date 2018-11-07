@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
-        public readonly RProperty<EditorPluginModel> UnityModel = new RProperty<EditorPluginModel>();
+        public readonly RProperty<EditorPluginModel> UnityModel = new RProperty<EditorPluginModel>(null);
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var solFolder = mySolution.SolutionFilePath.Directory;
                 AdviseModelData(lifetime);
-
+                
                 // todo: consider non-Unity Solution with Unity-generated projects
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
                 protocolInstancePath.Directory.CreateDirectory();
@@ -103,21 +103,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseModelData(Lifetime lifetime)
         {   
-            myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p =>
-            {
-                if (UnityModel.HasValue())
-                    UnityModel.Value.IfNotNull(editor => editor.Play.Value = p);
-            }));
-            myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p =>
-            {
-                if (UnityModel.HasValue())
-                    UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p);
-            }));
-            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () =>
-            {
-                if (UnityModel.HasValue())
-                    UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire());
-            }));
+           myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
+           myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
+           myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
+           myHost.PerformModelAction(model => {model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime, 
+             scriptCompilationDuringPlay => UnityModel.Value.DoIfNotNull(editor => editor.SetScriptCompilationDuringPlay.Fire((int)scriptCompilationDuringPlay)));});
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -184,6 +174,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
                     editor.ApplicationContentsPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
+                    editor.NotifyIsRecompileAndContinuePlaying.AdviseOnce(lifetime,
+                        s => myHost.PerformModelAction(a => a.NotifyIsRecompileAndContinuePlaying.Fire(s)));
 
                     BindPluginPathToSettings(lf, editor);
 

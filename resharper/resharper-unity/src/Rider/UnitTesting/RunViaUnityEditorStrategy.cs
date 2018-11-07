@@ -118,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var launch = SetupLaunch(run);
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
             {
-                if (!myEditorProtocol.UnityModel.HasValue() || myEditorProtocol.UnityModel.HasValue() && myEditorProtocol.UnityModel.Value == null)
+                if (myEditorProtocol.UnityModel.Value == null)
                 {
                     tcs.SetException(new Exception("Unity Editor connection unavailable."));
                     return;
@@ -267,12 +267,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
-            if (myEditorProtocol.UnityModel.HasValue())
-            {
-                var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
-                if (launchProperty != null && launchProperty.HasValue())
-                    launchProperty.Value?.Abort.Start(RdVoid.Instance);    
-            }
+            var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
+            if (launchProperty != null && launchProperty.HasValue())
+                launchProperty.Value?.Abort.Start(RdVoid.Instance);
             
             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
         }

@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (CurrentTask != null)
                 return CurrentTask;
 
-            if (!myEditorProtocol.UnityModel.HasValue() || myEditorProtocol.UnityModel.HasValue() && myEditorProtocol.UnityModel.Value == null)
+            if (myEditorProtocol.UnityModel.Value == null)
                 return new Task(()=>{});
 
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && !force)
