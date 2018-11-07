@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         public TargetFrameworkId TargetFrameworkId { get; }
         public PsiLanguageType PsiLanguage => UnknownLanguage.Instance;
         public ProjectFileType ProjectFileType => UnknownProjectFileType.Instance;
-        public IModule ContainingProjectModule => null;
+        public IModule ContainingProjectModule => mySolution.MiscFilesProject;
         public IEnumerable<IPsiSourceFile> SourceFiles => mySourceFiles.Values.Select(pair => pair.First);
 
         public void AddModuleReference(IPsiModule module)
@@ -84,11 +84,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         public void Add(FileSystemPath path, IPsiSourceFile file, Action<FileSystemChangeDelta> processFileChange)
         {
+            if (ContainsPath(path))
+                return;
+
             var fileLifetime = Lifetimes.Define(myLifetime, path.FullPath);
             mySourceFiles.Add(path, Pair.Of(file, fileLifetime));
             if (processFileChange == null)
                 return;
 
+            // Not sure we need this. We do all our file modification via another tracker. But it's part of the API...
             if (file is IPsiSourceFileWithLocation sourceFile)
             {
                 sourceFile.TrackChanges(fileLifetime.Lifetime, myFileSystemTracker,
