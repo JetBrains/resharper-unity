@@ -3,6 +3,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.UserInterface;
 using JetBrains.Application.Settings.UserInterface.FileInjectedLayers;
 using JetBrains.DataFlow;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Settings.Store;
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UserFriendlySettingsLayer.Identity mySettingsSolutionPersonalLayerId;
         private readonly FileSystemPath myPath;
 
-        public CodeStyleSettingsPatcher(Lifetime lifetime, ISolution solution, SolutionSettings settings,
+        public CodeStyleSettingsPatcher(Lifetime lifetime, ISolution solution, UnitySolutionTracker unitySolutionTracker, SolutionSettings settings,
             ISettingsStore settingsStore, FileInjectedLayers injector, PluginPathsProvider pathsProvider, 
             UserInjectedSettingsLayers injectedSettingsLayers, CSharpAutoNamingDetection detection)
         {
@@ -37,21 +38,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySettingsSolutionPersonalLayerId = settings.SolutionPersonalLayerId;
             myPath = pathsProvider.GetEditorPluginPathDir().Combine(PluginPathsProvider.UnityDotSettings);
 
-            if (!detection.ShouldAutoDetectionStarted())
+            // if it is not Unity project, we should remove Unity-layer
+            unitySolutionTracker.IsUnityProject.View(lifetime, (_, isUnity) =>
             {
-                SubscribeForInjection();
-            }
-            else
-            {
-                var entry = myContextBoundSettingsStoreLive.Schema.GetScalarEntry((CSharpAutoNamingSettings s) => s.IsNamingAutoDetectionCompleted);
-                myContextBoundSettingsStoreLive.GetValueProperty<bool>(myLifetime, entry, null).View(myLifetime,(lt, value) =>
+                if (isUnity)
+                {
+                    if (!detection.ShouldAutoDetectionStarted())
                     {
-                        if (value)
-                        {
-                            SubscribeForInjection();
-                        }
-                    });
-            }
+                        SubscribeForInjection();
+                    }
+                    else
+                    {
+                        var entry = myContextBoundSettingsStoreLive.Schema.GetScalarEntry(
+                            (CSharpAutoNamingSettings s) => s.IsNamingAutoDetectionCompleted);
+                        myContextBoundSettingsStoreLive.GetValueProperty<bool>(myLifetime, entry, null).View(myLifetime,
+                            (lt, value) =>
+                            {
+                                if (value)
+                                {
+                                    SubscribeForInjection();
+                                }
+                            });
+                    }
+                }
+                else
+                {
+                    RemoveUnityLayer();
+                }
+            });
+            
+
         }
 
         private void SubscribeForInjection()
@@ -81,16 +97,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void RemoveUnityLayer()
         {
-            if (IsLayerExists())
+            var unityLayer = GetUnityLayer();
+            if (unityLayer != null)
             {
-                var identity = myInjectedSettingsLayers.GetAllUserInjectedLayers().Where(IsOurInjectedLayer).Select(t => t.Id).First();
-                myInjectedSettingsLayers.DeleteUserInjectedLayer(identity);
+                myInjectedSettingsLayers.DeleteUserInjectedLayer(unityLayer.Id);
             }
+        }
+
+        private UserFriendlySettingsLayer GetUnityLayer()
+        {
+            return myInjectedSettingsLayers.GetAllUserInjectedLayers().Where(IsOurInjectedLayer).FirstOrDefault();
         }
         
         private bool IsOurInjectedLayer(UserFriendlySettingsLayer layer)
         {
-            return layer.Name.Split("::").Last().Equals(myPathsProvider.GetEditorPluginPathDir().Combine(PluginPathsProvider.UnityDotSettings).FullPath);
+            return layer.Name.Split("::").Last().EndsWith(PluginPathsProvider.UnityDotSettings);
         }
         
         private bool IsLayerExists()
