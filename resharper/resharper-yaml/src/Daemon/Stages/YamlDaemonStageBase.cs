@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -24,14 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
         .SelectNotNull(file => CreateProcess(process, settings, processKind, (IYamlFile) file));
     }
 
-
     protected abstract IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
       DaemonProcessKind processKind, IYamlFile file);
-
-    public ErrorStripeRequest NeedsErrorStripe(IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
-    {
-      throw new InvalidOperationException("This API is obsolete");
-    }
 
     protected virtual bool IsSupported(IPsiSourceFile sourceFile)
     {

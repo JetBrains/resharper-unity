@@ -2,9 +2,8 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
-import com.jetbrains.rider.icons.ReSharperCommonIcons
-import com.jetbrains.rider.icons.ReSharperProjectModelIcons
-import com.jetbrains.rider.icons.ReSharperPsiJavaScriptIcons
+import com.jetbrains.rider.icons.*
+import com.jetbrains.rider.plugins.unity.util.UnityIcons.Icons.Companion.UnityLogo
 import javax.swing.Icon
 
 class UnityIcons {
@@ -34,6 +33,11 @@ class UnityIcons {
 
             @JvmField
             val AsmDef = ReSharperPsiJavaScriptIcons.Json
+
+            // TODO: Proper icons
+            val UnityYaml = UnityLogo
+            val UnityScene = UnityLogo
+            val Meta = UnityLogo
         }
     }
 

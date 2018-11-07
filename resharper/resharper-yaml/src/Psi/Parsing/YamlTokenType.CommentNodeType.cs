@@ -1,8 +1,6 @@
-﻿using System;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl;
+﻿using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
-using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.Util;
 
@@ -27,7 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         return new Comment(token);
       }
 
-      // NOTE: Not filtered
+      // NOTE: Not filtered. This is because the spec only allows comments in certain places, so unlike e.g. C#, we let
+      // the parser see comments
       public override bool IsComment => true;
       public override string TokenRepresentation => "# comment";
     }

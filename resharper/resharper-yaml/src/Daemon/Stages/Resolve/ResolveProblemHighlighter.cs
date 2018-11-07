@@ -24,16 +24,17 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
 
     private void CheckForResolveProblems(IHighlightingConsumer consumer, IReference reference)
     {
-      var error = reference.CheckResolveResult();
-      if (error == null)
+      var resolveErrorType = reference.CheckResolveResult();
+      if (resolveErrorType == null)
         throw new InvalidOperationException("ResolveErrorType is null for reference " + reference.GetType().FullName);
 
-      if (error == ResolveErrorType.OK)
+      if (resolveErrorType.IsAcceptable)
         return;
 
-      if (myResolveHighlighterRegistrar.ContainsHandler(YamlLanguage.Instance, error))
+      // ReSharper disable once AssignNullToNotNullAttribute
+      if (myResolveHighlighterRegistrar.ContainsHandler(YamlLanguage.Instance, resolveErrorType))
       {
-        var highlighting = myResolveHighlighterRegistrar.GetResolveHighlighting(reference, error);
+        var highlighting = myResolveHighlighterRegistrar.GetResolveHighlighting(reference, resolveErrorType);
         if (highlighting != null)
           consumer.AddHighlighting(highlighting);
       }

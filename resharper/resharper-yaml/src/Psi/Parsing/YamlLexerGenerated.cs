@@ -225,6 +225,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return currentTokenType;
     }
 
+    // For completeness: These rewind functions don't reset any current indents or last new line offset. As long as you
+    // don't rewind multiple times, especially across a new line or an indent, this shouldn't cause an issue
     private void RewindToken()
     {
       yy_buffer_end = yy_buffer_index = yy_buffer_start;
@@ -274,10 +276,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     {
       parentNodeIndent = yy_buffer_start - lastNewLineOffset;
 
-      // We special case implicit keys as a single line ns-plain followed by a colon
-      // But we want to return that as separate tokens. So match it, rewind and let
-      // the next pass handle the whitespace and colon
-      // TODO: This doesn't reset line indents or last new line offset!!
+      // The lexer matches an implicit key as a single line ns-plain, followed by optional whitespace and a colon
+      // We want the lexer to return this as separate tokens (which the parser will then match as an implicit key), so
+      // rewind to the end of the ns-plain and let the next lexer advance match the whitespace and colon.
       RewindChar();
       RewindWhitespace();
       return YamlTokenType.NS_PLAIN_ONE_LINE;

@@ -340,15 +340,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       ParseComments();
 
       // ( l+block-sequence(seq-spaces(n,c)) | l+block-mapping(n) )
-      // Chicken and egg alert! The expected indent for the next rule is dependent on 
-      // The expected indent that the next rule is going to use is dependent on what the next rule is. Chicken and egg!
-      // Look passed any whitespace and indents, because we need to autodetect
-      // the indent, and that differs if we a sequence or a map
+      // Look ahead to see what the next rule is so that we know what the expected indent should be - a block sequence
+      // has a different indent (seq-spaces) to a block mapping (n)
       var tt = LookAheadNextSignificantToken();
       if (tt == YamlTokenType.MINUS)
       {
-        // Nested block sequences may be indented one less space, because people
-        // intuitively see `-` as indent
+        // Nested block sequences may be indented one less space, because people intuitively see `-` as indent
         var seqSpaces = isBlockIn ? expectedIndent : expectedIndent - 1;
         if (!TryParseBlockSequenceWithoutRollback(seqSpaces))
           Builder.RollbackTo(mark);
@@ -537,7 +534,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       {
         var mark = MarkNoSkipWhitespace();
         ParseCompactSequenceEntries(expectedIndent);
-        // TODO: COMPACT_SEQUENCE_NODE?
+        // TODO: Do we need a COMPACT_SEQUENCE_NODE?
         DoneBeforeWhitespaces(mark, ElementType.BLOCK_SEQUENCE_NODE);
         return true;
       }
@@ -585,7 +582,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
           Builder.Drop(indentMark);
         } while (!Builder.Eof());
 
-        // TODO: COMPACT_MAPPING_NODE?
+        // TODO: Do we need a COMPACT_MAPPING_NODE?
         DoneBeforeWhitespaces(mark, ElementType.BLOCK_MAPPING_NODE);
 
         return true;
@@ -652,6 +649,19 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       {
         ParseAnchorProperty();
         ParseTagProperty(expectedIndent);
+      }
+
+      // Unity scene files are sometimes invalid, with an extra keyword after the node properties and before a block
+      // mapping. We'll silently eat it.
+      // E.g.:
+      // --- !u!4 &154806035 stripped
+      // Transform:
+      //   m_PrefabParentObject: ...
+      if (GetTokenTypeNoSkipWhitespace().IsWhitespace && IsPlainScalarToken(LookAheadNoSkipWhitespaces(1)) &&
+          LookAheadText(1) == "stripped")
+      {
+        Advance();  // <whitespace>
+        Advance();  // stripped
       }
 
       DoneBeforeWhitespaces(mark, ElementType.NODE_PROPERTIES);
@@ -1119,7 +1129,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     }
 
     // ReSharper disable once UnusedMember.Local
-    [Obsolete("Skips whitespace. Be explicit and call GetTokenTypeNoSkipWhitesapce", true)]
+    [Obsolete("Skips whitespace. Be explicit and call GetTokenTypeNoSkipWhitespace", true)]
     private new TokenNodeType GetTokenType()
     {
       throw new InvalidOperationException("Do not call - be explicit about whitespace");
@@ -1131,6 +1141,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return Builder.GetTokenType();
     }
 
+    // ReSharper disable once UnusedMethodReturnValue.Local - mirrors the ExpectToken API
     private bool ExpectTokenNoSkipWhitespace(NodeType token, bool dontSkipSpacesAfter = false)
     {
       if (GetTokenTypeNoSkipWhitespace() != token)
@@ -1175,6 +1186,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       while (tt == YamlTokenType.INDENT)
         tt = LookAheadNoSkipWhitespaces(i++);
       return tt;
+    }
+
+
+    private string LookAheadText(int index)
+    {
+      return Builder.GetTokenText(Builder.GetCurrentLexeme() + index);
     }
 
 
