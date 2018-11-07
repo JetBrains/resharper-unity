@@ -257,12 +257,17 @@ namespace JetBrains.Rider.Unity.Editor
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           InitEditorLogPath(model);
+          AdviseScriptCompilationDuringPlay(model, connectionLifetime);
 
           model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
           model.ApplicationPath.SetValue(EditorApplication.applicationPath);
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
           model.ApplicationVersion.SetValue(Application.unityVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
+          if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
+            model.NotifyIsRecompileAndContinuePlaying.Fire("General");
+          else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
+            model.NotifyIsRecompileAndContinuePlaying.Fire("Rider");
           
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -275,6 +280,18 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
+    }
+
+    private static void AdviseScriptCompilationDuringPlay(EditorPluginModel model, Lifetime lifetime)
+    {
+      model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime,
+        scriptCompilationDuringPlay =>
+        {
+          if (UnityUtils.UnityVersion >= new Version(2018, 2))
+            EditorPrefsWrapper.ScriptChangesDuringPlayOptions = scriptCompilationDuringPlay;
+          else
+            PluginSettings.AssemblyReloadSettings = (AssemblyReloadSettings) scriptCompilationDuringPlay;
+        });
     }
 
     private static void AdviseEditorState(EditorPluginModel modelValue)
