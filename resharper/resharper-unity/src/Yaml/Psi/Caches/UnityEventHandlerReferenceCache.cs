@@ -18,12 +18,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [PsiComponent]
     public class UnityEventHandlerReferenceCache : SimpleICache<List<string>>
     {
+        private readonly MetaFileGuidCache myMetaFileGuidCache;
+
         private readonly CompactOneToListMap<string, IPsiSourceFile> myReferencedElementToAsset =
             new CompactOneToListMap<string, IPsiSourceFile>();
 
-        public UnityEventHandlerReferenceCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager)
+        public UnityEventHandlerReferenceCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
+                                               MetaFileGuidCache metaFileGuidCache)
             : base(lifetime, persistentIndexManager, CreateMarshaller())
         {
+            myMetaFileGuidCache = metaFileGuidCache;
 #if DEBUG
             ClearOnLoad = true;
 #endif
@@ -38,10 +42,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public bool IsEventHandler([NotNull] IDeclaredElement declaredElement)
         {
             var sourceFiles = declaredElement.GetSourceFiles();
+
+            // The methods and property setters that we are interested in will only have a single source file
             if (sourceFiles.Count != 1)
                 return false;
 
-            var referencedElementKey = GetReferencedElementKey(sourceFiles[0], declaredElement);
+            var assetGuid = myMetaFileGuidCache.GetAssetGuid(sourceFiles[0]);
+            if (assetGuid == null)
+                return false;
+
+            var referencedElementKey = GetReferencedElementKey(assetGuid, declaredElement);
             return myReferencedElementToAsset[referencedElementKey].Count > 0;
         }
 
@@ -66,10 +76,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var referencedElements = new List<string>();
             var referenceProcessor = new RecursiveReferenceProcessor<UnityEventTargetReference>(reference =>
             {
-                var location = reference.GetSourceFileLocation();
-                if (!location.IsEmpty)
+                var assetGuid = reference.GetAssetGuid();
+                if (assetGuid != null)
                 {
-                    var referencedElementKey = GetReferencedElementKey(location, reference.EventHandlerName);
+                    var referencedElementKey = GetReferencedElementKey(assetGuid, reference.EventHandlerName);
                     if (referencedElementKey != null)
                         referencedElements.Add(referencedElementKey);
                 }
@@ -105,26 +115,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         }
 
         [CanBeNull]
-        private string GetReferencedElementKey(IPsiSourceFile sourceFile, IDeclaredElement declaredElement)
+        private string GetReferencedElementKey(string assetGuid, IDeclaredElement declaredElement)
         {
             switch (declaredElement)
             {
                 case IMethod method:
-                    return GetReferencedElementKey(sourceFile.GetLocation(), method.ShortName);
+                    return GetReferencedElementKey(assetGuid, method.ShortName);
 
                 case IProperty property:
-                    return GetReferencedElementKey(sourceFile.GetLocation(), property.Setter?.ShortName);
+                    return GetReferencedElementKey(assetGuid, property.Setter?.ShortName);
             }
 
             return null;
         }
 
-        private string GetReferencedElementKey(FileSystemPath location, [CanBeNull] string handlerName)
+        private string GetReferencedElementKey(string assetGuid, [CanBeNull] string handlerName)
         {
             if (handlerName == null)
                 return null;
 
-            return location + "::" + handlerName;
+            return assetGuid + "::" + handlerName;
         }
     }
 }
