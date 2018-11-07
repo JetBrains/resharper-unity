@@ -21,12 +21,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         [CanBeNull]
         public static IMethodDeclaration GetMonoBehaviourMethod([NotNull] IClassDeclaration classDeclaration, [NotNull] string name)
         {
+            classDeclaration.GetPsiServices().Locks.AssertMainThread();
+            
             return classDeclaration.MethodDeclarations.FirstOrDefault(t => t.NameIdentifier.Name.Equals(name));
         }
         
         [NotNull]
         public static IMethodDeclaration GetOrCreateMethod([NotNull] IClassDeclaration classDeclaration, [NotNull] string methodName)
         {
+            classDeclaration.GetPsiServices().Locks.AssertMainThread();
+            
             var result = GetMonoBehaviourMethod(classDeclaration, methodName);
             if (result == null)
             {
@@ -41,6 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
 
         public static bool IsExpressionAccessibleInScript([NotNull]ICSharpExpression expression)
         {
+            expression.GetPsiServices().Locks.AssertMainThread();
+            
             Shell.Instance.GetComponent<IShellLocks>().AssertMainThread();
             
             if (!expression.IsValid())
@@ -66,6 +72,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         /// </summary>
         public static bool IsAvailableToMoveFromLoop([NotNull] ITreeNode toMove, [NotNull] ILoopStatement loop)
         {
+            toMove.GetPsiServices().Locks.AssertMainThread();
+
             var sourceFile = toMove.GetSourceFile();
             if (sourceFile == null)
                 return false;
@@ -82,6 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         /// </summary>
         public static bool IsAvailableToMoveFromMethodToMethod([NotNull] ITreeNode toMove)
         {
+            toMove.GetPsiServices().Locks.AssertMainThread();
+            
             return IsAvailableToMoveInner(toMove);
         }
         
@@ -126,6 +136,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
 
         public static void MoveToMethodWithFieldIntroduction([NotNull]IClassDeclaration classDeclaration, [NotNull]ICSharpExpression expression, [NotNull] string methodName, string fieldName = null)
         {
+            classDeclaration.GetPsiServices().Locks.AssertMainThread();
+            
             var methodDeclaration = GetOrCreateMethod(classDeclaration, methodName);
             MoveToMethodWithFieldIntroduction(classDeclaration, methodDeclaration, expression, fieldName);
         }
@@ -133,6 +145,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         public static void MoveToMethodWithFieldIntroduction([NotNull]IClassDeclaration classDeclaration,[NotNull] IMethodDeclaration methodDeclaration,
             [NotNull]ICSharpExpression expression, string fieldName = null)
         {
+            classDeclaration.GetPsiServices().Locks.AssertMainThread();
+
             var result = GetDeclaredElementFromParentDeclaration(expression);
             
             var factory = CSharpElementFactory.GetInstance(classDeclaration);
@@ -166,6 +180,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         public static void RenameOldUsages([NotNull]ICSharpExpression originExpression, [CanBeNull]IDeclaredElement localVariableDeclaredElement, 
             [NotNull] string newName, [NotNull] CSharpElementFactory factory)
         {
+            originExpression.GetPsiServices().Locks.AssertMainThread();
+
             var statement = ExpressionStatementNavigator.GetByExpression(originExpression);
             if (statement != null)
             {
@@ -193,9 +209,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             }
         }
 
-
-        public static IDeclaredElement GetDeclaredElementFromParentDeclaration(ICSharpExpression expression)
+        /// <summary>
+        /// If current expression is used as initializer for local variable, declared element for this variable will be returned
+        /// </summary>
+        public static IDeclaredElement GetDeclaredElementFromParentDeclaration([NotNull] ICSharpExpression expression)
         {
+            expression.GetPsiServices().Locks.AssertMainThread();
+            
             var localVariableDeclaration =
                 LocalVariableDeclarationNavigator.GetByInitial(
                     expression.GetContainingParenthesizedExpression()?.Parent as IVariableInitializer);
@@ -204,6 +224,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
 
         public static string CreateBaseName([NotNull]ICSharpExpression toMove, [CanBeNull] IDeclaredElement variableDeclaration)
         {
+            toMove.GetPsiServices().Locks.AssertMainThread();
+            
             var type = toMove.Type(new ResolveContext(toMove.GetPsiModule()));
             if (type.IsUnknown)
                 type = TypeFactory.CreateTypeByCLRName("System.Object", toMove.GetPsiModule());
