@@ -18,6 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
         public static string GetUniqueName<T>([NotNull] T node, [NotNull] string baseName,
             NamedElementKinds elementKind, Func<IDeclaredElement, bool> isConflictingElement = null) where T : ICSharpTreeNode
         {
+            node.GetPsiServices().Locks.AssertMainThread();
+            
             Shell.Instance.GetComponent<IShellLocks>().AssertMainThread();
             
             isConflictingElement = isConflictingElement ?? JetFunc<IDeclaredElement>.True;
