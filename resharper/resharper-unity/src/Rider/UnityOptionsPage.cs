@@ -34,7 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin, "Install or update Rider plugin automatically");
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh Assets in Unity");
-
+            CheckBox((UnitySettings s) => s.EnableDefaultUnityCodeStyle, "Enable default Unity code-style");
+            
             AddNamingSection(lifetime, settingsStore);
 
             // TODO: This needs to be available for ReSharper

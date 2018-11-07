@@ -43,6 +43,7 @@ data class SemVer(val major: Int, val minor: Int, val patch: Int, val prerelease
         // Non-null pre-release has lower precedence
         if (prerelease == null && other.prerelease == null) return 0
         if (other.prerelease == null) return -1
+        if (prerelease == null) return 1
 
         val segments = prerelease.split(".")
         val otherSegments = other.prerelease.split(".")
