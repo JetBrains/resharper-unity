@@ -115,4 +115,7 @@
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\resharper-yaml\src\rider-yaml.csproj" />
+  </ItemGroup>
 </Project>

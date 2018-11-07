@@ -1,0 +1,16 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:YAML)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:1.2)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    IPlainScalarNode
+      YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:text)
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

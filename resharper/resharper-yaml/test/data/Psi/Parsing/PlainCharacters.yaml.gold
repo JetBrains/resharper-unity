@@ -1,0 +1,75 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  Comment(type:COMMENT, text:# Outside flow collection:) spaces: "# Outside flow collection:"
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+  IYamlDocument
+    IBlockSequenceNode
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:::vector)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IDoubleQuotedScalarNode
+          YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:": - ()")
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Up, up, and away!)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:-123)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:http://example.com/foo#bar)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Comment(type:COMMENT, text:# Inside flow collection:) spaces: "# Inside flow collection:"
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IFlowSequenceNode
+          YamlTokenType+FixedTokenElement(type:LBRACK, text:[)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IFlowSequenceEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:::vector)
+          YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IFlowSequenceEntry
+            IDoubleQuotedScalarNode
+              YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:": - ()")
+          YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IFlowSequenceEntry
+            IDoubleQuotedScalarNode
+              YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"Up, up and away!")
+          YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IFlowSequenceEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:-123)
+          YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IFlowSequenceEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:http://example.com/foo#bar)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          YamlTokenType+FixedTokenElement(type:RBRACK, text:])
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

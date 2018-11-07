@@ -1,0 +1,9 @@
+# Single line comment
+key:    # Comment
+  value # Comment 2
+
+# Multi line comment 1
+# Multi line comment 2
+key2:#not a comment
+key3:# also not a comment
+-# still not a comment

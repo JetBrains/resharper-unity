@@ -1,0 +1,2 @@
+﻿0000: C_DOUBLE_QUOTED_MULTILINE '" 1st non-empty\n\n 2nd non-empty \n\t3rd non-empty "'
+0049: NEW_LINE '\n'

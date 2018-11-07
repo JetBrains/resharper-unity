@@ -1,0 +1,35 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  Comment(type:COMMENT, text:# Assuming conventional resolution:) spaces: "# Assuming conventional resolution:"
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+  IYamlDocument
+    IBlockSequenceNode
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IDoubleQuotedScalarNode
+          YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"12")
+      Whitespace(type:WHITESPACE, text:  ) spaces: "  "
+      Comment(type:COMMENT, text:# Resolves to !!str) spaces: "# Resolves to !!str"
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:12)
+      Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+      Comment(type:COMMENT, text:# Resolves to !!int) spaces: "# Resolves to !!int"
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ISequenceEntry
+        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPlainScalarNode
+          INodeProperties
+            INonSpecificTagProperty
+              YamlTokenType+FixedTokenElement(type:BANG, text:!)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:12)
+    Whitespace(type:WHITESPACE, text:  ) spaces: "  "
+    Comment(type:COMMENT, text:# Resolves to !!str) spaces: "# Resolves to !!str"
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

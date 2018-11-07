@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/citizenmatt/resharper-yaml
+	branch = master
+	commit = c424c59fb7d502ddfc536b84947df1ead2de46e2
+	parent = f4be806977871fe06e00b8a5e43696596798e78b
+	cmdver = 0.3.1
