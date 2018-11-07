@@ -4,9 +4,9 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
-    public static class PerformanceCriticalCodeStageUtil
+    internal static class PerformanceCriticalCodeStageUtil
     {
-        public static bool IsInvocationExpensive(IInvocationExpression invocationExpression)
+        internal static bool IsInvocationExpensive(IInvocationExpression invocationExpression)
         {
             var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
             if (reference == null)
