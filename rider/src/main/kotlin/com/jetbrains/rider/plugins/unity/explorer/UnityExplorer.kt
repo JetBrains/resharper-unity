@@ -10,7 +10,6 @@ import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
-import com.jetbrains.rider.icons.ReSharperSolutionAnalysisIcons
 import com.jetbrains.rider.isLikeUnityProject
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
@@ -27,7 +26,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         const val ShowHiddenItemsOption = "show-hidden-items"
         const val DefaultProjectPrefix = "Assembly-CSharp"
 
-        val Icon = UnityIcons.Explorer.PaneIcon
+        val Icon = UnityIcons.ToolWindows.UnityExplorer
         val IgnoredExtensions = hashSetOf("meta", "tmp")
         val SELECTED_REFERENCE_KEY: DataKey<UnityExplorerNode.ReferenceItem> = DataKey.create("selectedReference")
 
