@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
@@ -24,14 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             : base(owner)
         {
             myFileId = fileId;
-        }
-
-        // This is only because we can't call resolve in AssetReferencesCache. And we only have AssetReferenceCache
-        // because external files can't take part in usage analysis
-        public FileSystemPath GetSourceFileLocation()
-        {
-            var assetPaths = GetAssetPaths();
-            return assetPaths.Count == 1 ? assetPaths[0] : FileSystemPath.Empty;
         }
 
         public string EventHandlerName => myOwner.GetText();
@@ -91,7 +82,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         [CanBeNull]
         private ITypeElement GetTypeFromFileId()
         {
-            var assetPaths = GetAssetPaths();
+            var assetGuid = GetAssetGuid();
+            if (assetGuid == null)
+                return null;
+
+            var solution = myOwner.GetSolution();
+            var cache = solution.GetComponent<MetaFileGuidCache>();
+            var assetPaths = cache.GetAssetFilePathsFromGuid(assetGuid);
+            if (assetPaths == null || assetPaths.IsEmpty())
+                return null;
 
             // TODO: Multiple candidates!
             // I.e. someone has copy/pasted a .meta file
@@ -108,28 +107,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             return typeDeclaration?.DeclaredElement;
         }
 
-        private IList<FileSystemPath> GetAssetPaths()
+        [CanBeNull]
+        public string GetAssetGuid()
         {
             var document = FindDocumentByAnchor(myFileId);
             if (document == null)
-                return EmptyList<FileSystemPath>.InstanceList;
+                return null;
 
             // If it's a reference to something other than MonoBehaviour, it shouldn't be a resolve error
             var fileReference = GetScriptFileReference(document);
-            if (fileReference == null)
-                return EmptyList<FileSystemPath>.InstanceList;
-
-            var guid = GetFileReferenceGuid(fileReference);
-            if (guid == null)
-                return EmptyList<FileSystemPath>.InstanceList;
-
-            var solution = myOwner.GetSolution();
-            var cache = solution.GetComponent<MetaFileGuidCache>();
-            var assetPaths = cache.GetAssetFilePathsFromGuid(guid);
-            if (assetPaths == null || assetPaths.IsEmpty())
-                return EmptyList<FileSystemPath>.InstanceList;
-
-            return assetPaths;
+            return fileReference == null ? null : GetFileReferenceGuid(fileReference);
         }
 
         private IYamlDocument FindDocumentByAnchor(string anchor)

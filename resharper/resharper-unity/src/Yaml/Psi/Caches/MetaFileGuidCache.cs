@@ -20,6 +20,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         private readonly CompactOneToListMap<string, FileSystemPath> myAssetGuidToAssetFilePaths =
             new CompactOneToListMap<string, FileSystemPath>();
 
+        // Note that Map is a map of *meta file* to asset guid, NOT asset file!
+        private readonly Dictionary<FileSystemPath, string> myAssetFilePathToGuid =
+            new Dictionary<FileSystemPath, string>();
+
         public MetaFileGuidCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager)
             : base(lifetime, persistentIndexManager, MetaFileCacheItem.Marshaller)
         {
@@ -33,6 +37,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public IList<FileSystemPath> GetAssetFilePathsFromGuid(string guid)
         {
             return myAssetGuidToAssetFilePaths[guid];
+        }
+
+        public string GetAssetGuid(IPsiSourceFile sourceFile)
+        {
+            return myAssetFilePathToGuid.TryGetValue(sourceFile.GetLocation(), out var guid) ? guid : null;
         }
 
         protected override bool IsApplicable(IPsiSourceFile sf)
@@ -92,15 +101,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             base.Drop(sourceFile);
         }
 
-        private void PopulateLocalCache(IPsiSourceFile sourceFile, [CanBeNull] MetaFileCacheItem data)
+        private void PopulateLocalCache(IPsiSourceFile metaFile, [CanBeNull] MetaFileCacheItem data)
         {
             if (data == null) return;
 
-            var metaFileLocation = sourceFile.GetLocation();
+            var metaFileLocation = metaFile.GetLocation();
             if (!metaFileLocation.IsEmpty)
             {
                 var assetLocation = GetAssetLocationFromMetaFile(metaFileLocation);
                 myAssetGuidToAssetFilePaths.AddValue(data.Guid, assetLocation);
+                myAssetFilePathToGuid.Add(assetLocation, data.Guid);
             }
         }
 
