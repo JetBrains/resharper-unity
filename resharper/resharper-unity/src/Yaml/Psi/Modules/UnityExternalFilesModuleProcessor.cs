@@ -1,215 +1,210 @@
-using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.DocumentManagers.Transactions;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Model2.Transaction;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
-using JetBrains.Threading;
 using JetBrains.Util;
-using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
-    // * AdditionalFilesModuleFactoryBase isn't a base class for implementing IPsiModuleFactory, but is intended to help
-    //   build/populate other PSI modules (that contain additional files).
-    // * This class populates and maintains the module created by UnityExternalFilesModuleFactory. It's currently
-    //   interested in .unity files (so we can add references from YAML to methods) and .cs.meta files (so we can
-    //   generate a cache of GUIDs for MonoScript assets so we know what classes the YAML references are pointing to).
-    //   Also .asset files, and ProjectSettings/*
-    // * We need to collect external files from the main project, editor project, first pass projects, asmdef files and
-    //   source packages
-    // * This means we need to add everything under Assets and Packages, and also the root folder of any package that
-    //   isn't under Assets or Packages. This will handle file based packages
-    // TODO: Do we need to do anything for read only, "referenced" packages?
-    // The contents of a read only, "referenced" package are treated as assets, so AIUI, a package could contain a scene
-    // file that had references to methods in that package. These packages are not editable, and are not source packages
-    // - they are compiled and added as assemblies, so we will never see either the scene file, the source or the meta
-    // files, so I _think_ we can happily ignore these packages.
-    // If we ever create PSI module(s) for referenced packages (to enable better browsing), then this will change
     [SolutionComponent]
-    public class UnityExternalFilesModuleProcessor : AdditionalFilesModuleFactoryBase, IUnityReferenceChangeHandler
+    public class UnityExternalFilesModuleProcessor : IChangeProvider, IUnityReferenceChangeHandler
     {
+        private readonly Lifetime myLifetime;
+        private readonly ISolution mySolution;
+        private readonly ChangeManager myChangeManager;
+        private readonly IShellLocks myLocks;
         private readonly IFileSystemTracker myFileSystemTracker;
-        private readonly IPsiSourceFileProperties myPsiSourceFileProperties;
+        private readonly EnsureWritableHandler myEnsureWritableHandler;
+        private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
+        private readonly UnityExternalFilesModuleFactory myModuleFactory;
+        private readonly YamlSupport myYamlSupport;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
-        private readonly GroupingEvent myGroupingEvent;
         private readonly FileSystemPath mySolutionDirectory;
-        private JetHashSet<FileSystemPath> myFileChanges = new JetHashSet<FileSystemPath>();
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ISolution solution, ChangeManager changeManager,
-                                                 PsiProjectFileTypeCoordinator coordinator,
-                                                 IProjectFileExtensions extensions,
                                                  IShellLocks locks,
                                                  ISolutionLoadTasksScheduler scheduler,
                                                  IFileSystemTracker fileSystemTracker,
-                                                 UnityExternalFilesModuleFactory psiModuleFactory)
-            : base(solution, changeManager, coordinator, extensions, lifetime, locks, psiModuleFactory.PsiModule)
+                                                 EnsureWritableHandler ensureWritableHandler,
+                                                 UnityYamlPsiSourceFileFactory psiSourceFileFactory,
+                                                 UnityExternalFilesModuleFactory moduleFactory,
+                                                 YamlSupport yamlSupport)
         {
+            myLifetime = lifetime;
+            mySolution = solution;
+            myChangeManager = changeManager;
+            myLocks = locks;
             myFileSystemTracker = fileSystemTracker;
-            myPsiSourceFileProperties = new UnityExternalFileProperties();
+            myEnsureWritableHandler = ensureWritableHandler;
+            myPsiSourceFileFactory = psiSourceFileFactory;
+            myModuleFactory = moduleFactory;
+            myYamlSupport = yamlSupport;
+
+            changeManager.RegisterChangeProvider(lifetime, this);
+
             myRootPaths = new JetHashSet<FileSystemPath>();
 
-            // SolutionDirectory isn't absolute in tests, so resolve it. If it's not absolute and we call Exists, we'll
-            // get an exception (and break ALL the tests)
+            // SolutionDirectory isn't absolute in tests, and will throw an exception if we use it when we call Exists
             mySolutionDirectory = solution.SolutionDirectory;
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory());
 
-            myGroupingEvent = locks.GroupingEvents.CreateEvent(lifetime, GetType().Name + ".FileChanges",
-                TimeSpan.FromMilliseconds(50.0), Rgc.Guarded, FlushFileChanges);
-
-            // Make sure our module change notifications propagate correctly
             scheduler.EnqueueTask(new SolutionLoadTask(GetType().Name + ".Activate",
                 SolutionLoadTaskKinds.PreparePsiModules,
-                () => myChangeManager.AddDependency(myLifetime, Solution.PsiModules(), this)));
-        }
-
-        // Keep the file in the module after it's closed in the (VS) misc project?
-        protected override bool MustAlwaysHaveAdditionalFile(FileSystemPath oldLocation) => true;
-
-        protected override bool ShouldAcceptMiscProjectFile(IProjectFile projectFile)
-        {
-            return IsInterestingFile(projectFile.Location);
-        }
-
-        protected override IPsiSourceFileProperties CreateProperties() => myPsiSourceFileProperties;
-
-        // The module monitors added files for changes. We just need to notify that our file has changed
-        protected override void OnFileChange(FileSystemChangeDelta delta)
-        {
-            if (delta.ChangeType == FileSystemChangeType.CHANGED && IsInterestingFile(delta.NewPath))
-            {
-                lock (this)
-                    myFileChanges.Add(delta.NewPath);
-                myGroupingEvent.FireIncoming();
-            }
-        }
-
-        private void FlushFileChanges()
-        {
-            JetHashSet<FileSystemPath> fileChanges;
-            lock (this)
-            {
-                if (myFileChanges.Count == 0)
-                    return;
-                fileChanges = myFileChanges;
-                myFileChanges = new JetHashSet<FileSystemPath>();
-            }
-
-            var builder = new PsiModuleChangeBuilder();
-            foreach (var fileSystemPath in fileChanges)
-            {
-                if (PsiModule.TryGetFileByPath(fileSystemPath, out var file))
-                    builder.AddFileChange(file, PsiModuleChange.ChangeType.Modified);
-            }
-
-            if (!builder.IsEmpty)
-            {
-                myLocks.ExecuteOrQueueEx(myLifetime, GetType().Name + ".FlushFileChanges",
-                    () => PropagateChanges(builder, true));
-            }
+                () => myChangeManager.AddDependency(myLifetime, mySolution.PsiModules(), this)));
         }
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
-            // TODO: Only process the project if YAML parsing is enabled
-
-            var added = new List<FileSystemPath>();
-            ProcessAssets(added);
-            ProcessPackages(added);
-            ProcessProjectSettings(added);
-
-            // Look at each project being added. If the project folder is not under Assets or Packages, handle it
-            if (project.IsProjectFromUserView())
-            {
-                // This assumes that all of the files in a project are in the same folder
-                // TODO: Is this a reasonable assumption?
-                var projectDirectory = project.Location;
-                if (!mySolutionDirectory.IsPrefixOf(projectDirectory))
-                    ProcessFolder(projectDirectory, added);
-            }
-
-            if (added.Count > 0)
-                FlushChanges(added, EmptyList<FileSystemPath>.Instance, true);
-
-            AddModuleReference(project);
-        }
-
-        private void ProcessAssets(List<FileSystemPath> added)
-        {
-            var assetsPath = mySolutionDirectory.Combine("Assets");
-            if (assetsPath.ExistsDirectory)
-                ProcessFolder(assetsPath, added);
-        }
-
-        private void ProcessPackages(List<FileSystemPath> added)
-        {
-            var packagesPath = mySolutionDirectory.Combine("Packages");
-            if (packagesPath.ExistsDirectory)
-                ProcessFolder(packagesPath, added);
-        }
-
-        private void ProcessProjectSettings(List<FileSystemPath> added)
-        {
-            // This doesn't handle ProjectSettings/ProjectVersion.txt, but I don't think we really care about that
-            var projectSettingsPath = mySolutionDirectory.Combine("ProjectSettings");
-            if (projectSettingsPath.ExistsDirectory)
-                ProcessFolder(projectSettingsPath, added);
-        }
-
-        private void ProcessFolder(FileSystemPath folder, List<FileSystemPath> added)
-        {
-            if (myRootPaths.Contains(folder))
+            // We only support generated Unity projects. I.e. a Unity C# project that represents an actual Unity project
+            if (!myYamlSupport.IsParsingEnabled.Value || !project.IsUnityGeneratedProject())
                 return;
 
-            AddFiles(folder, added, "*.cs.meta");
-            // TODO: Only process assets if the project is set to text serialisation
+            var builder = new PsiModuleChangeBuilder();
+
+            // These are idempotent
+            ProcessSolutionDirectory(builder, "Assets");
+            ProcessSolutionDirectory(builder, "Packages");
+            ProcessSolutionDirectory(builder, "ProjectSettings");
+
+            if (project.IsProjectFromUserView())
+            {
+                // If the project doesn't live under the solution directory, it's most likely a file:// based package.
+                // They are .asmdef based, so can't contain links. We're safe to index the project directory.
+                // There could be a class library located in the solution directory, but since we're a generated project
+                // and Unity doesn't support that, we're ok (fatal last words)
+                var projectDirectory = project.Location;
+                if (!mySolutionDirectory.IsPrefixOf(projectDirectory))
+                    ProcessDirectory(builder, projectDirectory);
+            }
+
+            // Add a module reference to the project, so our reference can "see" the target (more accurately, I think
+            // this is used to figure out the search domain for Find Usages)
+            AddModuleReference(builder, project);
+
+            FlushChanges(builder);
+        }
+
+        private void ProcessSolutionDirectory(PsiModuleChangeBuilder builder, string relativePath)
+        {
+            var path = mySolutionDirectory.Combine(relativePath);
+            if (path.ExistsDirectory)
+                ProcessDirectory(builder, path);
+        }
+
+        private void ProcessDirectory(PsiModuleChangeBuilder builder, FileSystemPath directory)
+        {
+            if (myRootPaths.Contains(directory))
+                return;
+
+            AddFiles(builder, directory, "*.cs.meta");
+            AddAssetFiles(directory);
+
+            myFileSystemTracker.AdviseDirectoryChanges(myLifetime, directory, true, OnProjectDirectoryChange);
+
+            myRootPaths.Add(directory);
+        }
+
+        private void AddFiles(PsiModuleChangeBuilder builder, FileSystemPath directory, string filePattern)
+        {
+            // TODO: Verify this is case insensitive
+            var files = directory.GetChildFiles(filePattern, PathSearchFlags.RecurseIntoSubdirectories);
+            foreach (var file in files)
+                AddMetaPsiSourceFile(builder, file);
+        }
+
+        private void AddMetaPsiSourceFile(PsiModuleChangeBuilder builder, FileSystemPath path)
+        {
+            Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
+            if (myModuleFactory.PsiModule.ContainsPath(path))
+                return;
+
+            var sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path);
+            builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
+        }
+
+        private void AddAssetFiles(FileSystemPath directory)
+        {
+            // TODO: Only process assets if the project is set to use text serialisation
             foreach (var pattern in UnityYamlFileExtensions.AssetWildCards)
-                AddFiles(folder, added, pattern);
+            {
+                var files = directory.GetChildFiles(pattern, PathSearchFlags.RecurseIntoSubdirectories);
 
-            myFileSystemTracker.AdviseDirectoryChanges(myLifetime, folder, true, OnProjectDirectoryChanged);
-
-            myRootPaths.Add(folder);
+                // Just create the project file. This will get to the misc files provider and cause the creation of the
+                // IPsiSourceFile (and notify)
+                // TODO: Perhaps use ProjectModelBatchChangeCookie?
+                foreach (var path in files)
+                    AddAssetProjectFile(path);
+            }
         }
 
-        private void AddFiles(FileSystemPath folder, List<FileSystemPath> added, string filePattern)
+        private void AddAssetProjectFile(FileSystemPath path)
         {
-            // TODO: Is this pattern case insensitive?
-            var metaFiles = folder.GetChildFiles(filePattern, PathSearchFlags.RecurseIntoSubdirectories);
-            added.AddRange(metaFiles);
+            if (mySolution.FindProjectItemsByLocation(path).Count > 0)
+                return;
+
+            // Add the asset file as a project file, as various features require IProjectFile. Once created,
+            // it will automatically get an IPsiSourceFile created for it, and attached to our module
+            // See UnityMiscFilesProjectPsiModuleProvider
+            Lifetimes.Using(lifetime =>
+            {
+                myEnsureWritableHandler.SkipEnsureWritable(lifetime, path);
+                using (var transaction = mySolution.CreateTransactionCookie(DefaultAction.Commit,
+                    "Create project item", NullProgressIndicator.Create()))
+                {
+                    return transaction.AddFile(mySolution.MiscFilesProject, path);
+                }
+            });
         }
 
-        private void OnProjectDirectoryChanged(FileSystemChangeDelta delta)
+        private void OnProjectDirectoryChange(FileSystemChangeDelta delta)
         {
-            var added = new FrugalLocalList<FileSystemPath>();
-            var removed = new FrugalLocalList<FileSystemPath>();
-
-            ProcessFileSystemDelta(delta, ref added, ref removed);
-
-            if (added.Count > 0 || removed.Count > 0)
-                FlushChanges(added.ToArray(), removed.ToArray(), true);
+            var builder = new PsiModuleChangeBuilder();
+            ProcessFileSystemChangeDelta(delta, builder);
+            FlushChanges(builder);
         }
 
-        private void ProcessFileSystemDelta(FileSystemChangeDelta delta, ref FrugalLocalList<FileSystemPath> added,
-                                            ref FrugalLocalList<FileSystemPath> removed)
+        private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder)
         {
+            var module = myModuleFactory.PsiModule;
+            if (module == null)
+                return;
+
+            // TODO: Batch these changes up?
+            IPsiSourceFile sourceFile;
             switch (delta.ChangeType)
             {
                 case FileSystemChangeType.ADDED:
-                    if (IsInterestingFile(delta.NewPath))
-                        added.Add(delta.NewPath);
+                    if (UnityYamlFileExtensions.IsAsset(delta.NewPath))
+                        AddAssetProjectFile(delta.NewPath);
+                    else if (UnityYamlFileExtensions.IsMeta(delta.NewPath))
+                        AddMetaPsiSourceFile(builder, delta.NewPath);
                     break;
+
                 case FileSystemChangeType.DELETED:
-                    if (IsInterestingFile(delta.OldPath))
-                        removed.Add(delta.OldPath);
+                    sourceFile = GetYamlPsiSourceFile(module, delta.OldPath);
+                    if (sourceFile != null)
+                        builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Removed);
                     break;
+
                 case FileSystemChangeType.CHANGED:
+                    sourceFile = GetYamlPsiSourceFile(module, delta.NewPath);
+                    if (sourceFile != null)
+                        builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
+                    break;
+
                 case FileSystemChangeType.SUBTREE_CHANGED:
                 case FileSystemChangeType.RENAMED:
                 case FileSystemChangeType.UNKNOWN:
@@ -217,31 +212,62 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             }
 
             foreach (var child in delta.GetChildren())
-                ProcessFileSystemDelta(child, ref added, ref removed);
+                ProcessFileSystemChangeDelta(child, builder);
         }
 
-        // We need to add a module reference to the C# project so that searching for method usages will include this
-        // module in the search scope. This makes sense - this module is conceptually the same as the Unity project
-        // (i.e. Assets + Packages) and it needs to take a dependency on the C# projects in order to correctly see the
-        // methods
-        private void AddModuleReference(IProject project)
+        [CanBeNull]
+        private IPsiSourceFile GetYamlPsiSourceFile(IPsiModuleOnFileSystemPaths module, FileSystemPath path)
         {
-            var thisModule = (UnityExternalFilesPsiModule) PsiModule;
-            foreach (var module in project.GetPsiModules())
-                thisModule.AddModuleReference(module);
+            return module.TryGetFileByPath(path, out var sourceFile) ? sourceFile : null;
+        }
 
-            var builder = new PsiModuleChangeBuilder();
+        private void FlushChanges(PsiModuleChangeBuilder builder)
+        {
+            if (builder.IsEmpty)
+                return;
+
+            myLocks.ExecuteOrQueueEx(myLifetime, GetType().Name + ".FlushChanges",
+                () =>
+                {
+                    var module = myModuleFactory.PsiModule;
+                    Assertion.AssertNotNull(module, "module != null");
+                    myLocks.AssertMainThread();
+                    using (myLocks.UsingWriteLock())
+                    {
+                        foreach (var fileChange in builder.Result.FileChanges)
+                        {
+                            var location = fileChange.Item.GetLocation();
+                            if (location.IsEmpty)
+                                continue;
+
+                            switch (fileChange.Type)
+                            {
+                                case PsiModuleChange.ChangeType.Added:
+                                    module.Add(location, fileChange.Item, null);
+                                    break;
+                                case PsiModuleChange.ChangeType.Removed:
+                                    module.Remove(location);
+                                    break;
+                            }
+                        }
+
+                        myChangeManager.OnProviderChanged(this, builder.Result, SimpleTaskExecutor.Instance);
+                    }
+                });
+        }
+
+        private void AddModuleReference(PsiModuleChangeBuilder builder, IProject project)
+        {
+            var thisModule = myModuleFactory.PsiModule;
+            if (thisModule == null)
+                return;
+
+            foreach (var projectModule in project.GetPsiModules())
+                thisModule.AddModuleReference(projectModule);
+
             builder.AddModuleChange(thisModule, PsiModuleChange.ChangeType.Modified);
-
-            myLocks.ExecuteOrQueueEx(myLifetime, GetType().Name + ".FlushModuleChanges",
-                () => PropagateChanges(builder, true));
         }
 
-        private static bool IsInterestingFile(IPath path)
-        {
-            // TODO: Only process .unity if the project is set to text serialisation
-            // TODO: Should we check for .cs.meta instead of just .meta?
-            return UnityYamlFileExtensions.Contains(path.ExtensionWithDot);
-        }
+        public object Execute(IChangeMap changeMap) => null;
     }
 }

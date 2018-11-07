@@ -6,11 +6,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 {
     public static class UnityYamlFileExtensions
     {
-        // TODO: What else?
-        public static string MetaFileExtensionWithDot = ".meta";
-        public static string[] AssetFileExtensionsWithDot = {".unity", ".asset", ".prefab"};
-        public static string[] AllFileExtensionsWithDot;
-        public static string[] AssetWildCards;
+        public const string MetaFileExtensionWithDot = ".meta";
+        public static readonly string[] AssetFileExtensionsWithDot = {".unity", ".asset", ".prefab"};
+        public static readonly string[] AllFileExtensionsWithDot;
+        public static readonly string[] AssetWildCards;
 
         static UnityYamlFileExtensions()
         {
@@ -24,6 +23,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
         public static bool Contains(string extensionWithDot)
         {
             return AllFileExtensionsWithDot.Contains(extensionWithDot, StringComparer.InvariantCultureIgnoreCase);
+        }
+
+        public static bool IsAsset(FileSystemPath path)
+        {
+            return AssetFileExtensionsWithDot.Contains(path.ExtensionWithDot, StringComparer.InvariantCultureIgnoreCase);
+        }
+
+        public static bool IsMeta(FileSystemPath path)
+        {
+            return string.Equals(path.ExtensionWithDot, MetaFileExtensionWithDot,
+                StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
