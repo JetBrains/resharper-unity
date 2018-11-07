@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
@@ -80,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                         return false;
                     }
 
-                    if (IsPotentialEventHandler(unityApi, method))
+                    if (IsEventHandler(unityApi, method))
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
@@ -93,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
 
-                case IProperty property when IsPotentialEventHandler(unityApi, property.Setter):
+                case IProperty property when IsEventHandler(unityApi, property.Setter):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
             }
@@ -102,19 +103,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             return false;
         }
 
+        private bool IsEventHandler(UnityApi unityApi, [CanBeNull] IMethod method)
+        {
+            if (method == null)
+                return false;
+
+            var type = method.GetContainingType();
+            if (!unityApi.IsUnityType(type))
+                return false;
+
+            if (!myYamlSupport.IsParsingEnabled.Value)
+                return IsPotentialEventHandler(unityApi, method);
+
+            return method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>().IsEventHandler(method);
+        }
+
         // Best effort attempt at preventing false positives for type members that are actually being used inside a
         // scene. We don't have enough information to do this by name, so we'll mark all potential event handlers as
         // implicitly used by Unity
         // See https://github.com/Unity-Technologies/UnityCsReference/blob/02f8e8ca594f156dd6b2088ad89451143ca1b87e/Editor/Mono/Inspector/UnityEventDrawer.cs#L397
-        private bool IsPotentialEventHandler(UnityApi unityApi, [CanBeNull] IMethod method)
+        private static bool IsPotentialEventHandler(UnityApi unityApi, IMethod method)
         {
-            // If we have YAML support enabled, don't guess. Let the power of references work its magic
-            if (myYamlSupport.IsParsingEnabled.Value)
-                return false;
-
-            if (method == null)
-                return false;
-
             if (!method.ReturnType.IsVoid())
                 return false;
 
@@ -122,7 +131,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             if (method.GetAccessRights() != AccessRights.PUBLIC || method.IsStatic)
                 return false;
 
-            return unityApi.IsUnityType(method.GetContainingType()) && !method.HasAttributeInstance(PredefinedType.OBSOLETE_ATTRIBUTE_CLASS, true);
+            return unityApi.IsUnityType(method.GetContainingType()) &&
+                   !method.HasAttributeInstance(PredefinedType.OBSOLETE_ATTRIBUTE_CLASS, true);
         }
     }
 }

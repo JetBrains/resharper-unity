@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
@@ -24,6 +25,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         {
             myFileId = fileId;
         }
+
+        // This is only because we can't call resolve in AssetReferencesCache. And we only have AssetReferenceCache
+        // because external files can't take part in usage analysis
+        public FileSystemPath GetSourceFileLocation()
+        {
+            var assetPaths = GetAssetPaths();
+            return assetPaths.Count == 1 ? assetPaths[0] : FileSystemPath.Empty;
+        }
+
+        public string EventHandlerName => myOwner.GetText();
 
         public override ResolveResultWithInfo ResolveWithoutCache()
         {
@@ -77,38 +88,48 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             return GetTargetMonoBehaviourNode(document) != null;
         }
 
+        [CanBeNull]
         private ITypeElement GetTypeFromFileId()
         {
-            var document = FindDocumentByAnchor(myFileId);
-            if (document == null)
-                return null;
-
-            // If it's a reference to something other than MonoBehaviour, it shouldn't be a resolve error
-            var fileReference = GetScriptFileReference(document);
-            if (fileReference == null)
-                return null;
-
-            var guid = GetFileReferenceGuid(fileReference);
-            if (guid == null)
-                return null;
-
-            var solution = myOwner.GetSolution();
-            var cache = solution.GetComponent<MetaFileGuidCache>();
-            var assetPath = cache.GetAssetFilePathsFromGuid(guid);
-            if (assetPath == null || assetPath.IsEmpty())
-                return null;
+            var assetPaths = GetAssetPaths();
 
             // TODO: Multiple candidates!
             // I.e. someone has copy/pasted a .meta file
+            if (assetPaths.Count != 1)
+                return null;
 
-            var projectItems = solution.FindProjectItemsByLocation(assetPath[0]);
+            var projectItems = myOwner.GetSolution().FindProjectItemsByLocation(assetPaths[0]);
             var assetFile = projectItems.FirstOrDefault() as IProjectFile;
             if (!(assetFile?.GetPrimaryPsiFile() is ICSharpFile csharpFile))
                 return null;
 
             var typeDeclaration =
-                csharpFile.TypeDeclarationsEnumerable.FirstOrDefault(d => d.DeclaredName == assetPath[0].NameWithoutExtension);
+                csharpFile.TypeDeclarationsEnumerable.FirstOrDefault(d => d.DeclaredName == assetPaths[0].NameWithoutExtension);
             return typeDeclaration?.DeclaredElement;
+        }
+
+        private IList<FileSystemPath> GetAssetPaths()
+        {
+            var document = FindDocumentByAnchor(myFileId);
+            if (document == null)
+                return EmptyList<FileSystemPath>.InstanceList;
+
+            // If it's a reference to something other than MonoBehaviour, it shouldn't be a resolve error
+            var fileReference = GetScriptFileReference(document);
+            if (fileReference == null)
+                return EmptyList<FileSystemPath>.InstanceList;
+
+            var guid = GetFileReferenceGuid(fileReference);
+            if (guid == null)
+                return EmptyList<FileSystemPath>.InstanceList;
+
+            var solution = myOwner.GetSolution();
+            var cache = solution.GetComponent<MetaFileGuidCache>();
+            var assetPaths = cache.GetAssetFilePathsFromGuid(guid);
+            if (assetPaths == null || assetPaths.IsEmpty())
+                return EmptyList<FileSystemPath>.InstanceList;
+
+            return assetPaths;
         }
 
         private IYamlDocument FindDocumentByAnchor(string anchor)
