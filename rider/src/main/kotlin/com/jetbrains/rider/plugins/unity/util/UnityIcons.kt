@@ -89,6 +89,8 @@ class UnityIcons {
     class Explorer {
         companion object {
 
+            val PaneIcon = IconLoader.getIcon("/Icons/toolwindows/toolWindowUnityLog.svg")
+
             val AssetsRoot = IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg")
             val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/UnityPackages.svg")
             val ReferencesRoot = ReSharperCommonIcons.CompositeElement
