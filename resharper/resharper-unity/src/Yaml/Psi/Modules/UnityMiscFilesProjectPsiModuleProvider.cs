@@ -74,9 +74,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     if (module.TryGetFileByPath(projectFile.Location, out var sourceFile))
                         changeBuilder.AddFileChange(sourceFile, changeType);
                     break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(changeType), changeType, null);
             }
         }
     }
