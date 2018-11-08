@@ -20,8 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
         {
             node.GetPsiServices().Locks.AssertMainThread();
             
-            Shell.Instance.GetComponent<IShellLocks>().AssertMainThread();
-            
             isConflictingElement = isConflictingElement ?? JetFunc<IDeclaredElement>.True;
             var namingManager = node.GetPsiServices().Naming;
             var policyProvider = namingManager.Policy.GetPolicyProvider(node.Language, node.GetSourceFile());
