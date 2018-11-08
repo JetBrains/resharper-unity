@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -7,8 +8,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 {
     internal static class PerformanceCriticalCodeStageUtil
     {
-        internal static bool IsInvocationExpensive(IInvocationExpression invocationExpression)
+        public static bool IsInvocationExpensive([NotNull] IInvocationExpression invocationExpression)
         {
+            invocationExpression.GetPsiServices().Locks.AssertMainThread();
+            
             var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
             if (reference == null)
                 return false;
