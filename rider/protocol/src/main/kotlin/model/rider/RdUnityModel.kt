@@ -19,7 +19,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"ConnectedRefresh"
     }
 
-    private val ScriptCompilationDuringPlay = enum{
+    private val ScriptCompilationDuringPlay = enum {
         +"RecompileAndContinuePlaying"
         +"RecompileAfterFinishedPlaying"
         +"StopPlayingAndRecompile"
