@@ -1,0 +1,23 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class EveryThingAvailable : MonoBehaviour
+    {
+        public void Update()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                if (transform |==|(0) null) {
+                    
+                }
+            }
+        }
+    }
+}
+------------------------------------------------
+0: Null comparisons against UnityEngine.Object subclasses is expensive
+QUICKFIXES:
+Move to Start
+Move to Awake
+Move outside the loop

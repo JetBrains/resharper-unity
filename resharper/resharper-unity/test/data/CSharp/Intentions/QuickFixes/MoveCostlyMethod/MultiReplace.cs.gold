@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class MultiReplace : MonoBehaviour
+    {
+      private Transform myTransform;
+
+      private void Start()
+      {
+        myTransform = GetComponent<Transform>();
+      }
+
+      public void Update()
+        {{caret}
+          var t = myTransform.position.x + myTransform.position.x + myTransform.position.z;
+        }
+    }
+}

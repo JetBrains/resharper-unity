@@ -5,20 +5,22 @@ namespace DefaultNamespace
     public class IndirectCostlyTest : MonoBehaviour
     {
         private Object[] container = null;
-        public void Update()
+        |public void Update()
         {
-            |IndirectCostly|(0)();
-        }
+            |IndirectCostly|(1)();
+        }|(0)
 
-        private void IndirectCostly()
+        |private void IndirectCostly()
         {
             if (container == null)
             {
-                container = Object.|FindObjectsOfType|(1)<SimpleTest>();
+                container = Object.|FindObjectsOfType|(3)<SimpleTest>();
             }
-        }
+        }|(2)
     }
 }
 ---------------------------------------------------------
-(0): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
-(1): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
+(0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(1): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(2): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(3): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
