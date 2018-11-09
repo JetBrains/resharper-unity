@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void BindToInstallationSettingChange()
         {
             var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
-            myBoundSettingsStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise(myLifetime, CheckAllProjectsIfAutoInstallEnabled);
+            myBoundSettingsStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise_NoAcknowledgement(myLifetime, CheckAllProjectsIfAutoInstallEnabled);
         }
 
         private void CheckAllProjectsIfAutoInstallEnabled(PropertyChangedEventArgs<bool> args)
