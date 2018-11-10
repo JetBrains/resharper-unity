@@ -11,15 +11,17 @@ import javax.swing.Icon
 class UnityYamlIconProvider : IconProvider(), DumbAware {
     override fun getIcon(element: PsiElement, @Iconable.IconFlags flags: Int): Icon? {
 
-        // TODO: Do we need this? Can we just use the default icon?
-        // TODO: Different icons for different files - .yaml, .unity, .mat, etc.?
         val fileElement = element as? PsiFile
         if (fileElement != null) {
             if (fileElement.name.endsWith(".unity", true))
                 return UnityIcons.FileTypes.UnityScene
             if (fileElement.name.endsWith(".meta", true))
                 return UnityIcons.FileTypes.Meta
+            if (fileElement.name.endsWith(".prefab", true))
+                return UnityIcons.FileTypes.Prefab
+            if (fileElement.name.endsWith(".asset", true))
+                return UnityIcons.FileTypes.Asset
         }
-        return null
+        return UnityIcons.FileTypes.UnityYaml
     }
 }

@@ -35,12 +35,40 @@ task generateRiderModel(type: tasks.getByName('rdgen').class) {
 }
 
 task generateEditorPluginModel(type: tasks.getByName('rdgen').class) {
+    def backendCsOutput = new File(repoRoot, "resharper/resharper-unity/src/Rider/RdEditorProtocol")
+    def unityEditorCsOutput = new File(repoRoot, "unity/EditorPlugin/NonUnity/RdEditorProtocol")
+    def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol")
+
     params {
         verbose = true
         classpath { backend.getRiderModelJar() }
         sources "$modelDir/editorPlugin"
         hashFolder = "$hashBaseDir/editorPlugin"
         packages = "model.editorPlugin"
+
+        generator {
+            language = "csharp"
+            transform = "asis"
+            namespace = "JetBrains.Platform.Unity.EditorPluginModel"
+            root = "model.editorPlugin.EditorPluginModel"
+            directory = "$backendCsOutput"
+        }
+
+        generator {
+            language = "csharp"
+            transform = "reversed"
+            namespace = "JetBrains.Platform.Unity.EditorPluginModel"
+            root = "model.editorPlugin.EditorPluginModel"
+            directory = "$unityEditorCsOutput"
+        }
+
+        generator {
+            language = "kotlin"
+            transform = "asis"
+            namespace = "com.jetbrains.rider.plugins.unity.editorPlugin.model"
+            root = "model.editorPlugin.EditorPluginModel"
+            directory = "$ktOutput"
+        }
     }
 }
 
