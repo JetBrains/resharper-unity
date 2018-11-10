@@ -5,8 +5,8 @@ import com.jetbrains.rider.plugins.unity.util.UnityIcons
 
 object UnityYamlFileType : RiderLanguageFileTypeBase(UnityYamlLanguage) {
     override fun getDefaultExtension() = "unity"
-    override fun getDescription() = "Unity YAML yaml file"
+    override fun getDescription() = "Unity YAML file"
     override fun getIcon() = UnityIcons.FileTypes.UnityYaml
-    override fun getName() = "Unity YAML yaml"
+    override fun getName() = "Unity YAML"
 }
 

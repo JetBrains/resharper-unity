@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
+import com.intellij.icons.AllIcons
 import com.intellij.ide.SelectInContext
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -9,7 +10,6 @@ import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
-import com.jetbrains.rider.icons.ReSharperSolutionAnalysisIcons
 import com.jetbrains.rider.isLikeUnityProject
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
@@ -26,7 +26,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         const val ShowHiddenItemsOption = "show-hidden-items"
         const val DefaultProjectPrefix = "Assembly-CSharp"
 
-        val Icon = UnityIcons.Toolwindows.ToolWindowUnityLog
+        val Icon = UnityIcons.ToolWindows.UnityExplorer
         val IgnoredExtensions = hashSetOf("meta", "tmp")
         val SELECTED_REFERENCE_KEY: DataKey<UnityExplorerNode.ReferenceItem> = DataKey.create("selectedReference")
 
@@ -97,7 +97,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
     }
 
     private inner class ShowHiddenItemsAction
-        : ToggleAction("Show Hidden Files", null, ReSharperSolutionAnalysisIcons.UnignoreErrors), DumbAware {
+        : ToggleAction("Show Hidden Files", "Show all files, including .meta files", AllIcons.Actions.ShowHiddens), DumbAware {
 
         override fun isSelected(event: AnActionEvent): Boolean {
             return myShowHiddenItems

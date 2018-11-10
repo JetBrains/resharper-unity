@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
       var str1 = lexer.GetCurrTokenText().Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t");
       var str2 = $"{lexer.TokenStart:D4}: {lexer.TokenType} '{str1}'";
       writer.WriteLine(str2);
-      Console.WriteLine(str2);
+      // Console.WriteLine(str2);
     }
 
     // 5 Characters
