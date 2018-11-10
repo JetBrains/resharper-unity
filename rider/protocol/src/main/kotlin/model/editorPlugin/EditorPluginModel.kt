@@ -8,11 +8,7 @@ import com.jetbrains.rider.generator.nova.kotlin.Kotlin11Generator
 import java.io.File
 
 @Suppress("unused")
-object EditorPluginModel: Root(
-    CSharp50Generator(FlowTransform.AsIs, "JetBrains.Platform.Unity.EditorPluginModel", File("../resharper/resharper-unity/src/Rider/RdEditorProtocol")),
-    CSharp50Generator(FlowTransform.Reversed, "JetBrains.Platform.Unity.EditorPluginModel", File("../unity/EditorPlugin/NonUnity/RdEditorProtocol")),
-    Kotlin11Generator(FlowTransform.AsIs, "com.jetbrains.rider.plugins.unity.editorPlugin.model", File("src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol"))
-){
+object EditorPluginModel: Root() {
     var RdOpenFileArgs = structdef {
         field("path", string)
         field("line", int)
