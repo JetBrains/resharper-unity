@@ -8,7 +8,7 @@ class UnityYamlFileTypeFactory : FileTypeFactory() {
 
     companion object {
         // This MUST match the list in UnityYamlFileExtensionMapping in the backend
-        val extensions = arrayListOf("meta", "unity")
+        val extensions = arrayListOf("meta", "unity", "prefab", "asset")
     }
 
     private val matchers = extensions.map { ExtensionFileNameMatcher(it) }
