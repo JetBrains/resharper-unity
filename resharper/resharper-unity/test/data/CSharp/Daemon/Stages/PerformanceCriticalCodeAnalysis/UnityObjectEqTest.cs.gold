@@ -5,20 +5,22 @@ namespace DefaultNamespace
     public class UnityObjectEqTest : MonoBehaviour
     {
         private GameObject gameObject = null;
-        public void Update()
+        |public void Update()
         {
-            |IndirectCostly|(0)();
-        }
+            |IndirectCostly|(1)();
+        }|(0)
 
-        private void IndirectCostly()
+        |private void IndirectCostly()
         {
-            if (gameObject |==|(1) null)
+            if (gameObject |==|(3) null)
             {
                 // smth..
             }
-        }
+        }|(2)
     }
 }
 ---------------------------------------------------------
-(0): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
-(1): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
+(0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(1): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(2): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(3): ReSharper Unity PerformanceNullComparison: Null comparisons against UnityEngine.Object subclasses is expensive

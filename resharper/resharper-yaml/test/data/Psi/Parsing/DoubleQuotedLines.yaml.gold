@@ -1,0 +1,7 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDoubleQuotedScalarNode
+      YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_MULTILINE, text:" 1st non-empty\n\n 2nd non-empty \n	3rd non-empty ")
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

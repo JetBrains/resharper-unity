@@ -1,0 +1,10 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  YamlTokenType+GenericTokenElement(type:INDENT, text:   )
+  Comment(type:COMMENT, text:# Comment) spaces: "# Comment"
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+  YamlTokenType+GenericTokenElement(type:INDENT, text:   )
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

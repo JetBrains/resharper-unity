@@ -1,4 +1,5 @@
 def modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
+def hashBaseDir = new File(repoRoot, "rider/build/rdgen")
 
 // TODO: Think about adding an msbuild task for rdgen
 
@@ -12,7 +13,7 @@ task generateRiderModel(type: tasks.getByName('rdgen').class) {
         verbose = true
         classpath { backend.getRiderModelJar() }
         sources "$modelDir/rider"
-        hashFolder = 'build/rdgen/rider'
+        hashFolder = "$hashBaseDir/rider"
         packages = "model.rider"
 
         generator {
@@ -37,8 +38,8 @@ task generateEditorPluginModel(type: tasks.getByName('rdgen').class) {
     params {
         verbose = true
         classpath { backend.getRiderModelJar() }
-        hashFolder = "build/rdgen/editorPlugin"
         sources "$modelDir/editorPlugin"
+        hashFolder = "$hashBaseDir/editorPlugin"
         packages = "model.editorPlugin"
     }
 }

@@ -101,19 +101,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                 if (xmlElement == null)
                     continue;
 
+                // We can't just grab the value here because there may be multiple values set, one per configuration.
+                // I haven't seen Unity or Rider do this, so it must be VSTU, but I don't have proof...
                 if (xmlElement.GetElementsByTagName("LangVersion").Count > 0)
-                {
                     explicitLangVersion = true;
-                }
 
-                if (versionFromDll != null) 
+                if (versionFromDll != null)
                     continue;
-                
-                // Ideally, we could get the defines through the project model
-                // (see IManagedProjectConfiguration), but that only seems to
-                // give us the currently active project settings, and Unity's
-                // own .csproj creator only sets the version for the Debug build,
-                // not the Release build. VSTU sets the defines in both configurations.
+
+                // Ideally, we could get the defines through the project model (see IManagedProjectConfiguration), but
+                // that only seems to give us the currently active project settings, and Unity's own .csproj creator
+                // only sets the version for the Debug build, not the Release build. VSTU sets the defines in both
+                // configurations.
                 foreach (XmlNode defines in xmlElement.GetElementsByTagName("DefineConstants"))
                     unityVersion = GetVersionFromDefines(defines.InnerText, unityVersion);
             }
@@ -143,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             }
             return unityVersion;
         }
-        
+
         [CanBeNull]
         private static Version TryGetUnityVersionFromDll(XmlElement documentElement)
         {
@@ -152,11 +151,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                 .Where(c => c.Name == "Reference" && c.GetAttribute("Include").StartsWith("UnityEngine") || c.GetAttribute("Include").Equals("UnityEditor"))
                 .SelectMany(d => d.ChildElements())
                 .FirstOrDefault(c => c.Name == "HintPath");
-            
-            if (referencePathElement == null || string.IsNullOrEmpty(referencePathElement.InnerText)) 
+
+            if (referencePathElement == null || string.IsNullOrEmpty(referencePathElement.InnerText))
+                return null;
+
+            var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
+            if (!filePath.IsAbsolute) // RIDER-21237
                 return null;
             
-            var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
             if (filePath.ExistsFile)
             {
                 if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
@@ -165,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                     if (!exePath.ExistsFile)
                         exePath = filePath.Combine("../../../../Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
                     if (exePath.ExistsFile)
-                        return new Version(new Version(FileVersionInfo.GetVersionInfo(exePath.FullPath).FileVersion).ToString(3));    
+                        return new Version(new Version(FileVersionInfo.GetVersionInfo(exePath.FullPath).FileVersion).ToString(3));
                 }
                 else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 {
@@ -177,8 +179,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                     var fullVersion = UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
                     return UnityVersion.Parse(fullVersion);
                 }
-            } 
-            
+            }
+
             return null;
         }
 

@@ -100,7 +100,7 @@ namespace JetBrains.Rider.Unity.Editor
           return AssemblyReloadSettings.RecompileAndContinuePlaying;
         return (AssemblyReloadSettings) EditorPrefs.GetInt("Rider_AssemblyReloadSettings", (int) AssemblyReloadSettings.RecompileAndContinuePlaying);
       }
-      private set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
+      set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
     }
 
     private static string TargetFrameworkVersionDefault = "4.6";

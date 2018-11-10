@@ -191,9 +191,14 @@ nunit {
     outputs.upToDateWhen { false } // we should always run unit tests when RunTests are true
 
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
-    def riderTestsDll = new File(buildDir, "tests.rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
-    def resharperTestsDll = new File(buildDir, "tests.resharper-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")
-    testAssemblies = [riderTestsDll, resharperTestsDll]
+
+    def riderYamlTestsDll = new File(buildDir, "tests.rider-yaml/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.Tests.Rider.dll")
+    def resharperYamlTestsDll = new File(buildDir, "tests.resharper-yaml/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.Tests.ReSharper.dll")
+
+    def riderUnityTestsDll = new File(buildDir, "tests.rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
+    def resharperUnityTestsDll = new File(buildDir, "tests.resharper-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")
+
+    testAssemblies = [ riderYamlTestsDll, resharperYamlTestsDll, riderUnityTestsDll, resharperUnityTestsDll ]
 }
 
 task publishCiBackendArtifacts {

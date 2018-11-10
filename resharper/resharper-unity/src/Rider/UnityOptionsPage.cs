@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
 using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.Util;
@@ -33,26 +34,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin, "Install or update Rider plugin automatically");
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh Assets in Unity");
-
+            CheckBox((UnitySettings s) => s.EnableDefaultUnityCodeStyle, "Enable default Unity code-style");
+            
             AddNamingSection(lifetime, settingsStore);
 
-            Header("ShaderLab");
+            // TODO: This needs to be available for ReSharper
+            Header("C# code analysis");
+            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
+                "Enable highlighting of costly methods and indirect calls for these methods in performance critical code sections");
 
+            Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
                 "Enable simple word-based completion in ShaderLab files");
 
+            Header("Experimental");
+            CheckBox((YamlSettings s) => s.EnableYamlParsing,
+                "Parse Unity YAML files for references to methods");
+            AddText("Requires solution reopen.");
+
             if (productConfigurations.IsInternalMode())
             {
-                AddEmptyLine();
+                Header("Internal");
+
                 CheckBox((UnitySettings s) => s.EnableCgErrorHighlighting,
                     "Parse Cg files for syntax errors. Only works in internal mode.");
                 AddText("Requires solution reopen.");
             }
-            
-            Header("C# code analysis");
-            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
-                "Enable highlighting of costly methods and indirect calls for these methods in performance critical code sections");
-            
+
             FinishPage();
         }
 

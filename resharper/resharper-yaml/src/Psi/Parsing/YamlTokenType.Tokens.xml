@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- About this file
+
+     The root node can be anything. TokenGenerator doesn't care. It uses whatever the root node is,
+     and then looks for `BaseTokenNodeTypeIndex`, `TokenTypeNamespace` and `TokenTypeClass` child elements.
+     It will also look for `Import` elements which are used to add arbitrary using namespaces.
+     It will then loop over all other children of the root node, and treat them like sections. Each
+     child node must have a `NodeType` attribute, and optionally a `TokenElement` attribute. If there
+     is no `TokenElement` attribute, the token is generated as an instance of the `NodeType` class. If
+     there is a `TokenElement` attribute, then a new class is generated for the node type and the element.
+     There is no real difference between the two - identification is carried out based on reference equality
+     to a singleton instance and and generated types are private. The only difference is the derived classes
+     will have a smaller footprint - no text or node type fields. But that's negligible. On the flip side,
+     there will be fewer classes. Micro-optimisation swings and roundabouts.
+     When generating, TokenGenerator will look for `name` and `representation` attributes.
+-->
+<YamlTokens>
+
+  <!-- Default is 1000 -->
+  <BaseTokenNodeTypeIndex>1000</BaseTokenNodeTypeIndex>
+  <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing</TokenTypeNamespace>
+  <TokenTypeClass>YamlTokenType</TokenTypeClass>
+
+  <Tokens NodeType="FixedTokenNodeType">
+    <Token name="AMP" representation="&amp;" />
+    <Token name="AT" representation="@" />
+    <Token name="ASTERISK" representation="*" />
+    <Token name="BACKTICK" representation="`" />
+    <Token name="BANG" representation="!" />
+    <Token name="BANG_LT" representation="!&lt;" />
+    <Token name="COLON" representation=":" />
+    <Token name="COMMA" representation="," />
+    <Token name="LBRACE" representation="{" />
+    <Token name="RBRACE" representation="}" />
+    <Token name="LBRACK" representation="[" />
+    <Token name="RBRACK" representation="]" />
+    <Token name="LT" representation="&lt;" />
+    <Token name="GT" representation="&gt;" />
+    <Token name="MINUS" representation="-" />
+    <Token name="PERCENT" representation="%" />
+    <Token name="PIPE" representation="|" />
+    <Token name="PLUS" representation="+" />
+    <Token name="QUESTION" representation="?" />
+  </Tokens>
+
+  <Tokens NodeType="FixedTokenNodeType">
+    <Token name="DIRECTIVES_END" representation="---" />
+    <Token name="DOCUMENT_END" representation="..." />
+  </Tokens>
+</YamlTokens>

@@ -43,9 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityHost myHost;
 
         private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
-        public readonly Platform.RdFramework.Util.Signal<bool> Refresh = new Platform.RdFramework.Util.Signal<bool>();
-
-        private readonly IProperty<EditorPluginModel> myUnityModel;
+       private readonly IProperty<EditorPluginModel> myUnityModel;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
@@ -78,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var solFolder = mySolution.SolutionFilePath.Directory;
                 AdviseModelData(lifetime);
-
+                
                 // todo: consider non-Unity Solution with Unity-generated projects
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
                 protocolInstancePath.Directory.CreateDirectory();
@@ -114,7 +112,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
             myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
             myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
-            myHost.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => UnityModel.Value.IfNotNull(editor => editor.Refresh.Start(force))));
+            myHost.PerformModelAction(model => {model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime, 
+                scriptCompilationDuringPlay => UnityModel.Value.DoIfNotNull(editor => editor.SetScriptCompilationDuringPlay.Fire((int)scriptCompilationDuringPlay)));});
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -181,6 +180,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
                     editor.ApplicationContentsPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
+                    editor.NotifyIsRecompileAndContinuePlaying.AdviseOnce(lifetime,
+                        s => myHost.PerformModelAction(a => a.NotifyIsRecompileAndContinuePlaying.Fire(s)));
 
                     BindPluginPathToSettings(lf, editor);
 

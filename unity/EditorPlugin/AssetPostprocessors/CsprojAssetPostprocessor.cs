@@ -264,7 +264,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       var changed = false;
       
-      // Unity always sets AllowUnsafeBlocks in 2017.1+
+      // Unity sets AllowUnsafeBlocks in 2017.1+ depending on Player settings or asmdef
       // Strictly necessary to compile unsafe code
       // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/VisualStudioIntegration/SolutionSynchronizationSettings.cs#L119
       if (configText.Contains(UNITY_UNSAFE_KEYWORD) && !isUnity20171OrLater)
