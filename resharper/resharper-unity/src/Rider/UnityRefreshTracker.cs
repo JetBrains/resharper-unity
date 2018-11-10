@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher,
             ILogger logger,
-            IFileSystemTracker fileSystemTracker,
+            IFileSystemTracker fileSystemTracker, 
             UnityHost host,
             UnitySolutionTracker unitySolutionTracker)
         {
@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
-            
+
             unitySolutionTracker.IsUnityProject.ViewNotNull(lifetime, (lf, args) =>
             {
                 if (!args) return;
