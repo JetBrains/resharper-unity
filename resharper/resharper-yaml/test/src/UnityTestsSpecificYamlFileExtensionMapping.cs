@@ -10,7 +10,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Yaml.Tests
 {
   [ShellComponent]
-  public class RiderTestsSpecificYamlFileExtensionMapping : IFileExtensionMapping
+  public class UnityTestsSpecificYamlFileExtensionMapping : IFileExtensionMapping
   {
     private static readonly string[] ourFileExtensions =
     {
@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests
       ".unity"
     };
 
-    public RiderTestsSpecificYamlFileExtensionMapping(Lifetime lifetime)
+    public UnityTestsSpecificYamlFileExtensionMapping(Lifetime lifetime)
     {
       Changed = new SimpleSignal(lifetime, GetType().Name + "::Changed");
     }
@@ -45,7 +45,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests
     public ISimpleSignal Changed { get; }
   }
 
-#if RIDER
   [ShellComponent]
   public class EnsureEnabledForTests
   {
@@ -54,5 +53,4 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests
       yamlSupport.IsParsingEnabled.SetValue(true);
     }
   }
-#endif
 }
