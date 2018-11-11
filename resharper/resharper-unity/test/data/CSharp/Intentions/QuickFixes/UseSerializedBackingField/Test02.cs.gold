@@ -7,7 +7,7 @@ public abstract class Base : MonoBehaviour
 
 public class Derived : Base
 {
-  [SerializeField] private readonly int {selstart}myProp{selend};
+  [SerializeField] private int {selstart}myProp{selend};
 
   public override int Prop => myProp;
 }
