@@ -6,8 +6,9 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 {
-    // Note that these test the quick fix, NOT the context action. They apply when there is an error in a property that
-    // can be fixed by rewriting it with a backing field, e.g. an auto property missing a setter
+    // Note that these test the quick fix, NOT the AutoPropertyToSerializedBackingField context action. They apply when
+    // there is an error in a property that can be fixed by rewriting it with a backing field, e.g. an auto property
+    // missing a setter
     [TestUnity]
     [CSharpLanguageLevel(CSharpLanguageLevel.CSharp40)]
     public class UseSerializedBackingFieldFixAvailabilityTests : QuickFixAvailabilityTestBase
