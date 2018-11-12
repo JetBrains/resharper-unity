@@ -10,16 +10,6 @@ import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import java.awt.event.MouseEvent
 
 class UnityImportantActions : DefaultActionGroup(), DumbAware {
-    override fun actionPerformed(e: AnActionEvent) {
-        val popup = JBPopupFactory.getInstance().createActionGroupPopup("", UnityImportantActionsGroup(), e.dataContext, JBPopupFactory.ActionSelectionAid.MNEMONICS, true)
-        var point = JBPopupFactory.getInstance().guessBestPopupLocation(e.dataContext)
-        if (e.inputEvent is MouseEvent) {
-            point = RelativePoint(e.inputEvent as MouseEvent)
-        }
-
-        popup.show(point)
-    }
-
     override fun update(e: AnActionEvent) {
         if (!e.isUnityProject()) {
             e.presentation.isVisible = false
