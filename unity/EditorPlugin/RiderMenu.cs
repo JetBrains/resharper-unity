@@ -5,7 +5,7 @@ namespace JetBrains.Rider.Unity.Editor
 {
   // MenuOpenProject is also used to start Rider automatically via Unity commandline switches
   public static class RiderMenu
-  {    
+  {
     // The default "Open C# Project" menu item will use the external script editor to load the .sln
     // file, but unless Unity knows the external script editor can properly load solutions, it will
     // also launch MonoDevelop (or the OS registered app for .sln files). This menu item side steps
@@ -31,6 +31,21 @@ namespace JetBrains.Rider.Unity.Editor
       if (model == null)
         return true;
       return false;
+    }
+
+    /// <summary>
+    /// Forces regeneration of .csproj / .sln files.
+    /// </summary>
+    [MenuItem("Assets/Sync C# Project", false, 1001)]
+    private static void MenuSyncProject()
+    {
+      UnityUtils.SyncSolution();
+    }
+
+    [MenuItem("Assets/Sync C# Project", true, 1001)]
+    private static bool ValidateMenuSyncProject()
+    {
+      return PluginEntryPoint.Enabled;
     }
   }
 }
