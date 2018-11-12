@@ -198,6 +198,7 @@ namespace ApiParser
                         case "MonoBehaviour.Start":
                         case "MonoBehaviour.OnDestroy":
                         case "EditorWindow.OnProjectChange":
+                        case "AssetPostprocessor.OnPostprocessSprites": // 2018.3 adds example with incorrect casing - OnPostProcessSprites
                             Console.WriteLine(
                                 $"WARNING: Unable to parse example for {fullName}. Example incorrect in docs");
                             break;

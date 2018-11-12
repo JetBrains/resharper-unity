@@ -8,14 +8,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.WindowManagerListener
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.util.idea.lifetime
 import com.jetbrains.rider.util.idea.tryGetComponent
 import com.jetbrains.rider.util.lifetime.Lifetime
-import com.jetbrains.rider.util.lifetime.LifetimeDefinition
+import com.jetbrains.rider.util.lifetime.SequentialLifetimes
+import com.jetbrains.rider.util.lifetime.onTermination
 import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.whenTrue
 import org.jdom.Element
@@ -24,7 +24,8 @@ import org.jdom.Element
 class UnityUIManager(private val unityProjectDiscoverer: UnityProjectDiscoverer,
                      private val host : UnityHost,
                      solutionLifecycleHost: SolutionLifecycleHost,
-                     project: Project) : LifetimedProjectComponent(project), WindowManagerListener, PersistentStateComponent<Element> {
+                     project: Project)
+    : LifetimedProjectComponent(project), WindowManagerListener, PersistentStateComponent<Element> {
 
     companion object {
         const val hasMinimizedUiAttribute = "hasMinimizedUI"
@@ -35,14 +36,13 @@ class UnityUIManager(private val unityProjectDiscoverer: UnityProjectDiscoverer,
         }
     }
 
-    private var frameLifetime: LifetimeDefinition? = null
+    private val frameLifetime: SequentialLifetimes = SequentialLifetimes(componentLifetime)
+
     val hasMinimizedUi: Property<Boolean?> = Property(null) //null means undefined, default value
 
     init {
         WindowManager.getInstance().addListener(this)
-        componentLifetime.add {
-            WindowManager.getInstance().removeListener(this)
-        }
+        componentLifetime.onTermination { WindowManager.getInstance().removeListener(this) }
         solutionLifecycleHost.isBackendLoaded.whenTrue(componentLifetime) {
             // Only hide UI for generated projects, so that sidecar projects can still access nuget
             if (unityProjectDiscoverer.isLikeUnityGeneratedProject && hasMinimizedUi.value == null) hasMinimizedUi.set(true)
@@ -65,11 +65,9 @@ class UnityUIManager(private val unityProjectDiscoverer: UnityProjectDiscoverer,
 
     override fun frameCreated(frame: IdeFrame) {
         if (frame.project == project && unityProjectDiscoverer.isLikeUnityProject) {
-            frameLifetime?.terminate()
-
-            frameLifetime = Lifetime.create(project.lifetime)
-            val frameLifetime = frameLifetime?.lifetime ?: error("frameLifetime was terminated from non-ui thread")
-            installWidget(frame, frameLifetime)
+            frameLifetime.defineNext { _, frameLifetime ->
+                installWidget(frame, frameLifetime)
+            }
         }
     }
 
@@ -80,21 +78,18 @@ class UnityUIManager(private val unityProjectDiscoverer: UnityProjectDiscoverer,
         }
 
         val iconWidget = UnityStatusBarIcon(host)
-        host.unityState.advise(componentLifetime){
-            statusBar.updateWidget(iconWidget.ID())
-        }
+        host.unityState.advise(componentLifetime) { statusBar.updateWidget(iconWidget.ID()) }
 
         statusBar.addWidget(iconWidget, "after " + "ReadOnlyAttribute")
 
-        lifetime.add {
-            if (frame.project != project) return@add
+        lifetime.onTermination {
+            if (frame.project != project) return@onTermination
             statusBar.removeWidget(iconWidget.ID())
         }
     }
 
     override fun beforeFrameReleased(frame: IdeFrame) {
         if (frame.project != project) return
-        frameLifetime?.terminate()
-        frameLifetime = null
+        frameLifetime.terminateCurrent()
     }
 }

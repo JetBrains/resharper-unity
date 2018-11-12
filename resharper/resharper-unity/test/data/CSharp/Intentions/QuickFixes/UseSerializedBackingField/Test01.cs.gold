@@ -2,7 +2,7 @@
 
 public class Foo : MonoBehaviour
 {
-  [SerializeField] private readonly int myProp;
+  [SerializeField] private int myProp;
 
   public int Prop
   {

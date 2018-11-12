@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
+import com.jetbrains.rdclient.util.idea.defineNestedLifetime
 import com.jetbrains.rider.isLikeUnityProject
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
@@ -37,14 +38,12 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         }
     }
 
-    private val packagesViewUpdater = UnityExplorerPackagesViewUpdater(project, this, PackagesManager.getInstance(project))
+    init {
+        val lifetime = this.defineNestedLifetime()
+        UnityExplorerPackagesViewUpdater(lifetime, project, this, PackagesManager.getInstance(project))
+    }
 
     var myShowHiddenItems = false
-
-    override fun dispose() {
-        packagesViewUpdater.dispose()
-        super.dispose()
-    }
 
     override fun isInitiallyVisible() = project.isLikeUnityProject()
 
