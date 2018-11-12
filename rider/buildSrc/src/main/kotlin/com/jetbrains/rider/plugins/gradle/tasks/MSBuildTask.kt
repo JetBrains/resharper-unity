@@ -22,12 +22,14 @@ open class MSBuildTask: DefaultTask() {
     @TaskAction
     fun build() {
         val buildConfiguration = project.extra["BuildConfiguration"] as String
+        val warningsAsErrors = project.extra["warningsAsErrors"] as String
         val file = buildFile.asFile.get()
         project.buildServer.progress("Building $file ($buildConfiguration)")
 
         val arguments = listOf(file.absolutePath,
                 "/p:Configuration=$buildConfiguration",
                 "/p:Version=${project.version}",
+                "/p:TreatWarningsAsErrors=$warningsAsErrors",
                 "/v:$verbosity",
                 "/nologo")
 
