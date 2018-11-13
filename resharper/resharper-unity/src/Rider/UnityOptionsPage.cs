@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             CheckBox((UnitySettings s) => s.EnableDefaultUnityCodeStyle, "Enable default Unity code-style");
             
             AddNamingSection(lifetime, settingsStore);
-
+            AddHighlightingSection(lifetime, settingsStore);
             // TODO: This needs to be available for ReSharper
             Header("C# code analysis");
             CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
@@ -92,6 +92,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 new RadioOptionPoint(NamingStyleKinds.aaBb_aaBb, "lowerCamelCase_underscoreTolerant"),
                 new RadioOptionPoint(NamingStyleKinds.AA_BB, "ALL_UPPER"),
                 new RadioOptionPoint(NamingStyleKinds.Aa_bb, "First_upper"));
+        }
+
+        private void AddHighlightingSection(Lifetime lifetime, IContextBoundSettingsStore settingsStore)
+        {
+            // Rider doesn't have a UI for editing user defined rules. See RIDER-8339
+            Header("Editor highlighters");
+
+            AddComboOption((UnitySettings s) => s.UnityHighlighterSchemeKind, "Highlighter scheme for editor:",
+                new RadioOptionPoint(UnityHighlighterSchemeKind.CodeInsights, "Unity lenses"),
+                new RadioOptionPoint(UnityHighlighterSchemeKind.Gutter, "Gutter icons"),
+                new RadioOptionPoint(UnityHighlighterSchemeKind.OnlyBold, "Bold for implicit"),
+                new RadioOptionPoint(UnityHighlighterSchemeKind.None, "Disable Unity highlighters")
+                );
         }
 
         private static ClrUserDefinedNamingRule GetUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,

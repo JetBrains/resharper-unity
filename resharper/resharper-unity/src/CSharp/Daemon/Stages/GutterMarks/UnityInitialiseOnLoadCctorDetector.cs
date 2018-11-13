@@ -8,9 +8,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
     [ElementProblemAnalyzer(typeof(IConstructorDeclaration), HighlightingTypes = new[] {typeof(UnityGutterMarkInfo)})]
     public class UnityInitialiseOnLoadCctorDetector : UnityElementProblemAnalyzer<IConstructorDeclaration>
     {
-        public UnityInitialiseOnLoadCctorDetector(UnityApi unityApi)
+        private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
+
+        public UnityInitialiseOnLoadCctorDetector(UnityApi unityApi, UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
             : base(unityApi)
         {
+            myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
         }
 
         protected override void Analyze(IConstructorDeclaration element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -21,8 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
             var containingType = element.GetContainingTypeDeclaration()?.DeclaredElement;
             if (containingType != null && containingType.HasAttributeInstance(KnownTypes.InitializeOnLoadAttribute, false))
             {
-                var highlighting = new UnityGutterMarkInfo(element, "Called when Unity first launches the editor, the player, or recompiles scripts");
-                consumer.AddHighlighting(highlighting);
+                myImplicitUsageHighlightingContributor.AddUnityStartMethod(consumer, element, "Called when Unity first launches the editor, the player, or recompiles scripts");
             }
         }
     }

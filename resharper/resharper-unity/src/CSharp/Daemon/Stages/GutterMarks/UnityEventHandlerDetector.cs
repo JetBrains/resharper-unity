@@ -12,11 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
     public class UnityEventHandlerDetector : UnityElementProblemAnalyzer<IDeclaration>
     {
         private readonly UnityEventHandlerReferenceCache myCache;
+        private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
 
-        public UnityEventHandlerDetector([NotNull] UnityApi unityApi, UnityEventHandlerReferenceCache cache)
+        public UnityEventHandlerDetector([NotNull] UnityApi unityApi, UnityEventHandlerReferenceCache cache, UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
             : base(unityApi)
         {
             myCache = cache;
+            myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
         }
 
         protected override void Analyze(IDeclaration element, ElementProblemAnalyzerData data,
@@ -25,8 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
             var declaredElement = element.DeclaredElement;
             if (declaredElement != null && myCache.IsEventHandler(declaredElement))
             {
-                var highlighting = new UnityGutterMarkInfo(element, "Unity event handler");
-                consumer.AddHighlighting(highlighting);
+                myImplicitUsageHighlightingContributor.AddUnityEventHandler(consumer, element, "Unity event handler");
             }
         }
     }

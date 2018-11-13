@@ -26,5 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         
         [SettingsEntry(true, "Enables default Unity code-style.")]
         public bool EnableDefaultUnityCodeStyle;
+        
+        [SettingsEntry(UnityHighlighterSchemeKind.CodeInsights, "Unity highlighter scheme for editor.")]
+        public UnityHighlighterSchemeKind UnityHighlighterSchemeKind;
     }
 }

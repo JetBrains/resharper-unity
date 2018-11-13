@@ -8,9 +8,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
     [ElementProblemAnalyzer(typeof(IFieldDeclaration), HighlightingTypes = new[] { typeof(UnityGutterMarkInfo) })]
     public class UnityFieldDetector : UnityElementProblemAnalyzer<IFieldDeclaration>
     {
-        public UnityFieldDetector(UnityApi unityApi)
+        private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
+
+        public UnityFieldDetector(UnityApi unityApi, UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
             : base(unityApi)
         {
+            myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
         }
 
         protected override void Analyze(IFieldDeclaration element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -18,8 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
             var field = element.DeclaredElement;
             if (field != null && Api.IsSerialisedField(field))
             {
-                var highlighting = new UnityGutterMarkInfo(element, "This field is initialised by Unity");
-                consumer.AddHighlighting(highlighting);
+                myImplicitUsageHighlightingContributor.AddUnityImplicitFieldUsage(consumer, element, "This field is initialised by Unity");
             }
         }
     }

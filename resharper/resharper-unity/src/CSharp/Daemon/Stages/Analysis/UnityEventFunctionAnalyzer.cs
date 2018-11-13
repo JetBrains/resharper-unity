@@ -23,9 +23,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         })]
     public class UnityEventFunctionAnalyzer : MethodSignatureProblemAnalyzerBase<IMemberOwnerDeclaration>
     {
-        public UnityEventFunctionAnalyzer(UnityApi unityApi)
+        private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
+
+        public UnityEventFunctionAnalyzer(UnityApi unityApi, UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
             : base(unityApi)
         {
+            myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
         }
 
         protected override void Analyze(IMemberOwnerDeclaration element, ElementProblemAnalyzerData data,
@@ -58,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     // Only one function, mark it as a unity function, even if it's not an exact match
                     // We'll let other inspections handle invalid signatures
                     var method = candidates[0].Method;
-                    AddGutterMark(consumer, method, function);
+                    myImplicitUsageHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(consumer, method, function);
                     AddMethodSignatureInspections(consumer, method, function, candidates[0].Match);
                 }
                 else
@@ -71,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     {
                         if (candidate.Match == MethodSignatureMatch.ExactMatch)
                         {
-                            AddGutterMark(consumer, candidate.Method, function);
+                            myImplicitUsageHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(consumer, candidate.Method, function);
                             hasExactMatch = true;
                             duplicates.Add(candidate.Method);
                         }
@@ -97,31 +100,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         foreach (var candidate in candidates)
                         {
                             var method = candidate.Method;
-                            AddGutterMark(consumer, method, function);
+                            myImplicitUsageHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(consumer, method, function);
                             AddMethodSignatureInspections(consumer, method, function, candidate.Match);
                         }
                     }
                 }
             }
-        }
-
-        private void AddGutterMark(IHighlightingConsumer consumer, IMethod method, UnityEventFunction function)
-        {
-            foreach (var declaration in method.GetDeclarations())
-                AddGutterMark(declaration, function, consumer);
-        }
-
-        private void AddGutterMark(IDeclaration declaration, UnityEventFunction eventFunction,
-            IHighlightingConsumer consumer)
-        {
-            var tooltip = "Unity event function";
-            if (!string.IsNullOrEmpty(eventFunction.Description))
-                tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
-            if (eventFunction.Coroutine)
-                tooltip += Environment.NewLine + "This function can be a coroutine.";
-
-            var highlighting = new UnityGutterMarkInfo(declaration, tooltip);
-            consumer.AddHighlighting(highlighting);
         }
 
         private void AddMethodSignatureInspections(IHighlightingConsumer consumer, IMethod method,
