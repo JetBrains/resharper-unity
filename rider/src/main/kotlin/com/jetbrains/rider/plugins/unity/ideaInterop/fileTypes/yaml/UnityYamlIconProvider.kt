@@ -22,6 +22,6 @@ class UnityYamlIconProvider : IconProvider(), DumbAware {
             if (fileElement.name.endsWith(".asset", true))
                 return UnityIcons.FileTypes.Asset
         }
-        return UnityIcons.FileTypes.UnityYaml
+        return null
     }
 }
