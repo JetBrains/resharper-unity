@@ -26,10 +26,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public string EventHandlerName => myOwner.GetText();
 
+        // A reference is inside a component (usually a MonoScript), which is attached to a GameObject. Note that this
+        // is the document for where the owner node is, not where the target script is declared
+        public IYamlDocument ComponentDocument => myOwner.GetContainingNode<IYamlDocument>();
+
         public override ResolveResultWithInfo ResolveWithoutCache()
         {
             // If it's a reference to something other than MonoBehaviour, it shouldn't be a resolve error
-            // TODO: Find an example when we encounter this
+            // E.g. setting the property on a light map when an event fires
             if (!IsMonoBehaviourReference())
                 return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.IGNORABLE);
 
@@ -42,8 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            var assetGuid = GetAssetGuid();
-            var targetType = GetTypeFromAssetGuid(assetGuid);
+            var assetGuid = GetScriptAssetGuid();
+            var targetType = GetTypeFromScriptAssetGuid(assetGuid);
             if (targetType == null)
                 return EmptySymbolTable.INSTANCE;
 
@@ -79,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         }
 
         [CanBeNull]
-        private ITypeElement GetTypeFromAssetGuid([CanBeNull] string assetGuid)
+        private ITypeElement GetTypeFromScriptAssetGuid([CanBeNull] string assetGuid)
         {
             if (assetGuid == null)
                 return null;
@@ -106,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         }
 
         [CanBeNull]
-        public string GetAssetGuid()
+        public string GetScriptAssetGuid()
         {
             var yamlFile = (IYamlFile) myOwner.GetContainingFile();
             var document = yamlFile.FindDocumentByAnchor(myFileId.fileID);

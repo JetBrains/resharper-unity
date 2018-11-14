@@ -1,6 +1,8 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
@@ -17,6 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         // probably parsed something wrong), while  IsNullReference indicates that it's explicitly set to null
         public bool IsNullReference => this == Null || fileID == "0";
 
+        // Is external to the current file. True if there's an asset GUID
+        public bool IsExternal => guid != null;
+
         public FileID(string guid, string fileID)
         {
             this.guid = guid;
@@ -25,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public override string ToString()
         {
-            return $"FileID: {fileID}, {guid ?? " <no guid> "}";
+            return $"FileID: {fileID}, {guid ?? "<no guid>"}";
         }
     }
     // ReSharper restore InconsistentNaming
@@ -88,6 +93,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             // https://docs.unity3d.com/Manual/ClassIDReference.html)
             var rootBlockMappingNode = document?.BlockNode as IBlockMappingNode;
             return rootBlockMappingNode?.EntriesEnumerable.FirstOrDefault()?.Key.AsString();
+        }
+
+        [CanBeNull]
+        public static IYamlDocument GetUnityObjectDocumentFromFileIDProperty([CanBeNull] this IYamlDocument document, string key)
+        {
+            var fileID = document.GetUnityObjectPropertyValue(key).AsFileID();
+            if (fileID == null || fileID.IsNullReference || fileID.IsExternal)
+                return null;
+
+            Assertion.AssertNotNull(document, "document != null");
+            var file = (IYamlFile) document.GetContainingFile();
+            return file.FindDocumentByAnchor(fileID.fileID);
         }
 
         [CanBeNull]
