@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
     // ReSharper disable InconsistentNaming
     public class FileID
