@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using ICSharpCode.NRefactory;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
 {
@@ -12,13 +12,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
         public ICollection<OccurrenceKind> GetOccurrenceKinds(IOccurrence occurrence)
         {
             var referenceOccurrence = occurrence as ReferenceOccurrence;
-            if (referenceOccurrence == null)
-                return EmptyList<OccurrenceKind>.Instance;
-
-            var reference = referenceOccurrence.PrimaryReference;
+            var reference = referenceOccurrence?.PrimaryReference;
             if (reference is UnityEventTargetReference)
                 return new[] {UnityYamlSpecificOccurrenceKinds.EventHandler};
-            return Util.EmptyList<OccurrenceKind>.Instance;
+            return EmptyList<OccurrenceKind>.Instance;
         }
 
         public IEnumerable<OccurrenceKind> GetAllPossibleOccurrenceKinds()
