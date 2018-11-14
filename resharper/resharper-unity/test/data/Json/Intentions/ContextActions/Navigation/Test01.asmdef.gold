@@ -1,18 +1,6 @@
 ﻿-------------- offset 43 line 3 col 22 --------------------
 +++ JetBrains.ReSharper.Features.Navigation.Features.FindReferencedCode.FindReferencedCodeProvider navigation provider results +++
 Tooltip: Referenced code in 'assembly definition Ref1' were not found.
-+++ JetBrains.ReSharper.Features.Navigation.Features.FindUsages.FindUsagesProvider navigation provider results +++
-Immediate result: Occurrence's dump:
-TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
-Occurrence's navigation result. Opened file: Test01.asmdef
-------------------
-{
-  "name": "Test01",
-  "references": [ "Re|CARET|f1" ]
-}
-
-------------------
-
 +++ JetBrains.ReSharper.Features.Navigation.Features.FindUsagesAdvanced.FindUsagesAdvancedProvider navigation provider results +++
 Immediate result: Occurrence's dump:
 TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
@@ -49,6 +37,18 @@ Occurrence's navigation result. Opened file: Test01.asmdef
 ------------------
 
 +++ JetBrains.ReSharper.Features.Navigation.Features.HighlightUsages.HighlightUsagesProvider navigation provider results +++
+Immediate result: Occurrence's dump:
+TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
+Occurrence's navigation result. Opened file: Test01.asmdef
+------------------
+{
+  "name": "Test01",
+  "references": [ "Re|CARET|f1" ]
+}
+
+------------------
+
++++ JetBrains.ReSharper.Plugins.Unity.UnityFindUsagesProviderProvider navigation provider results +++
 Immediate result: Occurrence's dump:
 TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
 Occurrence's navigation result. Opened file: Test01.asmdef

@@ -1,8 +1,6 @@
 ﻿-------------- offset 43 line 3 col 22 --------------------
 +++ JetBrains.ReSharper.Features.Navigation.Features.FindReferencedCode.FindReferencedCodeProvider navigation provider results +++
 Tooltip: Referenced code in 'assembly definition Ref1' were not found.
-+++ JetBrains.ReSharper.Features.Navigation.Features.FindUsages.FindUsagesProvider navigation provider results +++
-FindResults window with 2 results
 +++ JetBrains.ReSharper.Features.Navigation.Features.FindUsagesAdvanced.FindUsagesAdvancedProvider navigation provider results +++
 FindResults window with 2 results
 +++ JetBrains.ReSharper.Features.Navigation.Features.GoToDeclaration.GotoDeclarationProvider navigation provider results +++
@@ -66,3 +64,5 @@ Occurrence's navigation result. Opened file: Test03.asmdef
 
 ------------------
 
++++ JetBrains.ReSharper.Plugins.Unity.UnityFindUsagesProviderProvider navigation provider results +++
+FindResults window with 2 results

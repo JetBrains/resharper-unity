@@ -8,6 +8,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
+using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
@@ -25,7 +26,7 @@ using JetBrains.TextControl;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.Util;
 
-[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_IMPLICIT_USAGE_BOLD_ATTRIBUTE,
+[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_IMPLICIT_USAGE_BOLD_ATTRIBUTE, GroupId = UnityHighlightingGroupIds.Unity,
     EffectType = EffectType.TEXT, FontStyle = FontStyle.Bold, Layer = HighlighterLayer.SYNTAX + 1)]
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -35,17 +36,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         private readonly DocumentRange myDocumentRange;
 
-        public UnityImplicitBoldHighlighting(string toolTip, DocumentRange documentRange)
+        public UnityImplicitBoldHighlighting(DocumentRange documentRange)
         {
             myDocumentRange = documentRange;
-            ToolTip = toolTip;
         }
 
         public bool IsValid() => true;
 
         public DocumentRange CalculateRange() => myDocumentRange;
 
-        public string ToolTip { get; }
+        public string ToolTip => null;
         public string ErrorStripeToolTip => null;
         public string AttributeId => UnityHighlightingAttributeIds.UNITY_IMPLICIT_USAGE_BOLD_ATTRIBUTE;
     }
@@ -77,49 +77,49 @@ namespace JetBrains.ReSharper.Plugins.Unity
             foreach (var declaration in method.GetDeclarations())
             {
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
-                    AddHighlightingWithBold(consumer, cSharpDeclaration, tooltip);
+                    AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip);
             }
         }
 
         public virtual void AddUnityImplicitClassUsage(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string tooltip)
         {
-            AddHighlightingWithBold(consumer, declaration, tooltip);
+            AddHighlightingWithConfigurableHighlighter(consumer, declaration, tooltip);
         }
         
         public virtual void AddUnityStartMethod(IHighlightingConsumer consumer, IConstructorDeclaration constructorDeclaration, string tooltip)
         {
-            AddHighlightingWithBold(consumer, constructorDeclaration, tooltip);
+            AddHighlightingWithConfigurableHighlighter(consumer, constructorDeclaration, tooltip);
         }
 
         public virtual void AddUnityImplicitFieldUsage(IHighlightingConsumer consumer, IFieldDeclaration field, string tooltip)
         {
-            AddHighlightingWithBold(consumer, field, tooltip);
+            AddHighlightingWithConfigurableHighlighter(consumer, field, tooltip);
         }
 
         public virtual void AddUnityEventHandler(IHighlightingConsumer consumer, IDeclaration element, string tooltip)
         {
             if (element is ICSharpDeclaration cSharpDeclaration)
-                AddHighlightingWithBold(consumer, cSharpDeclaration, tooltip);
+                AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip);
         }
 
-        public virtual void AddHighlightingWithBold(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
+        public virtual void AddHighlightingWithConfigurableHighlighter(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
         {
             AddHighlighting(consumer, element, tooltip);
-            AddBoldHighlighting(consumer, element, tooltip);
+            AddConfigurableHighlighter(consumer, element);
         }
 
-        public virtual void AddBoldHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
+        public virtual void AddConfigurableHighlighter(IHighlightingConsumer consumer, ICSharpDeclaration element)
         {
-            if (SettingsStore.GetValue((UnitySettings key) => key.UnityHighlighterSchemeKind) == UnityHighlighterSchemeKind.None)
+            if (SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode) == GutterIconMode.None)
                 return;
             
-            consumer.AddHighlighting(new UnityImplicitBoldHighlighting(tooltip, element.NameIdentifier.GetDocumentRange()));
+            consumer.AddHighlighting(new UnityImplicitBoldHighlighting(element.NameIdentifier.GetDocumentRange()));
         }
         
         public virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
         {
-            var mode = SettingsStore.GetValue((UnitySettings key) => key.UnityHighlighterSchemeKind);
-            if (mode != UnityHighlighterSchemeKind.Gutter && mode != UnityHighlighterSchemeKind.CodeInsights) // if code insights disabled, show gutter icons
+            var mode = SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode);
+            if (mode == GutterIconMode.None)
                 return;
             
             var highlighting = new UnityGutterMarkInfo(element, tooltip);

@@ -1,19 +1,18 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.Icons;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Lenses
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
     [SolutionComponent]
     public class UnityImplicitFieldUsageProvider : AbstractUnityImplicitProvider
     {
-        public override string ProviderId => "Unity Implicit Field";
-        public override string DisplayName => "Set from editor";
+        public override string ProviderId => "Unity implicit field";
+        public override string DisplayName => "Unity implicit field";
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings => new [] {new CodeLensRelativeOrderingLast()};
         
-        public UnityImplicitFieldUsageProvider(IconHost iconHost, BulbMenuComponent bulbMenu)
+        public UnityImplicitFieldUsageProvider(BulbMenuComponent bulbMenu)
             : base(bulbMenu)
         {
         }

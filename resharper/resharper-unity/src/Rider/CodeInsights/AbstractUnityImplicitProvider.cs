@@ -10,7 +10,7 @@ using JetBrains.Rider.Model;
 using JetBrains.TextControl.TextControlsManagement;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Lenses
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
     public abstract class AbstractUnityImplicitProvider : ICodeInsightsProvider
     {

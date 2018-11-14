@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
@@ -8,11 +7,11 @@ using JetBrains.ReSharper.Psi;
 namespace JetBrains.ReSharper.Plugins.Unity
 {
     [ShellComponent]
-    public class UnityFindReferencedCodeProvider : FindUsagesProvider
+    public class UnityFindUsagesProviderProvider : FindUsagesProvider
     {
         private readonly SolutionsManager mySolutionsManager;
 
-        public UnityFindReferencedCodeProvider(IFeaturePartsContainer manager, SolutionsManager solutionsManager)
+        public UnityFindUsagesProviderProvider(IFeaturePartsContainer manager, SolutionsManager solutionsManager)
             : base(manager)
         {
             mySolutionsManager = solutionsManager;

@@ -1,17 +1,14 @@
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.CodeInsights;
 using JetBrains.ReSharper.Host.Features.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Lenses;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
     [SolutionComponent]
     public class RiderUnityImplicitUsageHighlightingContributor : UnityImplicitUsageHighlightingContributor
@@ -22,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public RiderUnityImplicitUsageHighlightingContributor(ISolution solution, ITextControlManager textControlManager,
             UnityImplicitFieldUsageProvider fieldUsageProvider,  UnityImplicitCodeInsightProvider implicitCodeInsightProvider,
-            ISettingsStore settingsStore, IconHost iconHost)
+            ISettingsStore settingsStore, IconHost iconHost = null)
             : base(solution, settingsStore, textControlManager)
         {
             myFieldUsageProvider = fieldUsageProvider;
@@ -35,25 +32,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             switch (element)
             {
                 case IFieldDeclaration _:
-                    AddHighlighting(consumer, myFieldUsageProvider, element, tooltip, null);
+                    AddHighlighting(consumer, myFieldUsageProvider, element, tooltip, "Set by Unity");
                     break;
                 case IClassLikeDeclaration _:
-                    AddHighlighting(consumer, myImplicitCodeInsightProvider, element, tooltip, "Implicit usage");
+                    AddHighlighting(consumer, myImplicitCodeInsightProvider, element, tooltip, "Scripting component");
+                    break;
+                case IMethodDeclaration _:
+                    AddHighlighting(consumer, myImplicitCodeInsightProvider, element, tooltip, "Event function");
                     break;
                 default:
-                    AddHighlighting(consumer, myImplicitCodeInsightProvider, element, tooltip, null);
+                    AddHighlighting(consumer, myImplicitCodeInsightProvider, element, tooltip, "Implicit usage");
                     break;
             }
-           
         }
         
         private void AddHighlighting(IHighlightingConsumer consumer, AbstractUnityImplicitProvider codeInsightsProvider, ICSharpDeclaration element, string tooltip, string displayName)
         {
-            if (SettingsStore.GetIndexedValue((CodeInsightsSettings key) => key.DisabledProviders, codeInsightsProvider.ProviderId) ||
-                SettingsStore.GetValue((UnitySettings key) => key.UnityHighlighterSchemeKind) != UnityHighlighterSchemeKind.CodeInsights)
+            if (SettingsStore.GetIndexedValue((CodeInsightsSettings key) => key.DisabledProviders, codeInsightsProvider.ProviderId))
             {
                 base.AddHighlighting(consumer, element, tooltip);
                 return;
+            }
+
+            if (SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode) == GutterIconMode.Always)
+            {
+                base.AddHighlighting(consumer, element, tooltip);
             }
             
             displayName = displayName ?? codeInsightsProvider.DisplayName;

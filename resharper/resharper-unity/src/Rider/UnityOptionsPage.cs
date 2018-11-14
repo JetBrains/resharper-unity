@@ -99,11 +99,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // Rider doesn't have a UI for editing user defined rules. See RIDER-8339
             Header("Editor highlighters");
 
-            AddComboOption((UnitySettings s) => s.UnityHighlighterSchemeKind, "Highlighter scheme for editor:",
-                new RadioOptionPoint(UnityHighlighterSchemeKind.CodeInsights, "Unity lenses"),
-                new RadioOptionPoint(UnityHighlighterSchemeKind.Gutter, "Gutter icons"),
-                new RadioOptionPoint(UnityHighlighterSchemeKind.OnlyBold, "Bold for implicit"),
-                new RadioOptionPoint(UnityHighlighterSchemeKind.None, "Disable Unity highlighters")
+            AddComboOption((UnitySettings s) => s.GutterIconMode, "Show unity gutter icon when:",
+                new RadioOptionPoint(GutterIconMode.Always, "Always"),
+                new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "CodeInsights are disabled"),
+                new RadioOptionPoint(GutterIconMode.None, "Never")
                 );
         }
 
