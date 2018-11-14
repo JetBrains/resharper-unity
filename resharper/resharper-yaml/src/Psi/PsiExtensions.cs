@@ -12,8 +12,11 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
     }
 
     [CanBeNull]
-    public static IBlockMappingEntry FindChildBySimpleKey(this IBlockMappingNode mapNode, string keyName)
+    public static IBlockMappingEntry FindMapEntryBySimpleKey([CanBeNull] this IBlockMappingNode mapNode, string keyName)
     {
+      if (mapNode == null)
+        return null;
+
       foreach (var mappingEntry in mapNode.EntriesEnumerable)
       {
         if (mappingEntry.Key.GetPlainScalarText() == keyName)
@@ -24,9 +27,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
     }
 
     [CanBeNull]
-    public static IFlowMapEntry FindChildBySimpleKey(this IFlowMappingNode mapNode, string keyName)
+    public static IFlowMapEntry FindMapEntryBySimpleKey([CanBeNull] this IFlowMappingNode mapNode, string keyName)
     {
-      foreach (var sequenceEntry in mapNode.EntriesEnumerable)
+      if (mapNode == null)
+        return null;
+
+      foreach (var sequenceEntry in mapNode?.EntriesEnumerable)
       {
         if (sequenceEntry.Key.GetPlainScalarText() == keyName)
           return sequenceEntry;

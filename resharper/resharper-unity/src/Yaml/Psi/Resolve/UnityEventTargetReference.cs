@@ -3,7 +3,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -17,9 +16,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class UnityEventTargetReference : CheckedReferenceBase<IPlainScalarNode>
     {
-        private readonly string myFileId;
+        private readonly FileID myFileId;
 
-        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, string fileId)
+        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, FileID fileId)
             : base(owner)
         {
             myFileId = fileId;
@@ -29,18 +28,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public override ResolveResultWithInfo ResolveWithoutCache()
         {
+            // If it's a reference to something other than MonoBehaviour, it shouldn't be a resolve error
+            // TODO: Find an example when we encounter this
             if (!IsMonoBehaviourReference())
                 return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.IGNORABLE);
 
             var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
             if (!resolveResultWithInfo.Result.IsEmpty)
                 return resolveResultWithInfo;
+
             return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
         }
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            var targetType = GetTypeFromFileId();
+            var assetGuid = GetAssetGuid();
+            var targetType = GetTypeFromAssetGuid(assetGuid);
             if (targetType == null)
                 return EmptySymbolTable.INSTANCE;
 
@@ -70,19 +73,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         private bool IsMonoBehaviourReference()
         {
-            var document = FindDocumentByAnchor(myFileId);
-
-            // FileID points to nothing. Missing reference, treat as a MonoBehaviour reference
-            if (document == null)
-                return true;
-
-            return GetTargetMonoBehaviourNode(document) != null;
+            var yamlFile = (IYamlFile) myOwner.GetContainingFile();
+            var document = yamlFile.FindDocumentByAnchor(myFileId.fileID);
+            return document.GetUnityObjectTypeFromRootNode() == "MonoBehaviour";
         }
 
         [CanBeNull]
-        private ITypeElement GetTypeFromFileId()
+        private ITypeElement GetTypeFromAssetGuid([CanBeNull] string assetGuid)
         {
-            var assetGuid = GetAssetGuid();
             if (assetGuid == null)
                 return null;
 
@@ -110,78 +108,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         [CanBeNull]
         public string GetAssetGuid()
         {
-            var document = FindDocumentByAnchor(myFileId);
-            if (document == null)
-                return null;
-
-            // If it's a reference to something other than MonoBehaviour, it shouldn't be a resolve error
-            var fileReference = GetScriptFileReference(document);
-            return fileReference == null ? null : GetFileReferenceGuid(fileReference);
-        }
-
-        private IYamlDocument FindDocumentByAnchor(string anchor)
-        {
             var yamlFile = (IYamlFile) myOwner.GetContainingFile();
-            if (yamlFile == null)
-                return null;
-
-            foreach (var document in yamlFile.DocumentsEnumerable)
-            {
-                var properties = GetBlockNodeProperties(document.BlockNode);
-                var text = properties?.AnchorProperty?.Text?.GetText() ?? string.Empty;
-                if (text == anchor)
-                    return document;
-            }
-
-            return null;
-        }
-
-        [CanBeNull]
-        private INodeProperties GetBlockNodeProperties(INode documentBlockNode)
-        {
-            if (documentBlockNode is IBlockSequenceNode sequenceNode)
-                return sequenceNode.Properties;
-            if (documentBlockNode is IBlockMappingNode mappingNode)
-                return mappingNode.Properties;
-            return null;
-        }
-
-        [CanBeNull]
-        private IFlowMappingNode GetScriptFileReference(IYamlDocument document)
-        {
-            var monoBehaviourNode = GetTargetMonoBehaviourNode(document);
-            if (monoBehaviourNode == null)
-                return null;
-
-            if (!(monoBehaviourNode.Value is IBlockMappingNode blockMappingNode))
-                return null;
-
-            return blockMappingNode.FindChildBySimpleKey("m_Script")?.Value as IFlowMappingNode;
-        }
-
-        [CanBeNull]
-        private IBlockMappingEntry GetTargetMonoBehaviourNode(IYamlDocument document)
-        {
-            if (!(document.BlockNode is IBlockMappingNode monoBehaviourBlockMappingNode))
-                return null;
-
-            var firstEntry = monoBehaviourBlockMappingNode.EntriesEnumerable.FirstOrDefault();
-            if (firstEntry == null)
-                return null;
-
-            return firstEntry.Key.GetPlainScalarText() == "MonoBehaviour" ? firstEntry : null;
-        }
-
-        [CanBeNull]
-        private string GetFileReferenceGuid(IFlowMappingNode fileReference)
-        {
-            foreach (var entry in fileReference.EntriesEnumerable)
-            {
-                if (entry.Key.GetPlainScalarText() == "guid")
-                    return entry.Value.GetPlainScalarText();
-            }
-
-            return null;
+            var document = yamlFile.FindDocumentByAnchor(myFileId.fileID);
+            var fileID = document.GetUnityObjectPropertyValue("m_Script").AsFileID();
+            return fileID?.guid;
         }
     }
 }
