@@ -196,7 +196,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     if (newVersion == existingVersion)
                     {
                         myLogger.Verbose($"Plugin v{existingVersion} already installed.");
-                        return InstallationInfo.UpToDate(pluginFiles, existingVersion);
+                        return InstallationInfo.UpToDate(pluginDir, pluginFiles, existingVersion);
                     }
 
                     return InstallationInfo.ShouldUpdate(pluginDir, pluginFiles, existingVersion);
@@ -262,9 +262,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return new InstallationInfo(InstallReason.FreshInstall, installLocation, EmptyArray<FileSystemPath>.Instance, ourZeroVersion);
             }
 
-            public static InstallationInfo UpToDate(List<FileSystemPath> existingPluginFiles, Version existingVersion)
+            public static InstallationInfo UpToDate(FileSystemPath installLocation,
+                ICollection<FileSystemPath> existingPluginFiles, Version existingVersion)
             {
-                return new InstallationInfo(InstallReason.UpToDate, FileSystemPath.Empty, existingPluginFiles, existingVersion);
+                return new InstallationInfo(InstallReason.UpToDate, installLocation, existingPluginFiles, existingVersion);
             }
 
             public static InstallationInfo ShouldUpdate(FileSystemPath installLocation,
