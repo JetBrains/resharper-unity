@@ -1,7 +1,13 @@
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
@@ -11,19 +17,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [NotNull]
         public static string GetComponentName([NotNull] IYamlDocument componentDocument)
         {
-            // If name is null, and fileid is external, just use component type ("MonoBehaviour")
             var name = componentDocument.GetUnityObjectPropertyValue("m_Name").AsString();
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                var scriptDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty("m_Script");
-                if (scriptDocument == null)
-                    return componentDocument.GetUnityObjectTypeFromRootNode() ?? "Component";
+            if (!string.IsNullOrWhiteSpace(name))
+                return name;
 
-                return scriptDocument.GetUnityObjectPropertyValue("m_Name").AsString()
-                       ?? scriptDocument.GetUnityObjectTypeFromRootNode()
-                       ?? "Component";
+            var scriptDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty("m_Script");
+            name = scriptDocument.GetUnityObjectPropertyValue("m_Name").AsString();
+            if (!string.IsNullOrWhiteSpace(name))
+                return name;
+
+            var fileID = componentDocument.GetUnityObjectPropertyValue("m_Script").AsFileID();
+            if (fileID != null && fileID.IsExternal && fileID.IsMonoScript)
+            {
+                var typeElement = GetTypeElementFromScriptAssetGuid(componentDocument.GetSolution(), fileID.guid);
+                if (typeElement != null)
+                {
+                    // TODO: Format like in Unity, by splitting the camel humps
+                    return typeElement.ShortName + " (Script)";
+                }
             }
-            return name;
+
+            return scriptDocument.GetUnityObjectTypeFromRootNode()
+                   ?? componentDocument.GetUnityObjectTypeFromRootNode()
+                   ?? "Component";
         }
 
         [NotNull]
@@ -59,6 +75,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             }
 
             return sb.ToString();
+        }
+
+        [CanBeNull]
+        public static ITypeElement GetTypeElementFromScriptAssetGuid(ISolution solution, [CanBeNull] string assetGuid)
+        {
+            if (assetGuid == null)
+                return null;
+
+            var cache = solution.GetComponent<MetaFileGuidCache>();
+            var assetPaths = cache.GetAssetFilePathsFromGuid(assetGuid);
+            if (assetPaths == null || assetPaths.IsEmpty())
+                return null;
+
+            // TODO: Multiple candidates!
+            // I.e. someone has copy/pasted a .meta file
+            if (assetPaths.Count != 1)
+                return null;
+
+            var projectItems = solution.FindProjectItemsByLocation(assetPaths[0]);
+            var assetFile = projectItems.FirstOrDefault() as IProjectFile;
+            if (!(assetFile?.GetPrimaryPsiFile() is ICSharpFile csharpFile))
+                return null;
+
+            // Note that theoretically, there could be multiple classes with the same name in different namespaces.
+            // Unity's own behaviour here is undefined - it arbitrarily chooses one
+
+            // TODO: This only finds top level type declarations, not all type declarations in the file
+            var typeDeclaration =
+                csharpFile.TypeDeclarationsEnumerable.FirstOrDefault(d => d.DeclaredName == assetPaths[0].NameWithoutExtension);
+            return typeDeclaration?.DeclaredElement;
         }
 
         [CanBeNull]

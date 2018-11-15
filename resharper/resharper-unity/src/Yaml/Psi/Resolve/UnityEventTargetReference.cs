@@ -1,11 +1,7 @@
 using System;
-using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -14,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
-    public class UnityEventTargetReference : CheckedReferenceBase<IPlainScalarNode>
+    public class UnityEventTargetReference : CheckedReferenceBase<IPlainScalarNode>, IUnityYamlReference
     {
         private readonly FileID myFileId;
 
@@ -26,8 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public string EventHandlerName => myOwner.GetText();
 
-        // A reference is inside a component (usually a MonoScript), which is attached to a GameObject. Note that this
-        // is the document for where the owner node is, not where the target script is declared
+        // The YAML document for the component that contains the reference - usually, but not necessarily, a MonoBehaviour
         public IYamlDocument ComponentDocument => myOwner.GetContainingNode<IYamlDocument>();
 
         public override ResolveResultWithInfo ResolveWithoutCache()
@@ -47,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
             var assetGuid = GetScriptAssetGuid();
-            var targetType = GetTypeFromScriptAssetGuid(assetGuid);
+            var targetType = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(myOwner.GetSolution(), assetGuid);
             if (targetType == null)
                 return EmptySymbolTable.INSTANCE;
 
@@ -80,33 +75,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             var yamlFile = (IYamlFile) myOwner.GetContainingFile();
             var document = yamlFile.FindDocumentByAnchor(myFileId.fileID);
             return document.GetUnityObjectTypeFromRootNode() == "MonoBehaviour";
-        }
-
-        [CanBeNull]
-        private ITypeElement GetTypeFromScriptAssetGuid([CanBeNull] string assetGuid)
-        {
-            if (assetGuid == null)
-                return null;
-
-            var solution = myOwner.GetSolution();
-            var cache = solution.GetComponent<MetaFileGuidCache>();
-            var assetPaths = cache.GetAssetFilePathsFromGuid(assetGuid);
-            if (assetPaths == null || assetPaths.IsEmpty())
-                return null;
-
-            // TODO: Multiple candidates!
-            // I.e. someone has copy/pasted a .meta file
-            if (assetPaths.Count != 1)
-                return null;
-
-            var projectItems = myOwner.GetSolution().FindProjectItemsByLocation(assetPaths[0]);
-            var assetFile = projectItems.FirstOrDefault() as IProjectFile;
-            if (!(assetFile?.GetPrimaryPsiFile() is ICSharpFile csharpFile))
-                return null;
-
-            var typeDeclaration =
-                csharpFile.TypeDeclarationsEnumerable.FirstOrDefault(d => d.DeclaredName == assetPaths[0].NameWithoutExtension);
-            return typeDeclaration?.DeclaredElement;
         }
 
         [CanBeNull]

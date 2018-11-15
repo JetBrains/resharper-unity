@@ -22,6 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         // Is external to the current file. True if there's an asset GUID
         public bool IsExternal => guid != null;
 
+        // The static value that represents a MonoScript asset (C# scripts can't have an ID inside the file)
+        public bool IsMonoScript => fileID == "11500000";
+
         public FileID(string guid, string fileID)
         {
             this.guid = guid;

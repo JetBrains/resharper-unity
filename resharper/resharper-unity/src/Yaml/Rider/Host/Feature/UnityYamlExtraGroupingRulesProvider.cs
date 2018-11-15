@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
         {
             if (occurrence is ReferenceOccurrence referenceOccurrence &&
-                referenceOccurrence.PrimaryReference is UnityEventTargetReference reference)
+                referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
             {
                 return CreateModel(UnityObjectPsiUtil.GetGameObjectPath(reference.ComponentDocument));
             }
@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
         {
             if (occurrence is ReferenceOccurrence referenceOccurrence &&
-                referenceOccurrence.PrimaryReference is UnityEventTargetReference reference)
+                referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
             {
                 return CreateModel(UnityObjectPsiUtil.GetComponentName(reference.ComponentDocument));
             }
