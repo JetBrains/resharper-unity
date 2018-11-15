@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
                 if (isEditorSettingsInText)
                 {
                     var text = editorSettingsPath.ReadAllText2().Text;
-                    var match = Regex.Match(text, "m_SerializationMode: (?<mode>.*)$");
+                    var match = Regex.Match(text, @"^\s+m_SerializationMode:\s+(?<mode>\d+)$", RegexOptions.Multiline);
                     if (match.Success)
                     {
                         if (int.TryParse(match.Groups["mode"].Value, out var mode))
