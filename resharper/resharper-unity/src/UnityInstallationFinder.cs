@@ -23,17 +23,17 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             var possible = GetPossibleInstallationInfos();
             
-            var bestChoice = possible.LastOrDefault(a =>
+            var bestChoice = possible.Where(a =>
                 a.Version.Major == version.Major && a.Version.Minor == version.Minor &&
-                a.Version.Build == version.Build);
+                a.Version.Build == version.Build).OrderBy(b=>b.Version).LastOrDefault();
             if (bestChoice != null)
                 return bestChoice.Path;
-            var secondChoice = possible.LastOrDefault(a =>
-                a.Version.Major == version.Major && a.Version.Minor == version.Minor);
+            var secondChoice = possible.Where(a =>
+                a.Version.Major == version.Major && a.Version.Minor == version.Minor).OrderBy(b=>b.Version).LastOrDefault();
             if (secondChoice != null)
                 return secondChoice.Path;
-            var worstChoice =  possible.LastOrDefault(a =>
-                a.Version.Major == version.Major);
+            var worstChoice =  possible.Where(a => a.Version.Major == version.Major)
+                .OrderBy(b=>b.Version).LastOrDefault();
             return worstChoice?.Path;
         }
         
