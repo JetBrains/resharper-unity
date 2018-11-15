@@ -36,6 +36,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (reference == null)
                 return false;
 
+            if (!IsBaseCallReference(expression))
+                return false;
+
             var info = reference.Resolve();
 
             if (info.ResolveErrorType != ResolveErrorType.OK)
@@ -56,6 +59,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return false;
 
             return true;
+        }
+        
+        private static bool IsBaseCallReference(IInvocationExpression expression)
+        {
+            var referenceExpression = expression.InvokedExpression as IReferenceExpression;
+            return referenceExpression?.QualifierExpression is IBaseExpression;
         }
 
         private static bool IsInsideOnGUI(IInvocationExpression expression)
