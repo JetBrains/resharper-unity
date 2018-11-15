@@ -98,13 +98,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             if (!(assetFile?.GetPrimaryPsiFile() is ICSharpFile csharpFile))
                 return null;
 
-            // Note that theoretically, there could be multiple classes with the same name in different namespaces.
-            // Unity's own behaviour here is undefined - it arbitrarily chooses one
+            var expectedClassName = assetPaths[0].NameWithoutExtension;
+            var psiSourceFile = csharpFile.GetSourceFile();
+            if (psiSourceFile == null)
+                return null;
 
-            // TODO: This only finds top level type declarations, not all type declarations in the file
-            var typeDeclaration =
-                csharpFile.TypeDeclarationsEnumerable.FirstOrDefault(d => d.DeclaredName == assetPaths[0].NameWithoutExtension);
-            return typeDeclaration?.DeclaredElement;
+            var psiServices = csharpFile.GetPsiServices();
+            var elements = psiServices.Symbols.GetTypesAndNamespacesInFile(psiSourceFile);
+            foreach (var element in elements)
+            {
+                // Note that theoretically, there could be multiple classes with the same name in different namespaces.
+                // Unity's own behaviour here is undefined - it arbitrarily chooses one
+                // TODO: Multiple candidates in a file
+                if (element is ITypeElement typeElement && typeElement.ShortName == expectedClassName)
+                    return typeElement;
+            }
+
+            return null;
         }
 
         [CanBeNull]
