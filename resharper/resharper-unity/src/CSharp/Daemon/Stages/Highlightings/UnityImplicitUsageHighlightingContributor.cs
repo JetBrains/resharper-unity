@@ -1,55 +1,30 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
+using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.DocumentModel;
+using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
-using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Help;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Resources.Icons;
 using JetBrains.TextControl;
-using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.Util;
 
-[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_IMPLICIT_USAGE_BOLD_ATTRIBUTE, GroupId = UnityHighlightingGroupIds.Unity,
-    EffectType = EffectType.TEXT, FontStyle = FontStyle.Bold, Layer = HighlighterLayer.SYNTAX + 1)]
-
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {
-    [StaticSeverityHighlighting(Severity.INFO, "UnityGutterMarks", Languages = "CSHARP", OverlapResolve = OverlapResolveKind.NONE)]
-    public class UnityImplicitBoldHighlighting : ICustomAttributeIdHighlighting
-    {
-        private readonly DocumentRange myDocumentRange;
-
-        public UnityImplicitBoldHighlighting(DocumentRange documentRange)
-        {
-            myDocumentRange = documentRange;
-        }
-
-        public bool IsValid() => true;
-
-        public DocumentRange CalculateRange() => myDocumentRange;
-
-        public string ToolTip => null;
-        public string ErrorStripeToolTip => null;
-        public string AttributeId => UnityHighlightingAttributeIds.UNITY_IMPLICIT_USAGE_BOLD_ATTRIBUTE;
-    }
-    
     [SolutionComponent]
     public class UnityImplicitUsageHighlightingContributor
     {
@@ -86,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             AddHighlightingWithConfigurableHighlighter(consumer, declaration, tooltip);
         }
         
-        public virtual void AddUnityStartMethod(IHighlightingConsumer consumer, IConstructorDeclaration constructorDeclaration, string tooltip)
+        public virtual void AddInitializeOnLoadMethod(IHighlightingConsumer consumer, IConstructorDeclaration constructorDeclaration, string tooltip)
         {
             AddHighlightingWithConfigurableHighlighter(consumer, constructorDeclaration, tooltip);
         }
@@ -113,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode) == GutterIconMode.None)
                 return;
             
-            consumer.AddHighlighting(new UnityImplicitBoldHighlighting(element.NameIdentifier.GetDocumentRange()));
+            consumer.AddHighlighting(new UnityImplicitlyUsedIdentifierHighlighting(element.NameIdentifier.GetDocumentRange()));
         }
         
         public virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
@@ -146,20 +121,38 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
                 if (declaration is IMethodDeclaration methodDeclaration)
                 {
-                    var isCoroutine = IsCoroutine(methodDeclaration, unityApi);
-                    if (isCoroutine.HasValue)
+                    var result = new List<BulbMenuItem>();
+                    var declaredElement = methodDeclaration.DeclaredElement;
+
+                    if (declaredElement != null)
                     {
-                        IBulbAction bulbAction;
-                        if (isCoroutine.Value)
-                            bulbAction = new ConvertFromCoroutineBulbAction(methodDeclaration);
-                        else
-                            bulbAction = new ConvertToCoroutineBulbAction(methodDeclaration);
-                        return new[]
+                        var isCoroutine = IsCoroutine(methodDeclaration, unityApi);
+                        if (isCoroutine.HasValue)
                         {
-                            new BulbMenuItem(new IntentionAction.MyExecutableProxi(bulbAction, Solution, textControl),
+                            IBulbAction bulbAction;
+                            if (isCoroutine.Value)
+                                bulbAction = new ConvertFromCoroutineBulbAction(methodDeclaration);
+                            else
+                                bulbAction = new ConvertToCoroutineBulbAction(methodDeclaration);
+
+                            result.Add(new BulbMenuItem(
+                                new IntentionAction.MyExecutableProxi(bulbAction, Solution, textControl),
                                 bulbAction.Text, BulbThemedIcons.ContextAction.Id,
-                                BulbMenuAnchors.FirstClassContextItems)
-                        };
+                                BulbMenuAnchors.FirstClassContextItems));
+
+                        }
+
+                        if (unityApi.IsEventFunction(declaredElement))
+                        {
+                            var navigation = new NavigationAction(Solution.GetComponent<ShowUnityHelp>(), declaredElement,
+                                unityApi);
+                            result.Add(new BulbMenuItem(
+                                new IntentionAction.MyExecutableProxi(navigation, Solution, textControl),
+                                navigation.Text, BulbThemedIcons.ContextAction.Id,
+                                BulbMenuAnchors.FirstClassContextItems));
+                        }
+
+                        return result;
                     }
                 }
             }
@@ -182,6 +175,28 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (type == null) return null;
 
             return Equals(type.GetClrName(), PredefinedType.IENUMERATOR_FQN);
+        }
+
+        internal class NavigationAction : BulbActionBase
+        {
+            private readonly ShowUnityHelp myShowUnityHelp;
+            private readonly IMethod myMethod;
+            private readonly UnityApi myUnityApi;
+
+            public NavigationAction(ShowUnityHelp showUnityHelp, IMethod method, UnityApi unityApi)
+            {
+                myShowUnityHelp = showUnityHelp;
+                myMethod = method;
+                myUnityApi = unityApi;
+            }
+            
+            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            {
+                myShowUnityHelp.ShowHelp(myMethod.GetUnityEventFunctionName(myUnityApi), HelpSystem.HelpKind.Msdn);
+                return null;
+            }
+
+            public override string Text => "Open documentation";
         }
     }
 }

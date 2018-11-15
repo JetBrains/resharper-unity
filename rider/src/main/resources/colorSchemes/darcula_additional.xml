@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+file for overriding ReSharper highlighter color for Darcula editor scheme
+-->
+<list>
+  <option name="ReSharper.UNITY_IMPLICITLY_USED_IDENTIFIER">
+    <value>
+      <option name="FONT_TYPE" value="1" />
+    </value>
+  </option>
+</list>

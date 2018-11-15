@@ -1,11 +1,22 @@
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
+#if RIDER
+using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+#endif
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
 {
-    [ElementProblemAnalyzer(typeof(IConstructorDeclaration), HighlightingTypes = new[] {typeof(UnityGutterMarkInfo)})]
+    [ElementProblemAnalyzer(typeof(IConstructorDeclaration), HighlightingTypes = new[]
+    {
+#if RIDER
+            typeof(UnityCodeInsightsHighlighting)
+#else
+        typeof(UnityGutterMarkInfo),
+#endif
+    })]
     public class UnityInitialiseOnLoadCctorDetector : UnityElementProblemAnalyzer<IConstructorDeclaration>
     {
         private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
@@ -24,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
             var containingType = element.GetContainingTypeDeclaration()?.DeclaredElement;
             if (containingType != null && containingType.HasAttributeInstance(KnownTypes.InitializeOnLoadAttribute, false))
             {
-                myImplicitUsageHighlightingContributor.AddUnityStartMethod(consumer, element, "Called when Unity first launches the editor, the player, or recompiles scripts");
+                myImplicitUsageHighlightingContributor.AddInitializeOnLoadMethod(consumer, element, "Called when Unity first launches the editor, the player, or recompiles scripts");
             }
         }
     }

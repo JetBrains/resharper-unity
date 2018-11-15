@@ -1,10 +1,12 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
+#if RIDER
+using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+#endif
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
@@ -13,13 +15,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     [ElementProblemAnalyzer(typeof(IMemberOwnerDeclaration),
         HighlightingTypes = new[]
         {
-            typeof(UnityGutterMarkInfo),
             typeof(DuplicateEventFunctionWarning),
             typeof(IncorrectSignatureWarning),
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
             typeof(InvalidParametersWarning),
-            typeof(InvalidTypeParametersWarning)
+            typeof(InvalidTypeParametersWarning),
+            #if RIDER
+            typeof(UnityCodeInsightsHighlighting)
+            #else
+            typeof(UnityGutterMarkInfo),
+            #endif
         })]
     public class UnityEventFunctionAnalyzer : MethodSignatureProblemAnalyzerBase<IMemberOwnerDeclaration>
     {

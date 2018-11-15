@@ -7,11 +7,11 @@ using JetBrains.ReSharper.Psi;
 namespace JetBrains.ReSharper.Plugins.Unity
 {
     [ShellComponent]
-    public class UnityFindUsagesProviderProvider : FindUsagesProvider
+    public class UnityFindUsagesProvider : FindUsagesProvider
     {
         private readonly SolutionsManager mySolutionsManager;
 
-        public UnityFindUsagesProviderProvider(IFeaturePartsContainer manager, SolutionsManager solutionsManager)
+        public UnityFindUsagesProvider(IFeaturePartsContainer manager, SolutionsManager solutionsManager)
             : base(manager)
         {
             mySolutionsManager = solutionsManager;

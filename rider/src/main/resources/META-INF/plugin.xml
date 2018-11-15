@@ -121,6 +121,13 @@
     </action>
   </actions>
 
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- IDEA default schemes -->
+    <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
+    <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
+  </extensions>
+
+
   <description><![CDATA[
 <p>Adds support for the Unity engine.</p>
 <p></p>
