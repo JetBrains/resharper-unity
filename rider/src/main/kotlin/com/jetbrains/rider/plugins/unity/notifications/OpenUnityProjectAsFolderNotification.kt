@@ -35,8 +35,6 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
 
         val solutionDescription = project.solutionDescription
         if (solutionDescription is RdVirtualSolution) {
-
-            //var reopenText = "<a href=\"reopen\">reopen</a>"
             var adviceText = " Please <a href=\"reopen\">click here</a> to start Unity, generate a solution file and reopen the project."
             val (status, _) = EditorInstanceJson.load(project)
             if (status == EditorInstanceJsonStatus.Valid || UnityInstallationFinder(project).getApplicationPath() == null) {
