@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -230,7 +230,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public readonly InstallReason InstallReason;
 
-            public bool ShouldInstallPlugin => InstallReason != InstallReason.DoNotInstall;
+            public bool ShouldInstallPlugin => !(InstallReason == InstallReason.DoNotInstall || InstallReason == InstallReason.UpToDate);
 
             [NotNull]
             public readonly FileSystemPath PluginDirectory;
@@ -245,7 +245,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 [NotNull] ICollection<FileSystemPath> existingFiles, [NotNull] Version existingVersion)
             {
                 var logger = Logger.GetLogger<InstallationInfo>();
-                if (!pluginDirectory.IsAbsolute && installReason != InstallReason.DoNotInstall)
+                if (!pluginDirectory.IsAbsolute && ShouldInstallPlugin)
                     logger.Error($"pluginDirectory ${pluginDirectory} Is Not Absolute ${installReason}, ${existingVersion}, ${existingFiles.Count}");
                 else
                     logger.Info(
