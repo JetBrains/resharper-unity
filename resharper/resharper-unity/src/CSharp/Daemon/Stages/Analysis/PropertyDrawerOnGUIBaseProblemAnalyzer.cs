@@ -44,7 +44,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (info.ResolveErrorType != ResolveErrorType.OK)
                 return false;
 
-            var method = (info.DeclaredElement as IMethod).NotNull("info.DeclaredElement as IMethod != null");
+            var method = info.DeclaredElement as IMethod;
+            if (method == null)
+                return false;
 
             var doesNameMatch = method.ShortName == "OnGUI";
             if (!doesNameMatch)
