@@ -15,13 +15,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
             var reference = referenceOccurrence?.PrimaryReference;
             if (reference is UnityEventTargetReference)
                 return new[] {UnityYamlSpecificOccurrenceKinds.EventHandler};
+            if (reference is MonoScriptReference)
+                return new[] {UnityYamlSpecificOccurrenceKinds.ComponentUsage};
             return EmptyList<OccurrenceKind>.Instance;
         }
 
         public IEnumerable<OccurrenceKind> GetAllPossibleOccurrenceKinds()
         {
             // What about invocation, name capture?
-            return new[] {UnityYamlSpecificOccurrenceKinds.EventHandler};
+            return new[]
+            {
+                UnityYamlSpecificOccurrenceKinds.EventHandler,
+                UnityYamlSpecificOccurrenceKinds.ComponentUsage
+            };
         }
     }
 }
