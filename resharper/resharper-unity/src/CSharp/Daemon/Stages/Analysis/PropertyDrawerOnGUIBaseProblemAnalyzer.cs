@@ -3,9 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Impl.Reflection2;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -50,14 +48,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             var doesNameMatch = method.ShortName == "OnGUI";
             if (!doesNameMatch)
-                return false;
-
-            ICompiledEntity methodEntity = info.DeclaredElement as ICompiledEntity;
-            if (!(methodEntity?.Parent is CompiledTypeElement parentClass))
-                return false;
-
-            var isPropertyDrawerOwner = parentClass.ShortName == "PropertyDrawer";
-            if (!isPropertyDrawerOwner)
                 return false;
 
             return true;
