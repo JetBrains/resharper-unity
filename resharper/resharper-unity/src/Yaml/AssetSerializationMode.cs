@@ -17,6 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             Mode = SerializationMode.Unknown;
 
             var solutionDir = solution.SolutionDirectory;
+            if (!solutionDir.IsAbsolute) return; // True in tests
+
             var assetsDir = solutionDir.Combine("Assets");
             var editorSettingsPath = solutionDir.Combine("ProjectSettings\\EditorSettings.asset");
 
@@ -58,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             }
         }
 
-        public SerializationMode Mode { get; }
+        public SerializationMode Mode { get; protected set; }
         public bool IsForceText => Mode == SerializationMode.ForceText;
 
         public enum SerializationMode
