@@ -117,4 +117,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\resharper-yaml\src\rider-yaml.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Yaml\Feature\Services\Navigation" />
+  </ItemGroup>
 </Project>

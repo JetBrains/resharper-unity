@@ -65,5 +65,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         sink("notifyIsRecompileAndContinuePlaying", string)
         source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
+
+        property("showGameObjectOnScene", string)
     }
 }

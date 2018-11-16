@@ -78,6 +78,7 @@ object EditorPluginModel: Root() {
         property("play", bool)
         property("pause", bool)
         source("step", void)
+        property("showGameObjectOnScene", string)
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)
