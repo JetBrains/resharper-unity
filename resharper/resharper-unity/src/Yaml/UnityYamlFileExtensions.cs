@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml
@@ -25,12 +26,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             return AllFileExtensionsWithDot.Contains(extensionWithDot, StringComparer.InvariantCultureIgnoreCase);
         }
 
-        public static bool IsAsset(FileSystemPath path)
+        public static bool IsAsset([NotNull] FileSystemPath path)
         {
             return AssetFileExtensionsWithDot.Contains(path.ExtensionWithDot, StringComparer.InvariantCultureIgnoreCase);
         }
 
-        public static bool IsMeta(FileSystemPath path)
+        public static bool IsMeta([NotNull] FileSystemPath path)
         {
             return string.Equals(path.ExtensionWithDot, MetaFileExtensionWithDot,
                 StringComparison.InvariantCultureIgnoreCase);

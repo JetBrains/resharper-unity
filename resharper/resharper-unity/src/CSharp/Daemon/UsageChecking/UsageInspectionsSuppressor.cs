@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
@@ -112,7 +113,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             if (!unityApi.IsUnityType(type))
                 return false;
 
-            if (!myYamlSupport.IsParsingEnabled.Value)
+            var assetSerializationMode = method.GetSolution().GetComponent<AssetSerializationMode>();
+
+            // TODO: These two are usually used together. Consider combining in some way
+            if (!myYamlSupport.IsParsingEnabled.Value || !assetSerializationMode.IsForceText)
                 return IsPotentialEventHandler(unityApi, method);
 
             return method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>().IsEventHandler(method);

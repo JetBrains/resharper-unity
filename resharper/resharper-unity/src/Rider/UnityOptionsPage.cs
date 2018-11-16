@@ -32,24 +32,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             Header("General");
 
-            CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin, "Install or update Rider plugin automatically");
-            CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh Assets in Unity");
+            CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin,
+                "Automatically install and update Rider's Unity editor plugin (recommended)");
+            CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
             CheckBox((UnitySettings s) => s.EnableDefaultUnityCodeStyle, "Enable default Unity code-style");
-            
+
             AddNamingSection(lifetime, settingsStore);
 
             // TODO: This needs to be available for ReSharper
             Header("C# code analysis");
             CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
-                "Enable highlighting of costly methods and indirect calls for these methods in performance critical code sections");
+                "Highlight expensive method calls in frequently called code");
 
             Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
                 "Enable simple word-based completion in ShaderLab files");
 
-            Header("Experimental");
+            Header("Assets");
             CheckBox((YamlSettings s) => s.EnableYamlParsing,
-                "Parse Unity YAML files for references to methods");
+                "Parse text based asset files for class and method usages");
             AddText("Requires solution reopen.");
 
             if (productConfigurations.IsInternalMode())

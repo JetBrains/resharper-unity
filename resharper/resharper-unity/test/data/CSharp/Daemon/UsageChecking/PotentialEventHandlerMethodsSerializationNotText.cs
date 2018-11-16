@@ -3,6 +3,8 @@ using UnityEngine;
 
 // ReSharper disable ArrangeAccessorOwnerBody
 // ReSharper disable ConvertToAutoProperty
+
+// Only applicable when YAML supported is disabled
 public class A : MonoBehaviour
 {
   private string myThing;
