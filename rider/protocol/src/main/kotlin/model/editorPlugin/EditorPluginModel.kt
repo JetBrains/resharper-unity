@@ -9,6 +9,7 @@ import java.io.File
 
 @Suppress("unused")
 object EditorPluginModel: Root() {
+
     var RdOpenFileArgs = structdef {
         field("path", string)
         field("line", int)
@@ -20,6 +21,12 @@ object EditorPluginModel: Root() {
         field("mode", RdLogEventMode)
         field("message", string)
         field("stackTrace", string)
+    }
+
+    val RdFindUsageRequest = classdef {
+        field("localId", int)
+        field("sceneName", string)
+        field("path", array(string))
     }
 
     val RdLogEventType = enum {
@@ -78,10 +85,11 @@ object EditorPluginModel: Root() {
         property("play", bool)
         property("pause", bool)
         source("step", void)
-        property("showGameObjectOnScene", string)
+        property("showGameObjectOnScene", RdFindUsageRequest)
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)
+        property("unityProcessId", int)
 
         property("applicationPath", string)
         property("applicationContentsPath", string)

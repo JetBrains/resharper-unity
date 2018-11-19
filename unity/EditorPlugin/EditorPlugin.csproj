@@ -15,8 +15,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="UnitTesting\**" />
+    <Compile Remove="Navigation\**" />
     <None Remove="UnitTesting\**" />
+    <None Remove="Navigation\**" />
     <EmbeddedResource Remove="UnitTesting\**" />
+    <EmbeddedResource Remove="Navigation\**" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Annotations">

@@ -31,5 +31,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             action(myModel);
         }
+
+        public T GetValue<T>(Func<RdUnityModel, T> getter)
+        {
+            return getter(myModel);
+        }
     }
 }

@@ -160,7 +160,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     editor.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
                     editor.Pause.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
-                    myHost.PerformModelAction(t => t.ShowGameObjectOnScene.View(lifetime, (_, v) => editor.ShowGameObjectOnScene.Set(v)));
+
+                    editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
+                    myHost.PerformModelAction(t => t.ShowGameObjectOnScene.View(lifetime, (_, v) => editor.ShowGameObjectOnScene.Set(ToEditorModel(v))));
+                    
 
                     editor.EditorLogPath.Advise(lifetime,                    
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
@@ -202,6 +205,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 myLogger.Error(ex);
             }
+        }
+
+        private RdFindUsageRequest ToEditorModel(FindUsageRequest findUsageRequest)
+        {
+            return new RdFindUsageRequest(findUsageRequest.LocalId, findUsageRequest.SceneName, findUsageRequest.Path);
         }
 
         private void BindPluginPathToSettings(Lifetime lf, EditorPluginModel editor)

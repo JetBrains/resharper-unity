@@ -25,6 +25,12 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"StopPlayingAndRecompile"
     }
 
+    val FindUsageRequest = classdef {
+        field("localId", int)
+        field("sceneName", string)
+        field("path", array(string))
+    }
+
     init {
         sink("activateRider", void)
 
@@ -66,6 +72,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         sink("notifyIsRecompileAndContinuePlaying", string)
         source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
 
-        property("showGameObjectOnScene", string)
+        property("showGameObjectOnScene", FindUsageRequest)
+        property("unityProcessId", int)
     }
 }
