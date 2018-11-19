@@ -70,6 +70,8 @@
     <projectModelViewUpdater implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerProjectModelViewUpdater"/>
 
     <xdebugger.attachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityAttachEditorDebuggerProvider" />
+
+    <rider.android.project.validator implementation="com.jetbrains.rider.android.UnityCustomAndroidProjectValidator"/>
   </extensions>
 
   <project-components>
