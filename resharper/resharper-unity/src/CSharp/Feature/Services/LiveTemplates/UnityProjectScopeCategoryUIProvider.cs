@@ -20,9 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         // These get added to a static dictionary, so they can be referenced by name from templates
         // We're using Unity_CSharp instead of just CSharp, because that's set up to use the C#
         // template scope icon instead of the C# file icon - see RIDER-9903
-        public static TemplateImage Unity_CSharp = TemplateImage.Register("UnityCSharp", PsiCSharpThemedIcons.Csharp.Id);
-        public static TemplateImage Unity_ShaderLab = TemplateImage.Register("UnityShaderLab", DivebomThemedIconsThemedIcons.Shader.Id);
-        public static TemplateImage Unity_AsmDef = TemplateImage.Register("UnityAsmDef", PsiJavaScriptThemedIcons.Json.Id);
+        public static TemplateImage Unity_CSharp = new TemplateImage("UnityCSharp", PsiCSharpThemedIcons.Csharp.Id);
+        public static TemplateImage Unity_ShaderLab = new TemplateImage("UnityShaderLab", DivebomThemedIconsThemedIcons.Shader.Id);
+        public static TemplateImage Unity_AsmDef = new TemplateImage("UnityAsmDef", PsiJavaScriptThemedIcons.Json.Id);
 
         public UnityProjectScopeCategoryUIProvider()
             : base(LogoThemedIcons.UnityLogo.Id)
