@@ -44,13 +44,4 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests
 
     public ISimpleSignal Changed { get; }
   }
-
-  [ShellComponent]
-  public class EnsureEnabledForTests
-  {
-    public EnsureEnabledForTests(YamlSupport yamlSupport)
-    {
-      yamlSupport.IsParsingEnabled.SetValue(true);
-    }
-  }
 }

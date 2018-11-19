@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.Application.UI.Icons.Special.ThemedIcons;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
@@ -14,7 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     [SolutionComponent]
     public class UnityYamlExtraGroupingRulesProvider : IRiderExtraGroupingRulesProvider
     {
-        public UnityYamlExtraGroupingRulesProvider(IconHost iconHost)
+        // IconHost is optional so that we don't fail if we're in tests
+        public UnityYamlExtraGroupingRulesProvider(IconHost iconHost = null)
         {
             ExtraRules = new IRiderUsageGroupingRule[]
             {
@@ -28,9 +30,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
 
     public abstract class UnityYamlUsageGroupingRuleBase : IRiderUsageGroupingRule
     {
-        private readonly IconHost myIconHost;
+        [CanBeNull] private readonly IconHost myIconHost;
 
-        protected UnityYamlUsageGroupingRuleBase(string name, IconId iconId, IconHost iconHost, double sortingPriority)
+        protected UnityYamlUsageGroupingRuleBase(string name, IconId iconId, [CanBeNull] IconHost iconHost,
+            double sortingPriority)
         {
             Name = name;
             IconId = iconId;
@@ -40,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
 
         protected RdUsageGroup CreateModel(string text)
         {
-            return new RdUsageGroup(Name, text, myIconHost.Transform(IconId));
+            return new RdUsageGroup(Name, text, myIconHost?.Transform(IconId));
         }
 
         protected RdUsageGroup EmptyModel()
@@ -64,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class GameObjectUsageGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         // TODO: Proper icon
-        public GameObjectUsageGroupingRule(IconHost iconHost)
+        public GameObjectUsageGroupingRule([CanBeNull] IconHost iconHost)
             : base("Unity Game Object", SpecialThemedIcons.Placeholder.Id, iconHost, 7.0)
         {
         }
@@ -90,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class ComponentUsageGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         // TODO: Proper icon
-        public ComponentUsageGroupingRule(IconHost iconHost)
+        public ComponentUsageGroupingRule([CanBeNull] IconHost iconHost)
             : base("Unity Component", SpecialThemedIcons.Placeholder.Id, iconHost, 8.0)
         {
         }
