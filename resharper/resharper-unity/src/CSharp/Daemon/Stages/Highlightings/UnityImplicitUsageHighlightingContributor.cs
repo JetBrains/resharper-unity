@@ -144,11 +144,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 
                         if (unityApi.IsEventFunction(declaredElement))
                         {
-                            var navigation = new NavigationAction(Solution.GetComponent<ShowUnityHelp>(), declaredElement,
+                            var documentationNavigationAction = new DocumentationNavigationAction(Solution.GetComponent<ShowUnityHelp>(), declaredElement,
                                 unityApi);
                             result.Add(new BulbMenuItem(
-                                new IntentionAction.MyExecutableProxi(navigation, Solution, textControl),
-                                navigation.Text, BulbThemedIcons.ContextAction.Id,
+                                new IntentionAction.MyExecutableProxi(documentationNavigationAction, Solution, textControl),
+                                documentationNavigationAction.Text, BulbThemedIcons.ContextAction.Id,
+                                BulbMenuAnchors.FirstClassContextItems));
+                        }
+                        else
+                        {
+                            var unityNavigation = new UnityFindUsagesNavigationAction(declaredElement,unityApi);
+                            result.Add(new BulbMenuItem(
+                                new IntentionAction.MyExecutableProxi(unityNavigation, Solution, textControl),
+                                unityNavigation.Text, BulbThemedIcons.ContextAction.Id,
                                 BulbMenuAnchors.FirstClassContextItems));
                         }
 
@@ -177,13 +185,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             return Equals(type.GetClrName(), PredefinedType.IENUMERATOR_FQN);
         }
 
-        internal class NavigationAction : BulbActionBase
+        internal class UnityFindUsagesNavigationAction : BulbActionBase
+        {
+            private readonly IMethod myMethod;
+            private readonly UnityApi myUnityApi;
+
+            public UnityFindUsagesNavigationAction(IMethod method, UnityApi unityApi)
+            {
+                myMethod = method;
+                myUnityApi = unityApi;
+            }
+            
+            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            {
+                return null;
+            }
+
+            public override string Text => "Show usages in Unity";
+        }
+        
+        internal class DocumentationNavigationAction : BulbActionBase
         {
             private readonly ShowUnityHelp myShowUnityHelp;
             private readonly IMethod myMethod;
             private readonly UnityApi myUnityApi;
 
-            public NavigationAction(ShowUnityHelp showUnityHelp, IMethod method, UnityApi unityApi)
+            public DocumentationNavigationAction(ShowUnityHelp showUnityHelp, IMethod method, UnityApi unityApi)
             {
                 myShowUnityHelp = showUnityHelp;
                 myMethod = method;

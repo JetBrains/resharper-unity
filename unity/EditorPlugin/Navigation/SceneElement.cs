@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.Navigation
 {
-
+  [Serializable]
   internal class SceneElement
   {
     [SerializeField] public string SceneName;

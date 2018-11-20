@@ -7,6 +7,7 @@ using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 namespace JetBrains.Rider.Unity.Editor.Navigation
@@ -54,16 +55,20 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
+          if (result == null)
+            return;
+          
           if (lt.IsTerminated)
             return;
-          FindUsagesWindow.Instance.SetDataToEditor(result);
+          
+          EditorWindow.GetWindow<FindUsagesWindow>().SetDataToEditor(result);
+          modelValue.FindUsageResult.SetValue(null);
         });
       });
     }
 
     public static void ShowUsageOnScene(string sceneName, string[] path, int localId)
     {
-      
       var sceneCount = SceneManager.sceneCount;
 
       bool wasFound = false;
@@ -88,12 +93,13 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
         {
           var scenePath = "Assets/Scenes/" + sceneName + ".unity";
           var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
-          SelectUsage(scene, path, localId);
+          SelectUsage(scene, path, localId, true);
         }
       }
-    }
-
-    private static void SelectUsage(Scene scene, string[] path, int localId)
+    } 
+    
+    
+    private static void SelectUsage(Scene scene, string[] path, int localId, bool doNotMoveCamera = false) // When scene is loaded, each GO has default transform
     {
       foreach (var gameObject in scene.GetRootGameObjects())
       {
@@ -102,6 +108,8 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
         {
           EditorGUIUtility.PingObject(toSelect);
           Selection.activeObject = toSelect;
+          if (!doNotMoveCamera) 
+           SceneView.lastActiveSceneView.FrameSelected();
           break;
         }
       }

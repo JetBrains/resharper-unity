@@ -55,7 +55,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
             var id = sceneId++;
             findResultItems[id] = new FindUsagesTreeViewItem(sceneElement)
             {
-              id = sceneId++,
+              id = id,
               displayName = name,
               icon = (Texture2D) EditorGUIUtility.IconContent("GameObject Icon").image
             };

@@ -1,3 +1,4 @@
+using System;
 using JetBrains.DataFlow;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor;
@@ -7,9 +8,10 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 {
   internal class FindUsagesWindow : EditorWindow
   {
-    public static FindUsagesWindow Instance = new FindUsagesWindow();
+    [SerializeField]
+    FindUsagesWindowTreeState myTreeViewState;
     
-    [SerializeField] FindUsagesWindowTreeState myTreeViewState;
+    [NonSerialized]
     private FindUsagesTreeView myTreeView;
 
     [MenuItem("Rider/Windows/Find usages")]
@@ -32,10 +34,11 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     
     void OnEnable ()
     {
-      // Check whether there is already a serialized view state (state 
-      // that survived assembly reloading)
       if (myTreeViewState == null)
-        myTreeViewState = new FindUsagesWindowTreeState ();
+      {
+        Debug.Log("Was recreated");
+        myTreeViewState = new FindUsagesWindowTreeState();
+      }
 
       myTreeView = new FindUsagesTreeView(myTreeViewState);
     }

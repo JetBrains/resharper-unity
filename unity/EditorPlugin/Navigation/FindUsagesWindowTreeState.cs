@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor.IMGUI.Controls;
@@ -5,6 +6,7 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.Navigation
 {
+  [Serializable]
   internal class FindUsagesWindowTreeState : TreeViewState
   {
     // TODO prefabElement

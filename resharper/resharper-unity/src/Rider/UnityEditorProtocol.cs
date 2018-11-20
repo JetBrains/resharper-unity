@@ -163,8 +163,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
-                    myHost.PerformModelAction(t => t.ShowGameObjectOnScene.View(lifetime, (_, v) => editor.ShowGameObjectOnScene.Set(ToEditorModel(v))));
-                    myHost.PerformModelAction(t => t.FindUsageResult.View(lifetime, (_, v) => editor.FindUsageResult.Set(v.Select(ToEditorModel).ToArray())));
+                    myHost.PerformModelAction(t => t.ShowGameObjectOnScene.View(lf, (_, v) =>
+                    {
+                        if (v == null)
+                            return;
+                        editor.ShowGameObjectOnScene.Set(ToEditorModel(v));
+                    }));
+                    myHost.PerformModelAction(t => t.FindUsageResult.View(lf, (_, v) =>
+                    {
+                        if (v == null)
+                            return;
+                        editor.FindUsageResult.Set(v.Select(ToEditorModel).ToArray());
+                    }));
+                    
+                    
+                    editor.FindUsageResult.ViewNull(lf, _ => myHost.PerformModelAction(m => m.FindUsageResult.Set(null)));
+                    editor.ShowGameObjectOnScene.ViewNull(lf, _ => myHost.PerformModelAction(m => m.ShowGameObjectOnScene.Set(null)));
 
                     editor.EditorLogPath.Advise(lifetime,                    
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
