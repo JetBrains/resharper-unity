@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private readonly UnityMonoPathProvider myUnityMonoPathProvider;
 
-        public UnityPathTemplateParameter(UnityMonoPathProvider unityMonoPathProvider) : base("PathToUnityEngine", "Path to UnityEngine.dll")
+        public UnityPathTemplateParameter(UnityMonoPathProvider unityMonoPathProvider) : base("PathToUnityEngine", "Path to UnityEngine.dll", null)
         {
             myUnityMonoPathProvider = unityMonoPathProvider;
         }
@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var possiblePaths = myUnityMonoPathProvider.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).Where(b => b.ExistsFile).ToArray();
             if (possiblePaths.IsEmpty())
             {
-                return new RdProjectTemplateInvalidParameter(Name, "Unity installation is not found", null, null, null, content);
+                return new RdProjectTemplateInvalidParameter(Name, "Unity installation is not found", "", null, null, null, content); //TODO what is 'Message'?
             }
             
             var options = new List<RdProjectTemplateGroupOption>();
@@ -42,9 +42,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
 
             options.Add(new RdProjectTemplateGroupOption("Custom", "Custom",
-                new RdProjectTemplateTextParameter(Name, "", Tooltip, RdTextParameterStyle.FileChooser, content)));
+                new RdProjectTemplateTextParameter(Name, "", null, Tooltip, RdTextParameterStyle.FileChooser, content)));
             
-            return new RdProjectTemplateGroupParameter(Name, possiblePaths.Last().FullPath, Tooltip, options);
+            return new RdProjectTemplateGroupParameter(Name, possiblePaths.Last().FullPath, null, Tooltip, options);
         }
     }
 

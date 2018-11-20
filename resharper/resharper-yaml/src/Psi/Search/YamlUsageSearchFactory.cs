@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Impl.Search.SearchDomain;
@@ -19,9 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
 
     public IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, bool findCandidates)
     {
-      if (elements.All(e => e is IMethod))
-        return new YamlReferenceSearcher(elements, findCandidates);
-      return null;
+      return new YamlReferenceSearcher(elements, findCandidates);
     }
 
     // Used to filter files before searching for references

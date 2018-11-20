@@ -1,11 +1,9 @@
-using System;
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Web.WebConfig;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
@@ -48,10 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public IReferenceFactory CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex wordIndexForChecks)
         {
-            // TODO: Can we get these references inside .asset as well?
-            // TODO: Any other file types?
-            if (sourceFile.PrimaryPsiLanguage.Is<YamlLanguage>() && string.Equals(sourceFile.GetExtensionWithDot(),
-                    ".unity", StringComparison.InvariantCultureIgnoreCase))
+            if (sourceFile.PrimaryPsiLanguage.Is<YamlLanguage>() &&
+                UnityYamlFileExtensions.IsAsset(sourceFile.GetLocation()))
             {
                 if (wordIndexForChecks == null || wordIndexForChecks.CanContainAllSubwords(sourceFile, "m_MethodName"))
                     return new UnityEventTargetReferenceFactory();

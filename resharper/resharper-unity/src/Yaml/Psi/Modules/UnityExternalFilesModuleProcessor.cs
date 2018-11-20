@@ -29,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly EnsureWritableHandler myEnsureWritableHandler;
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
+        private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly YamlSupport myYamlSupport;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
@@ -40,6 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  EnsureWritableHandler ensureWritableHandler,
                                                  UnityYamlPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
+                                                 AssetSerializationMode assetSerializationMode,
                                                  YamlSupport yamlSupport)
         {
             myLifetime = lifetime;
@@ -50,6 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myEnsureWritableHandler = ensureWritableHandler;
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
+            myAssetSerializationMode = assetSerializationMode;
             myYamlSupport = yamlSupport;
 
             changeManager.RegisterChangeProvider(lifetime, this);
@@ -68,9 +71,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
-            // We only support generated Unity projects. I.e. a Unity C# project that represents an actual Unity project
-            if (!myYamlSupport.IsParsingEnabled.Value || !project.IsUnityGeneratedProject())
+            // Do nothing if we don't have text based projects, and if we don't have a project with assets.
+            // We could process .meta files here, as they are always written as text, but there's no point - the meta
+            // file guid cache is only used in conjunction with features that require YAML files
+            if (!myAssetSerializationMode.IsForceText || !myYamlSupport.IsParsingEnabled.Value ||
+                !project.IsUnityGeneratedProject())
+            {
                 return;
+            }
 
             var builder = new PsiModuleChangeBuilder();
 

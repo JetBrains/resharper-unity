@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return;
             }
 
-            var field = fields.First();
+            var field = fields.FirstOrDefault();
             if (!Api.IsSerialisedField(field))
             {
                 consumer.AddHighlighting(new RedundantFormerlySerializedAsAttributeWarning(attribute));

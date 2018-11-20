@@ -7,6 +7,7 @@
   <idea-version since-build="173.3389" until-build="173.3389.*" />
 
   <depends>com.intellij.modules.rider</depends>
+  <depends optional="true" config-file="PluginYamlPluginPart.xml">org.jetbrains.plugins.yaml</depends>
   <depends optional="true" config-file="PluginAppenderPluginPart.xml">rider.intellij.plugin.appender</depends>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -69,6 +70,8 @@
     <projectModelViewUpdater implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerProjectModelViewUpdater"/>
 
     <xdebugger.attachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityAttachEditorDebuggerProvider" />
+
+    <rider.android.project.validator implementation="com.jetbrains.rider.android.UnityCustomAndroidProjectValidator"/>
   </extensions>
 
   <project-components>
@@ -120,6 +123,12 @@
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
     </action>
   </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- IDEA default schemes -->
+    <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
+    <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
+  </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- IDEA default schemes -->

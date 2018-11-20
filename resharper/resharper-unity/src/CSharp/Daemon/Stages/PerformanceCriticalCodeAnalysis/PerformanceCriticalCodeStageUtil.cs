@@ -10,6 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         public static bool IsInvocationExpensive([NotNull] IInvocationExpression invocationExpression)
         {
+            invocationExpression.GetPsiServices().Locks.AssertReadAccessAllowed();;
+            
             var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
             if (reference == null)
                 return false;
