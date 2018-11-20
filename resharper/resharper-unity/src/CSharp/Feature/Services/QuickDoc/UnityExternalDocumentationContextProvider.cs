@@ -50,29 +50,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             if (!(FindDeclaredElement(psiView) is IClrDeclaredElement element))
                 return string.Empty;
 
-            var unityName = GetUnityEventFunctionName(element, unityApi);
+            var unityName = element.GetUnityEventFunctionName(unityApi);
             if (unityName != null)
                 return unityName;
 
             return GetFullyQualifiedUnityName(element);
         }
 
-        [CanBeNull]
-        private static string GetUnityEventFunctionName([NotNull] IDeclaredElement element, UnityApi unityApi)
-        {
-            var method = element as IMethod;
-            if (method == null && element is IParameter parameter)
-                method = parameter.ContainingParametersOwner as IMethod;
-
-            if (method == null)
-                return null;
-
-            var unityEventFunction = unityApi.GetUnityEventFunction(method);
-            if (unityEventFunction == null)
-                return null;
-
-            return unityEventFunction.TypeName + "." + element.ShortName;
-        }
 
         private static string GetFullyQualifiedUnityName(IClrDeclaredElement element)
         {

@@ -1,4 +1,5 @@
-﻿using JetBrains.Metadata.Reader.API;
+﻿using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Impl.Reflection2;
 using JetBrains.ReSharper.Psi.Modules;
@@ -42,6 +43,23 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 var type = TypeFactory.CreateTypeByCLRName(typeName, module);
                 return type.GetTypeElement();
             }
+        }
+        
+        [CanBeNull]
+        public static string GetUnityEventFunctionName(this IDeclaredElement element, UnityApi unityApi)
+        {
+            var method = element as IMethod;
+            if (method == null && element is IParameter parameter)
+                method = parameter.ContainingParametersOwner as IMethod;
+
+            if (method == null)
+                return null;
+
+            var unityEventFunction = unityApi.GetUnityEventFunction(method);
+            if (unityEventFunction == null)
+                return null;
+
+            return unityEventFunction.TypeName + "." + element.ShortName;
         }
     }
 }

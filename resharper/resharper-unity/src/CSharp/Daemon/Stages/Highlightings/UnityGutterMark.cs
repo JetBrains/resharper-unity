@@ -36,14 +36,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             if (solution == null)
                 return EmptyList<BulbMenuItem>.InstanceList;
 
-            var textControlManager = solution.GetComponent<ITextControlManager>();
-            var textControl = textControlManager.FocusedTextControl.Value;
+            var unityImplicitUsageHighlightingContributor = solution.GetComponent<UnityImplicitUsageHighlightingContributor>();
 
             var daemon = solution.GetComponent<IDaemon>();
             if (daemon.GetHighlighting(highlighter) is UnityGutterMarkInfo highlighting)
             {
                 using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                    return highlighting.GetBulbMenuItems(solution, textControl);
+                    return unityImplicitUsageHighlightingContributor.CreateBulbItemsForUnityDeclaration(highlighting
+                        .Declaration);
             }
 
             return EmptyList<BulbMenuItem>.InstanceList;
