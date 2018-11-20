@@ -6,9 +6,12 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
   [Serializable]
   internal class SceneElement
   {
-    [SerializeField] public string SceneName;
-    [SerializeField] public string[] Path;
-    [SerializeField] public int LocalId;
+    [SerializeField] 
+    public string SceneName;
+    [SerializeField]
+    public string[] Path;
+    [SerializeField] 
+    public int LocalId;
 
     public SceneElement(string sceneName, string[] path, int localId)
     {

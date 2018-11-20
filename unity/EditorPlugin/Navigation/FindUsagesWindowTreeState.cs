@@ -7,12 +7,13 @@ using UnityEngine;
 namespace JetBrains.Rider.Unity.Editor.Navigation
 {
   [Serializable]
-  internal class FindUsagesWindowTreeState : TreeViewState
+  public  class FindUsagesWindowTreeState : TreeViewState
   {
     // TODO prefabElement
     
     
-    [SerializeField] internal List<SceneElement> SceneElements = new List<SceneElement>();
+    [SerializeField] 
+    public List<SceneElement> SceneElements = new List<SceneElement>();
 
     public FindUsagesWindowTreeState()
     {

@@ -9,7 +9,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
   internal class FindUsagesWindow : EditorWindow
   {
     [SerializeField]
-    FindUsagesWindowTreeState myTreeViewState;
+    public FindUsagesWindowTreeState myTreeViewState;
     
     [NonSerialized]
     private FindUsagesTreeView myTreeView;
