@@ -37,6 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
         public abstract string ProviderId { get; }
         public abstract string DisplayName { get; }
+        public abstract CodeLensAnchorKind DefaultAnchor { get; }
+        
         public abstract ICollection<CodeLensRelativeOrdering> RelativeOrderings { get; }
     }
 }
