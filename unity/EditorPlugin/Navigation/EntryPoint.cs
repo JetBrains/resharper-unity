@@ -36,52 +36,68 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       var connectionLifetime = modelAndLifetime.Lifetime;
       modelValue.ShowGameObjectOnScene.View(connectionLifetime, (lt, findUsagesRequest) =>
       {
-        if (findUsagesRequest == null)
-          return;
-
-        var sceneCount = SceneManager.sceneCount;
-
-        Debug.Log("Scene count : " + sceneCount);
-        bool wasFound = false;
-        for (int i = 0; i < sceneCount; i++)
+        MainThreadDispatcher.Instance.Queue(() =>
         {
-          var scene = SceneManager.GetSceneAt(i);          
-          Debug.Log("Scene name : " + scene.name);
+          if (lt.IsTerminated)
+            return;
 
-          if (!scene.isLoaded)
-            continue;
-          
-          if (scene.name.Equals(findUsagesRequest.SceneName))
-          {
-            wasFound = true;
-            SelectUsage(scene, findUsagesRequest);
-            break;
-          }
-        }
+          if (findUsagesRequest == null)
+            return;
 
-        if (!wasFound)
-        {
-          if (EditorUtility.DisplayDialog("Find usages", "Do you want to load scene which contains usage?", "Ok", "No"))
-          {
-            var path = "Assets/Scenes/" + findUsagesRequest.SceneName + ".unity";
-            Debug.Log(path);
-            var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
-            if (scene != null)
-              SelectUsage(scene, findUsagesRequest);
-          } 
-        }
-        
-        modelValue.ShowGameObjectOnScene.SetValue(null);
+          ShowUsageOnScene(findUsagesRequest.SceneName, findUsagesRequest.Path, findUsagesRequest.LocalId);
+
+          modelValue.ShowGameObjectOnScene.SetValue(null);
+        });
       });
       
-
+      modelValue.FindUsageResult.View(connectionLifetime, (lt, result) =>
+      {
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          if (lt.IsTerminated)
+            return;
+          FindUsagesWindow.Instance.SetDataToEditor(result);
+        });
+      });
     }
 
-    private static void SelectUsage(Scene scene, RdFindUsageRequest request)
+    public static void ShowUsageOnScene(string sceneName, string[] path, int localId)
+    {
+      
+      var sceneCount = SceneManager.sceneCount;
+
+      bool wasFound = false;
+      for (int i = 0; i < sceneCount; i++)
+      {
+        var scene = SceneManager.GetSceneAt(i);
+
+        if (!scene.isLoaded)
+          continue;
+
+        if (scene.name.Equals(sceneName))
+        {
+          wasFound = true;
+          SelectUsage(scene, path, localId);
+          break;
+        }
+      }
+
+      if (!wasFound)
+      {
+        if (EditorUtility.DisplayDialog("Find usages", "Do you want to load scene which contains usage?", "Ok", "No"))
+        {
+          var scenePath = "Assets/Scenes/" + sceneName + ".unity";
+          var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+          SelectUsage(scene, path, localId);
+        }
+      }
+    }
+
+    private static void SelectUsage(Scene scene, string[] path, int localId)
     {
       foreach (var gameObject in scene.GetRootGameObjects())
       {
-        var toSelect = TryGetGameObject(gameObject, 0, request.Path, request.LocalId);
+        var toSelect = TryGetGameObject(gameObject, 0, path, localId);
         if (toSelect != null)
         {
           EditorGUIUtility.PingObject(toSelect);
@@ -93,7 +109,6 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     
     private static GameObject TryGetGameObject(GameObject gameObject, int index,  string[] path, int localId)
     {
-      Debug.Log("Look at gameobject with name:" + gameObject.name);
       if (index >= path.Length)
         return null;
 
@@ -128,8 +143,6 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       // ReSharper disable once StringLiteralTypo
       SerializedProperty localIdProp = serializedObject.FindProperty("m_LocalIdentfierInFile");
  
-      Debug.Log(localId);
-      Debug.Log(localIdProp.intValue);
       return localIdProp.intValue == localId;
     }
   }

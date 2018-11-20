@@ -74,5 +74,6 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         property("showGameObjectOnScene", FindUsageRequest)
         property("unityProcessId", int)
+        property("findUsageResult", array(FindUsageRequest))
     }
 }

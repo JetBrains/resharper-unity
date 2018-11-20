@@ -161,9 +161,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     editor.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
                     editor.Pause.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
 
+                    
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
                     myHost.PerformModelAction(t => t.ShowGameObjectOnScene.View(lifetime, (_, v) => editor.ShowGameObjectOnScene.Set(ToEditorModel(v))));
-                    
+                    myHost.PerformModelAction(t => t.FindUsageResult.View(lifetime, (_, v) => editor.FindUsageResult.Set(v.Select(ToEditorModel).ToArray())));
 
                     editor.EditorLogPath.Advise(lifetime,                    
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
