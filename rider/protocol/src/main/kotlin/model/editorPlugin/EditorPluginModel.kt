@@ -23,11 +23,20 @@ object EditorPluginModel: Root() {
         field("stackTrace", string)
     }
 
-    val RdFindUsageRequest = classdef {
-        field("localId", int)
-        field("sceneName", string)
-        field("path", array(string))
+    val RdFindUsageRequestBase = baseclass {
+        field("expandInTreeView", bool)
+        field("filePath", string)
+        field("pathElements", array(string))
     }
+
+    val RdFindUsageRequestScene = classdef extends RdFindUsageRequestBase {
+        field("localId", string)
+    }
+
+    val RdFindUsageRequestPrefab = classdef extends RdFindUsageRequestBase {
+
+    }
+
 
     val RdLogEventType = enum {
         +"Error"
@@ -85,8 +94,8 @@ object EditorPluginModel: Root() {
         property("play", bool)
         property("pause", bool)
         source("step", void)
-        property("showGameObjectOnScene", RdFindUsageRequest)
-        property("findUsageResult", array(RdFindUsageRequest))
+        property("showGameObjectOnScene", RdFindUsageRequestBase)
+        property("findUsageResult", array(RdFindUsageRequestBase))
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)

@@ -25,10 +25,18 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"StopPlayingAndRecompile"
     }
 
-    val FindUsageRequest = classdef {
-        field("localId", int)
-        field("sceneName", string)
-        field("path", array(string))
+    val FindUsageRequestBase = baseclass {
+        field("expandInTreeView", bool)
+        field("filePath", string)
+        field("pathElements", array(string))
+    }
+
+    val FindUsageRequestScene = classdef extends FindUsageRequestBase {
+        field("localId", string)
+    }
+
+    val FindUsageRequestPrefab = classdef extends FindUsageRequestBase {
+
     }
 
     init {
@@ -72,8 +80,8 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         sink("notifyIsRecompileAndContinuePlaying", string)
         source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
 
-        property("showGameObjectOnScene", FindUsageRequest)
+        property("showGameObjectOnScene", FindUsageRequestBase)
         property("unityProcessId", int)
-        property("findUsageResult", array(FindUsageRequest))
+        property("findUsageResult", array(FindUsageRequestBase))
     }
 }

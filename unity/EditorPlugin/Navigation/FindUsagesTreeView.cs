@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -22,23 +23,53 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     protected override TreeViewItem BuildRoot()
     {
       var root = new FindUsagePathElement {id = 0, depth = -1, displayName = "Usages result:"};
+
+      var sceneNode = CreateSceneSubTree();
+      if (sceneNode != null)
+        root.AddChild(sceneNode);
+
+      var prefabNode = CreatePrefabSubTree();
+      if (prefabNode != null)
+        root.AddChild(prefabNode);
+      
+      SetupDepthsFromParentsAndChildren (root);
+      return root;
+    }
+
+    private TreeViewItem CreateSceneSubTree()
+    {
+      if (myState.SceneElements.Count == 0)
+        return null;
+      
+      
       var scenes = new FindUsagePathElement() {id = 1, displayName = "Scenes"};
+      CreateSubTree(scenes, myState.SceneElements.ToArray(), 3);
+      return scenes;
+    }
+    
+    private TreeViewItem CreatePrefabSubTree()
+    {
+      if (myState.PrefabElements.Count == 0)
+        return null;
+      
       var prefabs = new FindUsagePathElement() {id = 2, displayName = "Prefabs"};
+      CreateSubTree(prefabs, myState.PrefabElements.ToArray(), 1_000_000_000);
+      return prefabs;
+    }
 
-      int sceneId = 3;
-      //int prefabId = 1_000_000_000;
- 
-      foreach (var sceneElement in myState.SceneElements)
+    private void CreateSubTree(FindUsagePathElement element, IEnumerable<AbstractUsageElement> data, int startId)
+    {
+      foreach (var usageElement in data)
       {
-        FindUsagePathElement current = scenes;
+        FindUsagePathElement current = element;
 
-        var sceneName = sceneElement.SceneName;
+        var sceneName = usageElement.FilePath.Split('/').Last();
         if (!current.HasChild(sceneName))
         {
           current = current.CreateChild(new FindUsagePathElement
           {
-            id = sceneId++, displayName = sceneElement.SceneName, 
-            icon = (Texture2D)EditorGUIUtility.IconContent("UnityLogo").image
+            id = startId++, displayName = sceneName, 
+            icon = (Texture2D)EditorGUIUtility.IconContent(usageElement.StartNodeImage).image
           }); 
         }
         else
@@ -46,21 +77,20 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
           current = current.GetChild(sceneName);
         }
 
-        var pathLength = sceneElement.Path.Length;
+        var pathLength = usageElement.Path.Length;
         for (int i = 0; i < pathLength; i++)
         {
-          var name = sceneElement.Path[i];
+          var name = usageElement.Path[i];
           if (i + 1 == pathLength)
           {
-            var id = sceneId++;
-            findResultItems[id] = new FindUsagesTreeViewItem(sceneElement)
+            var id = startId++;
+            findResultItems[id] = new FindUsagesTreeViewItem(usageElement)
             {
               id = id,
               displayName = name,
-              icon = (Texture2D) EditorGUIUtility.IconContent("GameObject Icon").image
+              icon = (Texture2D) EditorGUIUtility.IconContent(usageElement.TerminalNodeImage).image
             };
             current.AddChild(findResultItems[id]); 
-            
           }
           else
           {
@@ -68,8 +98,8 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
             {
               current = current.CreateChild(new FindUsagePathElement
               {
-                id = sceneId++, displayName = name,
-                icon = (Texture2D)EditorGUIUtility.IconContent("GameObject Icon").image
+                id = startId++, displayName = name,
+                icon = (Texture2D)EditorGUIUtility.IconContent(usageElement.NodeImage).image
               });
             }
             else
@@ -79,21 +109,22 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
           }
         }
       }
-
-      
-      root.AddChild(scenes);
-      root.AddChild(prefabs);
-      SetupDepthsFromParentsAndChildren (root);
-      return root;
     }
-
+    
     protected override void DoubleClickedItem(int id)
     {
-       if (!findResultItems.ContainsKey(id))
-         return;
+      if (!findResultItems.ContainsKey(id))
+      {
+        SetExpanded(id, true);
+        return;
+      }
 
-      var request = findResultItems[id].SceneElement;
-      EntryPoint.ShowUsageOnScene(request.SceneName, request.Path, request.LocalId);
+      var request = findResultItems[id].UsageElement;
+      if (request is SceneElement sceneElement)
+        EntryPoint.ShowUsageOnScene(sceneElement.FilePath, sceneElement.Path, sceneElement.LocalId);
+      
+      if (request is PrefabElement prefabElement)
+        EntryPoint.ShowPrefabUsage(prefabElement.FilePath, prefabElement.Path);
     }
   }
 }

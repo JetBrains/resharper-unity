@@ -16,11 +16,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             if (findResult is FindResultReference findResultReference)
             {
+                IUnityYamlReference reference = null;
                 if (findResultReference.Reference is UnityEventTargetReference unityEventTargetReference)
+                    reference = unityEventTargetReference;
+                
+                if (findResultReference.Reference is MonoScriptReference monoScriptReference)
+                    reference = monoScriptReference;
+                
+                if (reference != null)
                 {
-                    var node = unityEventTargetReference.GetTreeNode();
+                    var node = reference.GetTreeNode();
                     if (node.GetSolution().GetComponent<ConnectionTracker>().LastCheckResult != UnityEditorState.Disconnected)
-                        return new UnityEditorOccurrence(unityEventTargetReference.GetTreeNode(),unityEventTargetReference, OccurrenceType.TextualOccurrence);
+                        return new UnityEditorOccurrence(reference.GetTreeNode(), reference, OccurrenceType.TextualOccurrence);
                 }
             }
             

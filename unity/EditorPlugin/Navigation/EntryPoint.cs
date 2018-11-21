@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
@@ -45,8 +46,14 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
           if (findUsagesRequest == null)
             return;
 
-          ShowUsageOnScene(findUsagesRequest.SceneName, findUsagesRequest.Path, findUsagesRequest.LocalId);
+          if (findUsagesRequest is RdFindUsageRequestScene requestScene)
+            ShowUsageOnScene(requestScene.FilePath, requestScene.PathElements, requestScene.LocalId);
 
+          if (findUsagesRequest is RdFindUsageRequestPrefab requestPrefab)
+          {
+            ShowPrefabUsage(requestPrefab.FilePath, requestPrefab.PathElements);
+          }
+          
           modelValue.ShowGameObjectOnScene.SetValue(null);
         });
       });
@@ -61,14 +68,25 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
           if (lt.IsTerminated)
             return;
           
-          EditorWindow.GetWindow<FindUsagesWindow>().SetDataToEditor(result);
+          var window = EditorWindow.GetWindow<FindUsagesWindow>();
+          window.SetDataToEditor(result);
+          window.titleContent = new GUIContent ("Find usages");
           modelValue.FindUsageResult.SetValue(null);
         });
       });
     }
 
-    public static void ShowUsageOnScene(string sceneName, string[] path, int localId)
+    public static void ShowPrefabUsage(string filePath, string[] path)
     {
+      EditorUtility.FocusProjectWindow();
+      var prefab = AssetDatabase.LoadAssetAtPath(filePath + ".prefab", typeof(GameObject));
+      Selection.activeObject = prefab;
+      EditorGUIUtility.PingObject(prefab);
+    }
+    
+    public static void ShowUsageOnScene(string filePath, string[] path, string localId)
+    {
+      var sceneName = filePath.Split('/').Last();
       var sceneCount = SceneManager.sceneCount;
 
       bool wasFound = false;
@@ -82,7 +100,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
         if (scene.name.Equals(sceneName))
         {
           wasFound = true;
-          SelectUsage(scene, path, localId);
+          SelectUsageOnScene(scene, path, localId);
           break;
         }
       }
@@ -91,21 +109,22 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       {
         if (EditorUtility.DisplayDialog("Find usages", "Do you want to load scene which contains usage?", "Ok", "No"))
         {
-          var scenePath = "Assets/Scenes/" + sceneName + ".unity";
-          var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
-          SelectUsage(scene, path, localId, true);
+          var scene = EditorSceneManager.OpenScene(filePath + ".unity", OpenSceneMode.Additive);
+          SelectUsageOnScene(scene, path, localId, true);
         }
       }
     } 
     
     
-    private static void SelectUsage(Scene scene, string[] path, int localId, bool doNotMoveCamera = false) // When scene is loaded, each GO has default transform
+    private static void SelectUsageOnScene(Scene scene, string[] path, string localId, bool doNotMoveCamera = false) // When scene is loaded, each GO has default transform
     {
       foreach (var gameObject in scene.GetRootGameObjects())
       {
         var toSelect = TryGetGameObject(gameObject, 0, path, localId);
         if (toSelect != null)
         {
+          GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
+          GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());
           EditorGUIUtility.PingObject(toSelect);
           Selection.activeObject = toSelect;
           if (!doNotMoveCamera) 
@@ -115,7 +134,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       }
     }
     
-    private static GameObject TryGetGameObject(GameObject gameObject, int index,  string[] path, int localId)
+    private static GameObject TryGetGameObject(GameObject gameObject, int index,  string[] path, string localId)
     {
       if (index >= path.Length)
         return null;
@@ -138,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       return null;
     }
 
-    private static bool IsLocalIdSame(GameObject go, int localId)
+    private static bool IsLocalIdSame(GameObject go, string localId)
     {
       PropertyInfo inspectorModeInfo = typeof(SerializedObject).GetProperty("inspectorMode", BindingFlags.NonPublic | BindingFlags.Instance);
       if (inspectorModeInfo == null)
@@ -151,7 +170,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       // ReSharper disable once StringLiteralTypo
       SerializedProperty localIdProp = serializedObject.FindProperty("m_LocalIdentfierInFile");
  
-      return localIdProp.intValue == localId;
+      return localIdProp.intValue == int.Parse(localId);
     }
   }
 }

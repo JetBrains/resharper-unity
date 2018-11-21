@@ -7,11 +7,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public static class UnityFocusUtil
     {
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        
-        [DllImport("user32.dll")]
-        static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("User32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr handle);
+        [DllImport("User32.dll")]
+        private static extern bool ShowWindow(IntPtr handle, int nCmdShow);
+        [DllImport("User32.dll")]
+        private static extern bool IsIconic(IntPtr handle);
 
         private const int Minimize = 6;
         private const int Restore = 9;
@@ -23,9 +25,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 var process = Process.GetProcessById(pid);
                 var hWnd = process.MainWindowHandle;
 
-                ShowWindow(hWnd, Minimize); // TODO Krasnotsvetov : handle two monitors. We should not minimize unity 
+                if (IsIconic(hWnd))
+                {
+                    ShowWindow(hWnd, Restore);
+                }
+                // ShowWindow(hWnd, Minimize); // TODO Krasnotsvetov : handle two monitors. We should not minimize unity 
                 SetForegroundWindow(hWnd);
-                ShowWindow(hWnd, Restore);
             }
             // TODO Krasnotsvetov focus on mac os and linux
         }

@@ -4,11 +4,11 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 {
   internal class FindUsagesTreeViewItem : FindUsagePathElement
   {
-    public SceneElement SceneElement { get; }
+    public AbstractUsageElement UsageElement { get; }
 
-    public FindUsagesTreeViewItem(SceneElement sceneElement)
+    public FindUsagesTreeViewItem(AbstractUsageElement sceneElement)
     {
-      SceneElement = sceneElement;
+      UsageElement = sceneElement;
     } 
   }
 }

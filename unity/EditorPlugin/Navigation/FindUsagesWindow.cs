@@ -23,7 +23,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     }
 
 
-    public void SetDataToEditor(RdFindUsageRequest[] data)
+    public void SetDataToEditor(RdFindUsageRequestBase[] data)
     {
       Debug.Log("New data arrived");
       myTreeViewState = new FindUsagesWindowTreeState(data);
@@ -45,7 +45,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     
     void OnGUI()
     {
-      myTreeView.OnGUI(new Rect(0, 0, position.width, position.height));
+      myTreeView?.OnGUI(new Rect(0, 0, position.width, position.height));
     }
   }
 }

@@ -163,17 +163,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
+                    
+                    // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
                     myHost.PerformModelAction(t => t.ShowGameObjectOnScene.View(lf, (_, v) =>
                     {
                         if (v == null)
                             return;
-                        editor.ShowGameObjectOnScene.Set(ToEditorModel(v));
+                        editor.ShowGameObjectOnScene.Set(v.ConvertToUnityModel());
                     }));
+                    
+                    // pass all references to Unity TODO temp workaround, replace with async api
                     myHost.PerformModelAction(t => t.FindUsageResult.View(lf, (_, v) =>
                     {
                         if (v == null)
                             return;
-                        editor.FindUsageResult.Set(v.Select(ToEditorModel).ToArray());
+                        editor.FindUsageResult.Set(v.Select(e => e.ConvertToUnityModel()).ToArray());
                     }));
                     
                     
@@ -220,11 +224,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 myLogger.Error(ex);
             }
-        }
-
-        private RdFindUsageRequest ToEditorModel(FindUsageRequest findUsageRequest)
-        {
-            return new RdFindUsageRequest(findUsageRequest.LocalId, findUsageRequest.SceneName, findUsageRequest.Path);
         }
 
         private void BindPluginPathToSettings(Lifetime lf, EditorPluginModel editor)

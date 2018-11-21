@@ -4,20 +4,18 @@ using UnityEngine;
 namespace JetBrains.Rider.Unity.Editor.Navigation
 {
   [Serializable]
-  internal class SceneElement
+  internal class SceneElement : AbstractUsageElement
   {
     [SerializeField] 
-    public string SceneName;
-    [SerializeField]
-    public string[] Path;
-    [SerializeField] 
-    public int LocalId;
+    public string LocalId;
 
-    public SceneElement(string sceneName, string[] path, int localId)
+    public SceneElement(string scenePath, string[] path, string localId) : base(scenePath, path)
     {
-      SceneName = sceneName;
-      Path = path;
       LocalId = localId;
     }
+
+    public override string StartNodeImage => "SceneAsset Icon";
+    public override string NodeImage => "GameObject Icon";
+    public override string TerminalNodeImage => NodeImage;
   }
 }

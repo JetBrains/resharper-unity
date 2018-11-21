@@ -7,24 +7,32 @@ using UnityEngine;
 namespace JetBrains.Rider.Unity.Editor.Navigation
 {
   [Serializable]
-  public  class FindUsagesWindowTreeState : TreeViewState
+  internal class FindUsagesWindowTreeState : TreeViewState
   {
-    // TODO prefabElement
-    
-    
     [SerializeField] 
     public List<SceneElement> SceneElements = new List<SceneElement>();
 
+    [SerializeField] 
+    public List<PrefabElement> PrefabElements = new List<PrefabElement>();
+    
     public FindUsagesWindowTreeState()
     {
       
     }
     
-    public FindUsagesWindowTreeState(RdFindUsageRequest[] requests)
+    public FindUsagesWindowTreeState(RdFindUsageRequestBase[] requests)
     {
       foreach (var request in requests)
       {
-        SceneElements.Add(new SceneElement(request.SceneName, request.Path, request.LocalId));
+        if (request is RdFindUsageRequestScene requestScene)
+        {
+          SceneElements.Add(new SceneElement(requestScene.FilePath, requestScene.PathElements, requestScene.LocalId));
+        }
+        
+        if (request is RdFindUsageRequestPrefab requestPrefab)
+        {
+          PrefabElements.Add(new PrefabElement(requestPrefab.FilePath, requestPrefab.PathElements));
+        }
       }
       Debug.Log("Create tree state with size: " + SceneElements.Count);
     }
