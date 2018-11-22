@@ -143,6 +143,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var docs = XDocument.Load(infoPlistPath.FullPath);
             var keyValuePairs = docs.Descendants("dict")
                 .SelectMany(d => d.Elements("key").Zip(d.Elements().Where(e => e.Name != "key"), (k, v) => new { Key = k, Value = v }))
+                .GroupBy(x => x.Key.Value).Select(g => g.First()) // avoid exception An item with the same key has already been added.
                 .ToDictionary(i => i.Key.Value, i => i.Value.Value);
             var fullVersion = keyValuePairs["CFBundleVersion"];
             return fullVersion;
