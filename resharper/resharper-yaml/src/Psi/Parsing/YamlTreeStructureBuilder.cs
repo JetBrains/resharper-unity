@@ -50,7 +50,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
           || tokenNodeType == YamlTokenType.C_DOUBLE_QUOTED_SINGLE_LINE
           || tokenNodeType == YamlTokenType.C_SINGLE_QUOTED_SINGLE_LINE)
       {
-        return tokenNodeType.Create(IdentifierIntern.Intern(buffer, startOffset, endOffset));
+        // TODO: Consider interning options here
+        // Current usage patterns mean that we don't use GetText() very often, so it's better for us to define tokens in
+        // terms of buffers and ranges, with no substrings allocated until GetText() is called. Make sure to use the
+        // helper methods to compare a string directly against the buffer. If usage patterns change, and we're calling
+        // GetText() more often, consider interning
+        return tokenNodeType.Create(buffer, new TreeOffset(startOffset), new TreeOffset(endOffset));
       }
 
       return tokenNodeType.Create(buffer, new TreeOffset(startOffset), new TreeOffset(endOffset));
