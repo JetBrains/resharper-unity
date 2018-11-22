@@ -1,13 +1,17 @@
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class UnityEventTargetReferenceFactory : IReferenceFactory
     {
+        private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName", true);
+
         public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
             if (ResolveUtil.CheckThatAllReferencesBelongToElement<UnityEventTargetReference>(oldReferences, element))
@@ -44,8 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             if (callsMapEntry == null)
                 return ReferenceCollection.Empty;
 
-            if (methodNameMapEntry.Key.GetPlainScalarText() == "m_MethodName" &&
-                callsMapEntry.Key.GetPlainScalarText() == "m_Calls")
+            if (methodNameMapEntry.Key.MatchesPlainScalarText("m_MethodName") &&
+                callsMapEntry.Key.MatchesPlainScalarText("m_Calls"))
             {
                 // If we have a guid, that means this event handler exists inside another asset. That asset might be
                 // a .dll, in which case we don't want to add a reference (the primary purpose of these references
@@ -65,10 +69,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public bool HasReference(ITreeNode element, IReferenceNameContainer names)
         {
+            if (element is IPlainScalarNode methodNameValue && CanHaveReference(methodNameValue))
+                return names.Contains(methodNameValue.Text.GetText());
+            return false;
+        }
+
+        public static bool CanContainReference([NotNull] IYamlDocument document)
+        {
+            if (document.BlockNode is IBlockMappingNode rootBlockMappingNode)
+            {
+                // Only MonoBehaviours can contain event handlers. This includes compiled MBs, e.g. Button
+                // And only look inside this document if it contains "m_MethodName"
+                return rootBlockMappingNode.Properties?.TagProperty?.CompareBufferText("!u!114") == true
+                       && ourMethodNameSearcher.Find(rootBlockMappingNode.GetTextAsBuffer()) >= 0;
+            }
+
+            return false;
+        }
+
+        public static bool CanHaveReference([CanBeNull] ITreeNode element)
+        {
             var methodNameValue = element as IPlainScalarNode;
             var methodNameEntry = BlockMappingEntryNavigator.GetByValue(methodNameValue);
-            return methodNameValue != null && methodNameEntry?.Key.GetPlainScalarText() == "m_MethodName" &&
-                   names.Contains(methodNameValue.Text.GetText());
+            return methodNameValue != null && (methodNameEntry?.Key.MatchesPlainScalarText("m_MethodName") ?? false);
         }
     }
 }

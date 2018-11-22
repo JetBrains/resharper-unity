@@ -1,5 +1,6 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -22,7 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             var flowIDMap = FlowMappingNodeNavigator.GetByEntrie(guidEntry);
             var blockMappingEntry = BlockMappingEntryNavigator.GetByValue(flowIDMap);
 
-            if (guidEntry?.Key.AsString() == "guid" && blockMappingEntry?.Key.AsString() == "m_Script")
+            if (guidEntry?.Key.MatchesPlainScalarText("guid") == true
+                && blockMappingEntry?.Key.MatchesPlainScalarText("m_Script") == true)
             {
                 var fileID = flowIDMap.AsFileID();
                 if (fileID != null && !fileID.IsNullReference && fileID.IsMonoScript)
@@ -43,7 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             var guidEntry = FlowMapEntryNavigator.GetByValue(guidValue);
             var flowIDMap = FlowMappingNodeNavigator.GetByEntrie(guidEntry);
             var blockMappingEntry = BlockMappingEntryNavigator.GetByValue(flowIDMap);
-            return guidEntry?.Key.AsString() == "guid" && blockMappingEntry?.Key.AsString() == "m_Script";
+            return guidEntry?.Key.MatchesPlainScalarText("guid") == true
+                   && blockMappingEntry?.Key.MatchesPlainScalarText("m_Script") == true;
         }
     }
 }
