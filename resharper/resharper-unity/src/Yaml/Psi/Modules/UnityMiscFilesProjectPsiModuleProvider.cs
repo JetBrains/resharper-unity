@@ -12,12 +12,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
+        private readonly AssetSerializationMode myAssetSerializationMode;
 
         public UnityMiscFilesProjectPsiModuleProvider(UnityExternalFilesModuleFactory moduleFactory,
-                                                      UnityYamlPsiSourceFileFactory psiSourceFileFactory)
+                                                      UnityYamlPsiSourceFileFactory psiSourceFileFactory,
+                                                      AssetSerializationMode assetSerializationMode)
         {
             myModuleFactory = moduleFactory;
             myPsiSourceFileFactory = psiSourceFileFactory;
+            myAssetSerializationMode = assetSerializationMode;
         }
 
         public void Dispose() { }
@@ -42,8 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 
         public void OnProjectFileChanged(IProjectFile projectFile, PsiModuleChange.ChangeType changeType,
-                                         PsiModuleChangeBuilder changeBuilder,
-                                         FileSystemPath oldLocation)
+                                         PsiModuleChangeBuilder changeBuilder, FileSystemPath oldLocation)
         {
             if (projectFile == null)
                 return;
@@ -56,6 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             {
                 case PsiModuleChange.ChangeType.Added:
                     if (UnityYamlFileExtensions.IsAsset(projectFile.Location) &&
+                        myAssetSerializationMode.IsForceText &&
                         !module.ContainsPath(projectFile.Location))
                     {
                         // Create the PsiSourceFile, add it to the module, add the change to the builder

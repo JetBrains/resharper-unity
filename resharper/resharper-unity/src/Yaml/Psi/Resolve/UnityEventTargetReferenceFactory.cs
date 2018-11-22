@@ -3,7 +3,6 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
@@ -48,22 +47,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             if (methodNameMapEntry.Key.GetPlainScalarText() == "m_MethodName" &&
                 callsMapEntry.Key.GetPlainScalarText() == "m_Calls")
             {
-                if (callMapNode.FindChildBySimpleKey("m_Target")?.Value is IFlowMappingNode targetFileIdMappingNode)
+                // If we have a guid, that means this event handler exists inside another asset. That asset might be
+                // a .dll, in which case we don't want to add a reference (the primary purpose of these references
+                // is to enable Find Usages of methods, not navigation *from* YAML). Or it might be e.g. a prefab.
+                // This would be a reference to a prefab that contains a MonoScript asset that has the method
+                // TODO: Create an index of other assets that we could target
+                var fileID = callMapNode.FindMapEntryBySimpleKey("m_Target")?.Value.AsFileID();
+                if (fileID != null && !fileID.IsNullReference && fileID.guid == null)
                 {
-                    // I don't think we can get a guid, as a persistent call is defined as a reference to an instance of
-                    // UnityObject, so it must exist in the scene. The MonoBehaviour it refers to might be external, tho
-                    var guidNode = targetFileIdMappingNode.FindChildBySimpleKey("guid");
-                    Assertion.Assert(guidNode == null, "guidNode == null");
-
-                    var fileIdNode = targetFileIdMappingNode.FindChildBySimpleKey("fileID");
-                    var fileId = fileIdNode?.Value.GetPlainScalarText();
-
-                    // "0" means null
-                    if (fileId != null && fileId != "0")
-                    {
-                        var reference = new UnityEventTargetReference(methodNameValue, fileId);
-                        return new ReferenceCollection(reference);
-                    }
+                    var reference = new UnityEventTargetReference(methodNameValue, fileID);
+                    return new ReferenceCollection(reference);
                 }
             }
 

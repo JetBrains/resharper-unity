@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var referencedElements = new List<string>();
             var referenceProcessor = new RecursiveReferenceProcessor<UnityEventTargetReference>(reference =>
             {
-                var assetGuid = reference.GetAssetGuid();
+                var assetGuid = reference.GetScriptAssetGuid();
                 if (assetGuid != null)
                 {
                     var referencedElementKey = GetReferencedElementKey(assetGuid, reference.EventHandlerName);

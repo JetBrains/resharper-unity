@@ -47,8 +47,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         {
             expression.GetPsiServices().Locks.AssertReadAccessAllowed();
             
-            Shell.Instance.GetComponent<IShellLocks>().AssertMainThread();
-            
             if (!expression.IsValid())
                 return false;
             
@@ -137,7 +135,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         public static void MoveToMethodWithFieldIntroduction([NotNull]IClassDeclaration classDeclaration, [NotNull]ICSharpExpression expression, [NotNull] string methodName, string fieldName = null)
         {
             classDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
-            classDeclaration.GetPsiServices().Locks.AssertMainThread();
             
             var methodDeclaration = GetOrCreateMethod(classDeclaration, methodName);
             MoveToMethodWithFieldIntroduction(classDeclaration, methodDeclaration, expression, fieldName);
@@ -147,7 +144,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             [NotNull]ICSharpExpression expression, string fieldName = null)
         {
             classDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
-            classDeclaration.GetPsiServices().Locks.AssertMainThread();
             
             var result = GetDeclaredElementFromParentDeclaration(expression);
             
@@ -183,7 +179,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             [NotNull] string newName, [NotNull] CSharpElementFactory factory)
         {
             originExpression.GetPsiServices().Locks.AssertReadAccessAllowed();
-            originExpression.GetPsiServices().Locks.AssertMainThread();
 
             var statement = ExpressionStatementNavigator.GetByExpression(originExpression);
             if (statement != null)

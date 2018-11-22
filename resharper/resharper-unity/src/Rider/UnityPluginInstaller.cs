@@ -27,6 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly NotificationsModel myNotifications;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityVersionDetector myUnityVersionDetector;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private readonly ProcessingQueue myQueue;
 
@@ -53,6 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myNotifications = notifications;
             myPluginPathsProvider = pluginPathsProvider;
             myUnityVersionDetector = unityVersionDetector;
+            myUnitySolutionTracker = unitySolutionTracker;
 
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
@@ -72,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "IsAbleToEstablishProtocolConnectionWithUnity", () => InstallPluginIfRequired(solution.GetTopLevelProjects()));
+                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "IsAbleToEstablishProtocolConnectionWithUnity", InstallPluginIfRequired);
                 BindToInstallationSettingChange();
             });
         }
@@ -85,17 +87,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void CheckAllProjectsIfAutoInstallEnabled(PropertyChangedEventArgs<bool> args)
         {
-            if (!args.GetNewOrNull())
-                return;
-
-            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", () => InstallPluginIfRequired(mySolution.GetAllProjects().Where(p => p.IsUnityProject()).ToList()));
+            if (!args.GetNewOrNull()) return;
+            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", InstallPluginIfRequired);
         }
 
         readonly Version myCurrentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
 
-        private void InstallPluginIfRequired(ICollection<IProject> projects)
+        private void InstallPluginIfRequired()
         {
-            if (projects.Count == 0)
+            if (!myUnitySolutionTracker.IsUnityProjectFolder.Value)
                 return;
 
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))

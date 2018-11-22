@@ -9,12 +9,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityInstallationSynchronizer
     {
-        public UnityInstallationSynchronizer(Lifetime lifetime, UnityReferencesTracker referencesTracker,
+        public UnityInstallationSynchronizer(Lifetime lifetime, UnitySolutionTracker solutionTracker,
                                              UnityHost host, UnityInstallationFinder finder, UnityVersion unityVersion)
         {
-            referencesTracker.HasUnityReference.Advise(lifetime, hasReference =>
+            solutionTracker.IsUnityProjectFolder.Advise(lifetime, isUnityProjectFolder =>
             {
-                if (!hasReference) return;
+                if (!isUnityProjectFolder) return;
                 var version = unityVersion.GetActualVersionForSolution();
                 var path = finder.GetApplicationPath(version);
                 if (path == null)

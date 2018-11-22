@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -39,6 +40,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             return myAssetGuidToAssetFilePaths[guid];
         }
 
+        public IList<string> GetAssetNames(string guid)
+        {
+            return myAssetGuidToAssetFilePaths[guid].Select(p => p.NameWithoutExtension).ToList();
+        }
+
+        [CanBeNull]
         public string GetAssetGuid(IPsiSourceFile sourceFile)
         {
             return myAssetFilePathToGuid.TryGetValue(sourceFile.GetLocation(), out var guid) ? guid : null;

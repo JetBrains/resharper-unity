@@ -301,14 +301,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
-            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Cancel", () =>
-            {
-                var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
-                if (launchProperty != null && launchProperty.HasValue())
-                    launchProperty.Value?.Abort.Start(RdVoid.Instance);
-
-                run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
-            });
+            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "CancellingUnitTests", () =>
+                        {
+                            var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
+                            if (launchProperty != null && launchProperty.HasValue())
+                                launchProperty.Value?.Abort.Start(RdVoid.Instance);
+                             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
+                        });
         }
 
         public void Abort(IUnitTestRun run)

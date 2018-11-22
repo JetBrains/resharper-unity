@@ -26,5 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             writer.Write(value.myGuid);
         }
+
+        public override string ToString() => $"guid: {myGuid}";
     }
 }

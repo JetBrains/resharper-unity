@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class A : MonoBehaviour
 {
-  // Potential event handler - marked as in use
+  // Potential event handler, but YAML is enabled and a reference isn't found
+  // Should be unused
   public void UnusedMethod()
   {
   }
