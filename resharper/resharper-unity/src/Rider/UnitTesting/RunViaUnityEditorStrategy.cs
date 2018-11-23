@@ -95,16 +95,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var hostId = run.HostController.HostId;
             if (hostId == WellKnownHostProvidersIds.DebugProviderId)
             {
-                run.Launch.Output.Error("Starting Unity tests from 'Debug' is currently unsupported. Please attach to editor and use 'Run'.");
+                run.Launch.Output.Error(
+                    "Starting Unity tests from 'Debug' is currently unsupported. Please attach to editor and use 'Run'.");
                 return Task.FromResult(false);
             }
-            
+
             if (hostId != WellKnownHostProvidersIds.RunProviderId)
             {
-                run.Launch.Output.Error($"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
+                run.Launch.Output.Error(
+                    $"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
                 return Task.FromResult(false);
             }
-            
+
             var tcs = new TaskCompletionSource<bool>();
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
             run.PutData(ourCompletionSourceKey, tcs);
@@ -122,12 +124,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 {
                     await myUnityRefresher.Refresh(false);
                     working = false;
-                }); 
+                });
             });
 
-            // wait for myEditorProtocol.UnityModel.Value
-            JetDispatcher.RunOrSleep(() => working, TimeSpan.FromMinutes(30));
-            JetDispatcher.RunOrSleep(() => myEditorProtocol.UnityModel.Value == null, TimeSpan.FromMinutes(30));
+            JetDispatcher.RunOrSleep(() => !(!run.Lifetime.IsAlive || !working), TimeSpan.FromMinutes(30));
+            working = true;
+
+            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Wait EditorState != UnityEditorState.Refresh", () =>
+            {
+                mySolution.Locks.QueueRecurring(run.Lifetime, "Periodic wait EditorState != UnityEditorState.Refresh",
+                    TimeSpan.FromSeconds(1), () =>
+                    {
+                        if (myEditorProtocol.UnityModel.Value != null)
+                        {
+                            var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
+                            rdTask?.Result.Advise(run.Lifetime, result =>
+                            {
+                                if (result.Result != UnityEditorState.Refresh)
+                                    working = false;
+                            });
+                        }
+                    });
+            });
+
+            JetDispatcher.RunOrSleep(() => !(!run.Lifetime.IsAlive || !working), TimeSpan.FromMinutes(30));
+            JetDispatcher.RunOrSleep(() => !(!run.Lifetime.IsAlive || myEditorProtocol.UnityModel.Value != null),
+                TimeSpan.FromMinutes(30));
 
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Check compilation", () =>
             {
@@ -154,14 +176,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                 tcs.SetException(new Exception("Unity Editor connection unavailable."));
                                 return;
                             }
-                
+
                             myEditorProtocol.UnityModel.ViewNotNull(run.Lifetime, (lt, model) =>
                             {
                                 // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                                 model.UnitTestLaunch.SetValue(launch);
                                 SubscribeResults(run, lt, tcs, launch);
                             });
-                
+
                             myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(RdVoid.Instance);
                         });
                     }
