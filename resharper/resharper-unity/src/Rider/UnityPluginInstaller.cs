@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
         private readonly NotificationsModel myNotifications;
         private readonly PluginPathsProvider myPluginPathsProvider;
-        private readonly UnityVersionDetector myUnityVersionDetector;
+        private readonly UnityVersion myUnityVersion;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private readonly ProcessingQueue myQueue;
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             NotificationsModel notifications,
             ISettingsStore settingsStore,
             PluginPathsProvider pluginPathsProvider,
-            UnityVersionDetector unityVersionDetector,
+            UnityVersion unityVersion,
             UnityHost unityHost,
             UnitySolutionTracker unitySolutionTracker)
         {
@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDetector = detector;
             myNotifications = notifications;
             myPluginPathsProvider = pluginPathsProvider;
-            myUnityVersionDetector = unityVersionDetector;
+            myUnityVersion = unityVersion;
             myUnitySolutionTracker = unitySolutionTracker;
 
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
@@ -245,7 +245,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
                 {
-                    if (myUnityVersionDetector.GetUnityVersion() < new Version("5.6"))
+                    if (myUnityVersion.GetActualVersionForSolution() < new Version("5.6"))
                     {
                         myLogger.Verbose($"Coping {editorPluginPath} -> {targetPath}");
                         editorPluginPath.CopyFile(targetPath, true);
