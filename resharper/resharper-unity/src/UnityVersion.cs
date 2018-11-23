@@ -132,7 +132,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             Version version = null;
             if (match.Success)
             {
-                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}");
+                var type = Convert.ToInt32(groups["type"].Value+groups["revision"], 16);
+                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{type}");
             }
 
             return version;
