@@ -11,8 +11,8 @@ using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Host.Features.SolutionBuilder.ComponentsImpl;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly NUnitTestProvider myUnitTestProvider;
         private readonly IUnitTestElementIdFactory myIDFactory;
-        private readonly RiderSolutionSaver myRiderSolutionSaver;
+        private readonly ISolutionSaver myRiderSolutionSaver;
         private readonly UnityRefresher myUnityRefresher;
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             UnityEditorProtocol editorProtocol,
             NUnitTestProvider unitTestProvider, 
             IUnitTestElementIdFactory idFactory,
-            RiderSolutionSaver riderSolutionSaver,
+            ISolutionSaver riderSolutionSaver,
             UnityRefresher unityRefresher
             )
         {
