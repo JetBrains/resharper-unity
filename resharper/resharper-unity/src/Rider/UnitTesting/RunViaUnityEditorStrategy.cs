@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
+using JetBrains.Application.Threading.Tasks;
 using JetBrains.DataFlow;
 using JetBrains.Metadata.Access;
 using JetBrains.Platform.RdFramework;
@@ -20,7 +21,6 @@ using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Rider.Model;
-using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
@@ -117,84 +117,92 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             // https://docs.unity3d.com/ScriptReference/Compilation.CompilationPipeline-assemblyCompilationFinished.html
             // https://docs.unity3d.com/ScriptReference/Compilation.CompilationPipeline-assemblyCompilationStarted.html
             // Note that those events are only available for Unity 5.6+
-            bool working = true;
-            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RefreshBeforeUT", () =>
+            Refresh(mySolution.Locks, run.Lifetime).GetAwaiter().OnCompleted(() =>
             {
-                myRiderSolutionSaver.Save(run.Lifetime, mySolution, async () =>
+                mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Check compilation", () =>
                 {
-                    await myUnityRefresher.Refresh(false);
-                    working = false;
-                });
+                    if (myEditorProtocol.UnityModel.Value == null)
+                    {
+                        tcs.SetException(new Exception("Unity Editor connection unavailable."));
+                        return;
+                    }
+
+                    var task = myEditorProtocol.UnityModel.Value.GetCompilationResult.Start(RdVoid.Instance);
+                    task.Result.AdviseNotNull(run.Lifetime, result =>
+                    {
+                        if (!result.Result)
+                        {
+                            tcs.SetException(new Exception("There are errors during compilation in Unity."));
+                        }
+                        else
+                        {
+                            var launch = SetupLaunch(run);
+                            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
+                            {
+                                if (myEditorProtocol.UnityModel.Value == null)
+                                {
+                                    tcs.SetException(new Exception("Unity Editor connection unavailable."));
+                                    return;
+                                }
+
+                                myEditorProtocol.UnityModel.ViewNotNull(run.Lifetime, (lt, model) =>
+                                {
+                                    // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
+                                    model.UnitTestLaunch.SetValue(launch);
+                                    SubscribeResults(run, lt, tcs, launch);
+                                });
+
+                                myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(RdVoid.Instance);
+                            });
+                        }
+                    });
+                });    
             });
 
-            JetDispatcher.RunOrSleep(() => run.Lifetime.IsAlive && working, TimeSpan.FromMinutes(30));
-            working = true;
+            return tcs.Task;
+        }
 
-            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Wait EditorState != UnityEditorState.Refresh", () =>
+        private async Task Refresh(IShellLocks locks, Lifetime lifetime)
+        {
+            var refreshTask = locks.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, async () =>
             {
-                var lifetimeDefinition = Lifetimes.Define(run.Lifetime);
-                mySolution.Locks.QueueRecurring(lifetimeDefinition.Lifetime, "Periodic wait EditorState != UnityEditorState.Refresh",
+                var working = true;
+                myRiderSolutionSaver.Save(lifetime, mySolution, () =>
+                {
+                    myUnityRefresher.Refresh(false).GetAwaiter().OnCompleted(()=>{working = false;});
+                });
+                while (working)
+                {
+                    if (!lifetime.IsAlive)
+                        return;
+                    await Task.Delay(10);
+                }
+            });
+            
+            var lifetimeDefinition = lifetime.CreateNested();
+            await refreshTask.ContinueWith(task =>
+            {
+                mySolution.Locks.QueueRecurring(lifetimeDefinition.Lifetime,
+                    "Periodic wait EditorState != UnityEditorState.Refresh",
                     TimeSpan.FromSeconds(1), () =>
                     {
                         if (myEditorProtocol.UnityModel.Value != null)
                         {
                             var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
-                            rdTask?.Result.Advise(run.Lifetime, result =>
+                            rdTask?.Result.Advise(lifetime, result =>
                             {
                                 if (result.Result != UnityEditorState.Refresh)
                                 {
-                                    working = false;
                                     lifetimeDefinition.Terminate();
                                 }
                             });
                         }
                     });
-            });
-
-            JetDispatcher.RunOrSleep(() => run.Lifetime.IsAlive && working, TimeSpan.FromMinutes(30));
-            JetDispatcher.RunOrSleep(() => run.Lifetime.IsAlive && myEditorProtocol.UnityModel.Value == null,
-                TimeSpan.FromMinutes(30));
-
-            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Check compilation", () =>
+            }, locks.Tasks.UnguardedMainThreadScheduler);
+            while (lifetimeDefinition.Lifetime.IsAlive)
             {
-                if (myEditorProtocol.UnityModel.Value == null)
-                {
-                    tcs.SetException(new Exception("Unity Editor connection unavailable."));
-                    return;
-                }
-
-                var task = myEditorProtocol.UnityModel.Value.GetCompilationResult.Start(RdVoid.Instance);
-                task.Result.AdviseNotNull(run.Lifetime, result =>
-                {
-                    if (!result.Result)
-                    {
-                        tcs.SetException(new Exception("There are errors during compilation in Unity."));
-                    }
-                    else
-                    {
-                        var launch = SetupLaunch(run);
-                        mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
-                        {
-                            if (myEditorProtocol.UnityModel.Value == null)
-                            {
-                                tcs.SetException(new Exception("Unity Editor connection unavailable."));
-                                return;
-                            }
-
-                            myEditorProtocol.UnityModel.ViewNotNull(run.Lifetime, (lt, model) =>
-                            {
-                                // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
-                                model.UnitTestLaunch.SetValue(launch);
-                                SubscribeResults(run, lt, tcs, launch);
-                            });
-
-                            myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(RdVoid.Instance);
-                        });
-                    }
-                });
-            });
-
-            return tcs.Task;
+                await Task.Delay(50);
+            }
         }
 
         private UnitTestLaunch SetupLaunch(IUnitTestRun firstRun)
