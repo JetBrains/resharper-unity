@@ -48,15 +48,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
             foreach (var document in file.DocumentsEnumerable)
             {
-                var properties = GetDocumentBlockNodeProperties(document.BlockNode);
-                var text = properties?.AnchorProperty?.Text?.GetText() ?? string.Empty;
-                if (text == anchor)
+                if (document.GetFileId() == anchor)
                     return document;
             }
 
             return null;
         }
 
+        [CanBeNull]
+        public static string GetFileId(this IYamlDocument yamlDocument)
+        {
+            var properties = GetDocumentBlockNodeProperties(yamlDocument.BlockNode);
+            return properties?.AnchorProperty?.Text?.GetText();
+        }
+        
         [CanBeNull]
         public static string AsString([CanBeNull] this INode node)
         {

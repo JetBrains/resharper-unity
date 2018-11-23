@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DocumentModel;
@@ -22,12 +23,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
     public class UnityCodeInsightsHighlighting : CodeInsightsHighlighting
     {
         public const string Id = "UnityCodeInsights";
-        public IEnumerable<BulbMenuItem> MenuItems { get; }
+        public List<BulbMenuItem> MenuItems { get; }
 
         public UnityCodeInsightsHighlighting(DocumentRange range, [NotNull] string lenText, [NotNull] string moreText, [NotNull] ICodeInsightsProvider provider, IDeclaredElement elt, [CanBeNull] Icon icon, IEnumerable<BulbMenuItem> menuItems, List<CodeLensEntryExtraActionModel> extraActions = null)
             : base(range, lenText, moreText, provider, elt, icon, extraActions)
         {
-            MenuItems = menuItems;
+            MenuItems = menuItems.ToList();
         }
     }
 }

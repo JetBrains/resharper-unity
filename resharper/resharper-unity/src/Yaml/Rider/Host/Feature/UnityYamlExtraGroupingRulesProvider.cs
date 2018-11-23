@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
 using JetBrains.ReSharper.Host.Features.Icons;
 using JetBrains.ReSharper.Host.Features.Usages;
+using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.Rider.Model;
@@ -16,13 +17,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class UnityYamlExtraGroupingRulesProvider : IRiderExtraGroupingRulesProvider
     {
         // IconHost is optional so that we don't fail if we're in tests
-        public UnityYamlExtraGroupingRulesProvider(IconHost iconHost = null)
+        public UnityYamlExtraGroupingRulesProvider(UnitySolutionTracker unitySolutionTrackerIconHost, IconHost iconHost = null)
         {
-            ExtraRules = new IRiderUsageGroupingRule[]
+            if (unitySolutionTrackerIconHost.IsUnityProject.Value)
             {
-                new GameObjectUsageGroupingRule(iconHost),
-                new ComponentUsageGroupingRule(iconHost)
-            };
+                ExtraRules = new IRiderUsageGroupingRule[]
+                {
+                    new GameObjectUsageGroupingRule(iconHost), 
+                    new ComponentUsageGroupingRule(iconHost)
+                };
+            }
         }
 
         public IRiderUsageGroupingRule[] ExtraRules { get; }

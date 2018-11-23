@@ -65,44 +65,69 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private FindUsageRequestBase CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
         {
-            var componentDocument = currentReference.ComponentDocument; 
-            var gameObjectPath = UnityObjectPsiUtil.GetGameObjectPath(componentDocument);
-            var pathElements = gameObjectPath.RemoveEnd("\\").Split("\\");
-            
-            var gameObjectDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject");
-            var blockNode = gameObjectDocument?.BlockNode as IBlockMappingNode;
-            if (blockNode == null)
+            var gameObjectDocument = currentReference.ComponentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject");
+
+            var sourceFile = gameObjectDocument?.GetSourceFile();
+            if (sourceFile == null)
                 return null;
             
-            var pathFromAsset = GetPathFromAssetFolder(blockNode, out var extension);
+            var pathElements = UnityObjectPsiUtil.ConstructGameObjectPath(gameObjectDocument, (document, isPrefab) =>
+            {
+                IYamlDocument parent;
+                string name;
+                if (isPrefab)
+                {
+                    name = UnityObjectPsiUtil.ExtractNameFromPrefab(gameObjectDocument);
+                    parent = UnityObjectPsiUtil.GetParentFromPrefab(gameObjectDocument);
+                }
+                else
+                {
+                    name = document.GetUnityObjectPropertyValue("m_Name").AsString();
+                    parent = UnityObjectPsiUtil.GetParentGameObject(gameObjectDocument);
+                }
+                
+                return new PathElement(name, GetChildIndex(gameObjectDocument.GetFileId(), parent));
+            });
 
+            
+            var pathFromAsset = GetPathFromAssetFolder(sourceFile, out var extension);
             bool needExpand = currentReference == selectedReference;
           
             if (extension.Equals("prefab", StringComparison.OrdinalIgnoreCase))
             {
-                return new FindUsageRequestPrefab(needExpand, pathFromAsset, pathElements);
+                return new FindUsageRequestPrefab(needExpand, pathFromAsset, new String[]{});
             }
             
             if (extension.Equals("unity", StringComparison.OrdinalIgnoreCase))
             {
-                var localId = GetLocalId(blockNode);
+                var localId = gameObjectDocument.GetFileId();
                 if (localId == null)
                     return null;
-                return new FindUsageRequestScene(localId, needExpand, pathFromAsset, pathElements);
+                return new FindUsageRequestScene(localId, needExpand, pathFromAsset, new String[]{});
             }
             
             return null;
         }
- 
-        private string GetLocalId([NotNull] IBlockMappingNode blockNode)
+
+        private int GetChildIndex(string getFileId, IYamlDocument parent)
         {
-            return blockNode.Properties.AnchorProperty.Text.GetText();
+            var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(parent);
+            var children = transform?.GetUnityObjectPropertyValue("m_Children") as IBlockSequenceNode;
+            if (children == null)
+                return -1;
+            int result = 0;
+            foreach (var componentEntry in children.Entries)
+            {
+                
+                return result;
+            }
+            return -1;
         }
 
-        private string GetPathFromAssetFolder([NotNull] IBlockMappingNode blockNode, out string extension)
+        private string GetPathFromAssetFolder([NotNull] IPsiSourceFile file, out string extension)
         {
             extension = null;
-            var path = blockNode.GetSourceFile().GetLocation().MakeRelativeTo(solutionDirectoryPath);
+            var path = file.GetLocation().MakeRelativeTo(solutionDirectoryPath);
             var assetFolder = path.FirstComponent;
             if (!assetFolder.Equals("Assets"))
                 return null;
@@ -125,6 +150,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             
             return sb.ToString();
+        }
+    }
+
+    internal class PathElement
+    {
+        public PathElement(string name, object getChildIndex)
+        {
+            throw new NotImplementedException();
         }
     }
 }

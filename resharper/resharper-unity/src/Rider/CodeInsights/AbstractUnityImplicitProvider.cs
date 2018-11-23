@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.PopupLayout;
 using JetBrains.ProjectModel;
@@ -27,7 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var windowContextSource = new PopupWindowContextSource(lt => new HostTextControlPopupWindowContext(lt, highlighting.DeclaredElement.GetSolution().GetComponent<TextControlManager>().LastFocusedTextControl.Value).MarkAsOriginatedFromDataContext()/*new MousePositionPopupWindowContext(lt)*/);
             if (highlighting is UnityCodeInsightsHighlighting unityCodeInsightsHighlighting)
             {
-                myBulbMenu.ShowBulbMenu(unityCodeInsightsHighlighting.MenuItems, windowContextSource);
+                if (unityCodeInsightsHighlighting.MenuItems.Count > 0)
+                    myBulbMenu.ShowBulbMenu(unityCodeInsightsHighlighting.MenuItems, windowContextSource);
             }
         }
 
