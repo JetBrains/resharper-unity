@@ -178,6 +178,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             Rider plugin v{myCurrentVersion} can be found at:
                             {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
                         break;
+                    
+                    case UnityPluginDetector.InstallReason.UpToDate:
+                        userTitle = "Unity Editor plugin updated (up to date)";
+                        userMessage = $@"Please switch to the Unity Editor to reload the plugin.
+                            Rider plugin v{myCurrentVersion} can be found at:
+                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
+                        break;
 
                     default:
                         myLogger.Error("Unexpected install reason: {0}", installationInfo.InstallReason);
