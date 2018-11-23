@@ -127,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 });
             });
 
-            JetDispatcher.RunOrSleep(() => !(!run.Lifetime.IsAlive || !working), TimeSpan.FromMinutes(30));
+            JetDispatcher.RunOrSleep(() => run.Lifetime.IsAlive && working, TimeSpan.FromMinutes(30));
             working = true;
 
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Wait EditorState != UnityEditorState.Refresh", () =>
@@ -147,8 +147,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     });
             });
 
-            JetDispatcher.RunOrSleep(() => !(!run.Lifetime.IsAlive || !working), TimeSpan.FromMinutes(30));
-            JetDispatcher.RunOrSleep(() => !(!run.Lifetime.IsAlive || myEditorProtocol.UnityModel.Value != null),
+            JetDispatcher.RunOrSleep(() => run.Lifetime.IsAlive && working, TimeSpan.FromMinutes(30));
+            JetDispatcher.RunOrSleep(() => run.Lifetime.IsAlive && myEditorProtocol.UnityModel.Value == null,
                 TimeSpan.FromMinutes(30));
 
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Check compilation", () =>
