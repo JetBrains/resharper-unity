@@ -132,7 +132,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Wait EditorState != UnityEditorState.Refresh", () =>
             {
-                mySolution.Locks.QueueRecurring(run.Lifetime, "Periodic wait EditorState != UnityEditorState.Refresh",
+                var lifetimeDefinition = Lifetimes.Define(run.Lifetime);
+                mySolution.Locks.QueueRecurring(lifetimeDefinition.Lifetime, "Periodic wait EditorState != UnityEditorState.Refresh",
                     TimeSpan.FromSeconds(1), () =>
                     {
                         if (myEditorProtocol.UnityModel.Value != null)
@@ -141,7 +142,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             rdTask?.Result.Advise(run.Lifetime, result =>
                             {
                                 if (result.Result != UnityEditorState.Refresh)
+                                {
                                     working = false;
+                                    lifetimeDefinition.Terminate();
+                                }
                             });
                         }
                     });
