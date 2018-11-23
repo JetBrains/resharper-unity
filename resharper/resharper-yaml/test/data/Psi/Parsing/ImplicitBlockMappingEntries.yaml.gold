@@ -9,14 +9,14 @@ IYamlFile
         Whitespace(type:WHITESPACE, text: ) spaces: " "
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:in-line value)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IEmptyScalarNode
         YamlTokenType+FixedTokenElement(type:COLON, text::)
         IEmptyScalarNode
-      Whitespace(type:WHITESPACE, text: ) spaces: " "
-      Comment(type:COMMENT, text:# Both empty) spaces: "# Both empty"
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        Comment(type:COMMENT, text:# Both empty) spaces: "# Both empty"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IDoubleQuotedScalarNode
           YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"quoted key")
@@ -28,5 +28,5 @@ IYamlFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:entry)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

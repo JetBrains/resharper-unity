@@ -23,5 +23,5 @@ IYamlFile
               YamlTokenType+FixedTokenElement(type:GT, text:>)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

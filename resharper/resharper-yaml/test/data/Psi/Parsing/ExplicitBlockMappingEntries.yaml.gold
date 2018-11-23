@@ -28,16 +28,16 @@ IYamlFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:one)
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
-          Comment(type:COMMENT, text:# Explicit compact) spaces: "# Explicit compact"
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            Comment(type:COMMENT, text:# Explicit compact) spaces: "# Explicit compact"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           ISequenceEntry
             YamlTokenType+FixedTokenElement(type:MINUS, text:-)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:two)
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    Comment(type:COMMENT, text:# block value) spaces: "# block value"
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            Comment(type:COMMENT, text:# block value) spaces: "# block value"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

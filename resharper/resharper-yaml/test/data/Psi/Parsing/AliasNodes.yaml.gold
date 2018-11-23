@@ -14,7 +14,7 @@ IYamlFile
               YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:anchor)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Foo)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Second occurrence)
@@ -23,7 +23,7 @@ IYamlFile
         IAliasNode
           YamlTokenType+FixedTokenElement(type:ASTERISK, text:*)
           YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:anchor)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Override anchor)
@@ -36,7 +36,7 @@ IYamlFile
               YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:anchor)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Bar)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Reuse anchor)
@@ -45,5 +45,5 @@ IYamlFile
         IAliasNode
           YamlTokenType+FixedTokenElement(type:ASTERISK, text:*)
           YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:anchor)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

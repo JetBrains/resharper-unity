@@ -15,7 +15,7 @@ IYamlFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           YamlTokenType+GenericTokenElement(type:SCALAR_TEXT, text:text)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:folded)
@@ -29,5 +29,5 @@ IYamlFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           YamlTokenType+GenericTokenElement(type:SCALAR_TEXT, text:text)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

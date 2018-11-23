@@ -30,5 +30,5 @@ IYamlFile
         Whitespace(type:WHITESPACE, text: ) spaces: " "
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:20)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

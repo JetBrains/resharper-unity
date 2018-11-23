@@ -60,7 +60,7 @@ IYamlFile
                 IPlainScalarNode
                   YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:2)
               YamlTokenType+FixedTokenElement(type:RBRACE, text:})
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
@@ -77,5 +77,5 @@ IYamlFile
                 IPlainScalarNode
                   YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:325319426)
               YamlTokenType+FixedTokenElement(type:RBRACE, text:})
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

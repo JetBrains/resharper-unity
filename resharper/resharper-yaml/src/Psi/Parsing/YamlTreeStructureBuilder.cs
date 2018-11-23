@@ -136,7 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       if (!Builder.Eof())
         ExpectToken(YamlTokenType.DIRECTIVES_END);
 
-      DoneBeforeWhitespaces(mark, ElementType.DIRECTIVES);
+      Done(mark, ElementType.DIRECTIVES);
     }
 
     private void ParseDirective()
@@ -182,7 +182,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     {
       if (!TryParseCompactNotation(expectedIndent) && !TryParseBlockNode(expectedIndent, isBlockIn))
       {
-        DoneBeforeWhitespaces(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+        Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
         ParseComments();
       }
     }
@@ -242,6 +242,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       var scalarIndent = ParseBlockHeader(expectedIndent);
       ParseMultilineScalarText(scalarIndent);
 
+      // Scalars don't consume their trailing whitespace
       DoneBeforeWhitespaces(mark, elementType);
     }
 
@@ -306,7 +307,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         relativeIndent = ParseDecDigit(expectedIndent);
       }
 
-      DoneBeforeWhitespaces(mark, ElementType.BLOCK_HEADER);
+      Done(mark, ElementType.BLOCK_HEADER);
 
       return relativeIndent;
     }
@@ -356,7 +357,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
           Builder.RollbackTo(mark);
         else
         {
-          DoneBeforeWhitespaces(mark, ElementType.BLOCK_SEQUENCE_NODE);
+          Done(mark, ElementType.BLOCK_SEQUENCE_NODE);
           return true;
         }
       }
@@ -366,7 +367,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
           Builder.RollbackTo(mark);
         else
         {
-          DoneBeforeWhitespaces(mark, ElementType.BLOCK_MAPPING_NODE);
+          Done(mark, ElementType.BLOCK_MAPPING_NODE);
           return true;
         }
       }
@@ -412,7 +413,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       ExpectToken(YamlTokenType.MINUS);
       ParseBlockIndented(expectedIndent, true);  // block-in
 
-      DoneBeforeWhitespaces(mark, ElementType.SEQUENCE_ENTRY);
+      Done(mark, ElementType.SEQUENCE_ENTRY);
     }
 
     private bool TryParseBlockMappingWithoutRollback(int expectedIndent)
@@ -479,9 +480,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
           Builder.Drop(valueMark);
         }
         else
-          DoneBeforeWhitespaces(valueMark, ElementType.EMPTY_SCALAR_NODE);
+          Done(valueMark, ElementType.EMPTY_SCALAR_NODE);
 
-        DoneBeforeWhitespaces(mark, ElementType.BLOCK_MAPPING_ENTRY);
+        Done(mark, ElementType.BLOCK_MAPPING_ENTRY);
         return true;
       }
 
@@ -505,11 +506,11 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         Advance();
         if (!TryParseBlockNode(expectedIndent, false))
         {
-          DoneBeforeWhitespaces(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+          Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
           ParseComments();
         }
 
-        DoneBeforeWhitespaces(mark, ElementType.BLOCK_MAPPING_ENTRY);
+        Done(mark, ElementType.BLOCK_MAPPING_ENTRY);
         return true;
       }
 
@@ -540,7 +541,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         var mark = MarkNoSkipWhitespace();
         ParseCompactSequenceEntries(expectedIndent);
         // TODO: Do we need a COMPACT_SEQUENCE_NODE?
-        DoneBeforeWhitespaces(mark, ElementType.BLOCK_SEQUENCE_NODE);
+        Done(mark, ElementType.BLOCK_SEQUENCE_NODE);
         return true;
       }
 
@@ -588,7 +589,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         } while (!Builder.Eof());
 
         // TODO: Do we need a COMPACT_MAPPING_NODE?
-        DoneBeforeWhitespaces(mark, ElementType.BLOCK_MAPPING_NODE);
+        Done(mark, ElementType.BLOCK_MAPPING_NODE);
 
         return true;
       }
@@ -632,7 +633,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       var mark = MarkNoSkipWhitespace();
       ExpectToken(YamlTokenType.ASTERISK);
       ExpectTokenNoSkipWhitespace(YamlTokenType.NS_ANCHOR_NAME);
-      DoneBeforeWhitespaces(mark, ElementType.ALIAS_NODE);
+      Done(mark, ElementType.ALIAS_NODE);
     }
 
     // [96]	c-ns-properties(n,c)
@@ -669,7 +670,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         Advance();  // stripped
       }
 
-      DoneBeforeWhitespaces(mark, ElementType.NODE_PROPERTIES);
+      Done(mark, ElementType.NODE_PROPERTIES);
       return true;
     }
 
@@ -688,7 +689,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         var anchorMark = MarkNoSkipWhitespace();
         ExpectToken(YamlTokenType.AMP);
         ExpectTokenNoSkipWhitespace(YamlTokenType.NS_ANCHOR_NAME);
-        DoneBeforeWhitespaces(anchorMark, ElementType.ANCHOR_PROPERTY);
+        Done(anchorMark, ElementType.ANCHOR_PROPERTY);
         Builder.Drop(mark);
         return;
       }
@@ -729,7 +730,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       ExpectToken(YamlTokenType.BANG_LT);
       ExpectTokenNoSkipWhitespace(YamlTokenType.NS_URI_CHARS);
       ExpectTokenNoSkipWhitespace(YamlTokenType.GT);
-      DoneBeforeWhitespaces(mark, ElementType.VERBATIM_TAG_PROPERTY);
+      Done(mark, ElementType.VERBATIM_TAG_PROPERTY);
     }
 
     private void ParseShorthandTagProperty(int mark)
@@ -742,7 +743,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         ErrorBeforeWhitespaces(ParserMessages.GetExpectedMessage("text"));
       else
         Advance();
-      DoneBeforeWhitespaces(mark, ElementType.SHORTHAND_TAG_PROPERTY);
+      Done(mark, ElementType.SHORTHAND_TAG_PROPERTY);
     }
 
     private void ParseTagHandle()
@@ -750,7 +751,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       var mark = MarkNoSkipWhitespace();
       ExpectToken(YamlTokenType.BANG);
       var elementType = ParseSecondaryOrNamedTagHandle();
-      DoneBeforeWhitespaces(mark, elementType);
+      Done(mark, elementType);
     }
 
     private CompositeNodeType ParseSecondaryOrNamedTagHandle()
@@ -784,7 +785,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     private void ParseNonSpecificTagProperty(int mark)
     {
       ExpectToken(YamlTokenType.BANG);
-      DoneBeforeWhitespaces(mark, ElementType.NON_SPECIFIC_TAG_PROPERTY);
+      Done(mark, ElementType.NON_SPECIFIC_TAG_PROPERTY);
     }
 
     private void ParseFlowContent(int expectedIndent)
@@ -831,7 +832,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         elementType = ElementType.EMPTY_SCALAR_NODE;
 
       if (elementType != null)
-        DoneBeforeWhitespaces(mark, elementType);
+        Done(mark, elementType);
       else
         Builder.Drop(mark);
     }
@@ -897,7 +898,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       if (!TryParseFlowPair(expectedIndent))
         ParseFlowNode(expectedIndent);
 
-      DoneBeforeWhitespaces(mark, ElementType.FLOW_SEQUENCE_ENTRY);
+      Done(mark, ElementType.FLOW_SEQUENCE_ENTRY);
     }
 
     private bool TryParseFlowPair(int expectedIndent)
@@ -923,9 +924,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         if (ParseOptionalSeparationSpace(expectedIndent))
           ParseFlowNode(expectedIndent);
         else
-          DoneBeforeWhitespaces(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+          Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
 
-        DoneBeforeWhitespaces(mark, ElementType.FLOW_PAIR);
+        Done(mark, ElementType.FLOW_PAIR);
         return true;
       }
 
@@ -950,7 +951,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       else
       {
         Advance();
-        DoneBeforeWhitespaces(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+        Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
       }
 
       var valueMark = MarkNoSkipWhitespace();
@@ -963,7 +964,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       if (GetTokenTypeNoSkipWhitespace() != YamlTokenType.COLON)
       {
         Builder.RollbackTo(valueMark);
-        DoneBeforeWhitespaces(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+        Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
       }
       else
       {
@@ -974,10 +975,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         if (TryParseSeparationSpaceWithoutRollback(expectedIndent))
           ParseFlowContent(expectedIndent);
         else
-          DoneBeforeWhitespaces(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+          Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
       }
 
-      DoneBeforeWhitespaces(mark, ElementType.FLOW_MAP_ENTRY);
+      Done(mark, ElementType.FLOW_MAP_ENTRY);
     }
 
     private void ParseFlowMapImplicitEntry(int expectedIndent)
@@ -996,7 +997,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       if (GetTokenTypeNoSkipWhitespace() != YamlTokenType.COLON)
       {
         Builder.RollbackTo(valueMark);
-        DoneBeforeWhitespaces(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+        Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
       }
       else
       {
@@ -1007,10 +1008,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         if (ParseOptionalSeparationSpace(expectedIndent))
           ParseFlowNode(expectedIndent);
         else
-          DoneBeforeWhitespaces(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+          Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
       }
 
-      DoneBeforeWhitespaces(mark, ElementType.FLOW_MAP_ENTRY);
+      Done(mark, ElementType.FLOW_MAP_ENTRY);
     }
 
     private CompositeNodeType ParseFlowMapping(int expectedIndent)

@@ -9,7 +9,7 @@ IYamlFile
         Whitespace(type:WHITESPACE, text: ) spaces: " "
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:2)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:guid)
@@ -17,7 +17,7 @@ IYamlFile
         Whitespace(type:WHITESPACE, text: ) spaces: " "
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:90cc63b1b00786048a52ba0a677aeb36)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:PluginImporter)
@@ -33,7 +33,7 @@ IYamlFile
             IFlowMappingNode
               YamlTokenType+FixedTokenElement(type:LBRACE, text:{)
               YamlTokenType+FixedTokenElement(type:RBRACE, text:})
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
@@ -42,7 +42,7 @@ IYamlFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:2)
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
@@ -52,7 +52,7 @@ IYamlFile
             IFlowMappingNode
               YamlTokenType+FixedTokenElement(type:LBRACE, text:{)
               YamlTokenType+FixedTokenElement(type:RBRACE, text:})
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
@@ -62,7 +62,7 @@ IYamlFile
             IFlowMappingNode
               YamlTokenType+FixedTokenElement(type:LBRACE, text:{)
               YamlTokenType+FixedTokenElement(type:RBRACE, text:})
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
@@ -71,7 +71,7 @@ IYamlFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:0)
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
@@ -80,7 +80,7 @@ IYamlFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:0)
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
@@ -105,8 +105,8 @@ IYamlFile
                           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Any)
                         YamlTokenType+FixedTokenElement(type:COLON, text::)
                         IEmptyScalarNode
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   YamlTokenType+GenericTokenElement(type:INDENT, text:    )
                   IBlockMappingEntry
                     IPlainScalarNode
@@ -122,7 +122,7 @@ IYamlFile
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IPlainScalarNode
                           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:0)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       YamlTokenType+GenericTokenElement(type:INDENT, text:      )
                       IBlockMappingEntry
                         IPlainScalarNode
@@ -132,7 +132,7 @@ IYamlFile
                         IFlowMappingNode
                           YamlTokenType+FixedTokenElement(type:LBRACE, text:{)
                           YamlTokenType+FixedTokenElement(type:RBRACE, text:})
-              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               YamlTokenType+GenericTokenElement(type:INDENT, text:  )
               ISequenceEntry
                 YamlTokenType+FixedTokenElement(type:MINUS, text:-)
@@ -152,7 +152,7 @@ IYamlFile
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IPlainScalarNode
                           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Editor)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   YamlTokenType+GenericTokenElement(type:INDENT, text:    )
                   IBlockMappingEntry
                     IPlainScalarNode
@@ -168,7 +168,7 @@ IYamlFile
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IPlainScalarNode
                           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:1)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       YamlTokenType+GenericTokenElement(type:INDENT, text:      )
                       IBlockMappingEntry
                         IPlainScalarNode
@@ -184,7 +184,7 @@ IYamlFile
                             Whitespace(type:WHITESPACE, text: ) spaces: " "
                             IPlainScalarNode
                               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:true)
-              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               YamlTokenType+GenericTokenElement(type:INDENT, text:  )
               ISequenceEntry
                 YamlTokenType+FixedTokenElement(type:MINUS, text:-)
@@ -204,7 +204,7 @@ IYamlFile
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IPlainScalarNode
                           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:WindowsStoreApps)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   YamlTokenType+GenericTokenElement(type:INDENT, text:    )
                   IBlockMappingEntry
                     IPlainScalarNode
@@ -220,7 +220,7 @@ IYamlFile
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IPlainScalarNode
                           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:0)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       YamlTokenType+GenericTokenElement(type:INDENT, text:      )
                       IBlockMappingEntry
                         IPlainScalarNode
@@ -236,29 +236,29 @@ IYamlFile
                             Whitespace(type:WHITESPACE, text: ) spaces: " "
                             IPlainScalarNode
                               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:AnyCPU)
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:userData)
             YamlTokenType+FixedTokenElement(type:COLON, text::)
             IEmptyScalarNode
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:assetBundleName)
             YamlTokenType+FixedTokenElement(type:COLON, text::)
             IEmptyScalarNode
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:assetBundleVariant)
             YamlTokenType+FixedTokenElement(type:COLON, text::)
             IEmptyScalarNode
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

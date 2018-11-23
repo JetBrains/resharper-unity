@@ -19,7 +19,7 @@ IYamlFile
           YamlTokenType+FixedTokenElement(type:COMMA, text:,)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           YamlTokenType+FixedTokenElement(type:RBRACK, text:])
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ISequenceEntry
         YamlTokenType+FixedTokenElement(type:MINUS, text:-)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -34,5 +34,5 @@ IYamlFile
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:four)
           YamlTokenType+FixedTokenElement(type:RBRACK, text:])
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

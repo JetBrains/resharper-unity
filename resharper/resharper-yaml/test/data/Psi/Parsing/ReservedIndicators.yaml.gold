@@ -11,7 +11,7 @@ IYamlFile
           ErrorElement:Reserved indicator cannot be used
             YamlTokenType+FixedTokenElement(type:AT, text:@)
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:text)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:grave-accent)
@@ -21,5 +21,5 @@ IYamlFile
           ErrorElement:Reserved indicator cannot be used
             YamlTokenType+FixedTokenElement(type:BACKTICK, text:`)
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:text)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

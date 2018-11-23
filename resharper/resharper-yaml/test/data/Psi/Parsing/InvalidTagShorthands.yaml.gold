@@ -26,7 +26,7 @@ IYamlFile
               ErrorElement:Text expected
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:foo)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ISequenceEntry
         YamlTokenType+FixedTokenElement(type:MINUS, text:-)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -40,7 +40,7 @@ IYamlFile
               YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:bar)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
-    Whitespace(type:WHITESPACE, text:  ) spaces: "  "
-    Comment(type:COMMENT, text:# Valid lexically, but doesn't resolve) spaces: "# Valid lexically, but doesn't resolve"
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        Whitespace(type:WHITESPACE, text:  ) spaces: "  "
+        Comment(type:COMMENT, text:# Valid lexically, but doesn't resolve) spaces: "# Valid lexically, but doesn't resolve"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 
