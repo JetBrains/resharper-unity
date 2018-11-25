@@ -16,19 +16,23 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
     private readonly bool myFindCandidates;
     private readonly List<string> myElementNames;
 
-    public YamlReferenceSearcher(IDeclaredElementsSet elements, bool findCandidates)
+    public YamlReferenceSearcher(IDomainSpecificSearcherFactory searchWordsProvider, IDeclaredElementsSet elements,
+      bool findCandidates)
     {
       myElements = elements;
       myFindCandidates = findCandidates;
 
       myElementNames = new List<string>(elements.Count);
       foreach (var element in elements)
-        myElementNames.Add(element.ShortName);
+      {
+        foreach (var name in searchWordsProvider.GetAllPossibleWordsInFile(element))
+          myElementNames.Add(name);
+      }
     }
 
     public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
     {
-      if (sourceFile.GetPrimaryPsiFile() is IYamlFile yamlFile)
+      if (sourceFile.GetPrimaryPsiFile() is IYamlFile yamlFile && sourceFile.GetLocation().ExtensionNoDot != "meta")
         return ProcessElement(yamlFile, consumer);
       return false;
     }
@@ -36,8 +40,19 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
     public bool ProcessElement<TResult>(ITreeNode element, IFindResultConsumer<TResult> consumer)
     {
       Assertion.AssertNotNull(element, "element != null");
+      // wordsInText is used to create string searchers, which are used to see if chameleon subtree should be opened.
+      // If this is null or empty, then all references are processed, without skipping chameleons. References are cached
+      // in both cases.
+      // referenceNames is used to create a reference name container which is used to optimise things. It's passed to
+      // the reference provider's HasReferences to get a false or "maybe" based on name. It's then used (along with
+      // PreFilterReference) to filter references before they're resolved, based on GetName/GetAllNames.
+      // Normally, wordsInText will match referenceNames, as the reference's GetName will return a string that is also
+      // in the text. One example of a reference with a different name is a constructor initialiser, where the name is
+      // .ctor, but would appear in text as this or base
+      var wordsInText = myElementNames;
+      var referenceNames = myElementNames;
       var result = new ReferenceSearchSourceFileProcessor<TResult>(element, myFindCandidates, consumer, myElements,
-        myElementNames, myElementNames).Run();
+        wordsInText, referenceNames).Run();
       return result == FindExecution.Stop;
     }
   }

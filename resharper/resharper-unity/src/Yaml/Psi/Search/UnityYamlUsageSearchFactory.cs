@@ -10,29 +10,33 @@ using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
+    // Note that there isn't a default searcher factory for YAML because it has no declared elements to search for. This
+    // searcher factory is looking for C# declared elements - class or method, etc.
     [PsiSharedComponent]
-    public class UnityYamlGuidUsageSearchFactory : DomainSpecificSearcherFactoryBase
+    public class UnityYamlUsageSearchFactory : DomainSpecificSearcherFactoryBase
     {
         public override bool IsCompatibleWithLanguage(PsiLanguageType languageType)
         {
             return languageType.Is<YamlLanguage>();
         }
 
-        public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, bool findCandidates)
+        public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,
+            bool findCandidates)
         {
-            // We only use guids to find classes in YAML files
-            if (elements.All(e => e is IClass))
-                return new YamlReferenceSearcher(elements, findCandidates);
+            // We're interested in classes for usages of MonoScript references, and methods for UnityEvent usages
+            if (elements.All(e => e is IClass || e is IMethod))
+                return new YamlReferenceSearcher(this, elements, findCandidates);
             return null;
         }
 
-        // Used to filter files before searching for reference
+        // Used to filter files before searching for reference. Method references require the element short name while
+        // class references use the class's file's asset guid. If the file doesn't contain one of these words, it won't
+        // be searched
         public override IEnumerable<string> GetAllPossibleWordsInFile(IDeclaredElement element)
         {
-            // The existing YAML domain searcher word list will find all files that contain the element's short name,
-            // but won't find files that just have an asset guid
             var metaFileGuidCache = element.GetSolution().GetComponent<MetaFileGuidCache>();
             var words = new FrugalLocalList<string>();
+            words.Add(element.ShortName);
             foreach (var sourceFile in element.GetSourceFiles())
             {
                 var guid = metaFileGuidCache.GetAssetGuid(sourceFile);
