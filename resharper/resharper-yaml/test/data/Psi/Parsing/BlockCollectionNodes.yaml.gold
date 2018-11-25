@@ -1,7 +1,7 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:sequence)
@@ -43,7 +43,7 @@ IYamlFile
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:mapping)
         YamlTokenType+FixedTokenElement(type:COLON, text::)
-        IBlockMappingNode
+        ChameleonBlockMappingNode
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           INodeProperties
             IShorthandTagProperty

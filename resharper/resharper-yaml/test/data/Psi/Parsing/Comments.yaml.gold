@@ -3,7 +3,7 @@ IYamlFile
   Comment(type:COMMENT, text:# Single line comment) spaces: "# Single line comment"
   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:key)

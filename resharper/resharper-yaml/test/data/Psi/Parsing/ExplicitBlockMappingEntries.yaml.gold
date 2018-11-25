@@ -1,7 +1,7 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       IBlockMappingEntry
         YamlTokenType+FixedTokenElement(type:QUESTION, text:?)
         Whitespace(type:WHITESPACE, text: ) spaces: " "

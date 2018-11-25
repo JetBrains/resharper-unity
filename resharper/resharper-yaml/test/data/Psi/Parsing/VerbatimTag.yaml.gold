@@ -1,7 +1,7 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       INodeProperties
         IVerbatimTagProperty
           YamlTokenType+FixedTokenElement(type:BANG_LT, text:!<)

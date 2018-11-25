@@ -1,7 +1,7 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:fileFormatVersion)
@@ -22,7 +22,7 @@ IYamlFile
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:PluginImporter)
         YamlTokenType+FixedTokenElement(type:COLON, text::)
-        IBlockMappingNode
+        ChameleonBlockMappingNode
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
@@ -97,7 +97,7 @@ IYamlFile
                     IPlainScalarNode
                       YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:first)
                     YamlTokenType+FixedTokenElement(type:COLON, text::)
-                    IBlockMappingNode
+                    ChameleonBlockMappingNode
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       YamlTokenType+GenericTokenElement(type:INDENT, text:      )
                       IBlockMappingEntry
@@ -112,7 +112,7 @@ IYamlFile
                     IPlainScalarNode
                       YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:second)
                     YamlTokenType+FixedTokenElement(type:COLON, text::)
-                    IBlockMappingNode
+                    ChameleonBlockMappingNode
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       YamlTokenType+GenericTokenElement(type:INDENT, text:      )
                       IBlockMappingEntry
@@ -142,7 +142,7 @@ IYamlFile
                     IPlainScalarNode
                       YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:first)
                     YamlTokenType+FixedTokenElement(type:COLON, text::)
-                    IBlockMappingNode
+                    ChameleonBlockMappingNode
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       YamlTokenType+GenericTokenElement(type:INDENT, text:      )
                       IBlockMappingEntry
@@ -158,7 +158,7 @@ IYamlFile
                     IPlainScalarNode
                       YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:second)
                     YamlTokenType+FixedTokenElement(type:COLON, text::)
-                    IBlockMappingNode
+                    ChameleonBlockMappingNode
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       YamlTokenType+GenericTokenElement(type:INDENT, text:      )
                       IBlockMappingEntry
@@ -174,7 +174,7 @@ IYamlFile
                         IPlainScalarNode
                           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:settings)
                         YamlTokenType+FixedTokenElement(type:COLON, text::)
-                        IBlockMappingNode
+                        ChameleonBlockMappingNode
                           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                           YamlTokenType+GenericTokenElement(type:INDENT, text:        )
                           IBlockMappingEntry
@@ -194,7 +194,7 @@ IYamlFile
                     IPlainScalarNode
                       YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:first)
                     YamlTokenType+FixedTokenElement(type:COLON, text::)
-                    IBlockMappingNode
+                    ChameleonBlockMappingNode
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       YamlTokenType+GenericTokenElement(type:INDENT, text:      )
                       IBlockMappingEntry
@@ -210,7 +210,7 @@ IYamlFile
                     IPlainScalarNode
                       YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:second)
                     YamlTokenType+FixedTokenElement(type:COLON, text::)
-                    IBlockMappingNode
+                    ChameleonBlockMappingNode
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       YamlTokenType+GenericTokenElement(type:INDENT, text:      )
                       IBlockMappingEntry
@@ -226,7 +226,7 @@ IYamlFile
                         IPlainScalarNode
                           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:settings)
                         YamlTokenType+FixedTokenElement(type:COLON, text::)
-                        IBlockMappingNode
+                        ChameleonBlockMappingNode
                           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                           YamlTokenType+GenericTokenElement(type:INDENT, text:        )
                           IBlockMappingEntry

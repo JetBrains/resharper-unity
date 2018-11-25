@@ -21,7 +21,7 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:1.2)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IPlainScalarNode

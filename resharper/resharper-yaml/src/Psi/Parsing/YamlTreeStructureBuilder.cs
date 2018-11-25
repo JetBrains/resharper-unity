@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     private int myDocumentStartLexeme;
     private int myCurrentLineIndent;
     private bool myExpectImplicitKey;
+    private bool myCreateClosedChameleons;
 
     public YamlTreeStructureBuilder(ILexer<int> lexer, Lifetime lifetime)
       : base(lifetime)
@@ -40,6 +41,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     public LeafElementBase CreateToken(TokenNodeType tokenNodeType, IBuffer buffer, int startOffset, int endOffset)
     {
+      if (tokenNodeType == YamlTokenType.CHAMELEON)
+      {
+        return new ClosedChameleonElement(YamlTokenType.CHAMELEON, new TreeOffset(startOffset),
+          new TreeOffset(endOffset));
+      }
+
       if (tokenNodeType == YamlTokenType.NS_ANCHOR_NAME
           || tokenNodeType == YamlTokenType.NS_CHARS
           || tokenNodeType == YamlTokenType.NS_PLAIN_ONE_LINE
@@ -85,19 +92,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       var mark = MarkNoSkipWhitespace();
 
       ParseDirectives();
+      ParseChameleonRootBlockNode();
 
       var tt = GetTokenTypeNoSkipWhitespace();
-      if (tt != YamlTokenType.DOCUMENT_END && tt != YamlTokenType.DIRECTIVES_END)
-      {
-        myDocumentStartLexeme = Builder.GetCurrentLexeme();
-
-        // [207] l-bare-document	::=	s-l+block-node(-1,block-in)
-        // We know we can safely ignore this return value. It only fails for indent
-        // ReSharper disable once MustUseReturnValue
-        TryParseBlockNode(-1, true);
-      }
-
-      tt = GetTokenTypeNoSkipWhitespace();
       if (!Builder.Eof() && !IsDocumentEnd(tt))
       {
         var errorMark = MarkNoSkipWhitespace();
@@ -167,6 +164,27 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       ParseTrailingCommentLines();
 
       Done(mark, ElementType.DIRECTIVE);
+    }
+
+    private void ParseChameleonRootBlockNode()
+    {
+      myCreateClosedChameleons = true;
+      ParseRootBlockNode();
+      myCreateClosedChameleons = false;
+    }
+
+    public void ParseRootBlockNode()
+    {
+      var tt = GetTokenTypeNoSkipWhitespace();
+      if (!IsDocumentEnd(tt))
+      {
+        myDocumentStartLexeme = Builder.GetCurrentLexeme();
+
+        // [207] l-bare-document	::=	s-l+block-node(-1,block-in)
+        // We know we can safely ignore this return value. It only fails for indent
+        // ReSharper disable once MustUseReturnValue
+        TryParseBlockNode(-1, true);
+      }
     }
 
     // block-in being "inside a block sequence"
@@ -335,6 +353,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     private bool TryParseBlockCollection(int expectedIndent, bool isBlockIn)
     {
       var mark = MarkNoSkipWhitespace();
+      var blockNodeContentsMark = MarkNoSkipWhitespace();
 
       var propertiesMark = MarkNoSkipWhitespace();
       var correctIndent = TryParseSeparationSpaceWithoutRollback(expectedIndent + 1);
@@ -351,6 +370,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       var tt = LookAheadNextSignificantToken();
       if (tt == YamlTokenType.MINUS)
       {
+        Builder.Drop(blockNodeContentsMark);
+
         // Nested block sequences may be indented one less space, because people intuitively see `-` as indent
         var seqSpaces = isBlockIn ? expectedIndent : expectedIndent - 1;
         if (!TryParseBlockSequenceWithoutRollback(seqSpaces))
@@ -363,11 +384,29 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       }
       else
       {
+        var createClosedChameleons = myCreateClosedChameleons;
+        myCreateClosedChameleons = false;
+
         if (!TryParseBlockMappingWithoutRollback(expectedIndent))
           Builder.RollbackTo(mark);
         else
         {
-          Done(mark, ElementType.BLOCK_MAPPING_NODE);
+          if (createClosedChameleons)
+          {
+            // Get rid of the markers of everything we've just parsed and create a closed by default chameleon
+            var currentLexeme = Builder.GetCurrentLexeme();
+            Builder.RollbackTo(blockNodeContentsMark);
+
+            var count = currentLexeme - Builder.GetCurrentLexeme();
+            Builder.AlterToken(YamlTokenType.CHAMELEON, count);
+          }
+          else
+          {
+            Builder.Drop(blockNodeContentsMark);
+          }
+
+          Done(mark, YamlChameleonElementTypes.CHAMELEON_BLOCK_MAPPING_NODE);
+
           return true;
         }
       }
@@ -664,7 +703,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       // Transform:
       //   m_PrefabParentObject: ...
       if (GetTokenTypeNoSkipWhitespace().IsWhitespace && IsPlainScalarToken(LookAheadNoSkipWhitespaces(1)) &&
-          LookAheadText(1) == "stripped")
+          CompareLookAheadText(1, "stripped"))
       {
         Advance();  // <whitespace>
         Advance();  // stripped
@@ -1195,9 +1234,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     }
 
 
-    private string LookAheadText(int index)
+    private bool CompareLookAheadText(int index, string text)
     {
-      return Builder.GetTokenText(Builder.GetCurrentLexeme() + index);
+      return Builder.CompareTokenText(Builder.GetCurrentLexeme() + index, text);
     }
 
 
