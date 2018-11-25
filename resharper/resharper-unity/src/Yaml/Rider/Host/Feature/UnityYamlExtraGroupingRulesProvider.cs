@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
             if (occurrence is ReferenceOccurrence referenceOccurrence &&
                 referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
             {
-                return CreateModel(UnityObjectPsiUtil.GetGameObjectPath(reference.ComponentDocument));
+                return CreateModel(UnityObjectPsiUtil.GetGameObjectPathFromComponent(reference.ComponentDocument));
             }
             return EmptyModel();
         }

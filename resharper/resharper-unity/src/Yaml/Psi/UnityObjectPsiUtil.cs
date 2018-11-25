@@ -5,10 +5,13 @@ using System.Text;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches.Persistence;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
@@ -47,56 +50,113 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                    ?? "Component";
         }
 
-        public static FrugalLocalList<T> ConstructGameObjectPath<T>([NotNull] IYamlDocument startGameObject, Func<IYamlDocument, bool, T> selector)
+        
+        public static void ProcessToRoot([CanBeNull] IYamlDocument startGameObject, Action<IYamlDocument, IBlockMappingNode> selector)
         {
-            var result = new FrugalLocalList<T>();
-            var currentGameObject = startGameObject;
-            do
-            {
-                // current gameobject can be
-                // 1. GameObject which has reference to prefab instance
-                // 2. GameObject which is prefab instance
-                // 3. GameObject
-                // For 1st case, we should check that m_PrefabInstance is not null and has id greater than 0
-                // For 2nd case, we should check that m_Modification exists
-                // Otherwise, 3rd case
-                //
-                // 1st case do not contain actual data and has reference to 2nd case
-                // 2nd case contain delta in m_modification (include m_Name)
-                // 3rd case contain all actual data
-               
-                
-                bool isPrefab = false;
-                string fileId = currentGameObject.GetUnityObjectPropertyValue("m_PrefabInstance")?.AsFileID()?.fileID;
-                if (fileId != null && !fileId.Equals("0"))
-                {
-                    isPrefab = true;
-                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty("m_PrefabInstance");
-                }
-                else if (currentGameObject.GetUnityObjectPropertyValue("m_Modification") != null)
-                {
-                    isPrefab = true;
-                }
-                
-                result.Add(selector(currentGameObject, isPrefab));
-                currentGameObject = isPrefab ? GetParentFromPrefab(currentGameObject) : GetParentGameObject(currentGameObject);
-            } while (currentGameObject != null);
+            if (startGameObject == null)
+                return;
+            
+            var solution = startGameObject.GetSolution();
+            var yamlFileCache = solution.GetComponent<MetaFileGuidCache>();
+            var externalFilesModuleFactory = solution.GetComponent<UnityExternalFilesModuleFactory>();
+            // Common method for process prefab/scene. When we processing scene, we do not have modification. 
+            // If we process prefab, the root prefab do not have modification too
+            ProcessPrefabFromToRoot(yamlFileCache, externalFilesModuleFactory, startGameObject, null, selector);
+        }
 
-            return result;
+        private static void ProcessPrefabFromToRoot(MetaFileGuidCache yamlFileCache, UnityExternalFilesModuleFactory externalFilesModuleFactory,
+            IYamlDocument startGameObject, IBlockMappingNode modifications, Action<IYamlDocument, IBlockMappingNode> selector)
+        {
+            if (startGameObject == null)
+                return;
+            var currentGameObject = startGameObject;
+            while (currentGameObject != null)
+            {
+                var correspondingId = currentGameObject.GetUnityObjectPropertyValue("m_CorrespondingSourceObject")?.AsFileID();
+                string prefabInstanceId = currentGameObject.GetUnityObjectPropertyValue("m_PrefabInstance")?.AsFileID()?.fileID;
+                if (correspondingId != null && correspondingId != FileID.Null)
+                {
+                    // This should never happen, but data can be corrupted
+                    if (prefabInstanceId == null || prefabInstanceId.Equals("0"))
+                        return;
+
+                    var file = (IYamlFile) currentGameObject.GetContainingFile();
+                    var prefabInstance = file.FindDocumentByAnchor(prefabInstanceId);
+                    
+                    var prefabSourceFile = yamlFileCache.GetAssetFilePathsFromGuid(correspondingId.guid);
+                    if (prefabSourceFile.Count > 1 || prefabSourceFile.Count == 0) 
+                        return;
+
+                    // Is prefab file committed???
+                    externalFilesModuleFactory.PsiModule.NotNull("externalFilesModuleFactory.PsiModule != null")
+                        .TryGetFileByPath(prefabSourceFile.First(), out var sourceFile);
+                    
+                    if (sourceFile == null)
+                        return;
+
+                    var prefabFile = (IYamlFile)sourceFile.GetDominantPsiFile<YamlLanguage>();
+                    
+                    var prefabStartGameObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID);
+                    var localModifications = GetPrefabModification(prefabInstance);
+                    ProcessPrefabFromToRoot(yamlFileCache, externalFilesModuleFactory, prefabStartGameObject, localModifications, selector);
+                    currentGameObject = GetTransformFromPrefab(prefabInstance);
+                }
+                else
+                {
+                    selector(currentGameObject.GetUnityObjectDocumentFromFileIDProperty("m_GameObject"), modifications);
+                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty("m_Father");
+                }
+            }
         }
 
 
+        /// <summary>
+        /// This method return path from component's owner to scene or prefab hierarachy root
+        /// </summary>
+        /// <param name="componentDocument">GameObject's component</param>
+        /// <returns></returns>
         [NotNull]
-        public static string GetGameObjectPath([NotNull] IYamlDocument componentDocument)
+        public static string GetGameObjectPathFromComponent([NotNull] IYamlDocument componentDocument)
         {
             var gameObjectDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject");
-            if (gameObjectDocument == null) // It should never happen, this method calls from component IYamlDocument.
+            if (gameObjectDocument == null) // It should never happen (only when data is corrupted).
+                                            // This method calls from component of gameObject
                 return "INVALID";           // Each component has owner and owner must be gameobject (inside prefab too)
 
-            var parts = ConstructGameObjectPath(gameObjectDocument, (document, isPrefab) =>
+            var parts = new FrugalLocalList<string>();
+            ProcessToRoot(FindTransformComponentForGameObject(gameObjectDocument), (document, modification) =>
             {
-                // ReSharper disable once ConvertToLambdaExpression
-                return isPrefab ? ExtractNameFromPrefab(document) : document.GetUnityObjectPropertyValue("m_Name").AsString();
+                string name = null;
+                if (modification != null)
+                {
+                    var documentId = document.GetFileId();
+                    if (documentId != null)
+                    {
+                        var modifications = modification?.FindMapEntryBySimpleKey("m_Modifications")?.Value as IBlockSequenceNode;
+                        if (modifications != null)
+                        {
+                            foreach (var element in modifications.Entries)
+                            {
+                                if (!(element.Value is IBlockMappingNode mod))
+                                    return;
+                                var type = (mod.FindMapEntryBySimpleKey("propertyPath")?.Value as IPlainScalarNode)
+                                    ?.Text.GetText();
+                                var target = mod.FindMapEntryBySimpleKey("target")?.Value?.AsFileID();
+                                if (type?.Equals("m_Name") == true && target?.fileID.Equals(documentId) == true)
+                                {
+                                    name = (mod.FindMapEntryBySimpleKey("value")?.Value as IPlainScalarNode)?.Text
+                                        .GetText();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    name = document.GetUnityObjectPropertyValue("m_Name").AsString();
+                }
+                parts.Add(name ?? "INVALID");
             });
 
             if (parts.Count == 1)
@@ -120,8 +180,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
             return prefabInstanceMap?.FindMapEntryBySimpleKey("m_Modification")?.Value as IBlockMappingNode;
         }
-        
-        public static IYamlDocument GetParentFromPrefab(IYamlDocument prefabInstanceDocument)
+
+        public static IYamlDocument GetTransformFromPrefab(IYamlDocument prefabInstanceDocument)
         {
             // Prefab instance stores it's father in modification map
             var prefabModification = GetPrefabModification(prefabInstanceDocument);
@@ -129,25 +189,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             var fileID = prefabModification?.FindMapEntryBySimpleKey("m_TransformParent")?.Value.AsFileID();
             if (fileID == null)
                 return null;
-            
-            var file = (IYamlFile) prefabInstanceDocument.GetContainingFile();
-            return GetGameObjectFromTransform(file.FindDocumentByAnchor(fileID.fileID));
-        }
 
-        public static string ExtractNameFromPrefab(IYamlDocument prefabInstanceDocument)
-        {
-            // Prefab instance stores it's name in mofidications sequence which belongs to modification map
-            var prefabModifications = GetPrefabModification(prefabInstanceDocument)?.FindMapEntryBySimpleKey("m_Modifications")?.Value as IBlockSequenceNode;
-            if (prefabModifications == null)
-                return null;
-                    
-            var nameEntry = prefabModifications.Entries.FirstOrDefault(
-                    t => ((t.Value as IBlockMappingNode)?.FindMapEntryBySimpleKey("propertyPath")?.Value as IPlainScalarNode)
-                         ?.Text.GetText().Equals("m_Name") == true)?.Value as IBlockMappingNode;
-                
-                    
-           
-            return (nameEntry?.FindMapEntryBySimpleKey("value")?.Value as IPlainScalarNode)?.Text.GetText();
+            var file = (IYamlFile) prefabInstanceDocument.GetContainingFile();
+            return file.FindDocumentByAnchor(fileID.fileID);
         }
 
         [CanBeNull]
@@ -222,13 +266,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         [CanBeNull]
-        public static IYamlDocument GetParentGameObject([CanBeNull] IYamlDocument gameObjectDocument)
+        private static IYamlDocument GetParentTransformGameObject([CanBeNull] IYamlDocument gameObjectDocument)
         {
             var transformDocument = FindTransformComponentForGameObject(gameObjectDocument);
             
             // Transform contains information about scene hierarchy (m_Children, m_Father)
-            var parentTransformDocument = transformDocument?.GetUnityObjectDocumentFromFileIDProperty("m_Father");
-            return GetGameObjectFromTransform(parentTransformDocument);
+            return transformDocument?.GetUnityObjectDocumentFromFileIDProperty("m_Father");
         }
 
         public static IYamlDocument GetGameObjectFromTransform([CanBeNull] IYamlDocument yamlDocument)

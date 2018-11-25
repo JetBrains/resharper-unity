@@ -8,6 +8,7 @@ using JetBrains.Platform.RdFramework.Base;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Search;
@@ -70,32 +71,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var sourceFile = gameObjectDocument?.GetSourceFile();
             if (sourceFile == null)
                 return null;
-            
-            var pathElements = UnityObjectPsiUtil.ConstructGameObjectPath(gameObjectDocument, (document, isPrefab) =>
-            {
-                IYamlDocument parent;
-                string name;
-                if (isPrefab)
-                {
-                    name = UnityObjectPsiUtil.ExtractNameFromPrefab(gameObjectDocument);
-                    parent = UnityObjectPsiUtil.GetParentFromPrefab(gameObjectDocument);
-                }
-                else
-                {
-                    name = document.GetUnityObjectPropertyValue("m_Name").AsString();
-                    parent = UnityObjectPsiUtil.GetParentGameObject(gameObjectDocument);
-                }
-                
-                return new PathElement(name, GetChildIndex(gameObjectDocument.GetFileId(), parent));
-            });
 
+            var pathElements = UnityObjectPsiUtil.GetGameObjectPathFromComponent(currentReference.ComponentDocument);
             
             var pathFromAsset = GetPathFromAssetFolder(sourceFile, out var extension);
             bool needExpand = currentReference == selectedReference;
           
             if (extension.Equals("prefab", StringComparison.OrdinalIgnoreCase))
             {
-                return new FindUsageRequestPrefab(needExpand, pathFromAsset, new String[]{});
+                return new FindUsageRequestPrefab(needExpand, pathFromAsset, pathElements.RemoveEnd("/").Split('/'));
             }
             
             if (extension.Equals("unity", StringComparison.OrdinalIgnoreCase))
@@ -103,27 +87,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var localId = gameObjectDocument.GetFileId();
                 if (localId == null)
                     return null;
-                return new FindUsageRequestScene(localId, needExpand, pathFromAsset, new String[]{});
+                return new FindUsageRequestScene(localId, needExpand, pathFromAsset, pathElements.RemoveEnd("/").Split('/'));
             }
             
             return null;
         }
 
-        private int GetChildIndex(string getFileId, IYamlDocument parent)
+        private int GetChildIndex(IYamlDocument gameObject)
         {
-            var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(parent);
-            var children = transform?.GetUnityObjectPropertyValue("m_Children") as IBlockSequenceNode;
-            if (children == null)
+            var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(gameObject);
+            var rootOrder = transform?.GetUnityObjectPropertyValue("m_RootOrder").AsString();
+            if (rootOrder == null)
                 return -1;
-            int result = 0;
-            foreach (var componentEntry in children.Entries)
-            {
-                
-                return result;
-            }
-            return -1;
+            return int.Parse(rootOrder);
         }
 
+//        private int GetChildIndexFromPrefab(IYamlDocument prefabGameObject)
+//        {
+//            var modification = prefabGameObject.GetUnityObjectPropertyValue("m_Modification") as IBlockMappingNode;
+//            var prefabModifications = modification?.FindMapEntryBySimpleKey("m_Modifications")?.Value as IBlockSequenceNode;
+//            if (prefabModifications == null)
+//                return -1;
+//
+//            // Since introducing prefab mode, Unity has restriction on prefab modification and
+//            // there is only one node with m_RootOrder name. For supporting previous versions, we handle
+//            // each m_RootOrder and check that fileId of target corresponds to root object
+//            foreach (var entry in prefabModifications.Entries)
+//            {
+//                
+//            }
+//            var nameEntry = prefabModifications.Entries.FirstOrDefault(
+//                t => ((t.Value as IBlockMappingNode)?.FindMapEntryBySimpleKey("propertyPath")?.Value as IPlainScalarNode)
+//                     ?.Text.GetText().Equals("m_Name") == true)?.Value as IBlockMappingNode;
+//        }
+//        
         private string GetPathFromAssetFolder([NotNull] IPsiSourceFile file, out string extension)
         {
             extension = null;
