@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
     public class UnityEventTargetReferenceFactory : IReferenceFactory
     {
         private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName", true);
+        private static readonly StringSearcher ourMonoBehaviourTagSearcher = new StringSearcher("!u!114", true);
 
         public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
@@ -78,10 +79,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         {
             if (document.BlockNode is IBlockMappingNode rootBlockMappingNode)
             {
-                // Only MonoBehaviours can contain event handlers. This includes compiled MBs, e.g. Button
-                // And only look inside this document if it contains "m_MethodName"
-                return rootBlockMappingNode.Properties?.TagProperty?.CompareBufferText("!u!114") == true
-                       && ourMethodNameSearcher.Find(rootBlockMappingNode.GetTextAsBuffer()) >= 0;
+                // We can only contain a reference if we're a MonoBehaviour (including compiled MBs such as Button) and
+                // the YAML document contains "m_MethodName". Ideally, we could check that the tag property was "!u!114"
+                // but that would open the chameleon
+                var buffer = rootBlockMappingNode.GetTextAsBuffer();
+                return ourMonoBehaviourTagSearcher.Find(buffer) >= 0 && ourMethodNameSearcher.Find(buffer) >= 0;
             }
 
             return false;
