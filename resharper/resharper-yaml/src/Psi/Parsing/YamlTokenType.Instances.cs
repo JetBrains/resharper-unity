@@ -25,8 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     public static readonly TokenNodeType EOF = new GenericTokenNodeType("EOF", LAST_GENERATED_TOKEN_TYPE_INDEX + 21, "EOF");
 
-    public static readonly TokenNodeType NEW_LINE = new NewLineNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 22);
-    public static readonly TokenNodeType WHITESPACE = new WhitespaceNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 23);
+    public static readonly TokenNodeType CHAMELEON = new GenericTokenNodeType("CHAMELEON", LAST_GENERATED_TOKEN_TYPE_INDEX + 22, "CHAMELEON");
+
+    public static readonly TokenNodeType NEW_LINE = new NewLineNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 23);
+    public static readonly TokenNodeType WHITESPACE = new WhitespaceNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 24);
     public static readonly TokenNodeType INDENT = new GenericTokenNodeType("INDENT", INDENT_NODE_TYPE_INDEX, "INDENT");
 
     public static readonly TokenNodeType COMMENT = new CommentTokenNodeType(LAST_GENERATED_TOKEN_TYPE_INDEX + 25);

@@ -73,14 +73,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 foreach (var entry in blockMappingNode.Entries)
                 {
-                    if (entry.Key is IPlainScalarNode keyScalarNode && keyScalarNode.Text?.GetText() == "guid")
+                    if (entry.Key?.CompareBufferText("guid") == true && entry.Value is IPlainScalarNode valueScalarNode)
                     {
-                        if (entry.Value is IPlainScalarNode valueScalarNode)
-                        {
-                            var guid = valueScalarNode.Text?.GetText();
-                            if (guid != null)
-                                return new MetaFileCacheItem(guid);
-                        }
+                        var guid = valueScalarNode.Text?.GetText();
+                        if (guid != null)
+                            return new MetaFileCacheItem(guid);
                     }
                 }
             }
@@ -130,6 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 var assetLocation = GetAssetLocationFromMetaFile(sourceFile.GetLocation());
                 myAssetGuidToAssetFilePaths.RemoveValue(cacheItem.Guid, assetLocation);
+                myAssetFilePathToGuid.Remove(assetLocation);
             }
         }
 

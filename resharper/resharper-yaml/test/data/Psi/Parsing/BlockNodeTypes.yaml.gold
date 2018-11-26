@@ -8,7 +8,7 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:INDENT, text:  )
         IDoubleQuotedScalarNode
           YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"flow in block")
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ISequenceEntry
         YamlTokenType+FixedTokenElement(type:MINUS, text:-)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -17,10 +17,10 @@ IYamlFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text: )
           YamlTokenType+GenericTokenElement(type:SCALAR_TEXT, text:Block scalar)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ISequenceEntry
         YamlTokenType+FixedTokenElement(type:MINUS, text:-)
-        IBlockMappingNode
+        ChameleonBlockMappingNode
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           INodeProperties
             IShorthandTagProperty
@@ -40,6 +40,6 @@ IYamlFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:bar)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

@@ -29,7 +29,7 @@ IYamlFile
                 YamlTokenType+FixedTokenElement(type:BANG, text:!)
                 YamlTokenType+FixedTokenElement(type:BANG, text:!)
               YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:str)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
         YamlTokenType+FixedTokenElement(type:COLON, text::)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
         IPlainScalarNode

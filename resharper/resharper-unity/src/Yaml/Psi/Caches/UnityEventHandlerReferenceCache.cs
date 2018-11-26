@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.DataFlow;
@@ -6,9 +7,11 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 using JetBrains.Util.PersistentMap;
@@ -69,12 +72,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 return null;
 
             // If YAML parsing is disabled, this will return null
-            var file = sourceFile.GetDominantPsiFile<YamlLanguage>();
+            var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
             if (file == null)
                 return null;
 
             var referencedElements = new List<string>();
-            var referenceProcessor = new RecursiveReferenceProcessor<UnityEventTargetReference>(reference =>
+            var referenceProcessor = new ConditionalRecursiveReferenceProcessor(reference =>
             {
                 var assetGuid = reference.GetScriptAssetGuid();
                 if (assetGuid != null)
@@ -85,7 +88,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 }
             });
 
-            referenceProcessor.ProcessForResolve(file);
+            foreach (var document in file.DocumentsEnumerable)
+            {
+                if (UnityEventTargetReferenceFactory.CanContainReference(document))
+                    referenceProcessor.ProcessForResolve(document);
+            }
 
             return referencedElements.Count > 0 ? referencedElements : null;
         }
@@ -135,6 +142,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 return null;
 
             return assetGuid + "::" + handlerName;
+        }
+
+        private class ConditionalRecursiveReferenceProcessor : RecursiveReferenceProcessor<UnityEventTargetReference>
+        {
+            public ConditionalRecursiveReferenceProcessor(Action<UnityEventTargetReference> action)
+                : base(action)
+            {
+            }
+
+            public override void ProcessBeforeInterior(ITreeNode element)
+            {
+                if (UnityEventTargetReferenceFactory.CanHaveReference(element))
+                    base.ProcessBeforeInterior(element);
+            }
         }
     }
 }

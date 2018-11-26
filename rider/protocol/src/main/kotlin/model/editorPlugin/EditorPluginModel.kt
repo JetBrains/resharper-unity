@@ -107,6 +107,7 @@ object EditorPluginModel: Root() {
         callback("openFileLineCol", RdOpenFileArgs, bool)
         call("updateUnityPlugin", string, bool)
         call("refresh", bool, void)
+        call("getCompilationResult", void, bool)
 
         property("unitTestLaunch", UnitTestLaunch)
         source("runUnitTestLaunch", void)

@@ -82,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             var builder = new PsiModuleChangeBuilder();
 
-            // These are idempotent
+            // These are idempotent and can be called multiple times
             ProcessSolutionDirectory(builder, "Assets");
             ProcessSolutionDirectory(builder, "Packages");
             ProcessSolutionDirectory(builder, "ProjectSettings");

@@ -2,7 +2,6 @@
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.Text;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
@@ -17,12 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
       {
-        return new Comment(buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
-      }
-
-      public override LeafElementBase Create(string token)
-      {
-        return new Comment(token);
+        return new Comment(buffer, startOffset, endOffset);
       }
 
       // NOTE: Not filtered. This is because the spec only allows comments in certain places, so unlike e.g. C#, we let

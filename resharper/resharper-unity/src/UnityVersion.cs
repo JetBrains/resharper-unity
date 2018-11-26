@@ -132,7 +132,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             Version version = null;
             if (match.Success)
             {
-                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}");
+                var type = Convert.ToInt32(groups["type"].Value+groups["revision"], 16);
+                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{type}");
             }
 
             return version;
@@ -143,6 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var docs = XDocument.Load(infoPlistPath.FullPath);
             var keyValuePairs = docs.Descendants("dict")
                 .SelectMany(d => d.Elements("key").Zip(d.Elements().Where(e => e.Name != "key"), (k, v) => new { Key = k, Value = v }))
+                .GroupBy(x => x.Key.Value).Select(g => g.First()) // avoid exception An item with the same key has already been added.
                 .ToDictionary(i => i.Key.Value, i => i.Value.Value);
             var fullVersion = keyValuePairs["CFBundleVersion"];
             return fullVersion;

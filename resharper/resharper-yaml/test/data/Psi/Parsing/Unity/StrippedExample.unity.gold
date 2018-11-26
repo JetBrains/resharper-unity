@@ -4,7 +4,7 @@ IYamlFile
   IYamlDocument
     IDirectives
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       INodeProperties
         IShorthandTagProperty
@@ -24,7 +24,7 @@ IYamlFile
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Transform)
         YamlTokenType+FixedTokenElement(type:COLON, text::)
-        IBlockMappingNode
+        ChameleonBlockMappingNode
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
@@ -60,7 +60,7 @@ IYamlFile
                 IPlainScalarNode
                   YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:2)
               YamlTokenType+FixedTokenElement(type:RBRACE, text:})
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text:  )
           IBlockMappingEntry
             IPlainScalarNode
@@ -77,5 +77,5 @@ IYamlFile
                 IPlainScalarNode
                   YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:325319426)
               YamlTokenType+FixedTokenElement(type:RBRACE, text:})
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

@@ -1,7 +1,7 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:sequence)
@@ -20,7 +20,7 @@ IYamlFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:entry)
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           ISequenceEntry
             YamlTokenType+FixedTokenElement(type:MINUS, text:-)
             IBlockSequenceNode
@@ -38,12 +38,12 @@ IYamlFile
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IPlainScalarNode
                   YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:nested)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:mapping)
         YamlTokenType+FixedTokenElement(type:COLON, text::)
-        IBlockMappingNode
+        ChameleonBlockMappingNode
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           INodeProperties
             IShorthandTagProperty
@@ -60,5 +60,5 @@ IYamlFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:bar)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

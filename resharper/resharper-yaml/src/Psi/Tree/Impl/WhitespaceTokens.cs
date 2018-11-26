@@ -1,23 +1,20 @@
-﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
+﻿using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Text;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
 {
   internal abstract class WhitespaceBase : YamlTokenBase, IWhitespaceNode
   {
-    [NotNull] private readonly string myText;
-
-    protected WhitespaceBase([NotNull] string text)
+    protected WhitespaceBase(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      : base(buffer, startOffset, endOffset)
     {
-      myText = text;
     }
 
     public abstract bool IsNewLine { get; }
 
-    public override int GetTextLength() => myText.Length;
-    public override string GetText() => myText;
     public override bool IsFiltered() => true;
 
     public override string ToString()
@@ -28,8 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
 
   internal class Whitespace : WhitespaceBase
   {
-    public Whitespace([NotNull] string text)
-      : base(text)
+    public Whitespace(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      : base(buffer, startOffset, endOffset)
     {
     }
 
@@ -39,8 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
 
   internal class NewLine : WhitespaceBase
   {
-    public NewLine([NotNull] string text)
-      : base(text)
+    public NewLine(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      : base(buffer, startOffset, endOffset)
     {
     }
 
