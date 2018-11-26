@@ -18,11 +18,13 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     // TODO: Create a R# options page, with some of these settings
-    [OptionsPage(PID, "Unity Engine", typeof(LogoThemedIcons.UnityLogo), Sequence = 0.01,
+    [OptionsPage(PID, Name, typeof(LogoThemedIcons.UnityLogo), Sequence = 0.01,
         ParentId = CodeEditingPage.PID)]
     public class UnityOptionsPage : OptionsPageBase
     {
+        // Keep these in sync with the values in the front end!
         public const string PID = "UnityPluginSettings";
+        public const string Name = "Unity Engine";
 
         private static readonly Expression<Func<CSharpNamingSettings, IIndexedEntry<Guid, ClrUserDefinedNamingRule>>>
             ourUserRulesAccessor = s => s.UserRules;
