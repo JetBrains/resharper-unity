@@ -28,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityVersion myUnityVersion;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
+        private readonly UnityRefresher myRefresher;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private readonly ProcessingQueue myQueue;
 
@@ -42,7 +43,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             PluginPathsProvider pluginPathsProvider,
             UnityVersion unityVersion,
             UnityHost unityHost,
-            UnitySolutionTracker unitySolutionTracker)
+            UnitySolutionTracker unitySolutionTracker,
+            UnityRefresher refresher)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
@@ -55,6 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myPluginPathsProvider = pluginPathsProvider;
             myUnityVersion = unityVersion;
             myUnitySolutionTracker = unitySolutionTracker;
+            myRefresher = refresher;
 
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
@@ -82,13 +85,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void BindToInstallationSettingChange()
         {
             var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
-            myBoundSettingsStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise_NoAcknowledgement(myLifetime, CheckAllProjectsIfAutoInstallEnabled);
-        }
-
-        private void CheckAllProjectsIfAutoInstallEnabled(PropertyChangedEventArgs<bool> args)
-        {
-            if (!args.GetNewOrNull()) return;
-            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", InstallPluginIfRequired);
+            myBoundSettingsStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise_NoAcknowledgement(myLifetime, args =>
+            {
+                if (!args.GetNewOrNull()) return;
+                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", InstallPluginIfRequired);
+            });
         }
 
         readonly Version myCurrentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
@@ -117,6 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
 
             QueueInstall(installationInfo);
+            myQueue.Enqueue(() => { myRefresher.Refresh(false); });
         }
 
         private void QueueInstall(UnityPluginDetector.InstallationInfo installationInfo, bool force = false)
