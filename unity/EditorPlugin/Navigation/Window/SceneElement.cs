@@ -6,7 +6,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
   [Serializable]
   internal class SceneElement : AbstractUsageElement
   {
-    public SceneElement(string scenePath, string[] path, int[] rootIndices) : base(scenePath, path, rootIndices)
+    public SceneElement(string scenePath, string fileName, string[] path, int[] rootIndices) : base(scenePath, fileName, path, rootIndices)
     {
     }
 

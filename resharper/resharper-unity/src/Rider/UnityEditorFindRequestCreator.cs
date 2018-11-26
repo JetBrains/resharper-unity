@@ -45,14 +45,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public bool CreateRequestToUnity([NotNull] IDeclaredElement declaredElement, [CanBeNull] IUnityYamlReference selectedReference, bool focusUnity)
         {
             var finder = mySolution.GetPsiServices().Finder;
-            var references = finder.FindReferences(declaredElement, declaredElement.GetSearchDomain(), NullProgressIndicator.Create())
-                .Where(t => t is IUnityYamlReference);
+            var references = finder.FindAllReferences(declaredElement).OfType<IUnityYamlReference>();
 
             var result = new List<FindUsageRequest>();
 
             foreach (var reference in references)
             {
-                var request = CreateRequest((reference as IUnityYamlReference).NotNull("currentReference != null"), selectedReference);
+                var request = CreateRequest(reference, selectedReference);
                 if (request != null)
                     result.Add(request);
             }
@@ -66,14 +65,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             
             if (selectedReference != null)
-                myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Set(CreateRequest(selectedReference, null)));
-            myUnityHost.PerformModelAction(t => t.FindUsageResult.Set(result.ToArray()));
+                myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(CreateRequest(selectedReference, null)));
+            myUnityHost.PerformModelAction(t => t.FindUsageResult.Fire(result.ToArray()));
             return true;
         }
         
         private FindUsageRequest CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
         {
-            var gameObjectDocument = currentReference.ComponentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ?? currentReference.ComponentDocument;
+            var gameObjectDocument = currentReference.ComponentDocument.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty) ?? currentReference.ComponentDocument;
 
             var sourceFile = gameObjectDocument?.GetSourceFile();
             if (sourceFile == null)
@@ -89,57 +88,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(currentGameObject);
                     if (modification != null)
                     {
-                        if (!int.TryParse(UnityObjectPsiUtil.GetValueFromModifications(modification, transform.GetFileId(), "m_RootOrder")
+                        if (!int.TryParse(UnityObjectPsiUtil.GetValueFromModifications(modification, transform.GetFileId(), UnityYamlConstants.RootOrderProperty)
                             , out rootOrder))
                             rootOrder = -1;
                     }
                     if (rootOrder == -1)
                     {
-                        var rootOrderAsString = transform.GetUnityObjectPropertyValue("m_RootOrder").AsString();
+                        var rootOrderAsString = transform.GetUnityObjectPropertyValue(UnityYamlConstants.RootOrderProperty).AsString();
                         if (!int.TryParse(rootOrderAsString, out rootOrder))
                             rootOrder = -1;
                     }
                     rootIndices.Add(rootOrder);
                 });
 
-            
-            var pathFromAsset = GetPathFromAssetFolder(sourceFile, out var extension);
-            bool needExpand = currentReference == selectedReference;
-            bool isPrefab = extension.Equals("prefab", StringComparison.OrdinalIgnoreCase);
 
-            var rootIndicesReversed = new int[rootIndices.Count];
-            for (int i = 0; i < rootIndices.Count; i++)
-                rootIndicesReversed[i] = rootIndices[rootIndices.Count - 1 - i];
+            if (!GetPathFromAssetFolder(sourceFile, out var pathFromAsset, out var fileName, out var extension))
+                return null;
+            bool needExpand = currentReference == selectedReference;
+            bool isPrefab = extension.Equals(UnityYamlConstants.Prefab, StringComparison.OrdinalIgnoreCase);
             
-            return new FindUsageRequest(isPrefab, needExpand, pathFromAsset, pathElements, rootIndicesReversed);
+            return new FindUsageRequest(isPrefab, needExpand, pathFromAsset, fileName, pathElements, rootIndices.ToArray().Reverse().ToArray());
         }
 
-        private string GetPathFromAssetFolder([NotNull] IPsiSourceFile file, out string extension)
+        private bool GetPathFromAssetFolder([NotNull] IPsiSourceFile file, out string filePath, out string fileName, out string extension)
         {
             extension = null;
+            filePath = null;
+            fileName = null;
             var path = file.GetLocation().MakeRelativeTo(mySolutionDirectoryPath);
             var assetFolder = path.FirstComponent;
-            if (!assetFolder.Equals("Assets")) 
-                return null;
+            if (!assetFolder.Equals(UnityYamlConstants.AssetsFolder)) 
+                return false;
             
             var pathComponents = path.GetPathComponents();
 
-            var sb = new StringBuilder();
-            for (int i = 0; i < pathComponents.Length; i++)
-            {
-                if (i + 1 == pathComponents.Length)
-                {
-                    var name = path.NameWithoutExtension;
-                    sb.Append(name);
-                    extension = pathComponents[i].RemoveStart(name + ".");
-                    break;
-                }
+            extension = path.ExtensionWithDot;
+            fileName = path.NameWithoutExtension;
+            filePath =  String.Join("/", pathComponents);
 
-                sb.Append(pathComponents[i]);
-                sb.Append('/');
-            }
-            
-            return sb.ToString();
+            return true;
         }
     }
 }

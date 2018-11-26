@@ -8,14 +8,17 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
   {
     [SerializeField] 
     public string FilePath;
+    [SerializeField] 
+    public string FileName;
     [SerializeField]
     public string[] Path;
     [SerializeField]
     public readonly int[] RootIndices;
 
-    protected AbstractUsageElement(string filePath, string[] path, int[] rootIndices)
+    protected AbstractUsageElement(string filePath, string fileName, string[] path, int[] rootIndices)
     {
       FilePath = filePath;
+      FileName = fileName;
       Path = path;
       RootIndices = rootIndices;
     }

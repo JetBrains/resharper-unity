@@ -6,7 +6,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
   [Serializable]
   internal class PrefabElement : AbstractUsageElement
   {
-    public PrefabElement(string filePath, string[] path, int[] rootIndices) : base(filePath, path, rootIndices)
+    public PrefabElement(string filePath, string fileName, string[] path, int[] rootIndices) : base(filePath, fileName, path, rootIndices)
     {
     }
 

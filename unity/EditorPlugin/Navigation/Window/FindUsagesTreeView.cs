@@ -112,7 +112,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 
       var request = findResultItems[id].UsageElement;
       if (request is SceneElement sceneElement)
-        ShowUtil.ShowUsageOnScene(sceneElement.FilePath, sceneElement.Path, sceneElement.RootIndices);
+        ShowUtil.ShowUsageOnScene(sceneElement.FilePath, sceneElement.FileName, sceneElement.Path, sceneElement.RootIndices);
       
       if (request is PrefabElement prefabElement)
         ShowUtil.ShowPrefabUsage(prefabElement.FilePath, prefabElement.Path);

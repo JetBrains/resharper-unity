@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         public static RdFindUsageRequest ConvertToUnityModel(this FindUsageRequest request)
         {
-            return new RdFindUsageRequest(request.IsPrefab, request.ExpandInTreeView, request.FilePath, request.PathElements, request.RootIndices);
+            return new RdFindUsageRequest(request.IsPrefab, request.ExpandInTreeView, request.FilePath, request.FileName, request.PathElements, request.RootIndices);
         }
     }
 }

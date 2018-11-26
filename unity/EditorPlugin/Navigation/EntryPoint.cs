@@ -37,43 +37,34 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     {
       var modelValue = modelAndLifetime.Model;
       var connectionLifetime = modelAndLifetime.Lifetime;
-      modelValue.ShowGameObjectOnScene.View(connectionLifetime, (lt, findUsagesRequest) =>
+      modelValue.ShowGameObjectOnScene.Advise(connectionLifetime,  findUsagesRequest =>
       {
+        if (findUsagesRequest == null)
+          return;
+        
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          if (lt.IsTerminated)
-            return;
-
-          if (findUsagesRequest == null)
-            return;
-
           if (findUsagesRequest.IsPrefab)
           {
             ShowUtil.ShowPrefabUsage(findUsagesRequest.FilePath, findUsagesRequest.PathElements);
           }
           else
           {
-            ShowUtil.ShowUsageOnScene(findUsagesRequest.FilePath, findUsagesRequest.PathElements, findUsagesRequest.RootIndices);
+            ShowUtil.ShowUsageOnScene(findUsagesRequest.FilePath,  findUsagesRequest.FileName, findUsagesRequest.PathElements, findUsagesRequest.RootIndices);
           }
-          
-          modelValue.ShowGameObjectOnScene.SetValue(null);
         });
       });
       
-      modelValue.FindUsageResult.View(connectionLifetime, (lt, result) =>
+      modelValue.FindUsageResult.Advise(connectionLifetime, result =>
       {
+        if (result == null)
+          return;
+
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          if (result == null)
-            return;
-          
-          if (lt.IsTerminated)
-            return;
-          
           var window = EditorWindow.GetWindow<FindUsagesWindow>();
           window.SetDataToEditor(result);
           window.titleContent = new GUIContent ("Find usages");
-          modelValue.FindUsageResult.SetValue(null);
         });
       });
     }

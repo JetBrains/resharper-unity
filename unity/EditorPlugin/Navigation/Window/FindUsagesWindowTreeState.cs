@@ -26,11 +26,11 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       {
         if (request.IsPrefab)
         {
-          PrefabElements.Add(new PrefabElement(request.FilePath, request.PathElements, request.RootIndices));
+          PrefabElements.Add(new PrefabElement(request.FilePath, request.FileName, request.PathElements, request.RootIndices));
         }
         else
         {
-          SceneElements.Add(new SceneElement(request.FilePath, request.PathElements, request.RootIndices));
+          SceneElements.Add(new SceneElement(request.FilePath, request.FileName, request.PathElements, request.RootIndices));
         }
       }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using JetBrains.Interop.WinApi;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity

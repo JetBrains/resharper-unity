@@ -25,10 +25,11 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"StopPlayingAndRecompile"
     }
 
-    val FindUsageRequest = classdef {
+    val FindUsageRequest = structdef {
         field("isPrefab", bool)
         field("expandInTreeView", bool)
         field("filePath", string)
+        field("fileName", string)
         field("pathElements", array(string))
         field("rootIndices", array(int))
     }
@@ -74,8 +75,8 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         sink("notifyIsRecompileAndContinuePlaying", string)
         source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
 
-        property("showGameObjectOnScene", FindUsageRequest)
+        signal("findUsageResult", array(FindUsageRequest))
+        signal("showGameObjectOnScene", FindUsageRequest)
         property("unityProcessId", int)
-        property("findUsageResult", array(FindUsageRequest))
     }
 }

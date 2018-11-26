@@ -23,10 +23,11 @@ object EditorPluginModel: Root() {
         field("stackTrace", string)
     }
 
-    val RdFindUsageRequest = classdef {
+    val RdFindUsageRequest = structdef {
         field("isPrefab", bool)
         field("expandInTreeView", bool)
         field("filePath", string)
+        field("fileName", string)
         field("pathElements", array(string))
         field("rootIndices", array(int))
     }
@@ -88,8 +89,8 @@ object EditorPluginModel: Root() {
         property("play", bool)
         property("pause", bool)
         source("step", void)
-        property("showGameObjectOnScene", RdFindUsageRequest)
-        property("findUsageResult", array(RdFindUsageRequest))
+        signal("showGameObjectOnScene", RdFindUsageRequest)
+        signal("findUsageResult", array(RdFindUsageRequest))
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)

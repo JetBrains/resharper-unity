@@ -11,14 +11,13 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     public static void ShowPrefabUsage(string filePath, string[] path)
     {
       EditorUtility.FocusProjectWindow();
-      var prefab = AssetDatabase.LoadAssetAtPath(filePath + ".prefab", typeof(GameObject));
+      var prefab = AssetDatabase.LoadAssetAtPath(filePath, typeof(GameObject));
       Selection.activeObject = prefab;
       EditorGUIUtility.PingObject(prefab);
     }
     
-    public static void ShowUsageOnScene(string filePath, string[] path, int[] rootIndices)
+    public static void ShowUsageOnScene(string filePath, string sceneName, string[] path, int[] rootIndices)
     {
-      var sceneName = filePath.Split('/').Last();
       var sceneCount = SceneManager.sceneCount;
 
       bool wasFound = false;
@@ -41,7 +40,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       {
         if (EditorUtility.DisplayDialog("Find usages", "Do you want to load scene which contains usage?", "Ok", "No"))
         {
-          var scene = EditorSceneManager.OpenScene(filePath + ".unity", OpenSceneMode.Additive);
+          var scene = EditorSceneManager.OpenScene(filePath, OpenSceneMode.Additive);
           SelectUsageOnScene(scene, path, rootIndices, true);
         }
       }
