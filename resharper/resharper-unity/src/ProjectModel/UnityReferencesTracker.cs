@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             myChangeManager = changeManager;
             myProjects = projects;
 
-            scheduler.EnqueueTask(new SolutionLoadTask("Checking for Unity projects", SolutionLoadTaskKinds.Done,
+            scheduler.EnqueueTask(new SolutionLoadTask("Loading Unity project", SolutionLoadTaskKinds.Done,
                 AfterSolutionLoadDone));
         }
 
