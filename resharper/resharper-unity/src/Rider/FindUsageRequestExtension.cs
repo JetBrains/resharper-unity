@@ -5,19 +5,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     public static class FindUsageRequestExtension
     {
-        public static RdFindUsageRequestBase ConvertToUnityModel(this FindUsageRequestBase request)
+        public static RdFindUsageRequest ConvertToUnityModel(this FindUsageRequest request)
         {
-            if (request is FindUsageRequestScene requestScene)
-            {
-                return new RdFindUsageRequestScene(requestScene.LocalId, requestScene.ExpandInTreeView, requestScene.FilePath, requestScene.PathElements);
-            }
-
-            if (request is FindUsageRequestPrefab requestPrefab)
-            {
-                return new RdFindUsageRequestPrefab(requestPrefab.ExpandInTreeView, requestPrefab.FilePath, requestPrefab.PathElements);
-            }
-
-            return null;
+            return new RdFindUsageRequest(request.IsPrefab, request.ExpandInTreeView, request.FilePath, request.PathElements, request.RootIndices);
         }
     }
 }

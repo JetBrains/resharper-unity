@@ -6,12 +6,8 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
   [Serializable]
   internal class SceneElement : AbstractUsageElement
   {
-    [SerializeField] 
-    public string LocalId;
-
-    public SceneElement(string scenePath, string[] path, string localId) : base(scenePath, path)
+    public SceneElement(string scenePath, string[] path, int[] rootIndices) : base(scenePath, path, rootIndices)
     {
-      LocalId = localId;
     }
 
     public override string StartNodeImage => "SceneAsset Icon";

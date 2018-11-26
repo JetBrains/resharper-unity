@@ -10,11 +10,14 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     public string FilePath;
     [SerializeField]
     public string[] Path;
+    [SerializeField]
+    public readonly int[] RootIndices;
 
-    protected AbstractUsageElement(string filePath, string[] path)
+    protected AbstractUsageElement(string filePath, string[] path, int[] rootIndices)
     {
       FilePath = filePath;
       Path = path;
+      RootIndices = rootIndices;
     }
 
     public abstract string StartNodeImage { get; }

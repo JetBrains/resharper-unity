@@ -20,21 +20,19 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       
     }
     
-    public FindUsagesWindowTreeState(RdFindUsageRequestBase[] requests)
+    public FindUsagesWindowTreeState(RdFindUsageRequest[] requests)
     {
       foreach (var request in requests)
       {
-        if (request is RdFindUsageRequestScene requestScene)
+        if (request.IsPrefab)
         {
-          SceneElements.Add(new SceneElement(requestScene.FilePath, requestScene.PathElements, requestScene.LocalId));
+          PrefabElements.Add(new PrefabElement(request.FilePath, request.PathElements, request.RootIndices));
         }
-        
-        if (request is RdFindUsageRequestPrefab requestPrefab)
+        else
         {
-          PrefabElements.Add(new PrefabElement(requestPrefab.FilePath, requestPrefab.PathElements));
+          SceneElements.Add(new SceneElement(request.FilePath, request.PathElements, request.RootIndices));
         }
       }
-      Debug.Log("Create tree state with size: " + SceneElements.Count);
     }
   }
 }

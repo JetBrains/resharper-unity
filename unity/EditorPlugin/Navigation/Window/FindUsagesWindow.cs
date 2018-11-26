@@ -2,7 +2,9 @@ using System;
 using JetBrains.DataFlow;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace JetBrains.Rider.Unity.Editor.Navigation
 {
@@ -23,9 +25,8 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     }
 
 
-    public void SetDataToEditor(RdFindUsageRequestBase[] data)
+    public void SetDataToEditor(RdFindUsageRequest[] data)
     {
-      Debug.Log("New data arrived");
       myTreeViewState = new FindUsagesWindowTreeState(data);
       myTreeView = new FindUsagesTreeView(myTreeViewState);
       myTreeView.Reload();
@@ -36,16 +37,37 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     {
       if (myTreeViewState == null)
       {
-        Debug.Log("Was recreated");
         myTreeViewState = new FindUsagesWindowTreeState();
       }
 
       myTreeView = new FindUsagesTreeView(myTreeViewState);
     }
     
+    public void OnInspectorUpdate()
+    {
+      Repaint();
+    }
+
     void OnGUI()
     {
-      myTreeView?.OnGUI(new Rect(0, 0, position.width, position.height));
+      var count = SceneManager.sceneCount;
+      bool isDirty = false;
+      for (int i = 0; i < count; i++)
+      {
+        if (SceneManager.GetSceneAt(i).isDirty)
+          isDirty = true;
+      } 
+      if (isDirty)
+      {
+        var text = "Save scene and ask Rider to find usages again to get up-to-date results.";
+        var helpBox = GUILayoutUtility.GetRect(new GUIContent(text), EditorStyles.helpBox, GUILayout.MinHeight(40));
+        EditorGUI.HelpBox(helpBox, text, MessageType.Warning);
+        myTreeView?.OnGUI(new Rect(0, helpBox.height + 3, position.width, position.height - 3 - helpBox.height));
+      }
+      else
+      {
+        myTreeView?.OnGUI(new Rect(0, 0, position.width, position.height));
+      }
     }
   }
 }

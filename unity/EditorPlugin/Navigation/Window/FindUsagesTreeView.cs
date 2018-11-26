@@ -25,12 +25,10 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       var root = new FindUsagePathElement {id = 0, depth = -1, displayName = "Usages result:"};
 
       var sceneNode = CreateSceneSubTree();
-      if (sceneNode != null)
-        root.AddChild(sceneNode);
+      root.AddChild(sceneNode);
 
       var prefabNode = CreatePrefabSubTree();
-      if (prefabNode != null)
-        root.AddChild(prefabNode);
+      root.AddChild(prefabNode);
       
       SetupDepthsFromParentsAndChildren (root);
       return root;
@@ -38,10 +36,6 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 
     private TreeViewItem CreateSceneSubTree()
     {
-      if (myState.SceneElements.Count == 0)
-        return null;
-      
-      
       var scenes = new FindUsagePathElement() {id = 1, displayName = "Scenes"};
       CreateSubTree(scenes, myState.SceneElements.ToArray(), 3);
       return scenes;
@@ -49,9 +43,6 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     
     private TreeViewItem CreatePrefabSubTree()
     {
-      if (myState.PrefabElements.Count == 0)
-        return null;
-      
       var prefabs = new FindUsagePathElement() {id = 2, displayName = "Prefabs"};
       CreateSubTree(prefabs, myState.PrefabElements.ToArray(), 1_000_000_000);
       return prefabs;
@@ -121,10 +112,10 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 
       var request = findResultItems[id].UsageElement;
       if (request is SceneElement sceneElement)
-        EntryPoint.ShowUsageOnScene(sceneElement.FilePath, sceneElement.Path, sceneElement.LocalId);
+        ShowUtil.ShowUsageOnScene(sceneElement.FilePath, sceneElement.Path, sceneElement.RootIndices);
       
       if (request is PrefabElement prefabElement)
-        EntryPoint.ShowPrefabUsage(prefabElement.FilePath, prefabElement.Path);
+        ShowUtil.ShowPrefabUsage(prefabElement.FilePath, prefabElement.Path);
     }
   }
 }

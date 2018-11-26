@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
+using JetBrains.Util.dataStructures;
 using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -42,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var references = finder.FindReferences(declaredElement, declaredElement.GetSearchDomain(), NullProgressIndicator.Create())
                 .Where(t => t is IUnityYamlReference);
 
-            var result = new List<FindUsageRequestBase>();
+            var result = new List<FindUsageRequest>();
 
             foreach (var reference in references)
             {
@@ -64,69 +65,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return true;
         }
 
-        private FindUsageRequestBase CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
+        private FindUsageRequest CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
         {
-            var gameObjectDocument = currentReference.ComponentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject");
+            var gameObjectDocument = currentReference.ComponentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ?? currentReference.ComponentDocument;
 
             var sourceFile = gameObjectDocument?.GetSourceFile();
             if (sourceFile == null)
                 return null;
 
-            var pathElements = UnityObjectPsiUtil.GetGameObjectPathFromComponent(currentReference.ComponentDocument);
+            var pathElements = UnityObjectPsiUtil.GetGameObjectPathFromComponent(currentReference.ComponentDocument).RemoveEnd("\\").Split("\\");
+            var rootIndices = new FrugalLocalList<int>();
+            
+            // Constructing path of child indices
+            UnityObjectPsiUtil.ProcessToRoot(gameObjectDocument,(currentGameObject, modification) =>
+                {
+                    int rootOrder = -1;
+                    if (modification != null)
+                    {
+                        if (!int.TryParse(UnityObjectPsiUtil.GetValueFromModifications(modification, currentGameObject.GetFileId(), "m_RootOrder")
+                            , out rootOrder))
+                            rootOrder = -1;
+                    }
+                    if (rootOrder == -1)
+                    {
+                        var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(currentGameObject);
+                        var rootOrderAsString = transform.GetUnityObjectPropertyValue("m_RootOrder").AsString();
+                        if (!int.TryParse(rootOrderAsString, out rootOrder))
+                            rootOrder = -1;
+                    }
+                    rootIndices.Add(rootOrder);
+                });
+
             
             var pathFromAsset = GetPathFromAssetFolder(sourceFile, out var extension);
             bool needExpand = currentReference == selectedReference;
-          
-            if (extension.Equals("prefab", StringComparison.OrdinalIgnoreCase))
-            {
-                return new FindUsageRequestPrefab(needExpand, pathFromAsset, pathElements.RemoveEnd("/").Split('/'));
-            }
+            bool isPrefab = extension.Equals("prefab", StringComparison.OrdinalIgnoreCase);
+
+            var rootIndicesReversed = new int[rootIndices.Count];
+            for (int i = 0; i < rootIndices.Count; i++)
+                rootIndicesReversed[i] = rootIndices[rootIndices.Count - 1 - i];
             
-            if (extension.Equals("unity", StringComparison.OrdinalIgnoreCase))
-            {
-                var localId = gameObjectDocument.GetFileId();
-                if (localId == null)
-                    return null;
-                return new FindUsageRequestScene(localId, needExpand, pathFromAsset, pathElements.RemoveEnd("/").Split('/'));
-            }
-            
-            return null;
+            return new FindUsageRequest(isPrefab, needExpand, pathFromAsset, pathElements, rootIndicesReversed);
         }
 
-        private int GetChildIndex(IYamlDocument gameObject)
-        {
-            var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(gameObject);
-            var rootOrder = transform?.GetUnityObjectPropertyValue("m_RootOrder").AsString();
-            if (rootOrder == null)
-                return -1;
-            return int.Parse(rootOrder);
-        }
-
-//        private int GetChildIndexFromPrefab(IYamlDocument prefabGameObject)
-//        {
-//            var modification = prefabGameObject.GetUnityObjectPropertyValue("m_Modification") as IBlockMappingNode;
-//            var prefabModifications = modification?.FindMapEntryBySimpleKey("m_Modifications")?.Value as IBlockSequenceNode;
-//            if (prefabModifications == null)
-//                return -1;
-//
-//            // Since introducing prefab mode, Unity has restriction on prefab modification and
-//            // there is only one node with m_RootOrder name. For supporting previous versions, we handle
-//            // each m_RootOrder and check that fileId of target corresponds to root object
-//            foreach (var entry in prefabModifications.Entries)
-//            {
-//                
-//            }
-//            var nameEntry = prefabModifications.Entries.FirstOrDefault(
-//                t => ((t.Value as IBlockMappingNode)?.FindMapEntryBySimpleKey("propertyPath")?.Value as IPlainScalarNode)
-//                     ?.Text.GetText().Equals("m_Name") == true)?.Value as IBlockMappingNode;
-//        }
-//        
         private string GetPathFromAssetFolder([NotNull] IPsiSourceFile file, out string extension)
         {
             extension = null;
             var path = file.GetLocation().MakeRelativeTo(solutionDirectoryPath);
             var assetFolder = path.FirstComponent;
-            if (!assetFolder.Equals("Assets"))
+            if (!assetFolder.Equals("Assets")) 
                 return null;
             
             var pathComponents = path.GetPathComponents();
@@ -147,14 +134,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             
             return sb.ToString();
-        }
-    }
-
-    internal class PathElement
-    {
-        public PathElement(string name, object getChildIndex)
-        {
-            throw new NotImplementedException();
         }
     }
 }

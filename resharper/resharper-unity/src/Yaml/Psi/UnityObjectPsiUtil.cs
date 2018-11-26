@@ -96,15 +96,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
                     var prefabFile = (IYamlFile)sourceFile.GetDominantPsiFile<YamlLanguage>();
                     
-                    var prefabStartGameObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID);
+                    var prefabSourceObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID); // It can be component, game object or prefab
+                    // if it component we should query game object. 
+                    var prefabStartGameObject = prefabSourceObject.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ?? prefabSourceObject;
+
                     var localModifications = GetPrefabModification(prefabInstance);
                     ProcessPrefabFromToRoot(yamlFileCache, externalFilesModuleFactory, prefabStartGameObject, localModifications, selector);
                     currentGameObject = GetTransformFromPrefab(prefabInstance);
                 }
                 else
                 {
-                    selector(currentGameObject.GetUnityObjectDocumentFromFileIDProperty("m_GameObject"), modifications);
-                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty("m_Father");
+                    // TODO : check is currentGameObject transform or game object attached to this transform?
+                    selector(currentGameObject.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ?? currentGameObject, modifications);
+                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty("m_Father") 
+                                        ?? FindTransformComponentForGameObject(currentGameObject).GetUnityObjectDocumentFromFileIDProperty("m_Father");
                 }
             }
         }
@@ -118,44 +123,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [NotNull]
         public static string GetGameObjectPathFromComponent([NotNull] IYamlDocument componentDocument)
         {
-            var gameObjectDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject");
-            if (gameObjectDocument == null) // It should never happen (only when data is corrupted).
-                                            // This method calls from component of gameObject
-                return "INVALID";           // Each component has owner and owner must be gameobject (inside prefab too)
+            var gameObjectDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ?? componentDocument;
 
             var parts = new FrugalLocalList<string>();
-            ProcessToRoot(FindTransformComponentForGameObject(gameObjectDocument), (document, modification) =>
+            ProcessToRoot(gameObjectDocument, (document, modification) =>
             {
                 string name = null;
                 if (modification != null)
                 {
                     var documentId = document.GetFileId();
-                    if (documentId != null)
-                    {
-                        var modifications = modification?.FindMapEntryBySimpleKey("m_Modifications")?.Value as IBlockSequenceNode;
-                        if (modifications != null)
-                        {
-                            foreach (var element in modifications.Entries)
-                            {
-                                if (!(element.Value is IBlockMappingNode mod))
-                                    return;
-                                var type = (mod.FindMapEntryBySimpleKey("propertyPath")?.Value as IPlainScalarNode)
-                                    ?.Text.GetText();
-                                var target = mod.FindMapEntryBySimpleKey("target")?.Value?.AsFileID();
-                                if (type?.Equals("m_Name") == true && target?.fileID.Equals(documentId) == true)
-                                {
-                                    name = (mod.FindMapEntryBySimpleKey("value")?.Value as IPlainScalarNode)?.Text
-                                        .GetText();
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    name = GetValueFromModifications(modification, documentId, "m_Name");
                 }
                 else
                 {
                     name = document.GetUnityObjectPropertyValue("m_Name").AsString();
                 }
+
+                if (name?.Equals(string.Empty) == true)
+                    name = null;
                 parts.Add(name ?? "INVALID");
             });
 
@@ -181,7 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             return prefabInstanceMap?.FindMapEntryBySimpleKey("m_Modification")?.Value as IBlockMappingNode;
         }
 
-        public static IYamlDocument GetTransformFromPrefab(IYamlDocument prefabInstanceDocument)
+        private static IYamlDocument GetTransformFromPrefab(IYamlDocument prefabInstanceDocument)
         {
             // Prefab instance stores it's father in modification map
             var prefabModification = GetPrefabModification(prefabInstanceDocument);
@@ -265,24 +250,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             return null;
         }
 
-        [CanBeNull]
-        private static IYamlDocument GetParentTransformGameObject([CanBeNull] IYamlDocument gameObjectDocument)
+        public static string GetValueFromModifications(IBlockMappingNode modification, string targetFileId, string value)
         {
-            var transformDocument = FindTransformComponentForGameObject(gameObjectDocument);
-            
-            // Transform contains information about scene hierarchy (m_Children, m_Father)
-            return transformDocument?.GetUnityObjectDocumentFromFileIDProperty("m_Father");
-        }
+            if (targetFileId != null && modification.FindMapEntryBySimpleKey("m_Modifications")?.Value is IBlockSequenceNode modifications)
+            {
+                foreach (var element in modifications.Entries)
+                {
+                    if (!(element.Value is IBlockMappingNode mod))
+                        return null;
+                    var type = (mod.FindMapEntryBySimpleKey("propertyPath")?.Value as IPlainScalarNode)
+                        ?.Text.GetText();
+                    var target = mod.FindMapEntryBySimpleKey("target")?.Value?.AsFileID();
+                    if (type?.Equals(value) == true && target?.fileID.Equals(targetFileId) == true)
+                    {
+                        return (mod.FindMapEntryBySimpleKey("value")?.Value as IPlainScalarNode)?.Text.GetText();
+                    }
+                }
+            }
 
-        public static IYamlDocument GetGameObjectFromTransform([CanBeNull] IYamlDocument yamlDocument)
-        {
-            if (yamlDocument == null)
-                return null;
-            
-            // If transform belongs to gameObject it will contain m_GameObject
-            // If transform belongs to prefabInstance it will contain m_PrefabInstance
-             return yamlDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ??
-                    yamlDocument.GetUnityObjectDocumentFromFileIDProperty("m_PrefabInstance");
+            return null;
         }
     }
 }
