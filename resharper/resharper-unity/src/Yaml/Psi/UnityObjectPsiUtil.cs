@@ -134,7 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     var documentId = document.GetFileId();
                     name = GetValueFromModifications(modification, documentId, "m_Name");
                 }
-                else
+                if (name == null)
                 {
                     name = document.GetUnityObjectPropertyValue("m_Name").AsString();
                 }

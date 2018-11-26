@@ -120,8 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             AddFiles(builder, directory, "*.cs.meta");
             AddFiles(builder, directory, "*.prefab.meta");
             AddFiles(builder, directory, "*.unity.meta");
-            AddFiles(builder, directory, "*.unity");
-            AddFiles(builder, directory, "*.prefab");
+
             AddAssetFiles(directory);
 
             myFileSystemTracker.AdviseDirectoryChanges(myLifetime, directory, true, OnProjectDirectoryChange);

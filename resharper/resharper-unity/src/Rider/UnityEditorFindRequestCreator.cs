@@ -86,15 +86,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnityObjectPsiUtil.ProcessToRoot(gameObjectDocument,(currentGameObject, modification) =>
                 {
                     int rootOrder = -1;
+                    var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(currentGameObject);
                     if (modification != null)
                     {
-                        if (!int.TryParse(UnityObjectPsiUtil.GetValueFromModifications(modification, currentGameObject.GetFileId(), "m_RootOrder")
+                        if (!int.TryParse(UnityObjectPsiUtil.GetValueFromModifications(modification, transform.GetFileId(), "m_RootOrder")
                             , out rootOrder))
                             rootOrder = -1;
                     }
                     if (rootOrder == -1)
                     {
-                        var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(currentGameObject);
                         var rootOrderAsString = transform.GetUnityObjectPropertyValue("m_RootOrder").AsString();
                         if (!int.TryParse(rootOrderAsString, out rootOrder))
                             rootOrder = -1;
