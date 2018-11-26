@@ -19,22 +19,28 @@ using Lex;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
-    // TODO [Krasnotsvetov] all comments is out-of-date and incorrect
     public static class UnityObjectPsiUtil
     {
+        public static readonly string NameField = "m_Name";
+        public static readonly string ScriptField = "m_Script";
+        public static readonly string FatherField = "m_Father";
+        public static readonly string GameObjectField = "m_GameObject";
+        public static readonly string CorrespondingSourceObjectField = "m_CorrespondingSourceObject";
+        public static readonly string PrefabInstanceField = "m_PrefabInstance";
+        
         [NotNull]
         public static string GetComponentName([NotNull] IYamlDocument componentDocument)
         {
-            var name = componentDocument.GetUnityObjectPropertyValue("m_Name").AsString();
+            var name = componentDocument.GetUnityObjectPropertyValue(NameField).AsString();
             if (!string.IsNullOrWhiteSpace(name))
                 return name;
 
-            var scriptDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty("m_Script");
-            name = scriptDocument.GetUnityObjectPropertyValue("m_Name").AsString();
+            var scriptDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty(ScriptField);
+            name = scriptDocument.GetUnityObjectPropertyValue(NameField).AsString();
             if (!string.IsNullOrWhiteSpace(name))
                 return name;
 
-            var fileID = componentDocument.GetUnityObjectPropertyValue("m_Script").AsFileID();
+            var fileID = componentDocument.GetUnityObjectPropertyValue(ScriptField).AsFileID();
             if (fileID != null && fileID.IsExternal && fileID.IsMonoScript)
             {
                 var typeElement = GetTypeElementFromScriptAssetGuid(componentDocument.GetSolution(), fileID.guid);
@@ -50,7 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                    ?? "Component";
         }
 
-        
+        // Common method to process from startGameObject(or his component) to scene (or prefab) root elemment. Selector will be called for 
+        // each visited game object
         public static void ProcessToRoot([CanBeNull] IYamlDocument startGameObject, Action<IYamlDocument, IBlockMappingNode> selector)
         {
             if (startGameObject == null)
@@ -59,29 +66,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             var solution = startGameObject.GetSolution();
             var yamlFileCache = solution.GetComponent<MetaFileGuidCache>();
             var externalFilesModuleFactory = solution.GetComponent<UnityExternalFilesModuleFactory>();
-            // Common method for process prefab/scene. When we processing scene, we do not have modification. 
-            // If we process prefab, the root prefab do not have modification too
+
             ProcessPrefabFromToRoot(yamlFileCache, externalFilesModuleFactory, startGameObject, null, selector);
         }
 
         private static void ProcessPrefabFromToRoot(MetaFileGuidCache yamlFileCache, UnityExternalFilesModuleFactory externalFilesModuleFactory,
             IYamlDocument startGameObject, IBlockMappingNode modifications, Action<IYamlDocument, IBlockMappingNode> selector)
         {
+            // We can start traverse scene (or prefab) hierarchy from component/game object
+            // Each component has game object, only transform component know about parent
+            // If game object or component has m_CorrespondingSourceObject which is not zero, it means that all data stored in
+            // separated file (which is called prefab). All mofications for prefab is stored in current document in yaml document which can be found by
+            // m_PrefabInstance fileId
+            // So, if we meat component, we should check it for m_CorrespondingSourceObject. If we found it, we will traverse .prefab file and apply 
+            // modifications from m_PrefabInstance, then return to our file and continue traverse from parent of prefab
+            // If we meat component without m_CorrespondingSourceObject, we take it "m_GameObject", send to selector, then travers from parent which 
+            // is stored in transform for this game object
+            // If we meat game object, we send it to selector, then find transform and find parent via his transform and continue traverse.
+            // If parent can not be found, it means that we meat root node.
+            
+            
             if (startGameObject == null)
                 return;
             var currentGameObject = startGameObject;
             while (currentGameObject != null)
             {
-                var correspondingId = currentGameObject.GetUnityObjectPropertyValue("m_CorrespondingSourceObject")?.AsFileID();
-                string prefabInstanceId = currentGameObject.GetUnityObjectPropertyValue("m_PrefabInstance")?.AsFileID()?.fileID;
+                var correspondingId = currentGameObject.GetUnityObjectPropertyValue(CorrespondingSourceObjectField)?.AsFileID();
+                var prefabInstanceId = currentGameObject.GetUnityObjectPropertyValue(PrefabInstanceField)?.AsFileID();
                 if (correspondingId != null && correspondingId != FileID.Null)
                 {
                     // This should never happen, but data can be corrupted
-                    if (prefabInstanceId == null || prefabInstanceId.Equals("0"))
+                    if (prefabInstanceId == null || prefabInstanceId == FileID.Null)
                         return;
 
                     var file = (IYamlFile) currentGameObject.GetContainingFile();
-                    var prefabInstance = file.FindDocumentByAnchor(prefabInstanceId);
+                    var prefabInstance = file.FindDocumentByAnchor(prefabInstanceId.fileID);
                     
                     var prefabSourceFile = yamlFileCache.GetAssetFilePathsFromGuid(correspondingId.guid);
                     if (prefabSourceFile.Count > 1 || prefabSourceFile.Count == 0) 
@@ -98,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     
                     var prefabSourceObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID); // It can be component, game object or prefab
                     // if it component we should query game object. 
-                    var prefabStartGameObject = prefabSourceObject.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ?? prefabSourceObject;
+                    var prefabStartGameObject = prefabSourceObject.GetUnityObjectDocumentFromFileIDProperty(GameObjectField) ?? prefabSourceObject;
 
                     var localModifications = GetPrefabModification(prefabInstance);
                     ProcessPrefabFromToRoot(yamlFileCache, externalFilesModuleFactory, prefabStartGameObject, localModifications, selector);
@@ -106,10 +125,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 }
                 else
                 {
-                    // TODO : check is currentGameObject transform or game object attached to this transform?
-                    selector(currentGameObject.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ?? currentGameObject, modifications);
-                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty("m_Father") 
-                                        ?? FindTransformComponentForGameObject(currentGameObject).GetUnityObjectDocumentFromFileIDProperty("m_Father");
+                    
+                    selector(currentGameObject.GetUnityObjectDocumentFromFileIDProperty(GameObjectField) ?? currentGameObject, modifications);
+                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty(FatherField) 
+                                        ?? FindTransformComponentForGameObject(currentGameObject).GetUnityObjectDocumentFromFileIDProperty(FatherField);
                 }
             }
         }
@@ -123,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [NotNull]
         public static string GetGameObjectPathFromComponent([NotNull] IYamlDocument componentDocument)
         {
-            var gameObjectDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ?? componentDocument;
+            var gameObjectDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty(GameObjectField) ?? componentDocument;
 
             var parts = new FrugalLocalList<string>();
             ProcessToRoot(gameObjectDocument, (document, modification) =>
@@ -132,11 +151,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 if (modification != null)
                 {
                     var documentId = document.GetFileId();
-                    name = GetValueFromModifications(modification, documentId, "m_Name");
+                    name = GetValueFromModifications(modification, documentId, NameField);
                 }
                 if (name == null)
                 {
-                    name = document.GetUnityObjectPropertyValue("m_Name").AsString();
+                    name = document.GetUnityObjectPropertyValue(NameField).AsString();
                 }
 
                 if (name?.Equals(string.Empty) == true)

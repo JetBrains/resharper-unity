@@ -12,6 +12,9 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
   {
     [SerializeField]
     public FindUsagesWindowTreeState myTreeViewState;
+
+    [SerializeField]
+    public bool IsDirty = false;
     
     [NonSerialized]
     private FindUsagesTreeView myTreeView;
@@ -27,6 +30,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 
     public void SetDataToEditor(RdFindUsageRequest[] data)
     {
+      IsDirty = false;
       myTreeViewState = new FindUsagesWindowTreeState(data);
       myTreeView = new FindUsagesTreeView(myTreeViewState);
       myTreeView.Reload();
@@ -51,13 +55,12 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     void OnGUI()
     {
       var count = SceneManager.sceneCount;
-      bool isDirty = false;
       for (int i = 0; i < count; i++)
       {
-        if (SceneManager.GetSceneAt(i).isDirty)
-          isDirty = true;
+        if (SceneManager.GetSceneAt(i).isDirty) 
+          IsDirty = true; 
       } 
-      if (isDirty)
+      if (IsDirty) // the data can be out-of-date, notify user to update it from Rider
       {
         var text = "Save scene and ask Rider to find usages again to get up-to-date results.";
         var helpBox = GUILayoutUtility.GetRect(new GUIContent(text), EditorStyles.helpBox, GUILayout.MinHeight(40));

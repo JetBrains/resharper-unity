@@ -68,10 +68,11 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
           return;
 
         toSelect = transform.GetChild(rootIndices[i]).gameObject;
-        if (!toSelect.name.Equals(path[i]))
+        if (!toSelect.name.Equals(path[i])) // check that object is same (with false-positives, but we warn user if scene is dirty)
           return;
       }
 
+      // Bring scene hierarchy and scene view to front
       GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
       GUI.BringWindowToFront(EditorWindow
         .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());
