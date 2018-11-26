@@ -46,12 +46,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             if (file == null || anchor == null)
                 return null;
 
+            var searcher = new StringSearcher(anchor, true);
             foreach (var document in file.DocumentsEnumerable)
             {
-                var properties = GetDocumentBlockNodeProperties(document.BlockNode);
-                var text = properties?.AnchorProperty?.Text?.GetText() ?? string.Empty;
-                if (text == anchor)
-                    return document;
+                // Don't open chameleons unless we have to
+                // TODO: GetTextAsBuffer is not cheap - it will allocate a StringBuilder + string
+                // But then, FindDocumentByAnchor is hopelessly naive
+                if (searcher.Find(document.GetTextAsBuffer()) >= 0)
+                {
+                    var properties = GetDocumentBlockNodeProperties(document.BlockNode);
+                    if (properties?.AnchorProperty?.Text?.CompareBufferText(anchor) == true)
+                        return document;
+                }
             }
 
             return null;
@@ -113,6 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [CanBeNull]
         private static INodeProperties GetDocumentBlockNodeProperties([CanBeNull] INode documentBlockNode)
         {
+            // Careful. This will open chameleons
             if (documentBlockNode is IBlockSequenceNode sequenceNode)
                 return sequenceNode.Properties;
             if (documentBlockNode is IBlockMappingNode mappingNode)

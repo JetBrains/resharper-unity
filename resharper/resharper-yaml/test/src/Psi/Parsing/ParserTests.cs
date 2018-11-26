@@ -94,6 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
     // 7.2 Empty Nodes
     [TestCase("EmptyNodes")]
     [TestCase("CompletelyEmptyFlowNodes")]
+    [TestCase("EmptyImplicitBlockValueWithTrailingWhitespace")]
 
     // 7.3 Flow Scalar Styles
     // 7.3.1 Double-quoted style

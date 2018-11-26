@@ -1,5 +1,4 @@
-﻿using JetBrains.ReSharper.Psi.Parsing;
-using JetBrains.Text;
+﻿using JetBrains.Text;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {

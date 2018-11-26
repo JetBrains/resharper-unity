@@ -1,12 +1,12 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       IBlockMappingEntry
         IPlainScalarNode
           YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:block mapping)
         YamlTokenType+FixedTokenElement(type:COLON, text::)
-        IBlockMappingNode
+        ChameleonBlockMappingNode
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text: )
           IBlockMappingEntry
@@ -16,6 +16,6 @@ IYamlFile
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IPlainScalarNode
               YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:value)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

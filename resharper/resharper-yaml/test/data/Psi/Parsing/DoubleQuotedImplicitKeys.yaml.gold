@@ -1,7 +1,7 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IBlockMappingNode
+    ChameleonBlockMappingNode
       IBlockMappingEntry
         IDoubleQuotedScalarNode
           YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"implicit block key")
@@ -25,5 +25,5 @@ IYamlFile
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           YamlTokenType+GenericTokenElement(type:INDENT, text: )
           YamlTokenType+FixedTokenElement(type:RBRACK, text:])
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 
