@@ -24,21 +24,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private readonly ISolution mySolution;
         private readonly UnityHost myUnityHost;
-        private readonly FileSystemPath solutionDirectoryPath;
+        private readonly FileSystemPath mySolutionDirectoryPath;
 
         public UnityEditorFindRequestCreator(ISolution solution, UnityHost unityHost)
         {
             mySolution = solution;
             myUnityHost = unityHost;
-            solutionDirectoryPath = solution.SolutionDirectory;
+            mySolutionDirectoryPath = solution.SolutionDirectory;
         }
 
-        public bool CreateRequestToUnity(IUnityYamlReference yamlReference, bool focusUnity)
+        public bool CreateRequestToUnity([NotNull] IUnityYamlReference yamlReference, bool focusUnity)
         {
             var declaredElement = yamlReference.Resolve().DeclaredElement;
             if (declaredElement == null)
                 return false;
+            
+            return CreateRequestToUnity(declaredElement, yamlReference, focusUnity);
+        }
 
+        public bool CreateRequestToUnity([NotNull] IDeclaredElement declaredElement, [CanBeNull] IUnityYamlReference selectedReference, bool focusUnity)
+        {
             var finder = mySolution.GetPsiServices().Finder;
             var references = finder.FindReferences(declaredElement, declaredElement.GetSearchDomain(), NullProgressIndicator.Create())
                 .Where(t => t is IUnityYamlReference);
@@ -47,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             foreach (var reference in references)
             {
-                var request = CreateRequest((reference as IUnityYamlReference).NotNull("currentReference != null"), yamlReference);
+                var request = CreateRequest((reference as IUnityYamlReference).NotNull("currentReference != null"), selectedReference);
                 if (request != null)
                     result.Add(request);
             }
@@ -60,11 +65,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 UnityFocusUtil.FocusUnity(myUnityHost.GetValue(t => t.UnityProcessId.Value));
             }
             
-            myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Set(CreateRequest(yamlReference, null)));
+            if (selectedReference != null)
+                myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Set(CreateRequest(selectedReference, null)));
             myUnityHost.PerformModelAction(t => t.FindUsageResult.Set(result.ToArray()));
             return true;
         }
-
+        
         private FindUsageRequest CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
         {
             var gameObjectDocument = currentReference.ComponentDocument.GetUnityObjectDocumentFromFileIDProperty("m_GameObject") ?? currentReference.ComponentDocument;
@@ -111,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private string GetPathFromAssetFolder([NotNull] IPsiSourceFile file, out string extension)
         {
             extension = null;
-            var path = file.GetLocation().MakeRelativeTo(solutionDirectoryPath);
+            var path = file.GetLocation().MakeRelativeTo(mySolutionDirectoryPath);
             var assetFolder = path.FirstComponent;
             if (!assetFolder.Equals("Assets")) 
                 return null;

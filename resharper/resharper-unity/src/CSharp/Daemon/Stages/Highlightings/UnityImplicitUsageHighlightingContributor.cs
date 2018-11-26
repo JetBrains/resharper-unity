@@ -108,20 +108,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             if (textControl != null)
             {
 
+                var result = new List<BulbMenuItem>();
                 if (declaration is IClassLikeDeclaration classDeclaration)
                 {
                     var fix = new GenerateUnityEventFunctionsFix(classDeclaration);
-                    return new[]
-                    {
+                    result.Add(
                         new BulbMenuItem(new IntentionAction.MyExecutableProxi(fix, Solution, textControl),
                             "Generate Unity event functions", PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id,
                             BulbMenuAnchors.FirstClassContextItems)
-                    };
+                    );
                 }
 
                 if (declaration is IMethodDeclaration methodDeclaration)
                 {
-                    var result = new List<BulbMenuItem>();
+                    
                     var declaredElement = methodDeclaration.DeclaredElement;
 
                     if (declaredElement != null)
@@ -151,20 +151,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                                 documentationNavigationAction.Text, BulbThemedIcons.ContextAction.Id,
                                 BulbMenuAnchors.FirstClassContextItems));
                         }
-                        else
-                        {
-                            var unityNavigation = new UnityFindUsagesNavigationAction(declaredElement,unityApi);
-                            result.Add(new BulbMenuItem(
-                                new IntentionAction.MyExecutableProxi(unityNavigation, Solution, textControl),
-                                unityNavigation.Text, BulbThemedIcons.ContextAction.Id,
-                                BulbMenuAnchors.FirstClassContextItems));
-                        }
-
-                        return result;
+                        
+                        
                     }
                 }
+
+                result.AddRange(CreateAdditionalMenuItem(declaration, unityApi, textControl));
+                return result;
             }
 
+            return EmptyList<BulbMenuItem>.Enumerable;
+        }
+
+        public virtual IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api, ITextControl textControl)
+        {
             return EmptyList<BulbMenuItem>.Enumerable;
         }
         
@@ -183,25 +183,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             if (type == null) return null;
 
             return Equals(type.GetClrName(), PredefinedType.IENUMERATOR_FQN);
-        }
-
-        internal class UnityFindUsagesNavigationAction : BulbActionBase
-        {
-            private readonly IMethod myMethod;
-            private readonly UnityApi myUnityApi;
-
-            public UnityFindUsagesNavigationAction(IMethod method, UnityApi unityApi)
-            {
-                myMethod = method;
-                myUnityApi = unityApi;
-            }
-            
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
-            {
-                return null;
-            }
-
-            public override string Text => "Show usages in Unity";
         }
         
         internal class DocumentationNavigationAction : BulbActionBase

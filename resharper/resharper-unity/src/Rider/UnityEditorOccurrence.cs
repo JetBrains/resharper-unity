@@ -23,7 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     public class UnityEditorOccurrence : ReferenceOccurrence
     {
-        
         private readonly IUnityYamlReference myUnityEventTargetReference;
         public UnityEditorOccurrence([NotNull] ITreeNode treeNode, IUnityYamlReference unityEventTargetReference,
             OccurrenceType occurrenceType)
