@@ -21,6 +21,7 @@ using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
@@ -40,6 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly IUnitTestElementIdFactory myIDFactory;
         private readonly ISolutionSaver myRiderSolutionSaver;
         private readonly UnityRefresher myUnityRefresher;
+        private readonly NotificationsModel myNotificationsModel;
+        private readonly UnityHost myUnityHost;
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
@@ -50,7 +53,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             NUnitTestProvider unitTestProvider, 
             IUnitTestElementIdFactory idFactory,
             ISolutionSaver riderSolutionSaver,
-            UnityRefresher unityRefresher
+            UnityRefresher unityRefresher,
+            NotificationsModel notificationsModel,
+            UnityHost unityHost
             )
         {
             mySolution = solution;
@@ -60,6 +65,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myIDFactory = idFactory;
             myRiderSolutionSaver = riderSolutionSaver;
             myUnityRefresher = unityRefresher;
+            myNotificationsModel = notificationsModel;
+            myUnityHost = unityHost;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
         }
 
@@ -133,6 +140,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         if (!result.Result)
                         {
                             tcs.SetException(new Exception("There are errors during compilation in Unity."));
+                            
+                            var notification = new RdNotificationEntry("Compilation failed", "Scripts compilation in Unity failed, so tests were not started.", true, RdNotificationEntryType.INFO);
+                            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RunViaUnityEditorStrategy compilation failed", () => myNotificationsModel.Notification.Fire(notification));
+                            myUnityHost.PerformModelAction(model => model.ActivateUnityLogView.Fire());
                         }
                         else
                         {

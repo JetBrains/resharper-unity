@@ -7,7 +7,7 @@ import com.jetbrains.rider.util.idea.getLogger
 import com.jetbrains.rider.util.reactive.whenTrue
 
 class UnityToolWindowManager(project: Project,
-                             private val host: UnityHost,
+                             host: UnityHost,
                              private val unityToolWindowFactory: UnityToolWindowFactory)
     : LifetimedProjectComponent(project) {
     companion object {
@@ -29,6 +29,11 @@ class UnityToolWindowManager(project: Project,
             val context = unityToolWindowFactory.getOrCreateContext()
 
             context.addEvent(message)
+        }
+
+        host.model.activateUnityLogView.advise(componentLifetime){
+            val context = unityToolWindowFactory.getOrCreateContext()
+            context.activateToolWindowIfNotActive()
         }
     }
 }
