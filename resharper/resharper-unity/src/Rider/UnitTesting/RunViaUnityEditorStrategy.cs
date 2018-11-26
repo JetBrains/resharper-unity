@@ -166,16 +166,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             var refreshTask = locks.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, async () =>
             {
-                var working = true;
+                var lifetimeDef = lifetime.CreateNested();
                 myRiderSolutionSaver.Save(lifetime, mySolution, () =>
                 {
-                    myUnityRefresher.Refresh(false).GetAwaiter().OnCompleted(()=>{working = false;});
+                    myUnityRefresher.Refresh(false).GetAwaiter().OnCompleted(()=>{ lifetimeDef.Terminate(); });
                 });
-                while (working)
+                while (lifetimeDef.Lifetime.IsAlive)
                 {
-                    if (!lifetime.IsAlive)
-                        return;
-                    await Task.Delay(10);
+                    await Task.Delay(10, lifetimeDef.Lifetime);
                 }
             });
             
@@ -201,7 +199,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             }, locks.Tasks.UnguardedMainThreadScheduler);
             while (lifetimeDefinition.Lifetime.IsAlive)
             {
-                await Task.Delay(50);
+                await Task.Delay(50, lifetimeDefinition.Lifetime);
             }
         }
 
