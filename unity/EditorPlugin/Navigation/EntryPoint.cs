@@ -55,7 +55,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
         });
       });
       
-      modelValue.FindUsageResult.Advise(connectionLifetime, result =>
+      modelValue.FindUsageResults.Advise(connectionLifetime, result =>
       {
         if (result == null)
           return;

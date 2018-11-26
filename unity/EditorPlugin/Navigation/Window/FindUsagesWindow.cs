@@ -28,7 +28,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     }
 
 
-    public void SetDataToEditor(RdFindUsageRequest[] data)
+    public void SetDataToEditor(RdFindUsageResult[] data)
     {
       IsDirty = false;
       myTreeViewState = new FindUsagesWindowTreeState(data);
@@ -65,7 +65,9 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
         var text = "Save scene and ask Rider to find usages again to get up-to-date results.";
         var helpBox = GUILayoutUtility.GetRect(new GUIContent(text), EditorStyles.helpBox, GUILayout.MinHeight(40));
         EditorGUI.HelpBox(helpBox, text, MessageType.Warning);
-        myTreeView?.OnGUI(new Rect(0, helpBox.height + 3, position.width, position.height - 3 - helpBox.height));
+        var space = GUILayoutUtility.GetRect(new GUIContent("-"), EditorStyles.label);
+        
+        myTreeView?.OnGUI(new Rect(0, helpBox.height + space.height, position.width, position.height - space.height - helpBox.height));
       }
       else
       {

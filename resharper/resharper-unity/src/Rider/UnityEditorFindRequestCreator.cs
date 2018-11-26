@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var finder = mySolution.GetPsiServices().Finder;
             var references = finder.FindAllReferences(declaredElement).OfType<IUnityYamlReference>();
 
-            var result = new List<FindUsageRequest>();
+            var result = new List<FindUsageResult>();
 
             foreach (var reference in references)
             {
@@ -66,11 +66,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             
             if (selectedReference != null)
                 myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(CreateRequest(selectedReference, null)));
-            myUnityHost.PerformModelAction(t => t.FindUsageResult.Fire(result.ToArray()));
+            myUnityHost.PerformModelAction(t => t.FindUsageResults.Fire(result.ToArray()));
             return true;
         }
         
-        private FindUsageRequest CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
+        private FindUsageResult CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
         {
             var gameObjectDocument = currentReference.ComponentDocument.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty) ?? currentReference.ComponentDocument;
 
@@ -107,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             bool needExpand = currentReference == selectedReference;
             bool isPrefab = extension.Equals(UnityYamlConstants.Prefab, StringComparison.OrdinalIgnoreCase);
             
-            return new FindUsageRequest(isPrefab, needExpand, pathFromAsset, fileName, pathElements, rootIndices.ToArray().Reverse().ToArray());
+            return new FindUsageResult(isPrefab, needExpand, pathFromAsset, fileName, pathElements, rootIndices.ToArray().Reverse().ToArray());
         }
 
         private bool GetPathFromAssetFolder([NotNull] IPsiSourceFile file, out string filePath, out string fileName, out string extension)

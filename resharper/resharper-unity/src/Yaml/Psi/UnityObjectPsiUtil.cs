@@ -21,26 +21,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
     public static class UnityObjectPsiUtil
     {
-        public static readonly string NameField = "m_Name";
-        public static readonly string ScriptField = "m_Script";
-        public static readonly string FatherField = "m_Father";
-        public static readonly string GameObjectField = "m_GameObject";
-        public static readonly string CorrespondingSourceObjectField = "m_CorrespondingSourceObject";
-        public static readonly string PrefabInstanceField = "m_PrefabInstance";
-        
         [NotNull]
         public static string GetComponentName([NotNull] IYamlDocument componentDocument)
         {
-            var name = componentDocument.GetUnityObjectPropertyValue(NameField).AsString();
+            var name = componentDocument.GetUnityObjectPropertyValue(UnityYamlConstants.NameProperty).AsString();
             if (!string.IsNullOrWhiteSpace(name))
                 return name;
 
-            var scriptDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty(ScriptField);
-            name = scriptDocument.GetUnityObjectPropertyValue(NameField).AsString();
+            var scriptDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.ScriptProperty);
+            name = scriptDocument.GetUnityObjectPropertyValue(UnityYamlConstants.NameProperty).AsString();
             if (!string.IsNullOrWhiteSpace(name))
                 return name;
 
-            var fileID = componentDocument.GetUnityObjectPropertyValue(ScriptField).AsFileID();
+            var fileID = componentDocument.GetUnityObjectPropertyValue(UnityYamlConstants.ScriptProperty).AsFileID();
             if (fileID != null && fileID.IsExternal && fileID.IsMonoScript)
             {
                 var typeElement = GetTypeElementFromScriptAssetGuid(componentDocument.GetSolution(), fileID.guid);
@@ -91,8 +84,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             var currentGameObject = startGameObject;
             while (currentGameObject != null)
             {
-                var correspondingId = currentGameObject.GetUnityObjectPropertyValue(CorrespondingSourceObjectField)?.AsFileID();
-                var prefabInstanceId = currentGameObject.GetUnityObjectPropertyValue(PrefabInstanceField)?.AsFileID();
+                var correspondingId = currentGameObject.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty)?.AsFileID();
+                var prefabInstanceId = currentGameObject.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty)?.AsFileID();
                 if (correspondingId != null && correspondingId != FileID.Null)
                 {
                     // This should never happen, but data can be corrupted
@@ -117,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     
                     var prefabSourceObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID); // It can be component, game object or prefab
                     // if it component we should query game object. 
-                    var prefabStartGameObject = prefabSourceObject.GetUnityObjectDocumentFromFileIDProperty(GameObjectField) ?? prefabSourceObject;
+                    var prefabStartGameObject = prefabSourceObject.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty) ?? prefabSourceObject;
 
                     var localModifications = GetPrefabModification(prefabInstance);
                     ProcessPrefabFromToRoot(yamlFileCache, externalFilesModuleFactory, prefabStartGameObject, localModifications, selector);
@@ -126,9 +119,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 else
                 {
                     
-                    selector(currentGameObject.GetUnityObjectDocumentFromFileIDProperty(GameObjectField) ?? currentGameObject, modifications);
-                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty(FatherField) 
-                                        ?? FindTransformComponentForGameObject(currentGameObject).GetUnityObjectDocumentFromFileIDProperty(FatherField);
+                    selector(currentGameObject.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty) ?? currentGameObject, modifications);
+                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.FatherProperty) 
+                                        ?? FindTransformComponentForGameObject(currentGameObject).GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.FatherProperty);
                 }
             }
         }
@@ -142,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [NotNull]
         public static string GetGameObjectPathFromComponent([NotNull] IYamlDocument componentDocument)
         {
-            var gameObjectDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty(GameObjectField) ?? componentDocument;
+            var gameObjectDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty) ?? componentDocument;
 
             var parts = new FrugalLocalList<string>();
             ProcessToRoot(gameObjectDocument, (document, modification) =>
@@ -151,11 +144,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 if (modification != null)
                 {
                     var documentId = document.GetFileId();
-                    name = GetValueFromModifications(modification, documentId, NameField);
+                    name = GetValueFromModifications(modification, documentId, UnityYamlConstants.NameProperty);
                 }
                 if (name == null)
                 {
-                    name = document.GetUnityObjectPropertyValue(NameField).AsString();
+                    name = document.GetUnityObjectPropertyValue(UnityYamlConstants.NameProperty).AsString();
                 }
 
                 if (name?.Equals(string.Empty) == true)
@@ -179,10 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         private static IBlockMappingNode GetPrefabModification(IYamlDocument yamlDocument)
         {
             // Prefab instance has a map of modifications, that stores delta of instance and prefab
-            var prefabInstanceMap = (yamlDocument.BlockNode as IBlockMappingNode)
-                ?.FindMapEntryBySimpleKey("PrefabInstance")?.Value as IBlockMappingNode;
-
-            return prefabInstanceMap?.FindMapEntryBySimpleKey("m_Modification")?.Value as IBlockMappingNode;
+            return yamlDocument.GetUnityObjectPropertyValue(UnityYamlConstants.ModificationProperty) as IBlockMappingNode;
         }
 
         private static IYamlDocument GetTransformFromPrefab(IYamlDocument prefabInstanceDocument)
@@ -190,7 +180,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             // Prefab instance stores it's father in modification map
             var prefabModification = GetPrefabModification(prefabInstanceDocument);
 
-            var fileID = prefabModification?.FindMapEntryBySimpleKey("m_TransformParent")?.Value.AsFileID();
+            var fileID = prefabModification?.FindMapEntryBySimpleKey(UnityYamlConstants.TransformParentProperty)?.Value.AsFileID();
             if (fileID == null)
                 return null;
 
@@ -260,7 +250,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     {
                         var component = file.FindDocumentByAnchor(componentFileID.fileID);
                         var componentName = component.GetUnityObjectTypeFromRootNode();
-                        if (componentName != null && (componentName.Equals("RectTransform") || componentName.Equals("Transform")))
+                        if (componentName != null && (componentName.Equals(UnityYamlConstants.RectTransformComponent) || componentName.Equals(UnityYamlConstants.TransformComponent)))
                             return component;
                     }
                 }
@@ -271,18 +261,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public static string GetValueFromModifications(IBlockMappingNode modification, string targetFileId, string value)
         {
-            if (targetFileId != null && modification.FindMapEntryBySimpleKey("m_Modifications")?.Value is IBlockSequenceNode modifications)
+            if (targetFileId != null && modification.FindMapEntryBySimpleKey(UnityYamlConstants.ModificationsProperty)?.Value is IBlockSequenceNode modifications)
             {
                 foreach (var element in modifications.Entries)
                 {
                     if (!(element.Value is IBlockMappingNode mod))
                         return null;
-                    var type = (mod.FindMapEntryBySimpleKey("propertyPath")?.Value as IPlainScalarNode)
+                    var type = (mod.FindMapEntryBySimpleKey(UnityYamlConstants.PropertyPathProperty)?.Value as IPlainScalarNode)
                         ?.Text.GetText();
-                    var target = mod.FindMapEntryBySimpleKey("target")?.Value?.AsFileID();
+                    var target = mod.FindMapEntryBySimpleKey(UnityYamlConstants.TargetProperty)?.Value?.AsFileID();
                     if (type?.Equals(value) == true && target?.fileID.Equals(targetFileId) == true)
                     {
-                        return (mod.FindMapEntryBySimpleKey("value")?.Value as IPlainScalarNode)?.Text.GetText();
+                        return (mod.FindMapEntryBySimpleKey(UnityYamlConstants.ValueProperty)?.Value as IPlainScalarNode)?.Text.GetText();
                     }
                 }
             }

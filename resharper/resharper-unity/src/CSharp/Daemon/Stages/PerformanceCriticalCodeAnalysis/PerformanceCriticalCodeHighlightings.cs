@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DataFlow;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
@@ -129,7 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
     [DaemonTooltipProvider(typeof(PerformanceCriticalCodeHighlightingTooltipProvider))]
-    public class PerformanceHighlighting: PerformanceHighlightingBase, ILineMarkerInfo
+    public class PerformanceHighlighting: PerformanceHighlightingBase, IActiveLineMarkerInfo
     {
         private readonly DocumentRange myRange;
         public const string SEVERITY_ID = "Unity.PerformanceCriticalCodeHighlighting";
@@ -148,6 +149,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public string RendererId => null;
         public int Thickness => 3;
         public LineMarkerPosition Position => LineMarkerPosition.LEFT;
+        public ExecutableItem LeftClick() => null;
+
+        public string Tooltip => "Frequently called method";
     }
     
     

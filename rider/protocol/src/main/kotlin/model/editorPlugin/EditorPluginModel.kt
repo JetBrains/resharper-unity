@@ -2,10 +2,6 @@ package model.editorPlugin
 
 import com.jetbrains.rider.generator.nova.*
 import com.jetbrains.rider.generator.nova.PredefinedType.*
-import com.jetbrains.rider.generator.nova.csharp.CSharp50Generator
-import com.jetbrains.rider.generator.nova.kotlin.Kotlin11Generator
-
-import java.io.File
 
 @Suppress("unused")
 object EditorPluginModel: Root() {
@@ -23,7 +19,7 @@ object EditorPluginModel: Root() {
         field("stackTrace", string)
     }
 
-    val RdFindUsageRequest = structdef {
+    val RdFindUsageResult = structdef {
         field("isPrefab", bool)
         field("expandInTreeView", bool)
         field("filePath", string)
@@ -89,8 +85,8 @@ object EditorPluginModel: Root() {
         property("play", bool)
         property("pause", bool)
         source("step", void)
-        signal("showGameObjectOnScene", RdFindUsageRequest)
-        signal("findUsageResult", array(RdFindUsageRequest))
+        signal("showGameObjectOnScene", RdFindUsageResult)
+        signal("findUsageResults", array(RdFindUsageResult))
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)
