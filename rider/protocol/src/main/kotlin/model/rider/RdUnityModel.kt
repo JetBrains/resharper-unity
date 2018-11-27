@@ -36,6 +36,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
     init {
         sink("activateRider", void)
+        sink("activateUnityLogView", void)
 
         property("editorState", EditorState)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
