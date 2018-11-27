@@ -239,7 +239,8 @@ namespace JetBrains.Rider.Unity.Editor
     {
       try
       {
-        var riderProtocolController = new RiderProtocolController(MainThreadDispatcher.Instance, lifetime);
+        var dispatcher = MainThreadDispatcher.Instance;
+        var riderProtocolController = new RiderProtocolController(dispatcher, lifetime);
         list.Add(new ProtocolInstance(riderProtocolController.Wire.Port, solutionFileName));
 
         var serializers = new Serializers();
@@ -259,11 +260,13 @@ namespace JetBrains.Rider.Unity.Editor
           InitEditorLogPath(model);
           AdviseScriptCompilationDuringPlay(model, connectionLifetime);
 
+          model.UnityProcessId.Set(Process.GetCurrentProcess().Id);
           model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
           model.ApplicationPath.SetValue(EditorApplication.applicationPath);
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
           model.ApplicationVersion.SetValue(Application.unityVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
+          
           if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
             model.NotifyIsRecompileAndContinuePlaying.Fire("General");
           else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
@@ -280,8 +283,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
-    }
-
+    } 
     private static void AdviseScriptCompilationDuringPlay(EditorPluginModel model, Lifetime lifetime)
     {
       model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime,

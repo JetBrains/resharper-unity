@@ -1,13 +1,24 @@
+using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
+using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
+using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Features.CodeInsights;
 using JetBrains.ReSharper.Host.Features.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
@@ -69,5 +80,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 displayName, displayName, codeInsightsProvider, declaredElement, myIconHost.Transform(codeInsightsProvider.IconId), CreateBulbItemsForUnityDeclaration(element)));
         }
 
+
+        public override IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api, ITextControl textControl)
+        {
+            var declaredElement = declaration.DeclaredElement;
+            if (declaredElement != null && (declaredElement is IMethod method && !api.IsEventFunction(method) ||
+                declaration is IClassDeclaration))
+            {
+                var action = new UnityFindUsagesNavigationAction(declaredElement, declaration.GetSolution().GetComponent<UnityEditorFindRequestCreator>());
+                return new[]
+                {
+                    new BulbMenuItem(
+                        new IntentionAction.MyExecutableProxi(action, Solution, textControl),
+                        action.Text, BulbThemedIcons.ContextAction.Id,
+                        BulbMenuAnchors.FirstClassContextItems)
+                };
+            }
+
+            return EmptyList<BulbMenuItem>.Instance;
+        }
+
+        internal class UnityFindUsagesNavigationAction : BulbActionBase
+        {
+            private readonly IDeclaredElement myDeclaredElement;
+            private readonly UnityEditorFindRequestCreator myCreator;
+
+            public UnityFindUsagesNavigationAction([NotNull]IDeclaredElement method, [NotNull]UnityEditorFindRequestCreator creator)
+            {
+                myDeclaredElement = method;
+                myCreator = creator;
+            }
+            
+            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            {
+                myCreator.CreateRequestToUnity(myDeclaredElement, null, true);
+                return null;
+            }
+
+            public override string Text => "Show usages in Unity";
+        }
     }
 }

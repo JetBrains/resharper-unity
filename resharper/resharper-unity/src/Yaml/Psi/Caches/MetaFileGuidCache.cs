@@ -53,8 +53,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return sf.IsLanguageSupported<YamlLanguage>() &&
-                   sf.Name.EndsWith(".cs.meta", StringComparison.InvariantCultureIgnoreCase);
+            return sf.IsLanguageSupported<YamlLanguage>() && (
+                       sf.Name.EndsWith("cs.meta", StringComparison.InvariantCultureIgnoreCase) ||
+                       sf.Name.EndsWith("unity.meta", StringComparison.InvariantCultureIgnoreCase) ||
+                       sf.Name.EndsWith("prefab.meta", StringComparison.InvariantCultureIgnoreCase)
+                   );
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)

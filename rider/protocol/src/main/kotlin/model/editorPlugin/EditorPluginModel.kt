@@ -2,13 +2,10 @@ package model.editorPlugin
 
 import com.jetbrains.rider.generator.nova.*
 import com.jetbrains.rider.generator.nova.PredefinedType.*
-import com.jetbrains.rider.generator.nova.csharp.CSharp50Generator
-import com.jetbrains.rider.generator.nova.kotlin.Kotlin11Generator
-
-import java.io.File
 
 @Suppress("unused")
 object EditorPluginModel: Root() {
+
     var RdOpenFileArgs = structdef {
         field("path", string)
         field("line", int)
@@ -21,6 +18,16 @@ object EditorPluginModel: Root() {
         field("message", string)
         field("stackTrace", string)
     }
+
+    val RdFindUsageResult = structdef {
+        field("isPrefab", bool)
+        field("expandInTreeView", bool)
+        field("filePath", string)
+        field("fileName", string)
+        field("pathElements", array(string))
+        field("rootIndices", array(int))
+    }
+
 
     val RdLogEventType = enum {
         +"Error"
@@ -78,9 +85,12 @@ object EditorPluginModel: Root() {
         property("play", bool)
         property("pause", bool)
         source("step", void)
+        signal("showGameObjectOnScene", RdFindUsageResult)
+        signal("findUsageResults", array(RdFindUsageResult))
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)
+        property("unityProcessId", int)
 
         property("applicationPath", string)
         property("applicationContentsPath", string)

@@ -64,6 +64,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         [CanBeNull]
+        public static string GetFileId(this IYamlDocument yamlDocument)
+        {
+            var properties = GetDocumentBlockNodeProperties(yamlDocument.BlockNode);
+            return properties?.AnchorProperty?.Text?.GetText();
+        }
+        
+        [CanBeNull]
         public static string AsString([CanBeNull] this INode node)
         {
             return node?.GetPlainScalarText();
