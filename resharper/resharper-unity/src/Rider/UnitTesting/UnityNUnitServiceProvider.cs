@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public override IUnitTestRunStrategy GetRunStrategy(IUnitTestElement element)
         {
-            if (!myEditorModel.HasValue() || myEditorModel.Value == null)
+            if (myEditorModel.Value == null)
                 return base.GetRunStrategy(element);
 
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605

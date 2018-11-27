@@ -147,10 +147,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         new Identities(IdKind.Client), myDispatcher, wire);
                     var editor = new EditorPluginModel(lf, protocol);
                     editor.IsBackendConnected.Set(rdVoid => true);
-                    var frontendProcess = Process.GetCurrentProcess().GetParent();
-                    if (frontendProcess != null)
+                    
+                    if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                     {
-                        editor.RiderProcessId.SetValue(frontendProcess.Id);
+                        var frontendProcess = Process.GetCurrentProcess().GetParent(); // RiderProcessId is not used on non-Windows, but this line gives bad warning in the log
+                        if (frontendProcess != null)
+                        {
+                            editor.RiderProcessId.SetValue(frontendProcess.Id);
+                        }
                     }
 
                     myHost.PerformModelAction(m => m.SessionInitialized.Value = true);

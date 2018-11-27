@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,6 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnityRefresher myUnityRefresher;
         private readonly NotificationsModel myNotificationsModel;
         private readonly UnityHost myUnityHost;
+        private readonly ILogger myLogger;
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
@@ -55,7 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             ISolutionSaver riderSolutionSaver,
             UnityRefresher unityRefresher,
             NotificationsModel notificationsModel,
-            UnityHost unityHost
+            UnityHost unityHost,
+            ILogger logger
             )
         {
             mySolution = solution;
@@ -67,6 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myUnityRefresher = unityRefresher;
             myNotificationsModel = notificationsModel;
             myUnityHost = unityHost;
+            myLogger = logger;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
         }
 
@@ -124,12 +127,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             // https://docs.unity3d.com/ScriptReference/Compilation.CompilationPipeline-assemblyCompilationFinished.html
             // https://docs.unity3d.com/ScriptReference/Compilation.CompilationPipeline-assemblyCompilationStarted.html
             // Note that those events are only available for Unity 5.6+
+            myLogger.Verbose("Before calling Refresh.");
             Refresh(mySolution.Locks, run.Lifetime).GetAwaiter().OnCompleted(() =>
             {
                 mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Check compilation", () =>
                 {
                     if (myEditorProtocol.UnityModel.Value == null)
                     {
+                        myLogger.Verbose("Unity Editor connection unavailable.");
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         return;
                     }
@@ -200,14 +205,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
                             rdTask?.Result.Advise(lifetime, result =>
                             {
-                                if (result.Result != UnityEditorState.Refresh)
+                                if (result.Result != UnityEditorState.Refresh && result.Result != UnityEditorState.Disconnected)
                                 {
                                     lifetimeDefinition.Terminate();
+                                    myLogger.Verbose("lifetimeDefinition.Terminate();");
                                 }
                             });
                         }
                     });
             }, locks.Tasks.UnguardedMainThreadScheduler);
+                
             while (lifetimeDefinition.Lifetime.IsAlive)
             {
                 await Task.Delay(50, lifetimeDefinition.Lifetime);
