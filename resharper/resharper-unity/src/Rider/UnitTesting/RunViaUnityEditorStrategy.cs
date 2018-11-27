@@ -146,8 +146,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         {
                             tcs.SetException(new Exception("There are errors during compilation in Unity."));
                             
-                            var notification = new RdNotificationEntry("Compilation failed", "Scripts compilation in Unity failed, so tests were not started.", true, RdNotificationEntryType.INFO);
-                            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RunViaUnityEditorStrategy compilation failed", () => myNotificationsModel.Notification.Fire(notification));
+                            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RunViaUnityEditorStrategy compilation failed", () =>
+                            {
+                                var notification = new RdNotificationEntry("Compilation failed", "Script compilation in Unity failed, so tests were not started.", true, RdNotificationEntryType.INFO);
+                                myNotificationsModel.Notification.Fire(notification);
+                            });
                             myUnityHost.PerformModelAction(model => model.ActivateUnityLogView.Fire());
                         }
                         else
