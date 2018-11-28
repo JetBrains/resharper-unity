@@ -12,7 +12,6 @@ using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
-using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using UnityEditor;
@@ -114,9 +113,7 @@ namespace JetBrains.Rider.Unity.Editor
       // process csproj files once per Unity process
       if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
       {
-        ourLogger.Verbose("Call OnGeneratedCSProjectFiles once per Unity process.");
-        CsprojAssetPostprocessor.OnGeneratedCSProjectFiles();
-        RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
+        EditorApplication.update += SyncSolutionOnceCallBack;
       }
 
       var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
@@ -160,6 +157,14 @@ namespace JetBrains.Rider.Unity.Editor
       SetupAssemblyReloadEvents();
 
       ourInitialized = true;
+    }
+
+    private static void SyncSolutionOnceCallBack()
+    {
+      ourLogger.Verbose("Call SyncSolution once per Unity process.");
+      UnityUtils.SyncSolution();
+      RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
+      EditorApplication.update -= SyncSolutionOnceCallBack;
     }
 
     // Unity 2017.3 added "asmdef" to the default list of file extensions used to generate the C# projects, but only for
@@ -234,7 +239,8 @@ namespace JetBrains.Rider.Unity.Editor
     {
       try
       {
-        var riderProtocolController = new RiderProtocolController(MainThreadDispatcher.Instance, lifetime);
+        var dispatcher = MainThreadDispatcher.Instance;
+        var riderProtocolController = new RiderProtocolController(dispatcher, lifetime);
         list.Add(new ProtocolInstance(riderProtocolController.Wire.Port, solutionFileName));
 
         var serializers = new Serializers();
@@ -252,13 +258,20 @@ namespace JetBrains.Rider.Unity.Editor
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           InitEditorLogPath(model);
+          AdviseScriptCompilationDuringPlay(model, connectionLifetime);
 
+          model.UnityProcessId.Set(Process.GetCurrentProcess().Id);
           model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
           model.ApplicationPath.SetValue(EditorApplication.applicationPath);
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
           model.ApplicationVersion.SetValue(Application.unityVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
-
+          
+          if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
+            model.NotifyIsRecompileAndContinuePlaying.Fire("General");
+          else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
+            model.NotifyIsRecompileAndContinuePlaying.Fire("Rider");
+          
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.AddAction(() => { UnityModels.Remove(pair); });
@@ -270,6 +283,17 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
+    } 
+    private static void AdviseScriptCompilationDuringPlay(EditorPluginModel model, Lifetime lifetime)
+    {
+      model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime,
+        scriptCompilationDuringPlay =>
+        {
+          if (UnityUtils.UnityVersion >= new Version(2018, 2))
+            EditorPrefsWrapper.ScriptChangesDuringPlayOptions = scriptCompilationDuringPlay;
+          else
+            PluginSettings.AssemblyReloadSettings = (AssemblyReloadSettings) scriptCompilationDuringPlay;
+        });
     }
 
     private static void AdviseEditorState(EditorPluginModel modelValue)

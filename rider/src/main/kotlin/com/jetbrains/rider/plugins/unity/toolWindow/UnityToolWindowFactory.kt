@@ -23,8 +23,8 @@ class UnityToolWindowFactory(project: Project,
     : LifetimedProjectComponent(project) {
 
     companion object {
-        val TOOLWINDOW_ID = "Unity"
-        val ACTION_PLACE = "Unity"
+        const val TOOLWINDOW_ID = "Unity"
+        const val ACTION_PLACE = "Unity"
     }
 
     private val lock = Object()
@@ -54,12 +54,12 @@ class UnityToolWindowFactory(project: Project,
             }
         })
         toolWindow.title = ""
-        toolWindow.icon = UnityIcons.Toolwindows.ToolWindowUnityLog
+        toolWindow.icon = UnityIcons.ToolWindows.UnityLog
         // Required for hiding window without content
         ContentManagerWatcher(toolWindow, contentManager)
 
         val logModel = UnityLogPanelModel(componentLifetime, project)
-        val logView = UnityLogPanelView(project, logModel, host)
+        val logView = UnityLogPanelView(componentLifetime, project, logModel, host)
         val toolWindowContent = contentManager.factory.createContent(null, "Log", true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel

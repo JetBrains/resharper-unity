@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.DataFlow.StandardPreconditions;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Platform.RdFramework;
@@ -41,13 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
-
-        private readonly ReadonlyToken myReadonlyToken = new ReadonlyToken("unityModelReadonlyToken");
-       private readonly IProperty<EditorPluginModel> myUnityModel;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
-        public IProperty<EditorPluginModel> UnityModel => myUnityModel;
+        public readonly RProperty<EditorPluginModel> UnityModel = new RProperty<EditorPluginModel>(null);
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
@@ -64,8 +60,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myHost = host;
             myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
-            myUnityModel = new Property<EditorPluginModel>(lifetime, "unityModelProperty", null)
-                .EnsureReadonly(myReadonlyToken).EnsureThisThread();
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -76,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var solFolder = mySolution.SolutionFilePath.Directory;
                 AdviseModelData(lifetime);
-
+                
                 // todo: consider non-Unity Solution with Unity-generated projects
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
                 protocolInstancePath.Directory.CreateDirectory();
@@ -109,9 +103,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseModelData(Lifetime lifetime)
         {   
-            myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
-            myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
-            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
+           myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
+           myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
+           myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
+           myHost.PerformModelAction(model => {model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime, 
+             scriptCompilationDuringPlay => UnityModel.Value.DoIfNotNull(editor => editor.SetScriptCompilationDuringPlay.Fire((int)scriptCompilationDuringPlay)));});
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -151,10 +147,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         new Identities(IdKind.Client), myDispatcher, wire);
                     var editor = new EditorPluginModel(lf, protocol);
                     editor.IsBackendConnected.Set(rdVoid => true);
-                    var frontendProcess = Process.GetCurrentProcess().GetParent();
-                    if (frontendProcess != null)
+                    
+                    if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                     {
-                        editor.RiderProcessId.SetValue(frontendProcess.Id);
+                        var frontendProcess = Process.GetCurrentProcess().GetParent(); // RiderProcessId is not used on non-Windows, but this line gives bad warning in the log
+                        if (frontendProcess != null)
+                        {
+                            editor.RiderProcessId.SetValue(frontendProcess.Id);
+                        }
                     }
 
                     myHost.PerformModelAction(m => m.SessionInitialized.Value = true);
@@ -164,6 +164,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     editor.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
                     editor.Pause.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
+
+                    
+                    editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
+                    
+                    // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
+                    myHost.PerformModelAction(t => t.ShowGameObjectOnScene.Advise(lf, v => editor.ShowGameObjectOnScene.Fire(v.ConvertToUnityModel())));
+                    
+                    // pass all references to Unity TODO temp workaround, replace with async api
+                    myHost.PerformModelAction(t => t.FindUsageResults.Advise(lf, v =>editor.FindUsageResults.Fire(v.Select(e => e.ConvertToUnityModel()).ToArray())));
+                    
 
                     editor.EditorLogPath.Advise(lifetime,                    
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
@@ -178,6 +188,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
                     editor.ApplicationContentsPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
+                    editor.NotifyIsRecompileAndContinuePlaying.AdviseOnce(lifetime,
+                        s => myHost.PerformModelAction(a => a.NotifyIsRecompileAndContinuePlaying.Fire(s)));
 
                     BindPluginPathToSettings(lf, editor);
 
@@ -185,7 +197,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel",
-                            () => { myUnityModel.SetValue(editor, myReadonlyToken); });
+                            () => { UnityModel.SetValue(editor); });
 
                     lf.AddAction(() =>
                     {
@@ -194,7 +206,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             {
                                 myLogger.Info("Wire disconnected.");
                                 myHost.PerformModelAction(m => m.SessionInitialized.Value = false);
-                                myUnityModel.SetValue(null, myReadonlyToken);
+                                UnityModel.SetValue(null);
                             });
                     });
                 });

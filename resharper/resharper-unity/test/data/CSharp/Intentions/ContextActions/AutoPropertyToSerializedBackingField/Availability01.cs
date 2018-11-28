@@ -4,6 +4,8 @@ using UnityEngine;
 public class Foo : MonoBehaviour
 {
     public int MyAuto{on}Prop1 { get; set; }
+    public int MyAutoProp2 { get; }
+    public int MyAutoProp3 { get; } = 42;
 
     private int _myProp1;
     public int My{off}Prop1

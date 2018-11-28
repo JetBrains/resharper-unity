@@ -1,0 +1,6 @@
+# Note last entry is equivalent to ? !!null "" : !!null "",
+{
+? explicit: entry,
+implicit: entry,
+?
+}

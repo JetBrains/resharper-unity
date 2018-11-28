@@ -83,11 +83,7 @@ namespace ApiParser
             xmlWriter.WriteStartElement("api");
             ExportVersionRange(xmlWriter);
             foreach (var type in myTypes.OrderBy(t => t.Name))
-            {
-                if (type.Name == "MasterServer")
-                    Console.WriteLine();
                 type.ExportTo(xmlWriter, this);
-            }
             xmlWriter.WriteEndElement();
         }
 

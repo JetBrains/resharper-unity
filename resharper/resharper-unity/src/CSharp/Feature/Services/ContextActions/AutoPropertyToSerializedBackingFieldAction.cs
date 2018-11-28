@@ -74,6 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return null;
 
             var fieldDeclaration = AutomaticToBackingFieldAction.Execute(propertyDeclaration);
+            fieldDeclaration.SetReadonly(false);
             AttributeUtil.AddAttributeToSingleDeclaration(fieldDeclaration, KnownTypes.SerializeField, propertyDeclaration.GetPsiModule(), elementFactory);
             return AutomaticToBackingFieldAction.PostExecute(propertyDeclaration, fieldDeclaration, solution);
         }

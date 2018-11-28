@@ -19,8 +19,24 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"ConnectedRefresh"
     }
 
+    private val ScriptCompilationDuringPlay = enum {
+        +"RecompileAndContinuePlaying"
+        +"RecompileAfterFinishedPlaying"
+        +"StopPlayingAndRecompile"
+    }
+
+    val FindUsageResult = structdef {
+        field("isPrefab", bool)
+        field("expandInTreeView", bool)
+        field("filePath", string)
+        field("fileName", string)
+        field("pathElements", array(string))
+        field("rootIndices", array(int))
+    }
+
     init {
         sink("activateRider", void)
+        sink("activateUnityLogView", void)
 
         property("editorState", EditorState)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
@@ -56,5 +72,12 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         source("installEditorPlugin", void)
 
         property("hasUnityReference", bool)
+
+        sink("notifyIsRecompileAndContinuePlaying", string)
+        source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
+
+        signal("findUsageResults", array(FindUsageResult))
+        signal("showGameObjectOnScene", FindUsageResult)
+        property("unityProcessId", int)
     }
 }

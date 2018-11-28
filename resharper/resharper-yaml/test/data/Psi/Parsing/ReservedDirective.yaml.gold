@@ -1,0 +1,23 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:FOO)
+        Whitespace(type:WHITESPACE, text:  ) spaces: "  "
+        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:bar)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:baz)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        Comment(type:COMMENT, text:# Should be ignored) spaces: "# Should be ignored"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(type:INDENT, text:               )
+        Comment(type:COMMENT, text:# with a warning.) spaces: "# with a warning."
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    IDoubleQuotedScalarNode
+      YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

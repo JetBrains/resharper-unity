@@ -8,7 +8,7 @@ import com.jetbrains.rider.util.reactive.Property
 import com.jetbrains.rider.util.reactive.Signal
 import com.jetbrains.rider.util.reactive.fire
 
-class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
+class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
     private val lock = Object()
     private val maxItemsCount = 10000
 
@@ -107,7 +107,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
 
     private fun isVisibleEvent(event: RdLogEvent):Boolean
     {
-        return typeFilters.getShouldBeShown(event.type) && modeFilters.getShouldBeShown(event.mode) && textFilter.getShouldBeShown(event.message);
+        return typeFilters.getShouldBeShown(event.type) && modeFilters.getShouldBeShown(event.mode) && textFilter.getShouldBeShown(event.message)
     }
 
     private fun getVisibleEvents(): List<RdLogEvent> {
@@ -121,7 +121,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
     val modeFilters = ModeFilters()
     val textFilter = TextFilter()
     val events = Events()
-    var mergeSimilarItems = Property<Boolean>(false)
+    val mergeSimilarItems = Property(false)
 
     val onAdded = Signal<RdLogEvent>()
     val onChanged = Signal<List<RdLogEvent>>()

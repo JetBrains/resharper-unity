@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Daemon.Stages;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
@@ -17,15 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         {
             if (!IsSupported(process.SourceFile))
                 return EmptyList<IDaemonStageProcess>.InstanceList;
-            
+
             process.SourceFile.GetPsiServices().Files.AssertAllDocumentAreCommitted();
             return process.SourceFile.GetPsiFiles<CgLanguage>()
                 .SelectNotNull(file => CreateProcess(process, settings, processKind, (ICgFile) file));
-        }
-
-        public ErrorStripeRequest NeedsErrorStripe(IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
-        {
-            return IsSupported(sourceFile) ? ErrorStripeRequest.STRIPE_AND_ERRORS : ErrorStripeRequest.NONE;
         }
 
         private bool IsSupported(IPsiSourceFile sourceFile)
@@ -33,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             // just as C#
             if (sourceFile == null || !sourceFile.IsValid())
                 return false;
-            
+
             var properties = sourceFile.Properties;
             if (properties.IsNonUserFile || !properties.ProvidesCodeModel)
                 return false;

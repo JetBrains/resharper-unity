@@ -1,0 +1,7 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDoubleQuotedScalarNode
+      YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_MULTILINE, text:"folded \nto a space,	\n \nto a line feed, or 	\\n \ 	non-content")
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>JetBrains.Yaml.ReSharper</id>
+    <title>YAML Support</title>
+    <version>0.0.0.2</version>
+    <authors>citizenmatt</authors>
+    <owners>citizenmatt</owners>
+    <summary>ReSharper support for YAML</summary>
+    <description>Adds support for YAML</description>
+    <projectUrl>https://github.com/citizenmatt/resharper-yaml</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/citizenmatt/resharper-yaml/master/license.txt</licenseUrl>
+    <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
+    <copyright>Copyright 2018 Matt Ellis, s.r.o</copyright>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <dependencies>
+      <dependency id="Wave" version="[182.0]" />
+    </dependencies>
+    <tags>resharper yaml</tags>
+  </metadata>
+  <files>
+    <file src="..\..\build\resharper-yaml\bin\Release\net461\JetBrains.ReSharper.Plugins.Yaml.dll" target="lib" />
+    <file src="..\..\build\resharper-yaml\bin\Release\net461\JetBrains.ReSharper.Plugins.Yaml.pdb" target="lib" />
+  </files>
+</package>

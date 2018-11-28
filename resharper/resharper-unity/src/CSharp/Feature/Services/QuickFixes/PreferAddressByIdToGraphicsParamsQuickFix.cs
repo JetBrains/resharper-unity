@@ -5,13 +5,12 @@ using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
-using JetBrains.ReSharper.Psi.Naming.Extentions;
-using JetBrains.ReSharper.Psi.Naming.Impl;
 using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.ReSharper.Psi.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Tree;
@@ -66,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                     myMapFunction,
                     myArgumentExpression.Copy());
                 
-                name = GetUniqueName(myInvocationExpression, myFieldName).NotNull();
+                name = NamingUtil.GetUniqueName( myInvocationExpression, myFieldName, NamedElementKinds.PrivateStaticReadonly).NotNull();
                 var newDeclaration = factory.CreateFieldDeclaration(psiModule.GetPredefinedType().Int, name);
                 idDeclaration = newDeclaration.DeclaredElement;
                 if (idDeclaration == null)
@@ -238,24 +237,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return baseClass;
         }
         
-        [NotNull]
-        private static string GetUniqueName( [NotNull]IInvocationExpression invocationExpression,  [NotNull]string baseName)
-        {
-            var namingManager = invocationExpression.GetPsiServices().Naming;
-            var policyProvider = namingManager.Policy.GetPolicyProvider(invocationExpression.Language, invocationExpression.GetSourceFile());
-            var namingRule = policyProvider.GetPolicy(NamedElementKinds.PrivateStaticReadonly).NamingRule;
-            var name = namingManager.Parsing.Parse(baseName, namingRule, policyProvider);
-            var nameRoot = name.GetRootOrDefault(baseName);
-            var namesCollection = namingManager.Suggestion.CreateEmptyCollection(PluralityKinds.Unknown, CSharpLanguage.Instance, true, policyProvider);
-            namesCollection.Add(nameRoot, new EntryOptions(PluralityKinds.Unknown, SubrootPolicy.Decompose, emphasis: Emphasis.Good));
-            var suggestionOptions = new SuggestionOptions
-            {
-                DefaultName = baseName,
-                UniqueNameContext = invocationExpression,
-            };
-            var namesSuggestion = namesCollection.Prepare(NamedElementKinds.PrivateStaticReadonly, ScopeKind.Common, suggestionOptions);
-            return namesSuggestion.FirstName();
-        }
  
         public override string Text => "Use 'int' overload";
         

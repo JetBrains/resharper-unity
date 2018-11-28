@@ -1,6 +1,5 @@
 ﻿using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Extentions;
-using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
@@ -22,13 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     {
         private readonly RunViaUnityEditorStrategy myUnityEditorStrategy;
         private readonly RdUnityModel myRdUnityModel;
-        private readonly IProperty<EditorPluginModel> myUnityEditorModel;
+        private readonly RProperty<EditorPluginModel> myEditorModel;
 
         public UnityNUnitServiceProvider(ISolution solution, IPsiModules psiModules, ISymbolCache symbolCache,
             IUnitTestElementIdFactory idFactory, IUnitTestElementManager elementManager, NUnitTestProvider provider,
             ISettingsStore settingsStore, ISettingsOptimization settingsOptimization, ISettingsCache settingsCache,
             UnitTestingCachingService cachingService, IDotNetCoreSdkResolver dotNetCoreSdkResolver,
-            UnityEditorProtocol unityEditorProtocol,
+            UnityEditorProtocol editorProtocol,
             RunViaUnityEditorStrategy runViaUnityEditorStrategy,
             NUnitOutOfProcessUnitTestRunStrategy nUnitOutOfProcessUnitTestRunStrategy)
             : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settingsStore,
@@ -39,13 +38,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
 
-            myUnityEditorModel = unityEditorProtocol.UnityModel;
+            myEditorModel = editorProtocol.UnityModel;
             myUnityEditorStrategy = runViaUnityEditorStrategy;
         }
 
         public override IUnitTestRunStrategy GetRunStrategy(IUnitTestElement element)
         {
-            if (myUnityEditorModel.Value == null)
+            if (myEditorModel.Value == null)
                 return base.GetRunStrategy(element);
 
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605

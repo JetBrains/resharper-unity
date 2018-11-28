@@ -7,6 +7,7 @@
   <idea-version since-build="173.3389" until-build="173.3389.*" />
 
   <depends>com.intellij.modules.rider</depends>
+  <depends optional="true" config-file="PluginYamlPluginPart.xml">org.jetbrains.plugins.yaml</depends>
   <depends optional="true" config-file="PluginAppenderPluginPart.xml">rider.intellij.plugin.appender</depends>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -56,11 +57,21 @@
     <backend.typedHandler language="AsmDef" implementationClass="com.jetbrains.rdclient.editorActions.FrontendTypedHandler"/>
     <completion.contributor language="AsmDef" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
 
+    <fileTypeFactory id="UnityYaml" implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileTypeFactory" />
+    <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlIconProvider" />
+    <lang.altEnter language="UnityYaml" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterActionHandler" />
+    <lang.parserDefinition language="UnityYaml" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlParserDefinition" />
+    <backend.actions.support language="UnityYaml" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
+    <backend.markup.adapterFactory language="UnityYaml" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
+    <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rdclient.editorActions.FrontendTypedHandler"/>
+
     <!-- Unity Explorer -->
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
     <projectModelViewUpdater implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerProjectModelViewUpdater"/>
 
     <xdebugger.attachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityAttachEditorDebuggerProvider" />
+
+    <rider.android.project.validator implementation="com.jetbrains.rider.android.UnityCustomAndroidProjectValidator"/>
   </extensions>
 
   <project-components>
@@ -72,7 +83,7 @@
     <component><implementation-class>com.jetbrains.rider.UnityProjectDiscoverer</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.settings.AutoSaveNotification</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.RiderUnitySettings</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.UnityHost</implementation-class></component>
@@ -85,6 +96,8 @@
   <actions>
 
     <group id="UnityToolbarActions">
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
+
       <separator/>
       <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
         <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
@@ -100,8 +113,6 @@
       <action id="TriggerPauseInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"  />
       <action id="TriggerStepInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" />
       <separator/>
-
-      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
     </group>
 
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction">
@@ -111,14 +122,20 @@
     <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties...">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
     </action>
-
-    <group id="UnityLogPanelViewToolbar" text="Unity log panel">
-      <action id="RefreshInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Refresh" description="Starts refresh in Unity" />
-      <action id="PlayInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction" text="Play/Edit" description="Change Play/Edit mode in Unity" />
-      <action id="PauseInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction" text="Pause/Resume" description="Pause/Resume play in Unity" />
-      <action id="StepInUnityAction" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" text="Step" description="Perform a single frame step in Unity" />
-    </group>
   </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- IDEA default schemes -->
+    <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
+    <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- IDEA default schemes -->
+    <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
+    <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
+  </extensions>
+
 
   <description><![CDATA[
 <p>Adds support for the Unity engine.</p>

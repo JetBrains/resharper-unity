@@ -6,46 +6,50 @@ namespace DefaultNamespace
     {
         private RigidBody2D myRigidBody2D;
 
-        public void Test()
+        |public void Test()
         {
-            |Update|(0)();
-        }
+            |Update|(1)();
+        }|(0)
             
-        public void Update()
+        |public void Update()
         {
             if (myRigidBody2D == null)
             {
-                myRigidBody2D = |GetComponent|(1)<RigidBody2D>();
+                myRigidBody2D = |GetComponent|(3)<RigidBody2D>();
             }
 
-            |Test|(2)();
-            |IndirectCostly|(3)();
+            |Test|(4)();
+            |IndirectCostly|(5)();
 
-            |Test2|(4)();
-            |Test2|(5)();
             |Test2|(6)();
             |Test2|(7)();
-        }
+            |Test2|(8)();
+            |Test2|(9)();
+        }|(2)
         
-        private void IndirectCostly()
+        |private void IndirectCostly()
         {
-            var temp = gameObject.|GetComponent|(8)<RigidBody2D>();
-        }
+            var temp = gameObject.|GetComponent|(11)<RigidBody2D>();
+        }|(10)
 
-        private void Test2()
+        |private void Test2()
         {
-            |IndirectCostly|(9)();
-        }
+            |IndirectCostly|(13)();
+        }|(12)
     }
 }
 ---------------------------------------------------------
-(0): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
-(1): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
-(2): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
-(3): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
-(4): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
-(5): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
-(6): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
-(7): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
-(8): Resharper Unity CostlyMethodInvocation: Costly method is invoked from performance context
-(9): Resharper Unity CostlyMethodReachable: Invocation of this method indirectly calls costly method
+(0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(1): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(2): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(3): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(4): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(5): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(6): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(7): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(8): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(9): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(10): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(11): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(12): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(13): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context

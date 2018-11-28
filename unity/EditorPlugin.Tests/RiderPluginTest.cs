@@ -44,7 +44,7 @@ namespace JetBrains.Rider.Unity.Editor.Tests
       Assert.Equal(ourRiderPathForTests.FullName, res);
     }
     
-    [Fact]
+    [Fact(Skip = "@ivan.shakhov")]
     public void AllFoundPathsNotContainExternalEditorPathTest()
     {
       File.WriteAllText(ourRiderPathForTests.FullName, "test");

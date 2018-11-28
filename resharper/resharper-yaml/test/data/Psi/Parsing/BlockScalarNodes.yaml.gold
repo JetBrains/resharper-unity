@@ -1,0 +1,39 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonBlockMappingNode
+      IBlockMappingEntry
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:literal)
+        YamlTokenType+FixedTokenElement(type:COLON, text::)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        ILiteralScalarNode
+          YamlTokenType+FixedTokenElement(type:PIPE, text:|)
+          IBlockHeader
+            YamlTokenType+GenericTokenElement(type:NS_DEC_DIGIT, text:2)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          YamlTokenType+GenericTokenElement(type:SCALAR_TEXT, text:value)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IBlockMappingEntry
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:folded)
+        YamlTokenType+FixedTokenElement(type:COLON, text::)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(type:INDENT, text:   )
+        IFoldedScalarNode
+          INodeProperties
+            IShorthandTagProperty
+              IPrimaryTagHandle
+                YamlTokenType+FixedTokenElement(type:BANG, text:!)
+              YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:foo)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          YamlTokenType+FixedTokenElement(type:GT, text:>)
+          IBlockHeader
+            YamlTokenType+GenericTokenElement(type:NS_DEC_DIGIT, text:1)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text: )
+          YamlTokenType+GenericTokenElement(type:SCALAR_TEXT, text:value)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

@@ -381,7 +381,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 {
                     case ILoopStatement loopStatement:
                         InvalidateAll();
-                        loopStatement.Body.ProcessThisAndDescendants(this);
+                        loopStatement.Body?.ProcessThisAndDescendants(this);
                         InvalidateAll();
                         break;
                     case ISwitchSection switchSection:

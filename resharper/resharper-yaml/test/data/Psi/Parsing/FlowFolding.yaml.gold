@@ -1,0 +1,7 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDoubleQuotedScalarNode
+      YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_MULTILINE, text:"\n  foo \n \n  	 bar\n\n  baz\n")
+    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

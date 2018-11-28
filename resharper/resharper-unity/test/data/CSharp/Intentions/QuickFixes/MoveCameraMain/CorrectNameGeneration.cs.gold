@@ -1,0 +1,21 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class CorrectNameGeneration : MonoBehaviour
+    {
+      private Camera myCamera;
+
+      private void Start()
+      {
+        myCamera = Camera.main;
+      }
+
+      public void Update()
+        {
+            if (myCamera{caret}) {
+                
+            }
+        }
+    }
+}

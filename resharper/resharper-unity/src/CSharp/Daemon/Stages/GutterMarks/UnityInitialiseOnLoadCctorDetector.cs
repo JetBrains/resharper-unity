@@ -1,16 +1,30 @@
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
+#if RIDER
+using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+#endif
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
 {
-    [ElementProblemAnalyzer(typeof(IConstructorDeclaration), HighlightingTypes = new[] {typeof(UnityGutterMarkInfo)})]
+    [ElementProblemAnalyzer(typeof(IConstructorDeclaration), HighlightingTypes = new[]
+    {
+#if RIDER
+            typeof(UnityCodeInsightsHighlighting)
+#else
+        typeof(UnityGutterMarkInfo),
+#endif
+    })]
     public class UnityInitialiseOnLoadCctorDetector : UnityElementProblemAnalyzer<IConstructorDeclaration>
     {
-        public UnityInitialiseOnLoadCctorDetector(UnityApi unityApi)
+        private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
+
+        public UnityInitialiseOnLoadCctorDetector(UnityApi unityApi, UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
             : base(unityApi)
         {
+            myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
         }
 
         protected override void Analyze(IConstructorDeclaration element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -21,8 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
             var containingType = element.GetContainingTypeDeclaration()?.DeclaredElement;
             if (containingType != null && containingType.HasAttributeInstance(KnownTypes.InitializeOnLoadAttribute, false))
             {
-                var highlighting = new UnityGutterMarkInfo(element, "Called when Unity first launches the editor, the player, or recompiles scripts");
-                consumer.AddHighlighting(highlighting);
+                myImplicitUsageHighlightingContributor.AddInitializeOnLoadMethod(consumer, element, "Called when Unity first launches the editor, the player, or recompiles scripts");
             }
         }
     }

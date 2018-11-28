@@ -1,0 +1,59 @@
+﻿using System;
+using UnityEngine;
+
+// ReSharper disable ArrangeAccessorOwnerBody
+// ReSharper disable ConvertToAutoProperty
+
+// Only applicable when YAML supported is disabled
+public class A : MonoBehaviour
+{
+  private string myThing;
+  private static string ourThing;
+
+  public void PotentialEventHandler()
+  {
+  }
+
+  public void PotentialEventHandler(string s, int i)
+  {
+  }
+
+  public string SetterPotentialEventHandler
+  {
+      |get|(0) { return myThing; }
+      set { myThing = value; }
+  }
+
+  private void |WrongAccessibility|(1)()
+  {
+  }
+
+  public string |WrongReturnType|(2)()
+  {
+      return "Hello";
+  }
+
+  public static void |WrongStatic|(3)()
+  {
+  }
+
+  public static string |WrongStaticProperty|(4)
+  {
+      get { return ourThing; }
+      set { ourThing = value; }
+  }
+
+  [Obsolete]
+  public void |ObsoleteNotConsidered|(5)()
+  {
+  }
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Accessor 'SetterPotentialEventHandler.get' is never used
+(1): ReSharper Dead Code: Method 'WrongAccessibility' is never used
+(2): ReSharper Dead Code: Method 'WrongReturnType' is never used
+(3): ReSharper Dead Code: Method 'WrongStatic' is never used
+(4): ReSharper Dead Code: Property 'WrongStaticProperty' is never used
+(5): ReSharper Dead Code: Method 'ObsoleteNotConsidered' is never used
+

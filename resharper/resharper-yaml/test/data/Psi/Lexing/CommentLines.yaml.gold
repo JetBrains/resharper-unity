@@ -1,0 +1,7 @@
+﻿0000: INDENT '   '
+0003: COMMENT '# Comment'
+0012: NEW_LINE '\n'
+0013: INDENT '   '
+0016: NEW_LINE '\n'
+0017: NEW_LINE '\n'
+0018: NEW_LINE '\n'

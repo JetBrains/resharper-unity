@@ -2,17 +2,10 @@ package model.editorPlugin
 
 import com.jetbrains.rider.generator.nova.*
 import com.jetbrains.rider.generator.nova.PredefinedType.*
-import com.jetbrains.rider.generator.nova.csharp.CSharp50Generator
-import com.jetbrains.rider.generator.nova.kotlin.Kotlin11Generator
-
-import java.io.File
 
 @Suppress("unused")
-object EditorPluginModel: Root(
-    CSharp50Generator(FlowTransform.AsIs, "JetBrains.Platform.Unity.EditorPluginModel", File("../resharper/resharper-unity/src/Rider/RdEditorProtocol")),
-    CSharp50Generator(FlowTransform.Reversed, "JetBrains.Platform.Unity.EditorPluginModel", File("../unity/EditorPlugin/NonUnity/RdEditorProtocol")),
-    Kotlin11Generator(FlowTransform.AsIs, "com.jetbrains.rider.plugins.unity.editorPlugin.model", File("src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol"))
-){
+object EditorPluginModel: Root() {
+
     var RdOpenFileArgs = structdef {
         field("path", string)
         field("line", int)
@@ -25,6 +18,16 @@ object EditorPluginModel: Root(
         field("message", string)
         field("stackTrace", string)
     }
+
+    val RdFindUsageResult = structdef {
+        field("isPrefab", bool)
+        field("expandInTreeView", bool)
+        field("filePath", string)
+        field("fileName", string)
+        field("pathElements", array(string))
+        field("rootIndices", array(int))
+    }
+
 
     val RdLogEventType = enum {
         +"Error"
@@ -82,9 +85,12 @@ object EditorPluginModel: Root(
         property("play", bool)
         property("pause", bool)
         source("step", void)
+        signal("showGameObjectOnScene", RdFindUsageResult)
+        signal("findUsageResults", array(RdFindUsageResult))
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)
+        property("unityProcessId", int)
 
         property("applicationPath", string)
         property("applicationContentsPath", string)
@@ -98,12 +104,17 @@ object EditorPluginModel: Root(
         callback("openFileLineCol", RdOpenFileArgs, bool)
         call("updateUnityPlugin", string, bool)
         call("refresh", bool, void)
+        call("getCompilationResult", void, bool)
 
         property("unitTestLaunch", UnitTestLaunch)
+        source("runUnitTestLaunch", void)
 
         property("fullPluginPath", string)
 
         property("editorLogPath", string)
         property("playerLogPath", string)
+
+        sink("notifyIsRecompileAndContinuePlaying", string)
+        source("setScriptCompilationDuringPlay", int)
     }
 }

@@ -1,0 +1,69 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonBlockMappingNode
+      IBlockMappingEntry
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:fileFormatVersion)
+        YamlTokenType+FixedTokenElement(type:COLON, text::)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:2)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IBlockMappingEntry
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:guid)
+        YamlTokenType+FixedTokenElement(type:COLON, text::)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:82f36eef2b8314cecb7faeb63e535cec)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IBlockMappingEntry
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:folderAsset)
+        YamlTokenType+FixedTokenElement(type:COLON, text::)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:yes)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IBlockMappingEntry
+        IPlainScalarNode
+          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:DefaultImporter)
+        YamlTokenType+FixedTokenElement(type:COLON, text::)
+        ChameleonBlockMappingNode
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IBlockMappingEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:externalObjects)
+            YamlTokenType+FixedTokenElement(type:COLON, text::)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IFlowMappingNode
+              YamlTokenType+FixedTokenElement(type:LBRACE, text:{)
+              YamlTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IBlockMappingEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:userData)
+            YamlTokenType+FixedTokenElement(type:COLON, text::)
+            IEmptyScalarNode
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IBlockMappingEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:assetBundleName)
+            YamlTokenType+FixedTokenElement(type:COLON, text::)
+            IEmptyScalarNode
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IBlockMappingEntry
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:assetBundleVariant)
+            YamlTokenType+FixedTokenElement(type:COLON, text::)
+            IEmptyScalarNode
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

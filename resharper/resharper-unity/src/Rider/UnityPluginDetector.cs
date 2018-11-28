@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -63,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (TryFindExistingPluginOnDisk(defaultDir, newVersion, out installationInfo))
                     return installationInfo;
                 
-                // dll is there, but was not referenced by any project, for example - only Assenbly-SCharp project is present
+                // dll is there, but was not referenced by any project, for example - only Assembly-CSharp project is present
                 if (TryFindExistingPluginOnDiskInFolderRecursive(assetsDir, newVersion, out var installationInfo1))
                 {
                     return installationInfo1;
@@ -195,7 +196,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     if (newVersion == existingVersion)
                     {
                         myLogger.Verbose($"Plugin v{existingVersion} already installed.");
-                        return InstallationInfo.UpToDate(pluginFiles, existingVersion);
+                        return InstallationInfo.UpToDate(pluginDir, pluginFiles, existingVersion);
                     }
 
                     return InstallationInfo.ShouldUpdate(pluginDir, pluginFiles, existingVersion);
@@ -229,7 +230,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public readonly InstallReason InstallReason;
 
-            public bool ShouldInstallPlugin => InstallReason != InstallReason.DoNotInstall;
+            public bool ShouldInstallPlugin => !(InstallReason == InstallReason.DoNotInstall || InstallReason == InstallReason.UpToDate);
 
             [NotNull]
             public readonly FileSystemPath PluginDirectory;
@@ -243,6 +244,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             private InstallationInfo(InstallReason installReason, [NotNull] FileSystemPath pluginDirectory,
                 [NotNull] ICollection<FileSystemPath> existingFiles, [NotNull] Version existingVersion)
             {
+                var logger = Logger.GetLogger<InstallationInfo>();
+                if (!pluginDirectory.IsAbsolute && ShouldInstallPlugin)
+                    logger.Error($"pluginDirectory ${pluginDirectory} Is Not Absolute ${installReason}, ${existingVersion}, ${existingFiles.Count}");
+                else
+                    logger.Info(
+                        $"pluginDirectory ${pluginDirectory} ${installReason}, ${existingVersion}, ${existingFiles.Count}");
+                
                 InstallReason = installReason;
                 PluginDirectory = pluginDirectory;
                 ExistingFiles = existingFiles;
@@ -254,9 +262,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return new InstallationInfo(InstallReason.FreshInstall, installLocation, EmptyArray<FileSystemPath>.Instance, ourZeroVersion);
             }
 
-            public static InstallationInfo UpToDate(List<FileSystemPath> existingPluginFiles, Version existingVersion)
+            public static InstallationInfo UpToDate(FileSystemPath installLocation,
+                ICollection<FileSystemPath> existingPluginFiles, Version existingVersion)
             {
-                return new InstallationInfo(InstallReason.UpToDate, FileSystemPath.Empty, existingPluginFiles, existingVersion);
+                return new InstallationInfo(InstallReason.UpToDate, installLocation, existingPluginFiles, existingVersion);
             }
 
             public static InstallationInfo ShouldUpdate(FileSystemPath installLocation,

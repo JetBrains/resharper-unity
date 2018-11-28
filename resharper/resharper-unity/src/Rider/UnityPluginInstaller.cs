@@ -26,7 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
         private readonly NotificationsModel myNotifications;
         private readonly PluginPathsProvider myPluginPathsProvider;
-        private readonly UnityVersionDetector myUnityVersionDetector;
+        private readonly UnityVersion myUnityVersion;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
+        private readonly UnityRefresher myRefresher;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private readonly ProcessingQueue myQueue;
 
@@ -39,9 +41,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             NotificationsModel notifications,
             ISettingsStore settingsStore,
             PluginPathsProvider pluginPathsProvider,
-            UnityVersionDetector unityVersionDetector,
+            UnityVersion unityVersion,
             UnityHost unityHost,
-            UnitySolutionTracker unitySolutionTracker)
+            UnitySolutionTracker unitySolutionTracker,
+            UnityRefresher refresher)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
@@ -52,7 +55,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDetector = detector;
             myNotifications = notifications;
             myPluginPathsProvider = pluginPathsProvider;
-            myUnityVersionDetector = unityVersionDetector;
+            myUnityVersion = unityVersion;
+            myUnitySolutionTracker = unitySolutionTracker;
+            myRefresher = refresher;
 
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
@@ -72,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "IsAbleToEstablishProtocolConnectionWithUnity", () => InstallPluginIfRequired(solution.GetTopLevelProjects()));
+                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "IsAbleToEstablishProtocolConnectionWithUnity", InstallPluginIfRequired);
                 BindToInstallationSettingChange();
             });
         }
@@ -80,22 +85,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void BindToInstallationSettingChange()
         {
             var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
-            myBoundSettingsStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise(myLifetime, CheckAllProjectsIfAutoInstallEnabled);
-        }
-
-        private void CheckAllProjectsIfAutoInstallEnabled(PropertyChangedEventArgs<bool> args)
-        {
-            if (!args.GetNewOrNull())
-                return;
-
-            myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", () => InstallPluginIfRequired(mySolution.GetAllProjects().Where(p => p.IsUnityProject()).ToList()));
+            myBoundSettingsStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise_NoAcknowledgement(myLifetime, args =>
+            {
+                if (!args.GetNewOrNull()) return;
+                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", InstallPluginIfRequired);
+            });
         }
 
         readonly Version myCurrentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
 
-        private void InstallPluginIfRequired(ICollection<IProject> projects)
+        private void InstallPluginIfRequired()
         {
-            if (projects.Count == 0)
+            if (!myUnitySolutionTracker.IsUnityProjectFolder.Value)
                 return;
 
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
@@ -117,6 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
 
             QueueInstall(installationInfo);
+            myQueue.Enqueue(() => { myRefresher.Refresh(false); });
         }
 
         private void QueueInstall(UnityPluginDetector.InstallationInfo installationInfo, bool force = false)
@@ -174,6 +176,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     case UnityPluginDetector.InstallReason.ForceUpdateForDebug:
                         userTitle = "Unity Editor plugin updated (debug build)";
+                        userMessage = $@"Please switch to the Unity Editor to reload the plugin.
+                            Rider plugin v{myCurrentVersion} can be found at:
+                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
+                        break;
+                    
+                    case UnityPluginDetector.InstallReason.UpToDate:
+                        userTitle = "Unity Editor plugin updated (up to date)";
                         userMessage = $@"Please switch to the Unity Editor to reload the plugin.
                             Rider plugin v{myCurrentVersion} can be found at:
                             {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
@@ -238,7 +247,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
                 {
-                    if (myUnityVersionDetector.GetUnityVersion() < new Version("5.6"))
+                    if (myUnityVersion.GetActualVersionForSolution() < new Version("5.6"))
                     {
                         myLogger.Verbose($"Coping {editorPluginPath} -> {targetPath}");
                         editorPluginPath.CopyFile(targetPath, true);

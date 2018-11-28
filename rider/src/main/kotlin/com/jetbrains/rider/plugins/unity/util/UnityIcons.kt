@@ -1,10 +1,10 @@
 package com.jetbrains.rider.plugins.unity.util
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
-import com.jetbrains.rider.icons.ReSharperCommonIcons
-import com.jetbrains.rider.icons.ReSharperProjectModelIcons
-import com.jetbrains.rider.icons.ReSharperPsiJavaScriptIcons
+import com.jetbrains.rider.icons.*
+import com.jetbrains.rider.plugins.unity.util.UnityIcons.Icons.Companion.UnityLogo
 import javax.swing.Icon
 
 class UnityIcons {
@@ -21,6 +21,8 @@ class UnityIcons {
             val UnityEditMode = IconLoader.getIcon("/Icons/common/unityEditMode.svg")
             @JvmField
             val UnityPlayMode = IconLoader.getIcon("/Icons/common/unityPlayMode.svg")
+            @JvmField
+            val UnityDefault = IconLoader.getIcon("/Icons/common/unityDefault.svg")
         }
     }
 
@@ -34,6 +36,13 @@ class UnityIcons {
 
             @JvmField
             val AsmDef = ReSharperPsiJavaScriptIcons.Json
+
+            // TODO: Proper icons - this is the default IJ YAML icon
+            val UnityYaml: Icon = AllIcons.Nodes.DataTables
+            val UnityScene = UnityLogo
+            val Meta = UnityYaml
+            val Asset = UnityYaml
+            val Prefab = UnityYaml
         }
     }
 
@@ -161,10 +170,12 @@ class UnityIcons {
         }
     }
 
-    class Toolwindows {
+    class ToolWindows {
         companion object {
             @JvmField
-            val ToolWindowUnityLog = IconLoader.getIcon("/Icons/toolwindows/toolWindowUnityLog.svg")
+            val UnityLog = Common.UnityDefault
+            val UnityExplorer = Common.UnityDefault
         }
     }
 }
+
