@@ -31,9 +31,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             : base(lifetime, persistentIndexManager, CreateMarshaller())
         {
             myMetaFileGuidCache = metaFileGuidCache;
-#if DEBUG
-            ClearOnLoad = true;
-#endif
         }
 
         private static IUnsafeMarshaller<List<string>> CreateMarshaller()
@@ -99,25 +96,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public override void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
-            CleanLocalCache(sourceFile);
+            RemoveFromLocalCache(sourceFile);
             base.Merge(sourceFile, builtPart);
+            AddToLocalCache(sourceFile, builtPart as List<string> ?? EmptyList<string>.InstanceList);
+        }
 
-            foreach (var referencedElement in (List<string>) builtPart ?? EmptyList<string>.InstanceList)
-                myReferencedElementToAsset.AddValue(referencedElement, sourceFile);
+        public override void MergeLoaded(object data)
+        {
+            base.MergeLoaded(data);
+            PopulateLocalCache();
         }
 
         public override void Drop(IPsiSourceFile sourceFile)
         {
-            CleanLocalCache(sourceFile);
+            RemoveFromLocalCache(sourceFile);
             base.Drop(sourceFile);
         }
 
-        private void CleanLocalCache(IPsiSourceFile sourceFile)
+        private void PopulateLocalCache()
         {
-            if (Map.TryGetValue(sourceFile, out var referencedElements))
+            foreach (var (sourceFile, cacheItem) in Map)
+                AddToLocalCache(sourceFile, cacheItem);
+        }
+
+        private void AddToLocalCache(IPsiSourceFile sourceFile, [NotNull] IEnumerable<string> referencedElementKeys)
+        {
+            foreach (var referencedElementKey in referencedElementKeys)
+                myReferencedElementToAsset.AddValue(referencedElementKey, sourceFile);
+        }
+
+        private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
+        {
+            if (Map.TryGetValue(sourceFile, out var referencedElementKeys))
             {
-                foreach (var referencedElement in referencedElements)
-                    myReferencedElementToAsset.RemoveValue(referencedElement, sourceFile);
+                foreach (var referencedElementKey in referencedElementKeys)
+                    myReferencedElementToAsset.RemoveValue(referencedElementKey, sourceFile);
             }
         }
 
