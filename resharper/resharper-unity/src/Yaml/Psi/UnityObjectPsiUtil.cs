@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -9,13 +8,10 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Caches.Persistence;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
-using Lex;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
@@ -49,13 +45,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                    ?? "Component";
         }
 
-        // Common method to process from startGameObject(or his component) to scene (or prefab) root elemment. Selector will be called for 
+        // Common method to process from startGameObject(or his component) to scene (or prefab) root element. Selector will be called for
         // each visited game object
         public static void ProcessToRoot([CanBeNull] IYamlDocument startGameObject, Action<IYamlDocument, IBlockMappingNode> selector)
         {
             if (startGameObject == null)
                 return;
-            
+
             var solution = startGameObject.GetSolution();
             var yamlFileCache = solution.GetComponent<MetaFileGuidCache>();
             var externalFilesModuleFactory = solution.GetComponent<UnityExternalFilesModuleFactory>();
@@ -69,16 +65,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             // We can start traverse scene (or prefab) hierarchy from component/game object
             // Each component has game object, only transform component know about parent
             // If game object or component has m_CorrespondingSourceObject which is not zero, it means that all data stored in
-            // separated file (which is called prefab). All mofications for prefab is stored in current document in yaml document which can be found by
+            // separated file (which is called prefab). All modifications for prefab is stored in current document in yaml document which can be found by
             // m_PrefabInstance fileId
-            // So, if we meat component, we should check it for m_CorrespondingSourceObject. If we found it, we will traverse .prefab file and apply 
+            // So, if we meat component, we should check it for m_CorrespondingSourceObject. If we found it, we will traverse .prefab file and apply
             // modifications from m_PrefabInstance, then return to our file and continue traverse from parent of prefab
-            // If we meat component without m_CorrespondingSourceObject, we take it "m_GameObject", send to selector, then travers from parent which 
+            // If we meat component without m_CorrespondingSourceObject, we take it "m_GameObject", send to selector, then travers from parent which
             // is stored in transform for this game object
             // If we meat game object, we send it to selector, then find transform and find parent via his transform and continue traverse.
             // If parent can not be found, it means that we meat root node.
-            
-            
+
+
             if (startGameObject == null)
                 return;
             var currentGameObject = startGameObject;
@@ -94,22 +90,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
                     var file = (IYamlFile) currentGameObject.GetContainingFile();
                     var prefabInstance = file.FindDocumentByAnchor(prefabInstanceId.fileID);
-                    
+
                     var prefabSourceFile = yamlFileCache.GetAssetFilePathsFromGuid(correspondingId.guid);
-                    if (prefabSourceFile.Count > 1 || prefabSourceFile.Count == 0) 
+                    if (prefabSourceFile.Count > 1 || prefabSourceFile.Count == 0)
                         return;
 
                     // Is prefab file committed???
                     externalFilesModuleFactory.PsiModule.NotNull("externalFilesModuleFactory.PsiModule != null")
                         .TryGetFileByPath(prefabSourceFile.First(), out var sourceFile);
-                    
+
                     if (sourceFile == null)
                         return;
 
                     var prefabFile = (IYamlFile)sourceFile.GetDominantPsiFile<YamlLanguage>();
-                    
+
                     var prefabSourceObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID); // It can be component, game object or prefab
-                    // if it component we should query game object. 
+                    // if it component we should query game object.
                     var prefabStartGameObject = prefabSourceObject.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty) ?? prefabSourceObject;
 
                     var localModifications = GetPrefabModification(prefabInstance);
@@ -118,9 +114,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 }
                 else
                 {
-                    
+
                     selector(currentGameObject.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty) ?? currentGameObject, modifications);
-                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.FatherProperty) 
+                    currentGameObject = currentGameObject.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.FatherProperty)
                                         ?? FindTransformComponentForGameObject(currentGameObject).GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.FatherProperty);
                 }
             }
@@ -128,7 +124,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
 
         /// <summary>
-        /// This method return path from component's owner to scene or prefab hierarachy root
+        /// This method return path from component's owner to scene or prefab hierarchy root
         /// </summary>
         /// <param name="componentDocument">GameObject's component</param>
         /// <returns></returns>
@@ -206,23 +202,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
             var projectItems = solution.FindProjectItemsByLocation(assetPaths[0]);
             var assetFile = projectItems.FirstOrDefault() as IProjectFile;
-            if (!(assetFile?.GetPrimaryPsiFile() is ICSharpFile csharpFile))
-                return null;
-
             var expectedClassName = assetPaths[0].NameWithoutExtension;
-            var psiSourceFile = csharpFile.GetSourceFile();
-            if (psiSourceFile == null)
+            var psiSourceFiles = assetFile?.ToSourceFiles();
+            if (psiSourceFiles == null)
                 return null;
 
-            var psiServices = csharpFile.GetPsiServices();
-            var elements = psiServices.Symbols.GetTypesAndNamespacesInFile(psiSourceFile);
-            foreach (var element in elements)
+            var psiServices = solution.GetPsiServices();
+            foreach (var sourceFile in psiSourceFiles)
             {
-                // Note that theoretically, there could be multiple classes with the same name in different namespaces.
-                // Unity's own behaviour here is undefined - it arbitrarily chooses one
-                // TODO: Multiple candidates in a file
-                if (element is ITypeElement typeElement && typeElement.ShortName == expectedClassName)
-                    return typeElement;
+                var elements = psiServices.Symbols.GetTypesAndNamespacesInFile(sourceFile);
+                foreach (var element in elements)
+                {
+                    // Note that theoretically, there could be multiple classes with the same name in different
+                    // namespaces. Unity's own behaviour here is undefined - it arbitrarily chooses one
+                    // TODO: Multiple candidates in a file
+                    if (element is ITypeElement typeElement && typeElement.ShortName == expectedClassName)
+                        return typeElement;
+                }
             }
 
             return null;

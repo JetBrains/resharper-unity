@@ -77,6 +77,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             return document.GetUnityObjectTypeFromRootNode() == "MonoBehaviour";
         }
 
+        // Note that this is the guid of the script asset of the instance that the method should be called on. It is not
+        // necessarily the guid of the script asset that *declares* the method (property setter is a method). The method
+        // might be declared on a base type, or might be a virtual override
         [CanBeNull]
         public string GetScriptAssetGuid()
         {
