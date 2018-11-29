@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 n => new List<UnityEventHandlerCacheItem>(n));
         }
 
-        public bool IsEventHandler([NotNull] IDeclaredElement declaredElement)
+        public bool IsEventHandler([NotNull] IMethod declaredElement)
         {
             var sourceFiles = declaredElement.GetSourceFiles();
 
@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (file == null)
                 return null;
 
-            var cacheItems = new List<UnityEventHandlerCacheItem>();
+            var cacheItems = new JetHashSet<UnityEventHandlerCacheItem>();
             var referenceProcessor = new ConditionalRecursiveReferenceProcessor(reference =>
             {
                 var assetGuid = reference.GetScriptAssetGuid();
@@ -111,8 +111,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             RemoveFromLocalCache(sourceFile);
             base.Merge(sourceFile, builtPart);
-            AddToLocalCache(builtPart as List<UnityEventHandlerCacheItem> ??
-                            EmptyList<UnityEventHandlerCacheItem>.InstanceList);
+            AddToLocalCache(builtPart as JetHashSet<UnityEventHandlerCacheItem> ??
+                            JetHashSet<UnityEventHandlerCacheItem>.Empty);
         }
 
         public override void MergeLoaded(object data)
