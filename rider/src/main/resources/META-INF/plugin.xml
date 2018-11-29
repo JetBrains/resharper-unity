@@ -100,12 +100,14 @@
 
       <separator/>
       <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
-        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
-        <action class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" id="SwitchUIModeAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" id="InstallEditorPluginAction" />
         <action class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction" id="StartUnityAction" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessAction" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
+        <separator/>
+        <action class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" id="SwitchUIModeAction" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" id="InstallEditorPluginAction" />
+
       </group>
 
       <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />
