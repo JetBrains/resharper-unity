@@ -11,7 +11,7 @@ class UnityIcons {
     class Icons {
         companion object {
             @JvmField
-            val UnityLogo = IconLoader.getIcon("/Icons/Logo/UnityLogo.png")
+            val UnityLogo = IconLoader.getIcon("/Icons/Logo/UnityLogo.svg")
         }
     }
 
