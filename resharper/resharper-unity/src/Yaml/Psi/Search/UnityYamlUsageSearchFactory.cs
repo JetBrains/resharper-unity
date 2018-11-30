@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             bool findCandidates)
         {
             // We're interested in classes for usages of MonoScript references, and methods for UnityEvent usages
-            if (elements.All(e => e is IClass || e is IMethod))
+            if (elements.All(e => e is IClass || e is IMethod || e is IProperty))
                 return new YamlReferenceSearcher(this, elements, findCandidates);
             return null;
         }

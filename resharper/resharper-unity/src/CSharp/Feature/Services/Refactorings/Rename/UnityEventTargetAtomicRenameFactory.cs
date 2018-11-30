@@ -19,6 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 return eventHandlerCache.IsEventHandler(method);
             }
 
+
+            // TODO: Renaming properties
+
             return false;
         }
 

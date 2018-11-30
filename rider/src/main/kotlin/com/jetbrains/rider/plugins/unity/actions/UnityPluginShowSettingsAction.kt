@@ -6,7 +6,6 @@ import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.wm.ToolWindowManager
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class UnityPluginShowSettingsAction : DumbAwareAction("Unity Plugin Settings...", "", AllIcons.General.Settings) {
@@ -16,7 +15,7 @@ class UnityPluginShowSettingsAction : DumbAwareAction("Unity Plugin Settings..."
     }
 }
 
-class ShowUnityLogInRiderAction : DumbAwareAction("Show Unity Log Window", "", UnityIcons.ToolWindows.UnityLog) {
+class ShowUnityLogInRiderAction : DumbAwareAction("Show Unity Log Window") {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project?: return
         e.getHost() ?: return
