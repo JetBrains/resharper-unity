@@ -11,6 +11,7 @@ using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -28,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
-            
+
             if (locks.Dispatcher.IsAsyncBehaviorProhibited) // for tests
                 return;
 
@@ -132,7 +133,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
             Version version = null;
             if (match.Success)
             {
-                var type = Convert.ToInt32(groups["type"].Value+groups["revision"], 16);
+                var type = 0;
+                try
+                {
+                    type = Convert.ToInt32(groups["type"].Value + groups["revision"].Value, 16);
+                }
+                catch (Exception e)
+                {
+                    Logger.GetLogger<UnityVersion>().Error($"Unable to parse part of version. type={groups["type"].Value} revision={groups["revision"].Value}", e);
+                }
+
                 version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{type}");
             }
 
