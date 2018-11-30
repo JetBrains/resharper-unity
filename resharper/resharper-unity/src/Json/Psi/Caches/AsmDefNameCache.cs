@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
@@ -29,9 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Psi.Caches
             : base(lifetime, persistentIndexManager, AsmDefCacheItem.Marshaller)
         {
             mySolution = solution;
-#if DEBUG
-            ClearOnLoad = true;
-#endif
         }
 
         [CanBeNull]
@@ -45,28 +41,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Psi.Caches
         // Returns a symbol table for all items. Used to resolve references and provide completion
         public ISymbolTable GetSymbolTable()
         {
-            var elements = Map.Select(i =>
-            {
-                if (!myDeclaredElements.ContainsKey(i.Key))
-                {
-                    lock (this)
-                    {
-                        if (!myDeclaredElements.ContainsKey(i.Key))
-                        {
-                            var element = new AsmDefNameDeclaredElement(mySolution.GetComponent<JavaScriptServices>(),
-                                i.Value.Name, i.Key, i.Value.DeclarationOffset);
-                            myDeclaredElements.Add(i.Key, element);
-                            return element;
-                        }
-                    }
-                }
-                return myDeclaredElements[i.Key];
-            }).ToList();
-
-            if (elements.IsEmpty())
+            if (myDeclaredElements.IsEmpty())
                 return EmptySymbolTable.INSTANCE;
-            var psiServices = elements.First().GetPsiServices();
-            return new DeclaredElementsSymbolTable<IDeclaredElement>(psiServices, elements);
+            var psiServices = mySolution.GetComponent<IPsiServices>();
+            return new DeclaredElementsSymbolTable<IDeclaredElement>(psiServices, myDeclaredElements.Values);
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -94,19 +72,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.Psi.Caches
 
         public override void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
-            CleanLocalCache(sourceFile);
+            RemoveFromLocalCache(sourceFile);
+            AddToLocalCache(sourceFile, builtPart as AsmDefCacheItem);
             base.Merge(sourceFile, builtPart);
+        }
+
+        public override void MergeLoaded(object data)
+        {
+            PopulateLocalCache();
+            base.MergeLoaded(data);
         }
 
         public override void Drop(IPsiSourceFile sourceFile)
         {
-            CleanLocalCache(sourceFile);
+            RemoveFromLocalCache(sourceFile);
             base.Drop(sourceFile);
         }
 
-        private void CleanLocalCache(IPsiSourceFile sourceFile)
+        private void PopulateLocalCache()
+        {
+            foreach (var (sourceFile, cacheItem) in Map)
+                AddToLocalCache(sourceFile, cacheItem);
+        }
+
+        private void AddToLocalCache(IPsiSourceFile sourceFile, [CanBeNull] AsmDefCacheItem asmDefCacheItem)
+        {
+            if (asmDefCacheItem == null) return;
+
+            if (!myDeclaredElements.ContainsKey(sourceFile))
+                myDeclaredElements.Add(sourceFile, CreateDeclaredElement(sourceFile, asmDefCacheItem));
+        }
+
+        private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
             myDeclaredElements.Remove(sourceFile);
+        }
+
+        private AsmDefNameDeclaredElement CreateDeclaredElement(IPsiSourceFile sourceFile, AsmDefCacheItem cacheItem)
+        {
+            return new AsmDefNameDeclaredElement(mySolution.GetComponent<JavaScriptServices>(),
+                cacheItem.Name, sourceFile, cacheItem.DeclarationOffset);
         }
 
         protected override bool IsApplicable(IPsiSourceFile sf)
