@@ -1,3 +1,4 @@
+using System;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
@@ -29,6 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         rd.ApplicationPath.SetValue(path.FullPath);
                     if (!rd.ApplicationContentsPath.HasValue())
                         rd.ApplicationContentsPath.SetValue(contentPath.FullPath);
+                    if (!rd.ApplicationVersion.HasValue())
+                        rd.ApplicationVersion.SetValue($"{version.Major}.{version.Minor}.{version.Build}{Convert.ToString(version.Revision, 16)}");
                 });
             });
         }
