@@ -20,7 +20,7 @@ using JetBrains.Util.PersistentMap;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     [PsiComponent]
-    public class UnityEventHandlerReferenceCache : SimpleICache<List<UnityEventHandlerCacheItem>>
+    public class UnityEventHandlerReferenceCache : SimpleICache<JetHashSet<UnityEventHandlerCacheItem>>
     {
         private readonly ISolution mySolution;
 
@@ -41,10 +41,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         // Version "1": List<string> "asset::shortname"
         public override string Version => "2";
 
-        private static IUnsafeMarshaller<List<UnityEventHandlerCacheItem>> CreateMarshaller()
+        private static IUnsafeMarshaller<JetHashSet<UnityEventHandlerCacheItem>> CreateMarshaller()
         {
             return UnsafeMarshallers.GetCollectionMarshaller(UnityEventHandlerCacheItem.Marshaller,
-                n => new List<UnityEventHandlerCacheItem>(n));
+                n => new JetHashSet<UnityEventHandlerCacheItem>(n));
         }
 
         public bool IsEventHandler([NotNull] IMethod declaredElement)
