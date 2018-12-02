@@ -133,25 +133,28 @@ namespace JetBrains.ReSharper.Plugins.Unity
             Version version = null;
             if (match.Success)
             {
-                var type = 0;
+                var typeWithRevision = "0";
                 try
                 {
-                    type = Convert.ToInt32(groups["type"].Value + groups["revision"].Value, 16);
+                    var typeChar = groups["type"].Value.ToCharArray()[0];
+                    typeWithRevision = ((int)typeChar).ToString("D3") + groups["revision"].Value;
                 }
                 catch (Exception e)
                 {
                     Logger.GetLogger<UnityVersion>().Error($"Unable to parse part of version. type={groups["type"].Value} revision={groups["revision"].Value}", e);
                 }
 
-                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{type}");
+                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{typeWithRevision}");
             }
 
             return version;
         }
         
-        public string VersionToString(Version version)
+        public static string VersionToString(Version version)
         {
-            return $"{version.Major}.{version.Minor}.{version.Build}{Convert.ToString(version.Revision, 16)}";
+            var type = (char)Convert.ToInt32(version.Revision.ToString().Substring(0,3));
+            var rev = version.Revision.ToString().Substring(3);
+            return $"{version.Major}.{version.Minor}.{version.Build}{type}{rev}";
         }
 
         public static string GetVersionFromInfoPlist(FileSystemPath infoPlistPath)

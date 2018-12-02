@@ -1,9 +1,7 @@
-using System;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -31,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     if (!rd.ApplicationContentsPath.HasValue())
                         rd.ApplicationContentsPath.SetValue(contentPath.FullPath);
                     if (!rd.ApplicationVersion.HasValue())
-                        rd.ApplicationVersion.SetValue(unityVersion.VersionToString(version));
+                        rd.ApplicationVersion.SetValue(UnityVersion.VersionToString(version));
                 });
             });
         }
