@@ -157,9 +157,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var rev = string.Empty;
             try
             {
-                var revisionString = version.Revision.ToString();
-                type = ((char)Convert.ToInt32(revisionString.Substring(0,3))).ToString();
-                rev = revisionString.Substring(3);
+                var revisionString = version.Revision.ToString(); // first 3 is char, next 1+ ones - revision
+                if (revisionString.Length > 3)
+                {
+                    type = ((char)Convert.ToInt32(revisionString.Substring(0,3))).ToString();
+                    rev = revisionString.Substring(3);
+                }
             }
             catch (Exception e)
             {
