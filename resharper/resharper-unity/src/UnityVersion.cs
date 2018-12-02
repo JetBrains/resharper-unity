@@ -22,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private readonly ISolution mySolution;
         private Version myVersionFromProjectVersionTxt;
         private Version myVersionFromEditorInstanceJson;
+        private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, 
             ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
@@ -141,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
                 catch (Exception e)
                 {
-                    Logger.GetLogger<UnityVersion>().Error($"Unable to parse part of version. type={groups["type"].Value} revision={groups["revision"].Value}", e);
+                    ourLogger.Error($"Unable to parse part of version. type={groups["type"].Value} revision={groups["revision"].Value}", e);
                 }
 
                 version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{typeWithRevision}");
@@ -152,8 +153,19 @@ namespace JetBrains.ReSharper.Plugins.Unity
         
         public static string VersionToString(Version version)
         {
-            var type = (char)Convert.ToInt32(version.Revision.ToString().Substring(0,3));
-            var rev = version.Revision.ToString().Substring(3);
+            var type = string.Empty;
+            var rev = string.Empty;
+            try
+            {
+                var revisionString = version.Revision.ToString("D4"); // first 3 is char, next 1+ ones is revision
+                type = ((char)Convert.ToInt32(revisionString.Substring(0,3))).ToString();
+                rev = revisionString.Substring(3);
+            }
+            catch (Exception e)
+            {
+                ourLogger.Error($"Unable do VersionToString. Input version={version}", e);
+            }
+            
             return $"{version.Major}.{version.Minor}.{version.Build}{type}{rev}";
         }
 
