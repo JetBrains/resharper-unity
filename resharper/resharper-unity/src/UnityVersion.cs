@@ -157,7 +157,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var rev = string.Empty;
             try
             {
-                var revisionString = version.Revision.ToString("D4"); // first 3 is char, next 1+ ones is revision
+                var revisionString = version.Revision.ToString();
                 type = ((char)Convert.ToInt32(revisionString.Substring(0,3))).ToString();
                 rev = revisionString.Substring(3);
             }
