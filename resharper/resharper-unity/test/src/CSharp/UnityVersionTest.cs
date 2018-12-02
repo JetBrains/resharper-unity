@@ -14,5 +14,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             Assert.AreEqual(realVersion, Unity.UnityVersion.Parse(marketingVersion));
             Assert.AreEqual(marketingVersion, Unity.UnityVersion.VersionToString(realVersion));
         }
+        
+        [Test]
+        public void VersionToStringTest()
+        {
+            var marketingVersion = "2018.2.13";
+            var realVersion = Version.Parse("2018.2.13.0");
+            
+            Assert.AreEqual(marketingVersion, Unity.UnityVersion.VersionToString(realVersion));
+        }
     }
 }
