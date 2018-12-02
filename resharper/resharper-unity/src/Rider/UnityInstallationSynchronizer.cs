@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     if (!rd.ApplicationContentsPath.HasValue())
                         rd.ApplicationContentsPath.SetValue(contentPath.FullPath);
                     if (!rd.ApplicationVersion.HasValue())
-                        rd.ApplicationVersion.SetValue($"{version.Major}.{version.Minor}.{version.Build}{Convert.ToString(version.Revision, 16)}");
+                        rd.ApplicationVersion.SetValue(unityVersion.VersionToString(version));
                 });
             });
         }

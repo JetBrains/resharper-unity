@@ -148,6 +148,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return version;
         }
+        
+        public string VersionToString(Version version)
+        {
+            return $"{version.Major}.{version.Minor}.{version.Build}{Convert.ToString(version.Revision, 16)}";
+        }
 
         public static string GetVersionFromInfoPlist(FileSystemPath infoPlistPath)
         {
