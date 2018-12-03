@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         public void VersionConversionTest()
         {
             var marketingVersion = "2018.2.13p1";
-            var realVersion = Version.Parse("2018.2.13.1121");
+            var realVersion = Version.Parse("2018.2.13.128001");
             Assert.AreEqual(realVersion, Unity.UnityVersion.Parse(marketingVersion));
             Assert.AreEqual(marketingVersion, Unity.UnityVersion.VersionToString(realVersion));
         }
