@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
     {
         typeof(UnityGutterMarkInfo),
 #if RIDER
-        typeof(Rider.CodeInsights.UnityCodeInsightsHighlighting)
+        typeof(JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights.UnityCodeInsightsHighlighting)
 #endif
     })]
     public class UnityEventHandlerDetector : UnityElementProblemAnalyzer<IDeclaration>
