@@ -151,7 +151,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
             else
             {
-                ourLogger.Error($"Unable to parse part of version. input={input}");    
+                ourLogger.Error($"Unable to version. input={input}");    
             }
 
             return version;

@@ -28,9 +28,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         [Test]
         public void SortTest()
         {
-            string[] mVersions = {"2018.2.13p1", "2018.2.13a20", "2018.2.13f20", "2018.2.13b20", "2018.2.13p20"};
-            string[] expected =  {"2018.2.13a20", "2018.2.13b20", "2018.2.13f20", "2018.2.13p1", "2018.2.13p20"};
-            var actualVersions = mVersions.Select(Unity.UnityVersion.Parse).OrderBy().ToArray();
+            var mVersions = new[] {"2018.2.13p1", "2018.2.13a20", "2018.2.13f20", "2018.2.13b20", "2018.2.13p20"};
+            var expected = new[] {"2018.2.13", "2018.2.13a20", "2018.2.13b20", "2018.2.13f20", "2018.2.13p1", "2018.2.13p20"};
+            var actualVersions = mVersions.Select(Unity.UnityVersion.Parse).ToList();
+            actualVersions.Add(Version.Parse("2018.2.13"));
+            actualVersions = actualVersions.OrderBy().ToList();
             var actual = actualVersions.Select(Unity.UnityVersion.VersionToString).ToArray(); // Select preserves Ordering
             Assert.AreEqual(expected, actual);
         }
