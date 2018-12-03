@@ -46,6 +46,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private int myCurrentIndent;
 
+        protected void WithIndent(IOptionEntity entity)
+        {
+            SetIndent(entity, myCurrentIndent);
+        }
+
         protected void Header([NotNull] RichText text)
         {
             SetIndent(AddHeader(text), myCurrentIndent);
