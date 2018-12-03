@@ -3,24 +3,24 @@ IYamlFile
   IYamlDocument
     ChameleonDocumentBody
       IPlainScalarNode
-        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Bare)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:document)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    YamlTokenType+FixedTokenElement(type:DOCUMENT_END, text:...)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    Comment(type:COMMENT, text:# No document) spaces: "# No document"
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(0,4)(type:NS_PLAIN, text:Bare)
+        NewLine(4,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(5,8)(type:NS_PLAIN, text:document)
+      NewLine(13,1)(type:NEW_LINE, text:\n) spaces: "\n"
+    YamlTokenType+FixedTokenElement(14,3)(type:DOCUMENT_END, text:...)
+    NewLine(17,1)(type:NEW_LINE, text:\n) spaces: "\n"
+    Comment(18,13)(type:COMMENT, text:# No document) comment: "# No document"
+    NewLine(31,1)(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
     ChameleonDocumentBody
       IEmptyScalarNode
-    YamlTokenType+FixedTokenElement(type:DOCUMENT_END, text:...)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    YamlTokenType+FixedTokenElement(32,3)(type:DOCUMENT_END, text:...)
+    NewLine(35,1)(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
     ChameleonDocumentBody
       ILiteralScalarNode
-        YamlTokenType+FixedTokenElement(type:PIPE, text:|)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-        YamlTokenType+GenericTokenElement(type:SCALAR_TEXT, text:%!PS-Adobe-2.0 # Not the first line - should be string)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+FixedTokenElement(36,1)(type:PIPE, text:|)
+        NewLine(37,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(38,54)(type:SCALAR_TEXT, text:%!PS-Adobe-2.0 # Not the first line - should be string)
+      NewLine(92,1)(type:NEW_LINE, text:\n) spaces: "\n"
 

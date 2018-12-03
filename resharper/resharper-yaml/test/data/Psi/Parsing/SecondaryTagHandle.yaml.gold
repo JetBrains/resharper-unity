@@ -3,26 +3,26 @@ IYamlFile
   IYamlDocument
     IDirectives
       IDirective
-        YamlTokenType+FixedTokenElement(type:PERCENT, text:%)
-        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:TAG)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:!!)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:tag:example.com,2000:app/)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
+        YamlTokenType+FixedTokenElement(0,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(1,3)(type:NS_CHARS, text:TAG)
+        Whitespace(4,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(5,2)(type:NS_CHARS, text:!!)
+        Whitespace(7,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(8,25)(type:NS_CHARS, text:tag:example.com,2000:app/)
+        NewLine(33,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(34,3)(type:DIRECTIVES_END, text:---)
     ChameleonDocumentBody
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      NewLine(37,1)(type:NEW_LINE, text:\n) spaces: "\n"
       IPlainScalarNode
         INodeProperties
           IShorthandTagProperty
             ISecondaryTagHandle
-              YamlTokenType+FixedTokenElement(type:BANG, text:!)
-              YamlTokenType+FixedTokenElement(type:BANG, text:!)
-            YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:int)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:1 - 3)
-      Whitespace(type:WHITESPACE, text: ) spaces: " "
-      Comment(type:COMMENT, text:# Interval, not integer) spaces: "# Interval, not integer"
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+              YamlTokenType+FixedTokenElement(38,1)(type:BANG, text:!)
+              YamlTokenType+FixedTokenElement(39,1)(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(40,3)(type:NS_TAG_CHARS, text:int)
+        Whitespace(43,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(44,5)(type:NS_PLAIN, text:1 - 3)
+      Whitespace(49,1)(type:WHITESPACE, text: ) spaces: " "
+      Comment(50,23)(type:COMMENT, text:# Interval, not integer) comment: "# Interval, not integer"
+      NewLine(73,1)(type:NEW_LINE, text:\n) spaces: "\n"
 

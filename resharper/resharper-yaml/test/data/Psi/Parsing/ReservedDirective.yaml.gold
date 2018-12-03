@@ -3,22 +3,22 @@ IYamlFile
   IYamlDocument
     IDirectives
       IDirective
-        YamlTokenType+FixedTokenElement(type:PERCENT, text:%)
-        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:FOO)
-        Whitespace(type:WHITESPACE, text:  ) spaces: "  "
-        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:bar)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:baz)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        Comment(type:COMMENT, text:# Should be ignored) spaces: "# Should be ignored"
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-        YamlTokenType+GenericTokenElement(type:INDENT, text:               )
-        Comment(type:COMMENT, text:# with a warning.) spaces: "# with a warning."
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
+        YamlTokenType+FixedTokenElement(0,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(1,3)(type:NS_CHARS, text:FOO)
+        Whitespace(4,2)(type:WHITESPACE, text:  ) spaces: "  "
+        YamlTokenType+GenericTokenElement(6,3)(type:NS_CHARS, text:bar)
+        Whitespace(9,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(10,3)(type:NS_CHARS, text:baz)
+        Whitespace(13,1)(type:WHITESPACE, text: ) spaces: " "
+        Comment(14,19)(type:COMMENT, text:# Should be ignored) comment: "# Should be ignored"
+        NewLine(33,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(34,15)(type:INDENT, text:               )
+        Comment(49,17)(type:COMMENT, text:# with a warning.) comment: "# with a warning."
+        NewLine(66,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(67,3)(type:DIRECTIVES_END, text:---)
     ChameleonDocumentBody
-      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      Whitespace(70,1)(type:WHITESPACE, text: ) spaces: " "
       IDoubleQuotedScalarNode
-        YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(71,5)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
+      NewLine(76,1)(type:NEW_LINE, text:\n) spaces: "\n"
 

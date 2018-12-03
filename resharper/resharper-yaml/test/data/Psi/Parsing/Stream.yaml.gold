@@ -3,36 +3,36 @@ IYamlFile
   IYamlDocument
     ChameleonDocumentBody
       IPlainScalarNode
-        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Document)
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(0,8)(type:NS_PLAIN, text:Document)
+      NewLine(8,1)(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
     IDirectives
-      YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
+      YamlTokenType+FixedTokenElement(9,3)(type:DIRECTIVES_END, text:---)
     ChameleonDocumentBody
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      Comment(type:COMMENT, text:# Empty) spaces: "# Empty"
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      NewLine(12,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      Comment(13,7)(type:COMMENT, text:# Empty) comment: "# Empty"
+      NewLine(20,1)(type:NEW_LINE, text:\n) spaces: "\n"
       IEmptyScalarNode
-    YamlTokenType+FixedTokenElement(type:DOCUMENT_END, text:...)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    YamlTokenType+FixedTokenElement(21,3)(type:DOCUMENT_END, text:...)
+    NewLine(24,1)(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
     IDirectives
       IDirective
-        YamlTokenType+FixedTokenElement(type:PERCENT, text:%)
-        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:YAML)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        YamlTokenType+GenericTokenElement(type:NS_CHARS, text:1.2)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
+        YamlTokenType+FixedTokenElement(25,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(26,4)(type:NS_CHARS, text:YAML)
+        Whitespace(30,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(31,3)(type:NS_CHARS, text:1.2)
+        NewLine(34,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(35,3)(type:DIRECTIVES_END, text:---)
     ChameleonDocumentBody
       ChameleonBlockMappingNode
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(38,1)(type:NEW_LINE, text:\n) spaces: "\n"
         IBlockMappingEntry
           IPlainScalarNode
-            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:matches %)
-          YamlTokenType+FixedTokenElement(type:COLON, text::)
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(39,9)(type:NS_PLAIN, text:matches %)
+          YamlTokenType+FixedTokenElement(48,1)(type:COLON, text::)
+          Whitespace(49,1)(type:WHITESPACE, text: ) spaces: " "
           IPlainScalarNode
-            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:20)
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(50,2)(type:NS_PLAIN, text:20)
+          NewLine(52,1)(type:NEW_LINE, text:\n) spaces: "\n"
 
