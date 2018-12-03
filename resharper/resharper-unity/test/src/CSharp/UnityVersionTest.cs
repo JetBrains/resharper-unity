@@ -28,8 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         [Test]
         public void SortTest()
         {
-            var mVersions = new[] {"2018.2.13p1", "2018.2.13a20", "2018.2.13f20", "2018.2.13b20", "2018.2.13p20"};
-            var expected = new[] {"2018.2.13", "2018.2.13a20", "2018.2.13b20", "2018.2.13f20", "2018.2.13p1", "2018.2.13p20"};
+            var mVersions = new[] {"2018.2.13a20",  "2018.2.13b1", "2018.2.13b3", "2018.2.13b10", "2018.2.13b20", "2018.2.13f1","2018.2.13f20", "2018.2.13p1", "2018.2.13p20"};
+            var expected = new[] {"2018.2.13", "2018.2.13a20",  "2018.2.13b1", "2018.2.13b3", "2018.2.13b10", "2018.2.13b20", "2018.2.13f1","2018.2.13f20", "2018.2.13p1", "2018.2.13p20"};
             var actualVersions = mVersions.Select(Unity.UnityVersion.Parse).ToList();
             actualVersions.Add(Version.Parse("2018.2.13"));
             actualVersions = actualVersions.OrderBy().ToList();
