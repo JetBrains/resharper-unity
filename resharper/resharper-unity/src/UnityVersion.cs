@@ -138,7 +138,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 try
                 {
                     var typeChar = groups["type"].Value.ToCharArray()[0];
-                    typeWithRevision = ((int)typeChar).ToString("D3") + groups["revision"].Value;
+                    var shiftedChar = 16 + typeChar; // Because `f1` = `1021` and `b10` = `9810`, which will break sorting
+                    var revision = Convert.ToInt32(groups["revision"].Value);
+                    typeWithRevision = shiftedChar.ToString("D3") + revision.ToString("D3");
                 }
                 catch (Exception e)
                 {
@@ -146,6 +148,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
 
                 version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{typeWithRevision}");
+            }
+            else
+            {
+                ourLogger.Error($"Unable to parse part of version. input={input}");    
             }
 
             return version;
@@ -160,8 +166,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 var revisionString = version.Revision.ToString(); // first 3 is char, next 1+ ones - revision
                 if (revisionString.Length > 3)
                 {
-                    type = ((char)Convert.ToInt32(revisionString.Substring(0,3))).ToString();
-                    rev = revisionString.Substring(3);
+                    var charValue = Convert.ToInt32(revisionString.Substring(0, 3)) - 16;
+                    type = ((char)charValue).ToString();
+                    rev = Convert.ToInt32(revisionString.Substring(3)).ToString();
                 }
             }
             catch (Exception e)
