@@ -1,27 +1,28 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    ChameleonBlockMappingNode
-      INodeProperties
-        IVerbatimTagProperty
-          YamlTokenType+FixedTokenElement(type:BANG_LT, text:!<)
-          YamlTokenType+GenericTokenElement(type:NS_URI_CHARS, text:tag:yaml.org,2002:str)
-          YamlTokenType+FixedTokenElement(type:GT, text:>)
-      Whitespace(type:WHITESPACE, text: ) spaces: " "
-      IBlockMappingEntry
-        IPlainScalarNode
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:foo)
+    ChameleonDocumentBody
+      ChameleonBlockMappingNode
+        INodeProperties
+          IVerbatimTagProperty
+            YamlTokenType+FixedTokenElement(type:BANG_LT, text:!<)
+            YamlTokenType+GenericTokenElement(type:NS_URI_CHARS, text:tag:yaml.org,2002:str)
+            YamlTokenType+FixedTokenElement(type:GT, text:>)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
-        YamlTokenType+FixedTokenElement(type:COLON, text::)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-        YamlTokenType+GenericTokenElement(type:INDENT, text:  )
-        IPlainScalarNode
-          INodeProperties
-            IVerbatimTagProperty
-              YamlTokenType+FixedTokenElement(type:BANG_LT, text:!<)
-              YamlTokenType+GenericTokenElement(type:NS_URI_CHARS, text:!bar)
-              YamlTokenType+FixedTokenElement(type:GT, text:>)
+        IBlockMappingEntry
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:foo)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+FixedTokenElement(type:COLON, text::)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IPlainScalarNode
+            INodeProperties
+              IVerbatimTagProperty
+                YamlTokenType+FixedTokenElement(type:BANG_LT, text:!<)
+                YamlTokenType+GenericTokenElement(type:NS_URI_CHARS, text:!bar)
+                YamlTokenType+FixedTokenElement(type:GT, text:>)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

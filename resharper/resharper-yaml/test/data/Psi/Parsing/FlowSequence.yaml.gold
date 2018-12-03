@@ -1,38 +1,39 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IBlockSequenceNode
-      ISequenceEntry
-        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IFlowSequenceNode
-          YamlTokenType+FixedTokenElement(type:LBRACK, text:[)
+    ChameleonDocumentBody
+      IBlockSequenceNode
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(type:MINUS, text:-)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
-          IFlowSequenceEntry
-            IPlainScalarNode
-              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:one)
-          YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+          IFlowSequenceNode
+            YamlTokenType+FixedTokenElement(type:LBRACK, text:[)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IFlowSequenceEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:one)
+            YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IFlowSequenceEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:two)
+            YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+FixedTokenElement(type:RBRACK, text:])
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(type:MINUS, text:-)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
-          IFlowSequenceEntry
-            IPlainScalarNode
-              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:two)
-          YamlTokenType+FixedTokenElement(type:COMMA, text:,)
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
-          YamlTokenType+FixedTokenElement(type:RBRACK, text:])
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      ISequenceEntry
-        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IFlowSequenceNode
-          YamlTokenType+FixedTokenElement(type:LBRACK, text:[)
-          IFlowSequenceEntry
-            IPlainScalarNode
-              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:three)
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
-          YamlTokenType+FixedTokenElement(type:COMMA, text:,)
-          IFlowSequenceEntry
-            IPlainScalarNode
-              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:four)
-          YamlTokenType+FixedTokenElement(type:RBRACK, text:])
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          IFlowSequenceNode
+            YamlTokenType+FixedTokenElement(type:LBRACK, text:[)
+            IFlowSequenceEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:three)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+            IFlowSequenceEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:four)
+            YamlTokenType+FixedTokenElement(type:RBRACK, text:])
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

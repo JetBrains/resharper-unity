@@ -1,7 +1,8 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    ISingleQuotedScalarNode
-      YamlTokenType+GenericTokenElement(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'here''s to "quotes"')
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    ChameleonDocumentBody
+      ISingleQuotedScalarNode
+        YamlTokenType+GenericTokenElement(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'here''s to "quotes"')
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

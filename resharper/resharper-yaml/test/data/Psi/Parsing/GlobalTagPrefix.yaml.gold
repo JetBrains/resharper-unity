@@ -11,20 +11,21 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:tag:example.com,2000:app/)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    IBlockSequenceNode
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      ISequenceEntry
-        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IDoubleQuotedScalarNode
-          INodeProperties
-            IShorthandTagProperty
-              INamedTagHandle
-                YamlTokenType+FixedTokenElement(type:BANG, text:!)
-                YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:e)
-                YamlTokenType+FixedTokenElement(type:BANG, text:!)
-              YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:foo)
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
-          YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"bar")
+    ChameleonDocumentBody
+      IBlockSequenceNode
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IDoubleQuotedScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                INamedTagHandle
+                  YamlTokenType+FixedTokenElement(type:BANG, text:!)
+                  YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:e)
+                  YamlTokenType+FixedTokenElement(type:BANG, text:!)
+                YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:foo)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"bar")
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

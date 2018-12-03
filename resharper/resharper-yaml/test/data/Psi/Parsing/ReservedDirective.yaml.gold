@@ -16,8 +16,9 @@ IYamlFile
         Comment(type:COMMENT, text:# with a warning.) spaces: "# with a warning."
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    IDoubleQuotedScalarNode
-      YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    ChameleonDocumentBody
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      IDoubleQuotedScalarNode
+        YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

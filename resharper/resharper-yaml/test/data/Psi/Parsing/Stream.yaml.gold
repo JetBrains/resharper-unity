@@ -1,15 +1,18 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IPlainScalarNode
-      YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Document)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    ChameleonDocumentBody
+      IPlainScalarNode
+        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Document)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
     IDirectives
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    Comment(type:COMMENT, text:# Empty) spaces: "# Empty"
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    ChameleonDocumentBody
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Comment(type:COMMENT, text:# Empty) spaces: "# Empty"
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IEmptyScalarNode
     YamlTokenType+FixedTokenElement(type:DOCUMENT_END, text:...)
     NewLine(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
@@ -21,14 +24,15 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:1.2)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    ChameleonBlockMappingNode
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      IBlockMappingEntry
-        IPlainScalarNode
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:matches %)
-        YamlTokenType+FixedTokenElement(type:COLON, text::)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IPlainScalarNode
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:20)
+    ChameleonDocumentBody
+      ChameleonBlockMappingNode
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        IBlockMappingEntry
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:matches %)
+          YamlTokenType+FixedTokenElement(type:COLON, text::)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:20)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

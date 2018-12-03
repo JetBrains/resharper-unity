@@ -11,16 +11,17 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:tag:yaml.org,2002:)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    IDoubleQuotedScalarNode
-      INodeProperties
-        IShorthandTagProperty
-          INamedTagHandle
-            YamlTokenType+FixedTokenElement(type:BANG, text:!)
-            YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:yaml)
-            YamlTokenType+FixedTokenElement(type:BANG, text:!)
-          YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:str)
-      Whitespace(type:WHITESPACE, text: ) spaces: " "
-      YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    ChameleonDocumentBody
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IDoubleQuotedScalarNode
+        INodeProperties
+          IShorthandTagProperty
+            INamedTagHandle
+              YamlTokenType+FixedTokenElement(type:BANG, text:!)
+              YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:yaml)
+              YamlTokenType+FixedTokenElement(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:str)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

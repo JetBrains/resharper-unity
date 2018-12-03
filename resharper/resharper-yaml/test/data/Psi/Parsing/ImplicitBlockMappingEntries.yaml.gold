@@ -1,32 +1,33 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    ChameleonBlockMappingNode
-      IBlockMappingEntry
-        IPlainScalarNode
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:plain key)
-        YamlTokenType+FixedTokenElement(type:COLON, text::)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IPlainScalarNode
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:in-line value)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      IBlockMappingEntry
-        IEmptyScalarNode
-        YamlTokenType+FixedTokenElement(type:COLON, text::)
-        IEmptyScalarNode
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        Comment(type:COMMENT, text:# Both empty) spaces: "# Both empty"
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      IBlockMappingEntry
-        IDoubleQuotedScalarNode
-          YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"quoted key")
-        YamlTokenType+FixedTokenElement(type:COLON, text::)
-        IBlockSequenceNode
+    ChameleonDocumentBody
+      ChameleonBlockMappingNode
+        IBlockMappingEntry
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:plain key)
+          YamlTokenType+FixedTokenElement(type:COLON, text::)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:in-line value)
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-          ISequenceEntry
-            YamlTokenType+FixedTokenElement(type:MINUS, text:-)
-            Whitespace(type:WHITESPACE, text: ) spaces: " "
-            IPlainScalarNode
-              YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:entry)
+        IBlockMappingEntry
+          IEmptyScalarNode
+          YamlTokenType+FixedTokenElement(type:COLON, text::)
+          IEmptyScalarNode
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          Comment(type:COMMENT, text:# Both empty) spaces: "# Both empty"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        IBlockMappingEntry
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"quoted key")
+          YamlTokenType+FixedTokenElement(type:COLON, text::)
+          IBlockSequenceNode
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            ISequenceEntry
+              YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:entry)
+              NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

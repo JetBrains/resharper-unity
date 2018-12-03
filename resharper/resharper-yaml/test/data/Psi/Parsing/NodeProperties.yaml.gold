@@ -1,47 +1,48 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    ChameleonBlockMappingNode
-      INodeProperties
-        IShorthandTagProperty
-          ISecondaryTagHandle
-            YamlTokenType+FixedTokenElement(type:BANG, text:!)
-            YamlTokenType+FixedTokenElement(type:BANG, text:!)
-          YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:str)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IAnchorProperty
-          YamlTokenType+FixedTokenElement(type:AMP, text:&)
-          YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:a1)
-      Whitespace(type:WHITESPACE, text: ) spaces: " "
-      IBlockMappingEntry
-        IDoubleQuotedScalarNode
-          YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
-        YamlTokenType+FixedTokenElement(type:COLON, text::)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-        YamlTokenType+GenericTokenElement(type:INDENT, text:  )
-        IPlainScalarNode
-          INodeProperties
-            IShorthandTagProperty
-              ISecondaryTagHandle
-                YamlTokenType+FixedTokenElement(type:BANG, text:!)
-                YamlTokenType+FixedTokenElement(type:BANG, text:!)
-              YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:str)
+    ChameleonDocumentBody
+      ChameleonBlockMappingNode
+        INodeProperties
+          IShorthandTagProperty
+            ISecondaryTagHandle
+              YamlTokenType+FixedTokenElement(type:BANG, text:!)
+              YamlTokenType+FixedTokenElement(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:str)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:bar)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      IBlockMappingEntry
-        IPlainScalarNode
-          INodeProperties
-            IAnchorProperty
-              YamlTokenType+FixedTokenElement(type:AMP, text:&)
-              YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:a2)
+          IAnchorProperty
+            YamlTokenType+FixedTokenElement(type:AMP, text:&)
+            YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:a1)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IBlockMappingEntry
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
+          YamlTokenType+FixedTokenElement(type:COLON, text::)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+          IPlainScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                ISecondaryTagHandle
+                  YamlTokenType+FixedTokenElement(type:BANG, text:!)
+                  YamlTokenType+FixedTokenElement(type:BANG, text:!)
+                YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:str)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:bar)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        IBlockMappingEntry
+          IPlainScalarNode
+            INodeProperties
+              IAnchorProperty
+                YamlTokenType+FixedTokenElement(type:AMP, text:&)
+                YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:a2)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        YamlTokenType+FixedTokenElement(type:COLON, text::)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IAliasNode
-          YamlTokenType+FixedTokenElement(type:ASTERISK, text:*)
-          YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:a1)
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+FixedTokenElement(type:COLON, text::)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IAliasNode
+            YamlTokenType+FixedTokenElement(type:ASTERISK, text:*)
+            YamlTokenType+GenericTokenElement(type:NS_ANCHOR_NAME, text:a1)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

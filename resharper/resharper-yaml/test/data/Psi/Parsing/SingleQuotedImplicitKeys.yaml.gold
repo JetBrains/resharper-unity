@@ -1,29 +1,30 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    ChameleonBlockMappingNode
-      IBlockMappingEntry
-        ISingleQuotedScalarNode
-          YamlTokenType+GenericTokenElement(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'implicit block key')
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        YamlTokenType+FixedTokenElement(type:COLON, text::)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IFlowSequenceNode
-          YamlTokenType+FixedTokenElement(type:LBRACK, text:[)
+    ChameleonDocumentBody
+      ChameleonBlockMappingNode
+        IBlockMappingEntry
+          ISingleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'implicit block key')
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          YamlTokenType+FixedTokenElement(type:COLON, text::)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IFlowSequenceNode
+            YamlTokenType+FixedTokenElement(type:LBRACK, text:[)
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(type:INDENT, text:  )
+            IFlowSequenceEntry
+              IFlowPair
+                ISingleQuotedScalarNode
+                  YamlTokenType+GenericTokenElement(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'implicit flow key')
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                YamlTokenType+FixedTokenElement(type:COLON, text::)
+                Whitespace(type:WHITESPACE, text: ) spaces: " "
+                IPlainScalarNode
+                  YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:value)
+            YamlTokenType+FixedTokenElement(type:COMMA, text:,)
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(type:INDENT, text: )
+            YamlTokenType+FixedTokenElement(type:RBRACK, text:])
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-          YamlTokenType+GenericTokenElement(type:INDENT, text:  )
-          IFlowSequenceEntry
-            IFlowPair
-              ISingleQuotedScalarNode
-                YamlTokenType+GenericTokenElement(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'implicit flow key')
-              Whitespace(type:WHITESPACE, text: ) spaces: " "
-              YamlTokenType+FixedTokenElement(type:COLON, text::)
-              Whitespace(type:WHITESPACE, text: ) spaces: " "
-              IPlainScalarNode
-                YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:value)
-          YamlTokenType+FixedTokenElement(type:COMMA, text:,)
-          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-          YamlTokenType+GenericTokenElement(type:INDENT, text: )
-          YamlTokenType+FixedTokenElement(type:RBRACK, text:])
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

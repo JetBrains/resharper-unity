@@ -11,36 +11,37 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:tag:example,2000:app/)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    IBlockSequenceNode
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      ISequenceEntry
-        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IPlainScalarNode
-          INodeProperties
-            IShorthandTagProperty
-              INamedTagHandle
-                YamlTokenType+FixedTokenElement(type:BANG, text:!)
-                YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:e)
-                YamlTokenType+FixedTokenElement(type:BANG, text:!)
-              ErrorElement:Text expected
-          Whitespace(type:WHITESPACE, text: ) spaces: " "
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:foo)
+    ChameleonDocumentBody
+      IBlockSequenceNode
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      ISequenceEntry
-        YamlTokenType+FixedTokenElement(type:MINUS, text:-)
-        Whitespace(type:WHITESPACE, text: ) spaces: " "
-        IPlainScalarNode
-          INodeProperties
-            IShorthandTagProperty
-              INamedTagHandle
-                YamlTokenType+FixedTokenElement(type:BANG, text:!)
-                YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:h)
-                YamlTokenType+FixedTokenElement(type:BANG, text:!)
-              YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:bar)
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(type:MINUS, text:-)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
-          YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
-        Whitespace(type:WHITESPACE, text:  ) spaces: "  "
-        Comment(type:COMMENT, text:# Valid lexically, but doesn't resolve) spaces: "# Valid lexically, but doesn't resolve"
-        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          IPlainScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                INamedTagHandle
+                  YamlTokenType+FixedTokenElement(type:BANG, text:!)
+                  YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:e)
+                  YamlTokenType+FixedTokenElement(type:BANG, text:!)
+                ErrorElement:Text expected
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:foo)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(type:MINUS, text:-)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                INamedTagHandle
+                  YamlTokenType+FixedTokenElement(type:BANG, text:!)
+                  YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:h)
+                  YamlTokenType+FixedTokenElement(type:BANG, text:!)
+                YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:bar)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:baz)
+          Whitespace(type:WHITESPACE, text:  ) spaces: "  "
+          Comment(type:COMMENT, text:# Valid lexically, but doesn't resolve) spaces: "# Valid lexically, but doesn't resolve"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

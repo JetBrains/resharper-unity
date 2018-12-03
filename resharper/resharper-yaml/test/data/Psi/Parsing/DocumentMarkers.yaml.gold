@@ -9,10 +9,11 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:1.2)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    IPlainScalarNode
-      YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Document)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    ChameleonDocumentBody
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IPlainScalarNode
+        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Document)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
     YamlTokenType+FixedTokenElement(type:DOCUMENT_END, text:...)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     Comment(type:COMMENT, text:# Suffix) spaces: "# Suffix"

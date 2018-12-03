@@ -77,16 +77,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public static bool CanContainReference([NotNull] IYamlDocument document)
         {
-            if (document.BlockNode is IBlockMappingNode rootBlockMappingNode)
-            {
-                // We can only contain a reference if we're a MonoBehaviour (including compiled MBs such as Button) and
-                // the YAML document contains "m_MethodName". Ideally, we could check that the tag property was "!u!114"
-                // but that would open the chameleon
-                var buffer = rootBlockMappingNode.GetTextAsBuffer();
-                return ourMonoBehaviourTagSearcher.Find(buffer) >= 0 && ourMethodNameSearcher.Find(buffer) >= 0;
-            }
-
-            return false;
+            // We can only contain a reference if we're a MonoBehaviour (including compiled MBs such as Button) and
+            // the YAML document contains "m_MethodName". Ideally, we could check that the tag property was "!u!114"
+            // but that would open the chameleon
+            // TODO: Can we be more efficient about this?
+            // This will allocate a string for the whole text buffer, then search it twice. If it's a large buffer which
+            // doesn't match, this is a waste
+            var buffer = document.Body.GetTextAsBuffer();
+            return ourMonoBehaviourTagSearcher.Find(buffer) >= 0 && ourMethodNameSearcher.Find(buffer) >= 0;
         }
 
         public static bool CanHaveReference([CanBeNull] ITreeNode element)

@@ -1,15 +1,16 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
   IYamlDocument
-    IPlainScalarNode
-      YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:1st non-empty)
+    ChameleonDocumentBody
+      IPlainScalarNode
+        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:1st non-empty)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(type:INDENT, text: )
+        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:2nd non-empty)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(type:INDENT, text:	)
+        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:3rd non-empty)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      YamlTokenType+GenericTokenElement(type:INDENT, text: )
-      YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:2nd non-empty)
-      Whitespace(type:WHITESPACE, text: ) spaces: " "
-      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      YamlTokenType+GenericTokenElement(type:INDENT, text:	)
-      YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:3rd non-empty)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

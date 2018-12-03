@@ -11,20 +11,21 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:!my-)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    Comment(type:COMMENT, text:# Bulb here) spaces: "# Bulb here"
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    IPlainScalarNode
-      INodeProperties
-        IShorthandTagProperty
-          INamedTagHandle
-            YamlTokenType+FixedTokenElement(type:BANG, text:!)
-            YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:m)
-            YamlTokenType+FixedTokenElement(type:BANG, text:!)
-          YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:light)
+    ChameleonDocumentBody
       Whitespace(type:WHITESPACE, text: ) spaces: " "
-      YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:fluorescent)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Comment(type:COMMENT, text:# Bulb here) spaces: "# Bulb here"
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IPlainScalarNode
+        INodeProperties
+          IShorthandTagProperty
+            INamedTagHandle
+              YamlTokenType+FixedTokenElement(type:BANG, text:!)
+              YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:m)
+              YamlTokenType+FixedTokenElement(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:light)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:fluorescent)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
     YamlTokenType+FixedTokenElement(type:DOCUMENT_END, text:...)
     NewLine(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
@@ -38,18 +39,19 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:!my-)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    Comment(type:COMMENT, text:# Color here) spaces: "# Color here"
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    IPlainScalarNode
-      INodeProperties
-        IShorthandTagProperty
-          INamedTagHandle
-            YamlTokenType+FixedTokenElement(type:BANG, text:!)
-            YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:m)
-            YamlTokenType+FixedTokenElement(type:BANG, text:!)
-          YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:light)
+    ChameleonDocumentBody
       Whitespace(type:WHITESPACE, text: ) spaces: " "
-      YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:green)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Comment(type:COMMENT, text:# Color here) spaces: "# Color here"
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IPlainScalarNode
+        INodeProperties
+          IShorthandTagProperty
+            INamedTagHandle
+              YamlTokenType+FixedTokenElement(type:BANG, text:!)
+              YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:m)
+              YamlTokenType+FixedTokenElement(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(type:NS_TAG_CHARS, text:light)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:green)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 

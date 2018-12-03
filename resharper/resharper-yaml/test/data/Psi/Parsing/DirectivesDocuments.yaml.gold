@@ -9,12 +9,13 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:1.2)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    ILiteralScalarNode
-      YamlTokenType+FixedTokenElement(type:PIPE, text:|)
+    ChameleonDocumentBody
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      ILiteralScalarNode
+        YamlTokenType+FixedTokenElement(type:PIPE, text:|)
+        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(type:SCALAR_TEXT, text:%!PS-Adobe-2.0  # !!str)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-      YamlTokenType+GenericTokenElement(type:SCALAR_TEXT, text:%!PS-Adobe-2.0  # !!str)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
     YamlTokenType+FixedTokenElement(type:DOCUMENT_END, text:...)
     NewLine(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
@@ -24,9 +25,11 @@ IYamlFile
         YamlTokenType+GenericTokenElement(type:NS_CHARS, text:YAML1.2)
         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(type:DIRECTIVES_END, text:---)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    Comment(type:COMMENT, text:# Empty) spaces: "# Empty"
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    ChameleonDocumentBody
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Comment(type:COMMENT, text:# Empty) spaces: "# Empty"
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      IEmptyScalarNode
     YamlTokenType+FixedTokenElement(type:DOCUMENT_END, text:...)
     NewLine(type:NEW_LINE, text:\n) spaces: "\n"
 
