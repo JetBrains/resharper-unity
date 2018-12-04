@@ -21,19 +21,28 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public FileSystemPath GetApplicationPath(Version version)
         {
-            var possible = GetPossibleInstallationInfos();
+            var possible = GetPossibleInstallationInfos().ToArray();
+            var possibleWithVersion = possible.Where(a => a.Version != null).ToArray();
             
-            var bestChoice = possible.Where(a =>
+            var bestChoice = possibleWithVersion.Where(a =>
                 a.Version.Major == version.Major && a.Version.Minor == version.Minor &&
                 a.Version.Build == version.Build).OrderBy(b=>b.Version).LastOrDefault();
             if (bestChoice != null)
                 return bestChoice.Path;
-            var secondChoice = possible.Where(a =>
+            var secondChoice = possibleWithVersion.Where(a =>
                 a.Version.Major == version.Major && a.Version.Minor == version.Minor).OrderBy(b=>b.Version).LastOrDefault();
             if (secondChoice != null)
                 return secondChoice.Path;
-            var worstChoice =  possible.Where(a => a.Version.Major == version.Major)
+            var thirdChoice =  possibleWithVersion.Where(a => a.Version.Major == version.Major)
                 .OrderBy(b=>b.Version).LastOrDefault();
+            if (thirdChoice!=null)
+                return thirdChoice.Path;
+            var forthChoice =  possibleWithVersion
+                .OrderBy(b=>b.Version).LastOrDefault();
+            if (forthChoice!=null)
+                return forthChoice.Path;
+            
+            var worstChoice = possible.LastOrDefault();
             return worstChoice?.Path;
         }
         
@@ -59,17 +68,20 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var installations = GetPossibleApplicationPaths();
             return installations.Select(a =>
             {
-                var version = UnityVersion.Parse(a.FullPath);
-                
-                if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
+                Version version = null;
+                switch (PlatformUtil.RuntimePlatform)
                 {
-                    version = new Version(new Version(FileVersionInfo.GetVersionInfo(a.FullPath).FileVersion).ToString(3));
-                }
-                else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
-                {
-                    var infoPlistPath = a.Combine("Contents/Info.plist");
-                    var fullVersion = UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
-                    version = UnityVersion.Parse(fullVersion);
+                    case PlatformUtil.Platform.Windows:
+                        version = new Version(new Version(FileVersionInfo.GetVersionInfo(a.FullPath).FileVersion).ToString(3));
+                        break;
+                    case PlatformUtil.Platform.MacOsX:
+                        var infoPlistPath = a.Combine("Contents/Info.plist");
+                        var fullVersion = UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
+                        version = UnityVersion.Parse(fullVersion);
+                        break;
+                    case PlatformUtil.Platform.Linux:
+                        version=UnityVersion.Parse(a.FullPath); // parse from path
+                        break;
                 }
                 
                 return new UnityInstallationInfo(version, a);
