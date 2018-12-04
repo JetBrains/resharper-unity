@@ -126,6 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return unityVersion;
         }
 
+        [CanBeNull]
         public static Version Parse(string input)
         {
             const string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
@@ -148,10 +149,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
 
                 version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{typeWithRevision}");
-            }
-            else
-            {
-                ourLogger.Error($"Unable to version. input={input}");    
             }
 
             return version;
