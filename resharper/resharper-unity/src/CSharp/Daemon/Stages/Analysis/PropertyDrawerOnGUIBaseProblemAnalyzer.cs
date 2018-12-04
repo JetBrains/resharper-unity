@@ -61,6 +61,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private static bool IsInsideOnGUI(IInvocationExpression expression)
         {
+            // Make sure we are inside the OnGUI() method to only catch accidental usages
+            // If someone intentionally wants to do this, they probably know what they are doing
             var methodDeclaration = expression.GetContainingNode<IMethodDeclaration>();
             if (methodDeclaration == null)
                 return false;
