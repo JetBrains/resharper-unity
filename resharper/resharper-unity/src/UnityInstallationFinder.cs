@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         version = UnityVersion.Parse(fullVersion);
                         break;
                     case PlatformUtil.Platform.Linux:
-                        version=UnityVersion.Parse(a.FullPath); // parse from path
+                        version = UnityVersion.Parse(a.FullPath); // parse from path
                         break;
                 }
                 

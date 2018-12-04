@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -10,6 +11,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
@@ -65,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (myVersionFromProjectVersionTxt != null)
                 return myVersionFromProjectVersionTxt;
             
-            foreach (var project in mySolution.GetTopLevelProjects())
+            foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
             {
                 if (project.IsUnityProject())
                 {
@@ -124,6 +126,17 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             return unityVersion;
+        }
+
+        private static ICollection<IProject> GetTopLevelProjectWithReadLock(ISolution solution)
+        {
+            ICollection<IProject> projects;
+            using (ReadLockCookie.Create())
+            {
+                projects = solution.GetTopLevelProjects();
+            }
+
+            return projects;
         }
 
         [CanBeNull]
