@@ -24,8 +24,22 @@ public class Test : PropertyDrawer
     }
 }
 
-public class PlainClass
+public class MyBaseClass
 {
+    public virtual void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        
+    }
+}
+
+public class PlainClass : MyBaseClass
+{
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        // Make sure it only works if the base class is PropertyDrawer
+        base.OnGUI(position, property, label);
+    }
+
     public void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         OnGUI(position, property, label);
