@@ -44,6 +44,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         property("applicationPath", string)
         property("applicationContentsPath", string)
+        property("applicationVersion", string)
 
         property("editorLogPath", string)
         property("playerLogPath", string)

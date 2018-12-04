@@ -11,6 +11,7 @@ using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -21,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private readonly ISolution mySolution;
         private Version myVersionFromProjectVersionTxt;
         private Version myVersionFromEditorInstanceJson;
+        private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, 
             ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
@@ -28,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
-            
+
             if (locks.Dispatcher.IsAsyncBehaviorProhibited) // for tests
                 return;
 
@@ -132,11 +134,49 @@ namespace JetBrains.ReSharper.Plugins.Unity
             Version version = null;
             if (match.Success)
             {
-                var type = Convert.ToInt32(groups["type"].Value+groups["revision"], 16);
-                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{type}");
+                var typeWithRevision = "0";
+                try
+                {
+                    var typeChar = groups["type"].Value.ToCharArray()[0];
+                    var shiftedChar = 16 + typeChar; // Because `f1` = `1021` and `b10` = `9810`, which will break sorting
+                    var revision = Convert.ToInt32(groups["revision"].Value);
+                    typeWithRevision = shiftedChar.ToString("D3") + revision.ToString("D3");
+                }
+                catch (Exception e)
+                {
+                    ourLogger.Error($"Unable to parse part of version. type={groups["type"].Value} revision={groups["revision"].Value}", e);
+                }
+
+                version = Version.Parse($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}.{typeWithRevision}");
+            }
+            else
+            {
+                ourLogger.Error($"Unable to version. input={input}");    
             }
 
             return version;
+        }
+        
+        public static string VersionToString(Version version)
+        {
+            var type = string.Empty;
+            var rev = string.Empty;
+            try
+            {
+                var revisionString = version.Revision.ToString(); // first 3 is char, next 1+ ones - revision
+                if (revisionString.Length > 3)
+                {
+                    var charValue = Convert.ToInt32(revisionString.Substring(0, 3)) - 16;
+                    type = ((char)charValue).ToString();
+                    rev = Convert.ToInt32(revisionString.Substring(3)).ToString();
+                }
+            }
+            catch (Exception e)
+            {
+                ourLogger.Error($"Unable do VersionToString. Input version={version}", e);
+            }
+            
+            return $"{version.Major}.{version.Minor}.{version.Build}{type}{rev}";
         }
 
         public static string GetVersionFromInfoPlist(FileSystemPath infoPlistPath)
