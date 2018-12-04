@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.PopupLayout;
+using JetBrains.Platform.RdFramework;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Host.Features.TextControls;
@@ -13,13 +14,16 @@ using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
-    public abstract class AbstractUnityImplicitProvider : ICodeInsightsProvider
+    public abstract class AbstractUnityCodeInsightProvider : ICodeInsightsProvider
     {
+        public static string StartUnityActionId => "startUnity";
         public IconId IconId => LogoThemedIcons.UnityLogo.Id;
+        private readonly UnityHost myHost;
         private readonly BulbMenuComponent myBulbMenu;
         
-        public AbstractUnityImplicitProvider(BulbMenuComponent bulbMenu)
+        public AbstractUnityCodeInsightProvider(UnityHost host, BulbMenuComponent bulbMenu)
         {
+            myHost = host;
             myBulbMenu = bulbMenu;
         }
         
@@ -35,6 +39,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
         public void OnExtraActionClick(CodeInsightsHighlighting highlighting, string actionId)
         {
+           if (actionId.Equals(StartUnityActionId))
+           {
+               myHost.PerformModelAction(model => model.StartUnity.Fire(RdVoid.Instance));
+           }
         }
 
         public abstract string ProviderId { get; }

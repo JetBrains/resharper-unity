@@ -6,6 +6,7 @@ using JetBrains.Application.Progress;
 using JetBrains.Application.UI.PopupLayout;
 using JetBrains.IDE;
 using JetBrains.Platform.RdFramework.Base;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
@@ -24,9 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityEditorOccurrence : ReferenceOccurrence
     {
         private readonly IUnityYamlReference myUnityEventTargetReference;
-        public UnityEditorOccurrence([NotNull] ITreeNode treeNode, IUnityYamlReference unityEventTargetReference,
+        public UnityEditorOccurrence([NotNull] IUnityYamlReference unityEventTargetReference, IDeclaredElement element,
             OccurrenceType occurrenceType)
-            : base(treeNode, occurrenceType)
+            : base(unityEventTargetReference, element, occurrenceType)
         {
             myUnityEventTargetReference = unityEventTargetReference;
         }
@@ -34,6 +35,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public override bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
             TabOptions tabOptions = TabOptions.Default)
         {
+            if (solution.GetComponent<ConnectionTracker>().LastCheckResult != UnityEditorState.Disconnected)
+                return base.Navigate(solution, windowContext, transferFocus, tabOptions);
+            
             var findRequestCreator = solution.GetComponent<UnityEditorFindRequestCreator>();
             return findRequestCreator.CreateRequestToUnity(myUnityEventTargetReference, true);
         }

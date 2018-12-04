@@ -5,6 +5,8 @@ using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
+using JetBrains.Application.UI.Tooltips;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -17,6 +19,7 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Rider.Model;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
@@ -25,17 +28,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
     [SolutionComponent]
     public class RiderUnityImplicitUsageHighlightingContributor : UnityImplicitUsageHighlightingContributor
     {
-        private readonly UnityImplicitFieldUsageProvider myFieldUsageProvider;
-        private readonly UnityImplicitCodeInsightProvider myImplicitCodeInsightProvider;
+        private readonly UnityCodeInsightFieldUsageProvider myFieldUsageProvider;
+        private readonly UnityCodeInsightCodeInsightProvider myCodeInsightCodeInsightProvider;
+        private readonly ConnectionTracker myConnectionTracker;
+        private readonly ITooltipManager myTooltipManager;
         private readonly IconHost myIconHost;
 
         public RiderUnityImplicitUsageHighlightingContributor(ISolution solution, ITextControlManager textControlManager,
-            UnityImplicitFieldUsageProvider fieldUsageProvider,  UnityImplicitCodeInsightProvider implicitCodeInsightProvider,
-            ISettingsStore settingsStore, IconHost iconHost = null)
+            UnityCodeInsightFieldUsageProvider fieldUsageProvider,  UnityCodeInsightCodeInsightProvider codeInsightCodeInsightProvider,
+            ISettingsStore settingsStore, ConnectionTracker connectionTracker, ITooltipManager tooltipManager, IconHost iconHost = null)
             : base(solution, settingsStore, textControlManager)
         {
             myFieldUsageProvider = fieldUsageProvider;
-            myImplicitCodeInsightProvider = implicitCodeInsightProvider;
+            myCodeInsightCodeInsightProvider = codeInsightCodeInsightProvider;
+            myConnectionTracker = connectionTracker;
+            myTooltipManager = tooltipManager;
             myIconHost = iconHost;
         }
         
@@ -47,18 +54,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                     AddHighlighting(consumer, myFieldUsageProvider, element, tooltip, "Set by Unity");
                     break;
                 case IClassLikeDeclaration _:
-                    AddHighlighting(consumer, myImplicitCodeInsightProvider, element, tooltip, "Scripting component");
+                    AddHighlighting(consumer, myCodeInsightCodeInsightProvider, element, tooltip, "Scripting component");
                     break;
                 case IMethodDeclaration _:
-                    AddHighlighting(consumer, myImplicitCodeInsightProvider, element, tooltip, "Event function");
+                    AddHighlighting(consumer, myCodeInsightCodeInsightProvider, element, tooltip, "Event function");
                     break;
                 default:
-                    AddHighlighting(consumer, myImplicitCodeInsightProvider, element, tooltip, "Implicit usage");
+                    AddHighlighting(consumer, myCodeInsightCodeInsightProvider, element, tooltip, "Implicit usage");
                     break;
             }
         }
         
-        private void AddHighlighting(IHighlightingConsumer consumer, AbstractUnityImplicitProvider codeInsightsProvider, ICSharpDeclaration element, string tooltip, string displayName)
+        private void AddHighlighting(IHighlightingConsumer consumer, AbstractUnityCodeInsightProvider codeInsightsProvider, ICSharpDeclaration element, string tooltip, string displayName)
         {
             if (SettingsStore.GetIndexedValue((CodeInsightsSettings key) => key.DisabledProviders, codeInsightsProvider.ProviderId))
             {
@@ -75,9 +82,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var declaredElement = element.DeclaredElement;
             if (declaredElement == null || !declaredElement.IsValid())
                 return;
+
+
+            var extraActions = new List<CodeLensEntryExtraActionModel>();
+            if (myConnectionTracker.LastCheckResult == UnityEditorState.Disconnected)
+            {
+                extraActions.Add(new CodeLensEntryExtraActionModel("Unity is off", null));
+                extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity", AbstractUnityCodeInsightProvider.StartUnityActionId));
+            }
             
             consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.NameIdentifier.GetDocumentRange(),
-                displayName, displayName, codeInsightsProvider, declaredElement, myIconHost.Transform(codeInsightsProvider.IconId), CreateBulbItemsForUnityDeclaration(element)));
+                displayName, displayName, codeInsightsProvider, declaredElement, 
+                myIconHost.Transform(codeInsightsProvider.IconId), CreateBulbItemsForUnityDeclaration(element), extraActions));
         }
 
 
@@ -85,9 +101,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         {
             var declaredElement = declaration.DeclaredElement;
             if (declaredElement != null && (declaredElement is IMethod method && !api.IsEventFunction(method) ||
-                declaration is IClassDeclaration))
+                                            declaration is IClassDeclaration))
             {
-                var action = new UnityFindUsagesNavigationAction(declaredElement, declaration.GetSolution().GetComponent<UnityEditorFindRequestCreator>());
+                var action = new UnityFindUsagesNavigationAction(declaredElement,
+                    declaration.GetSolution().GetComponent<UnityEditorFindRequestCreator>(),
+                    myTooltipManager, myConnectionTracker);
                 return new[]
                 {
                     new BulbMenuItem(
@@ -97,6 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 };
             }
 
+
             return EmptyList<BulbMenuItem>.Instance;
         }
 
@@ -104,20 +123,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         {
             private readonly IDeclaredElement myDeclaredElement;
             private readonly UnityEditorFindRequestCreator myCreator;
+            [NotNull] private readonly ITooltipManager myTooltipManager;
+            [NotNull] private readonly ConnectionTracker myTracker;
 
-            public UnityFindUsagesNavigationAction([NotNull]IDeclaredElement method, [NotNull]UnityEditorFindRequestCreator creator)
+            public UnityFindUsagesNavigationAction([NotNull]IDeclaredElement method, [NotNull]UnityEditorFindRequestCreator creator,[NotNull] ITooltipManager tooltipManager, [NotNull] ConnectionTracker tracker)
             {
                 myDeclaredElement = method;
                 myCreator = creator;
+                myTooltipManager = tooltipManager;
+                myTracker = tracker;
             }
             
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
+                if (myTracker.LastCheckResult == UnityEditorState.Disconnected)
+                {
+
+                    return textControl => ShowTooltip(textControl, "Unity is not running");
+                }
+                    
                 myCreator.CreateRequestToUnity(myDeclaredElement, null, true);
                 return null;
             }
 
             public override string Text => "Show usages in Unity";
+            
         }
     }
 }
