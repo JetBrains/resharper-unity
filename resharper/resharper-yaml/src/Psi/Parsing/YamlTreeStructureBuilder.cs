@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using JetBrains.Annotations;
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl;
@@ -92,16 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       var mark = MarkNoSkipWhitespace();
 
       ParseDirectives();
-      ParseChameleonRootBlockNode();
-
-      var tt = GetTokenTypeNoSkipWhitespace();
-      if (!Builder.Eof() && !IsDocumentEnd(tt))
-      {
-        var errorMark = MarkNoSkipWhitespace();
-        while (!Builder.Eof() && !IsDocumentEnd(GetTokenTypeNoSkipWhitespace()))
-          Advance();
-        Builder.Error(errorMark, "Unexpected content");
-      }
+      ParseChameleonDocumentBody();
 
       if (GetTokenTypeNoSkipWhitespace() == YamlTokenType.DOCUMENT_END)
       {
@@ -164,6 +155,42 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       ParseTrailingCommentLines();
 
       Done(mark, ElementType.DIRECTIVE);
+    }
+
+    private void ParseChameleonDocumentBody()
+    {
+      var mark = MarkNoSkipWhitespace();
+
+      // TODO: We need a better API than this
+      // We advance through the lexer once, roll back and then AlterToken will do it all again. The lexer is cached, so
+      // it's not that bad, but it would be better to have an overload of AlterToken that can avoid it
+      var mark2 = MarkNoSkipWhitespace();
+      while (!Builder.Eof() && !IsDocumentEnd(GetTokenTypeNoSkipWhitespace()))
+        Advance();
+      var currentLexeme = Builder.GetCurrentLexeme();
+      Builder.RollbackTo(mark2);
+      var count = currentLexeme - Builder.GetCurrentLexeme();
+      Builder.AlterToken(YamlTokenType.CHAMELEON, count);
+
+      Done(mark, YamlChameleonElementTypes.CHAMELEON_DOCUMENT_BODY);
+    }
+
+    public void ParseDocumentBody()
+    {
+      var mark = MarkNoSkipWhitespace();
+
+      ParseRootBlockNode();
+
+      var tt = GetTokenTypeNoSkipWhitespace();
+      if (!Builder.Eof() && !IsDocumentEnd(tt))
+      {
+        var errorMark = MarkNoSkipWhitespace();
+        while (!Builder.Eof() && !IsDocumentEnd(GetTokenTypeNoSkipWhitespace()))
+          Advance();
+        Builder.Error(errorMark, "Unexpected content");
+      }
+
+      Done(mark, ElementType.DOCUMENT_BODY);
     }
 
     private void ParseChameleonRootBlockNode()
