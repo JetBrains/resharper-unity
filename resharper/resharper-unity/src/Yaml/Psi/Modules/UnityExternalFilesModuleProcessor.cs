@@ -6,10 +6,11 @@ using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
-using JetBrains.DocumentManagers.Transactions;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.Model2.Transaction;
+using JetBrains.ProjectModel.Properties;
+using JetBrains.ProjectModel.Properties.Common;
 using JetBrains.ProjectModel.Tasks;
+using JetBrains.ProjectModel.Transaction;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
@@ -28,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly ChangeManager myChangeManager;
         private readonly IShellLocks myLocks;
         private readonly IFileSystemTracker myFileSystemTracker;
-        private readonly EnsureWritableHandler myEnsureWritableHandler;
+        private readonly ProjectFilePropertiesFactory myProjectFilePropertiesFactory;
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly AssetSerializationMode myAssetSerializationMode;
@@ -40,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  IShellLocks locks,
                                                  ISolutionLoadTasksScheduler scheduler,
                                                  IFileSystemTracker fileSystemTracker,
-                                                 EnsureWritableHandler ensureWritableHandler,
+                                                 ProjectFilePropertiesFactory projectFilePropertiesFactory,
                                                  UnityYamlPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  AssetSerializationMode assetSerializationMode,
@@ -51,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myChangeManager = changeManager;
             myLocks = locks;
             myFileSystemTracker = fileSystemTracker;
-            myEnsureWritableHandler = ensureWritableHandler;
+            myProjectFilePropertiesFactory = projectFilePropertiesFactory;
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
             myAssetSerializationMode = assetSerializationMode;
@@ -121,7 +122,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
 
-            var files = directory.GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories);
+            // Don't use up valuable interning spaces for files that aren't part of a project
+            var files = directory.GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories,
+                FileSystemPathInternStrategy.TRY_GET_INTERNED_BUT_DO_NOT_INTERN);
             foreach (var file in files)
             {
                 var extension = file.ExtensionWithDot;
@@ -162,20 +165,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
             // automatically get an IPsiSourceFile created for it, and attached to our module via
             // UnityMiscFilesProjectPsiModuleProvider
-            Lifetimes.Using(lifetime =>
+            using (new ProjectModelBatchChangeCookie(mySolution, SimpleTaskExecutor.Instance))
             {
-                using (var transaction = mySolution.CreateTransactionCookie(DefaultAction.Commit,
-                    "Create Unity Asset project file", NullProgressIndicator.Create()))
+                using (mySolution.Locks.UsingWriteLock())
                 {
                     foreach (var path in paths)
                     {
                         if (mySolution.FindProjectItemsByLocation(path).Count > 0)
                             continue;
-                        myEnsureWritableHandler.SkipEnsureWritable(lifetime, path);
-                        transaction.AddFile(mySolution.MiscFilesProject, path);
+                        var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
+                        Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
+                        var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
+                            new MiscFilesProjectProperties());
+                        projectImpl.DoCreateProjectFile(path, properties);
                     }
                 }
-            });
+            }
         }
 
         private void OnProjectDirectoryChange(FileSystemChangeDelta delta)
