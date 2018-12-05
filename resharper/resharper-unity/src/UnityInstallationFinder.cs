@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myLogger = logger;
         }
 
-        public FileSystemPath GetApplicationPath(Version version)
+        public UnityInstallationInfo GetApplicationInfo(Version version)
         {
             var possible = GetPossibleInstallationInfos().ToArray();
             var possibleWithVersion = possible.Where(a => a.Version != null).ToArray();
@@ -28,32 +28,32 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 a.Version.Build == version.Build && a.Version.Revision == version.Revision
                 ).OrderBy(b=>b.Version).LastOrDefault();
             if (bestChoice != null)
-                return bestChoice.Path;
+                return bestChoice;
             var choice1 = possibleWithVersion.Where(a =>
                 a.Version.Major == version.Major && a.Version.Minor == version.Minor &&  
                 a.Version.Build == version.Build).OrderBy(b=>b.Version).LastOrDefault();
             if (choice1 != null)
-                return choice1.Path;
+                return choice1;
             var choice2 = possibleWithVersion.Where(a =>
                 a.Version.Major == version.Major && a.Version.Minor == version.Minor).OrderBy(b=>b.Version).LastOrDefault();
             if (choice2 != null)
-                return choice2.Path;
+                return choice2;
             var choice3 =  possibleWithVersion.Where(a => a.Version.Major == version.Major)
                 .OrderBy(b=>b.Version).LastOrDefault();
             if (choice3!=null)
-                return choice3.Path;
+                return choice3;
             var choice4 =  possibleWithVersion
                 .OrderBy(b=>b.Version).LastOrDefault();
             if (choice4!=null)
-                return choice4.Path;
+                return choice4;
             
             var worstChoice = possible.LastOrDefault();
-            return worstChoice?.Path;
+            return worstChoice;
         }
         
         public FileSystemPath GetApplicationContentsPath(Version version)
         {
-            var applicationPath = GetApplicationPath(version);
+            var applicationPath = GetApplicationInfo(version).Path;
             if (applicationPath == null)
                 return null;
             switch (PlatformUtil.RuntimePlatform)
