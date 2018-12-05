@@ -129,7 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 var declaredElement = MonoBehaviourMoveUtil.GetDeclaredElementFromParentDeclaration(myToMove);
                 var baseName = myVariableName ?? MonoBehaviourMoveUtil.CreateBaseName(myToMove, declaredElement);
                 var name = NamingUtil.GetUniqueName(myToMove, baseName, NamedElementKinds.Locals,
-                    collection => collection.Add(myToMove, new EntryOptions { }),
+                    collection => collection.Add(myToMove.Type(), new EntryOptions()),
                     de => !de.Equals(declaredElement));
                 
                 var factory = CSharpElementFactory.GetInstance(myToMove);

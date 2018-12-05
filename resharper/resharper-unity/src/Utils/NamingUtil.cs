@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             {
                 var name = namingManager.Parsing.Parse(baseName, namingRule, policyProvider);
                 var nameRoot = name.GetRootOrDefault(baseName);
-                namesCollection.Add(nameRoot, new EntryOptions(PluralityKinds.Unknown, SubrootPolicy.Decompose, emphasis: Emphasis.Good));
+                namesCollection.Add(nameRoot, new EntryOptions(PluralityKinds.Plural, SubrootPolicy.Decompose, emphasis: Emphasis.Good));
             }
 
             collectionModifier?.Invoke(namesCollection);

@@ -109,36 +109,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         
         private static bool IsAvailableToMoveInner([NotNull] ITreeNode toMove, [CanBeNull] Func<IDeclaredElement, bool> isElementIgnored = null)
         {
+            var sourceFile = toMove.GetSourceFile();
+            if (sourceFile == null)
+                return false;
+
+            var methodDeclaration = toMove.GetContainingNode<IMethodDeclaration>();
+            if (methodDeclaration == null)
+                return false;
+            
             var nodeEnumerator = toMove.ThisAndDescendants();
             while (nodeEnumerator.MoveNext())
             {
                 var current = nodeEnumerator.Current;
-                IDeclaredElement declaredElement;
-                switch (current)
+                foreach (var reference in current.GetReferences())
                 {
-                    case IDeclaration declaration:
-                        declaredElement = declaration.DeclaredElement;
-                        break;
-                    case IReferenceExpression referenceExpression:
-                        declaredElement = referenceExpression.Reference.Resolve().DeclaredElement;
-                        break;
-                    default:
-                        declaredElement = null;
-                        break;
-                }
-                
-                if (declaredElement == null || isElementIgnored != null && isElementIgnored(declaredElement))
-                    continue;
-                // if declared element is local, we can't move our expression outside the method
-                switch (declaredElement)
-                {
-                    case ILocalVariableDeclaration _:                  
-                    case IParameterDeclaration _:
-                    case ILocalFunctionDeclaration _:
-                    case IDelegateDeclaration _:
-                    case ILambdaExpression _:
-                    case IAnonymousFunctionExpression _:
-                    case IQueryParameterPlatform _:
+                    var declaredElement = reference.Resolve().DeclaredElement;
+                    if (declaredElement == null || isElementIgnored?.Invoke(declaredElement) == true)
+                        continue;
+                    var declaration = declaredElement.GetDeclarationsIn(sourceFile).FirstOrDefault();
+                    if (declaration == null)
+                        continue;
+
+                    if (declaration.GetContainingNode<IMethodDeclaration>() == methodDeclaration && declaration.GetContainingNode<ICSharpClosure>() == null)
                         return false;
                 }
             }
@@ -168,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
 
             var baseName = fieldName ?? CreateBaseName(expression, result);
             var name = NamingUtil.GetUniqueName(expression, baseName, NamedElementKinds.PrivateInstanceFields,
-                collection => collection.Add(expression, new EntryOptions { }),
+                baseName == null ? collection => collection.Add(expression.Type(), new EntryOptions()) : (Action<INamesCollection>)null,
                 de => !de.Equals(result));
 
             var isVoid = type.IsVoid();
