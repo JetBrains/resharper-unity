@@ -4,8 +4,7 @@ using JetBrains.ReSharper.Host.Env;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
     [ZoneMarker]
-    public class ZoneMarker : IRequire<IReSharperHostFeatureZone>
+    public class ZoneMarker : IRequire<IRiderPlatformZone>
     {
-        
     }
 }

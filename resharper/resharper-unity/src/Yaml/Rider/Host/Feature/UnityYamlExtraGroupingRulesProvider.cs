@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
 using JetBrains.ReSharper.Host.Features.Icons;
 using JetBrains.ReSharper.Host.Features.Usages;
+using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
