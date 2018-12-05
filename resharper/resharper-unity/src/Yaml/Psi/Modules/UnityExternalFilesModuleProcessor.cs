@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
@@ -15,6 +16,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
+using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
@@ -88,15 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             ProcessSolutionDirectory(builder, "ProjectSettings");
 
             if (project.IsProjectFromUserView())
-            {
-                // If the project doesn't live under the solution directory, it's most likely a file:// based package.
-                // They are .asmdef based, so can't contain links. We're safe to index the project directory.
-                // There could be a class library located in the solution directory, but since we're a generated project
-                // and Unity doesn't support that, we're ok (fatal last words)
-                var projectDirectory = project.Location;
-                if (!mySolutionDirectory.IsPrefixOf(projectDirectory))
-                    ProcessDirectory(builder, projectDirectory);
-            }
+                ProcessDirectory(builder, project.Location);
 
             // Add a module reference to the project, so our reference can "see" the target (more accurately, I think
             // this is used to figure out the search domain for Find Usages)
@@ -117,23 +111,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             if (myRootPaths.Contains(directory))
                 return;
 
-            AddFiles(builder, directory, "*.cs.meta");
-            AddFiles(builder, directory, "*.prefab.meta");
-            AddFiles(builder, directory, "*.unity.meta");
+            // Make sure the directory hasn't already been processed. This can happen if the project is a .asmdef based
+            // project living under Assets or Packages, or inside a file:// based package
+            foreach (var rootPath in myRootPaths)
+            {
+                if (rootPath.IsPrefixOf(directory))
+                    return;
+            }
 
-            AddAssetFiles(directory);
+            var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
+
+            var files = directory.GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories);
+            foreach (var file in files)
+            {
+                var extension = file.ExtensionWithDot;
+                if (file.IsMeta())
+                {
+                    // Full path doesn't allocate
+                    var fullPath = file.FullPath;
+                    if (fullPath.EndsWith(".cs.meta", StringComparison.CurrentCultureIgnoreCase)
+                        || fullPath.EndsWith(".prefab.meta", StringComparison.InvariantCultureIgnoreCase)
+                        || fullPath.EndsWith(".unity.meta", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        AddMetaPsiSourceFile(builder, file);
+                    }
+                }
+                else if (UnityYamlFileExtensions.Contains(extension))
+                    projectFilesToAdd.Add(file);
+            }
+
+            AddAssetProjectFiles(projectFilesToAdd);
 
             myFileSystemTracker.AdviseDirectoryChanges(myLifetime, directory, true, OnProjectDirectoryChange);
 
             myRootPaths.Add(directory);
-        }
-
-        private void AddFiles(PsiModuleChangeBuilder builder, FileSystemPath directory, string filePattern)
-        {
-            // TODO: Verify this is case insensitive
-            var files = directory.GetChildFiles(filePattern, PathSearchFlags.RecurseIntoSubdirectories);
-            foreach (var file in files)
-                AddMetaPsiSourceFile(builder, file);
         }
 
         private void AddMetaPsiSourceFile(PsiModuleChangeBuilder builder, FileSystemPath path)
@@ -146,36 +157,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
         }
 
-        private void AddAssetFiles(FileSystemPath directory)
+        private void AddAssetProjectFiles(FrugalLocalList<FileSystemPath> paths)
         {
-            // TODO: Only process assets if the project is set to use text serialisation
-            foreach (var pattern in UnityYamlFileExtensions.AssetWildCards)
-            {
-                var files = directory.GetChildFiles(pattern, PathSearchFlags.RecurseIntoSubdirectories);
-
-                // Just create the project file. This will get to the misc files provider and cause the creation of the
-                // IPsiSourceFile (and notify)
-                // TODO: Perhaps use ProjectModelBatchChangeCookie?
-                foreach (var path in files)
-                    AddAssetProjectFile(path);
-            }
-        }
-
-        private void AddAssetProjectFile(FileSystemPath path)
-        {
-            if (mySolution.FindProjectItemsByLocation(path).Count > 0)
-                return;
-
-            // Add the asset file as a project file, as various features require IProjectFile. Once created,
-            // it will automatically get an IPsiSourceFile created for it, and attached to our module
-            // See UnityMiscFilesProjectPsiModuleProvider
+            // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
+            // automatically get an IPsiSourceFile created for it, and attached to our module via
+            // UnityMiscFilesProjectPsiModuleProvider
             Lifetimes.Using(lifetime =>
             {
-                myEnsureWritableHandler.SkipEnsureWritable(lifetime, path);
                 using (var transaction = mySolution.CreateTransactionCookie(DefaultAction.Commit,
-                    "Create project item", NullProgressIndicator.Create()))
+                    "Create Unity Asset project file", NullProgressIndicator.Create()))
                 {
-                    return transaction.AddFile(mySolution.MiscFilesProject, path);
+                    foreach (var path in paths)
+                    {
+                        if (mySolution.FindProjectItemsByLocation(path).Count > 0)
+                            continue;
+                        myEnsureWritableHandler.SkipEnsureWritable(lifetime, path);
+                        transaction.AddFile(mySolution.MiscFilesProject, path);
+                    }
                 }
             });
         }
@@ -193,14 +191,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             if (module == null)
                 return;
 
-            // TODO: Batch these changes up?
+            var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
+
             IPsiSourceFile sourceFile;
             switch (delta.ChangeType)
             {
                 case FileSystemChangeType.ADDED:
-                    if (UnityYamlFileExtensions.IsAsset(delta.NewPath))
-                        AddAssetProjectFile(delta.NewPath);
-                    else if (UnityYamlFileExtensions.IsMeta(delta.NewPath))
+                    if (delta.NewPath.IsAsset())
+                        projectFilesToAdd.Add(delta.NewPath);
+                    else if (delta.NewPath.IsMeta())
                         AddMetaPsiSourceFile(builder, delta.NewPath);
                     break;
 
@@ -221,6 +220,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 case FileSystemChangeType.UNKNOWN:
                     break;
             }
+
+            AddAssetProjectFiles(projectFilesToAdd);
 
             foreach (var child in delta.GetChildren())
                 ProcessFileSystemChangeDelta(child, builder);
