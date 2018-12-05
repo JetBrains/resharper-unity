@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -14,6 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
+using Vestris.ResourceLib;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -189,15 +191,34 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return $"{version.Major}.{version.Minor}.{version.Build}{type}{rev}";
         }
 
-        public static string GetVersionFromInfoPlist(FileSystemPath infoPlistPath)
+        public static Version GetVersionFromInfoPlist(FileSystemPath infoPlistPath)
         {
             var docs = XDocument.Load(infoPlistPath.FullPath);
             var keyValuePairs = docs.Descendants("dict")
                 .SelectMany(d => d.Elements("key").Zip(d.Elements().Where(e => e.Name != "key"), (k, v) => new { Key = k, Value = v }))
                 .GroupBy(x => x.Key.Value).Select(g => g.First()) // avoid exception An item with the same key has already been added.
                 .ToDictionary(i => i.Key.Value, i => i.Value.Value);
-            var fullVersion = keyValuePairs["CFBundleVersion"];
-            return fullVersion;
+            return Parse(keyValuePairs["CFBundleVersion"]);
+        }
+        
+        public static Version ReadUnityVersionFromExe(FileSystemPath exePath)
+        {
+            Version version;
+            var resource = new VersionResource();
+            resource.LoadFrom(exePath.FullPath);
+            var unityVersionList = resource.Resources.Values.OfType<StringFileInfo>()
+                .Where(c => c.Default.Strings.Keys.Any(b => b == "Unity Version")).ToArray();
+            if (unityVersionList.Any())
+            {
+                var unityVersion = unityVersionList.First().Default.Strings["Unity Version"].StringValue;
+                version = Parse(unityVersion);
+            }
+            else
+            {
+                version = new Version(new Version(FileVersionInfo.GetVersionInfo(exePath.FullPath).FileVersion).ToString(3));
+            }
+
+            return version;
         }
     }
 }

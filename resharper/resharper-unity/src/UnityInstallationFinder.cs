@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Application;
@@ -26,21 +25,27 @@ namespace JetBrains.ReSharper.Plugins.Unity
             
             var bestChoice = possibleWithVersion.Where(a =>
                 a.Version.Major == version.Major && a.Version.Minor == version.Minor &&
-                a.Version.Build == version.Build).OrderBy(b=>b.Version).LastOrDefault();
+                a.Version.Build == version.Build && a.Version.Revision == version.Revision
+                ).OrderBy(b=>b.Version).LastOrDefault();
             if (bestChoice != null)
                 return bestChoice.Path;
-            var secondChoice = possibleWithVersion.Where(a =>
+            var choice1 = possibleWithVersion.Where(a =>
+                a.Version.Major == version.Major && a.Version.Minor == version.Minor &&  
+                a.Version.Build == version.Build).OrderBy(b=>b.Version).LastOrDefault();
+            if (choice1 != null)
+                return choice1.Path;
+            var choice2 = possibleWithVersion.Where(a =>
                 a.Version.Major == version.Major && a.Version.Minor == version.Minor).OrderBy(b=>b.Version).LastOrDefault();
-            if (secondChoice != null)
-                return secondChoice.Path;
-            var thirdChoice =  possibleWithVersion.Where(a => a.Version.Major == version.Major)
+            if (choice2 != null)
+                return choice2.Path;
+            var choice3 =  possibleWithVersion.Where(a => a.Version.Major == version.Major)
                 .OrderBy(b=>b.Version).LastOrDefault();
-            if (thirdChoice!=null)
-                return thirdChoice.Path;
-            var forthChoice =  possibleWithVersion
+            if (choice3!=null)
+                return choice3.Path;
+            var choice4 =  possibleWithVersion
                 .OrderBy(b=>b.Version).LastOrDefault();
-            if (forthChoice!=null)
-                return forthChoice.Path;
+            if (choice4!=null)
+                return choice4.Path;
             
             var worstChoice = possible.LastOrDefault();
             return worstChoice?.Path;
@@ -66,28 +71,27 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public List<UnityInstallationInfo> GetPossibleInstallationInfos()
         {
             var installations = GetPossibleApplicationPaths();
-            return installations.Select(a =>
+            return installations.Select(path =>
             {
                 Version version = null;
                 switch (PlatformUtil.RuntimePlatform)
                 {
                     case PlatformUtil.Platform.Windows:
-                        version = new Version(new Version(FileVersionInfo.GetVersionInfo(a.FullPath).FileVersion).ToString(3));
+                        version = UnityVersion.ReadUnityVersionFromExe(path);
                         break;
                     case PlatformUtil.Platform.MacOsX:
-                        var infoPlistPath = a.Combine("Contents/Info.plist");
-                        var fullVersion = UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
-                        version = UnityVersion.Parse(fullVersion);
+                        var infoPlistPath = path.Combine("Contents/Info.plist");
+                        version = UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
                         break;
                     case PlatformUtil.Platform.Linux:
-                        version = UnityVersion.Parse(a.FullPath); // parse from path
+                        version = UnityVersion.Parse(path.FullPath); // parse from path
                         break;
                 }
                 
-                return new UnityInstallationInfo(version, a);
+                return new UnityInstallationInfo(version, path);
             }).ToList();
         }
-        
+
         public List<FileSystemPath> GetPossibleApplicationPaths()
         {
             switch (PlatformUtil.RuntimePlatform)
