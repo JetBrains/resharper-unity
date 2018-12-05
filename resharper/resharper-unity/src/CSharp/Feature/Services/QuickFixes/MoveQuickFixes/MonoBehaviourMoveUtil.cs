@@ -6,9 +6,11 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
+using JetBrains.ReSharper.Psi.Naming.Extentions;
 using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
@@ -43,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             return result;
         }
 
-        public static bool IsExpressionAccessibleInScript([NotNull]ICSharpExpression expression)
+        public static bool IsExpressionAccessibleInMethod([NotNull]ICSharpExpression expression, [NotNull] string methodName)
         {
             expression.GetPsiServices().Locks.AssertReadAccessAllowed();
             
@@ -58,11 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             if (statement == null)
                 return false;
 
-            var classDeclaration = expression.GetContainingNode<IClassDeclaration>();
-            if (classDeclaration == null)
-                return false;
-
-            return IsAvailableToMoveFromMethodToMethod(expression);
+            return IsAvailableToMoveFromMethodToMethod(expression, methodName);
         }
 
         /// <summary>
@@ -86,11 +84,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         /// <summary>
         /// Is node available to move from one method to another in MonoBehaviour class 
         /// </summary>
-        public static bool IsAvailableToMoveFromMethodToMethod([NotNull] ITreeNode toMove)
+        public static bool IsAvailableToMoveFromMethodToMethod([NotNull] ITreeNode toMove, [NotNull] string methodName)
         {
             toMove.GetPsiServices().Locks.AssertReadAccessAllowed();
+            var classDeclaration = toMove.GetContainingNode<IClassDeclaration>();
+            if (classDeclaration == null)
+                return false;
+
+            var modifiers = classDeclaration.ModifiersList;
             
-            return IsAvailableToMoveInner(toMove);
+            if (modifiers == null || !modifiers.ModifiersEnumerable.Any(t => t.GetTokenType().Equals(CSharpTokenType.ABSTRACT_KEYWORD)))
+                return IsAvailableToMoveInner(toMove);
+
+            var method = GetMonoBehaviourMethod(classDeclaration, methodName);
+            if (method == null)
+                return IsAvailableToMoveInner(toMove);;
+
+            var methodModifiers = method.ModifiersList;
+            if (methodModifiers == null || !methodModifiers.ModifiersEnumerable.Any(t => t.GetTokenType().Equals(CSharpTokenType.ABSTRACT_KEYWORD)))
+                return IsAvailableToMoveInner(toMove);
+            
+            return false;
         }
         
         private static bool IsAvailableToMoveInner([NotNull] ITreeNode toMove, [CanBeNull] Func<IDeclaredElement, bool> isElementIgnored = null)
@@ -115,11 +129,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 
                 if (declaredElement == null || isElementIgnored != null && isElementIgnored(declaredElement))
                     continue;
-
                 // if declared element is local, we can't move our expression outside the method
                 switch (declaredElement)
                 {
-                    case ILocalVariableDeclaration _:
+                    case ILocalVariableDeclaration _:                  
                     case IParameterDeclaration _:
                     case ILocalFunctionDeclaration _:
                     case IDelegateDeclaration _:
@@ -154,7 +167,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 type = TypeFactory.CreateTypeByCLRName("System.Object", classDeclaration.GetPsiModule());
 
             var baseName = fieldName ?? CreateBaseName(expression, result);
-            var name = NamingUtil.GetUniqueName(expression, baseName, NamedElementKinds.PrivateInstanceFields, de => !de.Equals(result));
+            var name = NamingUtil.GetUniqueName(expression, baseName, NamedElementKinds.PrivateInstanceFields,
+                collection => collection.Add(expression, new EntryOptions { }),
+                de => !de.Equals(result));
 
             var isVoid = type.IsVoid();
 
@@ -166,8 +181,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 classDeclaration.AddClassMemberDeclaration(field);
             }
 
-            var initialization = isVoid ? factory.CreateStatement("$1;", name, expression.Copy()) : 
-                factory.CreateStatement("$0 = $1;", name, expression.Copy());
+            var initialization = isVoid ? factory.CreateStatement("$1;", name, expression.CopyWithResolve()) : 
+                factory.CreateStatement("$0 = $1;", name, expression.CopyWithResolve());
             
             var body = methodDeclaration.EnsureStatementMemberBody();
             body.AddStatementAfter(initialization, null);
@@ -216,7 +231,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             
             var localVariableDeclaration =
                 LocalVariableDeclarationNavigator.GetByInitial(
-                    expression.GetContainingParenthesizedExpression()?.Parent as IVariableInitializer);
+                    ExpressionInitializerNavigator.GetByValue(expression.GetContainingParenthesizedExpression()));
             return localVariableDeclaration?.DeclaredElement;
         }
 
@@ -224,11 +239,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         {
             toMove.GetPsiServices().Locks.AssertReadAccessAllowed();
             
-            var type = toMove.Type(new ResolveContext(toMove.GetPsiModule()));
-            if (type.IsUnknown)
-                type = TypeFactory.CreateTypeByCLRName("System.Object", toMove.GetPsiModule());
-            
-            string baseName =  type.GetPresentableName(CSharpLanguage.Instance);
+            string baseName = null;
 
             if (variableDeclaration != null)
             {

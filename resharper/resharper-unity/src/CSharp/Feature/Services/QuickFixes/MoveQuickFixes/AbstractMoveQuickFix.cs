@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Naming.Extentions;
 using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
@@ -37,12 +38,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             Assertion.Assert(MonoBehaviourScript != null, "MonoBehaviourScript != null");
 
             var result = new List<IntentionAction>();
-            if (MonoBehaviourMoveUtil.IsExpressionAccessibleInScript(ToMove))
+            if (MonoBehaviourMoveUtil.IsExpressionAccessibleInMethod(ToMove, "Start"))
             {
                 result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Start", FieldName), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor ));
+            }
+            if (MonoBehaviourMoveUtil.IsExpressionAccessibleInMethod(ToMove, "Awake"))
+            {
                 result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Awake", FieldName), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor ));
             }
-
+            
             var loopAction = TryCreateMoveFromLoopAction(ToMove);
             if (loopAction != null)
                 result.Add(loopAction);
@@ -51,28 +55,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         }
 
         private IntentionAction TryCreateMoveFromLoopAction([NotNull] ICSharpExpression toMove)
-        {
-            ITreeNode currentExpression = toMove;
+        { 
             ILoopStatement previousLoop = null;
 
-            int closureStartOffset = currentExpression.GetContainingNode<ICSharpClosure>()?.GetTreeStartOffset().Offset ?? 0;
-            while (true)
+            foreach (var node in toMove.ContainingNodes())
             {
-                var loop = currentExpression.GetContainingNode<ILoopStatement>();
-                if (loop == null)
-                    break;
-                
-                if (closureStartOffset > loop.GetTreeStartOffset().Offset)
-                    break;
-
-                if (MonoBehaviourMoveUtil.IsAvailableToMoveFromLoop(toMove, loop))
+                if (node is ICSharpClosure) break;
+                if (node is ILoopStatement loop)
                 {
-                    previousLoop = loop;
-                    currentExpression = loop;
-                }
-                else
-                {
-                    break;
+                    if (MonoBehaviourMoveUtil.IsAvailableToMoveFromLoop(toMove, loop))
+                        previousLoop = loop;
+                    else
+                        break;
                 }
             }
 
@@ -134,10 +128,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
 
                 var declaredElement = MonoBehaviourMoveUtil.GetDeclaredElementFromParentDeclaration(myToMove);
                 var baseName = myVariableName ?? MonoBehaviourMoveUtil.CreateBaseName(myToMove, declaredElement);
-                var name = NamingUtil.GetUniqueName(myToMove, baseName, NamedElementKinds.Locals, de => !de.Equals(declaredElement));
+                var name = NamingUtil.GetUniqueName(myToMove, baseName, NamedElementKinds.Locals,
+                    collection => collection.Add(myToMove, new EntryOptions { }),
+                    de => !de.Equals(declaredElement));
                 
                 var factory = CSharpElementFactory.GetInstance(myToMove);
-                var originMyToMove = myToMove.Copy();
+                var originMyToMove = myToMove.CopyWithResolve();
                 MonoBehaviourMoveUtil.RenameOldUsages(myToMove, declaredElement, name, factory);
                 
                 ICSharpStatement declaration = factory.CreateStatement("var $0 = $1;", name, originMyToMove);

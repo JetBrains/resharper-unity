@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return;
 
 
-            var method = info.DeclaredElement as IMethod; // e.g. localfunction declared element, (when removing `}` and method below is parsed like local function)
+            var method = info.DeclaredElement as IMethod;
             if (method == null)
                 return;
             
