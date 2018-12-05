@@ -107,24 +107,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            unitySolutionTracker.IsUnityProject.ViewNotNull(lifetime, (lf, args) =>
+            // Rgc.Guarded - beware RIDER-15577
+            myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent",
+                TimeSpan.FromMilliseconds(500),
+                Rgc.Guarded, () => refresher.Refresh(false));
+
+            unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
+                // send refresh, when we detect UnitySolution
                 host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => { refresher.Refresh(force); }));
             });
             
-            // Rgc.Guarded - beware RIDER-15577
-            myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent", TimeSpan.FromMilliseconds(500),
-                Rgc.Guarded, ()=> refresher.Refresh(false));
-
-            var protocolSolution = solution.GetProtocolSolution();
-            protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
+            unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
-                myLogger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
-                myGroupingEvent.FireIncoming();
+                if (!args) return;
+                
+                var protocolSolution = solution.GetProtocolSolution();
+                protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
+                {
+                    myLogger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
+                    myGroupingEvent.FireIncoming();
+                });
+
+                fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
             });
-            
-            fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
         }
         
         private void FileSystemChange(FileSystemChange fileSystemChange)
