@@ -162,6 +162,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private void AddAssetProjectFiles(FrugalLocalList<FileSystemPath> paths)
         {
+            if (paths.IsEmpty)
+                return;
+
             // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
             // automatically get an IPsiSourceFile created for it, and attached to our module via
             // UnityMiscFilesProjectPsiModuleProvider
@@ -186,17 +189,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private void OnProjectDirectoryChange(FileSystemChangeDelta delta)
         {
             var builder = new PsiModuleChangeBuilder();
-            ProcessFileSystemChangeDelta(delta, builder);
+            var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
+            ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
+            AddAssetProjectFiles(projectFilesToAdd);
             FlushChanges(builder);
         }
 
-        private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder)
+        private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
+                                                  FrugalLocalList<FileSystemPath> projectFilesToAdd)
         {
             var module = myModuleFactory.PsiModule;
             if (module == null)
                 return;
-
-            var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
 
             IPsiSourceFile sourceFile;
             switch (delta.ChangeType)
@@ -226,10 +230,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     break;
             }
 
-            AddAssetProjectFiles(projectFilesToAdd);
-
             foreach (var child in delta.GetChildren())
-                ProcessFileSystemChangeDelta(child, builder);
+                ProcessFileSystemChangeDelta(child, builder, projectFilesToAdd);
         }
 
         [CanBeNull]

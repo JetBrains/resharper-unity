@@ -64,25 +64,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
         private void AfterSolutionLoadDone()
         {
-            using (myShellLocks.UsingReadLock())
+            myChangeManager.RegisterChangeProvider(myLifetime, this);
+            myChangeManager.AddDependency(myLifetime, this, myModuleReferenceResolveSync);
+
+            // Track the lifetime of all projects, so we can pass it to the handler later
+            myProjects.Projects.View(myLifetime,
+                (projectLifetime, project) => myProjectLifetimes.Add(project, projectLifetime));
+
+            var unityProjectLifetimes = myProjectLifetimes.Where(pl => pl.Key.IsUnityProject()).ToList();
+
+            if (unityProjectLifetimes.Any())
+                HasUnityReference.SetValue(true);
+
+            foreach (var handler in myHandlers)
             {
-                // Track the lifetime of all projects, so we can pass it to the handler later
-                myProjects.Projects.View(myLifetime,
-                    (projectLifetime, project) => myProjectLifetimes.Add(project, projectLifetime));
-
-                var unityProjectLifetimes = myProjectLifetimes.Where(pl => pl.Key.IsUnityProject()).ToList();
-
-                if (unityProjectLifetimes.Any())
-                    HasUnityReference.SetValue(true);
-
-                foreach (var handler in myHandlers)
-                {
-                    foreach (var (project, lifetime) in unityProjectLifetimes)
-                        handler.OnUnityProjectAdded(lifetime, project);
-                }
-
-                myChangeManager.RegisterChangeProvider(myLifetime, this);
-                myChangeManager.AddDependency(myLifetime, this, myModuleReferenceResolveSync);
+                foreach (var (project, lifetime) in unityProjectLifetimes)
+                    handler.OnUnityProjectAdded(lifetime, project);
             }
         }
 
