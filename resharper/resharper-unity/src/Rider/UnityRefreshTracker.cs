@@ -94,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityRefreshTracker
     {
         private readonly ILogger myLogger;
-        private readonly GroupingEvent myGroupingEvent;
+        private GroupingEvent myGroupingEvent;
 
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher,
             ILogger logger,
@@ -107,11 +107,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            // Rgc.Guarded - beware RIDER-15577
-            myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent",
-                TimeSpan.FromMilliseconds(500),
-                Rgc.Guarded, () => refresher.Refresh(false));
-
             unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
@@ -122,6 +117,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
+                
+                // Rgc.Guarded - beware RIDER-15577
+                myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent",
+                    TimeSpan.FromMilliseconds(500),
+                    Rgc.Guarded, () => refresher.Refresh(false));
                 
                 var protocolSolution = solution.GetProtocolSolution();
                 protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
