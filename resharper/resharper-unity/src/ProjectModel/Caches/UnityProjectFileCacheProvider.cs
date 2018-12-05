@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -167,7 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                     if (!exePath.ExistsFile)
                         exePath = filePath.Combine("../../../../Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
                     if (exePath.ExistsFile)
-                        return new Version(new Version(FileVersionInfo.GetVersionInfo(exePath.FullPath).FileVersion).ToString(3));
+                        return UnityVersion.ReadUnityVersionFromExe(exePath);
                 }
                 else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 {
@@ -176,8 +175,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                         infoPlistPath = filePath.Combine("../../../Info.plist");
                     if (!infoPlistPath.ExistsFile)
                         return null;
-                    var fullVersion = UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
-                    return UnityVersion.Parse(fullVersion);
+                    return UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
                 }
             }
 
