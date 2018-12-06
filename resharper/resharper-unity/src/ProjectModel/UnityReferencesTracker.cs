@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
-using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
@@ -24,7 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
-        private readonly IShellLocks myShellLocks;
         private readonly ModuleReferenceResolveSync myModuleReferenceResolveSync;
         private readonly ChangeManager myChangeManager;
         private readonly IViewableProjectsCollection myProjects;
@@ -41,7 +39,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             IEnumerable<IUnityReferenceChangeHandler> handlers,
             ISolution solution,
             ISolutionLoadTasksScheduler scheduler,
-            IShellLocks shellLocks,
             ModuleReferenceResolveSync moduleReferenceResolveSync,
             ChangeManager changeManager,
             IViewableProjectsCollection projects,
@@ -53,16 +50,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             myLifetime = lifetime;
             myLogger = logger;
             mySolution = solution;
-            myShellLocks = shellLocks;
             myModuleReferenceResolveSync = moduleReferenceResolveSync;
             myChangeManager = changeManager;
             myProjects = projects;
 
-            scheduler.EnqueueTask(new SolutionLoadTask("Loading Unity project", SolutionLoadTaskKinds.Done,
-                AfterSolutionLoadDone));
+            // At PreparePsiModules, we know what references we have, so we know if we're a Unity project. This is where
+            // we'll initialise our custom PSI module. We have to initialise our PSI module before Done, or the
+            // PersistentIndexManager will clean out the "orphaned" external (YAML) files and we'll have to reparse all
+            // files on every startup
+            scheduler.EnqueueTask(new SolutionLoadTask("Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
+                OnSolutionPreparePsiModules));
         }
 
-        private void AfterSolutionLoadDone()
+        private void OnSolutionPreparePsiModules()
         {
             myChangeManager.RegisterChangeProvider(myLifetime, this);
             myChangeManager.AddDependency(myLifetime, this, myModuleReferenceResolveSync);
