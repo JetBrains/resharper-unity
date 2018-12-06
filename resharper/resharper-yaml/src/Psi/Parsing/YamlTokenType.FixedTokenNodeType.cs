@@ -30,14 +30,13 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       public FixedTokenElement(TokenNodeType tokenNodeType, IBuffer buffer, TreeOffset startOffset,
                                TreeOffset endOffset)
-        : base(buffer, startOffset, endOffset)
+        : base(tokenNodeType, buffer, startOffset, endOffset)
       {
         myTokenNodeType = tokenNodeType;
       }
 
       public override int GetTextLength() => myTokenNodeType.TokenRepresentation.Length;
       public override string GetText() => myTokenNodeType.TokenRepresentation;
-      public override NodeType NodeType => myTokenNodeType;
     }
   }
 }

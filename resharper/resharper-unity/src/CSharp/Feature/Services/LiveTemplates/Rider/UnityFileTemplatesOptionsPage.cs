@@ -1,5 +1,6 @@
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.UI.Options;
+using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.DataFlow;
 using JetBrains.IDE.UI;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
@@ -15,12 +16,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
     public class UnityFileTemplatesOptionsPage : RiderFileTemplatesOptionPageBase
     {
         public UnityFileTemplatesOptionsPage(Lifetime lifetime,
+                                             UnityProjectScopeCategoryUIProvider uiProvider,
+                                             OptionsPageContext optionsPageContext,
                                              OptionsSettingsSmartContext optionsSettingsSmartContext,
                                              StoredTemplatesProvider storedTemplatesProvider,
-                                             UnityProjectScopeCategoryUIProvider uiProvider,
                                              ScopeCategoryManager scopeCategoryManager,
                                              TemplatesUIFactory uiFactory, IconHostBase iconHostBase)
-            : base(lifetime, uiProvider, optionsSettingsSmartContext, storedTemplatesProvider, scopeCategoryManager,
+            : base(lifetime, uiProvider, optionsPageContext, optionsSettingsSmartContext, storedTemplatesProvider, scopeCategoryManager,
                 uiFactory, iconHostBase, "CSHARP")
         {
         }

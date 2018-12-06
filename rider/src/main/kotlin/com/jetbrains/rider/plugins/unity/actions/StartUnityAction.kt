@@ -16,11 +16,23 @@ open class StartUnityAction : DumbAwareAction("Start Unity", "Start Unity with c
         StartUnity(project)
     }
 
+    override fun update(e: AnActionEvent) {
+        val project = e.project
+        if (project != null) {
+            val appVersion = UnityInstallationFinder.getInstance(project).getApplicationVersion()
+            if (appVersion != null)
+                e.presentation.text = "Start Unity ($appVersion)"
+            else
+                e.presentation.isEnabled = false
+        }
+        else
+          e.presentation.isEnabled = false
+        super.update(e)
+    }
+
     companion object {
         fun StartUnity(project: Project, vararg args: String) {
-            val appPath = UnityInstallationFinder.getInstance(project).getApplicationPath()
-            if (appPath == null) return
-
+            val appPath = UnityInstallationFinder.getInstance(project).getApplicationPath() ?: return
             var path = appPath.toString()
             if (SystemInfo.isMac)
                 path = Path.combine(path, "Contents/MacOS/Unity")

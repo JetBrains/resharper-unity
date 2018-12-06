@@ -1,11 +1,12 @@
 ﻿Language: PsiLanguageType:YAML
 IYamlFile
-  Comment(type:COMMENT, text:# Comment) spaces: "# Comment"
-  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-  Comment(type:COMMENT, text:# lines) spaces: "# lines"
-  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+  Comment(0,9)(type:COMMENT, text:# Comment) comment: "# Comment"
+  NewLine(9,1)(type:NEW_LINE, text:\n) spaces: "\n"
+  Comment(10,7)(type:COMMENT, text:# lines) comment: "# lines"
+  NewLine(17,1)(type:NEW_LINE, text:\n) spaces: "\n"
   IYamlDocument
-    IPlainScalarNode
-      YamlTokenType+GenericTokenElement(type:NS_PLAIN, text:Document)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+    ChameleonDocumentBody
+      IPlainScalarNode
+        YamlTokenType+GenericTokenElement(18,8)(type:NS_PLAIN, text:Document)
+      NewLine(26,1)(type:NEW_LINE, text:\n) spaces: "\n"
 
