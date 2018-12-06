@@ -7,7 +7,6 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
-
     [TestUnity]
     public class PerformanceStageTest : CSharpHighlightingTestBase
     {
@@ -20,8 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
         [Test] public void UnityObjectEqTest() { DoNamedTest(); }
         [Test] public void IndirectCostlyTest() { DoNamedTest(); }
         [Test] public void InefficientCameraMainUsageWarningTest() {DoNamedTest();}
+        [Test] public void InvokeAndSendMessageTest() {DoNamedTest();}
         [Test] public void DisabledWarningTest() {DoNamedTest();}
-     
+
         protected sealed override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {
