@@ -63,5 +63,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }
+
+        public bool IsConnectionEstablished()
+        {
+            return LastCheckResult != UnityEditorState.Refresh && LastCheckResult != UnityEditorState.Disconnected;
+        }
     }
 }

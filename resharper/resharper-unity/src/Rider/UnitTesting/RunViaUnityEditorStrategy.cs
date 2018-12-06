@@ -208,6 +208,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
                             rdTask?.Result.Advise(lifetime, result =>
                             {
+                                // [TODO] Backend ConnectionTracker has IsConnectionEstablished method which has same logic
                                 if (result.Result != UnityEditorState.Refresh && result.Result != UnityEditorState.Disconnected)
                                 {
                                     lifetimeDefinition.Terminate();

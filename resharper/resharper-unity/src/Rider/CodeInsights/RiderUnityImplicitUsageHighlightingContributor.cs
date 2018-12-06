@@ -31,18 +31,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly UnityCodeInsightFieldUsageProvider myFieldUsageProvider;
         private readonly UnityCodeInsightCodeInsightProvider myCodeInsightCodeInsightProvider;
         private readonly ConnectionTracker myConnectionTracker;
-        private readonly ITooltipManager myTooltipManager;
         private readonly IconHost myIconHost;
 
         public RiderUnityImplicitUsageHighlightingContributor(ISolution solution, ITextControlManager textControlManager,
             UnityCodeInsightFieldUsageProvider fieldUsageProvider,  UnityCodeInsightCodeInsightProvider codeInsightCodeInsightProvider,
-            ISettingsStore settingsStore, ConnectionTracker connectionTracker, ITooltipManager tooltipManager, IconHost iconHost = null)
+            ISettingsStore settingsStore, ConnectionTracker connectionTracker, IconHost iconHost = null)
             : base(solution, settingsStore, textControlManager)
         {
             myFieldUsageProvider = fieldUsageProvider;
             myCodeInsightCodeInsightProvider = codeInsightCodeInsightProvider;
             myConnectionTracker = connectionTracker;
-            myTooltipManager = tooltipManager;
             myIconHost = iconHost;
         }
         
@@ -85,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
 
             var extraActions = new List<CodeLensEntryExtraActionModel>();
-            if (myConnectionTracker.LastCheckResult == UnityEditorState.Disconnected)
+            if (!myConnectionTracker.IsConnectionEstablished())
             {
                 extraActions.Add(new CodeLensEntryExtraActionModel("Unity is off", null));
                 extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity", AbstractUnityCodeInsightProvider.StartUnityActionId));
@@ -103,9 +101,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (declaredElement != null && (declaredElement is IMethod method && !api.IsEventFunction(method) ||
                                             declaration is IClassDeclaration))
             {
-                var action = new UnityFindUsagesNavigationAction(declaredElement,
-                    declaration.GetSolution().GetComponent<UnityEditorFindRequestCreator>(),
-                    myTooltipManager, myConnectionTracker);
+                var action = new UnityFindUsagesNavigationAction(declaredElement, 
+                    declaration.GetSolution().GetComponent<UnityEditorFindRequestCreator>(),  myConnectionTracker);
                 return new[]
                 {
                     new BulbMenuItem(
@@ -123,22 +120,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         {
             private readonly IDeclaredElement myDeclaredElement;
             private readonly UnityEditorFindRequestCreator myCreator;
-            [NotNull] private readonly ITooltipManager myTooltipManager;
             [NotNull] private readonly ConnectionTracker myTracker;
 
-            public UnityFindUsagesNavigationAction([NotNull]IDeclaredElement method, [NotNull]UnityEditorFindRequestCreator creator,[NotNull] ITooltipManager tooltipManager, [NotNull] ConnectionTracker tracker)
+            public UnityFindUsagesNavigationAction([NotNull]IDeclaredElement method, [NotNull]UnityEditorFindRequestCreator creator, [NotNull] ConnectionTracker tracker)
             {
                 myDeclaredElement = method;
                 myCreator = creator;
-                myTooltipManager = tooltipManager;
                 myTracker = tracker;
             }
             
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
-                if (myTracker.LastCheckResult == UnityEditorState.Disconnected)
+                if (!myTracker.IsConnectionEstablished())
                 {
-
                     return textControl => ShowTooltip(textControl, "Unity is not running");
                 }
                     
