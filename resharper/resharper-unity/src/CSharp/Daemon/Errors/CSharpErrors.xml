@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
         baseClass="CSharpUnityHighlightingBase">
-  
+
   <Usings>
     JetBrains.ReSharper.Psi.CSharp;
     JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -9,7 +9,7 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
   </Usings>
-  
+
   <!-- Register the static severity groups. This is mostly used in grouping items in SWEA results.
        The groups should be different to any configurable severity groups -->
   <StaticSeverityGroups>
@@ -17,12 +17,12 @@
     <Group name="Unity Warnings" key="UnityWarnings" />
     <Group name="Unity Gutter Marks" key="UnityGutterMarks" />
   </StaticSeverityGroups>
-  
+
   <!-- Register the configurable severities
        Can take a child Tag or Group element
        * Tag is configurable severity without a group
        * Group[@name] specifies the name of the group, expects child Tag elements.
-         Note that the group name/title should be registered with 
+         Note that the group name/title should be registered with
          [assembly: RegisterConfigurableHighlightingsGroup(name, "Title")]
        * Tag[@name] is the HIGHLIGHTING_ID of a warning/error. It is treated as a string
          literal and quoted. It is referenced in Warning[@configurableSeverity]
@@ -45,7 +45,7 @@
         <Title>Event function with the same name is already declared</Title>
         <Description>Event function with the same name is already declared.</Description>
       </Tag>
-      
+
       <Tag externalName="ExplicitTagStringComparisonWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Use 'CompareTag' instead of explicit string comparison</Title>
@@ -72,18 +72,18 @@
         <Title>MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</Title>
         <Description>Instantiating a MonoBehaviour based class with 'new' does not attach it to a GameObject, and Unity will not invoke any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;().</Description>
       </Tag>
-      
+
       <Tag externalName="IncorrectScriptableObjectInstantiationWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>ScriptableObjects must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'</Title>
         <Description>Instantiating a ScriptableObject base class with 'new' means that Unity will not call any event functions. Use 'ScriptableObject.CreateInstance&lt;T&gt;()' instead.</Description>
       </Tag>
-      
+
       <Tag externalName="IncorrectSignatureWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>Incorrect method signature</Title>
         <Description>Method does not match expected signature.</Description>
       </Tag>
- 
+
       <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Inefficient setting of the parent property</Title>
@@ -159,12 +159,6 @@
         <CompoundItemName>Redundant attribute usage</CompoundItemName>
       </Tag>
 
-      <Tag externalName="StringBasedMethodInvocationProblemWarning.HIGHLIGHTING_ID"
-           default="HINT">
-        <Title>String-based method invocation is inefficient</Title>
-        <Description>Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call.</Description>
-      </Tag>
-
       <Tag externalName="StringLiteralReferenceIncorrectSignatureWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Method referenced in string literal does not have the expected signature</Title>
@@ -181,7 +175,7 @@
         </Description>
         <CompoundItemName>Possible unintended bypass of lifetime check of underlying Unity engine object</CompoundItemName>
       </Tag>
-      
+
       <Tag externalName="UnityObjectNullPropagationWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</Title>
         <Description>
@@ -194,7 +188,7 @@
       </Tag>
     </Group>
   </SeverityConfiguration>
-  
+
   <!-- Warning, Error, Info or LocalAndGlobal
        * @name - name of the highlighting. Suffix based on parent element is automatically added
        * @configurableSeverity - the value of HIGHLIGHTING_ID. Treated as a string literal and quoted
@@ -220,7 +214,7 @@
     <Range>CSharpErrorUtil.GetMethodNameAndParametersHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="ExpectedComponent" configurableSeverity="Unity.ExpectedComponent">
     <Parameter type="IReference" name="reference" />
     <Parameter type="string" name="requiredBaseType" />
@@ -229,14 +223,14 @@
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
   </Warning>
-  
+
   <Warning name="ExpectedScriptableObject" configurableSeverity="Unity.ExpectedScriptableObject">
     <Parameter type="IReference" name="reference" />
     <Message value="Expected type derived from 'UnityEngine.ScriptableObject'" />
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="ExplicitTagStringComparison" configurableSeverity="Unity.ExplicitTagComparison">
     <Parameter type="IEqualityExpression" name="equalityExpression" />
     <Parameter type="bool" name="leftOperandIsTagReference" />
@@ -349,7 +343,7 @@
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
-  
+
   <Warning name="PreferGenericMethodOverload" configurableSeverity="Unity.PreferGenericMethodOverload">
     <Parameter type="IInvocationExpression" name="invocationMethod" />
     <Parameter type="string" name="methodName" isValid="skip"/>
@@ -377,7 +371,7 @@
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="RedundantAttributeOnTarget" configurableSeverity="Unity.RedundantAttributeOnTarget">
     <Parameter type="IAttribute" name="attribute" />
     <Parameter type="ITypeElement" name="attributeType"/>
@@ -428,13 +422,6 @@
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
 
-  <Warning name="StringBasedMethodInvocationProblem" configurableSeverity="Unity.StringBasedMethodInvocationProblem">
-    <Parameter type="IReference" name="invocation" />
-    <Message value="Invocation for this method results in additional overhead. Use UnityEvent, C# event, delegates or a direct method call."/>
-    <Range>Invocation.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
   <Error name="StringLiteralReferenceIncorrectSignature" staticGroup="UnityErrors">
     <Parameter type="SyncVarHookReference" name="reference" />
     <Message value="Expected a method with '{0}' signature">
@@ -453,7 +440,7 @@
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Error name="SyncVarUsage" staticGroup="UnityErrors">
     <Parameter type="IAttribute" name="attribute" />
     <Message value="'SyncVar' attribute can only be applied in a class that derives from 'NetworkBehaviour'" />
@@ -469,14 +456,14 @@
     </Message>
     <Range>Declaration.GetNameDocumentRange()</Range>
   </Info>
-  
+
   <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
     <Parameter type="INullCoalescingExpression" name="expression" />
     <Message value="'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />
     <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="UnityObjectNullPropagation" configurableSeverity="Unity.NoNullPropogation">
     <Parameter type="IConditionalAccessExpression" name="expression" />
     <Message value="'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />
