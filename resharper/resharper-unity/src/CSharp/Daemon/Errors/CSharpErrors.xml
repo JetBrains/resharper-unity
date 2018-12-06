@@ -90,6 +90,12 @@
         <Description>Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code.</Description>
       </Tag>
 
+      <Tag externalName="PropertyDrawerOnGUIBaseWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>You should not call 'base.OnGUI()' in PropertyDrawers</Title>
+        <Description>Calling this method will show the default 'No GUI Implemented' message in the inspector.</Description>
+      </Tag>
+
       <Tag externalName="ParameterNotDerivedFromComponentWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Parameter should be derived from `Component`</Title>
@@ -288,6 +294,13 @@
     <Parameter type="bool" name="stayInWorldCoords" isValid="skip"/>
     <Message value="Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code."/>
     <Range>Reference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="PropertyDrawerOnGUIBase" configurableSeverity="Unity.PropertyDrawerOnGUIBase">
+    <Parameter type="IReference" name="invocation" />
+    <Message value="Calling this method will show the default 'No GUI Implemented' message in the inspector."/>
+    <Range>Invocation.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
