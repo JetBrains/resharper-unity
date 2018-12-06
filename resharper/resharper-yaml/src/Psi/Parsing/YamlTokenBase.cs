@@ -1,9 +1,11 @@
-﻿using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
+﻿using System;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
@@ -35,7 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     public override string ToString()
     {
-      return base.ToString() + "(type:" + NodeType + ", text:" + GetText() + ")";
+      var text = GetTextAsBuffer().GetText(new TextRange(0, Math.Min(100, Length)));
+      return $"{base.ToString()}(type:{NodeType}, text:{text})";
     }
   }
 }

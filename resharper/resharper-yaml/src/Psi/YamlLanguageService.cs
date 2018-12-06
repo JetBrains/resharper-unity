@@ -7,7 +7,6 @@ using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Text;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi
@@ -44,13 +43,5 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
     public override bool IsCaseSensitive => false;
     public override bool SupportTypeMemberCache => false;
     public override ITypePresenter TypePresenter => DefaultTypePresenter.Instance;
-
-    private class YamlLexerFactory : ILexerFactory
-    {
-      public ILexer CreateLexer(IBuffer buffer)
-      {
-        return new YamlLexer(buffer);
-      }
-    }
   }
 }
