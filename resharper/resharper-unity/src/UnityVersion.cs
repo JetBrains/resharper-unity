@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private Version myVersionFromEditorInstanceJson;
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
-        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache, 
+        public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
             ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
             IShellLocks locks)
         {
@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 projectVersionTxtPath,
                 _ => { myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath); });
             myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
-            
+
             var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
             fileSystemTracker.AdviseFileChanges(lifetime,
                 editorInstanceJsonPath,
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 return myVersionFromEditorInstanceJson;
             if (myVersionFromProjectVersionTxt != null)
                 return myVersionFromProjectVersionTxt;
-            
+
             foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
             {
                 if (project.IsUnityProject())
@@ -92,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var groups = match.Groups;
             return match.Success ? Parse(groups["version"].Value) : null;
         }
-        
+
         [CanBeNull]
         private Version TryGetVersionFromProjectVersion(FileSystemPath projectVersionTxtPath)
         {
@@ -100,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (!projectVersionTxtPath.ExistsFile)
                 return null;
             var text = projectVersionTxtPath.ReadAllText2().Text;
-            var match = Regex.Match(text, "m_EditorVersion: (?<version>.*$)");
+            var match = Regex.Match(text, @"^m_EditorVersion:\s+(?<version>.*)\s*$", RegexOptions.Multiline);
             var groups = match.Groups;
             return match.Success ? Parse(groups["version"].Value) : null;
         }
@@ -168,7 +168,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return version;
         }
-        
+
         public static string VersionToString(Version version)
         {
             var type = string.Empty;
@@ -187,7 +187,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             {
                 ourLogger.Error($"Unable do VersionToString. Input version={version}", e);
             }
-            
+
             return $"{version.Major}.{version.Minor}.{version.Build}{type}{rev}";
         }
 
@@ -200,7 +200,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 .ToDictionary(i => i.Key.Value, i => i.Value.Value);
             return Parse(keyValuePairs["CFBundleVersion"]);
         }
-        
+
         public static Version ReadUnityVersionFromExe(FileSystemPath exePath)
         {
             Version version;
