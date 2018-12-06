@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public override bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
             TabOptions tabOptions = TabOptions.Default)
         {
-            if (solution.GetComponent<ConnectionTracker>().LastCheckResult != UnityEditorState.Disconnected)
+            if (solution.GetComponent<ConnectionTracker>().LastCheckResult == UnityEditorState.Disconnected)
                 return base.Navigate(solution, windowContext, transferFocus, tabOptions);
             
             var findRequestCreator = solution.GetComponent<UnityEditorFindRequestCreator>();
