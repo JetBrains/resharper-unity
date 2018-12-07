@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -77,16 +78,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public static bool CanContainReference([NotNull] IYamlDocument document)
         {
-            if (document.BlockNode is IBlockMappingNode rootBlockMappingNode)
-            {
-                // We can only contain a reference if we're a MonoBehaviour (including compiled MBs such as Button) and
-                // the YAML document contains "m_MethodName". Ideally, we could check that the tag property was "!u!114"
-                // but that would open the chameleon
-                var buffer = rootBlockMappingNode.GetTextAsBuffer();
-                return ourMonoBehaviourTagSearcher.Find(buffer) >= 0 && ourMethodNameSearcher.Find(buffer) >= 0;
-            }
-
-            return false;
+            // This document can only contain a reference if it represents a MonoBehaviour (which includes compiled
+            // MonoBehaviours such as Button) and if it has the `m_MethodName` property. So, check the text of the
+            // closed chameleon for "!u!114" and "m_MethodName".
+            // TODO: Can we improve this?
+            // When the chameleon is closed, GetTextAsBuffer returns a ProjectedBuffer over the source file element.
+            // When open, it's a bit more expensive, by creating a StringBuffer over the result of GetText, which is
+            // calculated by pre-initialising a StringBuilder to the correct length and calling GetText(StringBuilder)
+            // on the child nodes.
+            // Then we search the buffer, potentially twice. We'll limit the tag searcher to the first 100 characters of
+            // the buffer
+            var buffer = document.Body.GetTextAsBuffer();
+            return ourMonoBehaviourTagSearcher.Find(buffer, 0, Math.Min(100, buffer.Length)) >= 0 &&
+                   ourMethodNameSearcher.Find(buffer) >= 0;
         }
 
         public static bool CanHaveReference([CanBeNull] ITreeNode element)

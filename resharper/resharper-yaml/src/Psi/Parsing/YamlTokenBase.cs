@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -9,15 +9,11 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
-  public abstract class YamlTokenBase : LeafElementBase, IYamlTreeNode, ITokenNode
+  public abstract class YamlTokenBase : BindedToBufferLeafElement, IYamlTreeNode, ITokenNode
   {
-    private readonly IBuffer myBuffer;
-    private readonly TextRange myRange;
-
-    protected YamlTokenBase(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+    protected YamlTokenBase(NodeType nodeType, IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      : base(nodeType, buffer, startOffset, endOffset)
     {
-      myBuffer = buffer;
-      myRange = new TextRange(startOffset.Offset, endOffset.Offset);
     }
 
     public override PsiLanguageType Language => LanguageFromParent;
@@ -39,23 +35,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     public TokenNodeType GetTokenType() => (TokenNodeType) NodeType;
 
-    public override StringBuilder GetText(StringBuilder to)
-    {
-      myBuffer.AppendTextTo(to, myRange);
-      return to;
-    }
-
-    public override IBuffer GetTextAsBuffer()
-    {
-      return ProjectedBuffer.Create(myBuffer, myRange);
-    }
-
-    public override int GetTextLength() => myRange.Length;
-    public override string GetText() => myBuffer.GetText(myRange);
-
     public override string ToString()
     {
-      return base.ToString() + "(type:" + NodeType + ", text:" + GetText() + ")";
+      var text = GetTextAsBuffer().GetText(new TextRange(0, Math.Min(100, Length)));
+      return $"{base.ToString()}(type:{NodeType}, text:{text})";
     }
   }
 }

@@ -94,11 +94,17 @@ options {
 yamlDocument
 :
   directives<DIRECTIVES, Directives>?
-  node<NODE, BlockNode>?
-  
+  documentBody<BODY, Body>
+
   // TODO: Documents must either be separated with one or more document end markers or directive end marker
   // We can't easily capture that without using interface, and I don't want to do that
   DOCUMENT_END<DOCUMENT_END, DocumentEndMarker>*
+;
+
+// This node is a chameleon
+documentBody
+:
+  node<NODE, BlockNode>?
 ;
 
 
@@ -109,7 +115,7 @@ yamlDocument
 // **************************************************************************
 
 directives
-: 
+:
   directive<DIRECTIVE, Directive>+
   DIRECTIVES_END<DIRECTIVES_END, DirectivesEndMarker>*
 ;

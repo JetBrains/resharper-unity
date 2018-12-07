@@ -8,8 +8,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
 {
   internal abstract class WhitespaceBase : YamlTokenBase, IWhitespaceNode
   {
-    protected WhitespaceBase(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
-      : base(buffer, startOffset, endOffset)
+    protected WhitespaceBase(NodeType nodeType, IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
+      : base(nodeType, buffer, startOffset, endOffset)
     {
     }
 
@@ -26,22 +26,20 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
   internal class Whitespace : WhitespaceBase
   {
     public Whitespace(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
-      : base(buffer, startOffset, endOffset)
+      : base(YamlTokenType.WHITESPACE, buffer, startOffset, endOffset)
     {
     }
 
-    public override NodeType NodeType => YamlTokenType.WHITESPACE;
     public override bool IsNewLine => false;
   }
 
   internal class NewLine : WhitespaceBase
   {
     public NewLine(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
-      : base(buffer, startOffset, endOffset)
+      : base(YamlTokenType.NEW_LINE, buffer, startOffset, endOffset)
     {
     }
 
-    public override NodeType NodeType => YamlTokenType.NEW_LINE;
     public override bool IsNewLine => true;
   }
 }
