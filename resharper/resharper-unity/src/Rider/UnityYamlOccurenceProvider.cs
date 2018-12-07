@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         public IOccurrence MakeOccurrence(FindResult findResult)
         {
-            if (findResult is FindResultReference findResultReference)
+            if (findResult is IFindResultReference findResultReference)
             {
                 IUnityYamlReference reference = null;
                 if (findResultReference.Reference is UnityEventTargetReference unityEventTargetReference)
@@ -25,9 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 
                 if (reference != null)
                 {
-                    var node = reference.GetTreeNode();
-                    if (node.GetSolution().GetComponent<ConnectionTracker>().LastCheckResult != UnityEditorState.Disconnected)
-                        return new UnityEditorOccurrence(reference.GetTreeNode(), reference, OccurrenceType.TextualOccurrence);
+                    return new UnityEditorOccurrence(reference, findResultReference.DeclaredElement, OccurrenceType.TextualOccurrence); 
                 }
             }
             
