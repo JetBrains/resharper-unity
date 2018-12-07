@@ -11,12 +11,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityInstallationSynchronizer(Lifetime lifetime, UnitySolutionTracker solutionTracker,
                                              UnityHost host, UnityInstallationFinder finder, UnityVersion unityVersion)
         {
-            solutionTracker.IsUnityProjectFolder.Advise(lifetime, isUnityProjectFolder =>
+            solutionTracker.IsUnityProjectFolder.AdviseNotNull(lifetime, isUnityProjectFolder =>
             {
                 if (!isUnityProjectFolder) return;
                 var version = unityVersion.GetActualVersionForSolution();
-                var path = finder.GetApplicationPath(version);
-                if (path == null)
+                var info = finder.GetApplicationInfo(version);
+                if (info == null)
                     return;
 
                 var contentPath = finder.GetApplicationContentsPath(version);
@@ -25,11 +25,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     // ApplicationPath may be already set via UnityEditorProtocol, which is more accurate
                     if (!rd.ApplicationPath.HasValue())
-                        rd.ApplicationPath.SetValue(path.FullPath);
+                        rd.ApplicationPath.SetValue(info.Path.FullPath);
                     if (!rd.ApplicationContentsPath.HasValue())
                         rd.ApplicationContentsPath.SetValue(contentPath.FullPath);
                     if (!rd.ApplicationVersion.HasValue())
-                        rd.ApplicationVersion.SetValue(UnityVersion.VersionToString(version));
+                        rd.ApplicationVersion.SetValue(UnityVersion.VersionToString(info.Version));
                 });
             });
         }

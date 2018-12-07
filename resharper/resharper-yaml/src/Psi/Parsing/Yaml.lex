@@ -234,7 +234,7 @@ C_DOCUMENT_END=^"..."
                 {WHITESPACE}            { return YamlTokenType.WHITESPACE; }
 
 <BLOCK_SCALAR>  {NEW_LINE}              { HandleNewLine(false); return YamlTokenType.NEW_LINE; }
-<BLOCK_SCALAR>  ^{WHITESPACE}           { currentLineIndent = yylength(); HandleBlockScalarWhitespace(); return YamlTokenType.INDENT; } 
+<BLOCK_SCALAR>  ^{WHITESPACE}           { currentLineIndent = yylength(); HandleBlockScalarWhitespace(); return YamlTokenType.INDENT; }
 <BLOCK_SCALAR>  {WHITESPACE}            { HandleBlockScalarWhitespace(); return YamlTokenType.WHITESPACE; }
 <BLOCK_SCALAR>  {NB_CHAR}+              { return YamlTokenType.SCALAR_TEXT; }
 <BLOCK_SCALAR>  ^([^{WHITESPACE_CHARS}{NEW_LINE_CHARS}]){NB_CHAR}+
