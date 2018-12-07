@@ -21,41 +21,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
     internal static class MonoBehaviourMoveUtil
     {
         [CanBeNull]
-        public static IMethodDeclaration GetMonoBehaviourMethod([NotNull] IClassDeclaration classDeclaration, [NotNull] string name)
+        public static IMethodDeclaration GetMonoBehaviourMethod([NotNull] IClassDeclaration classDeclaration,
+            [NotNull] string name)
         {
             classDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
-            
+
             return classDeclaration.MethodDeclarations.FirstOrDefault(t => t.NameIdentifier.Name.Equals(name));
         }
-        
+
         [NotNull]
-        public static IMethodDeclaration GetOrCreateMethod([NotNull] IClassDeclaration classDeclaration, [NotNull] string methodName)
+        public static IMethodDeclaration GetOrCreateMethod([NotNull] IClassDeclaration classDeclaration,
+            [NotNull] string methodName)
         {
             classDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
-            
+
             var result = GetMonoBehaviourMethod(classDeclaration, methodName);
             if (result == null)
             {
                 var factory = CSharpElementFactory.GetInstance(classDeclaration);
-                var declaration = (IMethodDeclaration)factory.CreateTypeMemberDeclaration("void $0(){}", methodName);
+                var declaration = (IMethodDeclaration) factory.CreateTypeMemberDeclaration("void $0(){}", methodName);
 
-                result = classDeclaration.AddClassMemberDeclarationAfter(declaration, classDeclaration.FieldDeclarations.FirstOrDefault());
-               
+                result = classDeclaration.AddClassMemberDeclarationAfter(declaration,
+                    classDeclaration.FieldDeclarations.FirstOrDefault());
             }
+
             return result;
         }
 
-        public static bool IsExpressionAccessibleInMethod([NotNull]ICSharpExpression expression, [NotNull] string methodName)
+        public static bool IsExpressionAccessibleInMethod([NotNull] ICSharpExpression expression,
+            [NotNull] string methodName)
         {
             expression.GetPsiServices().Locks.AssertReadAccessAllowed();
-            
+
             if (!expression.IsValid())
                 return false;
-            
+
             var methodDeclaration = expression.GetContainingNode<IMethodDeclaration>();
             if (methodDeclaration == null)
                 return false;
-            
+
             var statement = expression.GetContainingStatementLike();
             if (statement == null)
                 return false;
@@ -73,11 +77,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             var sourceFile = toMove.GetSourceFile();
             if (sourceFile == null)
                 return false;
-            
+
             var loopStartOffset = loop.GetTreeStartOffset().Offset;
-            return IsAvailableToMoveInner(toMove, declaredElement => 
-                    declaredElement.GetDeclarationsIn(sourceFile)
-                    .FirstOrDefault(declaration => declaration.GetSourceFile() == sourceFile)?.GetTreeStartOffset().Offset < loopStartOffset
+            return IsAvailableToMoveInner(toMove, declaredElement =>
+                declaredElement.GetDeclarationsIn(sourceFile)
+                    .FirstOrDefault(declaration => declaration.GetSourceFile() == sourceFile)?.GetTreeStartOffset()
+                    .Offset < loopStartOffset
             );
         }
 
@@ -92,22 +97,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 return false;
 
             var modifiers = classDeclaration.ModifiersList;
-            
-            if (modifiers == null || !modifiers.ModifiersEnumerable.Any(t => t.GetTokenType().Equals(CSharpTokenType.ABSTRACT_KEYWORD)))
+
+            if (modifiers == null ||
+                !modifiers.ModifiersEnumerable.Any(t => t.GetTokenType().Equals(CSharpTokenType.ABSTRACT_KEYWORD)))
                 return IsAvailableToMoveInner(toMove);
 
             var method = GetMonoBehaviourMethod(classDeclaration, methodName);
             if (method == null)
-                return IsAvailableToMoveInner(toMove);;
+                return IsAvailableToMoveInner(toMove);
+            ;
 
             var methodModifiers = method.ModifiersList;
-            if (methodModifiers == null || !methodModifiers.ModifiersEnumerable.Any(t => t.GetTokenType().Equals(CSharpTokenType.ABSTRACT_KEYWORD)))
+            if (methodModifiers == null ||
+                !methodModifiers.ModifiersEnumerable.Any(t => t.GetTokenType().Equals(CSharpTokenType.ABSTRACT_KEYWORD))
+            )
                 return IsAvailableToMoveInner(toMove);
-            
+
             return false;
         }
-        
-        private static bool IsAvailableToMoveInner([NotNull] ITreeNode toMove, [CanBeNull] Func<IDeclaredElement, bool> isElementIgnored = null)
+
+        private static bool IsAvailableToMoveInner([NotNull] ITreeNode toMove,
+            [CanBeNull] Func<IDeclaredElement, bool> isElementIgnored = null)
         {
             var sourceFile = toMove.GetSourceFile();
             if (sourceFile == null)
@@ -116,7 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             var methodDeclaration = toMove.GetContainingNode<IMethodDeclaration>();
             if (methodDeclaration == null)
                 return false;
-            
+
             var nodeEnumerator = toMove.ThisAndDescendants();
             while (nodeEnumerator.MoveNext())
             {
@@ -130,28 +140,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                     if (declaration == null)
                         continue;
 
-                    if (declaration.GetContainingNode<IMethodDeclaration>() == methodDeclaration && declaration.GetContainingNode<ICSharpClosure>() == null)
+                    if (declaration.GetContainingNode<IMethodDeclaration>() == methodDeclaration &&
+                        declaration.GetContainingNode<ICSharpClosure>() == null)
                         return false;
                 }
             }
+
             return true;
         }
 
-        public static void MoveToMethodWithFieldIntroduction([NotNull]IClassDeclaration classDeclaration, [NotNull]ICSharpExpression expression, [NotNull] string methodName, string fieldName = null)
+        public static void MoveToMethodWithFieldIntroduction([NotNull] IClassDeclaration classDeclaration,
+            [NotNull] ICSharpExpression expression, [NotNull] string methodName, string fieldName = null)
         {
             classDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
-            
+
             var methodDeclaration = GetOrCreateMethod(classDeclaration, methodName);
             MoveToMethodWithFieldIntroduction(classDeclaration, methodDeclaration, expression, fieldName);
         }
-        
-        public static void MoveToMethodWithFieldIntroduction([NotNull]IClassDeclaration classDeclaration,[NotNull] IMethodDeclaration methodDeclaration,
-            [NotNull]ICSharpExpression expression, string fieldName = null)
+
+        public static void MoveToMethodWithFieldIntroduction([NotNull] IClassDeclaration classDeclaration,
+            [NotNull] IMethodDeclaration methodDeclaration,
+            [NotNull] ICSharpExpression expression, string fieldName = null)
         {
             classDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
-            
+
             var result = GetDeclaredElementFromParentDeclaration(expression);
-            
+
             var factory = CSharpElementFactory.GetInstance(classDeclaration);
 
             var type = expression.Type(new ResolveContext(classDeclaration.GetPsiModule()));
@@ -160,7 +174,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
 
             var baseName = fieldName ?? CreateBaseName(expression, result);
             var name = NamingUtil.GetUniqueName(expression, baseName, NamedElementKinds.PrivateInstanceFields,
-                baseName == null ? collection => collection.Add(expression.Type(), new EntryOptions()) : (Action<INamesCollection>)null,
+                baseName == null
+                    ? collection => collection.Add(expression.Type(), new EntryOptions())
+                    : (Action<INamesCollection>) null,
                 de => !de.Equals(result));
 
             var isVoid = type.IsVoid();
@@ -173,16 +189,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 classDeclaration.AddClassMemberDeclaration(field);
             }
 
-            var initialization = isVoid ? factory.CreateStatement("$1;", name, expression.CopyWithResolve()) : 
-                factory.CreateStatement("$0 = $1;", name, expression.CopyWithResolve());
-            
+            var initialization = isVoid
+                ? factory.CreateStatement("$1;", name, expression.CopyWithResolve())
+                : factory.CreateStatement("$0 = $1;", name, expression.CopyWithResolve());
+
             var body = methodDeclaration.EnsureStatementMemberBody();
             body.AddStatementAfter(initialization, null);
 
             RenameOldUsages(expression, result, name, factory);
         }
 
-        public static void RenameOldUsages([NotNull]ICSharpExpression originExpression, [CanBeNull]IDeclaredElement localVariableDeclaredElement, 
+        public static void RenameOldUsages([NotNull] ICSharpExpression originExpression,
+            [CanBeNull] IDeclaredElement localVariableDeclaredElement,
             [NotNull] string newName, [NotNull] CSharpElementFactory factory)
         {
             originExpression.GetPsiServices().Locks.AssertReadAccessAllowed();
@@ -211,6 +229,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                             node.ReplaceBy(factory.CreateReferenceExpression(newName));
                     }
                 }
+                else
+                {
+                    DeclarationStatementNavigator.GetByVariableDeclaration(
+                            LocalVariableDeclarationNavigator.GetByInitial(
+                                ExpressionInitializerNavigator.GetByValue(
+                                    originExpression.GetContainingParenthesizedExpression())))
+                        ?.RemoveOrReplaceByEmptyStatement();
+                }
             }
         }
 
@@ -220,17 +246,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         public static IDeclaredElement GetDeclaredElementFromParentDeclaration([NotNull] ICSharpExpression expression)
         {
             expression.GetPsiServices().Locks.AssertReadAccessAllowed();
-            
+
             var localVariableDeclaration =
                 LocalVariableDeclarationNavigator.GetByInitial(
                     ExpressionInitializerNavigator.GetByValue(expression.GetContainingParenthesizedExpression()));
             return localVariableDeclaration?.DeclaredElement;
         }
 
-        public static string CreateBaseName([NotNull]ICSharpExpression toMove, [CanBeNull] IDeclaredElement variableDeclaration)
+        public static string CreateBaseName([NotNull] ICSharpExpression toMove,
+            [CanBeNull] IDeclaredElement variableDeclaration)
         {
             toMove.GetPsiServices().Locks.AssertReadAccessAllowed();
-            
+
             string baseName = null;
 
             if (variableDeclaration != null)
@@ -246,7 +273,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                     {
                         var argument = arguments[0].Value;
                         var reference = argument.GetReferences<UnityObjectTypeOrNamespaceReference>().FirstOrDefault();
-                        if (reference != null && reference.Resolve().ResolveErrorType.IsAcceptable)    
+                        if (reference != null && reference.Resolve().ResolveErrorType.IsAcceptable)
                         {
                             baseName = (argument.ConstantValue.Value as string).NotNull(
                                 "argument.ConstantValue.Value as string != null");
