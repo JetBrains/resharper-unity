@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 "Highlight expensive method calls in frequently called code");
             AddComboOption((UnitySettings s) => s.GutterIconMode, "Show gutter icons for implicit script usages:",
                 new RadioOptionPoint(GutterIconMode.Always, "Always"),
-                new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "When Code Insights are disabled"),
+                new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "When Code Vision are disabled"),
                 new RadioOptionPoint(GutterIconMode.None, "Never")
             );
 

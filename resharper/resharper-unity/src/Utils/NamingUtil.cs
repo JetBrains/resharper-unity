@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
     internal static class NamingUtil
     {
         [NotNull]
-        public static string GetUniqueName<T>([NotNull] T node, [NotNull] string baseName,
-            NamedElementKinds elementKind, Func<IDeclaredElement, bool> isConflictingElement = null) where T : ICSharpTreeNode
+        public static string GetUniqueName<T>([NotNull] T node, [CanBeNull] string baseName,
+            NamedElementKinds elementKind, Action<INamesCollection> collectionModifier = null, Func<IDeclaredElement, bool> isConflictingElement = null) where T : ICSharpTreeNode
         {
             node.GetPsiServices().Locks.AssertMainThread();
             
@@ -24,10 +24,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             var namingManager = node.GetPsiServices().Naming;
             var policyProvider = namingManager.Policy.GetPolicyProvider(node.Language, node.GetSourceFile());
             var namingRule = policyProvider.GetPolicy(elementKind).NamingRule;
-            var name = namingManager.Parsing.Parse(baseName, namingRule, policyProvider);
-            var nameRoot = name.GetRootOrDefault(baseName);
             var namesCollection = namingManager.Suggestion.CreateEmptyCollection(PluralityKinds.Unknown, CSharpLanguage.Instance, true, policyProvider);
-            namesCollection.Add(nameRoot, new EntryOptions(PluralityKinds.Unknown, SubrootPolicy.Decompose, emphasis: Emphasis.Good));
+
+            if (baseName != null)
+            {
+                var name = namingManager.Parsing.Parse(baseName, namingRule, policyProvider);
+                var nameRoot = name.GetRootOrDefault(baseName);
+                namesCollection.Add(nameRoot, new EntryOptions(PluralityKinds.Plural, SubrootPolicy.Decompose, emphasis: Emphasis.Good));
+            }
+
+            collectionModifier?.Invoke(namesCollection);
             var suggestionOptions = new SuggestionOptions
             {
                 DefaultName = baseName,

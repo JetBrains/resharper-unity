@@ -4,6 +4,7 @@ import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
@@ -24,14 +25,18 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
     val logSignal = Signal<RdLogEvent>()
 
     init {
-        model.activateRider.advise(componentLifetime){
+        model.activateRider.advise(componentLifetime) {
             ProjectUtil.focusProjectWindow(project, true)
         }
 
-        model.onUnityLogEvent.adviseNotNull(componentLifetime){
+        model.onUnityLogEvent.adviseNotNull(componentLifetime) {
             val type = RdLogEventType.values()[it.type]
             val mode = RdLogEventMode.values()[it.mode]
             logSignal.fire(RdLogEvent(it.ticks, type, mode, it.message, it.stackTrace))
+        }
+
+        model.startUnity.advise(componentLifetime) {
+            StartUnityAction.StartUnity(project)
         }
     }
 
