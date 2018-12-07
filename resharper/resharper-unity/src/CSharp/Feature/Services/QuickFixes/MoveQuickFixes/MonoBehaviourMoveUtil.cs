@@ -171,32 +171,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             var type = expression.Type(new ResolveContext(classDeclaration.GetPsiModule()));
             if (type.IsUnknown)
                 type = TypeFactory.CreateTypeByCLRName("System.Object", classDeclaration.GetPsiModule());
-
-            var baseName = fieldName ?? CreateBaseName(expression, result);
-            var name = NamingUtil.GetUniqueName(expression, baseName, NamedElementKinds.PrivateInstanceFields,
-                baseName == null
-                    ? collection => collection.Add(expression.Type(), new EntryOptions())
-                    : (Action<INamesCollection>) null,
-                de => !de.Equals(result));
-
             var isVoid = type.IsVoid();
 
             if (!isVoid)
             {
+                var baseName = fieldName ?? CreateBaseName(expression, result);
+                var name = NamingUtil.GetUniqueName(expression, baseName, NamedElementKinds.PrivateInstanceFields,
+                    baseName == null
+                        ? collection =>
+                        {
+                            collection.Add(expression.Type(), new EntryOptions());
+                        }
+                        : (Action<INamesCollection>) null,
+                    de => !de.Equals(result));
+                
                 var field = factory.CreateFieldDeclaration(type, name);
                 field.SetAccessRights(AccessRights.PRIVATE);
 
                 classDeclaration.AddClassMemberDeclaration(field);
+                var initialization = factory.CreateStatement("$0 = $1;", name, expression.CopyWithResolve());
+                var body = methodDeclaration.EnsureStatementMemberBody();
+                body.AddStatementAfter(initialization, null);
+
+                RenameOldUsages(expression, result, name, factory);
             }
-
-            var initialization = isVoid
-                ? factory.CreateStatement("$1;", name, expression.CopyWithResolve())
-                : factory.CreateStatement("$0 = $1;", name, expression.CopyWithResolve());
-
-            var body = methodDeclaration.EnsureStatementMemberBody();
-            body.AddStatementAfter(initialization, null);
-
-            RenameOldUsages(expression, result, name, factory);
+            else
+            {
+                var initialization = factory.CreateStatement("$0;", expression.CopyWithResolve());
+                var body = methodDeclaration.EnsureStatementMemberBody();
+                body.AddStatementAfter(initialization, null);
+                ExpressionStatementNavigator.GetByExpression(expression).NotNull("statement != null").RemoveOrReplaceByEmptyStatement();
+            }
         }
 
         public static void RenameOldUsages([NotNull] ICSharpExpression originExpression,
