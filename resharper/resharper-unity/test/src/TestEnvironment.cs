@@ -1,5 +1,7 @@
 ﻿using JetBrains.Application.BuildScript.Application.Zones;
+using JetBrains.ReSharper.Host.Env;
 using JetBrains.ReSharper.TestFramework;
+using JetBrains.Rider.Model;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
 using NUnit.Framework;
@@ -18,7 +20,9 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
     [ZoneDefinition]
-    public interface IUnityTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>
+    public interface IUnityTestZone :ITestsEnvZone,
+        IRequire<PsiFeatureTestZone>,
+        IRequire<IRiderPlatformZone>
     {
     }
 
