@@ -35,7 +35,7 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
 
         if (propertiesComponent.getBoolean(settingName)) return
 
-        val message = """Unity is configured to compile scripts in play mode (Unity preferences $tabName tab). Rider's auto save may cause loss of state in the running game.
+        val message = """Unity is configured to compile scripts while in play mode (see $tabName tab in Unity’s preferences). Rider's auto save may cause loss of state in the running game.
             Change Unity to:
             <ul style="margin-left:10px">
               <li><a href="recompileAfterFinishedPlaying">Recompile After Finished Playing</a></li>
