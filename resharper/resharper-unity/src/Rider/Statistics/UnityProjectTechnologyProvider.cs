@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Statistics
 {
-    [ShellComponent]
+    [SolutionComponent]
     public class UnityProjectTechnologyProvider : IProjectTechnologyProvider
     {
         private readonly UnityReferencesTracker myUnityReferencesTracker;
