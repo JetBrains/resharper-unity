@@ -20,6 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public IEnumerable<string> GetProjectTechnology(IProject project)
         {
+            if (myUnityReferencesTracker.HasUnityReference.Value) yield return "Unity";
+        
             if (myUnitySolutionTracker.IsUnityGeneratedProject.Value) yield return "UnityGenerated";
             else if (myUnitySolutionTracker.IsUnityProject.Value) yield return "UnitySidecar";
             else if (myUnityReferencesTracker.HasUnityReference.Value) yield return "UnityClassLib";
