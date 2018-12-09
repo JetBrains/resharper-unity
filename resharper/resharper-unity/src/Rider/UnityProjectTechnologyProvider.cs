@@ -7,22 +7,6 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [ShellComponent]
-    public class UnityProjectTechnologyProvider : IProjectTechnologyProvider
-    {
-        private readonly UnitySolutionTracker myUnitySolutionTracker;
-
-        public UnityProjectTechnologyProvider(UnitySolutionTracker unitySolutionTracker)
-        {
-            myUnitySolutionTracker = unitySolutionTracker;
-        }
-        
-        public IEnumerable<string> GetProjectTechnology(IProject project)
-        {
-            if (myUnitySolutionTracker.IsUnityGeneratedProject.Value) yield return "Unity";      
-        }
-    }
-    
-    [ShellComponent]
     public class UnityClassLibProjectTechnologyProvider : IProjectTechnologyProvider
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
@@ -36,8 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public IEnumerable<string> GetProjectTechnology(IProject project)
         {
-            if (myUnityReferencesTracker.HasUnityReference.Value && !myUnitySolutionTracker.IsUnityProject.Value) 
-                yield return "UnityClassLib";      
+            if (myUnitySolutionTracker.IsUnityGeneratedProject.Value) yield return "UnityGenerated";
+            else if (myUnitySolutionTracker.IsUnityProject.Value) yield return "UnitySidecar";
+            else if (myUnityReferencesTracker.HasUnityReference.Value) yield return "UnityClassLib";
         }
     }
 }
