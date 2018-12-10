@@ -1,12 +1,11 @@
 using JetBrains.Annotations;
-using JetBrains.Application.UI.Icons.Special.ThemedIcons;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
-using JetBrains.ReSharper.Host.Features.Icons;
 using JetBrains.ReSharper.Host.Features.Usages;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
@@ -25,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
             {
                 ExtraRules = new IRiderUsageGroupingRule[]
                 {
-                    new GameObjectUsageGroupingRule(iconHost), 
+                    new GameObjectUsageGroupingRule(iconHost),
                     new ComponentUsageGroupingRule(iconHost)
                 };
             }
@@ -76,9 +75,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     // The priorities here put us after directory, file, namespace, type and member
     public class GameObjectUsageGroupingRule : UnityYamlUsageGroupingRuleBase
     {
-        // TODO: Proper icon
         public GameObjectUsageGroupingRule([CanBeNull] IconHost iconHost)
-            : base("Unity Game Object", SpecialThemedIcons.Placeholder.Id, iconHost, 7.0)
+            : base("Unity Game Object", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
         {
         }
 
@@ -102,9 +100,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
 
     public class ComponentUsageGroupingRule : UnityYamlUsageGroupingRuleBase
     {
-        // TODO: Proper icon
         public ComponentUsageGroupingRule([CanBeNull] IconHost iconHost)
-            : base("Unity Component", SpecialThemedIcons.Placeholder.Id, iconHost, 8.0)
+            : base("Unity Component", UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
         {
         }
 

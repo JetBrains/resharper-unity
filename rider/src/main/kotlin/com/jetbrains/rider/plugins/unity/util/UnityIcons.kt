@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.util
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
 import com.jetbrains.rider.icons.*
-import com.jetbrains.rider.plugins.unity.util.UnityIcons.Icons.Companion.UnityLogo
 import javax.swing.Icon
 
 class UnityIcons {
@@ -37,10 +36,10 @@ class UnityIcons {
             val AsmDef = ReSharperPsiJavaScriptIcons.Json
 
             val UnityYaml: Icon = IconLoader.getIcon("/resharper/YamlFileType/FileYaml.svg")
-            val UnityScene = UnityLogo
-            val Meta = UnityYaml
-            val Asset = UnityYaml
-            val Prefab = UnityYaml
+            val UnityScene = IconLoader.getIcon("/resharper/UnityFileType/FileUnity.svg")
+            val Meta = IconLoader.getIcon("/resharper/UnityFileType/FileUnityMeta.svg")
+            val Asset = IconLoader.getIcon("/resharper/UnityFileType/FileUnityAsset.svg")
+            val Prefab = IconLoader.getIcon("/resharper/UnityFileType/FileUnityPrefab.svg")
         }
     }
 
