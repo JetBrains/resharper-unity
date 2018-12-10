@@ -1,11 +1,11 @@
 ﻿using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.UI.Icons;
-using JetBrains.UI.ThemedIcons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
 {
@@ -37,6 +37,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
             }
         }
 
-        public override IconId Icon => DivebomThemedIconsThemedIcons.Shader.Id;
+        public override IconId Icon => ShaderFileTypeThemedIcons.FileShader.Id;
     }
 }

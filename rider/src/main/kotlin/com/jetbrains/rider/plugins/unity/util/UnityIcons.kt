@@ -27,7 +27,7 @@ class UnityIcons {
     class FileTypes {
         companion object {
             @JvmField
-            val ShaderLab = IconLoader.getIcon("/Icons/fileTypes/shaderLab.svg")
+            val ShaderLab = IconLoader.getIcon("/resharper/ShaderFileType/FileShader.svg")
 
             @JvmField
             val Cg = ShaderLab
