@@ -91,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity", AbstractUnityCodeInsightProvider.StartUnityActionId));
             }
             
-            consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.NameIdentifier.GetDocumentRange(),
+            consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.GetNameDocumentRange(),
                 displayName, displayName, codeInsightsProvider, declaredElement, 
                 myIconHost.Transform(codeInsightsProvider.IconId), CreateBulbItemsForUnityDeclaration(element), extraActions));
         }

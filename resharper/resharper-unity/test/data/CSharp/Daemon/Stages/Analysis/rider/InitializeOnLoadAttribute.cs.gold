@@ -15,4 +15,4 @@ public class WithStaticConstructor
 
 ---------------------------------------------------------
 (0): ReSharper Dead Code: 'InitializeOnLoad' attribute is redundant when static constructor is missing
-(1): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
+(1): UnityCodeInsights: 
