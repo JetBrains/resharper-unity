@@ -21,11 +21,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Statistics
         public void ProcessSolutionStatistics([NotNull] JObject log)
         {
             if (myUnitySolutionTracker.IsUnityGeneratedProject.Value) 
-                log["unity_project_type"] = "UnityGenerated";
+                log["unity_pt"] = "UnityGenerated";
             else if (myUnitySolutionTracker.IsUnityProject.Value) 
-                log["unity_project_type"] = "UnitySidecar";
+                log["unity_pt"] = "UnitySidecar";
             else if (myUnityReferencesTracker.HasUnityReference.Value)
-                log["unity_project_type"] = "UnityClassLib";
+                log["unity_pt"] = "UnityClassLib";
         }
     }
 }
