@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity.util
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
 import com.jetbrains.rider.icons.*
@@ -37,8 +36,7 @@ class UnityIcons {
             @JvmField
             val AsmDef = ReSharperPsiJavaScriptIcons.Json
 
-            // TODO: Proper icons - this is the default IJ YAML icon
-            val UnityYaml: Icon = AllIcons.Nodes.DataTables
+            val UnityYaml: Icon = IconLoader.getIcon("/resharper/YamlFileType/FileYaml.svg")
             val UnityScene = UnityLogo
             val Meta = UnityYaml
             val Asset = UnityYaml

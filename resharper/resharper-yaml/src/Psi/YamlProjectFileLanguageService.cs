@@ -1,6 +1,6 @@
-﻿using JetBrains.Application.UI.Icons.Special.ThemedIcons;
-using JetBrains.ProjectModel;
+﻿using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Yaml.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -35,7 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       }
     }
 
-    // TODO: Proper icon!
-    public override IconId Icon => SpecialThemedIcons.Placeholder.Id;
+    public override IconId Icon => YamlFileTypeThemedIcons.FileYaml.Id;
   }
 }
