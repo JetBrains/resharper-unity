@@ -46,15 +46,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             if (file == null || anchor == null)
                 return null;
 
+            var searcher = new StringSearcher("&" + anchor, true);
             foreach (var document in file.DocumentsEnumerable)
             {
-                var properties = GetDocumentBlockNodeProperties(document.BlockNode);
-                var text = properties?.AnchorProperty?.Text?.GetText() ?? string.Empty;
-                if (text == anchor)
-                    return document;
+                // Don't open chameleons unless we have to
+                // TODO: GetTextAsBuffer is not cheap - it will allocate a StringBuilder + string
+                // But then, FindDocumentByAnchor is hopelessly naive
+                if (searcher.Find(document.GetTextAsBuffer()) >= 0)
+                {
+                    // Note that this opens the Body chameleon
+                    var properties = GetDocumentBlockNodeProperties(document.Body.BlockNode);
+                    if (properties?.AnchorProperty?.Text?.CompareBufferText(anchor) == true)
+                        return document;
+                }
             }
 
             return null;
+        }
+
+        // This will open the Body chameleon
+        [CanBeNull]
+        public static string GetFileId(this IYamlDocument yamlDocument)
+        {
+            var properties = GetDocumentBlockNodeProperties(yamlDocument.Body.BlockNode);
+            return properties?.AnchorProperty?.Text?.GetText();
         }
 
         [CanBeNull]
@@ -78,12 +93,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             return null;
         }
 
+        // This will open the Body chameleon
         [CanBeNull]
         public static INode GetUnityObjectPropertyValue([CanBeNull] this IYamlDocument document, [NotNull] string key)
         {
             return FindRootBlockMapEntries(document).FindMapEntryBySimpleKey(key)?.Value;
         }
 
+        // This will open the Body chameleon
         [CanBeNull]
         public static string GetUnityObjectTypeFromRootNode([CanBeNull] this IYamlDocument document)
         {
@@ -94,10 +111,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             // This will return "MonoBehaviour"
             // (Note that !u!114 is the actual type of this object - MonoBehaviour -
             // https://docs.unity3d.com/Manual/ClassIDReference.html)
-            var rootBlockMappingNode = document?.BlockNode as IBlockMappingNode;
+            var rootBlockMappingNode = document?.Body.BlockNode as IBlockMappingNode;
             return rootBlockMappingNode?.EntriesEnumerable.FirstOrDefault()?.Key.AsString();
         }
 
+        // This will open the Body chameleon
         [CanBeNull]
         public static IYamlDocument GetUnityObjectDocumentFromFileIDProperty([CanBeNull] this IYamlDocument document, string key)
         {
@@ -113,6 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [CanBeNull]
         private static INodeProperties GetDocumentBlockNodeProperties([CanBeNull] INode documentBlockNode)
         {
+            // Careful. This will open chameleons
             if (documentBlockNode is IBlockSequenceNode sequenceNode)
                 return sequenceNode.Properties;
             if (documentBlockNode is IBlockMappingNode mappingNode)
@@ -120,12 +139,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             return null;
         }
 
+        // This will open the Body chameleon
         [CanBeNull]
         private static IBlockMappingNode FindRootBlockMapEntries([CanBeNull] this IYamlDocument document)
         {
             // A YAML document is a block mapping node with a single entry. The key is usually the type of the object,
             // while the value is another block mapping node. Those entries are the properties of the Unity object
-            var rootBlockMappingNode = document?.BlockNode as IBlockMappingNode;
+            var rootBlockMappingNode = document?.Body.BlockNode as IBlockMappingNode;
             return rootBlockMappingNode?.EntriesEnumerable.FirstOrDefault()?.Value as IBlockMappingNode;
         }
     }

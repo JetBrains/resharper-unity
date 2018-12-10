@@ -1,6 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.TestFramework;
@@ -16,15 +16,25 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
 
     protected override ILexer CreateLexer(IBuffer buffer)
     {
-      return new YamlLexer(buffer);
+      return new YamlLexerFactory().CreateLexer(buffer);
     }
 
     protected override void WriteToken(TextWriter writer, ILexer lexer)
     {
-      var str1 = lexer.GetCurrTokenText().Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t");
-      var str2 = $"{lexer.TokenStart:D4}: {lexer.TokenType} '{str1}'";
-      writer.WriteLine(str2);
-      // Console.WriteLine(str2);
+      var text = lexer.GetCurrTokenText();
+
+      var token = lexer.TokenType;
+      if (token == YamlTokenType.NON_PRINTABLE)
+      {
+        text = $"{lexer.TokenStart:D4}: {lexer.TokenType} length: {lexer.TokenEnd - lexer.TokenStart}";
+      }
+      else
+      {
+        text = text.Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t");
+        text = $"{lexer.TokenStart:D4}: {lexer.TokenType} '{text}'";
+      }
+      writer.WriteLine(text);
+      // Console.WriteLine(text);
     }
 
     // 5 Characters

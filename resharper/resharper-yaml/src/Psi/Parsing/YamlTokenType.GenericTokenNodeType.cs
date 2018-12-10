@@ -2,7 +2,6 @@
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
@@ -18,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
       {
-        return new GenericTokenElement(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
+        return new GenericTokenElement(this, buffer, startOffset, endOffset);
       }
 
       public override string TokenRepresentation { get; }
@@ -27,17 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     public class GenericTokenElement : YamlTokenBase
     {
       private readonly TokenNodeType myTokenNodeType;
-      private readonly string myText;
 
-      public GenericTokenElement(TokenNodeType tokenNodeType, string text)
+      public GenericTokenElement(TokenNodeType tokenNodeType, IBuffer buffer, TreeOffset startOffset,
+                                 TreeOffset endOffset)
+        : base(tokenNodeType, buffer, startOffset, endOffset)
       {
         myTokenNodeType = tokenNodeType;
-        myText = text;
       }
-
-      public override int GetTextLength() => myText.Length;
-      public override string GetText() => myText;
-      public override NodeType NodeType => myTokenNodeType;
     }
   }
 }

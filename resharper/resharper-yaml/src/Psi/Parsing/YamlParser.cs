@@ -1,10 +1,12 @@
-﻿using JetBrains.DataFlow;
+using JetBrains.DataFlow;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
-  internal class YamlParser : IYamlParser
+  public class YamlParser : IYamlParser
   {
     private readonly ILexer<int> myLexer;
 
@@ -15,12 +17,35 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     public IFile ParseFile()
     {
-      using (var lifetimeDefinition = Lifetimes.Define())
+      return Lifetimes.Using(lifetime =>
       {
-        var builder = CreateTreeBuilder(lifetimeDefinition.Lifetime);
+        var builder = CreateTreeBuilder(lifetime);
         builder.ParseFile();
         return (IFile) builder.GetTree();
-      }
+      });
+    }
+
+    public IDocumentBody ParseDocumentBody()
+    {
+      return Lifetimes.Using(lifetime =>
+      {
+        var builder = CreateTreeBuilder(lifetime);
+        builder.ParseDocumentBody();
+        return (IDocumentBody) builder.GetTree();
+      });
+    }
+
+    public INode ParseRootBlockNode()
+    {
+      return Lifetimes.Using(lifetime =>
+      {
+        var builder = CreateTreeBuilder(lifetime);
+        builder.ParseRootBlockNode();
+
+        var rootBlockNode = builder.GetTree();
+        Assertion.Assert(rootBlockNode is INode, "rootBlockNode is INode");
+        return (INode) rootBlockNode;
+      });
     }
 
     private YamlTreeStructureBuilder CreateTreeBuilder(Lifetime lifetime)

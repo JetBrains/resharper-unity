@@ -23,8 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "Enables underscore highlighting of costly methods and indirect calls of these methods.")]
         public bool EnablePerformanceCriticalCodeHighlighting;
-        
-        [SettingsEntry(true, "Enables default Unity code-style.")]
-        public bool EnableDefaultUnityCodeStyle;
+
+        [SettingsEntry(GutterIconMode.CodeInsightDisabled, "Unity highlighter scheme for editor.")]
+        public GutterIconMode GutterIconMode;
     }
 }

@@ -4,6 +4,10 @@ using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
 using NUnit.Framework;
 
+#if RIDER
+using JetBrains.ReSharper.Host.Env;
+#endif
+
 [assembly: RequiresSTA]
 
 // This attribute is marked obsolete but is still supported. Use is discouraged in preference to convention, but the
@@ -18,7 +22,10 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
     [ZoneDefinition]
-    public interface IUnityTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>
+    public interface IUnityTestZone :ITestsEnvZone, IRequire<PsiFeatureTestZone>
+#if RIDER
+        , IRequire<IRiderPlatformZone>
+#endif
     {
     }
 

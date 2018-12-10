@@ -194,7 +194,8 @@ class PackagesManager(private val project: Project) {
         if (version.startsWith("file:")) {
             return try {
                 val path = version.substring(5)
-                val filePath = Paths.get(packagesFolder.path, path)
+                val packagesPath = Paths.get(packagesFolder.path)
+                val filePath = packagesPath.resolve(path)
                 val packageFolder = VfsUtil.findFile(filePath, true)
                 if (packageFolder != null && packageFolder.isDirectory) {
                     getPackageDataFromFolder(name, packageFolder, PackageSource.Local)

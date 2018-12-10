@@ -1,12 +1,13 @@
 ﻿using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
 {
     [DaemonTooltipProvider(typeof(CgIdentifierTooltipProvider))]
     [StaticSeverityHighlighting(Severity.INFO, HighlightingGroupIds.IdentifierHighlightingsGroup, OverlapResolve = OverlapResolveKind.NONE, ShowToolTipInStatusBar = false)]
-    public class CgHighlighting : ICustomAttributeIdHighlighting
+    public class CgHighlighting : ICustomAttributeIdHighlighting, IUnityHighlighting
     {
         private readonly DocumentRange myRange;
 

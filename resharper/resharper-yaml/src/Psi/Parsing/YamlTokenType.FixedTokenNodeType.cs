@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
       {
-        return new FixedTokenElement(this);
+        return new FixedTokenElement(this, buffer, startOffset, endOffset);
       }
 
       public override string TokenRepresentation { get; }
@@ -28,14 +28,15 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     {
       private readonly TokenNodeType myTokenNodeType;
 
-      public FixedTokenElement(TokenNodeType tokenNodeType)
+      public FixedTokenElement(TokenNodeType tokenNodeType, IBuffer buffer, TreeOffset startOffset,
+                               TreeOffset endOffset)
+        : base(tokenNodeType, buffer, startOffset, endOffset)
       {
         myTokenNodeType = tokenNodeType;
       }
 
       public override int GetTextLength() => myTokenNodeType.TokenRepresentation.Length;
       public override string GetText() => myTokenNodeType.TokenRepresentation;
-      public override NodeType NodeType => myTokenNodeType;
     }
   }
 }

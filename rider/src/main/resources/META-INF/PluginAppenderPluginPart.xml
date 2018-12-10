@@ -1,7 +1,5 @@
 <idea-plugin>
-    <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceInterface="com.intellij.javascript.nodejs.packageJson.PackageJsonNotifierConfiguration"
-                        serviceImplementation="com.jetbrains.rider.plugins.unity.javascript.UnityPackageJsonNotifierConfiguration"
-                        overrides="true" />
-    </extensions>
+  <extensions defaultExtensionNs="JavaScript">
+    <packageJson.configuration.handler implementation="com.jetbrains.rider.plugins.unity.javascript.UnityPackageJsonConfiguratorHandler"/>
+  </extensions>
 </idea-plugin>

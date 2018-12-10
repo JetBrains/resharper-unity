@@ -25,8 +25,18 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"StopPlayingAndRecompile"
     }
 
+    val FindUsageResult = structdef {
+        field("isPrefab", bool)
+        field("expandInTreeView", bool)
+        field("filePath", string)
+        field("fileName", string)
+        field("pathElements", array(string))
+        field("rootIndices", array(int))
+    }
+
     init {
         sink("activateRider", void)
+        sink("activateUnityLogView", void)
 
         property("editorState", EditorState)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
@@ -34,6 +44,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         property("applicationPath", string)
         property("applicationContentsPath", string)
+        property("applicationVersion", string)
 
         property("editorLogPath", string)
         property("playerLogPath", string)
@@ -63,7 +74,12 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         property("hasUnityReference", bool)
 
+        sink("startUnity", void)
         sink("notifyIsRecompileAndContinuePlaying", string)
         source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
+
+        signal("findUsageResults", array(FindUsageResult))
+        signal("showGameObjectOnScene", FindUsageResult)
+        property("unityProcessId", int)
     }
 }

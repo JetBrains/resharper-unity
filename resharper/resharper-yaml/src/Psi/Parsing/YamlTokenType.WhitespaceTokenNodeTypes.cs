@@ -2,7 +2,6 @@
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.Text;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
@@ -17,12 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
       {
-        return new Whitespace(buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
-      }
-
-      public override LeafElementBase Create(string token)
-      {
-        return new Whitespace(token);
+        return new Whitespace(buffer, startOffset, endOffset);
       }
 
       public override bool IsFiltered => true;
@@ -39,12 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
       {
-        return new NewLine(buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
-      }
-
-      public override LeafElementBase Create(string token)
-      {
-        return new NewLine(token);
+        return new NewLine(buffer, startOffset, endOffset);
       }
 
       public override bool IsFiltered => true;

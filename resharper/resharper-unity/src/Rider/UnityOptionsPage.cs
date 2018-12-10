@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
@@ -17,11 +17,14 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
-    [OptionsPage(PID, "Unity Engine", typeof(LogoThemedIcons.UnityLogo), Sequence = 0.01,
+    // TODO: Create a R# options page, with some of these settings
+    [OptionsPage(PID, Name, typeof(LogoThemedIcons.UnityLogo), Sequence = 0.01,
         ParentId = CodeEditingPage.PID)]
     public class UnityOptionsPage : OptionsPageBase
     {
+        // Keep these in sync with the values in the front end!
         public const string PID = "UnityPluginSettings";
+        public const string Name = "Unity Engine";
 
         private static readonly Expression<Func<CSharpNamingSettings, IIndexedEntry<Guid, ClrUserDefinedNamingRule>>>
             ourUserRulesAccessor = s => s.UserRules;
@@ -35,31 +38,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin,
                 "Automatically install and update Rider's Unity editor plugin (recommended)");
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
-            CheckBox((UnitySettings s) => s.EnableDefaultUnityCodeStyle, "Enable default Unity code-style");
+            CheckBox((YamlSettings s) => s.EnableYamlParsing,
+                "Parse text based asset files for implicit script usages (requires re-opening solution).");
 
-            AddNamingSection(lifetime, settingsStore);
-
-            // TODO: This needs to be available for ReSharper
-            Header("C# code analysis");
+            // TODO: Add to R# options page
+            Header("C#");
             CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
                 "Highlight expensive method calls in frequently called code");
+            AddComboOption((UnitySettings s) => s.GutterIconMode, "Show gutter icons for implicit script usages:",
+                new RadioOptionPoint(GutterIconMode.Always, "Always"),
+                new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "When Code Vision are disabled"),
+                new RadioOptionPoint(GutterIconMode.None, "Never")
+            );
+
+            AddNamingSection(lifetime, settingsStore);
 
             Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
                 "Enable simple word-based completion in ShaderLab files");
 
-            Header("Assets");
-            CheckBox((YamlSettings s) => s.EnableYamlParsing,
-                "Parse text based asset files for class and method usages");
-            AddText("Requires solution reopen.");
-
             if (productConfigurations.IsInternalMode())
             {
                 Header("Internal");
 
+                // TODO: Add to R# options page
                 CheckBox((UnitySettings s) => s.EnableCgErrorHighlighting,
-                    "Parse Cg files for syntax errors. Only works in internal mode.");
-                AddText("Requires solution reopen.");
+                    "Parse Cg files for syntax errors (requires internal mode, and re-opening solution).");
             }
 
             FinishPage();
@@ -67,24 +71,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AddNamingSection(Lifetime lifetime, IContextBoundSettingsStore settingsStore)
         {
+            BeginSection();
+
             // Rider doesn't have a UI for editing user defined rules. See RIDER-8339
-#if RIDER
-            Header("Naming");
+            Header("Serialized field naming rules");
 
             var entry = settingsStore.Schema.GetIndexedEntry(ourUserRulesAccessor);
             var userRule = GetUnitySerializedFieldRule(settingsStore, entry);
             Assertion.AssertNotNull(userRule, "userRule != null");
 
-            var property = new Property<object>(lifetime, "ComboOptionViewModel_SerializedFieldNamingStyle");
-            property.SetValue(userRule.Policy.NamingRule.NamingStyleKind);
-            property.Change.Advise_NoAcknowledgement(lifetime, args =>
+            var prefixProperty = new Property<string>(lifetime, "StringOptionViewModel_SerializedFieldPrefix");
+            prefixProperty.SetValue(userRule.Policy.NamingRule.Prefix);
+            prefixProperty.Change.Advise_NoAcknowledgement(lifetime, args =>
+            {
+                var rule = GetUnitySerializedFieldRule(settingsStore, entry);
+                rule.Policy.NamingRule.Prefix = args.New ?? string.Empty;
+                SetUnitySerializedFieldRule(settingsStore, entry, rule);
+            });
+
+            var suffixProperty = new Property<string>(lifetime, "StringOptionViewModel_SerializedFieldSuffix");
+            suffixProperty.SetValue(userRule.Policy.NamingRule.Suffix);
+            suffixProperty.Change.Advise_NoAcknowledgement(lifetime, args =>
+            {
+                var rule = GetUnitySerializedFieldRule(settingsStore, entry);
+                rule.Policy.NamingRule.Suffix = args.New ?? string.Empty;
+                SetUnitySerializedFieldRule(settingsStore, entry, rule);
+            });
+
+            var kindProperty = new Property<object>(lifetime, "ComboOptionViewModel_SerializedFieldNamingStyle");
+            kindProperty.SetValue(userRule.Policy.NamingRule.NamingStyleKind);
+            kindProperty.Change.Advise_NoAcknowledgement(lifetime, args =>
             {
                 var rule = GetUnitySerializedFieldRule(settingsStore, entry);
                 rule.Policy.NamingRule.NamingStyleKind = (NamingStyleKinds) args.New;
                 SetUnitySerializedFieldRule(settingsStore, entry, rule);
             });
 
-            AddComboOption(property, "Naming style for serialized fields:",
+            var enabledProperty = new Property<bool>(lifetime, "BoolOptionViewModel_SerializedFieldEnableInspection");
+            enabledProperty.SetValue(userRule.Policy.EnableInspection);
+            enabledProperty.Change.Advise_NoAcknowledgement(lifetime, args =>
+            {
+                var existingRule = GetUnitySerializedFieldRule(settingsStore, entry);
+                var newRule = new ClrUserDefinedNamingRule(existingRule.Descriptor,
+                    new NamingPolicy(existingRule.Policy.ExtraRules, existingRule.Policy.NamingRule, args.New));
+                SetUnitySerializedFieldRule(settingsStore, entry, newRule);
+            });
+
+            WithIndent(AddStringOption(prefixProperty, "Prefix:"));
+            WithIndent(AddStringOption(suffixProperty, "Suffix:"));
+            WithIndent(AddComboOption(kindProperty, "Style:",
                 new RadioOptionPoint(NamingStyleKinds.AaBb, "UpperCamelCase"),
                 new RadioOptionPoint(NamingStyleKinds.AaBb_AaBb, "UpperCamelCase_UnderscoreTolerant"),
                 new RadioOptionPoint(NamingStyleKinds.AaBb_aaBb, "UpperCamelCase_underscoreTolerant"),
@@ -92,7 +127,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 new RadioOptionPoint(NamingStyleKinds.aaBb_AaBb, "lowerCamelCase_UnderscoreTolerant"),
                 new RadioOptionPoint(NamingStyleKinds.aaBb_aaBb, "lowerCamelCase_underscoreTolerant"),
                 new RadioOptionPoint(NamingStyleKinds.AA_BB, "ALL_UPPER"),
-                new RadioOptionPoint(NamingStyleKinds.Aa_bb, "First_upper"));
+                new RadioOptionPoint(NamingStyleKinds.Aa_bb, "First_upper")));
+            WithIndent(AddBoolOption(enabledProperty, "Enable inspection"));
+
+            EndSection();
         }
 
         private static ClrUserDefinedNamingRule GetUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
@@ -114,7 +152,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             settingsStore.SetIndexedValue(entry, UnityNamingRuleDefaultSettings.SerializedFieldRuleGuid, null,
                 userRule);
-#endif
+        }
+
+        private StringOptionViewModel AddStringOption(Property<string> property, string text, string toolTipText = null,
+                                     bool acceptsReturn = false)
+        {
+            using (var tempLifetimeDefinition = Lifetimes.Define())
+            {
+                // StringOptionViewModel doesn't allow us to pass a Property, but creates one based on the given scalar
+                // entry. We're dealing with a custom object as a custom entry, so this doesn't work for us. Let's hack!
+                // Create a StringOptionViewModel, with a binding to a scalar, let it create a property, then overwrite
+                // it. The temp lifetime will then clean up the binding.
+                // RIDER-8339 is sooo getting fixed in 2019.1
+                var stringOptionViewModel = new StringOptionViewModel(tempLifetimeDefinition.Lifetime,
+                    OptionsSettingsSmartContext,
+                    OptionsSettingsSmartContext.Schema.GetScalarEntry((CSharpNamingSettings s) => s.ExceptionName),
+                    text, toolTipText ?? string.Empty, acceptsReturn) {StringProperty = property};
+
+                OptionEntities.Add(stringOptionViewModel);
+                return stringOptionViewModel;
+            }
         }
     }
 }

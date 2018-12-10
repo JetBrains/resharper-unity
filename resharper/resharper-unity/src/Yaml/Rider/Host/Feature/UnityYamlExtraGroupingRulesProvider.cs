@@ -1,10 +1,13 @@
 using JetBrains.Annotations;
 using JetBrains.Application.UI.Icons.Special.ThemedIcons;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
 using JetBrains.ReSharper.Host.Features.Icons;
 using JetBrains.ReSharper.Host.Features.Usages;
+using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.Rider.Model;
@@ -16,13 +19,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class UnityYamlExtraGroupingRulesProvider : IRiderExtraGroupingRulesProvider
     {
         // IconHost is optional so that we don't fail if we're in tests
-        public UnityYamlExtraGroupingRulesProvider(IconHost iconHost = null)
+        public UnityYamlExtraGroupingRulesProvider(UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
         {
-            ExtraRules = new IRiderUsageGroupingRule[]
+            if (unitySolutionTracker != null && unitySolutionTracker.IsUnityProject.HasValue() && unitySolutionTracker.IsUnityProject.Value)
             {
-                new GameObjectUsageGroupingRule(iconHost),
-                new ComponentUsageGroupingRule(iconHost)
-            };
+                ExtraRules = new IRiderUsageGroupingRule[]
+                {
+                    new GameObjectUsageGroupingRule(iconHost), 
+                    new ComponentUsageGroupingRule(iconHost)
+                };
+            }
+            else
+            {
+                ExtraRules = new IRiderUsageGroupingRule[0];
+            }
         }
 
         public IRiderUsageGroupingRule[] ExtraRules { get; }
@@ -77,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
             if (occurrence is ReferenceOccurrence referenceOccurrence &&
                 referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
             {
-                return CreateModel(UnityObjectPsiUtil.GetGameObjectPath(reference.ComponentDocument));
+                return CreateModel(UnityObjectPsiUtil.GetGameObjectPathFromComponent(reference.ComponentDocument));
             }
             return EmptyModel();
         }

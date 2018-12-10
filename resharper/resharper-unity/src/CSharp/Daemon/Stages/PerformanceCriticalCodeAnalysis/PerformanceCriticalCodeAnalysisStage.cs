@@ -4,8 +4,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
-using JetBrains.DocumentModel;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.Stages;
@@ -22,7 +20,6 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.Util;
-using JetBrains.Util.dataStructures.TypedIntrinsics;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
@@ -32,13 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            
-            var enabled = settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
+            var enabled = processKind == DaemonProcessKind.VISIBLE_DOCUMENT && settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
 
             if (!enabled)
                 return null;
             
-            return new PerformanceCriticalCodeAnalysisProcess(process, processKind, settings, file);
+            return new PerformanceCriticalCodeAnalysisProcess(process, file);
         }
         
         protected override bool IsSupported(IPsiSourceFile sourceFile)
@@ -59,15 +55,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             "Update", "LateUpdate", "FixedUpdate",
         };
 
-        private readonly DaemonProcessKind myProcessKind;
-        [NotNull] private readonly IContextBoundSettingsStore mySettingsStore;
         private readonly Func<bool> myCheckForInterrupt;
 
-        public PerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, DaemonProcessKind processKind, [NotNull] IContextBoundSettingsStore settingsStore, [NotNull] ICSharpFile file)
+        public PerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file)
             : base(process, file)
         {
-            myProcessKind = processKind;
-            mySettingsStore = settingsStore;
             myCheckForInterrupt = InterruptableActivityCookie.GetCheck().NotNull();
         }
 
@@ -81,18 +73,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         private void AnalyzeFile(ICSharpFile file, IHighlightingConsumer consumer)
         {
-            if (myProcessKind != DaemonProcessKind.VISIBLE_DOCUMENT && myProcessKind != DaemonProcessKind.SOLUTION_ANALYSIS)
-                return;
-            
             if (!file.GetProject().IsUnityProject())
                 return;
             
             var sourceFile = file.GetSourceFile();
             if (sourceFile == null)
                 return;
-            
-            var markupManager = Shell.Instance.GetComponent<IDocumentMarkupManager>();
-            var markup = markupManager.GetMarkupModel(sourceFile.Document);
             
             // find hot methods in derived from MonoBehaviour classes.
             var hotRootMethods = FindHotRootMethods(file, sourceFile);
@@ -103,13 +89,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             myCheckForInterrupt();
 
             // Second step of propagation 'costly reachable mark'. Handles cycles in call graph
-            PropagateCostlyReachableMark(context, sourceFile, consumer);
+            PropagateCostlyReachableMark(context);
             myCheckForInterrupt();
 
             // highlight hot methods
             foreach (var hotMethodDeclaration in context.HotMethods)
             {
-                HighlightHotMethod(hotMethodDeclaration, sourceFile, consumer);
+                HighlightHotMethod(hotMethodDeclaration, consumer);
             }
             
             // highlight all invocation which indirectly calls costly methods.
@@ -133,16 +119,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         continue;
 
                     var references = invocationElement.Value;
-                    foreach (var reference in references)    
+                    foreach (var reference in references)
                     {
+                        var referenceExpression = reference.InvokedExpression as IReferenceExpression;
+                        if (referenceExpression == null)
+                            continue;
                         consumer.AddHighlighting(new PerformanceInvocationHighlighting(reference,
-                            (reference.InvokedExpression as IReferenceExpression).Reference.NotNull("(reference.InvokedExpression as IReferenceExpression).Reference != null")));
+                            referenceExpression.Reference.NotNull("(reference.InvokedExpression as IReferenceExpression).Reference != null")));
                     }
                 }
             }
         }
 
-        private void PropagateCostlyReachableMark(HotMethodAnalyzerContext context, IPsiSourceFile sourceFile, IHighlightingConsumer consumer)
+        private void PropagateCostlyReachableMark(HotMethodAnalyzerContext context)
         {
             var callGraph = context.InvertedCallGraph;
             var nodes = new HashSet<IDeclaredElement>();
@@ -155,12 +144,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             var visited = new HashSet<IDeclaredElement>();
             foreach (var node in nodes)
             {
-                PropagateCostlyMark(node, callGraph, context, visited, sourceFile, consumer);
+                PropagateCostlyMark(node, callGraph, context, visited);
             }
         }
         
         private void PropagateCostlyMark(IDeclaredElement node, IReadOnlyDictionary<IDeclaredElement, HashSet<IDeclaredElement>> callGraph,
-            HotMethodAnalyzerContext context, ISet<IDeclaredElement> visited, IPsiSourceFile sourceFile, IHighlightingConsumer consumer)
+            HotMethodAnalyzerContext context, ISet<IDeclaredElement> visited)
         {
             if (visited.Contains(node))
                 return;
@@ -172,40 +161,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             {
                 foreach (var child in children)
                 {
-                    PropagateCostlyMark(child, callGraph, context, visited, sourceFile, consumer);
+                    PropagateCostlyMark(child, callGraph, context, visited);
                 }
             }
         }
 
-        private void HighlightHotMethod(IDeclaration node, IPsiSourceFile sourceFile, IHighlightingConsumer consumer)
+        private void HighlightHotMethod(IDeclaration node, IHighlightingConsumer consumer)
         {
             consumer.AddHighlighting(new PerformanceHighlighting(node.GetDocumentRange()));
         }
         
-        private HotMethodAnalyzerContext GetHotMethodAnalyzerContext(IHighlightingConsumer consumer, HashSet<IMethodDeclaration> hotRootMethods,
+        private HotMethodAnalyzerContext GetHotMethodAnalyzerContext(IHighlightingConsumer consumer, HashSet<IDeclaration> hotRootMethods,
             IPsiSourceFile sourceFile)
         {
             // sharing context for each hot root.
             var context = new HotMethodAnalyzerContext();
 
-            foreach (var methodDeclaration in hotRootMethods)
+            foreach (var declaration in hotRootMethods)
             {
-                var declaredElement = methodDeclaration.DeclaredElement.NotNull("declaredElement != null");
+                var declaredElement = declaration.DeclaredElement;
+                if (declaredElement == null)
+                    continue;
+                
                 context.CurrentDeclaredElement = declaredElement;
-                context.CurrentDeclaration = methodDeclaration;
-                context.MarkCurrentAsCostly();
+                context.CurrentDeclaration = declaration;
                 
                 var visitor = new HotMethodAnalyzer(sourceFile, consumer, myCheckForInterrupt, ourMaxAnalysisDepth);
-                methodDeclaration.ProcessThisAndDescendants(visitor, context);
+                declaration.ProcessThisAndDescendants(visitor, context);
             }
 
             return context;
         }
 
-        private HashSet<IMethodDeclaration> FindHotRootMethods([NotNull]ICSharpFile file,[NotNull] IPsiSourceFile sourceFile)
+        private HashSet<IDeclaration> FindHotRootMethods([NotNull]ICSharpFile file,[NotNull] IPsiSourceFile sourceFile)
         {
             var api = file.GetSolution().GetComponent<UnityApi>();
-            var result = new HashSet<IMethodDeclaration>();
+            var result = new HashSet<IDeclaration>();
                 
             var descendantsEnumerator = file.Descendants();
             while (descendantsEnumerator.MoveNext())
@@ -264,7 +255,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                             var declarations = coroutineMethodDeclaration.GetDeclarationsIn(sourceFile).Where(t => t.GetSourceFile() == sourceFile);
                             foreach (var declaration in declarations)
                             {
-                                result.Add((IMethodDeclaration)declaration);
+                                result.Add(declaration);
                             }
                         }
 
@@ -299,7 +290,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return null;
         }
         
-        // return value only for invocation nodes. If invoked method contain costly method `true` will be returned.
         private class HotMethodAnalyzer : TreeNodeVisitor<HotMethodAnalyzerContext>, IRecursiveElementProcessor<HotMethodAnalyzerContext>
         {
             private readonly IPsiSourceFile mySourceFile;
@@ -313,11 +303,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 myConsumer = consumer;
                 myCheckForInterrupt = checkForInterrupt;
                 myMaxDepth = maxDepth;
-            }
-
-            public override void VisitMethodDeclaration(IMethodDeclaration methodDeclarationParam, HotMethodAnalyzerContext context)
-            {
-                context.MarkCurrentAsVisited();
             }
 
             public override void VisitInvocationExpression(IInvocationExpression invocationExpressionParam, HotMethodAnalyzerContext context)
@@ -338,23 +323,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 context.RegisterInvocationInMethod(declaredElement, invocationExpressionParam);
 
                 // find all declarations in current file
-                var declaration = declaredElement.GetDeclarationsIn(mySourceFile).FirstOrDefault(t => t.GetSourceFile() == mySourceFile);
-                if (declaration == null)
-                    return;
+                var declarations = declaredElement.GetDeclarationsIn(mySourceFile).Where(t => t.GetSourceFile() == mySourceFile);
 
                 // update current declared element in context and then restore it
                 var originDeclaredElement = context.CurrentDeclaredElement;
                 var originDeclaration = context.CurrentDeclaration;
-                
-                context.CurrentDeclaredElement = declaredElement;
-                context.CurrentDeclaration = declaration;
-                
-                // Do not visit methods twice
-                if (!context.IsCurrentElementVisited())
+
+                foreach (var declaration in declarations)
                 {
-                    myCheckForInterrupt();
-                    declaration.ProcessThisAndDescendants(this, context);
+                    context.CurrentDeclaredElement = declaredElement;
+                    context.CurrentDeclaration = declaration;
+                
+                    // Do not visit methods twice
+                    if (!context.IsCurrentElementVisited())
+                    {
+                        myCheckForInterrupt();
+                        declaration.ProcessThisAndDescendants(this, context);
+                    }
                 }
+
 
                 context.CurrentDeclaration = originDeclaration;
                 context.CurrentDeclaredElement = originDeclaredElement;
@@ -425,6 +412,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             public void ProcessBeforeInterior(ITreeNode element, HotMethodAnalyzerContext context)
             {
+                if (element is IDeclaration declaration && declaration == context.CurrentDeclaration)
+                   context.MarkCurrentAsVisited();
+                    
                 // handle depth of analysis
                 if (element is IInvocationExpression)
                     context.Depth++;
@@ -498,7 +488,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         private class HotMethodAnalyzerContext
         {
-            public List<IDeclaration> HotMethods = new List<IDeclaration>();
+            public readonly List<IDeclaration> HotMethods = new List<IDeclaration>();
             
             // Current depth of analysis
             public int Depth { get; set; }

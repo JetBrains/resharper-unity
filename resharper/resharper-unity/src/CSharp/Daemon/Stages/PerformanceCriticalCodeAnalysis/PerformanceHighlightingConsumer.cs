@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 {
     public class PerformanceHighlightingConsumer : DefaultHighlightingConsumer
     {
-        private IgnoreWarningsRegionsInfo myRegionsInfo;
+        private readonly IgnoreWarningsRegionsInfo myRegionsInfo;
 
         public PerformanceHighlightingConsumer([NotNull] IPsiSourceFile sourceFile, [NotNull] IFile psiFile)
             : base(sourceFile)

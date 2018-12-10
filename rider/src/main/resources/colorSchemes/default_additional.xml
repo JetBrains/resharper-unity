@@ -3,6 +3,11 @@
 file for overriding ReSharper highlighter color for Default editor scheme
 -->
 <list>
+  <option name="ReSharper.UNITY_IMPLICITLY_USED_IDENTIFIER">
+    <value>
+      <option name="FONT_TYPE" value="1" />
+    </value>
+  </option>
   <option name="ReSharper.UNITY_PERFORMANCE_CAMERA_MAIN">
     <value>
       <option name="EFFECT_COLOR" value="ff8700" />

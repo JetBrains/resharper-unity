@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.DataFlow;
@@ -6,9 +7,12 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 using JetBrains.Util.PersistentMap;
@@ -16,30 +20,34 @@ using JetBrains.Util.PersistentMap;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     [PsiComponent]
-    public class UnityEventHandlerReferenceCache : SimpleICache<List<string>>
+    public class UnityEventHandlerReferenceCache : SimpleICache<JetHashSet<UnityEventHandlerCacheItem>>
     {
-        private readonly MetaFileGuidCache myMetaFileGuidCache;
+        private readonly ISolution mySolution;
 
-        private readonly CompactOneToListMap<string, IPsiSourceFile> myReferencedElementToAsset =
-            new CompactOneToListMap<string, IPsiSourceFile>();
+        // We need to be able to check if a method is declared on a base type but used in a deriving type. We keep a map
+        // of method/property setter short name to all the asset guids where it's used. These usages will always be the
+        // most derived type. If we get all (inherited) members of each usage, we can match to see if a given method
+        // (potentially declared on a base type) is being used as an event handler
+        private readonly CompactOneToSetMap<string, string> myShortNameToAssetGuid =
+            new CompactOneToSetMap<string, string>();
 
-        public UnityEventHandlerReferenceCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
-                                               MetaFileGuidCache metaFileGuidCache)
+        public UnityEventHandlerReferenceCache(Lifetime lifetime, ISolution solution,
+                                               IPersistentIndexManager persistentIndexManager)
             : base(lifetime, persistentIndexManager, CreateMarshaller())
         {
-            myMetaFileGuidCache = metaFileGuidCache;
-#if DEBUG
-            ClearOnLoad = true;
-#endif
+            mySolution = solution;
         }
 
-        private static IUnsafeMarshaller<List<string>> CreateMarshaller()
+        // Version "1": List<string> "asset::shortname"
+        public override string Version => "2";
+
+        private static IUnsafeMarshaller<JetHashSet<UnityEventHandlerCacheItem>> CreateMarshaller()
         {
-            return UnsafeMarshallers.GetCollectionMarshaller(UnsafeMarshallers.UnicodeStringMarshaller,
-                n => new List<string>(n));
+            return UnsafeMarshallers.GetCollectionMarshaller(UnityEventHandlerCacheItem.Marshaller,
+                n => new JetHashSet<UnityEventHandlerCacheItem>(n));
         }
 
-        public bool IsEventHandler([NotNull] IDeclaredElement declaredElement)
+        public bool IsEventHandler([NotNull] IMethod declaredElement)
         {
             var sourceFiles = declaredElement.GetSourceFiles();
 
@@ -47,12 +55,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (sourceFiles.Count != 1)
                 return false;
 
-            var assetGuid = myMetaFileGuidCache.GetAssetGuid(sourceFiles[0]);
-            if (assetGuid == null)
-                return false;
+            foreach (var assetGuid in myShortNameToAssetGuid[declaredElement.ShortName])
+            {
+                var invokedType = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(mySolution, assetGuid);
+                if (invokedType != null)
+                {
+                    var members = invokedType.GetAllClassMembers(declaredElement.ShortName);
+                    foreach (var member in members)
+                    {
+                        if (Equals(member.Element, declaredElement))
+                            return true;
+                    }
+                }
+            }
 
-            var referencedElementKey = GetReferencedElementKey(assetGuid, declaredElement);
-            return myReferencedElementToAsset[referencedElementKey].Count > 0;
+            return false;
         }
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
@@ -60,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             return base.IsApplicable(sourceFile) &&
                    sourceFile.LanguageType.Is<YamlProjectFileType>() &&
                    sourceFile.PsiModule is UnityExternalFilesPsiModule &&
-                   UnityYamlFileExtensions.IsAsset(sourceFile.GetLocation());
+                   sourceFile.IsAsset();
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -69,72 +86,80 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 return null;
 
             // If YAML parsing is disabled, this will return null
-            var file = sourceFile.GetDominantPsiFile<YamlLanguage>();
+            var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
             if (file == null)
                 return null;
 
-            var referencedElements = new List<string>();
-            var referenceProcessor = new RecursiveReferenceProcessor<UnityEventTargetReference>(reference =>
+            var cacheItems = new JetHashSet<UnityEventHandlerCacheItem>();
+            var referenceProcessor = new ConditionalRecursiveReferenceProcessor(reference =>
             {
                 var assetGuid = reference.GetScriptAssetGuid();
                 if (assetGuid != null)
-                {
-                    var referencedElementKey = GetReferencedElementKey(assetGuid, reference.EventHandlerName);
-                    if (referencedElementKey != null)
-                        referencedElements.Add(referencedElementKey);
-                }
+                    cacheItems.Add(new UnityEventHandlerCacheItem(assetGuid, reference.EventHandlerName));
             });
 
-            referenceProcessor.ProcessForResolve(file);
+            foreach (var document in file.DocumentsEnumerable)
+            {
+                if (UnityEventTargetReferenceFactory.CanContainReference(document))
+                    referenceProcessor.ProcessForResolve(document);
+            }
 
-            return referencedElements.Count > 0 ? referencedElements : null;
+            return cacheItems.Count > 0 ? cacheItems : null;
         }
 
         public override void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
-            CleanLocalCache(sourceFile);
+            RemoveFromLocalCache(sourceFile);
             base.Merge(sourceFile, builtPart);
+            AddToLocalCache(builtPart as JetHashSet<UnityEventHandlerCacheItem> ??
+                            JetHashSet<UnityEventHandlerCacheItem>.Empty);
+        }
 
-            foreach (var referencedElement in (List<string>) builtPart ?? EmptyList<string>.InstanceList)
-                myReferencedElementToAsset.AddValue(referencedElement, sourceFile);
+        public override void MergeLoaded(object data)
+        {
+            base.MergeLoaded(data);
+            PopulateLocalCache();
         }
 
         public override void Drop(IPsiSourceFile sourceFile)
         {
-            CleanLocalCache(sourceFile);
+            RemoveFromLocalCache(sourceFile);
             base.Drop(sourceFile);
         }
 
-        private void CleanLocalCache(IPsiSourceFile sourceFile)
+        private void PopulateLocalCache()
         {
-            if (Map.TryGetValue(sourceFile, out var referencedElements))
+            foreach (var (_, cacheItems) in Map)
+                AddToLocalCache(cacheItems);
+        }
+
+        private void AddToLocalCache(IEnumerable<UnityEventHandlerCacheItem> cacheItems)
+        {
+            foreach (var cacheItem in cacheItems)
+                myShortNameToAssetGuid.Add(cacheItem.ReferenceShortName, cacheItem.AssetGuid);
+        }
+
+        private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
+        {
+            if (Map.TryGetValue(sourceFile, out var cacheItems))
             {
-                foreach (var referencedElement in referencedElements)
-                    myReferencedElementToAsset.RemoveValue(referencedElement, sourceFile);
+                foreach (var cacheItem in cacheItems)
+                    myShortNameToAssetGuid.Remove(cacheItem.ReferenceShortName, cacheItem.AssetGuid);
             }
         }
 
-        [CanBeNull]
-        private string GetReferencedElementKey(string assetGuid, IDeclaredElement declaredElement)
+        private class ConditionalRecursiveReferenceProcessor : RecursiveReferenceProcessor<UnityEventTargetReference>
         {
-            switch (declaredElement)
+            public ConditionalRecursiveReferenceProcessor(Action<UnityEventTargetReference> action)
+                : base(action)
             {
-                case IMethod method:
-                    return GetReferencedElementKey(assetGuid, method.ShortName);
-
-                case IProperty property:
-                    return GetReferencedElementKey(assetGuid, property.Setter?.ShortName);
             }
 
-            return null;
-        }
-
-        private string GetReferencedElementKey(string assetGuid, [CanBeNull] string handlerName)
-        {
-            if (handlerName == null)
-                return null;
-
-            return assetGuid + "::" + handlerName;
+            public override void ProcessBeforeInterior(ITreeNode element)
+            {
+                if (UnityEventTargetReferenceFactory.CanHaveReference(element))
+                    base.ProcessBeforeInterior(element);
+            }
         }
     }
 }

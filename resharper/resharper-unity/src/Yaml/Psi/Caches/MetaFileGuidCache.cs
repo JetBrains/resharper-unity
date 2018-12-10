@@ -28,9 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public MetaFileGuidCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager)
             : base(lifetime, persistentIndexManager, MetaFileCacheItem.Marshaller)
         {
-#if DEBUG
-            ClearOnLoad = true;
-#endif
         }
 
         // This will usually return a single value, but there's always a chance for copy/paste
@@ -53,8 +50,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return sf.IsLanguageSupported<YamlLanguage>() &&
-                   sf.Name.EndsWith(".cs.meta", StringComparison.InvariantCultureIgnoreCase);
+            return sf.IsLanguageSupported<YamlLanguage>() && (
+                       sf.Name.EndsWith("cs.meta", StringComparison.InvariantCultureIgnoreCase) ||
+                       sf.Name.EndsWith("unity.meta", StringComparison.InvariantCultureIgnoreCase) ||
+                       sf.Name.EndsWith("prefab.meta", StringComparison.InvariantCultureIgnoreCase)
+                   );
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -65,19 +65,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (!(sourceFile.GetDominantPsiFile<YamlLanguage>() is IYamlFile yamlFile))
                 return null;
 
+            // Note that this opens the document body chameleon, but we don't care for .meta files. They're lightweight
             var document = yamlFile.Documents.FirstOrDefault();
-            if (document?.BlockNode is IBlockMappingNode blockMappingNode)
+            if (document?.Body.BlockNode is IBlockMappingNode blockMappingNode)
             {
                 foreach (var entry in blockMappingNode.Entries)
                 {
-                    if (entry.Key is IPlainScalarNode keyScalarNode && keyScalarNode.Text?.GetText() == "guid")
+                    if (entry.Key?.CompareBufferText("guid") == true && entry.Value is IPlainScalarNode valueScalarNode)
                     {
-                        if (entry.Value is IPlainScalarNode valueScalarNode)
-                        {
-                            var guid = valueScalarNode.Text?.GetText();
-                            if (guid != null)
-                                return new MetaFileCacheItem(guid);
-                        }
+                        var guid = valueScalarNode.Text?.GetText();
+                        if (guid != null)
+                            return new MetaFileCacheItem(guid);
                     }
                 }
             }
@@ -87,46 +85,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public override void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
-            if (builtPart == null)
-                CleanLocalCache(sourceFile);
-
+            RemoveFromLocalCache(sourceFile);
+            AddToLocalCache(sourceFile, builtPart as MetaFileCacheItem);
             base.Merge(sourceFile, builtPart);
-            PopulateLocalCache(sourceFile, builtPart as MetaFileCacheItem);
         }
 
         public override void MergeLoaded(object data)
         {
             base.MergeLoaded(data);
-
-            foreach (var (psiSourceFile, cacheItem) in Map)
-                PopulateLocalCache(psiSourceFile, cacheItem);
+            PopulateLocalCache();
         }
 
         public override void Drop(IPsiSourceFile sourceFile)
         {
-            CleanLocalCache(sourceFile);
+            RemoveFromLocalCache(sourceFile);
             base.Drop(sourceFile);
         }
 
-        private void PopulateLocalCache(IPsiSourceFile metaFile, [CanBeNull] MetaFileCacheItem data)
+        private void PopulateLocalCache()
         {
-            if (data == null) return;
+            foreach (var (psiSourceFile, cacheItem) in Map)
+                AddToLocalCache(psiSourceFile, cacheItem);
+        }
+
+        private void AddToLocalCache(IPsiSourceFile metaFile, [CanBeNull] MetaFileCacheItem cacheItem)
+        {
+            if (cacheItem == null) return;
 
             var metaFileLocation = metaFile.GetLocation();
             if (!metaFileLocation.IsEmpty)
             {
                 var assetLocation = GetAssetLocationFromMetaFile(metaFileLocation);
-                myAssetGuidToAssetFilePaths.AddValue(data.Guid, assetLocation);
-                myAssetFilePathToGuid.Add(assetLocation, data.Guid);
+                myAssetGuidToAssetFilePaths.AddValue(cacheItem.Guid, assetLocation);
+                myAssetFilePathToGuid.Add(assetLocation, cacheItem.Guid);
             }
         }
 
-        private void CleanLocalCache(IPsiSourceFile sourceFile)
+        private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
             if (Map.TryGetValue(sourceFile, out var cacheItem))
             {
                 var assetLocation = GetAssetLocationFromMetaFile(sourceFile.GetLocation());
                 myAssetGuidToAssetFilePaths.RemoveValue(cacheItem.Guid, assetLocation);
+                myAssetFilePathToGuid.Remove(assetLocation);
             }
         }
 

@@ -1,10 +1,12 @@
 using JetBrains.Annotations;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DataFlow;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Descriptions;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -15,7 +17,7 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
     RegisterConfigurableSeverity(
         PerformanceInvocationHighlighting.SEVERITY_ID, 
         null, 
-        PerformanceHighlightingAttributeIds.GroupID,
+        UnityHighlightingGroupIds.Unity,
         PerformanceInvocationHighlighting.TITLE,
         PerformanceInvocationHighlighting.MESSAGE, 
         Severity.INFO
@@ -23,7 +25,7 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
     RegisterConfigurableSeverity(
         PerformanceNullComparisonHighlighting.SEVERITY_ID, 
         null, 
-        PerformanceHighlightingAttributeIds.GroupID,
+        UnityHighlightingGroupIds.Unity,
         PerformanceNullComparisonHighlighting.TITLE,
         PerformanceNullComparisonHighlighting.MESSAGE,
         Severity.INFO
@@ -31,7 +33,7 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
     RegisterConfigurableSeverity(
         PerformanceHighlighting.SEVERITY_ID, 
         null, 
-        PerformanceHighlightingAttributeIds.GroupID,
+        UnityHighlightingGroupIds.Unity,
         PerformanceHighlighting.TITLE,
         PerformanceHighlighting.MESSAGE,
         Severity.INFO
@@ -39,13 +41,11 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
     RegisterConfigurableSeverity(
         PerformanceCameraMainHighlighting.SEVERITY_ID, 
         null, 
-        PerformanceHighlightingAttributeIds.GroupID,
+        UnityHighlightingGroupIds.Unity,
         PerformanceCameraMainHighlighting.TITLE,
         PerformanceCameraMainHighlighting.MESSAGE,
         Severity.INFO
     ),
-    
-    RegisterConfigurableHighlightingsGroup(PerformanceHighlightingAttributeIds.GroupID, "Unity performance analysis")
 ]
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
@@ -130,7 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
     [DaemonTooltipProvider(typeof(PerformanceCriticalCodeHighlightingTooltipProvider))]
-    public class PerformanceHighlighting: PerformanceHighlightingBase, ILineMarkerInfo
+    public class PerformanceHighlighting: PerformanceHighlightingBase, IActiveLineMarkerInfo
     {
         private readonly DocumentRange myRange;
         public const string SEVERITY_ID = "Unity.PerformanceCriticalCodeHighlighting";
@@ -149,10 +149,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public string RendererId => null;
         public int Thickness => 3;
         public LineMarkerPosition Position => LineMarkerPosition.LEFT;
+        public ExecutableItem LeftClick() => null;
+
+        public string Tooltip => "Frequently called method";
     }
     
     
-    public abstract class PerformanceHighlightingBase : ICustomAttributeIdHighlighting
+    public abstract class PerformanceHighlightingBase : ICustomAttributeIdHighlighting, IUnityHighlighting
     {
         [NotNull] public readonly string SeverityId;
 
@@ -181,9 +184,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
    
     public static class PerformanceHighlightingAttributeIds
-    {
-        public const string GroupID = "ReSharper Unity PerformanceAnalysisHighlighters";
-        
+    { 
         public const string CAMERA_MAIN = "ReSharper Unity PerformanceCameraMain";
         public const string COSTLY_METHOD_INVOCATION = "ReSharper Unity PerformanceCostlyMethodInvocation";
         public const string NULL_COMPARISON = "ReSharper Unity PerformanceNullComparison";

@@ -16,31 +16,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private UnityEditorState myLastCheckResult = UnityEditorState.Disconnected;
         
-        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol, IShellLocks locks)
+        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol, IShellLocks locks, UnitySolutionTracker unitySolutionTracker)
         {
             // TODO: this shouldn't be up in tests until we figure out how to test unity-editor requiring features
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)
                 return;
-            
-            //check connection between backend and unity editor
-            locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
-            {
-                if (editorProtocol.UnityModel.Value == null)
-                {
-                    myLastCheckResult = UnityEditorState.Disconnected;
-                }
-                else
-                {
-                    var rdTask = editorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
-                    rdTask?.Result.Advise(lifetime, result =>
-                    {
-                        myLastCheckResult = result.Result;
-                        logger.Trace($"myIsConnected = {myLastCheckResult}");
-                    });    
-                }
 
-                logger.Trace($"Sending connection state. State: {myLastCheckResult}");                
-                host.PerformModelAction(m => m.EditorState.Value = Wrap(myLastCheckResult));
+            unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
+            {
+                //check connection between backend and unity editor
+                locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
+                {
+                    if (editorProtocol.UnityModel.Value == null)
+                    {
+                        myLastCheckResult = UnityEditorState.Disconnected;
+                    }
+                    else
+                    {
+                        var rdTask = editorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
+                        rdTask?.Result.Advise(lifetime, result =>
+                        {
+                            myLastCheckResult = result.Result;
+                            logger.Trace($"myIsConnected = {myLastCheckResult}");
+                        });
+                    }
+
+                    logger.Trace($"Sending connection state. State: {myLastCheckResult}");
+                    host.PerformModelAction(m => m.EditorState.Value = Wrap(myLastCheckResult));
+                });
             });
         }
 
@@ -62,6 +65,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+        }
+
+        public bool IsConnectionEstablished()
+        {
+            return LastCheckResult != UnityEditorState.Refresh && LastCheckResult != UnityEditorState.Disconnected;
         }
     }
 }
