@@ -155,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
     
     
-    public abstract class PerformanceHighlightingBase : ICustomAttributeIdHighlighting
+    public abstract class PerformanceHighlightingBase : ICustomAttributeIdHighlighting, IUnityHighlighting
     {
         [NotNull] public readonly string SeverityId;
 

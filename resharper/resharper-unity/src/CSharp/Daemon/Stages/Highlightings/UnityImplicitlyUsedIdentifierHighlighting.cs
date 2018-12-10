@@ -10,7 +10,7 @@ using JetBrains.TextControl.DocumentMarkup;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {
     [StaticSeverityHighlighting(Severity.INFO, "UnityGutterMarks", Languages = "CSHARP", OverlapResolve = OverlapResolveKind.NONE)]
-    public class UnityImplicitlyUsedIdentifierHighlighting : ICustomAttributeIdHighlighting
+    public class UnityImplicitlyUsedIdentifierHighlighting : ICustomAttributeIdHighlighting, IUnityHighlighting
     {
         private readonly DocumentRange myDocumentRange;
 
