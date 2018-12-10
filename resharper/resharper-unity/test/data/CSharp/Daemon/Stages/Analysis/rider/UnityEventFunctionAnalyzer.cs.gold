@@ -1,0 +1,132 @@
+﻿// ReSharper disable Unity.RedundantEventFunction
+using UnityEditor;
+using UnityEngine;
+
+public class ||HighlightExactMatchOnly|(0)|(1) : MonoBehaviour
+{
+    public void ||Start|(2)|(3)()
+    {
+    }
+
+    public void Start(int i)
+    {
+    }
+}
+
+public class ||HighlightMultipleExactMatches|(4)|(5) : MonoBehaviour
+{
+    // Both overloads are correct - collisionInfo is optional.
+    // Which is picked is ambiguous, so mark both with a warning
+    public void |||OnCollisionStay|(7)|(8)(Collision collisionInfo)|(6)
+    {
+    }
+
+    public void |||OnCollisionStay|(10)|(11)()|(9)
+    {
+    }
+}
+
+// Incorrect signatures should still be marked as event functions,
+// as long as there isn't an exact match
+public class ||HighlightIncorrectOverloads|(12)|(13) : MonoBehaviour
+{
+    public void ||Start|(14)|(15)(|int i|(16))
+    {
+    }
+
+    |public |int|(18) ||Update|(19)|(20)()
+    {
+        return 0;
+    }|(17)
+
+    public void ||OnCollisionStay|(21)|(22)(|Collision collisionInfo, int i|(23))
+    {
+    }
+
+    // Missing all parameters
+    public void ||OnAnimatorIK|(24)|(25)|()|(26)
+    {
+    }
+}
+
+public class ||StaticModifier|(27)|(28) : AssetPostprocessor
+{
+    // Should be static
+    public void |||OnGeneratedCSProjectFiles|(29)|(30)|(31)()
+    {
+    }
+
+    bool |||OnPreGeneratingCSProjectFiles|(32)|(33)|(34)()
+    {
+    }
+
+    // Should not be static
+    |static|(35) void ||OnPreprocessAssembly|(36)|(37)(string pathName)
+    {
+    }
+}
+
+public class ||TypeParameters|(38)|(39) : MonoBehaviour
+{
+    public void ||Start|(40)|(41)|<T1, T2>|(42)()
+    {
+    }
+}
+
+public class ||AllWrong|(43)|(44) : AssetPostprocessor
+{
+    public int |||OnGeneratedCSProjectFiles|(45)|(46)|(47)<T1, T2>(int value)
+    {
+        return 42;
+    }
+}
+
+---------------------------------------------------------
+(0): Unity implicitly used identifier: 
+(1): UnityCodeInsights: 
+(2): Unity implicitly used identifier: 
+(3): UnityCodeInsights: 
+(4): Unity implicitly used identifier: 
+(5): UnityCodeInsights: 
+(6): ReSharper Warning: Event function with the same name is already declared
+(7): Unity implicitly used identifier: 
+(8): UnityCodeInsights: 
+(9): ReSharper Warning: Event function with the same name is already declared
+(10): Unity implicitly used identifier: 
+(11): UnityCodeInsights: 
+(12): Unity implicitly used identifier: 
+(13): UnityCodeInsights: 
+(14): Unity implicitly used identifier: 
+(15): UnityCodeInsights: 
+(16): ReSharper Warning: Incorrect method parameters. Expected '()'
+(17): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(18): ReSharper Warning: Incorrect return type. Expected 'void'
+(19): Unity implicitly used identifier: 
+(20): UnityCodeInsights: 
+(21): Unity implicitly used identifier: 
+(22): UnityCodeInsights: 
+(23): ReSharper Warning: Incorrect method parameters. Expected '(Collision other)'
+(24): Unity implicitly used identifier: 
+(25): UnityCodeInsights: 
+(26): ReSharper Warning: Incorrect method parameters. Expected '(int layerIndex)'
+(27): Unity implicitly used identifier: 
+(28): UnityCodeInsights: 
+(29): ReSharper Warning: Missing static modifier
+(30): Unity implicitly used identifier: 
+(31): UnityCodeInsights: 
+(32): ReSharper Warning: Missing static modifier
+(33): Unity implicitly used identifier: 
+(34): UnityCodeInsights: 
+(35): ReSharper Warning: Incorrect static modifier
+(36): Unity implicitly used identifier: 
+(37): UnityCodeInsights: 
+(38): Unity implicitly used identifier: 
+(39): UnityCodeInsights: 
+(40): Unity implicitly used identifier: 
+(41): UnityCodeInsights: 
+(42): ReSharper Warning: Incorrect type parameters
+(43): Unity implicitly used identifier: 
+(44): UnityCodeInsights: 
+(45): ReSharper Warning: Incorrect method signature. Expected 'static void OnGeneratedCSProjectFiles()'
+(46): Unity implicitly used identifier: 
+(47): UnityCodeInsights: 
