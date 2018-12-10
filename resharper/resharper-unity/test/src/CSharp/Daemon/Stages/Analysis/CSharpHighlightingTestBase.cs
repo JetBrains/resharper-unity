@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
         }
     }
     
-    public abstract class CSharpHighlightingTestWitProductDependentGoldBase<T> : CSharpHighlightingTestBase
+    public abstract class CSharpHighlightingTestWithProductDependentGoldBase<T> : CSharpHighlightingTestBase
     {
         protected abstract string RelativeTestDataRoot { get; }
 

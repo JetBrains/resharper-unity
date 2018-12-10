@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class RedundantSerializeFieldAttributeAnalyzerTests : CSharpHighlightingTestWitProductDependentGoldBase<IUnityHighlighting>
+    public class RedundantSerializeFieldAttributeAnalyzerTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityHighlighting>
     {
         protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\Analysis";
 
