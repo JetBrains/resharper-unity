@@ -72,9 +72,6 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       }
 
       // Bring scene hierarchy and scene view to front
-      GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
-      GUI.BringWindowToFront(EditorWindow
-        .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());
       EditorGUIUtility.PingObject(toSelect);
       Selection.activeObject = toSelect;
       if (!doNotMoveCamera) // When scene is loaded, each GO has default transform

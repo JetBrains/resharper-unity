@@ -62,6 +62,10 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 
         MainThreadDispatcher.Instance.Queue(() =>
         {
+          GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
+          GUI.BringWindowToFront(EditorWindow
+            .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());      
+          
           var window = EditorWindow.GetWindow<FindUsagesWindow>();
           window.SetDataToEditor(result);
           window.titleContent = new GUIContent ("Find usages");
