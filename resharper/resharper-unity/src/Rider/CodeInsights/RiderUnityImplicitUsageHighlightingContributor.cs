@@ -31,17 +31,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
     public class RiderUnityImplicitUsageHighlightingContributor : UnityImplicitUsageHighlightingContributor
     {
         private readonly UnityCodeInsightFieldUsageProvider myFieldUsageProvider;
-        private readonly UnityCodeInsightCodeInsightProvider myCodeInsightCodeInsightProvider;
+        private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
 
         public RiderUnityImplicitUsageHighlightingContributor(ISolution solution, ITextControlManager textControlManager,
-            UnityCodeInsightFieldUsageProvider fieldUsageProvider,  UnityCodeInsightCodeInsightProvider codeInsightCodeInsightProvider,
+            UnityCodeInsightFieldUsageProvider fieldUsageProvider,  UnityCodeInsightProvider codeInsightProvider,
             ISettingsStore settingsStore, ConnectionTracker connectionTracker, IconHost iconHost = null)
             : base(solution, settingsStore, textControlManager)
         {
             myFieldUsageProvider = fieldUsageProvider;
-            myCodeInsightCodeInsightProvider = codeInsightCodeInsightProvider;
+            myCodeInsightProvider = codeInsightProvider;
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
         }
@@ -54,13 +54,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                     AddHighlighting(consumer, myFieldUsageProvider, element, tooltip, "Set by Unity");
                     break;
                 case IClassLikeDeclaration _:
-                    AddHighlighting(consumer, myCodeInsightCodeInsightProvider, element, tooltip, "Scripting component");
+                    AddHighlighting(consumer, myCodeInsightProvider, element, tooltip, "Scripting component");
                     break;
                 case IMethodDeclaration _:
-                    AddHighlighting(consumer, myCodeInsightCodeInsightProvider, element, tooltip, "Event function");
+                    AddHighlighting(consumer, myCodeInsightProvider, element, tooltip, "Event function");
                     break;
                 default:
-                    AddHighlighting(consumer, myCodeInsightCodeInsightProvider, element, tooltip, "Implicit usage");
+                    AddHighlighting(consumer, myCodeInsightProvider, element, tooltip, "Implicit usage");
                     break;
             }
         }
@@ -91,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity", AbstractUnityCodeInsightProvider.StartUnityActionId));
             }
             
-            consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.NameIdentifier.GetDocumentRange(),
+            consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.GetNameDocumentRange(),
                 displayName, displayName, codeInsightsProvider, declaredElement, 
                 myIconHost.Transform(codeInsightsProvider.IconId), CreateBulbItemsForUnityDeclaration(element), extraActions));
         }

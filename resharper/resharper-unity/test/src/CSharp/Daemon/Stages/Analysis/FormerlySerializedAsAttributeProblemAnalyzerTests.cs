@@ -4,9 +4,9 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class FormerlySerializedAsAttributeProblemAnalyzerTests : CSharpHighlightingTestBase<IUnityHighlighting>
+    public class FormerlySerializedAsAttributeProblemAnalyzerTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityHighlighting>
     {
-        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\FormerlySerializedAsAttribute";
+        protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\Analysis\FormerlySerializedAsAttribute";
 
         [Test] public void TestNonUnityFields() { DoNamedTest2(); }
         [Test] public void TestRedundantFormerlySerializedAs() { DoNamedTest2(); }

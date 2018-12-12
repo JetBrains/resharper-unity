@@ -30,6 +30,7 @@ using JetBrains.ReSharper.Host.Features.TypingAssist;
 using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.TestFramework.Components.Feature.Services.ContextHighlighters;
 using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Notifications;
 using JetBrains.TestFramework.Projects;
 using JetBrains.TestFramework.TextControl;
 using JetBrains.TestFramework.UI.Components;
@@ -59,6 +60,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
 
         public MyProtocol(IShellLocks locks, IPolymorphicTypesCatalog typesCatalog)
             : base(locks, typesCatalog)
+        {
+        }
+    }
+    
+    [ShellComponent]
+    public class MyRdShellModel : RdShellModel, IHideImplementation<RdShellModel>
+    {
+        public MyRdShellModel(Lifetime lifetime, IProtocol protocol)
+            : base(lifetime, protocol)
+        {
+        }
+    }
+    
+    [ShellComponent]
+    public class MyNotificationModel : NotificationsModel, IHideImplementation<NotificationsModel>
+    {
+        public MyNotificationModel(Lifetime lifetime, IProtocol protocol)
+            : base(lifetime, protocol)
         {
         }
     }

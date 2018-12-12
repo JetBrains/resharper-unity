@@ -1,8 +1,6 @@
 ﻿using JetBrains.ReSharper.Daemon.CodeFolding;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 

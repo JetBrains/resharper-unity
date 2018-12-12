@@ -1,0 +1,74 @@
+﻿using System;
+using UnityEngine;
+using UnityEditor;
+
+[assembly: |DrawGizmo|(0)]
+
+[|DrawGizmo|(1)]
+public class Foo
+{
+    [|DrawGizmo|(2)]
+    public Foo()
+    {
+    }
+
+    [|DrawGizmo|(3)]
+    public string Field;
+
+    [|DrawGizmo|(4)]
+    public const string ConstField = "Hello world";
+
+    [|DrawGizmo|(5)]
+    public string Property { get; set; }
+
+    [DrawGizmo]
+    [return: |DrawGizmo|(6)]
+    public string |Method|(7)<[|DrawGizmo|(8)] T>([|DrawGizmo|(9)] int param1)
+    {
+        return null;
+    }
+
+    [|DrawGizmo|(10)]
+    public event EventHandler MyEvent;
+
+    [field: |DrawGizmo|(11)]
+    public event EventHandler MyEvent2;
+}
+
+[|DrawGizmo|(12)]
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+[|DrawGizmo|(13)]
+public struct Bar
+{
+}
+
+[|DrawGizmo|(14)]
+public enum Baz
+{
+    One,
+    Two
+}
+
+[|DrawGizmo|(15)]
+public interface Quux
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(1): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(2): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(3): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(4): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(5): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(6): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(7): ReSharper Warning: Incorrect method signature. Expected 'static void Method(Component, GizmoType)'
+(8): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(9): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(10): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(11): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(12): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(13): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(14): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(15): ReSharper Dead Code: Attribute 'UnityEditor.DrawGizmo' is redundant on this declaration type. It is only used when applied to 'Method' declarations
