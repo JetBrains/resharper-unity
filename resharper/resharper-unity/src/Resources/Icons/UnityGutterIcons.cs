@@ -47,16 +47,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
         ///</remarks>
         ///<example>
-        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:TydijezThemedIconsThemedIcons+HotMethod}" /&gt;        &lt;!-- XAML --&gt;</code>
+        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:NabusimThemedIconsThemedIcons+HotMethod}" /&gt;        &lt;!-- XAML --&gt;</code>
         ///</example>
         ///<example>
-        ///	<code>[Item(Name="Sample", Icon=typeof(TydijezThemedIconsThemedIcons.HotMethod))]        // C# Type attribute</code>
+        ///	<code>[Item(Name="Sample", Icon=typeof(NabusimThemedIconsThemedIcons.HotMethod))]        // C# Type attribute</code>
         ///</example>
         ///<example>
-        ///	<code>IconId iconid = TydijezThemedIconsThemedIcons.HotMethod.Id;        // IconId identifier object</code>
+        ///	<code>IconId iconid = NabusimThemedIconsThemedIcons.HotMethod.Id;        // IconId identifier object</code>
         ///</example>
         ///<example>
-        ///	<code>themediconmanager.GetIcon&lt;TydijezThemedIconsThemedIcons.HotMethod&gt;()        // Icon image for rendering</code>
+        ///	<code>themediconmanager.GetIcon&lt;NabusimThemedIconsThemedIcons.HotMethod&gt;()        // Icon image for rendering</code>
         ///</example>
         [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
         public sealed class HotMethod : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
                     "6L0,16Z\' fill=\'#FFFFFF\' opacity=\'0\'/><linearGradient id=\'F1\' x1=\'0.4996270923025" +
                     "2011\' y1=\'0.00094263230465130982\' x2=\'0.49962709230252011\' y2=\'0.999999999999999" +
                     "89\'><stop offset=\'0\' stop-color=\'#954900\'/><stop offset=\'1\' stop-color=\'#4D1700\'" +
-                    "/></linearGradient><path d=\'M6.213,1.145C6.446,2.745,5.688,3.913,4.8130000000000" +
+                    "/></linearGradient><path d=\'M6.213,1.145C6.446,2.745,5.687,3.913,4.8130000000000" +
                     "006,5.27C3.7393837939009531,6.6408833308120965,3.1070165895692297,8.306035583145" +
                     "0536,3,10.043999999999999C3,13.7,5.213,15,7.109,15C10.8,15,13,12.146,13,7.363C13" +
                     ".068817532787561,5.8257269345579852,12.660390352533781,4.304169731816148,11.831," +
@@ -111,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
                 return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(
                     "<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
                     "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M0,0L16,0L16,1" +
-                    "6L0,16Z\' fill=\'#FFFFFF\' opacity=\'0\'/><path d=\'M6.213,1.145C6.446,2.745,5.688,3.9" +
+                    "6L0,16Z\' fill=\'#FFFFFF\' opacity=\'0\'/><path d=\'M6.213,1.145C6.446,2.745,5.687,3.9" +
                     "13,4.8130000000000006,5.27C3.7393837939009531,6.6408833308120965,3.1070165895692" +
                     "297,8.3060355831450536,3,10.043999999999999C3,13.7,5.213,15,7.109,15C10.8,15,13," +
                     "12.146,13,7.363C13.068817532787561,5.8257269345579852,12.660390352533781,4.30416" +
@@ -142,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
                 return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(
                     "<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
                     "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M0,0L16,0L16,1" +
-                    "6L0,16Z\' fill=\'#FFFFFF\' opacity=\'0\'/><path d=\'M6.213,1.145C6.446,2.745,5.688,3.9" +
+                    "6L0,16Z\' fill=\'#FFFFFF\' opacity=\'0\'/><path d=\'M6.213,1.145C6.446,2.745,5.687,3.9" +
                     "13,4.8130000000000006,5.27C3.7393837939009531,6.6408833308120965,3.1070165895692" +
                     "297,8.3060355831450536,3,10.043999999999999C3,13.7,5.213,15,7.109,15C10.8,15,13," +
                     "12.146,13,7.363C13.068817532787561,5.8257269345579852,12.660390352533781,4.30416" +
@@ -227,16 +227,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
         ///</remarks>
         ///<example>
-        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:TydijezThemedIconsThemedIcons+UnityLogo}" /&gt;        &lt;!-- XAML --&gt;</code>
+        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:NabusimThemedIconsThemedIcons+UnityLogo}" /&gt;        &lt;!-- XAML --&gt;</code>
         ///</example>
         ///<example>
-        ///	<code>[Item(Name="Sample", Icon=typeof(TydijezThemedIconsThemedIcons.UnityLogo))]        // C# Type attribute</code>
+        ///	<code>[Item(Name="Sample", Icon=typeof(NabusimThemedIconsThemedIcons.UnityLogo))]        // C# Type attribute</code>
         ///</example>
         ///<example>
-        ///	<code>IconId iconid = TydijezThemedIconsThemedIcons.UnityLogo.Id;        // IconId identifier object</code>
+        ///	<code>IconId iconid = NabusimThemedIconsThemedIcons.UnityLogo.Id;        // IconId identifier object</code>
         ///</example>
         ///<example>
-        ///	<code>themediconmanager.GetIcon&lt;TydijezThemedIconsThemedIcons.UnityLogo&gt;()        // Icon image for rendering</code>
+        ///	<code>themediconmanager.GetIcon&lt;NabusimThemedIconsThemedIcons.UnityLogo&gt;()        // Icon image for rendering</code>
         ///</example>
         [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
         public sealed class UnityLogo : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
