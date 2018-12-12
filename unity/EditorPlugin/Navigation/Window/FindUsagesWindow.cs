@@ -16,19 +16,30 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     [SerializeField]
     public bool IsDirty = false;
     
+    [SerializeField]
+    public string Target = null;
+    
     [NonSerialized]
     private FindUsagesTreeView myTreeView;
+    
+    
 
-    [MenuItem("Rider/Windows/Find usages")]
-    public static void ShowWindow()
+    public static FindUsagesWindow GetWindow(string target)
     {
-      var window = GetWindow<FindUsagesWindow>();
-      window.titleContent = new GUIContent ("Find usages");
-      window.Show();
+      var window = GetWindow();
+      window.Target = target;
+      return window;
     }
 
+    [MenuItem("Window/Rider/Usages")]
+    public static FindUsagesWindow GetWindow()
+    {
+      var window = GetWindow<FindUsagesWindow>();
+      window.titleContent = new GUIContent ("Usages Window");
+      return window;
+    }
 
-    public void SetDataToEditor(RdFindUsageResult[] data)
+    public void SetDataToEditor(RdFindUsageResultElement[] data)
     {
       IsDirty = false;
       myTreeViewState = new FindUsagesWindowTreeState(data);
@@ -48,31 +59,36 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     }
     
     public void OnInspectorUpdate()
-    {
-      Repaint();
-    }
-
-    void OnGUI()
-    {
+    {     
       var count = SceneManager.sceneCount;
       for (int i = 0; i < count; i++)
       {
         if (SceneManager.GetSceneAt(i).isDirty) 
           IsDirty = true; 
       } 
+      Repaint();
+    }
+
+    void OnGUI()
+    {
+      var currentY = 0f;
       if (IsDirty) // the data can be out-of-date, notify user to update it from Rider
       {
         var text = "Save scene and ask Rider to find usages again to get up-to-date results.";
         var helpBox = GUILayoutUtility.GetRect(new GUIContent(text), EditorStyles.helpBox, GUILayout.MinHeight(40));
+        currentY += helpBox.height;
         EditorGUI.HelpBox(helpBox, text, MessageType.Warning);
-        var space = GUILayoutUtility.GetRect(new GUIContent("-"), EditorStyles.label);
-        
-        myTreeView?.OnGUI(new Rect(0, helpBox.height + space.height, position.width, position.height - space.height - helpBox.height));
       }
-      else
+
+      if (Target != null)
       {
-        myTreeView?.OnGUI(new Rect(0, 0, position.width, position.height));
+        var text = $"Usages of '{Target}'";
+        var textHeight= GUILayoutUtility.GetRect(new GUIContent(text), EditorStyles.label).height * 1.2f;
+        GUI.Box(new Rect(0, currentY, position.width, textHeight),  text);
+        currentY += textHeight;
       }
+
+      myTreeView?.OnGUI(new Rect(0, currentY, position.width, position.height - currentY));
     }
   }
 }
