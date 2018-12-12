@@ -20,6 +20,11 @@ object EditorPluginModel: Root() {
     }
 
     val RdFindUsageResult = structdef {
+        field("target", string)
+        field("elements", array(RdFindUsageResultElement))
+    }
+
+    val RdFindUsageResultElement = structdef {
         field("isPrefab", bool)
         field("expandInTreeView", bool)
         field("filePath", string)
@@ -85,8 +90,8 @@ object EditorPluginModel: Root() {
         property("play", bool)
         property("pause", bool)
         source("step", void)
-        signal("showGameObjectOnScene", RdFindUsageResult)
-        signal("findUsageResults", array(RdFindUsageResult))
+        signal("showGameObjectOnScene", RdFindUsageResultElement)
+        signal("findUsageResults", RdFindUsageResult)
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)

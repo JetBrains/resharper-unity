@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (!solution.GetComponent<ConnectionTracker>().IsConnectionEstablished())
                 return base.Navigate(solution, windowContext, transferFocus, tabOptions);
             
-            var findRequestCreator = solution.GetComponent<UnityEditorFindRequestCreator>();
+            var findRequestCreator = solution.GetComponent<UnityEditorFindUsageResultCreator>();
             return findRequestCreator.CreateRequestToUnity(myUnityEventTargetReference, true);
         }
     }

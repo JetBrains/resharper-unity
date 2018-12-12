@@ -37,20 +37,20 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     {
       var modelValue = modelAndLifetime.Model;
       var connectionLifetime = modelAndLifetime.Lifetime;
-      modelValue.ShowGameObjectOnScene.Advise(connectionLifetime,  findUsagesRequest =>
+      modelValue.ShowGameObjectOnScene.Advise(connectionLifetime,  findUsagesResult =>
       {
-        if (findUsagesRequest == null)
+        if (findUsagesResult == null)
           return;
         
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          if (findUsagesRequest.IsPrefab)
+          if (findUsagesResult.IsPrefab)
           {
-            ShowUtil.ShowPrefabUsage(findUsagesRequest.FilePath, findUsagesRequest.PathElements);
+            ShowUtil.ShowPrefabUsage(findUsagesResult.FilePath, findUsagesResult.PathElements);
           }
           else
           {
-            ShowUtil.ShowUsageOnScene(findUsagesRequest.FilePath,  findUsagesRequest.FileName, findUsagesRequest.PathElements, findUsagesRequest.RootIndices);
+            ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath,  findUsagesResult.FileName, findUsagesResult.PathElements, findUsagesResult.RootIndices);
           }
         });
       });
@@ -62,9 +62,12 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          var window = EditorWindow.GetWindow<FindUsagesWindow>();
-          window.SetDataToEditor(result);
-          window.titleContent = new GUIContent ("Find usages");
+          GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
+          GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());      
+          GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).GetInstanceID());
+
+          var window = FindUsagesWindow.GetWindow(result.Target);
+          window.SetDataToEditor(result.Elements);
         });
       });
     }

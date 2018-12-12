@@ -151,7 +151,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public LineMarkerPosition Position => LineMarkerPosition.LEFT;
         public ExecutableItem LeftClick() => null;
 
-        public string Tooltip => "Frequently called method";
+        public string Tooltip => "Performance critical context";
     }
     
     
