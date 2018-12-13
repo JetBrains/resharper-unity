@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var extraActions = new List<CodeLensEntryExtraActionModel>();
             if (!myConnectionTracker.IsConnectionEstablished())
             {
-                extraActions.Add(new CodeLensEntryExtraActionModel("Unity is not running", null));
+                extraActions.Add(new CodeLensEntryExtraActionModel("Unity is off", null));
                 extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity", AbstractUnityCodeInsightProvider.StartUnityActionId));
             }
 
