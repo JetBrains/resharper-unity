@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return null;
         }
 
-        public override string Text => "Convert to CompareTag";
+        public override string Text => "Convert to 'CompareTag'";
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

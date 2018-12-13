@@ -25,13 +25,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         [CanBeNull] protected readonly ICSharpExpression ToMove;
         [CanBeNull] protected readonly string FieldName;
 
-        public AbstractMoveQuickFix([CanBeNull] IClassDeclaration monoBehaviourScript, [CanBeNull]ICSharpExpression toMove, [CanBeNull] string fieldName = null)
+        protected AbstractMoveQuickFix([CanBeNull] IClassDeclaration monoBehaviourScript,
+                                       [CanBeNull] ICSharpExpression toMove, [CanBeNull] string fieldName = null)
         {
             MonoBehaviourScript = monoBehaviourScript;
             ToMove = toMove;
             FieldName = fieldName;
         }
-        
+
         public virtual IEnumerable<IntentionAction> CreateBulbItems()
         {
             Assertion.Assert(ToMove != null, "ToMove != null");
@@ -40,13 +41,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             var result = new List<IntentionAction>();
             if (MonoBehaviourMoveUtil.IsExpressionAccessibleInMethod(ToMove, "Start"))
             {
-                result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Start", FieldName), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor ));
+                result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Start", FieldName),
+                    BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor));
             }
+
             if (MonoBehaviourMoveUtil.IsExpressionAccessibleInMethod(ToMove, "Awake"))
             {
-                result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Awake", FieldName), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor ));
+                result.Add(new IntentionAction(new MoveAction(MonoBehaviourScript, ToMove, "Awake", FieldName),
+                    BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor));
             }
-            
+
             var loopAction = TryCreateMoveFromLoopAction(ToMove);
             if (loopAction != null)
                 result.Add(loopAction);
@@ -55,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         }
 
         private IntentionAction TryCreateMoveFromLoopAction([NotNull] ICSharpExpression toMove)
-        { 
+        {
             ILoopStatement previousLoop = null;
 
             foreach (var node in toMove.ContainingNodes())
@@ -71,8 +75,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             }
 
             if (previousLoop != null)
-                return new IntentionAction(new MoveFromLoopAction(toMove, previousLoop, FieldName), BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor);
-            
+                return new IntentionAction(new MoveFromLoopAction(toMove, previousLoop, FieldName),
+                    BulbThemedIcons.ContextAction.Id, IntentionsAnchors.ContextActionsAnchor);
+
             return null;
         }
 
@@ -84,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 return false;
             return true;
         }
-        
+
         public class MoveAction : BulbActionBase
         {
             [NotNull] private readonly IClassDeclaration myClassDeclaration;
@@ -92,23 +97,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
             [NotNull] private readonly string myMethodName;
             [CanBeNull] private readonly string myFieldName;
 
-            public MoveAction([NotNull] IClassDeclaration classDeclaration, [NotNull] ICSharpExpression expression,[NotNull] string methodName, [CanBeNull] string fieldName = null)
+            public MoveAction([NotNull] IClassDeclaration classDeclaration, [NotNull] ICSharpExpression expression,
+                              [NotNull] string methodName, [CanBeNull] string fieldName = null)
             {
                 myClassDeclaration = classDeclaration;
                 myExpression = expression;
                 myMethodName = methodName;
                 myFieldName = fieldName;
             }
-            
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+
+            protected override Action<ITextControl> ExecutePsiTransaction(
+                ISolution solution, IProgressIndicator progress)
             {
-                MonoBehaviourMoveUtil.MoveToMethodWithFieldIntroduction(myClassDeclaration, myExpression, myMethodName, myFieldName);
+                MonoBehaviourMoveUtil.MoveToMethodWithFieldIntroduction(myClassDeclaration, myExpression, myMethodName,
+                    myFieldName);
                 return null;
             }
 
-            public override string Text => $"Move to {myMethodName}";
+            public override string Text => $"Introduce field and initialise in '{myMethodName}'";
         }
-        
+
         public class MoveFromLoopAction : BulbActionBase
         {
             private readonly ICSharpExpression myToMove;
@@ -121,7 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 myLoopStatement = loopStatement;
                 myVariableName = variableName;
             }
-            
+
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 var anchor = myLoopStatement as ICSharpStatement;
@@ -131,17 +139,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 var name = NamingUtil.GetUniqueName(myToMove, baseName, NamedElementKinds.Locals,
                     collection => collection.Add(myToMove.Type(), new EntryOptions()),
                     de => !de.Equals(declaredElement));
-                
+
                 var factory = CSharpElementFactory.GetInstance(myToMove);
                 var originMyToMove = myToMove.CopyWithResolve();
                 MonoBehaviourMoveUtil.RenameOldUsages(myToMove, declaredElement, name, factory);
-                
+
                 ICSharpStatement declaration = factory.CreateStatement("var $0 = $1;", name, originMyToMove);
                 StatementUtil.InsertStatement(declaration, ref anchor, true);
                 return null;
             }
 
-            public override string Text => "Move outside the loop";
+            public override string Text => "Move outside of loop";
         }
     }
 }

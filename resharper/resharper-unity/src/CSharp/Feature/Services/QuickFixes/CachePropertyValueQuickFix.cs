@@ -4,7 +4,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.LinqTools;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
@@ -29,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         private readonly bool myInlineRestore;
         private readonly ICSharpTreeNode myCacheAnchor;
         private readonly ICSharpTreeNode myRestoreAnchor;
-        
+
         public CachePropertyValueQuickFix(InefficientPropertyAccessWarning warning)
         {
             myReferences = warning.References;
@@ -52,16 +51,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var name = GetUniqueName(myHighlightedReference, property.ShortName);
 
             IReferenceExpression originValue = myHighlightedReference.Copy();
-            
+
             for (var i = 0; i < myReferences.Count; i++)
             {
                 var reference = myReferences[i];
                 myReferences[i] = reference.ReplaceBy(factory.CreateReferenceExpression("$0", name));
             }
-            
+
             var firstReference = myReferences[0];
 
-            if (declaration is IExpressionBodyOwnerDeclaration expressionBodyOwnerDeclaration 
+            if (declaration is IExpressionBodyOwnerDeclaration expressionBodyOwnerDeclaration
                 && expressionBodyOwnerDeclaration.GetCodeBody().ExpressionBody != null)
             {
                 using (var marker = new DisposableMarker<IReferenceExpression>(firstReference))
@@ -72,8 +71,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
                 return null;
             }
-            
-            if (declaration is ILambdaExpression lambdaExpression 
+
+            if (declaration is ILambdaExpression lambdaExpression
                 && lambdaExpression.GetCodeBody().ExpressionBody != null)
             {
                 using (var marker = new DisposableMarker<IReferenceExpression>(firstReference))
@@ -83,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 }
                 return null;
             }
-            
+
             Assertion.Assert(myCacheAnchor is ICSharpStatement, "myInlineCache is IStatement");
             var statementCacheAnchor = (ICSharpStatement) myCacheAnchor;
 
@@ -91,9 +90,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             {
                 foreach (var reference in myReferences)
                 {
-                    if (reference.GetContainingStatement() != myCacheAnchor) 
+                    if (reference.GetContainingStatement() != myCacheAnchor)
                         continue;
-                    
+
                     // is write first???
                     // example: var x = (transform.position = Vector3.Up) + transform.position + transform.position ...
                     // if yes, we have already save our variable in cycle above, if no use inline to cache.
@@ -109,10 +108,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             }
             else
             {
-                var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());   
+                var cacheStatement = factory.CreateStatement("var $0 = $1;", name, originValue.Copy());
                 StatementUtil.InsertStatement(cacheStatement, ref statementCacheAnchor, true);
             }
-            
+
             if (myRestoreAnchor != null)
             {
                 Assertion.Assert(myRestoreAnchor is ICSharpStatement, "myRestoreAnchor is IStatement");
@@ -150,12 +149,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             updatedReference.ReplaceBy(factory.CreateExpression("($0 = $1)", name, originValue.Copy()));
         }
 
-        private static bool IsAssignDestination(IReferenceExpression expr)
-        {
-            var fullReference = ReferenceExpressionNavigator.GetTopByQualifierExpression(expr);
-            var assignment = AssignmentExpressionNavigator.GetByDest(fullReference.GetContainingParenthesizedExpression());
-            return ExpressionStatementNavigator.GetByExpression(assignment) != null;
-        }
         private static string GetUniqueName([NotNull]IReferenceExpression referenceExpression,[NotNull] string baseName)
         {
             var namingManager = referenceExpression.GetPsiServices().Naming;
@@ -173,8 +166,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var namesSuggestion = namesCollection.Prepare(NamedElementKinds.Locals, ScopeKind.Common, suggestionOptions);
             return namesSuggestion.FirstName();
         }
-        
-        public override string Text => "Cache property value";
+
+        public override string Text => "Introduce variable";
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

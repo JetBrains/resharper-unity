@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
         }
-        
+
         public override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
         {
             switch (element)
@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                     break;
             }
         }
-        
+
         private void AddHighlighting(IHighlightingConsumer consumer, AbstractUnityCodeInsightProvider codeInsightsProvider, ICSharpDeclaration element, string tooltip, string displayName)
         {
             if (SettingsStore.GetIndexedValue((CodeInsightsSettings key) => key.DisabledProviders, codeInsightsProvider.ProviderId))
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             {
                 base.AddHighlighting(consumer, element, tooltip);
             }
-            
+
             displayName = displayName ?? codeInsightsProvider.DisplayName;
             var declaredElement = element.DeclaredElement;
             if (declaredElement == null || !declaredElement.IsValid())
@@ -87,12 +87,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var extraActions = new List<CodeLensEntryExtraActionModel>();
             if (!myConnectionTracker.IsConnectionEstablished())
             {
-                extraActions.Add(new CodeLensEntryExtraActionModel("Unity is off", null));
+                extraActions.Add(new CodeLensEntryExtraActionModel("Unity is not running", null));
                 extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity", AbstractUnityCodeInsightProvider.StartUnityActionId));
             }
-            
+
             consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.NameIdentifier.GetDocumentRange(),
-                displayName, displayName, codeInsightsProvider, declaredElement, 
+                displayName, displayName, codeInsightsProvider, declaredElement,
                 myIconHost.Transform(codeInsightsProvider.IconId), CreateBulbItemsForUnityDeclaration(element), extraActions));
         }
 
@@ -103,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (declaredElement != null && (declaredElement is IMethod method && !api.IsEventFunction(method) ||
                                             declaration is IClassDeclaration))
             {
-                var action = new UnityFindUsagesNavigationAction(declaredElement, 
+                var action = new UnityFindUsagesNavigationAction(declaredElement,
                     declaration.GetSolution().GetComponent<UnityEditorFindRequestCreator>(),  myConnectionTracker);
                 return new[]
                 {
@@ -130,20 +130,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 myCreator = creator;
                 myTracker = tracker;
             }
-            
+
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 if (!myTracker.IsConnectionEstablished())
                 {
                     return textControl => ShowTooltip(textControl, "Unity is not running");
                 }
-                    
+
                 myCreator.CreateRequestToUnity(myDeclaredElement, null, true);
                 return null;
             }
 
             public override string Text => "Show usages in Unity";
-            
+
         }
     }
 }

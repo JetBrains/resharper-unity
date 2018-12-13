@@ -15,35 +15,35 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
 
 [assembly:
     RegisterConfigurableSeverity(
-        PerformanceInvocationHighlighting.SEVERITY_ID, 
-        null, 
+        PerformanceInvocationHighlighting.SEVERITY_ID,
+        UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
         UnityHighlightingGroupIds.Unity,
         PerformanceInvocationHighlighting.TITLE,
-        PerformanceInvocationHighlighting.MESSAGE, 
+        PerformanceInvocationHighlighting.DESCRIPTION,
         Severity.INFO
         ),
     RegisterConfigurableSeverity(
-        PerformanceNullComparisonHighlighting.SEVERITY_ID, 
-        null, 
+        PerformanceNullComparisonHighlighting.SEVERITY_ID,
+        UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
         UnityHighlightingGroupIds.Unity,
         PerformanceNullComparisonHighlighting.TITLE,
-        PerformanceNullComparisonHighlighting.MESSAGE,
+        PerformanceNullComparisonHighlighting.DESCRIPTION,
         Severity.INFO
     ),
     RegisterConfigurableSeverity(
-        PerformanceHighlighting.SEVERITY_ID, 
-        null, 
+        PerformanceHighlighting.SEVERITY_ID,
+        UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
         UnityHighlightingGroupIds.Unity,
         PerformanceHighlighting.TITLE,
         PerformanceHighlighting.MESSAGE,
         Severity.INFO
     ),
     RegisterConfigurableSeverity(
-        PerformanceCameraMainHighlighting.SEVERITY_ID, 
-        null, 
+        PerformanceCameraMainHighlighting.SEVERITY_ID,
+        UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
         UnityHighlightingGroupIds.Unity,
         PerformanceCameraMainHighlighting.TITLE,
-        PerformanceCameraMainHighlighting.MESSAGE,
+        PerformanceCameraMainHighlighting.DESCRIPTION,
         Severity.INFO
     ),
 ]
@@ -60,10 +60,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         [CanBeNull] public readonly IInvocationExpression InvocationExpression;
         [NotNull] public readonly IReference Reference;
         public const string SEVERITY_ID = "Unity.PerformanceCriticalCodeInvocation";
-        public const string TITLE = "[Performace] Costly method is invoked";
-        public const string MESSAGE = "Costly method is invoked from performance context";
+        public const string TITLE = "Expensive method invocation";
+        public const string DESCRIPTION = "This method call is inefficient when called inside a performance critical context.";
+        public const string MESSAGE = "Expensive method invocation";
 
-        public PerformanceInvocationHighlighting([CanBeNull] IInvocationExpression invocationExpression, [NotNull] IReference reference) : 
+        public PerformanceInvocationHighlighting([CanBeNull] IInvocationExpression invocationExpression, [NotNull] IReference reference) :
             base(SEVERITY_ID, PerformanceHighlightingAttributeIds.COSTLY_METHOD_INVOCATION, MESSAGE)
         {
             InvocationExpression = invocationExpression;
@@ -74,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public override DocumentRange CalculateRange() => Reference.GetDocumentRange();
     }
-    
+
     [ConfigurableSeverityHighlighting(
         PerformanceNullComparisonHighlighting.SEVERITY_ID, CSharpLanguage.Name, Languages = "CSHARP",
         AttributeId = PerformanceHighlightingAttributeIds.NULL_COMPARISON,
@@ -86,8 +87,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         [NotNull] public string FieldName;
         [NotNull] private readonly IReference myReference;
         public const string SEVERITY_ID = "Unity.PerformanceCriticalCodeNullComparison";
-        public const string TITLE = "[Performance] Null comparison in expensive";
-        public const string MESSAGE = "Null comparisons against UnityEngine.Object subclasses is expensive";
+        public const string TITLE = "Expensive null comparison";
+        public const string DESCRIPTION = "Equality operations on objects deriving from 'UnityEngine.Object' will also check that the underlying native object has not been destroyed. This requires a call into native code and can have a performance impact when used inside frequently called methods.";
+        public const string MESSAGE = "Comparison to 'null' is expensive";
 
         public PerformanceNullComparisonHighlighting([NotNull] ICSharpExpression expression, [NotNull] string fieldName, [NotNull] IReference reference) :
             base(SEVERITY_ID, PerformanceHighlightingAttributeIds.NULL_COMPARISON, MESSAGE)
@@ -101,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public override DocumentRange CalculateRange() => myReference.GetDocumentRange();
     }
-    
+
     [ConfigurableSeverityHighlighting(
         PerformanceCameraMainHighlighting.SEVERITY_ID, CSharpLanguage.Name, Languages = "CSHARP",
         AttributeId = PerformanceHighlightingAttributeIds.CAMERA_MAIN,
@@ -111,8 +113,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         [NotNull] public readonly IReferenceExpression ReferenceExpression;
         public const string SEVERITY_ID = "Unity.PerformanceCriticalCodeCameraMain";
-        public const string TITLE = "[Performance] Camera.main is expensive";
-        public const string MESSAGE = "Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()";
+        public const string TITLE = "'Camera.main' is expensive";
+        public const string DESCRIPTION = "'Camera.main' is slow and does not cache its result. Using 'Camera.main' in frequently called methods is very inefficient. Prefer caching the result in 'Start()' or 'Awake()'";
+        public const string MESSAGE = "'Camera.main' is expensive";
 
         public PerformanceCameraMainHighlighting([NotNull] IReferenceExpression referenceExpression) :
             base(SEVERITY_ID, PerformanceHighlightingAttributeIds.CAMERA_MAIN, MESSAGE)
@@ -124,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public override DocumentRange CalculateRange() => ReferenceExpression.GetHighlightingRange();
     }
-    
+
     [StaticSeverityHighlighting(Severity.INFO, CSharpLanguage.Name, Languages = "CSHARP",
         AttributeId = PerformanceHighlightingAttributeIds.COSTLY_METHOD_HIGHLIGHTER,
         ShowToolTipInStatusBar = false,
@@ -147,14 +150,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override DocumentRange CalculateRange() => myRange;
 
         public string RendererId => null;
-        public int Thickness => 3;
+        public int Thickness => 1;
         public LineMarkerPosition Position => LineMarkerPosition.LEFT;
         public ExecutableItem LeftClick() => null;
 
         public string Tooltip => "Frequently called method";
     }
-    
-    
+
+
     public abstract class PerformanceHighlightingBase : ICustomAttributeIdHighlighting
     {
         [NotNull] public readonly string SeverityId;
@@ -173,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         [NotNull] public string ErrorStripeToolTip => ToolTip;
         public string AttributeId { get; }
     }
-    
+
     [SolutionComponent]
     public class PerformanceCriticalCodeHighlightingTooltipProvider : IdentifierTooltipProvider<CSharpLanguage>
     {
@@ -182,9 +185,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
         }
     }
-   
+
     public static class PerformanceHighlightingAttributeIds
-    { 
+    {
         public const string CAMERA_MAIN = "ReSharper Unity PerformanceCameraMain";
         public const string COSTLY_METHOD_INVOCATION = "ReSharper Unity PerformanceCostlyMethodInvocation";
         public const string NULL_COMPARISON = "ReSharper Unity PerformanceNullComparison";
