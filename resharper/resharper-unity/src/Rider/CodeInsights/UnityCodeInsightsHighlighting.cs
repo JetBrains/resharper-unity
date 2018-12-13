@@ -5,6 +5,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Rider.Model;
@@ -19,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
     [StaticSeverityHighlighting(Severity.INFO, HighlightingGroupIds.CodeInsightsGroup, AttributeId = Id,
         OverlapResolve = OverlapResolveKind.NONE)]
-    public class UnityCodeInsightsHighlighting : CodeInsightsHighlighting
+    public class UnityCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityHighlighting
     {
         public const string Id = "UnityCodeInsights";
 

@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
     
     [SolutionComponent]
-    public class UnityCodeInsightCodeInsightProvider : AbstractUnityCodeInsightProvider
+    public class UnityCodeInsightProvider : AbstractUnityCodeInsightProvider
     {
         public override string ProviderId => "Unity implicit usage";
         public override string DisplayName => "Unity implicit usage";
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings =>  new[] { new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)};
 
-        public UnityCodeInsightCodeInsightProvider(UnityHost host,BulbMenuComponent bulbMenu)
+        public UnityCodeInsightProvider(UnityHost host,BulbMenuComponent bulbMenu)
             : base(host, bulbMenu)
         {
         }

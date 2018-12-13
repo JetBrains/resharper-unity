@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEditor;
 
-public class |A|(0) : MonoBehaviour
+public class A : MonoBehaviour
 {
     // All serialised by Unity - gutter icons
-    public string |ImplicitlyAssignedField|(1);
-    public string |ImplicitlyAssignedMultiField1|(2), |ImplicitlyAssignedMultiField2|(3);
-    [SerializeField] private int |myImplicitlyAssignedPrivateField|(4);
+    public string ImplicitlyAssignedField;
+    public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
+    [SerializeField] private int myImplicitlyAssignedPrivateField;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -23,7 +23,7 @@ public class |A|(0) : MonoBehaviour
     [SerializeField] private static string ourUnusedPrivateStaticField;
 
     // Unity function
-    private void |OnDestroy|(5)()
+    private void OnDestroy()
     {
     }
 
@@ -33,13 +33,13 @@ public class |A|(0) : MonoBehaviour
     }
 
     // Unity message as coroutine
-    private IEnumerator |Start|(6)()
+    private IEnumerator Start()
     {
         return null;
     }
 
     // Optional parameter
-    private void |OnCollisionStay|(7)()
+    private void OnCollisionStay()
     {
     }
 }
@@ -47,7 +47,7 @@ public class |A|(0) : MonoBehaviour
 [InitializeOnLoad]
 public class Startup
 {
-    static |Startup|(8)()
+    static Startup()
     {
         Debug.Log("Up and running");
     }
@@ -97,12 +97,12 @@ class MyClass
 }
 
 [Serializable]
-class |SerialisableClass|(9)
+class SerialisableClass
 {
     // All serialised by Unity - gutter icons
-    public string |ImplicitlyAssignedField|(10);
-    public string |ImplicitlyAssignedMultiField1|(11), |ImplicitlyAssignedMultiField2|(12);
-    [SerializeField] private int |myImplicitlyAssignedPrivateField|(13);
+    public string ImplicitlyAssignedField;
+    public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
+    [SerializeField] private int myImplicitlyAssignedPrivateField;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -118,12 +118,12 @@ class |SerialisableClass|(9)
 }
 
 [Serializable]
-struct |SerialisableStruct|(14)
+struct SerialisableStruct
 {
     // All serialised by Unity - gutter icons
-    public string |ImplicitlyAssignedField|(15);
-    public string |ImplicitlyAssignedMultiField1|(16), |ImplicitlyAssignedMultiField2|(17);
-    [SerializeField] private int |myImplicitlyAssignedPrivateField|(18);
+    public string ImplicitlyAssignedField;
+    public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
+    [SerializeField] private int myImplicitlyAssignedPrivateField;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -156,32 +156,3 @@ static class NotSerialisableClass
     public string NotSerialised1;
     [SerializeField] public string NotSerialised2;
 }
-
----------------------------------------------------------
-(0): Unity Gutter Icon: Unity scripting component
-(1): Unity Gutter Icon: This field is initialised by Unity
-(2): Unity Gutter Icon: This field is initialised by Unity
-(3): Unity Gutter Icon: This field is initialised by Unity
-(4): Unity Gutter Icon: This field is initialised by Unity
-(5): Unity Gutter Icon: Unity event function
-
-Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
-(6): Unity Gutter Icon: Unity event function
-
-Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
-This function can be a coroutine.
-(7): Unity Gutter Icon: Unity event function
-
-OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
-This function can be a coroutine.
-(8): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
-(9): Unity Gutter Icon: Unity custom serializable type
-(10): Unity Gutter Icon: This field is initialised by Unity
-(11): Unity Gutter Icon: This field is initialised by Unity
-(12): Unity Gutter Icon: This field is initialised by Unity
-(13): Unity Gutter Icon: This field is initialised by Unity
-(14): Unity Gutter Icon: Unity custom serializable type
-(15): Unity Gutter Icon: This field is initialised by Unity
-(16): Unity Gutter Icon: This field is initialised by Unity
-(17): Unity Gutter Icon: This field is initialised by Unity
-(18): Unity Gutter Icon: This field is initialised by Unity

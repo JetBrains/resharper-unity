@@ -20,13 +20,13 @@ using JetBrains.Util.Extension;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
-    public class UnityEditorFindRequestCreator
+    public class UnityEditorFindUsageResultCreator
     {
         private readonly ISolution mySolution;
         private readonly UnityHost myUnityHost;
         private readonly FileSystemPath mySolutionDirectoryPath;
 
-        public UnityEditorFindRequestCreator(ISolution solution, UnityHost unityHost)
+        public UnityEditorFindUsageResultCreator(ISolution solution, UnityHost unityHost)
         {
             mySolution = solution;
             myUnityHost = unityHost;
@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var finder = mySolution.GetPsiServices().Finder;
             var references = finder.FindAllReferences(declaredElement).OfType<IUnityYamlReference>();
 
-            var result = new List<FindUsageResult>();
+            var result = new List<FindUsageResultElement>();
 
             foreach (var reference in references)
             {
@@ -60,17 +60,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return false;
 
             if (focusUnity)
-            {
                 UnityFocusUtil.FocusUnity(myUnityHost.GetValue(t => t.UnityProcessId.Value));
-            }
             
             if (selectedReference != null)
                 myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(CreateRequest(selectedReference, null)));
-            myUnityHost.PerformModelAction(t => t.FindUsageResults.Fire(result.ToArray()));
+            myUnityHost.PerformModelAction(t => t.FindUsageResults.Fire(new FindUsageResult(declaredElement.ShortName, result.ToArray())));
             return true;
         }
         
-        private FindUsageResult CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
+        private FindUsageResultElement CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
         {
             var gameObjectDocument = currentReference.ComponentDocument.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty) ?? currentReference.ComponentDocument;
 
@@ -107,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             bool needExpand = currentReference == selectedReference;
             bool isPrefab = extension.Equals(UnityYamlConstants.Prefab, StringComparison.OrdinalIgnoreCase);
             
-            return new FindUsageResult(isPrefab, needExpand, pathFromAsset, fileName, pathElements, rootIndices.ToArray().Reverse().ToArray());
+            return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, pathElements, rootIndices.ToArray().Reverse().ToArray());
         }
 
         private bool GetPathFromAssetFolder([NotNull] IPsiSourceFile file, out string filePath, out string fileName, out string extension)

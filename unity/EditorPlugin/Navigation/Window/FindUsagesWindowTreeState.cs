@@ -20,7 +20,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       
     }
     
-    public FindUsagesWindowTreeState(RdFindUsageResult[] requests)
+    public FindUsagesWindowTreeState(RdFindUsageResultElement[] requests)
     {
       foreach (var request in requests)
       {

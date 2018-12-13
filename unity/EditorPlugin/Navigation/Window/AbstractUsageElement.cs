@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.Navigation
 {
   [Serializable]
+  [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
   internal abstract class AbstractUsageElement
   {
     [SerializeField] 
@@ -13,7 +15,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     [SerializeField]
     public string[] Path;
     [SerializeField]
-    public readonly int[] RootIndices;
+    public int[] RootIndices;
 
     protected AbstractUsageElement(string filePath, string fileName, string[] path, int[] rootIndices)
     {
