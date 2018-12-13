@@ -8,7 +8,7 @@ namespace DefaultNamespace
             
         public void Method(Material material)
         {
-            material.SetFloat(Prope{caret}rty, 10.0f);
+            material.SetFloat(Proper{caret}ty, 10.0f);
         }
     }
 }

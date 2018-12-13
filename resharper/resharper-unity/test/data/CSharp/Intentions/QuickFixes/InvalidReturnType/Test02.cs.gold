@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Foo : AssetPostprocessor
 {
-    public {caret}Material OnAssignMaterialModel(Material material, Renderer renderer)
+    public Mater{caret}ial OnAssignMaterialModel(Material material, Renderer renderer)
     {
     }
 }

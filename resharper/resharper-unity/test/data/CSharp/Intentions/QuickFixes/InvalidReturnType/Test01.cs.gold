@@ -2,7 +2,7 @@
 
 public class Foo : MonoBehaviour
 {
-    public voi{caret}d Start()
+    public void{caret} Start()
     {
         return 0;
     }

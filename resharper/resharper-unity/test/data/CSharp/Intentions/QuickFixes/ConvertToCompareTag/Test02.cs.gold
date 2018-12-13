@@ -4,6 +4,6 @@ public class Foo
 {
     public void Method(GameObject o)
     {
-        if (o.CompareTag("Whatever"{caret})) { }
+        if (o.CompareTag("Whatever"){caret}) { }
     }
 }

@@ -6,7 +6,7 @@ namespace UnityTest
   {
     public Class1()
     {
-      var c = Color{caret}.cyan;
+      var c = Color.cyan{caret};
     }
   }
 }

@@ -14,7 +14,7 @@ namespace DefaultNamespace
       public void Update()
         {
             var localTransform = GetComponent<Transform>();
-            if (myIstransform{caret}NotNull) {
+            if (myIstransformNotN{caret}ull) {
                 
             }
         }

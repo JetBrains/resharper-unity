@@ -3,7 +3,7 @@ using UnityEditor;
 
 public class FooProcessor : AssetPostprocessor
 {
-    private void OnPostprocessGameObjectWithUserProperties({caret}GameObject go, string[] propNames, object[] values)
+    private void OnPostprocessGameObjectWithUserProperties(GameObject go, string[] propNames, object[] values{caret})
     {
     }
 }

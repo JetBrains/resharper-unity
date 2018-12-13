@@ -10,7 +10,7 @@ public class TopLevelClass
 
         public void Method(Material material)
         {
-            material.SetFloat(TopLe{caret}velClass.Test, 10.0f);
+            material.SetFloat(TopLevelCla{caret}ss.Test, 10.0f);
         }
     }
 }

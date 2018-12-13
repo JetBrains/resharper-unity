@@ -3,7 +3,7 @@
 public class Foo
 {
     [RuntimeInitializeOnLoadMethod]
-    public static voi{caret}d OnLoad()
+    public static void{caret} OnLoad()
     {
         return 0;
     }

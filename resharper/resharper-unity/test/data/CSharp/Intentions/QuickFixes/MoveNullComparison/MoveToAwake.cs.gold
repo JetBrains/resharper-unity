@@ -14,7 +14,7 @@ namespace Test
 
       public void Update()
         {
-            if (myIsTransform{caret}Null)
+            if (myIsTransformN{caret}ull)
             {
                 
             }
