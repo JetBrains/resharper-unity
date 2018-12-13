@@ -46,4 +46,4 @@ public class PlainClass : MyBaseClass
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Calling this method will show the default 'No GUI Implemented' message in the inspector.
+(0): ReSharper Warning: 'base.OnGUI()' will print "No GUI Implemented" in the Unity inspector

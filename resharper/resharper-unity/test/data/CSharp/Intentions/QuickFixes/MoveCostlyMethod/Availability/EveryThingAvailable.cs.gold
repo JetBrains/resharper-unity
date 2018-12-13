@@ -16,8 +16,8 @@ namespace DefaultNamespace
 ------------------------------------------------
 0: 
 NO QUICKFIXES
-1: Costly method is invoked from performance context
+1: Expensive method invocation
 QUICKFIXES:
-Move to Start
-Move to Awake
-Move outside the loop
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+Move outside of loop

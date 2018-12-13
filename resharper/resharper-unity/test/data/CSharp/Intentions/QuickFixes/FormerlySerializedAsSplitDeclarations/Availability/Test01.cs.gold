@@ -7,6 +7,6 @@ public class Test : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Possible mis-application of 'FormerlySerializedAs' attribute to multiple fields
+0: Possible incorrect application of 'FormerlySerializedAs' attribute to multiple fields
 QUICKFIXES:
 Split into separate declarations

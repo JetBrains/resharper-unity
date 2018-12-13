@@ -15,4 +15,4 @@ public class Whatever
 ---------------------------------------------------------
 (0): Unity Gutter Icon: Unity scripting component
 (1): Unity implicitly used identifier: 
-(2): ReSharper Warning: ScriptableObjects must be instantiated with 'ScriptableObject.CreateInstance<T>()' instead of 'new'
+(2): ReSharper Warning: 'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance<T>()' instead of 'new'

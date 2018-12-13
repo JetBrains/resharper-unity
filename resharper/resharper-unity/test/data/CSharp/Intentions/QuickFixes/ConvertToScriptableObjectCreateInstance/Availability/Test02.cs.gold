@@ -8,6 +8,6 @@
 }
 
 ------------------------------------------------
-0: ScriptableObjects must be instantiated with 'ScriptableObject.CreateInstance<T>()' instead of 'new'
+0: 'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance<T>()' instead of 'new'
 QUICKFIXES:
 Convert to 'ScriptableObject.CreateInstance<MyScriptableObject>()'

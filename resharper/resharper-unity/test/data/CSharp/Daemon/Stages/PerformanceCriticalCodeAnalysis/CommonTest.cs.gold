@@ -40,16 +40,16 @@ namespace DefaultNamespace
 }
 ---------------------------------------------------------
 (0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(1): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(1): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
 (2): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(3): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
-(4): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
-(5): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
-(6): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
-(7): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
-(8): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
-(9): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(3): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
+(4): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
+(5): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
+(6): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
+(7): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
+(8): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
+(9): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
 (10): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(11): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(11): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
 (12): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(13): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(13): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
