@@ -146,6 +146,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
                         new Identities(IdKind.Client), myDispatcher, wire);
+
+                    protocol.ThrowErrorOnOutOfSyncModels = false;
                     
                     protocol.OutOfSyncModels.AdviseNotNull(lf, e =>
                     {
