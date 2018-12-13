@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                                             declaration is IClassDeclaration))
             {
                 var action = new UnityFindUsagesNavigationAction(declaredElement, 
-                    declaration.GetSolution().GetComponent<UnityEditorFindRequestCreator>(),  myConnectionTracker);
+                    declaration.GetSolution().GetComponent<UnityEditorFindUsageResultCreator>(),  myConnectionTracker);
                 return new[]
                 {
                     new BulbMenuItem(
@@ -121,10 +121,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         internal class UnityFindUsagesNavigationAction : BulbActionBase
         {
             private readonly IDeclaredElement myDeclaredElement;
-            private readonly UnityEditorFindRequestCreator myCreator;
+            private readonly UnityEditorFindUsageResultCreator myCreator;
             [NotNull] private readonly ConnectionTracker myTracker;
 
-            public UnityFindUsagesNavigationAction([NotNull]IDeclaredElement method, [NotNull]UnityEditorFindRequestCreator creator, [NotNull] ConnectionTracker tracker)
+            public UnityFindUsagesNavigationAction([NotNull]IDeclaredElement method, [NotNull]UnityEditorFindUsageResultCreator creator, [NotNull] ConnectionTracker tracker)
             {
                 myDeclaredElement = method;
                 myCreator = creator;

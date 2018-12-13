@@ -172,7 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     myHost.PerformModelAction(t => t.ShowGameObjectOnScene.Advise(lf, v => editor.ShowGameObjectOnScene.Fire(v.ConvertToUnityModel())));
                     
                     // pass all references to Unity TODO temp workaround, replace with async api
-                    myHost.PerformModelAction(t => t.FindUsageResults.Advise(lf, v =>editor.FindUsageResults.Fire(v.Select(e => e.ConvertToUnityModel()).ToArray())));
+                    myHost.PerformModelAction(t => t.FindUsageResults.Advise(lf, v =>editor.FindUsageResults.Fire(v.ConvertToUnityModel())));
                     
                     editor.EditorLogPath.Advise(lifetime,                    
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));

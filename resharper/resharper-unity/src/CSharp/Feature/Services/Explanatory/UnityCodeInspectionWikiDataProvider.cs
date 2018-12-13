@@ -71,6 +71,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
                 {
                     ExplicitTagStringComparisonWarning.HIGHLIGHTING_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/Use-CompareTag-instead-of-explicit-string-comparison"
+                },
+                {
+                    PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Prefer-using-generic-method-overload-instead-of-string"
+                },
+                {
+                    PerformanceInvocationHighlighting.SEVERITY_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Performance-critical-context-and-costly-methods"
+                },
+                {
+                    InstantiateWithoutParentWarning.HIGHLIGHTING_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Avoid-using-Object.Instantiate-without-“Transform-Parent”-parameter-and-using-SetParent-later"
+                },
+                {
+                    InefficientPropertyAccessWarning.HIGHLIGHTING_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Avoid-multiple-unnecessary-property-accesses"
+                },
+                {
+                    PreferAddressByIdToGraphicsParamsWarning.HIGHLIGHTING_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Avoid-using-string-based-names-for-setting-and-getting-properties-on-Animators,-Shaders-and-Materials"
+                },
+                {
+                    PreferNonAllocApiWarning.HIGHLIGHTING_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Avoid-using-allocating-versions-of-Physics-Raycast-functions"
+                },
+                {
+                    PerformanceNullComparisonHighlighting.SEVERITY_ID,
+                    "https://github.com/JetBrains/resharper-unity/wiki/Avoid-null-comparisons-against-UnityEngine.Object-subclasses"
                 }
             };
 
