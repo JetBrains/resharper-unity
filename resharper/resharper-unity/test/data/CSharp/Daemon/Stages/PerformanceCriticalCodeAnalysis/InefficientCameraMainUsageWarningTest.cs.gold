@@ -40,11 +40,11 @@ public class Boring
 
 ---------------------------------------------------------
 (0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(1): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
-(2): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
+(1): ReSharper Unity PerformanceCameraMain: 'Camera.main' is expensive
+(2): ReSharper Unity PerformanceCameraMain: 'Camera.main' is expensive
 (3): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(4): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
-(5): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
+(4): ReSharper Unity PerformanceCameraMain: 'Camera.main' is expensive
+(5): ReSharper Unity PerformanceCameraMain: 'Camera.main' is expensive
 (6): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(7): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
-(8): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
+(7): ReSharper Unity PerformanceCameraMain: 'Camera.main' is expensive
+(8): ReSharper Unity PerformanceCameraMain: 'Camera.main' is expensive

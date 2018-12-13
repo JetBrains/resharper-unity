@@ -12,4 +12,4 @@ public class Test : MonoBehaviour
 
 ---------------------------------------------------------
 (0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(1): ReSharper Unity PerformanceCameraMain: Camera.main is slow and does not cache its result. Using Camera.main in frequently called methods is very inefficient. Prefer caching the result in Start() or Awake()
+(1): ReSharper Unity PerformanceCameraMain: 'Camera.main' is expensive

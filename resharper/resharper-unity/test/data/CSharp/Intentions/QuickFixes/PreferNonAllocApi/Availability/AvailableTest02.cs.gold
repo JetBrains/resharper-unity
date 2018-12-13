@@ -9,6 +9,6 @@ public class Available02 : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Allocating method will decrease performance. Use 'OverlapBoxNonAlloc' and reuse buffer for return value
+0: Use non-allocating method 'OverlapBoxNonAlloc'
 QUICKFIXES:
-Convert to OverlapBoxNonAlloc
+Convert to 'OverlapBoxNonAlloc'

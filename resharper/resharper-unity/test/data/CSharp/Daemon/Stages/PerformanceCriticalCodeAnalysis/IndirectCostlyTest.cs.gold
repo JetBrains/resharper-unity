@@ -21,6 +21,6 @@ namespace DefaultNamespace
 }
 ---------------------------------------------------------
 (0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(1): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(1): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
 (2): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(3): ReSharper Unity PerformanceCostlyMethodInvocation: Costly method is invoked from performance context
+(3): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation

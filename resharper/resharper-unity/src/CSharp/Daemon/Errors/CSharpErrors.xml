@@ -46,37 +46,31 @@
         <Description>Event function with the same name is already declared.</Description>
       </Tag>
 
+      <Tag externalName="ExpectedComponentWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Expected type derived from 'Component' or 'MonoBehaviour'</Title>
+        <Description>Expected built in type derived from 'Component', or user type derived from 'MonoBehaviour'.</Description>
+      </Tag>
+
+      <Tag externalName="ExpectedScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Expected type derived from 'ScriptableObject'</Title>
+        <Description>Expected type derived from 'ScriptableObject'.</Description>
+      </Tag>
+
       <Tag externalName="ExplicitTagStringComparisonWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Use 'CompareTag' instead of explicit string comparison</Title>
         <Description>Explicit string comparison with 'GameObject.tag' or 'Component.tag' is inefficient. Use the 'CompareTag' method instead.</Description>
       </Tag>
 
-      <Tag externalName="ExpectedComponentWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Expected type deriving from 'Component' or 'MonoBehaviour'</Title>
-        <Description>Expected built in type deriving from 'Component', or user type deriving from 'MonoBehaviour'.</Description>
-      </Tag>
-
-      <Tag externalName="ExpectedScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Expected type deriving from 'ScriptableObject'</Title>
-        <Description>Expected type deriving from 'ScriptableObject'.</Description>
-      </Tag>
-
-      <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Repeatable property access of a built-in component is inefficient</Title>
-        <Description>Built-in component property access results in native method calls and should be cached.</Description>
-      </Tag>
-
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</Title>
-        <Description>Instantiating a MonoBehaviour based class with 'new' does not attach it to a GameObject, and Unity will not invoke any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;().</Description>
+        <Title>'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</Title>
+        <Description>Using 'new' to instantiate a class derived from 'MonoBehaviour' will not attach it to a 'GameObject' instance, and Unity will not call any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;()'.</Description>
       </Tag>
 
       <Tag externalName="IncorrectScriptableObjectInstantiationWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>ScriptableObjects must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'</Title>
-        <Description>Instantiating a ScriptableObject base class with 'new' means that Unity will not call any event functions. Use 'ScriptableObject.CreateInstance&lt;T&gt;()' instead.</Description>
+        <Title>'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'</Title>
+        <Description>Using 'new' to instantiate a class derived from 'ScriptableObject' means that Unity will not call any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;()'.</Description>
       </Tag>
 
       <Tag externalName="IncorrectSignatureWarning.HIGHLIGHTING_ID" default="WARNING">
@@ -84,45 +78,52 @@
         <Description>Method does not match expected signature.</Description>
       </Tag>
 
+      <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Repeated access of property on built in component is inefficient</Title>
+        <Description>Some Unity object properties result in native methods calls and repeatedly accessing the property is inefficient. Introduce a variable to locally cache the property value.</Description>
+      </Tag>
+
       <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Inefficient setting of the parent property</Title>
-        <Description>Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code.</Description>
+        <Title>Setting 'parent' property immediately after object instantiation is inefficient</Title>
+        <Description>Instantiating a Unity object and setting the 'parent' property as separate operations is inefficient, as the transform hierarchy is created and immediately replaced. Combine setting the 'parent' property with the call to instantiate the object.</Description>
       </Tag>
 
-      <Tag externalName="PropertyDrawerOnGUIBaseWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>You should not call 'base.OnGUI()' in PropertyDrawers</Title>
-        <Description>Calling this method will show the default 'No GUI Implemented' message in the inspector.</Description>
-      </Tag>
-
+      <!-- TODO: Merge this with ExpectedComponentWarning? -->
       <Tag externalName="ParameterNotDerivedFromComponentWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Parameter should be derived from `Component`</Title>
-        <Description>Parameter should be derived from `Component`.</Description>
+        <Title>Parameter should be derived from 'Component'</Title>
+        <Description>Parameter should be derived from 'Component'.</Description>
       </Tag>
 
       <Tag externalName="PossibleMisapplicationOfAttributeToMultipleFieldsWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Possible mis-application of attribute to multiple fields</Title>
+        <Title>Possible incorrect application of attribute to multiple fields</Title>
         <Description>Applying an attribute to a single declaration containing multiple fields will apply the attribute to each field. The highlighted attribute (e.g. 'FormerlySerializedAs') is intended to be applied only to a single field. Prefer an explicit application to a single field in a single declaration.</Description>
       </Tag>
 
       <Tag externalName="PreferAddressByIdToGraphicsParamsWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Use int overload to access properties instead of string</Title>
-        <Description>Using the string to address graphics properties results in additional overhead that should not be incurred.</Description>
+        <Title>String based graphics property lookup is inefficient</Title>
+        <Description>String based property lookup is inefficient, as each time the method is called, the string name is converted into an integer value. Prefer calculating the integer value once and caching the result.</Description>
       </Tag>
 
       <Tag externalName="PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Use generic method overload instead of a string one</Title>
-        <Description>Using the string for the component type variants results in additional overhead that should not be incurred.</Description>
+        <Title>String based lookup of component type is inefficient</Title>
+        <Description>Using a string type name to look up a component is slower than specifying the type as a generic type parameter.</Description>
       </Tag>
 
       <Tag externalName="PreferNonAllocApiWarning.HIGHLIGHTING_ID"
            default="WARNING">
-        <Title>Use 'NonAlloc' api instead of methods which allocate memory</Title>
-        <Description>Reusing your buffer instead of new allocation will increase performance.</Description>
+        <Title>Alternative non-allocating method available</Title>
+        <Description>An alternative method is available that avoids allocation and reuses an existing buffer.</Description>
+      </Tag>
+
+      <Tag externalName="PropertyDrawerOnGUIBaseWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+        <Title>Avoid 'base.OnGUI()' in classes derived from 'PropertyDrawer'</Title>
+        <Description>The default implementation for 'OnGUI' in 'PropertyDrawer' will print \&quot;No GUI Implemented\&quot; in the Unity inspector.</Description>
       </Tag>
 
       <Tag externalName="RedundantAttributeOnTargetWarning.HIGHLIGHTING_ID"
@@ -141,7 +142,8 @@
       <Tag externalName="RedundantFormerlySerializedAsAttributeWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Redundant 'FormerlySerializedAs' attribute</Title>
-        <Description>The 'FormerlySerializedAs' attribute is only valid on Unity serialized field. It is also redundant if the name argument matches the current name of the field.</Description>
+        <Description>The 'FormerlySerializedAs' attribute is only valid on Unity serialized fields. It can also be redundant if the name argument matches the current name of the field.</Description>
+        <CompoundItemName>Redundant attribute usage</CompoundItemName>
       </Tag>
 
       <Tag externalName="RedundantHideInInspectorAttributeWarning.HIGHLIGHTING_ID"
@@ -154,7 +156,7 @@
       <Tag externalName="RedundantInitializeOnLoadAttributeWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Redundant 'InitializeOnLoad' attribute</Title>
-        <Description>The 'InitializeOnLoad' attribute is redundant when static constructor is missing.</Description>
+        <Description>The 'InitializeOnLoad' attribute is redundant when the static constructor is missing.</Description>
         <CompoundItemName>Redundant attribute usage</CompoundItemName>
       </Tag>
 
@@ -247,14 +249,14 @@
 
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
-    <Message value="MonoBehaviours must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
+    <Message value="'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
     <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="IncorrectScriptableObjectInstantiation" configurableSeverity="Unity.IncorrectScriptableObjectInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
-    <Message value="ScriptableObjects must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'" />
+    <Message value="'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'" />
     <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -276,7 +278,7 @@
     <Parameter type="bool" name = "inlineCacheValue" />
     <Parameter type="ICSharpTreeNode" name="restoreAnchor" />
     <Parameter type="bool" name="inlineRestoreValue" />
-    <Message value="Built-in component property access results in native method calls and should be cached"/>
+    <Message value="Repeated property access of built in component is inefficient" />
     <Range>HighlightedReference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -286,15 +288,8 @@
     <Parameter type="IInvocationExpression" name="invocation"/>
     <Parameter type="ICSharpExpression" name="newArgument" isValid="skip"/>
     <Parameter type="bool" name="stayInWorldCoords" isValid="skip"/>
-    <Message value="Using overload without transform parameter results in creating transform hierarchy, which is replaced later in code."/>
+    <Message value="Setting 'parent' property immediately after object instantiation is inefficient" />
     <Range>Reference.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
-  <Warning name="PropertyDrawerOnGUIBase" configurableSeverity="Unity.PropertyDrawerOnGUIBase">
-    <Parameter type="IReference" name="invocation" />
-    <Message value="Calling this method will show the default 'No GUI Implemented' message in the inspector."/>
-    <Range>Invocation.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
@@ -336,12 +331,20 @@
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
+  <!-- TODO: Merge this with ExpectedComponentWarning? -->
   <Warning name="ParameterNotDerivedFromComponent" configurableSeverity="Unity.ParameterNotDerivedFromComponent">
     <Parameter type="ICSharpParameterDeclaration" name="parameterDeclaration" />
     <Message value="Parameter '{0}' should be derived from 'Component'">
       <Argument>ParameterDeclaration.DeclaredName</Argument>
     </Message>
     <Range>ParameterDeclaration.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="PossibleMisapplicationOfAttributeToMultipleFields" configurableSeverity="Unity.PossibleMisapplicationOfAttributeToMultipleFields">
+    <Parameter type="IAttribute" name="attribute" />
+    <Message value="Possible incorrect application of 'FormerlySerializedAs' attribute to multiple fields" />
+    <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
@@ -352,7 +355,7 @@
     <Parameter type="string" name="literal" />
     <Parameter type="string" name="typeName" />
     <Parameter type="string" name="mapFunction" />
-    <Message value="Int method overload is preferred. Using the string parameter results in additional overhead."/>
+    <Message value="String based property lookup is inefficient" />
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -362,7 +365,7 @@
     <Parameter type="string" name="methodName" isValid="skip"/>
     <Parameter type="ILiteralExpression" name="argument" />
     <Parameter type="ITypeElement" name="typeElement" isValid="skip"/>
-    <Message value="Generic method overload is preferred. Using the string parameter results in additional overhead."/>
+    <Message value="String based type lookup is inefficient, use generic overload" />
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -371,18 +374,18 @@
     <Parameter type="IInvocationExpression" name="invocationExpression" />
     <Parameter type="IReferenceExpression" name="invokedExpression" />
     <Parameter type="IMethod" name="nonAllocMethod" />
-    <Message value="Allocating method will decrease performance. Use '{0}' and reuse buffer for return value">
+    <Message value="Use non-allocating method '{0}'">
       <Argument>NonAllocMethod.ShortName</Argument>
     </Message>
     <Range>InvokedExpression.Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
-  <Warning name="PossibleMisapplicationOfAttributeToMultipleFields" configurableSeverity="Unity.PossibleMisapplicationOfAttributeToMultipleFields">
-    <Parameter type="IAttribute" name="attribute" />
-    <Message value="Possible mis-application of 'FormerlySerializedAs' attribute to multiple fields" />
-    <Range>Attribute.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+  <Warning name="PropertyDrawerOnGUIBase" configurableSeverity="Unity.PropertyDrawerOnGUIBase">
+    <Parameter type="IReference" name="invocation" />
+    <Message value="'base.OnGUI()' will print \&quot;No GUI Implemented\&quot; in the Unity inspector" />
+    <Range>Invocation.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="RedundantAttributeOnTarget" configurableSeverity="Unity.RedundantAttributeOnTarget">

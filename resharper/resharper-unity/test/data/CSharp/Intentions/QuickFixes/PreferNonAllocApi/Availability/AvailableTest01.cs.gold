@@ -9,6 +9,6 @@ public class Available01 : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Allocating method will decrease performance. Use 'RaycastNonAlloc' and reuse buffer for return value
+0: Use non-allocating method 'RaycastNonAlloc'
 QUICKFIXES:
-Convert to RaycastNonAlloc
+Convert to 'RaycastNonAlloc'

@@ -23,5 +23,5 @@ namespace DefaultNamespace
     }
 }
 ------------------------------------------------
-0: Null comparisons against UnityEngine.Object subclasses is expensive
+0: Comparison to 'null' is expensive
 NO QUICKFIXES

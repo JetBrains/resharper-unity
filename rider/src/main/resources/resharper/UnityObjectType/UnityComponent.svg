@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>UnityComponent(Gray)</title>
+  <g>
+    <rect width="16" height="16" fill="#ffd3ff" opacity="0"/>
+    <g>
+      <g>
+        <rect x="9" y="1" width="6" height="6" fill="#f4f4f4"/>
+        <rect x="10" y="2" width="4" height="4" fill="#00539c"/>
+      </g>
+      <g>
+        <polygon points="9 7 9 3 2 3 2 14 13 14 13 7 9 7" fill="#f4f4f4"/>
+        <rect x="3" y="8" width="5" height="5" fill="#323232"/>
+        <rect x="3" y="4" width="5" height="5" fill="#323232"/>
+        <rect x="7" y="8" width="5" height="5" fill="#323232"/>
+        <rect x="8" y="9" width="3" height="3" fill="#ebebeb"/>
+        <rect x="4" y="9" width="3" height="3" fill="#ebebeb"/>
+        <rect x="4" y="5" width="3" height="3" fill="#ebebeb"/>
+      </g>
+    </g>
+  </g>
+</svg>

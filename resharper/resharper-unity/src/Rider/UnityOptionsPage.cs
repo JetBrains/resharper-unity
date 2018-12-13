@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 "Automatically install and update Rider's Unity editor plugin (recommended)");
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
             CheckBox((YamlSettings s) => s.EnableYamlParsing,
-                "Parse text based asset files for implicit script usages (requires re-opening solution).");
+                "Parse text based asset files for implicit script usages (requires re-opening solution)");
 
             // TODO: Add to R# options page
             Header("C#");
@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 // TODO: Add to R# options page
                 CheckBox((UnitySettings s) => s.EnableCgErrorHighlighting,
-                    "Parse Cg files for syntax errors (requires internal mode, and re-opening solution).");
+                    "Parse Cg files for syntax errors (requires internal mode, and re-opening solution)");
             }
 
             FinishPage();

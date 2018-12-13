@@ -10,6 +10,6 @@ public class Foo : MonoBehaviour
 }
 
 ------------------------------------------------
-0: MonoBehaviours must be instantiated with 'GameObject.AddComponent<T>()' instead of 'new'
+0: 'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent<T>()' instead of 'new'
 QUICKFIXES:
 Convert to 'GameObject.AddComponent<Foo>()'

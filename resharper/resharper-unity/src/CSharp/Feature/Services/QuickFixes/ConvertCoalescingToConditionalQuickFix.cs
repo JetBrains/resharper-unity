@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return null;
         }
 
-        public override string Text => "Convert to conditional expression.";
+        public override string Text => "Convert to conditional expression";
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

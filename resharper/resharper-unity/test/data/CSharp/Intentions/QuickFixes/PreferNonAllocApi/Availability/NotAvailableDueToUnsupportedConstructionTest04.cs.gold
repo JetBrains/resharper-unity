@@ -13,5 +13,5 @@ namespace DefaultNamespace
     }
 }
 ------------------------------------------------
-0: Allocating method will decrease performance. Use 'OverlapBoxNonAlloc' and reuse buffer for return value
+0: Use non-allocating method 'OverlapBoxNonAlloc'
 NO QUICKFIXES

@@ -15,4 +15,4 @@ public class Whatever
 ---------------------------------------------------------
 (0): Unity Gutter Icon: Unity scripting component
 (1): Unity implicitly used identifier: 
-(2): ReSharper Warning: MonoBehaviours must be instantiated with 'GameObject.AddComponent<T>()' instead of 'new'
+(2): ReSharper Warning: 'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent<T>()' instead of 'new'
