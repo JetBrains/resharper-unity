@@ -24,41 +24,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.QuickD
     {
         protected override void DoTest(IProject testProject)
         {
-            using (var textControl = OpenTextControl(testProject))
+            var textControl = OpenTextControl(TestLifetime);
+            var document = textControl.Document;
+            var projectFile = Solution.GetComponent<DocumentManager>().TryGetProjectFile(document);
+            Assert.IsNotNull(projectFile, "projectFile == null");
+
+            var context = CreateDataContext(textControl);
+            var declaredElement = TextControlToPsi.GetDeclaredElements(Solution, textControl).SingleOrDefault();
+            Exception exception = null;
+            if (declaredElement != null)
             {
-                var document = textControl.Document;
-                var projectFile = Solution.GetComponent<DocumentManager>().TryGetProjectFile(document);
-                Assert.IsNotNull(projectFile, "projectFile == null");
-
-                var context = CreateDataContext(textControl);
-                var declaredElement = TextControlToPsi.GetDeclaredElements(Solution, textControl).SingleOrDefault();
-                Exception exception = null;
-                if (declaredElement != null)
+                try
                 {
-                    try
-                    {
-                        TestAdditionalInfo(declaredElement, projectFile);
-                    }
-                    catch (Exception e)
-                    {
-                        exception = e;
-                    }
+                    TestAdditionalInfo(declaredElement, projectFile);
                 }
-
-                var quickDocService = Solution.GetComponent<IQuickDocService>();
-                Assert.IsTrue(quickDocService.CanShowQuickDoc(context), "No QuickDoc available");
-                quickDocService.ResolveGoto(context, (presenter, language) => ExecuteWithGold(projectFile, writer =>
+                catch (Exception e)
                 {
-                    var html = presenter.GetHtml(language).Text;
-                    Assert.NotNull(html);
-                    var startIdx = html.IndexOf("  <head>", StringComparison.Ordinal);
-                    var endIdx = html.IndexOf("</head>", StringComparison.Ordinal) + "</head>".Length;
-                    Assert.AreEqual(string.CompareOrdinal(html, endIdx, "\n<body>", 0, "\n<body>".Length), 0);
-                    writer.Write(html.Remove(startIdx, endIdx - startIdx + 1));
-                }));
-                if (exception != null)
-                    throw exception;
+                    exception = e;
+                }
             }
+
+            var quickDocService = Solution.GetComponent<IQuickDocService>();
+            Assert.IsTrue(quickDocService.CanShowQuickDoc(context), "No QuickDoc available");
+            quickDocService.ResolveGoto(context, (presenter, language) => ExecuteWithGold(projectFile, writer =>
+            {
+                var html = presenter.GetHtml(language).Text;
+                Assert.NotNull(html);
+                var startIdx = html.IndexOf("  <head>", StringComparison.Ordinal);
+                var endIdx = html.IndexOf("</head>", StringComparison.Ordinal) + "</head>".Length;
+                Assert.AreEqual(string.CompareOrdinal(html, endIdx, "\n<body>", 0, "\n<body>".Length), 0);
+                writer.Write(html.Remove(startIdx, endIdx - startIdx + 1));
+            }));
+            if (exception != null)
+                throw exception;
         }
 
         private static IDataContext CreateDataContext(IComponentContainer componentContainer, ISolution solution, ITextControl control)

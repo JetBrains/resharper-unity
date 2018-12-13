@@ -32,23 +32,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descri
         protected override void DoTest(IProject testProject)
         {
             testProject.GetSolution().GetPsiServices().Files.CommitAllDocuments();
-            using (var textControl = OpenTextControl(testProject))
+            var textControl = OpenTextControl(TestLifetime);
+            var document = textControl.Document;
+            var psiSourceFile = document.GetPsiSourceFile(Solution);
+            Assert.IsNotNull(psiSourceFile, "sourceFile == null");
+            using (ReadLockCookie.Create())
             {
-                var document = textControl.Document;
-                var psiSourceFile = document.GetPsiSourceFile(Solution);
-                Assert.IsNotNull(psiSourceFile, "sourceFile == null");
-                using (ReadLockCookie.Create())
-                {
-                    var highlightingFinder = new IdentifierHighlightingFinder(psiSourceFile, new DocumentRange(document, new TextRange(textControl.Caret.Offset())));
-                    highlightingFinder.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
-                    var highlightingInfo = highlightingFinder.HighlightingInfo;
-                    Assertion.AssertNotNull(highlightingInfo, "Highlighting not found");
-                    var markupModel = Solution.GetComponent<IDocumentMarkupManager>().GetMarkupModel(document);
-                    var highlighterTooltipProvider = DaemonUtil.GetHighlighterTooltipProvider(highlightingInfo.Highlighting, Solution);
-                    var attributeId = HighlightingSettingsManager.Instance.GetAttributeId(highlightingInfo.Highlighting, psiSourceFile, Solution, psiSourceFile.GetSettingsStore(Solution)).NotNull();
-                    var highlighter = markupModel.AddHighlighter("test", highlightingInfo.Range.TextRange, AreaType.EXACT_RANGE, 0, attributeId, new ErrorStripeAttributes(), highlighterTooltipProvider);
-                    ExecuteWithGold(writer => writer.WriteLine(highlighter.ToolTip));
-                }
+                var highlightingFinder = new IdentifierHighlightingFinder(psiSourceFile, new DocumentRange(document, new TextRange(textControl.Caret.Offset())));
+                highlightingFinder.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
+                var highlightingInfo = highlightingFinder.HighlightingInfo;
+                Assertion.AssertNotNull(highlightingInfo, "Highlighting not found");
+                var markupModel = Solution.GetComponent<IDocumentMarkupManager>().GetMarkupModel(document);
+                var highlighterTooltipProvider = DaemonUtil.GetHighlighterTooltipProvider(highlightingInfo.Highlighting, Solution);
+                var attributeId = HighlightingSettingsManager.Instance.GetAttributeId(highlightingInfo.Highlighting, psiSourceFile, Solution, psiSourceFile.GetSettingsStore(Solution)).NotNull();
+                var highlighter = markupModel.AddHighlighter("test", highlightingInfo.Range.TextRange, AreaType.EXACT_RANGE, 0, attributeId, new ErrorStripeAttributes(), highlighterTooltipProvider);
+                ExecuteWithGold(writer => writer.WriteLine(highlighter.ToolTip));
             }
         }
 
