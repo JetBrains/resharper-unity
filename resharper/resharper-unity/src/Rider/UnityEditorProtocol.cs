@@ -139,12 +139,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
+                
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
 
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
                         new Identities(IdKind.Client), myDispatcher, wire);
+
+                    protocol.ThrowErrorOnOutOfSyncModels = false;
+                    
+                    protocol.OutOfSyncModels.AdviseNotNull(lf, e =>
+                    {
+                        var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
+                        var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Value;
+                        if (!isEnabled)
+                        {
+                            myHost.PerformModelAction(model => model.OnEditorModelOutOfSync.Fire());
+                        }
+                    });
                     var editor = new EditorPluginModel(lf, protocol);
                     editor.IsBackendConnected.Set(rdVoid => true);
                     

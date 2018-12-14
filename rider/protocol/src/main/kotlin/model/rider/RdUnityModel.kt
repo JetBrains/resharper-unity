@@ -86,5 +86,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         signal("findUsageResults", FindUsageResult)
         signal("showGameObjectOnScene", FindUsageResultElement)
         property("unityProcessId", int)
+
+        sink("onEditorModelOutOfSync", void)
     }
 }
