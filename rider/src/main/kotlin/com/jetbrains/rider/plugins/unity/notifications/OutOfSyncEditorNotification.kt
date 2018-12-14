@@ -17,9 +17,9 @@ class OutOfSyncEditorNotification(project: Project, unityHost: UnityHost): Lifet
 
     init {
         unityHost.model.onEditorModelOutOfSync.adviseNotNull(componentLifetime) {
-            val message = "UnityEditor connection is out of sync, but automatic plugin update is disabled."
+            val message = "The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated."
 
-            val notification = Notification(notificationGroupId.displayId, "UnityEditor plugin update is required", message, NotificationType.WARNING)
+            val notification = Notification(notificationGroupId.displayId, "Unity editor plugin update required", message, NotificationType.WARNING)
             notification.addAction(object : InstallEditorPluginAction(){})
             Notifications.Bus.notify(notification, project)
         }
