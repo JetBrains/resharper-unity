@@ -38,14 +38,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly FileSystemPath mySolutionDirectory;
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ISolution solution, ChangeManager changeManager,
-                                                 IShellLocks locks,
-                                                 ISolutionLoadTasksScheduler scheduler,
-                                                 IFileSystemTracker fileSystemTracker,
-                                                 ProjectFilePropertiesFactory projectFilePropertiesFactory,
-                                                 UnityYamlPsiSourceFileFactory psiSourceFileFactory,
-                                                 UnityExternalFilesModuleFactory moduleFactory,
-                                                 AssetSerializationMode assetSerializationMode,
-                                                 YamlSupport yamlSupport)
+            IShellLocks locks,
+            ISolutionLoadTasksScheduler scheduler,
+            IFileSystemTracker fileSystemTracker,
+            ProjectFilePropertiesFactory projectFilePropertiesFactory,
+            UnityYamlPsiSourceFileFactory psiSourceFileFactory,
+            UnityExternalFilesModuleFactory moduleFactory,
+            AssetSerializationMode assetSerializationMode,
+            YamlSupport yamlSupport)
         {
             myLifetime = lifetime;
             mySolution = solution;
@@ -190,13 +190,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             var builder = new PsiModuleChangeBuilder();
             var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
-            ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
+            ProcessFileSystemChangeDelta(delta, builder, ref projectFilesToAdd);
             AddAssetProjectFiles(projectFilesToAdd);
             FlushChanges(builder);
         }
 
         private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
-                                                  FrugalLocalList<FileSystemPath> projectFilesToAdd)
+            ref FrugalLocalList<FileSystemPath> projectFilesToAdd)
         {
             var module = myModuleFactory.PsiModule;
             if (module == null)
@@ -231,7 +231,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             }
 
             foreach (var child in delta.GetChildren())
-                ProcessFileSystemChangeDelta(child, builder, projectFilesToAdd);
+                ProcessFileSystemChangeDelta(child, builder, ref projectFilesToAdd);
         }
 
         [CanBeNull]
