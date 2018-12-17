@@ -46,6 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static bool IsUnityGeneratedProject([CanBeNull] this IProject project)
         {
+            // TODO: This doesn't work for Packages folder or 'file:' based packages
             return project != null && project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
 

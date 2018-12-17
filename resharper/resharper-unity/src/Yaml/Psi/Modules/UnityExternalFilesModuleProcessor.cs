@@ -25,6 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     public class UnityExternalFilesModuleProcessor : IChangeProvider, IUnityReferenceChangeHandler
     {
         private readonly Lifetime myLifetime;
+        private readonly ILogger myLogger;
         private readonly ISolution mySolution;
         private readonly ChangeManager myChangeManager;
         private readonly IShellLocks myLocks;
@@ -37,17 +38,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
 
-        public UnityExternalFilesModuleProcessor(Lifetime lifetime, ISolution solution, ChangeManager changeManager,
-            IShellLocks locks,
-            ISolutionLoadTasksScheduler scheduler,
-            IFileSystemTracker fileSystemTracker,
-            ProjectFilePropertiesFactory projectFilePropertiesFactory,
-            UnityYamlPsiSourceFileFactory psiSourceFileFactory,
-            UnityExternalFilesModuleFactory moduleFactory,
-            AssetSerializationMode assetSerializationMode,
-            YamlSupport yamlSupport)
+        public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
+                                                 ChangeManager changeManager,
+                                                 IShellLocks locks,
+                                                 ISolutionLoadTasksScheduler scheduler,
+                                                 IFileSystemTracker fileSystemTracker,
+                                                 ProjectFilePropertiesFactory projectFilePropertiesFactory,
+                                                 UnityYamlPsiSourceFileFactory psiSourceFileFactory,
+                                                 UnityExternalFilesModuleFactory moduleFactory,
+                                                 AssetSerializationMode assetSerializationMode,
+                                                 YamlSupport yamlSupport)
         {
             myLifetime = lifetime;
+            myLogger = logger;
             mySolution = solution;
             myChangeManager = changeManager;
             myLocks = locks;
@@ -74,11 +77,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
-            // Do nothing if we don't have text based projects, and if we don't have a project with assets.
-            // We could process .meta files here, as they are always written as text, but there's no point - the meta
-            // file guid cache is only used in conjunction with features that require YAML files
+            // For project model access
+            myLocks.AssertReadAccessAllowed();
+
+            // Note that this means we process meta and asset files for class library projects, which likely won't have
+            // asset files. We can't use IsUnityGeneratedProject because any project based in the Packages folder or
+            // using 'file:' won't be processed.
             if (!myAssetSerializationMode.IsForceText || !myYamlSupport.IsParsingEnabled.Value ||
-                !project.IsUnityGeneratedProject())
+                !project.IsUnityProject())
             {
                 return;
             }
@@ -90,8 +96,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             ProcessSolutionDirectory(builder, "Packages");
             ProcessSolutionDirectory(builder, "ProjectSettings");
 
-            if (project.IsProjectFromUserView())
-                ProcessDirectory(builder, project.Location);
+            // See if the project is based on a .asmdef file, and process the files at the .asmdef file location. We'll
+            // already have processed any of these files in the Assets and Packages folder, so this will catch any
+            // packages that are external to the solution folder and registered with `file:`
+            ProcessAsmdefDirectory(builder, project);
 
             // Add a module reference to the project, so our reference can "see" the target (more accurately, I think
             // this is used to figure out the search domain for Find Usages)
@@ -107,18 +115,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 ProcessDirectory(builder, path);
         }
 
+        private void ProcessAsmdefDirectory(PsiModuleChangeBuilder builder, IProject project)
+        {
+            if (!project.IsProjectFromUserView())
+                return;
+
+            // We know that the default projects are not .asmdef based, and will obviously live in Assets, which we've
+            // already processed. This is just an optimisation - if a plugin renames the projects, we'll still work ok
+            if (project.Name == "Assembly-CSharp" || project.Name == "Assembly-CSharp-Editor" ||
+                project.Name == "Assembly-CSharp-firstpass" || project.Name == "Assembly-CSharp-Editor-firstpass")
+            {
+                return;
+            }
+
+            foreach (var projectItem in project.GetSubItemsRecursively())
+            {
+                if (projectItem is IProjectFile projectFile)
+                {
+                    var location = projectFile.Location;
+                    if (location.FullPath.EndsWith(".asmdef", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        ProcessDirectory(builder, location.Parent);
+                        return;
+                    }
+                }
+            }
+        }
+
         private void ProcessDirectory(PsiModuleChangeBuilder builder, FileSystemPath directory)
         {
+            if (directory == mySolutionDirectory)
+            {
+                myLogger.Error("Unexpected request to process entire solution directory. Skipping");
+                return;
+            }
+
             if (myRootPaths.Contains(directory))
                 return;
 
-            // Make sure the directory hasn't already been processed. This can happen if the project is a .asmdef based
-            // project living under Assets or Packages, or inside a file:// based package
+            // Make sure the directory hasn't already been processed as part of a previous directory. This can happen if
+            // the project is a .asmdef based project living under Assets or Packages, or inside a file:// based package
             foreach (var rootPath in myRootPaths)
             {
                 if (rootPath.IsPrefixOf(directory))
                     return;
             }
+
+            myLogger.Info("Processing directory for asset and meta files: {0}", directory);
 
             var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
 
@@ -127,7 +170,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 FileSystemPathInternStrategy.TRY_GET_INTERNED_BUT_DO_NOT_INTERN);
             foreach (var file in files)
             {
-                var extension = file.ExtensionWithDot;
                 if (file.IsMeta())
                 {
                     // Full path doesn't allocate
@@ -139,7 +181,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                         AddMetaPsiSourceFile(builder, file);
                     }
                 }
-                else if (UnityYamlFileExtensions.Contains(extension))
+                else if (file.IsAsset())
                     projectFilesToAdd.Add(file);
             }
 
