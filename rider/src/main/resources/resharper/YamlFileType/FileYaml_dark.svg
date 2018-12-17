@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>YAML(GrayDark)</title>
+  <g>
+    <rect width="16" height="16" fill="#ffd3ff" opacity="0"/>
+    <g>
+      <g>
+        <polygon points="14 7 14 4 11 4 11 1 2 1 2 5 5 5 5 8 8 8 8 14 16 14 16 7 14 7" fill="#252525"/>
+        <rect x="3" y="2" width="7" height="2" fill="#86d086"/>
+        <rect x="6" y="5" width="7" height="2" fill="#86d086"/>
+        <rect x="9" y="8" width="6" height="2" fill="#c4c4c4"/>
+        <rect x="9" y="11" width="6" height="2" fill="#c4c4c4"/>
+      </g>
+      <g>
+        <polygon points="4.201 7 3.487 8.496 2.773 7 0 7 0 8.26 2 12.297 2 15 4.975 15 4.975 12.297 6.975 8.26 6.975 7 4.201 7" fill="#252525"/>
+        <polygon points="4.832 8 3.487 10.818 2.143 8 0.987 8 2.854 11.769 2.854 14 4.121 14 4.121 11.769 5.987 8 4.832 8" fill="#c4c4c4"/>
+      </g>
+    </g>
+  </g>
+</svg>

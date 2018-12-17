@@ -3,9 +3,9 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Templates;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Psi.CSharp.Resources;
 using JetBrains.ReSharper.Psi.Resources;
-using JetBrains.UI.ThemedIcons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
 {
@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         // We're using Unity_CSharp instead of just CSharp, because that's set up to use the C#
         // template scope icon instead of the C# file icon - see RIDER-9903
         public static TemplateImage Unity_CSharp = TemplateImage.Register("UnityCSharp", PsiCSharpThemedIcons.Csharp.Id);
-        public static TemplateImage Unity_ShaderLab = TemplateImage.Register("UnityShaderLab", DivebomThemedIconsThemedIcons.Shader.Id);
+        public static TemplateImage Unity_ShaderLab = TemplateImage.Register("UnityShaderLab", ShaderFileTypeThemedIcons.FileShader.Id);
         public static TemplateImage Unity_AsmDef = TemplateImage.Register("UnityAsmDef", PsiJavaScriptThemedIcons.Json.Id);
 
         public UnityProjectScopeCategoryUIProvider()

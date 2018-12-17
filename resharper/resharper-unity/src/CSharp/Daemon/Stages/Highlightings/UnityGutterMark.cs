@@ -5,10 +5,9 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
-using JetBrains.TextControl;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.Util;
 
@@ -24,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     public class UnityGutterMark : IconGutterMark
     {
         public UnityGutterMark()
-            : base(LogoThemedIcons.UnityLogo.Id)
+            : base(UnityGutterIcons.UnityLogo.Id)
         {
         }
 

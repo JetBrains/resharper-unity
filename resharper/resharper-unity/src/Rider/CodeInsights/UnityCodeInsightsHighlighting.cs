@@ -12,24 +12,27 @@ using JetBrains.Rider.Model;
 using JetBrains.TextControl.DocumentMarkup;
 using Severity = JetBrains.ReSharper.Feature.Services.Daemon.Severity;
 
-[assembly: RegisterHighlighter(UnityCodeInsightsHighlighting.Id, 
-    EffectType = EffectType.NONE, Layer = HighlighterLayer.SYNTAX + 1, NotRecyclable = true, GroupId = HighlighterGroupIds.HIDDEN)]
+[assembly: RegisterHighlighter(UnityCodeInsightsHighlighting.Id, EffectType = EffectType.NONE,
+    Layer = HighlighterLayer.SYNTAX + 1, NotRecyclable = true, GroupId = HighlighterGroupIds.HIDDEN)]
 
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
-    [StaticSeverityHighlighting(Severity.INFO, HighlightingGroupIds.CodeInsightsGroup, 
-        AttributeId = Id, OverlapResolve = OverlapResolveKind.NONE 
-    )]
+    [StaticSeverityHighlighting(Severity.INFO, HighlightingGroupIds.CodeInsightsGroup, AttributeId = Id,
+        OverlapResolve = OverlapResolveKind.NONE)]
     public class UnityCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityHighlighting
     {
         public const string Id = "UnityCodeInsights";
-        public List<BulbMenuItem> MenuItems { get; }
 
-        public UnityCodeInsightsHighlighting(DocumentRange range, [NotNull] string lenText, [NotNull] string moreText, [NotNull] ICodeInsightsProvider provider, IDeclaredElement elt, [CanBeNull] Icon icon, IEnumerable<BulbMenuItem> menuItems, List<CodeLensEntryExtraActionModel> extraActions = null)
-            : base(range, lenText, moreText, provider, elt, icon, extraActions)
+        public UnityCodeInsightsHighlighting(DocumentRange range, [NotNull] string lenText, [NotNull] string moreText,
+                                             [NotNull] ICodeInsightsProvider provider, IDeclaredElement element,
+                                             [CanBeNull] Icon icon, IEnumerable<BulbMenuItem> menuItems,
+                                             List<CodeLensEntryExtraActionModel> extraActions = null)
+            : base(range, lenText, moreText, provider, element, icon, extraActions)
         {
             MenuItems = menuItems.ToList();
         }
+
+        public List<BulbMenuItem> MenuItems { get; }
     }
 }

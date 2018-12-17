@@ -7,4 +7,4 @@ public class Test01
 }
 
 ---------------------------------------------------------
-(0): ReSharper Warning: Possible mis-application of 'FormerlySerializedAs' attribute to multiple fields
+(0): ReSharper Warning: Possible incorrect application of 'FormerlySerializedAs' attribute to multiple fields

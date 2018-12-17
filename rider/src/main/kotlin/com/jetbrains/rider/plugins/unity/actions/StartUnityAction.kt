@@ -9,7 +9,7 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.microsoft.alm.helpers.Path
 
 
-open class StartUnityAction : DumbAwareAction("Start Unity", "Start Unity with current project", UnityIcons.Actions.ImportantActions) {
+open class StartUnityAction : DumbAwareAction("Start Unity", "Start Unity with current project", UnityIcons.Actions.StartUnity) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 

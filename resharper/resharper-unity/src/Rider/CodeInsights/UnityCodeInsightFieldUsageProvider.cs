@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         public override string DisplayName => "Unity serialized field";
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings => new [] {new CodeLensRelativeOrderingLast()};
-        
+
         public UnityCodeInsightFieldUsageProvider(UnityHost host, BulbMenuComponent bulbMenu)
             : base(host, bulbMenu)
         {

@@ -15,4 +15,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     {
         public const string Unity = "Unity";
     }
+
+    public static class UnityHighlightingCompoundGroupNames
+    {
+        public const string PerformanceCriticalCode = "Performance indicators";
+    }
 }

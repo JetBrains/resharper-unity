@@ -40,7 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             SettingsStore = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
         }
 
-
         public virtual void AddUnityImplicitHighlightingForEventFunction(IHighlightingConsumer consumer, IMethod method, UnityEventFunction eventFunction)
         {
             var tooltip = "Unity event function";
@@ -60,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         {
             AddHighlightingWithConfigurableHighlighter(consumer, declaration, tooltip);
         }
-        
+
         public virtual void AddInitializeOnLoadMethod(IHighlightingConsumer consumer, IConstructorDeclaration constructorDeclaration, string tooltip)
         {
             AddHighlightingWithConfigurableHighlighter(consumer, constructorDeclaration, tooltip);
@@ -87,20 +86,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         {
             if (SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode) == GutterIconMode.None)
                 return;
-            
+
             consumer.AddHighlighting(new UnityImplicitlyUsedIdentifierHighlighting(element.NameIdentifier.GetDocumentRange()));
         }
-        
+
         public virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
         {
             var mode = SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode);
             if (mode == GutterIconMode.None)
                 return;
-            
+
             var highlighting = new UnityGutterMarkInfo(element, tooltip);
             consumer.AddHighlighting(highlighting);
         }
-        
+
         public IEnumerable<BulbMenuItem> CreateBulbItemsForUnityDeclaration(IDeclaration declaration)
         {
             var unityApi = Solution.GetComponent<UnityApi>();
@@ -121,7 +120,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 
                 if (declaration is IMethodDeclaration methodDeclaration)
                 {
-                    
                     var declaredElement = methodDeclaration.DeclaredElement;
 
                     if (declaredElement != null)
@@ -139,20 +137,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                                 new IntentionAction.MyExecutableProxi(bulbAction, Solution, textControl),
                                 bulbAction.Text, BulbThemedIcons.ContextAction.Id,
                                 BulbMenuAnchors.FirstClassContextItems));
-
                         }
 
                         if (unityApi.IsEventFunction(declaredElement))
                         {
-                            var documentationNavigationAction = new DocumentationNavigationAction(Solution.GetComponent<ShowUnityHelp>(), declaredElement,
-                                unityApi);
+                            var documentationNavigationAction = new DocumentationNavigationAction(
+                                Solution.GetComponent<ShowUnityHelp>(), declaredElement, unityApi);
                             result.Add(new BulbMenuItem(
-                                new IntentionAction.MyExecutableProxi(documentationNavigationAction, Solution, textControl),
-                                documentationNavigationAction.Text, BulbThemedIcons.ContextAction.Id,
+                                new IntentionAction.MyExecutableProxi(documentationNavigationAction, Solution,
+                                    textControl), documentationNavigationAction.Text, BulbThemedIcons.ContextAction.Id,
                                 BulbMenuAnchors.FirstClassContextItems));
                         }
-                        
-                        
                     }
                 }
 
@@ -167,7 +162,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         {
             return EmptyList<BulbMenuItem>.Enumerable;
         }
-        
+
         protected static bool? IsCoroutine(IMethodDeclaration methodDeclaration, UnityApi unityApi)
         {
             if (methodDeclaration == null) return null;
@@ -184,8 +179,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 
             return Equals(type.GetClrName(), PredefinedType.IENUMERATOR_FQN);
         }
-        
-        internal class DocumentationNavigationAction : BulbActionBase
+
+        private class DocumentationNavigationAction : BulbActionBase
         {
             private readonly ShowUnityHelp myShowUnityHelp;
             private readonly IMethod myMethod;
@@ -197,14 +192,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                 myMethod = method;
                 myUnityApi = unityApi;
             }
-            
+
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 myShowUnityHelp.ShowHelp(myMethod.GetUnityEventFunctionName(myUnityApi), HelpSystem.HelpKind.Msdn);
                 return null;
             }
 
-            public override string Text => "Open documentation";
+            public override string Text => "View documentation";
         }
     }
 }

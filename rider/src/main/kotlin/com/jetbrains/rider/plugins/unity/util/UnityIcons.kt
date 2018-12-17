@@ -1,67 +1,56 @@
 package com.jetbrains.rider.plugins.unity.util
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
 import com.jetbrains.rider.icons.*
-import com.jetbrains.rider.plugins.unity.util.UnityIcons.Icons.Companion.UnityLogo
 import javax.swing.Icon
+
+// FYI: Icons are defined in C# files in the backend. When being shown in the frontend, only the icon ID is passed to
+// the frontend, and IJ will look it up in resources/resharper. The name of the enclosing C# class is stripped of any
+// trailing "Icons" or "ThemedIcons" and used as the folder name. The icon is named after the inner class. IJ will
+// automatically add `_dark` to the basename of the SVG file if in Darcula.
+// Note that IJ has a different palette and colour scheme to ReSharper. This means that the front end svg files might
+// not be the same as the backed C# files...
 
 class UnityIcons {
     class Icons {
         companion object {
-            @JvmField
-            val UnityLogo = IconLoader.getIcon("/Icons/Logo/UnityLogo.svg")
+            val UnityLogo = IconLoader.getIcon("/resharper/Logo/UnityLogo.svg")
         }
     }
 
     class Common {
         companion object {
-            @JvmField
             val UnityEditMode = IconLoader.getIcon("/Icons/common/unityEditMode.svg")
-            @JvmField
             val UnityPlayMode = IconLoader.getIcon("/Icons/common/unityPlayMode.svg")
-            @JvmField
-            val UnityDefault = IconLoader.getIcon("/Icons/common/unityDefault.svg")
+            val UnityToolWindow = IconLoader.getIcon("/Icons/common/unityToolWindow.svg")
         }
     }
 
     class FileTypes {
         companion object {
-            @JvmField
-            val ShaderLab = IconLoader.getIcon("/Icons/fileTypes/shaderLab.svg")
-
-            @JvmField
+            val ShaderLab = IconLoader.getIcon("/resharper/ShaderFileType/FileShader.svg")
             val Cg = ShaderLab
 
-            @JvmField
             val AsmDef = ReSharperPsiJavaScriptIcons.Json
 
-            // TODO: Proper icons - this is the default IJ YAML icon
-            val UnityYaml: Icon = AllIcons.Nodes.DataTables
-            val UnityScene = UnityLogo
-            val Meta = UnityYaml
-            val Asset = UnityYaml
-            val Prefab = UnityYaml
+            val UnityYaml: Icon = IconLoader.getIcon("/resharper/YamlFileType/FileYaml.svg")
+            val UnityScene = IconLoader.getIcon("/resharper/UnityFileType/FileUnity.svg")
+            val Meta = IconLoader.getIcon("/resharper/UnityFileType/FileUnityMeta.svg")
+            val Asset = IconLoader.getIcon("/resharper/UnityFileType/FileUnityAsset.svg")
+            val Prefab = IconLoader.getIcon("/resharper/UnityFileType/FileUnityPrefab.svg")
         }
     }
 
     class Status{
         companion object {
-            @JvmField
             val UnityStatus = IconLoader.getIcon("/Icons/status/unityStatus.svg")
-            @JvmField
             val UnityStatusPlay = IconLoader.getIcon("/Icons/status/unityStatusPlay.svg")
 
-            @JvmField
             val UnityStatusProgress1 = IconLoader.getIcon("/Icons/status/unityStatusProgress1.svg")
-            @JvmField
             val UnityStatusProgress2 = IconLoader.getIcon("/Icons/status/unityStatusProgress2.svg")
-            @JvmField
             val UnityStatusProgress3 = IconLoader.getIcon("/Icons/status/unityStatusProgress3.svg")
-            @JvmField
             val UnityStatusProgress4 = IconLoader.getIcon("/Icons/status/unityStatusProgress4.svg")
-            @JvmField
             val UnityStatusProgress5 = IconLoader.getIcon("/Icons/status/unityStatusProgress5.svg")
 
             val UnityStatusProgress = AnimatedIcon(150,
@@ -71,15 +60,10 @@ class UnityIcons {
                 UnityStatusProgress2,
                 UnityStatusProgress1)
 
-            @JvmField
             val UnityStatusPlayProgress1 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress1.svg")
-            @JvmField
             val UnityStatusPlayProgress2 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress2.svg")
-            @JvmField
             val UnityStatusPlayProgress3 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress3.svg")
-            @JvmField
             val UnityStatusPlayProgress4 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress4.svg")
-            @JvmField
             val UnityStatusPlayProgress5 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress5.svg")
 
             val UnityStatusPlayProgress = AnimatedIcon(150,
@@ -126,22 +110,13 @@ class UnityIcons {
 
     class Actions {
         companion object {
-            @JvmField
-            val ImportantActions = Icons.UnityLogo
-            @JvmField
-            val Execute = IconLoader.getIcon("/Icons/actions/execute.svg")
-            @JvmField
-            val ForceRefresh = IconLoader.getIcon("/Icons/actions/forceRefresh.svg")
-            @JvmField
-            val GC = IconLoader.getIcon("/Icons/actions/gc.svg")
-            @JvmField
-            val Pause = IconLoader.getIcon("/Icons/actions/pause.svg")
-            @JvmField
-            val Step = IconLoader.getIcon("/Icons/actions/step.svg")
+            val UnityActionsGroup = Icons.UnityLogo
+            val StartUnity = Icons.UnityLogo
 
-            @JvmField
+            val Execute = IconLoader.getIcon("/Icons/actions/execute.svg")
+            val Pause = IconLoader.getIcon("/Icons/actions/pause.svg")
+            val Step = IconLoader.getIcon("/Icons/actions/step.svg")
             val FilterEditModeMessages = Common.UnityEditMode
-            @JvmField
             val FilterPlayModeMessages = Common.UnityPlayMode
 
             val OpenEditorLog = FilterEditModeMessages
@@ -161,20 +136,16 @@ class UnityIcons {
 
     class Ide {
         companion object {
-            @JvmField
             val Warning = IconLoader.getIcon("/Icons/ide/warning.svg")
-            @JvmField
             val Info = IconLoader.getIcon("/Icons/ide/info.svg")
-            @JvmField
             val Error = IconLoader.getIcon("/Icons/ide/error.svg")
         }
     }
 
     class ToolWindows {
         companion object {
-            @JvmField
-            val UnityLog = Common.UnityDefault
-            val UnityExplorer = Common.UnityDefault
+            val UnityLog = Common.UnityToolWindow
+            val UnityExplorer = Common.UnityToolWindow
         }
     }
 }

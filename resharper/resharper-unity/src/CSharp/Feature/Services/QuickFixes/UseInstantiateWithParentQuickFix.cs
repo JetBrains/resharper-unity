@@ -32,9 +32,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             var statement = myNewArgument.GetContainingStatement().NotNull("myNewArgument.GetContainingStatement() != null");
-            
+
             var factory = CSharpElementFactory.GetInstance(myInvocation);
-            
+
             var first = myInvocation.Arguments[0];
             var second = myInvocation.AddArgumentAfter(factory.CreateArgument(ParameterKind.VALUE, myNewArgument.Copy()), first);
             var boolLiteral = factory.CreateExpression(myStayInWorldCoords.ToString().ToLower());

@@ -24,7 +24,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 
         public static bool IsAsset([NotNull] this FileSystemPath path)
         {
-            return Contains(path.ExtensionWithDot);
+            var fullPath = path.FullPath;
+            foreach (var extension in AllFileExtensionsWithDot)
+            {
+                if (fullPath.EndsWith(extension, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+            }
+
+            return false;
         }
 
         public static bool IsMeta([NotNull] this FileSystemPath path)

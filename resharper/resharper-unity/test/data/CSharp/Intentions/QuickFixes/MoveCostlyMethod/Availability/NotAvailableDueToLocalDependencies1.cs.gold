@@ -21,11 +21,11 @@ namespace DefaultNamespace
 ------------------------------------------------
 0: 
 NO QUICKFIXES
-1: Costly method is invoked from performance context
+1: Expensive method invocation
 QUICKFIXES:
-Move to Start
-Move to Awake
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
 2: 
 NO QUICKFIXES
-3: Costly method is invoked from performance context
+3: Expensive method invocation
 NO QUICKFIXES

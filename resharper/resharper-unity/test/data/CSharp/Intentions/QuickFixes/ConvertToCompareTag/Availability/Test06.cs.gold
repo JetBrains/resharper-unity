@@ -11,4 +11,4 @@ public class Foo : MonoBehaviour
 ------------------------------------------------
 0: Explicit string comparison is inefficient, use 'CompareTag' instead
 QUICKFIXES:
-Convert to CompareTag
+Convert to 'CompareTag'
