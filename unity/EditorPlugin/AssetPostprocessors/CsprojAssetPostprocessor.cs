@@ -127,10 +127,42 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
       changed |= AvoidGetReferenceAssemblyPathsCall(projectContentElement, xmlns);
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
+      changed |= IncludeEmptyFolders(projectContentElement, xmlns);
       
       return changed;
     }
-    
+
+    private static bool IncludeEmptyFolders(XElement projectContentElement, XNamespace xmlns)
+    {
+      var currentDirectory = Directory.GetCurrentDirectory();
+      // <Folder Include="Assets\Empty" />
+      var emptyFolders = new DirectoryInfo("Assets")
+        .GetDirectories("*", SearchOption.AllDirectories).Where(a => a.GetFiles("*.cs").Length == 0)
+        .Select(a=>a.FullName.Substring(currentDirectory.Length+1)) // make relative
+        .ToArray();
+
+      if (!emptyFolders.Any())
+        return false;
+      
+      ourLogger.Verbose($"IncludeEmptyFolders");
+      var itemGroup = projectContentElement.Elements(xmlns + "ItemGroup").FirstOrDefault();
+      if (itemGroup == null)
+      {
+        ourLogger.Verbose("Skip IncludeEmptyFolders, ItemGroup is null.");
+        return false;
+      }
+
+      foreach (var emptyFolder in emptyFolders)
+      {
+        var folder = new XElement(xmlns + "Folder");
+        folder.Add(new XAttribute("Include", emptyFolder));
+      
+        itemGroup.Add(folder);
+      }
+      
+      return true;
+    }
+
     // Computer may not have specific TargetFramework, msbuild will resolve System from different TargetFramework
     // If we set HintPaths together with DisableHandlePackageFileConflicts we help msbuild to resolve libs from Unity installation
     // Unity 2018+ already have HintPaths by default
