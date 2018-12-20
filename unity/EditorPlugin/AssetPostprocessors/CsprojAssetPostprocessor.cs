@@ -17,6 +17,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
   {
     private static readonly ILog ourLogger = Log.GetLog<CsprojAssetPostprocessor>();
 
+    private static bool ourIncludeEmptyFoldersDone;
+    
     // Note that this does not affect the order in which postprocessors are evaluated. Order of execution is undefined.
     // https://github.com/Unity-Technologies/UnityCsReference/blob/2018.2/Editor/Mono/AssetPostprocessor.cs#L152
     public override int GetPostprocessOrder()
@@ -134,6 +136,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool IncludeEmptyFolders(XElement projectContentElement, XNamespace xmlns)
     {
+      if (ourIncludeEmptyFoldersDone) // include empty folders to first csproj only
+        return false;
+      
+      ourIncludeEmptyFoldersDone = true;
+      
       var currentDirectory = Directory.GetCurrentDirectory();
       // <Folder Include="Assets\Empty" />
       var emptyFolders = new DirectoryInfo("Assets")
