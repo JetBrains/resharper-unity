@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml
@@ -29,15 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             if (assetsDir.ExistsDirectory && editorSettingsPath.ExistsFile)
             {
                 // If binary serialisation is enabled, the EditorSettings.asset file might be in binary. Sheesh
-                var isEditorSettingsInText = editorSettingsPath.ReadBinaryStream(reader =>
-                {
-                    var headerChars = new char[5];
-                    reader.Read(headerChars, 0, headerChars.Length);
-                    if (headerChars[0] == '%' && headerChars[1] == 'Y' && headerChars[2] == 'A' &&
-                        headerChars[3] == 'M' && headerChars[4] == 'L')
-                        return true;
-                    return false;
-                });
+                var isEditorSettingsInText = editorSettingsPath.IsYaml();
 
                 // At best, we can say that it's mixed. If the settings asset is in text, read it to get the proper value
                 Mode = SerializationMode.Mixed;
