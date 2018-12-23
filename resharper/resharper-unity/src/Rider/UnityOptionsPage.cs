@@ -10,7 +10,6 @@ using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
 using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.Util;
@@ -38,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin,
                 "Automatically install and update Rider's Unity editor plugin (recommended)");
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
-            CheckBox((YamlSettings s) => s.EnableYamlParsing,
+            CheckBox((UnitySettings s) => s.EnableYamlParsing,
                 "Parse text based asset files for implicit script usages (requires re-opening solution)");
 
             // TODO: Add to R# options page
