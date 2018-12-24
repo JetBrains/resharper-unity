@@ -27,6 +27,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     [SolutionComponent]
     public class UnityExternalFilesModuleProcessor : IChangeProvider, IUnityReferenceChangeHandler
     {
+        // stats
+        public readonly List<long> PrefabSizes = new List<long>();
+        public readonly List<long> SceneSizes = new List<long>();
+        public readonly List<long> AssetSizes = new List<long>();
+        
+        
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
@@ -180,7 +186,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     }
                 }
                 else if (file.IsAsset())
+                {
+                    HandleStatistics(file);
                     projectFilesToAdd.Add(file);
+                }
             }
 
             AddAssetProjectFiles(projectFilesToAdd);
@@ -328,5 +337,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 
         public object Execute(IChangeMap changeMap) => null;
+        
+        private void HandleStatistics(FileSystemPath path)
+        {
+            var extension = path.ExtensionNoDot;
+            if (extension.Equals("asset", StringComparison.OrdinalIgnoreCase))
+            {
+                AssetSizes.Add(path.GetFileLength());
+            }
+            
+            if (extension.Equals("prefab", StringComparison.OrdinalIgnoreCase))
+            {
+                PrefabSizes.Add(path.GetFileLength());
+            }
+            
+            if (extension.Equals("unity", StringComparison.OrdinalIgnoreCase))
+            {
+                SceneSizes.Add(path.GetFileLength());
+            }
+        }
     }
 }
