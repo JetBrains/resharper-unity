@@ -1,6 +1,10 @@
+using JetBrains.Application.Settings;
+using JetBrains.DataFlow;
 using JetBrains.DocumentManagers;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.DataContext;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
@@ -18,13 +22,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         public UnityYamlPsiSourceFileFactory(IProjectFileExtensions projectFileExtensions,
                                              PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
+                                             UnityYamlEnabled unityYamlEnabled,
                                              DocumentManager documentManager)
         {
             myProjectFileExtensions = projectFileExtensions;
             myProjectFileTypeCoordinator = projectFileTypeCoordinator;
             myDocumentManager = documentManager;
-
-            myPsiSourceFileProperties = new UnityExternalFileProperties();
+            
+            myPsiSourceFileProperties = new UnityExternalFileProperties(unityYamlEnabled.YamlParsingEnabled);
         }
 
         public IPsiProjectFile CreatePsiProjectFile(IPsiModule psiModule, IProjectFile projectFile)

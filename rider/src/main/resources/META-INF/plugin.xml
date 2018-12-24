@@ -84,6 +84,7 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AutoSaveNotification</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.YamlHugeFileNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.RiderUnitySettings</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.UnityHost</implementation-class></component>

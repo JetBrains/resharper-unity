@@ -36,13 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly ProjectFilePropertiesFactory myProjectFilePropertiesFactory;
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
-        private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly IProperty<bool> myYamlParsingEnabled;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
-        private readonly JetHashSet<FileSystemPath> myIgnoredFiles;
         private readonly FileSystemPath mySolutionDirectory;
-
-        private const long myYamlFileSizeThreshold = 40 * 1024 * 1024;
         
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
@@ -52,8 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  ProjectFilePropertiesFactory projectFilePropertiesFactory,
                                                  UnityYamlPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
-                                                 AssetSerializationMode assetSerializationMode,
-                                                 ISettingsStore settingsStore)
+                                                 UnityYamlDisableStrategy unityYamlDisableStrategy)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -64,83 +58,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myProjectFilePropertiesFactory = projectFilePropertiesFactory;
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
-            myAssetSerializationMode = assetSerializationMode;
-            
-            // we should write only to solution level settings
-            var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            myYamlParsingEnabled = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.EnableYamlParsing);
-            var yamlHeuristicEnabled = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.EnableYamlHeuristic);
 
             changeManager.RegisterChangeProvider(lifetime, this);
 
             myRootPaths = new JetHashSet<FileSystemPath>();
-            myIgnoredFiles = new JetHashSet<FileSystemPath>();
 
             // SolutionDirectory isn't absolute in tests, and will throw an exception if we use it when we call Exists
             mySolutionDirectory = solution.SolutionDirectory;
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory());
 
-            // first run will have null value, run heuristic to understand how parsing will affect performance
-            if (yamlHeuristicEnabled.Value)
-            {
-                if (IsAnyFilePreventYamlParsing())
-                {
-                    myYamlParsingEnabled.Value = false;
-                    yamlHeuristicEnabled.Value = false;
-                    // TODO show notification
-                    return;
-                }
-                myYamlParsingEnabled.Value = true;
-                yamlHeuristicEnabled.Value = false;
-            }
+            unityYamlDisableStrategy.Run(mySolutionDirectory);
+            
 
             scheduler.EnqueueTask(new SolutionLoadTask(GetType().Name + ".Activate",
                 SolutionLoadTaskKinds.PreparePsiModules,
                 () => myChangeManager.AddDependency(myLifetime, mySolution.PsiModules(), this)));
-        }
-
-        private bool IsAnyFilePreventYamlParsing()
-        {
-            return IsYamlParsingAvailable() && (
-                   IsAnyFileInDirectoryPreventYamlParsing("Assets") ||
-                   IsAnyFileInDirectoryPreventYamlParsing("Packages") ||
-                   IsAnyFileInDirectoryPreventYamlParsing("ProjectSettings"));
-        }
-
-        private bool IsAnyFileInDirectoryPreventYamlParsing(string relativePath)
-        {
-            var directory = mySolutionDirectory.Combine(relativePath);
-            var files = directory.GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories,
-                FileSystemPathInternStrategy.TRY_GET_INTERNED_BUT_DO_NOT_INTERN);
-            foreach (var file in files)
-            {
-                if (IsYamlFilePreventParsing(file))
-                    return true;
-            }
-
-            return false;
-        }
-        
-        private bool IsYamlFilePreventParsing(FileSystemPath path)
-        {
-            if (path.GetFileLength() > myYamlFileSizeThreshold)
-            {
-                if (path.ExtensionNoDot.Equals("asset", StringComparison.OrdinalIgnoreCase) && !path.IsYaml())
-                {
-                    myIgnoredFiles.Add(path);
-                    return false;
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool IsYamlParsingAvailable()
-        {
-            return myAssetSerializationMode.IsForceText && myYamlParsingEnabled.Value == true;
         }
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
@@ -151,10 +84,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             // Note that this means we process meta and asset files for class library projects, which likely won't have
             // asset files. We can't use IsUnityGeneratedProject because any project based in the Packages folder or
             // using 'file:' won't be processed.
-            if ( !IsYamlParsingAvailable() || !project.IsUnityProject())
-            {
+            if (!project.IsUnityProject())
                 return;
-            }
 
             var builder = new PsiModuleChangeBuilder();
 
@@ -248,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                         AddMetaPsiSourceFile(builder, file);
                     }
                 }
-                else if (!myIgnoredFiles.Contains(file) && file.IsAsset())
+                else if (file.IsAsset())
                     projectFilesToAdd.Add(file);
             }
 
