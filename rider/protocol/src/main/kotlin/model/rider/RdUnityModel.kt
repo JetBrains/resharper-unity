@@ -81,7 +81,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         sink("startUnity", void)
         sink("notifyIsRecompileAndContinuePlaying", string)
+        sink("notifyYamlHugeFiles", void)
         source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
+        source("enableYamlParsing", void)
 
         signal("findUsageResults", FindUsageResult)
         signal("showGameObjectOnScene", FindUsageResultElement)
