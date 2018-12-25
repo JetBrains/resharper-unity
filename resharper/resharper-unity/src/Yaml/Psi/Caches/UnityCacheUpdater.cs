@@ -13,34 +13,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [SolutionComponent]
     public class UnityCacheUpdater
     {
-        public UnityCacheUpdater(Lifetime lifetime, ISolution solution, UnityYamlEnabled unityYamlEnabled, IShellLocks locks, ChangeManager changeManager, UnityExternalFilesModuleFactory factory)
+        public UnityCacheUpdater(Lifetime lifetime, ISolution solution, UnityYamlSupport unityYamlSupport, IShellLocks locks, ChangeManager changeManager, UnityExternalFilesModuleFactory factory)
         {
             var module = factory.PsiModule;
             if (module != null)
             {
-                unityYamlEnabled.YamlParsingEnabled.Change.Advise_NoAcknowledgement(lifetime, (handler) =>
+                unityYamlSupport.IsYamlParsingEnabled.Change.Advise_NoAcknowledgement(lifetime, (handler) =>
                 {
-                    if (!handler.HasNew  || !handler.HasNew)
+                    if (handler.HasNew && handler.HasOld && handler.New == handler.Old)
                         return;
-                    locks.ExecuteOrQueueReadLockEx(lifetime, "YamlParsingEnabled", () =>
-
+                    
+                    locks.ExecuteOrQueueReadLockEx(lifetime, "YamlParsingStateChange", () =>
                     {
                         var psiSourceFiles = module.SourceFiles.ToList();
                         if (psiSourceFiles.Any())
                         {
-                            if (psiSourceFiles.Any())
+                            locks.ExecuteWithWriteLock(() => changeManager.ExecuteAfterChange(() =>
                             {
-                                locks.ExecuteWithWriteLock(() => changeManager.ExecuteAfterChange(() =>
+                                var changeBuilder = new PsiModuleChangeBuilder();
+                                foreach (var sourceFile in psiSourceFiles)
                                 {
-                                    var changeBuilder = new PsiModuleChangeBuilder();
-                                    foreach (var sourceFile in psiSourceFiles)
-                                    {
-                                        if (sourceFile.IsValid())
-                                            changeBuilder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
-                                    }
-                                    changeManager.OnProviderChanged(solution, changeBuilder.Result, SimpleTaskExecutor.Instance);
-                                }));
-                            }
+                                    if (sourceFile.IsValid())
+                                        changeBuilder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
+                                }
+                                changeManager.OnProviderChanged(solution, changeBuilder.Result, SimpleTaskExecutor.Instance);
+                            }));
                         }
                     });
                 });

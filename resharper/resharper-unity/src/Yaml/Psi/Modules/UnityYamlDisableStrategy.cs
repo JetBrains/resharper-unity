@@ -14,19 +14,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         private long myTotalSize = 0;
 
-        private readonly IProperty<bool> myEnabled;
+        private readonly IProperty<bool> myApplied;
         private readonly AssetSerializationMode myAssetSerializationMode;
         protected readonly IProperty<bool> YamlParsingEnabled;
         private const long YamlFileSizeThreshold = 40 * (1024 * 1024); // 40 MB
         private const long YamlFileTotalSizeThreshold = 700 * (1024 * 1024); // 700 MB
 
         public UnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, 
-            AssetSerializationMode assetSerializationMode, UnityYamlEnabled unityYamlEnabled)
+            AssetSerializationMode assetSerializationMode, UnityYamlSupport unityYamlEnabled)
         {
             myAssetSerializationMode = assetSerializationMode;
             var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            myEnabled = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.EnableYamlHeuristic);
-            YamlParsingEnabled = unityYamlEnabled.YamlParsingEnabled;
+            myApplied = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.IsYamlHeuristicApplied);
+            YamlParsingEnabled = unityYamlEnabled.IsYamlParsingEnabled;
 
         }
 
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         
         public void Run(FileSystemPath solutionDirectory)
         {
-            if (myEnabled.Value)
+            if (!myApplied.Value)
             {
                 if (!IsYamlParsingAvailable())
                 {
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     YamlParsingEnabled.Value = false;
                     CreateNotification();
                 }
-                myEnabled.Value = false;
+                myApplied.Value = true;
             }
         }
 

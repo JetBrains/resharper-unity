@@ -22,14 +22,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         public UnityYamlPsiSourceFileFactory(IProjectFileExtensions projectFileExtensions,
                                              PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
-                                             UnityYamlEnabled unityYamlEnabled,
+                                             UnityYamlSupport unityYamlSupport,
                                              DocumentManager documentManager)
         {
             myProjectFileExtensions = projectFileExtensions;
             myProjectFileTypeCoordinator = projectFileTypeCoordinator;
             myDocumentManager = documentManager;
             
-            myPsiSourceFileProperties = new UnityExternalFileProperties(unityYamlEnabled.YamlParsingEnabled);
+            myPsiSourceFileProperties = new UnityExternalFileProperties(unityYamlSupport.IsYamlParsingEnabled);
         }
 
         public IPsiProjectFile CreatePsiProjectFile(IPsiModule psiModule, IProjectFile projectFile)

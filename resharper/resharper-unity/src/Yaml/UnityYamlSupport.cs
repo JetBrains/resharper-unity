@@ -7,14 +7,14 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 {
     [SolutionComponent]
-    public class UnityYamlEnabled
+    public class UnityYamlSupport
     {
-        public readonly IProperty<bool> YamlParsingEnabled;
-        public UnityYamlEnabled(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore)
+        public readonly IProperty<bool> IsYamlParsingEnabled;
+        public UnityYamlSupport(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore)
         {
             var settings = settingsStore.BindToContextLive(lifetime,
                 ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            YamlParsingEnabled = settings.GetValueProperty(lifetime, (UnitySettings key) => key.EnableYamlParsing);
+            IsYamlParsingEnabled = settings.GetValueProperty(lifetime, (UnitySettings key) => key.IyYamlParsingEnabled);
         }
     }
 }

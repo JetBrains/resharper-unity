@@ -13,8 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Yaml.Psi.Modules
         private readonly UnityHost myUnityHost;
 
         public RiderUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, AssetSerializationMode assetSerializationMode,
-            UnityYamlEnabled unityYamlEnabled, UnityHost unityHost)
-            : base(lifetime, solution, settingsStore, assetSerializationMode, unityYamlEnabled)
+            UnityYamlSupport unityYamlSupport, UnityHost unityHost)
+            : base(lifetime, solution, settingsStore, assetSerializationMode, unityYamlSupport)
         {
             myUnityHost = unityHost;
             
