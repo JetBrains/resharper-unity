@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.UsageStatistics;
 using Newtonsoft.Json.Linq;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Yaml
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 {
     [SolutionComponent]
     public class UnityYamlStatistics : IActivityLogContributorSolutionComponent
