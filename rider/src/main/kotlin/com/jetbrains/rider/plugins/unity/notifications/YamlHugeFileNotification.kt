@@ -7,6 +7,8 @@ import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.util.reactive.adviseNotNullOnce
+import com.jetbrains.rider.util.reactive.fire
 import javax.swing.event.HyperlinkEvent
 
 class YamlHugeFileNotification(project: Project, private val unityHost: UnityHost): LifetimedProjectComponent(project) {
@@ -29,8 +31,8 @@ class YamlHugeFileNotification(project: Project, private val unityHost: UnityHos
             </ul>
             """
 
-        val notification = Notification(notificationGroupId.displayId, "Disabled parsing of Unity assets", message, NotificationType.WARNING)
-        notification.setListener { notification, hyperlinkEvent ->
+        val yamlNotification = Notification(notificationGroupId.displayId, "Disabled parsing of Unity assets", message, NotificationType.WARNING)
+        yamlNotification.setListener { notification, hyperlinkEvent ->
             if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
                 return@setListener
 
@@ -40,6 +42,6 @@ class YamlHugeFileNotification(project: Project, private val unityHost: UnityHos
             }
         }
 
-        Notifications.Bus.notify(autoSaveNotification, project)
+        Notifications.Bus.notify(yamlNotification, project)
     }
 }

@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         public string GetDefaultNamespace() => string.Empty;
         public ICollection<PreProcessingDirective> GetDefines() => EmptyList<PreProcessingDirective>.InstanceList;
         public bool ShouldBuildPsi => myEnabled.Value;
-        public bool IsGeneratedFile => false;
+        public bool IsGeneratedFile => true;
         public bool IsICacheParticipant => true;
         public bool ProvidesCodeModel => true;
 

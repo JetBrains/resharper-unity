@@ -3,9 +3,8 @@ using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Yaml.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
     [SolutionComponent]
     public class RiderUnityYamlDisableStrategy : UnityYamlDisableStrategy
