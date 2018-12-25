@@ -334,9 +334,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static bool SetXCodeDllReference(string name, XElement projectContentElement, XNamespace xmlns)
     {
       // C:\Program Files\Unity\Editor\Data\PlaybackEngines\iOSSupport\
-      var unityAppBaseFolder = Path.GetFullPath(EditorApplication.applicationPath);
       var unityAppBaseDataFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
-      var folders = new List<string> { unityAppBaseFolder, unityAppBaseDataFolder};
+      var folders = new List<string> { unityAppBaseDataFolder};
       // https://github.com/JetBrains/resharper-unity/issues/841
       // /Applications/Unity/Hub/Editor/2018.2.10f1/PlaybackEngines/iOSSupport/
       var directoryInfo = new FileInfo(EditorApplication.applicationPath).Directory;
