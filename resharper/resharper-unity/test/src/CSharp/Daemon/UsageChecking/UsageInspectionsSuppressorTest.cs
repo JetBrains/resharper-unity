@@ -42,15 +42,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
             var oldValue = false;
             myOnProjectStarted = project =>
             {
-                var yamlSupport = project.GetSolution().GetComponent<UnityYamlEnabled>();
-                oldValue = yamlSupport.YamlParsingEnabled.Value;
-                yamlSupport.YamlParsingEnabled.Value = false;
+                var yamlSupport = project.GetSolution().GetComponent<UnityYamlSupport>();
+                oldValue = yamlSupport.IsYamlParsingEnabled.Value;
+                yamlSupport.IsYamlParsingEnabled.Value = false;
             };
 
             myOnProjectFinished = project =>
             {
-                var yamlSupport = project.GetSolution().GetComponent<UnityYamlEnabled>();
-                yamlSupport.YamlParsingEnabled.Value = oldValue;
+                var yamlSupport = project.GetSolution().GetComponent<UnityYamlSupport>();
+                yamlSupport.IsYamlParsingEnabled.Value = oldValue;
             };
 
             DoNamedTest();

@@ -113,10 +113,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             var solution = method.GetSolution();
             var assetSerializationMode = solution.GetComponent<AssetSerializationMode>();
-            var yamlEnabled = solution.GetComponent<UnityYamlEnabled>().YamlParsingEnabled;
+            var yamlParsingEnabled = solution.GetComponent<UnityYamlSupport>().IsYamlParsingEnabled;
 
             // TODO: These two are usually used together. Consider combining in some way
-            if (!yamlEnabled.Value || !assetSerializationMode.IsForceText)
+            if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
                 return IsPotentialEventHandler(unityApi, method);
 
             return method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>().IsEventHandler(method);
