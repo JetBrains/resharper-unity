@@ -42,6 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly ProjectFilePropertiesFactory myProjectFilePropertiesFactory;
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
+        private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
         
@@ -53,7 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  ProjectFilePropertiesFactory projectFilePropertiesFactory,
                                                  UnityYamlPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
-                                                 UnityYamlDisableStrategy unityYamlDisableStrategy)
+                                                 UnityYamlDisableStrategy unityYamlDisableStrategy,
+                                                 AssetSerializationMode assetSerializationMode)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -64,6 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myProjectFilePropertiesFactory = projectFilePropertiesFactory;
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
+            myAssetSerializationMode = assetSerializationMode;
 
             changeManager.RegisterChangeProvider(lifetime, this);
 
@@ -90,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             // Note that this means we process meta and asset files for class library projects, which likely won't have
             // asset files. We can't use IsUnityGeneratedProject because any project based in the Packages folder or
             // using 'file:' won't be processed.
-            if (!project.IsUnityProject())
+            if (!myAssetSerializationMode.IsForceText || !project.IsUnityProject())
                 return;
 
             var builder = new PsiModuleChangeBuilder();
