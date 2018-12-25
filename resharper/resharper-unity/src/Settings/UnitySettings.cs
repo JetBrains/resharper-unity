@@ -33,6 +33,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         public bool IsYamlHeuristicApplied;
         
         [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of YAML files for Unity")]
-        public bool IyYamlParsingEnabled;
+        public bool IsYamlParsingEnabled;
     }
 }

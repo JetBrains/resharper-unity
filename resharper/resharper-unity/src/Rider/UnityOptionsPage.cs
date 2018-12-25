@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin,
                 "Automatically install and update Rider's Unity editor plugin (recommended)");
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
-            CheckBox((UnitySettings s) => s.IyYamlParsingEnabled,
+            CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
                 "Parse text based asset files for implicit script usages");
 
             // TODO: Add to R# options page

@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
         {
             var settings = settingsStore.BindToContextLive(lifetime,
                 ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            IsYamlParsingEnabled = settings.GetValueProperty(lifetime, (UnitySettings key) => key.IyYamlParsingEnabled);
+            IsYamlParsingEnabled = settings.GetValueProperty(lifetime, (UnitySettings key) => key.IsYamlParsingEnabled);
         }
     }
 }
