@@ -333,24 +333,20 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool SetXCodeDllReference(string name, XElement projectContentElement, XNamespace xmlns)
     {
-      var unityAppBaseFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
-      var unityAppBaseDataFolder = Path.Combine(unityAppBaseFolder, "Data");
-      var folders = new List<string> { unityAppBaseFolder, unityAppBaseDataFolder};
+      // C:\Program Files\Unity\Editor\Data\PlaybackEngines\iOSSupport\
+      var unityAppBaseDataFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
+      var folders = new List<string> { unityAppBaseDataFolder};
       // https://github.com/JetBrains/resharper-unity/issues/841
       // /Applications/Unity/Hub/Editor/2018.2.10f1/PlaybackEngines/iOSSupport/
       var directoryInfo = new FileInfo(EditorApplication.applicationPath).Directory;
       if (directoryInfo != null) 
         folders.Add(directoryInfo.FullName);
-      
-      var xcodeDllPath = string.Empty;
-      foreach (var folder in folders)
-      {
-        var path = Path.Combine(folder, Path.Combine("PlaybackEngines/iOSSupport", name));
-        if (!File.Exists(path))
-          xcodeDllPath = path;
-      }
 
-      if (string.IsNullOrEmpty(xcodeDllPath) || !File.Exists(xcodeDllPath)) 
+      var xcodeDllPath = folders
+        .Select(folder => Path.Combine(folder, Path.Combine("PlaybackEngines/iOSSupport", name)))
+        .Where(File.Exists).FirstOrDefault();
+      
+      if (string.IsNullOrEmpty(xcodeDllPath)) 
         return false;
       
       AddCustomReference(Path.GetFileNameWithoutExtension(xcodeDllPath), projectContentElement, xmlns, xcodeDllPath);
