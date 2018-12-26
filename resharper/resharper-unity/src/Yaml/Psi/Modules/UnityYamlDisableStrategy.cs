@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         public void Run(List<FileSystemPath> files)
         {
-            if (ShouldBeApplied.Value)
+            if (ShouldBeApplied.Value && YamlParsingEnabled.Value)
             {
                 if (IsAnyFilePreventYamlParsing(files) || myTotalSize > YamlFileTotalSizeThreshold)
                 {
