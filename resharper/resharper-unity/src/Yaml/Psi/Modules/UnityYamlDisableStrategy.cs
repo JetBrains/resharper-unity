@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             myAssetSerializationMode = assetSerializationMode;
             var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            ShouldBeApplied = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.ShouldBeAppliedYamlHeuristic);
+            ShouldBeApplied = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.ShouldApplyYamlHugeFileHeuristic);
             YamlParsingEnabled = unityYamlEnabled.IsYamlParsingEnabled;
 
         }

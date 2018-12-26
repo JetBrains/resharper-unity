@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         public GutterIconMode GutterIconMode;
 
         [SettingsEntry(true, "Should yaml heuristic be applied?")]
-        public bool ShouldBeAppliedYamlHeuristic;
+        public bool ShouldApplyYamlHugeFileHeuristic;
         
         [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of YAML files for Unity")]
         public bool IsYamlParsingEnabled;
