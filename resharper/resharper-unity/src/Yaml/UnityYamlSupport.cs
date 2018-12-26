@@ -26,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
                 if (v.HasNew && v.New)
                 {
                     support.IsParsingEnabled.Value = true;
-                    settings.SetValue((UnitySettings key) => key.ShouldApplyYamlHugeFileHeuristic, false);
+                    if (v.HasOld)
+                        settings.SetValue((UnitySettings key) => key.ShouldApplyYamlHugeFileHeuristic, false);
                 }
             });
         }
