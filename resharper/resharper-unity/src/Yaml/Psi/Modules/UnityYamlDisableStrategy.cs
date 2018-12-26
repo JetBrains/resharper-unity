@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         private long myTotalSize = 0;
 
-        private readonly IProperty<bool> myApplied;
+        private readonly IProperty<bool> ShouldBeApplied;
         private readonly AssetSerializationMode myAssetSerializationMode;
         protected readonly IProperty<bool> YamlParsingEnabled;
         private const long YamlFileSizeThreshold = 40 * (1024 * 1024); // 40 MB
@@ -25,30 +25,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             myAssetSerializationMode = assetSerializationMode;
             var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            myApplied = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.IsYamlHeuristicApplied);
+            ShouldBeApplied = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.ShouldBeAppliedYamlHeuristic);
             YamlParsingEnabled = unityYamlEnabled.IsYamlParsingEnabled;
 
         }
 
-        private bool IsYamlParsingAvailable()
+        public void Run(List<FileSystemPath> files)
         {
-            return myAssetSerializationMode.IsForceText && YamlParsingEnabled.Value;
-        }
-        
-        public void Run(FileSystemPath solutionDirectory)
-        {
-            if (!myApplied.Value)
+            if (ShouldBeApplied.Value)
             {
-                if (!IsYamlParsingAvailable())
-                {
-                    YamlParsingEnabled.Value = false;
-                } 
-                else if (IsAnyFilePreventYamlParsing(solutionDirectory) || myTotalSize > YamlFileTotalSizeThreshold)
+                if (IsAnyFilePreventYamlParsing(files) || myTotalSize > YamlFileTotalSizeThreshold)
                 {
                     YamlParsingEnabled.Value = false;
                     CreateNotification();
                 }
-                myApplied.Value = true;
             }
         }
 
@@ -57,31 +47,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             
         }
 
-        private bool IsAnyFilePreventYamlParsing(FileSystemPath solutionDirectory)
+        private bool IsAnyFilePreventYamlParsing(List<FileSystemPath> files)
         {
-            return IsAnyFileInDirectoryPreventYamlParsing(solutionDirectory, "Assets") ||
-                   IsAnyFileInDirectoryPreventYamlParsing(solutionDirectory, "Packages") ||
-                   IsAnyFileInDirectoryPreventYamlParsing(solutionDirectory, "ProjectSettings");
-        }
-
-        private bool IsAnyFileInDirectoryPreventYamlParsing(FileSystemPath solutionDirectory, string relativePath)
-        {
-            var directory = solutionDirectory.Combine(relativePath);
-            var files = directory.GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories,
-                FileSystemPathInternStrategy.TRY_GET_INTERNED_BUT_DO_NOT_INTERN);
-
             foreach (var file in files)
             {
-                if (!file.IsAsset())
-                    continue;
-
                 if (IsYamlFilePreventParsing(file))
                     return true;
             }
 
             return false;
         }
-        
+
         private bool IsYamlFilePreventParsing(FileSystemPath path)
         {
             var length = path.GetFileLength();
