@@ -249,14 +249,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private void OnProjectDirectoryChange(FileSystemChangeDelta delta)
         {
             var builder = new PsiModuleChangeBuilder();
-            var projectFilesToAdd = new List<FileSystemPath>();
-            ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
-            AddAssetProjectFiles(projectFilesToAdd);
+            var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
+            ProcessFileSystemChangeDelta(delta, builder, ref projectFilesToAdd);
+            AddAssetProjectFiles(projectFilesToAdd.ToList());
             FlushChanges(builder);
         }
 
         private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
-            List<FileSystemPath> projectFilesToAdd)
+            ref FrugalLocalList<FileSystemPath> projectFilesToAdd)
         {
             var module = myModuleFactory.PsiModule;
             if (module == null)
@@ -291,7 +291,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             }
 
             foreach (var child in delta.GetChildren())
-                ProcessFileSystemChangeDelta(child, builder, projectFilesToAdd);
+                ProcessFileSystemChangeDelta(child, builder, ref projectFilesToAdd);
         }
 
         [CanBeNull]
