@@ -87,8 +87,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
-
-
             // For project model access
             myLocks.AssertReadAccessAllowed();
 
@@ -249,14 +247,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private void OnProjectDirectoryChange(FileSystemChangeDelta delta)
         {
             var builder = new PsiModuleChangeBuilder();
-            var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
-            ProcessFileSystemChangeDelta(delta, builder, ref projectFilesToAdd);
-            AddAssetProjectFiles(projectFilesToAdd.ToList());
+            var projectFilesToAdd = new List<FileSystemPath>();
+            ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
+            AddAssetProjectFiles(projectFilesToAdd);
             FlushChanges(builder);
         }
 
         private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
-            ref FrugalLocalList<FileSystemPath> projectFilesToAdd)
+            List<FileSystemPath> projectFilesToAdd)
         {
             var module = myModuleFactory.PsiModule;
             if (module == null)
@@ -291,7 +289,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             }
 
             foreach (var child in delta.GetChildren())
-                ProcessFileSystemChangeDelta(child, builder, ref projectFilesToAdd);
+                ProcessFileSystemChangeDelta(child, builder, projectFilesToAdd);
         }
 
         [CanBeNull]
