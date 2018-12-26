@@ -27,10 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         [SettingsEntry(GutterIconMode.CodeInsightDisabled, "Unity highlighter scheme for editor.")]
         public GutterIconMode GutterIconMode;
 
-        
-        // TODO : merge this two options : any converter for settings?
-        [SettingsEntry(false, "Enables heuristic which can disable yaml for performance reason")]
-        public bool IsYamlHeuristicApplied;
+        [SettingsEntry(true, "Should yaml heuristic be applied?")]
+        public bool ShouldBeAppliedYamlHeuristic;
         
         [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of YAML files for Unity")]
         public bool IsYamlParsingEnabled;

@@ -11,11 +11,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
     public class UnityYamlStatistics : IActivityLogContributorSolutionComponent
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
+        private readonly UnityYamlSupport myUnityYamlSupport;
         private readonly UnityExternalFilesModuleProcessor myModuleProcessor;
 
-        public UnityYamlStatistics(UnitySolutionTracker unitySolutionTracker, UnityExternalFilesModuleProcessor moduleProcessor)
+        public UnityYamlStatistics(UnitySolutionTracker unitySolutionTracker, UnityYamlSupport unityYamlSupport, UnityExternalFilesModuleProcessor moduleProcessor)
         {
             myUnitySolutionTracker = unitySolutionTracker;
+            myUnityYamlSupport = unityYamlSupport;
             myModuleProcessor = moduleProcessor;
         }
         
@@ -32,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             unityYamlStats["s"] = JArray.FromObject(myModuleProcessor.SceneSizes);
             unityYamlStats["p"] = JArray.FromObject(myModuleProcessor.PrefabSizes);
             unityYamlStats["a"] = JArray.FromObject(myModuleProcessor.AssetSizes);
+            unityYamlStats["e"] = myUnityYamlSupport.IsYamlParsingEnabled.Value;
         }
     }
 }
