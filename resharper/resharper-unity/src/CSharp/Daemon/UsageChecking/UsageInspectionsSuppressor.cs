@@ -14,12 +14,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
     [ShellComponent]
     public class UsageInspectionsSuppressor : IUsageInspectionsSuppressor
     {
-        private readonly YamlSupport myYamlSupport;
         private readonly ILogger myLogger;
 
-        public UsageInspectionsSuppressor(YamlSupport yamlSupport, ILogger logger)
+        public UsageInspectionsSuppressor(ILogger logger)
         {
-            myYamlSupport = yamlSupport;
             myLogger = logger;
         }
 
@@ -113,10 +111,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             if (!unityApi.IsUnityType(type))
                 return false;
 
-            var assetSerializationMode = method.GetSolution().GetComponent<AssetSerializationMode>();
+            var solution = method.GetSolution();
+            var assetSerializationMode = solution.GetComponent<AssetSerializationMode>();
+            var yamlParsingEnabled = solution.GetComponent<UnityYamlSupport>().IsYamlParsingEnabled;
 
             // TODO: These two are usually used together. Consider combining in some way
-            if (!myYamlSupport.IsParsingEnabled.Value || !assetSerializationMode.IsForceText)
+            if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
                 return IsPotentialEventHandler(unityApi, method);
 
             return method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>().IsEventHandler(method);

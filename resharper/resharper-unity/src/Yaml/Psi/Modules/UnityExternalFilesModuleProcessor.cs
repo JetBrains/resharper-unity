@@ -4,14 +4,17 @@ using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Progress;
+using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Common;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ProjectModel.Transaction;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
@@ -24,6 +27,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     [SolutionComponent]
     public class UnityExternalFilesModuleProcessor : IChangeProvider, IUnityReferenceChangeHandler
     {
+        // stats
+        public readonly List<long> PrefabSizes = new List<long>();
+        public readonly List<long> SceneSizes = new List<long>();
+        public readonly List<long> AssetSizes = new List<long>();
+        
+        
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
@@ -33,11 +42,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly ProjectFilePropertiesFactory myProjectFilePropertiesFactory;
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
+        private readonly UnityYamlDisableStrategy myUnityYamlDisableStrategy;
         private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly YamlSupport myYamlSupport;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
-
+        private bool myFirstTime = true;
+        
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
                                                  IShellLocks locks,
@@ -46,8 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  ProjectFilePropertiesFactory projectFilePropertiesFactory,
                                                  UnityYamlPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
-                                                 AssetSerializationMode assetSerializationMode,
-                                                 YamlSupport yamlSupport)
+                                                 UnityYamlDisableStrategy unityYamlDisableStrategy,
+                                                 AssetSerializationMode assetSerializationMode)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -58,8 +68,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myProjectFilePropertiesFactory = projectFilePropertiesFactory;
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
+            myUnityYamlDisableStrategy = unityYamlDisableStrategy;
             myAssetSerializationMode = assetSerializationMode;
-            myYamlSupport = yamlSupport;
 
             changeManager.RegisterChangeProvider(lifetime, this);
 
@@ -83,18 +93,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             // Note that this means we process meta and asset files for class library projects, which likely won't have
             // asset files. We can't use IsUnityGeneratedProject because any project based in the Packages folder or
             // using 'file:' won't be processed.
-            if (!myAssetSerializationMode.IsForceText || !myYamlSupport.IsParsingEnabled.Value ||
-                !project.IsUnityProject())
-            {
+            if (!myAssetSerializationMode.IsForceText || !project.IsUnityProject())
                 return;
-            }
 
             var builder = new PsiModuleChangeBuilder();
-
+            var result = new List<FileSystemPath>();
             // These are idempotent and can be called multiple times
-            ProcessSolutionDirectory(builder, "Assets");
-            ProcessSolutionDirectory(builder, "Packages");
-            ProcessSolutionDirectory(builder, "ProjectSettings");
+            ProcessSolutionDirectory(result, builder, "Assets");
+            ProcessSolutionDirectory(result, builder, "Packages");
+            ProcessSolutionDirectory(result, builder, "ProjectSettings");
+            
+            if (myFirstTime)
+            {
+                myFirstTime = false;
+                myUnityYamlDisableStrategy.Run(result);
+            }
+            AddAssetProjectFiles(result);
 
             // See if the project is based on a .asmdef file, and process the files at the .asmdef file location. We'll
             // already have processed any of these files in the Assets and Packages folder, so this will catch any
@@ -108,11 +122,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             FlushChanges(builder);
         }
 
-        private void ProcessSolutionDirectory(PsiModuleChangeBuilder builder, string relativePath)
+        private void ProcessSolutionDirectory(List<FileSystemPath> result, PsiModuleChangeBuilder builder, string relativePath)
         {
             var path = mySolutionDirectory.Combine(relativePath);
             if (path.ExistsDirectory)
-                ProcessDirectory(builder, path);
+                ProcessDirectory(result, builder, path);
         }
 
         private void ProcessAsmdefDirectory(PsiModuleChangeBuilder builder, IProject project)
@@ -135,14 +149,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     var location = projectFile.Location;
                     if (location.FullPath.EndsWith(".asmdef", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        ProcessDirectory(builder, location.Parent);
+                        var result = new List<FileSystemPath>();
+                        ProcessDirectory(result, builder, location.Parent);
+                        AddAssetProjectFiles(result);
                         return;
                     }
                 }
             }
         }
 
-        private void ProcessDirectory(PsiModuleChangeBuilder builder, FileSystemPath directory)
+        private void ProcessDirectory(List<FileSystemPath> result, PsiModuleChangeBuilder builder, FileSystemPath directory)
         {
             if (directory == mySolutionDirectory)
             {
@@ -163,7 +179,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             myLogger.Info("Processing directory for asset and meta files: {0}", directory);
 
-            var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
 
             // Don't use up valuable interning spaces for files that aren't part of a project
             var files = directory.GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories,
@@ -182,10 +197,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     }
                 }
                 else if (file.IsAsset())
-                    projectFilesToAdd.Add(file);
+                {
+                    HandleStatistics(file);
+                    result.Add(file);
+                }
             }
-
-            AddAssetProjectFiles(projectFilesToAdd);
 
             myFileSystemTracker.AdviseDirectoryChanges(myLifetime, directory, true, OnProjectDirectoryChange);
 
@@ -202,9 +218,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
         }
 
-        private void AddAssetProjectFiles(FrugalLocalList<FileSystemPath> paths)
+        private void AddAssetProjectFiles(List<FileSystemPath> paths)
         {
-            if (paths.IsEmpty)
+            if (paths.IsEmpty())
                 return;
 
             // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
@@ -231,14 +247,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private void OnProjectDirectoryChange(FileSystemChangeDelta delta)
         {
             var builder = new PsiModuleChangeBuilder();
-            var projectFilesToAdd = new FrugalLocalList<FileSystemPath>();
-            ProcessFileSystemChangeDelta(delta, builder, ref projectFilesToAdd);
+            var projectFilesToAdd = new List<FileSystemPath>();
+            ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
             AddAssetProjectFiles(projectFilesToAdd);
             FlushChanges(builder);
         }
 
         private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
-            ref FrugalLocalList<FileSystemPath> projectFilesToAdd)
+            List<FileSystemPath> projectFilesToAdd)
         {
             var module = myModuleFactory.PsiModule;
             if (module == null)
@@ -273,7 +289,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             }
 
             foreach (var child in delta.GetChildren())
-                ProcessFileSystemChangeDelta(child, builder, ref projectFilesToAdd);
+                ProcessFileSystemChangeDelta(child, builder, projectFilesToAdd);
         }
 
         [CanBeNull]
@@ -330,5 +346,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 
         public object Execute(IChangeMap changeMap) => null;
+        
+        private void HandleStatistics(FileSystemPath path)
+        {
+            var extension = path.ExtensionNoDot;
+            if (extension.Equals("asset", StringComparison.OrdinalIgnoreCase))
+            {
+                AssetSizes.Add(path.GetFileLength());
+            }
+            
+            if (extension.Equals("prefab", StringComparison.OrdinalIgnoreCase))
+            {
+                PrefabSizes.Add(path.GetFileLength());
+            }
+            
+            if (extension.Equals("unity", StringComparison.OrdinalIgnoreCase))
+            {
+                SceneSizes.Add(path.GetFileLength());
+            }
+        }
     }
 }
