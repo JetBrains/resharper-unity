@@ -1,9 +1,11 @@
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.framework.closeProjectsWaitForBackendWillBeClosed
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.util.idea.getComponent
 import org.testng.annotations.Test
 import java.io.File
 
@@ -20,7 +22,9 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         params.restoreNuGetPackages = true //it's always true in getAndOpenSolution
         params.waitForCaches = true
 
-        val newProject = getAndOpenSolution(templateId, true, params)
+        val newProject = getAndOpenSolution("JetBrains.MacOS.ClassLibrary.CSharp", true, params)
+
+        var unityHost = newProject.getComponent<UnityHost>()
 
         try {
             executeWithGold(editorGoldFile) {
