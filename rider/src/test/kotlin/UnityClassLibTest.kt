@@ -16,13 +16,13 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         get() = File(testCaseGoldDirectory, "${testMethod.name}_opened")
 
     @Test
-    fun testXamarinFormsClassLibraryTemplate() {
+    fun testUnityClassLibraryTemplate() {
         val projectName = "ClassLibrary"
         val params = OpenSolutionParams()
         params.restoreNuGetPackages = true //it's always true in getAndOpenSolution
         params.waitForCaches = true
 
-        val newProject = getAndOpenSolution("JetBrains.MacOS.ClassLibrary.CSharp", true, params)
+        val newProject = getAndOpenSolution(templateId, true, params)
 
         var unityHost = newProject.getComponent<UnityHost>()
 

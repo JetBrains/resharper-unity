@@ -10,6 +10,13 @@ compileKotlin {
     }
 }
 
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        allWarningsAsErrors = false
+    }
+}
+
 intellij {
     pluginName 'rider-unity'
     type 'RD'
@@ -46,7 +53,7 @@ intellij {
     // Sources aren't available for Rider
     downloadSources = false
 
-    plugins = [ 'JavaScriptLanguage', 'rider-plugins-appender' ]
+    plugins = [ 'rider-plugins-appender' ]
 }
 
 
