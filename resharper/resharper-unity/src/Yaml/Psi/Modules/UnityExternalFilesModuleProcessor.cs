@@ -4,23 +4,19 @@ using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Progress;
-using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
+using JetBrains.ProjectModel.Impl;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Common;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ProjectModel.Transaction;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
-using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
@@ -31,8 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         public readonly List<long> PrefabSizes = new List<long>();
         public readonly List<long> SceneSizes = new List<long>();
         public readonly List<long> AssetSizes = new List<long>();
-        
-        
+
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
@@ -47,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
         private bool myFirstTime = true;
-        
+
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
                                                  IShellLocks locks,
@@ -102,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             ProcessSolutionDirectory(result, builder, "Assets");
             ProcessSolutionDirectory(result, builder, "Packages");
             ProcessSolutionDirectory(result, builder, "ProjectSettings");
-            
+
             if (myFirstTime)
             {
                 myFirstTime = false;
@@ -279,7 +274,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 case FileSystemChangeType.CHANGED:
                     sourceFile = GetYamlPsiSourceFile(module, delta.NewPath);
                     if (sourceFile != null)
+                    {
+                        // Make sure we update the cached file system data, or all of our files will have stale
+                        // timestamps and never get updated by ICache implementations!
+                        if (sourceFile is PsiSourceFileFromPath psiSourceFileFromPath)
+                            psiSourceFileFromPath.GetCachedFileSystemData().Refresh(delta.NewPath);
                         builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
+                    }
                     break;
 
                 case FileSystemChangeType.SUBTREE_CHANGED:
@@ -346,7 +347,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 
         public object Execute(IChangeMap changeMap) => null;
-        
+
         private void HandleStatistics(FileSystemPath path)
         {
             var extension = path.ExtensionNoDot;
@@ -354,12 +355,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             {
                 AssetSizes.Add(path.GetFileLength());
             }
-            
+
             if (extension.Equals("prefab", StringComparison.OrdinalIgnoreCase))
             {
                 PrefabSizes.Add(path.GetFileLength());
             }
-            
+
             if (extension.Equals("unity", StringComparison.OrdinalIgnoreCase))
             {
                 SceneSizes.Add(path.GetFileLength());

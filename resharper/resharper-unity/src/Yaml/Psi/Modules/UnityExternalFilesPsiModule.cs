@@ -89,17 +89,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             var fileLifetime = Lifetimes.Define(myLifetime, path.FullPath);
             mySourceFiles.Add(path, Pair.Of(file, fileLifetime));
-            if (processFileChange == null)
-                return;
 
-            // Not sure we need this. We do all our file modification via another tracker. But it's part of the API...
-            if (file is IPsiSourceFileWithLocation sourceFile)
-            {
-                sourceFile.TrackChanges(fileLifetime.Lifetime, myFileSystemTracker,
-                    (delta, externalChangeType) => processFileChange(delta));
-            }
-            else
-                myFileSystemTracker.AdviseFileChanges(fileLifetime.Lifetime, path, processFileChange);
+            // Explicitly assert if we're given a file change handler. We're expecting a lot of files in this module, it
+            // will be much better to add a couple of directory change handlers than to add several thousand file change
+            // handlers.
+            // We also need to call the equivalent of PsiSourceFileWithLocationEx.TrackChanges, without registering
+            // thousands of file change handlers.
+            if (processFileChange != null)
+                Assertion.Fail("Individual file change handler not supported. Use a directory change handler");
         }
 
         public void Remove(FileSystemPath path)
