@@ -15,6 +15,10 @@ namespace JetBrains.Rider.Unity.Editor
     [MenuItem("Assets/Open C# Project in Rider", false, 1000)]
     public static void MenuOpenProject()
     {
+      // method can be called via commandline
+      if (!PluginEntryPoint.Enabled)
+        return; 
+      
       // Force the project files to be sync
       UnityUtils.SyncSolution();
 
