@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
-using JetBrains.Util.dataStructures;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
@@ -23,28 +23,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,
             bool findCandidates)
         {
-            // We're interested in classes for usages of MonoScript references, and methods for UnityEvent usages
-            if (elements.All(e => e is IClass || e is IMethod || e is IProperty))
-                return new YamlReferenceSearcher(this, elements, findCandidates);
-            return null;
+            return elements.Any(IsInterestingElement)
+                ? new YamlReferenceSearcher(this, elements, findCandidates)
+                : null;
         }
 
-        // Used to filter files before searching for reference. Method references require the element short name while
-        // class references use the class's file's asset guid. If the file doesn't contain one of these words, it won't
-        // be searched
+        // Used to filter files before searching for references. Files must contain ANY of these search terms. An
+        // ISearchGuru implementation can narrow the search domain further (e.g. checking for files that contain ALL of
+        // the terms). Method references require the element short name, while class references require the class's
+        // file's asset guid
         public override IEnumerable<string> GetAllPossibleWordsInFile(IDeclaredElement element)
         {
-            var metaFileGuidCache = element.GetSolution().GetComponent<MetaFileGuidCache>();
-            var words = new FrugalLocalList<string>();
-            words.Add(element.ShortName);
-            foreach (var sourceFile in element.GetSourceFiles())
+            if (IsInterestingElement(element))
             {
-                var guid = metaFileGuidCache.GetAssetGuid(sourceFile);
-                if (guid != null)
-                    words.Add(guid);
+                var words = new List<string> { element.ShortName };
+
+                // If it's a class, we also need the asset GUID
+                if (element is IClass)
+                {
+                    var metaFileGuidCache = element.GetSolution().GetComponent<MetaFileGuidCache>();
+                    foreach (var sourceFile in element.GetSourceFiles())
+                    {
+                        // If the element doesn't have the same name as the file it's in, Unity doesn't recognise it
+                        if (!sourceFile.Name.StartsWith(element.ShortName))
+                            continue;
+
+                        var guid = metaFileGuidCache.GetAssetGuid(sourceFile);
+                        if (guid != null)
+                            words.Add(guid);
+                    }
+                }
+
+                return words;
             }
 
-            return words.ToList();
+            return EmptyList<string>.Instance;
+        }
+
+        private static bool IsInterestingElement(IDeclaredElement element)
+        {
+            var unityApi = element.GetSolution().TryGetComponent<UnityApi>();
+            if (unityApi == null)
+                return false;
+            return unityApi.IsUnityType(element as IClass)
+                || unityApi.IsPotentialEventHandler(element as IMethod)
+                || unityApi.IsPotentialEventHandler(element as IProperty);
         }
     }
 }
