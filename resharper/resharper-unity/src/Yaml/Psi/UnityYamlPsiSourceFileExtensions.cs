@@ -9,5 +9,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             return sourceFile is UnityYamlAssetPsiSourceFile || sourceFile.GetLocation().IsAsset();
         }
+
+        public static bool IsMeta(this IPsiSourceFile sourceFile)
+        {
+            return sourceFile is UnityYamlExternalPsiSourceFile || sourceFile.GetLocation().IsMeta();
+        }
     }
 }

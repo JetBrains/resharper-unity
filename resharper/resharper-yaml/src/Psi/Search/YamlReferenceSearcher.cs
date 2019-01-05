@@ -29,8 +29,11 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
       }
     }
 
+    // Note that some searchers (such as ReferenceSearchProcessorBase) will filter by word index before calling this.
+    // Words come from IDomainSpecificSearcherFactory.GetAllPossibleWordsInFile
     public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
     {
+      // TODO: The YAML assembly shouldn't know anything about .meta files
       if (sourceFile.GetPrimaryPsiFile() is IYamlFile yamlFile && sourceFile.GetLocation().ExtensionNoDot != "meta")
         return ProcessElement(yamlFile, consumer);
       return false;
