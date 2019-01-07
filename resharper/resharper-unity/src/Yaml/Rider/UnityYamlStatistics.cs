@@ -20,21 +20,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             myUnityYamlSupport = unityYamlSupport;
             myModuleProcessor = moduleProcessor;
         }
-        
+
         public void ProcessSolutionStatistics(JObject log)
         {
             if (!myUnitySolutionTracker.IsUnityProject.HasTrueValue())
                 return;
-            
+
             if (myModuleProcessor.SceneSizes.Count == 0 && myModuleProcessor.PrefabSizes.Count == 0 && myModuleProcessor.AssetSizes.Count == 0)
                 return;
-            
+
             var unityYamlStats = new JObject();
             log["uys"] = unityYamlStats;
             unityYamlStats["s"] = JArray.FromObject(myModuleProcessor.SceneSizes);
             unityYamlStats["p"] = JArray.FromObject(myModuleProcessor.PrefabSizes);
             unityYamlStats["a"] = JArray.FromObject(myModuleProcessor.AssetSizes);
-            unityYamlStats["e"] = myUnityYamlSupport.IsYamlParsingEnabled.Value;
+            unityYamlStats["e"] = myUnityYamlSupport.IsUnityYamlParsingEnabled.Value;
         }
     }
 }

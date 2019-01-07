@@ -11,16 +11,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         private readonly UnityHost myUnityHost;
 
-        public RiderUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, AssetSerializationMode assetSerializationMode,
-            UnityYamlSupport unityYamlSupport, UnityHost unityHost)
-            : base(lifetime, solution, settingsStore, assetSerializationMode, unityYamlSupport)
+        public RiderUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore,
+                                             UnityYamlSupport unityYamlSupport, UnityHost unityHost)
+            : base(lifetime, solution, settingsStore, unityYamlSupport)
         {
             myUnityHost = unityHost;
-            
-            myUnityHost.PerformModelAction(t => t.EnableYamlParsing.Advise(lifetime, _ =>  YamlParsingEnabled.Value = true));
+
+            myUnityHost.PerformModelAction(t =>
+                t.EnableYamlParsing.Advise(lifetime, _ => IsUnityYamlParsingEnabled.Value = true));
         }
 
-        protected override void CreateNotification()
+        protected override void NotifyYamlParsingDisabled()
         {
             myUnityHost.PerformModelAction(t => t.NotifyYamlHugeFiles.Fire(RdVoid.Instance));
         }

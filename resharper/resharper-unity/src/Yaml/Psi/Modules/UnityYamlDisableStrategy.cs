@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
@@ -12,62 +11,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     [SolutionComponent]
     public class UnityYamlDisableStrategy
     {
-        private long myTotalSize = 0;
+        private const ulong AssetFileSizeThreshold = 40 * (1024 * 1024); // 40 MB
+        private const ulong TotalFileSizeThreshold = 700 * (1024 * 1024); // 700 MB
 
-        private readonly IProperty<bool> ShouldBeApplied;
-        private readonly AssetSerializationMode myAssetSerializationMode;
-        protected readonly IProperty<bool> YamlParsingEnabled;
-        private const long YamlFileSizeThreshold = 40 * (1024 * 1024); // 40 MB
-        private const long YamlFileTotalSizeThreshold = 700 * (1024 * 1024); // 700 MB
+        private ulong myTotalSize = 0;
 
-        public UnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, 
-            AssetSerializationMode assetSerializationMode, UnityYamlSupport unityYamlEnabled)
+        private readonly IProperty<bool> myShouldRunHeuristic;
+        protected readonly IProperty<bool> IsUnityYamlParsingEnabled;
+
+        public UnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, UnityYamlSupport unityYamlEnabled)
         {
-            myAssetSerializationMode = assetSerializationMode;
             var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            ShouldBeApplied = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.ShouldApplyYamlHugeFileHeuristic);
-            YamlParsingEnabled = unityYamlEnabled.IsYamlParsingEnabled;
-
+            myShouldRunHeuristic = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.ShouldApplyYamlHugeFileHeuristic);
+            IsUnityYamlParsingEnabled = unityYamlEnabled.IsUnityYamlParsingEnabled;
         }
 
-        public void Run(List<FileSystemPath> files)
+        public void Run(List<DirectoryEntryData> directoryEntries)
         {
-            if (ShouldBeApplied.Value && YamlParsingEnabled.Value)
+            if (myShouldRunHeuristic.Value && IsUnityYamlParsingEnabled.Value)
             {
-                if (IsAnyFilePreventYamlParsing(files) || myTotalSize > YamlFileTotalSizeThreshold)
+                if (IsAnyFilePreventYamlParsing(directoryEntries) || myTotalSize > TotalFileSizeThreshold)
                 {
-                    YamlParsingEnabled.Value = false;
-                    CreateNotification();
+                    IsUnityYamlParsingEnabled.Value = false;
+                    NotifyYamlParsingDisabled();
                 }
             }
         }
 
-        protected virtual void CreateNotification()
+        protected virtual void NotifyYamlParsingDisabled()
         {
-            
         }
 
-        private bool IsAnyFilePreventYamlParsing(List<FileSystemPath> files)
+        private bool IsAnyFilePreventYamlParsing(List<DirectoryEntryData> directoryEntries)
         {
-            foreach (var file in files)
+            foreach (var directoryEntry in directoryEntries)
             {
-                if (IsYamlFilePreventParsing(file))
+                if (IsYamlFilePreventParsing(directoryEntry))
                     return true;
             }
 
             return false;
         }
 
-        private bool IsYamlFilePreventParsing(FileSystemPath path)
+        private bool IsYamlFilePreventParsing(DirectoryEntryData path)
         {
-            var length = path.GetFileLength();
-            if (length > YamlFileSizeThreshold)
+            var length = path.Length;
+            if (length > AssetFileSizeThreshold)
             {
-                if (path.ExtensionNoDot.Equals("asset", StringComparison.OrdinalIgnoreCase) && !path.IsYaml())
+                if (path.RelativePath.IsAsset() && !path.GetAbsolutePath().SniffYamlHeader())
                 {
                     return false;
                 }
-                
+
                 myTotalSize += length;
                 return true;
             }

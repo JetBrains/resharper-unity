@@ -24,9 +24,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     public class UnityExternalFilesModuleProcessor : IChangeProvider, IUnityReferenceChangeHandler
     {
         // stats
-        public readonly List<long> PrefabSizes = new List<long>();
-        public readonly List<long> SceneSizes = new List<long>();
-        public readonly List<long> AssetSizes = new List<long>();
+        public readonly List<ulong> PrefabSizes = new List<ulong>();
+        public readonly List<ulong> SceneSizes = new List<ulong>();
+        public readonly List<ulong> AssetSizes = new List<ulong>();
 
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
@@ -41,7 +41,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
-        private bool myFirstTime = true;
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
@@ -92,39 +91,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 return;
 
             var builder = new PsiModuleChangeBuilder();
-            var result = new List<FileSystemPath>();
-            // These are idempotent and can be called multiple times
-            ProcessSolutionDirectory(result, builder, "Assets");
-            ProcessSolutionDirectory(result, builder, "Packages");
-            ProcessSolutionDirectory(result, builder, "ProjectSettings");
+            var assetFiles = new List<DirectoryEntryData>();
 
-            if (myFirstTime)
-            {
-                myFirstTime = false;
-                myUnityYamlDisableStrategy.Run(result);
-            }
-            AddAssetProjectFiles(result);
+            ProcessUnityProjectDirectories(assetFiles, builder);
+
+            if (assetFiles.Count > 0) myUnityYamlDisableStrategy.Run(assetFiles);
 
             // See if the project is based on a .asmdef file, and process the files at the .asmdef file location. We'll
             // already have processed any of these files in the Assets and Packages folder, so this will catch any
             // packages that are external to the solution folder and registered with `file:`
-            ProcessAsmdefDirectory(builder, project);
+            ProcessAsmdefDirectory(assetFiles, builder, project);
 
             // Add a module reference to the project, so our reference can "see" the target (more accurately, I think
             // this is used to figure out the search domain for Find Usages)
             AddModuleReference(builder, project);
 
+            AddAssetProjectFiles(assetFiles);
             FlushChanges(builder);
         }
 
-        private void ProcessSolutionDirectory(List<FileSystemPath> result, PsiModuleChangeBuilder builder, string relativePath)
+        private void ProcessUnityProjectDirectories(List<DirectoryEntryData> assetFiles, PsiModuleChangeBuilder builder)
+        {
+            // These are idempotent and can be called multiple times. We expect most files to come from here - either in
+            // Assets or Packages. We can have assets in externally stored packages, but they are not treated as user
+            // editable source, so we can mostly ignore them (the exception is file: based packages, but these are
+            // expected to be a small number, and will complicate gathering stats for thresholds)
+            ProcessSolutionDirectory(assetFiles, builder, "Assets");
+            ProcessSolutionDirectory(assetFiles, builder, "Packages");
+            ProcessSolutionDirectory(assetFiles, builder, "ProjectSettings");
+        }
+
+        private void ProcessSolutionDirectory(List<DirectoryEntryData> assetFiles, PsiModuleChangeBuilder builder,
+                                              string relativePath)
         {
             var path = mySolutionDirectory.Combine(relativePath);
             if (path.ExistsDirectory)
-                ProcessDirectory(result, builder, path);
+                ProcessDirectory(assetFiles, builder, path);
         }
 
-        private void ProcessAsmdefDirectory(PsiModuleChangeBuilder builder, IProject project)
+        private void ProcessAsmdefDirectory(List<DirectoryEntryData> assetFiles, PsiModuleChangeBuilder builder,
+                                            IProject project)
         {
             if (!project.IsProjectFromUserView())
                 return;
@@ -144,17 +150,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     var location = projectFile.Location;
                     if (location.FullPath.EndsWith(".asmdef", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        var result = new List<FileSystemPath>();
-                        ProcessDirectory(result, builder, location.Parent);
-                        AddAssetProjectFiles(result);
+                        ProcessDirectory(assetFiles, builder, location.Parent);
                         return;
                     }
                 }
             }
         }
 
-        private void ProcessDirectory(List<FileSystemPath> result, PsiModuleChangeBuilder builder, FileSystemPath directory)
+        private void ProcessDirectory(List<DirectoryEntryData> assetFiles, PsiModuleChangeBuilder builder,
+                                      FileSystemPath directory)
         {
+            // Don't process the entire solution directory - this would process Assets and Packages for a second time,
+            // and also process Temp and Library, which are likely to be huge
             if (directory == mySolutionDirectory)
             {
                 myLogger.Error("Unexpected request to process entire solution directory. Skipping");
@@ -174,27 +181,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             myLogger.Info("Processing directory for asset and meta files: {0}", directory);
 
-
-            // Don't use up valuable interning spaces for files that aren't part of a project
-            var files = directory.GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories,
-                FileSystemPathInternStrategy.TRY_GET_INTERNED_BUT_DO_NOT_INTERN);
-            foreach (var file in files)
+            // Based on super simple tests, GetDirectoryEntries is faster than GetChildFiles with subsequent calls to
+            // GetFileLength. But what is more surprising is that Windows in a VM is an order of magnitude FASTER than
+            // Mac, on the same project!
+            var entries = directory.GetDirectoryEntries("*", PathSearchFlags.RecurseIntoSubdirectories
+                                                             | PathSearchFlags.ExcludeDirectories);
+            foreach (var entry in entries)
             {
-                if (file.IsMeta())
+                if (entry.RelativePath.IsInterestingMeta())
                 {
-                    // Full path doesn't allocate
-                    var fullPath = file.FullPath;
-                    if (fullPath.EndsWith(".cs.meta", StringComparison.CurrentCultureIgnoreCase)
-                        || fullPath.EndsWith(".prefab.meta", StringComparison.InvariantCultureIgnoreCase)
-                        || fullPath.EndsWith(".unity.meta", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        AddMetaPsiSourceFile(builder, file);
-                    }
+                    AddMetaPsiSourceFile(builder, entry.GetAbsolutePath());
                 }
-                else if (file.IsAsset())
+                else if (entry.RelativePath.IsInterestingAsset())
                 {
-                    HandleStatistics(file);
-                    result.Add(file);
+                    UpdateStatistics(entry);
+
+                    assetFiles.Add(entry);
                 }
             }
 
@@ -213,30 +215,54 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
         }
 
+        private void UpdateStatistics(DirectoryEntryData directoryEntry)
+        {
+            if (directoryEntry.RelativePath.IsAsset())
+                AssetSizes.Add(directoryEntry.Length);
+            else if (directoryEntry.RelativePath.IsPrefab())
+                PrefabSizes.Add(directoryEntry.Length);
+            else if (directoryEntry.RelativePath.IsScene())
+                SceneSizes.Add(directoryEntry.Length);
+        }
+
         private void AddAssetProjectFiles(List<FileSystemPath> paths)
         {
-            if (paths.IsEmpty())
+            if (paths.Count == 0)
                 return;
 
-            // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
-            // automatically get an IPsiSourceFile created for it, and attached to our module via
-            // UnityMiscFilesProjectPsiModuleProvider
             using (new ProjectModelBatchChangeCookie(mySolution, SimpleTaskExecutor.Instance))
+            using (mySolution.Locks.UsingWriteLock())
             {
-                using (mySolution.Locks.UsingWriteLock())
-                {
-                    foreach (var path in paths)
-                    {
-                        if (mySolution.FindProjectItemsByLocation(path).Count > 0)
-                            continue;
-                        var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
-                        Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
-                        var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
-                            new MiscFilesProjectProperties());
-                        projectImpl.DoCreateProjectFile(path, properties);
-                    }
-                }
+                foreach (var path in paths) AddAssetProjectFile(path);
             }
+        }
+
+        private void AddAssetProjectFiles(List<DirectoryEntryData> assetDirectoryEntries)
+        {
+            if (assetDirectoryEntries.Count == 0)
+                return;
+
+            using (new ProjectModelBatchChangeCookie(mySolution, SimpleTaskExecutor.Instance))
+            using (mySolution.Locks.UsingWriteLock())
+            {
+                foreach (var directoryEntry in assetDirectoryEntries)
+                    AddAssetProjectFile(directoryEntry.GetAbsolutePath());
+            }
+        }
+
+        // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
+        // automatically get an IPsiSourceFile created for it, and attached to our module via
+        // UnityMiscFilesProjectPsiModuleProvider
+        private void AddAssetProjectFile(FileSystemPath path)
+        {
+            if (mySolution.FindProjectItemsByLocation(path).Count > 0)
+                return;
+
+            var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
+            Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
+            var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
+                new MiscFilesProjectProperties());
+            projectImpl.DoCreateProjectFile(path, properties);
         }
 
         private void OnProjectDirectoryChange(FileSystemChangeDelta delta)
@@ -259,9 +285,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             switch (delta.ChangeType)
             {
                 case FileSystemChangeType.ADDED:
-                    if (delta.NewPath.IsAsset())
+                    if (delta.NewPath.IsInterestingAsset())
                         projectFilesToAdd.Add(delta.NewPath);
-                    else if (delta.NewPath.IsMeta())
+                    else if (delta.NewPath.IsInterestingMeta())
                         AddMetaPsiSourceFile(builder, delta.NewPath);
                     break;
 
@@ -323,6 +349,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                 case PsiModuleChange.ChangeType.Added:
                                     module.Add(location, fileChange.Item, null);
                                     break;
+
                                 case PsiModuleChange.ChangeType.Removed:
                                     module.Remove(location);
                                     break;
@@ -347,24 +374,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 
         public object Execute(IChangeMap changeMap) => null;
-
-        private void HandleStatistics(FileSystemPath path)
-        {
-            var extension = path.ExtensionNoDot;
-            if (extension.Equals("asset", StringComparison.OrdinalIgnoreCase))
-            {
-                AssetSizes.Add(path.GetFileLength());
-            }
-
-            if (extension.Equals("prefab", StringComparison.OrdinalIgnoreCase))
-            {
-                PrefabSizes.Add(path.GetFileLength());
-            }
-
-            if (extension.Equals("unity", StringComparison.OrdinalIgnoreCase))
-            {
-                SceneSizes.Add(path.GetFileLength());
-            }
-        }
     }
 }

@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
     {
         public static bool IsAsset(this IPsiSourceFile sourceFile)
         {
-            return sourceFile is UnityYamlAssetPsiSourceFile || sourceFile.GetLocation().IsAsset();
+            return sourceFile is UnityYamlAssetPsiSourceFile || sourceFile.GetLocation().IsInterestingAsset();
         }
 
         public static bool IsMeta(this IPsiSourceFile sourceFile)

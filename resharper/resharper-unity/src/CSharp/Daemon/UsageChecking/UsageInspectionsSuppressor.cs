@@ -5,7 +5,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
@@ -113,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             var solution = method.GetSolution();
             var assetSerializationMode = solution.GetComponent<AssetSerializationMode>();
-            var yamlParsingEnabled = solution.GetComponent<UnityYamlSupport>().IsYamlParsingEnabled;
+            var yamlParsingEnabled = solution.GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled;
 
             // TODO: These two are usually used together. Consider combining in some way
             if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
