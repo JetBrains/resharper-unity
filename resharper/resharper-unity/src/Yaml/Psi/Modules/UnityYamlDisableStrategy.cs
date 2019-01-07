@@ -14,25 +14,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private const ulong AssetFileSizeThreshold = 40 * (1024 * 1024); // 40 MB
         private const ulong TotalFileSizeThreshold = 700 * (1024 * 1024); // 700 MB
 
-        private ulong myTotalSize = 0;
-
         private readonly IProperty<bool> myShouldRunHeuristic;
-        protected readonly IProperty<bool> IsUnityYamlParsingEnabled;
+        private readonly UnityYamlSupport myUnityYamlSupport;
 
-        public UnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, UnityYamlSupport unityYamlEnabled)
+        private ulong myTotalSize;
+
+        public UnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, UnityYamlSupport unityYamlSupport)
         {
+            myUnityYamlSupport = unityYamlSupport;
             var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
             myShouldRunHeuristic = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.ShouldApplyYamlHugeFileHeuristic);
-            IsUnityYamlParsingEnabled = unityYamlEnabled.IsUnityYamlParsingEnabled;
         }
 
         public void Run(List<DirectoryEntryData> directoryEntries)
         {
-            if (myShouldRunHeuristic.Value && IsUnityYamlParsingEnabled.Value)
+            if (myShouldRunHeuristic.Value && myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
             {
                 if (IsAnyFilePreventYamlParsing(directoryEntries) || myTotalSize > TotalFileSizeThreshold)
                 {
-                    IsUnityYamlParsingEnabled.Value = false;
+                    myUnityYamlSupport.IsUnityYamlParsingEnabled.Value = false;
                     NotifyYamlParsingDisabled();
                 }
             }

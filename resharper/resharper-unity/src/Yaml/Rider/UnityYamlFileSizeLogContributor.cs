@@ -8,13 +8,13 @@ using Newtonsoft.Json.Linq;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 {
     [SolutionComponent]
-    public class UnityYamlStatistics : IActivityLogContributorSolutionComponent
+    public class UnityYamlFileSizeLogContributor : IActivityLogContributorSolutionComponent
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly UnityYamlSupport myUnityYamlSupport;
         private readonly UnityExternalFilesModuleProcessor myModuleProcessor;
 
-        public UnityYamlStatistics(UnitySolutionTracker unitySolutionTracker, UnityYamlSupport unityYamlSupport, UnityExternalFilesModuleProcessor moduleProcessor)
+        public UnityYamlFileSizeLogContributor(UnitySolutionTracker unitySolutionTracker, UnityYamlSupport unityYamlSupport, UnityExternalFilesModuleProcessor moduleProcessor)
         {
             myUnitySolutionTracker = unitySolutionTracker;
             myUnityYamlSupport = unityYamlSupport;
@@ -34,6 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             unityYamlStats["s"] = JArray.FromObject(myModuleProcessor.SceneSizes);
             unityYamlStats["p"] = JArray.FromObject(myModuleProcessor.PrefabSizes);
             unityYamlStats["a"] = JArray.FromObject(myModuleProcessor.AssetSizes);
+            unityYamlStats["kba"] = JArray.FromObject(myModuleProcessor.KnownBinaryAssetSizes);
+            unityYamlStats["ebna"] = JArray.FromObject(myModuleProcessor.ExcludedByNameAssetsSizes);
             unityYamlStats["e"] = myUnityYamlSupport.IsUnityYamlParsingEnabled.Value;
         }
     }

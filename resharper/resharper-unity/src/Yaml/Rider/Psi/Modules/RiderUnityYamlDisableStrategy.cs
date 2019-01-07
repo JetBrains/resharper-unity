@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myUnityHost = unityHost;
 
             myUnityHost.PerformModelAction(t =>
-                t.EnableYamlParsing.Advise(lifetime, _ => IsUnityYamlParsingEnabled.Value = true));
+                t.EnableYamlParsing.Advise(lifetime, _ => unityYamlSupport.IsUnityYamlParsingEnabled.Value = true));
         }
 
         protected override void NotifyYamlParsingDisabled()
