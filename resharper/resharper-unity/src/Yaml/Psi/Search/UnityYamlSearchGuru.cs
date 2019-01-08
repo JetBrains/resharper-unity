@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Text;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
@@ -56,6 +57,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     return null;
 
                 var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
+                if (guid == null)
+                    return null;
 
                 // Class usage is in the form: "m_Script: {fileID: 11500000, guid: $guid, ... }"
                 // Get the set of files that contain ALL of these terms
@@ -75,6 +78,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     return null;
 
                 var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
+                if (guid == null)
+                    return null;
 
                 // Searching for an event handler method requires matching something like
                 // Event handlers are in the form:
@@ -111,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             return true;
         }
 
-        private UnityYamlSearchGuruId GetElementId(params string[] searchTerms)
+        private UnityYamlSearchGuruId GetElementId([ItemNotNull] params string[] searchTerms)
         {
             var foundFiles = new JetHashSet<IPsiSourceFile>();
             foreach (var trigramIndex in myIndices)
