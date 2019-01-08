@@ -25,14 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     // This cache recognises binary YAML files, and the file's IPsiSourceFileProperties.ShouldBuildPsi will return false
     // if the cache says it's binary. When the cache sees a binary file, it notifies the change manager that the PSI
     // file has been modified (technically, the properties have been modified). Now that ShouldBuildPsi returns false,
-    // the file is dropped from all caches, including the trigram index, and the caches  are no longer called for this
+    // the file is dropped from all caches, including the trigram index, and the caches are no longer called for this
     // file.
-    //
-    // TODO: Support resetting a file back to non-binary
-    // Note that this means that once we mark a file as binary, it will never become not-binary. This cache is not
-    // called again when the file is modified, so we never check to see if it's become text. We even ignore the Drop
-    // request, so that we know (even though the file no longer has a PSI) that the file is binary. And because the Map
-    // is persistent, this survives application restarts.
+    // When a binary file is modified, the PSI module processor will sniff the header and invalidate the file in the
+    // cache if it's now a YAML file.
     [PsiComponent]
     public class BinaryUnityFileCache : SimpleICache<BinaryUnityFileCache.BinaryFileCacheItem>
     {
@@ -71,6 +67,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public bool IsBinaryFile(IPsiSourceFile sourceFile)
         {
             return Map.TryGetValue(sourceFile, out var value) && value.IsBinary;
+        }
+
+        public void Invalidate(IPsiSourceFile sourceFile)
+        {
+            base.Drop(sourceFile);
         }
 
         protected override bool IsApplicable(IPsiSourceFile sf)
