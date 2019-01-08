@@ -33,8 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
     // Words come from IDomainSpecificSearcherFactory.GetAllPossibleWordsInFile
     public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
     {
-      // TODO: The YAML assembly shouldn't know anything about .meta files
-      if (sourceFile.GetPrimaryPsiFile() is IYamlFile yamlFile && sourceFile.GetLocation().ExtensionNoDot != "meta")
+      if (sourceFile.GetPrimaryPsiFile() is IYamlFile yamlFile)
         return ProcessElement(yamlFile, consumer);
       return false;
     }
