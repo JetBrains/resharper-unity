@@ -18,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         public string GetDefaultNamespace() => string.Empty;
         public ICollection<PreProcessingDirective> GetDefines() => EmptyList<PreProcessingDirective>.InstanceList;
         public bool ShouldBuildPsi => myEnabled.Value;
+        // ClrToDoManager takes a lot of time inside yaml files, but if file is generated, it will be ignored by todomanager
         public bool IsGeneratedFile => true;
         public bool IsICacheParticipant => true;
         public bool ProvidesCodeModel => true;
