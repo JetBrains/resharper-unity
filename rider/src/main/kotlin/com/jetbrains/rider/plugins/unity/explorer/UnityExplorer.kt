@@ -25,6 +25,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         const val Title = "Unity"
         const val Weight = 1
         const val ShowHiddenItemsOption = "show-hidden-items"
+        const val ShowProjectNamesOption = "show-project-names"
         const val DefaultProjectPrefix = "Assembly-CSharp"
 
         val Icon = UnityIcons.ToolWindows.UnityExplorer
@@ -44,6 +45,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
     }
 
     var myShowHiddenItems = false
+    var myShowProjectNames = true
 
     override fun isInitiallyVisible() = project.isLikeUnityProject()
 
@@ -61,12 +63,15 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
         JDOMExternalizerUtil.writeField(element, ShowHiddenItemsOption, myShowHiddenItems.toString())
+        JDOMExternalizerUtil.writeField(element, ShowProjectNamesOption, myShowProjectNames.toString())
     }
 
     override fun readExternal(element: Element) {
         super.readExternal(element)
-        val option = JDOMExternalizerUtil.readField(element, ShowHiddenItemsOption)
+        var option = JDOMExternalizerUtil.readField(element, ShowHiddenItemsOption)
         myShowHiddenItems = option != null && java.lang.Boolean.parseBoolean(option)
+        option = JDOMExternalizerUtil.readField(element, ShowProjectNamesOption)
+        myShowProjectNames = option == null || java.lang.Boolean.parseBoolean(option)
     }
 
     override fun getTitle() = Title
@@ -91,6 +96,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
 
     override fun addPrimaryToolbarActions(actionGroup: DefaultActionGroup) {
         actionGroup.addAction(ShowHiddenItemsAction())
+        actionGroup.addAction(ShowProjectNamesAction()).setAsSecondary(true)
         actionGroup.addSeparator()
         super.addPrimaryToolbarActions(actionGroup)
     }
@@ -105,6 +111,26 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         override fun setSelected(event: AnActionEvent, flag: Boolean) {
             if (myShowHiddenItems != flag) {
                 myShowHiddenItems = flag
+                updateFromRoot(false)
+            }
+        }
+
+        override fun update(e: AnActionEvent) {
+            super.update(e)
+            e.presentation.isEnabledAndVisible = ProjectView.getInstance(myProject).currentProjectViewPane === this@UnityExplorer
+        }
+    }
+
+    private inner class ShowProjectNamesAction
+        : ToggleAction("Show Project Names", "Show names of owning projects next to folders", AllIcons.Actions.ListFiles), DumbAware {
+
+        override fun isSelected(event: AnActionEvent): Boolean {
+            return myShowProjectNames
+        }
+
+        override fun setSelected(event: AnActionEvent, flag: Boolean) {
+            if (myShowProjectNames != flag) {
+                myShowProjectNames = flag
                 updateFromRoot(false)
             }
         }

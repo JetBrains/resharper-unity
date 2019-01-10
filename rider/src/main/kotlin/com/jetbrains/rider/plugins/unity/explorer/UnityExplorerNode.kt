@@ -61,7 +61,7 @@ open class UnityExplorerNode(project: Project,
         presentation.setIcon(calculateIcon())
 
         // Add additional info for directories
-        if (!virtualFile.isDirectory) return
+        if (!virtualFile.isDirectory || !UnityExplorer.getInstance(myProject).myShowProjectNames) return
         addProjects(presentation)
     }
 
