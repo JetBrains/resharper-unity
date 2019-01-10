@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
             if (name?.Equals(string.Empty) == true)
                 name = null;
-            NameParts.Add(name ?? "INVALID");
+            NameParts.Add(name ?? "Unknown");
         }
     }
 }
