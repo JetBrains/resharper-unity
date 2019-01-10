@@ -63,7 +63,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       for (int i = 1; i < rootIndices.Length; i++)
       {
         var transform = toSelect.transform;
-        if (rootIndices[i] >= transform.childCount)
+        if (rootIndices[i] >= transform.childCount || rootIndices[i] < 0)
           return;
 
         toSelect = transform.GetChild(rootIndices[i]).gameObject;
