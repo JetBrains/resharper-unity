@@ -103,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             if (externalFiles.AssetFiles.Count > 0) myUnityYamlDisableStrategy.Run(externalFiles.AssetFiles);
 
             CollectExternalFilesForAsmDefProject(externalFiles, project);
-            AddExternalFiles(externalFiles, project);
+            AddExternalFiles(externalFiles);
             UpdateStatistics(externalFiles);
         }
 
@@ -192,11 +192,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myRootPaths.Add(directory);
         }
 
-        private void AddExternalFiles(ExternalFiles externalFiles, IProject project)
+        private void AddExternalFiles(ExternalFiles externalFiles)
         {
             var builder = new PsiModuleChangeBuilder();
             AddExternalMetaFiles(externalFiles, builder);
-            AddModuleReference(builder, project);
             FlushChanges(builder);
 
             AddExternalAssetFiles(externalFiles);
@@ -431,20 +430,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                         myChangeManager.OnProviderChanged(this, builder.Result, SimpleTaskExecutor.Instance);
                     }
                 });
-        }
-
-        // Add a module reference to the project, so our reference can "see" the target (more accurately, I think this
-        // is used to figure out the search domain for Find Usages)
-        private void AddModuleReference(PsiModuleChangeBuilder builder, IProject project)
-        {
-            var thisModule = myModuleFactory.PsiModule;
-            if (thisModule == null)
-                return;
-
-            foreach (var projectModule in project.GetPsiModules())
-                thisModule.AddModuleReference(projectModule);
-
-            builder.AddModuleChange(thisModule, PsiModuleChange.ChangeType.Modified);
         }
 
         public object Execute(IChangeMap changeMap) => null;

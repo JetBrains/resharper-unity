@@ -2,10 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
+using JetBrains.ReSharper.Psi.Impl.Search.SearchDomain;
+using JetBrains.ReSharper.Psi.Search;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
@@ -15,6 +18,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     [PsiSharedComponent]
     public class UnityYamlUsageSearchFactory : DomainSpecificSearcherFactoryBase
     {
+        private readonly SearchDomainFactory mySearchDomainFactory;
+
+        public UnityYamlUsageSearchFactory(SearchDomainFactory searchDomainFactory)
+        {
+            mySearchDomainFactory = searchDomainFactory;
+        }
+
         public override bool IsCompatibleWithLanguage(PsiLanguageType languageType)
         {
             return languageType.Is<YamlLanguage>();
@@ -58,6 +68,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             }
 
             return EmptyList<string>.Instance;
+        }
+
+        public override ISearchDomain GetDeclaredElementSearchDomain(IDeclaredElement declaredElement)
+        {
+            if (IsInterestingElement(declaredElement))
+            {
+                var moduleFactory = declaredElement.GetSolution().TryGetComponent<UnityExternalFilesModuleFactory>();
+                if (moduleFactory != null)
+                    return mySearchDomainFactory.CreateSearchDomain(moduleFactory.PsiModule);
+            }
+
+            return EmptySearchDomain.Instance;
         }
 
         private static bool IsInterestingElement(IDeclaredElement element)
