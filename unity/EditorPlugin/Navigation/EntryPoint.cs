@@ -1,16 +1,8 @@
 using System;
-using System.Linq;
-using System.Reflection;
-using JetBrains.Platform.RdFramework.Base;
-using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.EditorPluginModel;
-using JetBrains.Util;
+using JetBrains.Rider.Unity.Editor.Navigation.Window;
 using JetBrains.Util.Logging;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 
 namespace JetBrains.Rider.Unity.Editor.Navigation
 {

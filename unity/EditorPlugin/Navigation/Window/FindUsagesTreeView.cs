@@ -3,9 +3,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation
+namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 {
   internal class FindUsagesTreeView : TreeView
   {
@@ -22,7 +21,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 
     protected override TreeViewItem BuildRoot()
     {
-      var root = new FindUsagePathElement {id = 0, depth = -1, displayName = "Usages result:"};
+      var root = new FindUsagePathElement(0) {id = 0, depth = -1, displayName = "Usages result:"};
 
       var sceneNode = CreateSceneSubTree();
       root.AddChild(sceneNode);
@@ -36,36 +35,40 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 
     private TreeViewItem CreateSceneSubTree()
     {
-      var scenes = new FindUsagePathElement() {id = 1, displayName = "Scenes"};
+      var scenes = new FindUsagePathElement(0) {id = 1, displayName = "Scenes"};
       CreateSubTree(scenes, myState.SceneElements.ToArray(), 3);
       return scenes;
     }
     
     private TreeViewItem CreatePrefabSubTree()
     {
-      var prefabs = new FindUsagePathElement() {id = 2, displayName = "Prefabs"};
+      var prefabs = new FindUsagePathElement(1) {id = 2, displayName = "Prefabs"};
       CreateSubTree(prefabs, myState.PrefabElements.ToArray(), 1_000_000_000);
       return prefabs;
     }
 
     private void CreateSubTree(FindUsagePathElement element, IEnumerable<AbstractUsageElement> data, int startId)
     {
+      var fileNames = new Dictionary<string, FindUsagePathElement>();
+      var curFileNameId = 0;
       foreach (var usageElement in data)
       {
         FindUsagePathElement current = element;
 
-        var sceneName = usageElement.FilePath.Split('/').Last();
-        if (!current.HasChild(sceneName))
+        var filePath = usageElement.FilePath;
+        var dataFileName = filePath.Split('/').Last();
+        if (!fileNames.ContainsKey(filePath))
         {
-          current = current.CreateChild(new FindUsagePathElement
+          current = current.CreateChild(new FindUsagePathElement(curFileNameId++)
           {
-            id = startId++, displayName = sceneName, 
+            id = startId++, displayName = dataFileName, 
             icon = (Texture2D)EditorGUIUtility.IconContent(usageElement.StartNodeImage).image
           }); 
+          fileNames.Add(filePath, current);
         }
         else
         {
-          current = current.GetChild(sceneName);
+          current = fileNames[filePath];
         }
 
         var pathLength = usageElement.Path.Length;
@@ -75,7 +78,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
           if (i + 1 == pathLength)
           {
             var id = startId++;
-            findResultItems[id] = new FindUsagesTreeViewItem(usageElement)
+            findResultItems[id] = new FindUsagesTreeViewItem(usageElement.RootIndices[i], usageElement)
             {
               id = id,
               displayName = name,
@@ -85,9 +88,10 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
           }
           else
           {
-            if (!current.HasChild(name))
+            var rootIndex = usageElement.RootIndices[i];
+            if (!current.HasChild(rootIndex))
             {
-              current = current.CreateChild(new FindUsagePathElement
+              current = current.CreateChild(new FindUsagePathElement(rootIndex)
               {
                 id = startId++, displayName = name,
                 icon = (Texture2D)EditorGUIUtility.IconContent(usageElement.NodeImage).image
@@ -95,7 +99,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
             }
             else
             {
-              current = current.GetChild(name);
+              current = current.GetChild(rootIndex);
             }
           }
         }
