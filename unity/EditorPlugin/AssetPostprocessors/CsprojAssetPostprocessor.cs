@@ -146,7 +146,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static bool FixImplicitReferences(XElement projectContentElement, XNamespace xmlns)
     {
       // Starting with Unity 2018.2, it must be done by Unity itself
-      if (UnityUtils.UnityVersion < new Version(2018, 2))
+      if (UnityUtils.UnityVersion >= new Version(2018, 2))
         return false;
       
       var changed = SetOrUpdateProperty(projectContentElement, xmlns, "NoConfig", existing => "true");
