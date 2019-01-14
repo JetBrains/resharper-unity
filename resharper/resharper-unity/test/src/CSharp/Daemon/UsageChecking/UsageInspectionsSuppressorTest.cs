@@ -2,7 +2,6 @@ using System;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
@@ -43,14 +42,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
             myOnProjectStarted = project =>
             {
                 var yamlSupport = project.GetSolution().GetComponent<UnityYamlSupport>();
-                oldValue = yamlSupport.IsYamlParsingEnabled.Value;
-                yamlSupport.IsYamlParsingEnabled.Value = false;
+                oldValue = yamlSupport.IsUnityYamlParsingEnabled.Value;
+                yamlSupport.IsUnityYamlParsingEnabled.Value = false;
             };
 
             myOnProjectFinished = project =>
             {
                 var yamlSupport = project.GetSolution().GetComponent<UnityYamlSupport>();
-                yamlSupport.IsYamlParsingEnabled.Value = oldValue;
+                yamlSupport.IsUnityYamlParsingEnabled.Value = oldValue;
             };
 
             DoNamedTest();

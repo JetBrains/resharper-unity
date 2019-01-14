@@ -18,11 +18,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var module = factory.PsiModule;
             if (module != null)
             {
-                unityYamlSupport.IsYamlParsingEnabled.Change.Advise_NoAcknowledgement(lifetime, (handler) =>
+                unityYamlSupport.IsUnityYamlParsingEnabled.Change.Advise_NoAcknowledgement(lifetime, (handler) =>
                 {
                     if (handler.HasNew && handler.HasOld && handler.New == handler.Old)
                         return;
-                    
+
                     locks.ExecuteOrQueueReadLockEx(lifetime, "YamlParsingStateChange", () =>
                     {
                         var psiSourceFiles = module.SourceFiles.ToList();

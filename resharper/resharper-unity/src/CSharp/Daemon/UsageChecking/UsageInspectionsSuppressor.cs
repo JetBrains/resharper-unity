@@ -5,7 +5,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
@@ -34,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                 /*
                  * TODO: radically rethink Unity / non-Unity project detection.
                  * Currently we check project's assemblies using extensions for IProject,
-                 * with no way to log errors and/or react to targetFrameworkChanges should they happen on the fly.                  
+                 * with no way to log errors and/or react to targetFrameworkChanges should they happen on the fly.
                  * This should be replaced with something more stable and fast.
                  */
                 myLogger.LogExceptionSilently(e);
@@ -113,30 +112,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             var solution = method.GetSolution();
             var assetSerializationMode = solution.GetComponent<AssetSerializationMode>();
-            var yamlParsingEnabled = solution.GetComponent<UnityYamlSupport>().IsYamlParsingEnabled;
+            var yamlParsingEnabled = solution.GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled;
 
             // TODO: These two are usually used together. Consider combining in some way
             if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
-                return IsPotentialEventHandler(unityApi, method);
+                return unityApi.IsPotentialEventHandler(method);
 
             return method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>().IsEventHandler(method);
         }
-
-        // Best effort attempt at preventing false positives for type members that are actually being used inside a
-        // scene. We don't have enough information to do this by name, so we'll mark all potential event handlers as
-        // implicitly used by Unity
-        // See https://github.com/Unity-Technologies/UnityCsReference/blob/02f8e8ca594f156dd6b2088ad89451143ca1b87e/Editor/Mono/Inspector/UnityEventDrawer.cs#L397
-        private static bool IsPotentialEventHandler(UnityApi unityApi, IMethod method)
-        {
-            if (!method.ReturnType.IsVoid())
-                return false;
-
-            // Type.GetMethods() returns public instance methods only
-            if (method.GetAccessRights() != AccessRights.PUBLIC || method.IsStatic)
-                return false;
-
-            return unityApi.IsUnityType(method.GetContainingType()) &&
-                   !method.HasAttributeInstance(PredefinedType.OBSOLETE_ATTRIBUTE_CLASS, true);
-        }
     }
 }
+

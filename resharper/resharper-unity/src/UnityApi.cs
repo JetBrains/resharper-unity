@@ -95,6 +95,28 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return field.GetAccessRights() == AccessRights.PUBLIC;
         }
 
+        // Best effort attempt at preventing false positives for type members that are actually being used inside a
+        // scene. We don't have enough information to do this by name, so we'll mark all potential event handlers as
+        // implicitly used by Unity
+        // See https://github.com/Unity-Technologies/UnityCsReference/blob/02f8e8ca594f156dd6b2088ad89451143ca1b87e/Editor/Mono/Inspector/UnityEventDrawer.cs#L397
+        public bool IsPotentialEventHandler([CanBeNull] IMethod method)
+        {
+            if (method == null || !method.ReturnType.IsVoid())
+                return false;
+
+            // Type.GetMethods() returns public instance methods only
+            if (method.GetAccessRights() != AccessRights.PUBLIC || method.IsStatic)
+                return false;
+
+            return IsUnityType(method.GetContainingType()) &&
+                   !method.HasAttributeInstance(PredefinedType.OBSOLETE_ATTRIBUTE_CLASS, true);
+        }
+
+        public bool IsPotentialEventHandler([CanBeNull] IProperty property)
+        {
+            return IsPotentialEventHandler(property?.Setter);
+        }
+
         public IEnumerable<UnityEventFunction> GetEventFunctions(ITypeElement type, Version unityVersion)
         {
             var types = myTypes.Value;
