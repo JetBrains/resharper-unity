@@ -122,11 +122,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
       changed |= TrySetHintPathsForSystemAssemblies(projectContentElement, xmlns);
       changed |= FixImplicitReferences(projectContentElement, xmlns);
+      changed |= AvoidGetReferenceAssemblyPathsCall(projectContentElement, xmlns);
       changed |= AddMicrosoftCSharpReference(projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
-      changed |= AvoidGetReferenceAssemblyPathsCall(projectContentElement, xmlns);
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
       
       return changed;
@@ -145,18 +145,29 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // https://github.com/JetBrains/resharper-unity/issues/988
     private static bool FixImplicitReferences(XElement projectContentElement, XNamespace xmlns)
     {
-      // Starting with Unity 2018.2, it must be done by Unity itself
-      if (UnityUtils.UnityVersion >= new Version(2018, 2))
-        return false;
-      
-      var changed = SetOrUpdateProperty(projectContentElement, xmlns, "NoConfig", existing => "true");
-      changed |= SetOrUpdateProperty(projectContentElement, xmlns, "NoStdLib", existing => "true");
-      changed |= SetOrUpdateProperty(projectContentElement, xmlns, "AddAdditionalExplicitAssemblyReferences", existing => "false");
-      changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandNETStandardFacades", existing => "false");
-      changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandDesignTimeFacades", existing => "false");
+      var changed = false;
+
+      // For Unity 2017.x, we are adding tags and reference to mscorlib
+      if (UnityUtils.UnityVersion.Major == 2017)
+      {
+        changed = SetOrUpdateProperty(projectContentElement, xmlns, "NoConfig", existing => "true");
+        changed |= SetOrUpdateProperty(projectContentElement, xmlns, "NoStdLib", existing => "true");
+        changed |= SetOrUpdateProperty(projectContentElement, xmlns, "AddAdditionalExplicitAssemblyReferences",existing => "false");
+
+        var referenceName = "mscorlib.dll";
+        var hintPath = GetHintPath(referenceName);
+        AddCustomReference(referenceName, projectContentElement, xmlns, hintPath);
+      }
+
+      if (UnityUtils.UnityVersion.Major == 2017 || UnityUtils.UnityVersion.Major == 2018)
+      {
+        changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandNETStandardFacades",existing => "false");
+        changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandDesignTimeFacades",existing => "false");
+      }
+
       return changed;
     }
-    
+
     // Computer may not have specific TargetFramework, msbuild will resolve System from different TargetFramework
     // If we set HintPaths together with DisableHandlePackageFileConflicts we help msbuild to resolve libs from Unity installation
     // Unity 2018+ already have HintPaths by default
@@ -210,8 +221,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     private static bool AvoidGetReferenceAssemblyPathsCall(XElement projectContentElement, XNamespace xmlns)
     {
-      // Starting with Unity 2018, dotnet target pack is not required
-      if (UnityUtils.UnityVersion < new Version(2018, 1))
+      // Starting with Unity 2017, dotnet target pack is not required
+      if (UnityUtils.UnityVersion.Major < 2017)
         return false;
       
       // Set _TargetFrameworkDirectories and _FullFrameworkReferenceAssemblyPaths to something to avoid GetReferenceAssemblyPaths task being called
