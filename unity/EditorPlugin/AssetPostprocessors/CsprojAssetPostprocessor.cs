@@ -121,6 +121,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetProjectFlavour(projectContentElement, xmlns);
       changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
       changed |= TrySetHintPathsForSystemAssemblies(projectContentElement, xmlns);
+      changed |= FixImplicitReferences(projectContentElement, xmlns);
       changed |= AddMicrosoftCSharpReference(projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
@@ -128,6 +129,31 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= AvoidGetReferenceAssemblyPathsCall(projectContentElement, xmlns);
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
       
+      return changed;
+    }
+    
+    /* In Unity 2018.2 it looks like this:
+     
+     <PropertyGroup>
+           <NoConfig>true</NoConfig>
+           <NoStdLib>true</NoStdLib>
+           <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+           <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
+           <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
+         </PropertyGroup>
+    */
+    // https://github.com/JetBrains/resharper-unity/issues/988
+    private static bool FixImplicitReferences(XElement projectContentElement, XNamespace xmlns)
+    {
+      // Starting with Unity 2018.2, it must be done by Unity itself
+      if (UnityUtils.UnityVersion < new Version(2018, 2))
+        return false;
+      
+      var changed = SetOrUpdateProperty(projectContentElement, xmlns, "NoConfig", existing => "true");
+      changed |= SetOrUpdateProperty(projectContentElement, xmlns, "NoStdLib", existing => "true");
+      changed |= SetOrUpdateProperty(projectContentElement, xmlns, "AddAdditionalExplicitAssemblyReferences", existing => "false");
+      changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandNETStandardFacades", existing => "false");
+      changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandDesignTimeFacades", existing => "false");
       return changed;
     }
     
