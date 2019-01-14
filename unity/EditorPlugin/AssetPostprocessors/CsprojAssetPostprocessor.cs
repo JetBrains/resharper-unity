@@ -150,13 +150,14 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       // For Unity 2017.x, we are adding tags and reference to mscorlib
       if (UnityUtils.UnityVersion.Major == 2017)
       {
-        changed = SetOrUpdateProperty(projectContentElement, xmlns, "NoConfig", existing => "true");
-        changed |= SetOrUpdateProperty(projectContentElement, xmlns, "NoStdLib", existing => "true");
-        changed |= SetOrUpdateProperty(projectContentElement, xmlns, "AddAdditionalExplicitAssemblyReferences",existing => "false");
+        SetOrUpdateProperty(projectContentElement, xmlns, "NoConfig", existing => "true");
+        SetOrUpdateProperty(projectContentElement, xmlns, "NoStdLib", existing => "true");
+        SetOrUpdateProperty(projectContentElement, xmlns, "AddAdditionalExplicitAssemblyReferences",existing => "false");
 
         var referenceName = "mscorlib.dll";
         var hintPath = GetHintPath(referenceName);
         AddCustomReference(referenceName, projectContentElement, xmlns, hintPath);
+        changed = true;
       }
 
       if (UnityUtils.UnityVersion.Major == 2017 || UnityUtils.UnityVersion.Major == 2018)
