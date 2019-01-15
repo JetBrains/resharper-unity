@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             if (assetsDir.ExistsDirectory && editorSettingsPath.ExistsFile)
             {
                 // If binary serialisation is enabled, the EditorSettings.asset file might be in binary. Sheesh
-                var isEditorSettingsInText = editorSettingsPath.IsYaml();
+                var isEditorSettingsInText = editorSettingsPath.SniffYamlHeader();
 
                 // At best, we can say that it's mixed. If the settings asset is in text, read it to get the proper value
                 Mode = SerializationMode.Mixed;

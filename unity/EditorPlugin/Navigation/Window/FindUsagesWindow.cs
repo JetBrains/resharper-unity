@@ -1,12 +1,10 @@
 using System;
-using JetBrains.DataFlow;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation
+namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 {
   internal class FindUsagesWindow : EditorWindow
   {

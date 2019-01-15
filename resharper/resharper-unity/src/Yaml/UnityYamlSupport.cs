@@ -10,22 +10,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
     [SolutionComponent]
     public class UnityYamlSupport
     {
-        public readonly IProperty<bool> IsYamlParsingEnabled;
-        public UnityYamlSupport(Lifetime lifetime, YamlSupport support, ISolution solution, ISettingsStore settingsStore)
+        public readonly IProperty<bool> IsUnityYamlParsingEnabled;
+
+        public UnityYamlSupport(Lifetime lifetime, YamlSupport yamlSupport, ISolution solution, ISettingsStore settingsStore)
         {
             var settings = settingsStore.BindToContextLive(lifetime,
                 ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            IsYamlParsingEnabled = settings.GetValueProperty(lifetime, (UnitySettings key) => key.IsYamlParsingEnabled);
-            
-            
-            if (!support.IsParsingEnabled.Value)
-                IsYamlParsingEnabled.Value = false;
+            IsUnityYamlParsingEnabled = settings.GetValueProperty(lifetime, (UnitySettings key) => key.IsYamlParsingEnabled);
 
-            IsYamlParsingEnabled.Change.Advise(lifetime, v =>
+            if (!yamlSupport.IsParsingEnabled.Value)
+                IsUnityYamlParsingEnabled.Value = false;
+
+            IsUnityYamlParsingEnabled.Change.Advise(lifetime, v =>
             {
                 if (v.HasNew && v.New)
                 {
-                    support.IsParsingEnabled.Value = true;
+                    yamlSupport.IsParsingEnabled.Value = true;
                     if (v.HasOld)
                         settings.SetValue((UnitySettings key) => key.ShouldApplyYamlHugeFileHeuristic, false);
                 }

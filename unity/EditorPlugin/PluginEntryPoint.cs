@@ -35,8 +35,8 @@ namespace JetBrains.Rider.Unity.Editor
     static PluginEntryPoint()
     {
       PluginSettings.InitLog(); // init log before doing any logging
-      ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap 
-      
+      ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap
+
       ourPluginSettings = new PluginSettings();
       ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
       var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
@@ -113,6 +113,8 @@ namespace JetBrains.Rider.Unity.Editor
       // process csproj files once per Unity process
       if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
       {
+        // Perform on next editor frame update, so we avoid this exception:
+        // "Must set an output directory through SetCompileScriptsOutputDirectory before compiling"
         EditorApplication.update += SyncSolutionOnceCallBack;
       }
 
@@ -153,7 +155,7 @@ namespace JetBrains.Rider.Unity.Editor
         File.Delete(protocolInstanceJsonPath);
       };
 
-      PlayModeSavedState = GetEditorState();
+      PlayModeSavedState = GetPlayModeState();
       SetupAssemblyReloadEvents();
 
       ourInitialized = true;
@@ -190,7 +192,16 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static PlayModeState GetEditorState()
+    public enum PlayModeState
+    {
+      Stopped,
+      Playing,
+      Paused
+    }
+
+    public static PlayModeState PlayModeSavedState = PlayModeState.Stopped;
+
+    private static PlayModeState GetPlayModeState()
     {
       if (EditorApplication.isPaused)
         return PlayModeState.Paused;
@@ -201,25 +212,26 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void SetupAssemblyReloadEvents()
     {
+      // playmodeStateChanged was marked obsolete in 2017.1. Still working in 2018.3
 #pragma warning disable 618
       EditorApplication.playmodeStateChanged += () =>
 #pragma warning restore 618
       {
-        var newState = GetEditorState();
-        if (PlayModeSavedState != newState)
+        var newPlayModeState = GetPlayModeState();
+        if (PlayModeSavedState != newPlayModeState)
         {
           if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
           {
-            if (newState == PlayModeState.Playing)
+            if (newPlayModeState == PlayModeState.Playing)
             {
               EditorApplication.LockReloadAssemblies();
             }
-            else if (newState == PlayModeState.Stopped)
+            else if (newPlayModeState == PlayModeState.Stopped)
             {
               EditorApplication.UnlockReloadAssemblies();
             }
           }
-          PlayModeSavedState = newState;
+          PlayModeSavedState = newPlayModeState;
         }
       };
 
@@ -266,12 +278,12 @@ namespace JetBrains.Rider.Unity.Editor
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
           model.ApplicationVersion.SetValue(Application.unityVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
-          
+
           if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
             model.NotifyIsRecompileAndContinuePlaying.Fire("General");
           else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
             model.NotifyIsRecompileAndContinuePlaying.Fire("Rider");
-          
+
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.AddAction(() => { UnityModels.Remove(pair); });
@@ -283,7 +295,8 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
-    } 
+    }
+
     private static void AdviseScriptCompilationDuringPlay(EditorPluginModel model, Lifetime lifetime)
     {
       model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime,
@@ -325,8 +338,11 @@ namespace JetBrains.Rider.Unity.Editor
           {
             if (force)
             {
+              ourLogger.Verbose("Refresh: RequestScriptReload");
               UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
             }
+
+            ourLogger.Verbose("Refresh: SyncSolution ");
             UnityUtils.SyncSolution();
           }
           else
@@ -337,60 +353,63 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    public enum PlayModeState
-    {
-      Stopped,
-      Playing,
-      Paused
-    }
-
-    public static PlayModeState PlayModeSavedState = PlayModeState.Stopped;
-
     private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
     {
-      var isPlayingAction = new Action(() =>
+      var syncPlayState = new Action(() =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          var isPlayOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode;
-          var isPlaying = isPlayOrWillChange && EditorApplication.isPlaying;
+          var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
           if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
+          {
+            ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
             model.Play.SetValue(isPlaying);
+          }
 
           var isPaused = EditorApplication.isPaused;
           if (!model.Pause.HasValue() || model.Pause.HasValue() && model.Pause.Value != isPaused)
+          {
+            ourLogger.Verbose("Reporting pause mode change to model: {0}", isPaused);
             model.Pause.SetValue(isPaused);
-        });
-      });
-      isPlayingAction(); // get Unity state
-      model.Play.AdviseNotNull(connectionLifetime, play =>
-      {
-        MainThreadDispatcher.Instance.Queue(() =>
-        {
-          var res = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-          if (res != play)
-            EditorApplication.isPlaying = play;
+          }
         });
       });
 
-      model.Pause.AdviseNotNull(connectionLifetime, pause =>
+      syncPlayState();
+
+      model.Play.Advise(connectionLifetime, play =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
+          var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+          if (current != play)
+          {
+            ourLogger.Verbose("Request to change play mode from model: {0}", play);
+            EditorApplication.isPlaying = play;
+          }
+        });
+      });
+
+      model.Pause.Advise(connectionLifetime, pause =>
+      {
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          ourLogger.Verbose("Request to change pause mode from model: {0}", pause);
           EditorApplication.isPaused = pause;
         });
       });
 
-      model.Step.AdviseNotNull(connectionLifetime, x =>
+      model.Step.Advise(connectionLifetime, x =>
       {
         MainThreadDispatcher.Instance.Queue(EditorApplication.Step);
       });
 
-      var isPlayingHandler = new EditorApplication.CallbackFunction(() => isPlayingAction());
+      var onPlaymodeStateChanged = new EditorApplication.CallbackFunction(() => syncPlayState());
+
 // left for compatibility with Unity <= 5.5
 #pragma warning disable 618
-      connectionLifetime.AddBracket(() => { EditorApplication.playmodeStateChanged += isPlayingHandler; },
-        () => { EditorApplication.playmodeStateChanged -= isPlayingHandler; });
+      connectionLifetime.AddBracket(() => { EditorApplication.playmodeStateChanged += onPlaymodeStateChanged; },
+        () => { EditorApplication.playmodeStateChanged -= onPlaymodeStateChanged; });
 #pragma warning restore 618
       // new api - not present in Unity 5.5
       // private static Action<PauseState> IsPauseStateChanged(UnityModel model)
