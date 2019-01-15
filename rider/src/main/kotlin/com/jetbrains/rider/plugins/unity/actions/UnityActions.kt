@@ -3,11 +3,10 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.isLikeUnityProject
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
-import com.jetbrains.rider.util.reactive.fire
-import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class PlayInUnityAction : ToggleAction("Play/Edit", "Change Play/Edit mode in Unity", UnityIcons.Actions.Execute) {
 
@@ -58,7 +57,7 @@ class PauseInUnityAction : ToggleAction("Pause/Resume", "Pause/Resume play in Un
 
 class StepInUnityAction : AnAction("Step", "Perform a single frame step.", UnityIcons.Actions.Step) {
     override fun actionPerformed(e: AnActionEvent) {
-        e.getHost()?.model?.step?.fire()
+        e.getHost()?.model?.step?.fire(Unit)
     }
 
     override fun update(e: AnActionEvent) {

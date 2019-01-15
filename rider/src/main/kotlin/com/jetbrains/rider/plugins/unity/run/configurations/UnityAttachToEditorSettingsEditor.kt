@@ -3,8 +3,8 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.impl.CheckableRunConfigurationEditor
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rdclient.util.idea.defineNestedLifetime
-import com.jetbrains.rider.util.lifetime.LifetimeDefinition
 
 class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<UnityAttachToEditorRunConfiguration>(),
         CheckableRunConfigurationEditor<UnityAttachToEditorRunConfiguration> {

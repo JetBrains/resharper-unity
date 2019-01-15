@@ -8,10 +8,10 @@ import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.ScriptCompilationDuringPlay
 import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.util.reactive.adviseNotNullOnce
 import javax.swing.event.HyperlinkEvent
 
 class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, project: Project, private val unityHost: UnityHost): LifetimedProjectComponent(project) {

@@ -3,10 +3,10 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
-import com.jetbrains.rider.util.lifetime.Lifetime
-import com.jetbrains.rider.util.reactive.Property
-import com.jetbrains.rider.util.reactive.Signal
-import com.jetbrains.rider.util.reactive.fire
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.Signal
+import com.jetbrains.rd.util.reactive.fire
 
 class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
     private val lock = Object()

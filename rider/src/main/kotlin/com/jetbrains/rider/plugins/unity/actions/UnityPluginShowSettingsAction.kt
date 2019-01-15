@@ -5,8 +5,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.wm.ToolWindowManager
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
-import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class UnityPluginShowSettingsAction : DumbAwareAction("Unity Plugin Settings...", "", AllIcons.General.Settings) {
     override fun actionPerformed(e: AnActionEvent) {

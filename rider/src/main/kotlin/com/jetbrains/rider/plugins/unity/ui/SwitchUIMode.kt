@@ -3,7 +3,7 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.jetbrains.rider.isLikeUnityGeneratedProject
-import com.jetbrains.rider.util.reactive.Property
+import com.jetbrains.rd.util.reactive.Property
 
 class SwitchUIMode : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
