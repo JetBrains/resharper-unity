@@ -132,8 +132,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return changed;
     }
     
-    /* In Unity 2018.2 it looks like this:
-     
+    /* Since Unity 2018.1.5f1 it looks like this:
      <PropertyGroup>
            <NoConfig>true</NoConfig>
            <NoStdLib>true</NoStdLib>
