@@ -154,6 +154,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         SetOrUpdateProperty(projectContentElement, xmlns, "NoStdLib", existing => "true");
         SetOrUpdateProperty(projectContentElement, xmlns, "AddAdditionalExplicitAssemblyReferences",existing => "false");
 
+        // Unity 2018.x+ itself adds mscorlib reference 
         var referenceName = "mscorlib.dll";
         var hintPath = GetHintPath(referenceName);
         AddCustomReference(referenceName, projectContentElement, xmlns, hintPath);
