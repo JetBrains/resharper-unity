@@ -150,6 +150,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       // For Unity 2017.x, we are adding tags and reference to mscorlib
       if (UnityUtils.UnityVersion.Major == 2017)
       {
+        // appears in Unity 2018.1.0b10
         SetOrUpdateProperty(projectContentElement, xmlns, "NoConfig", existing => "true");
         SetOrUpdateProperty(projectContentElement, xmlns, "NoStdLib", existing => "true");
         SetOrUpdateProperty(projectContentElement, xmlns, "AddAdditionalExplicitAssemblyReferences",existing => "false");
@@ -163,6 +164,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       if (UnityUtils.UnityVersion.Major == 2017 || UnityUtils.UnityVersion.Major == 2018)
       {
+        // appears in Unity 2018.1.5f1
         changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandNETStandardFacades",existing => "false");
         changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandDesignTimeFacades",existing => "false");
       }
