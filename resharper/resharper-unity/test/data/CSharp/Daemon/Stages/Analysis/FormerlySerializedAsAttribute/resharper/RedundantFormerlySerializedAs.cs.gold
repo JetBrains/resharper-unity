@@ -18,7 +18,7 @@ public class ||Test02|(3)|(4) : MonoBehaviour
 (1): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (2): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (3): Unity Gutter Icon: Unity scripting component
-(4): Unity implicitly used identifier: 
+(4): ReSharper Unity Implicitly Used Identifier: 
 (5): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (6): Unity Gutter Icon: This field is initialised by Unity
-(7): Unity implicitly used identifier: 
+(7): ReSharper Unity Implicitly Used Identifier: 

@@ -158,54 +158,54 @@ static class NotSerialisableClass
 }
 
 ---------------------------------------------------------
-(0): Unity implicitly used identifier: 
+(0): ReSharper Unity Implicitly Used Identifier: 
 (1): UnityCodeInsights: 
-(2): Unity implicitly used identifier: 
+(2): ReSharper Unity Implicitly Used Identifier: 
 (3): UnityCodeInsights: 
-(4): Unity implicitly used identifier: 
+(4): ReSharper Unity Implicitly Used Identifier: 
 (5): UnityCodeInsights: 
-(6): Unity implicitly used identifier: 
+(6): ReSharper Unity Implicitly Used Identifier: 
 (7): UnityCodeInsights: 
-(8): Unity implicitly used identifier: 
+(8): ReSharper Unity Implicitly Used Identifier: 
 (9): UnityCodeInsights: 
 (10): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (11): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (12): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (13): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (14): ReSharper Dead Code: Redundant Unity event function
-(15): Unity implicitly used identifier: 
+(15): ReSharper Unity Implicitly Used Identifier: 
 (16): UnityCodeInsights: 
-(17): Unity implicitly used identifier: 
+(17): ReSharper Unity Implicitly Used Identifier: 
 (18): UnityCodeInsights: 
 (19): ReSharper Dead Code: Redundant Unity event function
-(20): Unity implicitly used identifier: 
+(20): ReSharper Unity Implicitly Used Identifier: 
 (21): UnityCodeInsights: 
 (22): UnityCodeInsights: 
 (23): ReSharper Warning: Missing static modifier
 (24): ReSharper Warning: Missing static modifier
-(25): Unity implicitly used identifier: 
+(25): ReSharper Unity Implicitly Used Identifier: 
 (26): UnityCodeInsights: 
-(27): Unity implicitly used identifier: 
+(27): ReSharper Unity Implicitly Used Identifier: 
 (28): UnityCodeInsights: 
-(29): Unity implicitly used identifier: 
+(29): ReSharper Unity Implicitly Used Identifier: 
 (30): UnityCodeInsights: 
-(31): Unity implicitly used identifier: 
+(31): ReSharper Unity Implicitly Used Identifier: 
 (32): UnityCodeInsights: 
-(33): Unity implicitly used identifier: 
+(33): ReSharper Unity Implicitly Used Identifier: 
 (34): UnityCodeInsights: 
 (35): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (36): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (37): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (38): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(39): Unity implicitly used identifier: 
+(39): ReSharper Unity Implicitly Used Identifier: 
 (40): UnityCodeInsights: 
-(41): Unity implicitly used identifier: 
+(41): ReSharper Unity Implicitly Used Identifier: 
 (42): UnityCodeInsights: 
-(43): Unity implicitly used identifier: 
+(43): ReSharper Unity Implicitly Used Identifier: 
 (44): UnityCodeInsights: 
-(45): Unity implicitly used identifier: 
+(45): ReSharper Unity Implicitly Used Identifier: 
 (46): UnityCodeInsights: 
-(47): Unity implicitly used identifier: 
+(47): ReSharper Unity Implicitly Used Identifier: 
 (48): UnityCodeInsights: 
 (49): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (50): ReSharper Dead Code: Redundant 'SerializeField' attribute

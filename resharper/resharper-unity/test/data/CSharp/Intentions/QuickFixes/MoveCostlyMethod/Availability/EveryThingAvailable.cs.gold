@@ -4,19 +4,17 @@ namespace DefaultNamespace
 {
     public class EveryThingAvailable : MonoBehaviour
     {
-        |public void Update()
+        public void Update()
         {
             for (int i = 0; i < 100; i++)
             {
-                var transform = |GetComponent|(1)<Transform>();
+                var transform = |GetComponent|(0)<Transform>();
             }
-        }|(0)
+        }
     }
 }
 ------------------------------------------------
-0: 
-NO QUICKFIXES
-1: Expensive method invocation
+0: Expensive method invocation
 QUICKFIXES:
 Introduce field and initialise in 'Start'
 Introduce field and initialise in 'Awake'
