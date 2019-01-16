@@ -10,6 +10,7 @@ using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
 using JetBrains.Platform.RdFramework.Util;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 
@@ -146,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return;
                 }
             }
-            
+
             myLogger.Info("Installing Rider Unity editor plugin: {0}", installationInfo.InstallReason);
 
             if (!TryCopyFiles(installationInfo, out var installedPath))
@@ -180,7 +181,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             Rider plugin v{myCurrentVersion} can be found at:
                             {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
                         break;
-                    
+
                     case UnityPluginDetector.InstallReason.UpToDate:
                         userTitle = "Unity Editor plugin updated (up to date)";
                         userMessage = $@"Please switch to the Unity Editor to reload the plugin.
