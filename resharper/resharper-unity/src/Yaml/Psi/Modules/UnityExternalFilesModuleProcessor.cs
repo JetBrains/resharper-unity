@@ -327,11 +327,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private void OnProjectDirectoryChange(FileSystemChangeDelta delta)
         {
-            var builder = new PsiModuleChangeBuilder();
-            var projectFilesToAdd = new List<FileSystemPath>();
-            ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
-            AddAssetProjectFiles(projectFilesToAdd);
-            FlushChanges(builder);
+            myLocks.ExecuteOrQueue(Lifetime.Eternal, "UnityExternalFilesModuleProcessor::OnProjectDirectoryChange",
+                () =>
+                {
+                    var builder = new PsiModuleChangeBuilder();
+                    var projectFilesToAdd = new List<FileSystemPath>();
+                    ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
+                    AddAssetProjectFiles(projectFilesToAdd);
+                    FlushChanges(builder);
+                });
         }
 
         private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
