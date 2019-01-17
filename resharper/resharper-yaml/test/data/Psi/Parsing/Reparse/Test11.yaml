@@ -1,0 +1,13 @@
+# ${ACTION0:-32}
+# ${ACTION1:+00000000000000000000000000000000}
+--- !u!1001 &498889474
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 397386422}
+    m_Modifications:
+    - target: {fileID: 22446900, guid: {caret}874cc498a75243b4a8882576dc0ce4e7, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
