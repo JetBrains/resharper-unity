@@ -13,9 +13,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.pom.Navigatable
 import com.intellij.ui.TreeUIHelper
 import com.intellij.ui.components.JBList
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rdclient.util.idea.createNestedDisposable
 import com.jetbrains.rdclient.util.idea.toVirtualFile
-import com.jetbrains.rider.util.lifetime.Lifetime
 import java.awt.Font
 import java.awt.datatransfer.StringSelection
 import java.io.File

@@ -27,7 +27,7 @@ import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import com.jetbrains.rider.unitTesting.panels.RiderUnitTestSessionPanel
 import com.jetbrains.rider.util.idea.application
-import com.jetbrains.rider.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.Lifetime
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.KeyAdapter

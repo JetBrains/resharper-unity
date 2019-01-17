@@ -9,7 +9,7 @@ import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorAndPlayFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
-import com.jetbrains.rider.util.reactive.whenTrue
+import com.jetbrains.rd.util.reactive.whenTrue
 
 class DefaultRunConfigurationGenerator(project: Project, runManager: RunManager, unityProjectDiscoverer: UnityProjectDiscoverer) : LifetimedProjectComponent(project) {
 

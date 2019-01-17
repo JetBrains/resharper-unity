@@ -7,12 +7,12 @@ import com.intellij.openapi.vfs.VirtualFileEvent
 import com.intellij.openapi.vfs.VirtualFileListener
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.ui.tree.TreeVisitor
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rdclient.util.idea.createNestedDisposable
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
-import com.jetbrains.rider.util.lifetime.Lifetime
 
 class UnityExplorerPackagesViewUpdater(lifetime: Lifetime, project: Project, private val pane: UnityExplorer, private val packagesManager: PackagesManager) {
 

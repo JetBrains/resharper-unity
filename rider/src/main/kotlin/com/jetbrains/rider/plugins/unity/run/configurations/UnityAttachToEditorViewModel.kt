@@ -3,13 +3,13 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.IProperty
+import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.ViewableList
 import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
-import com.jetbrains.rider.util.lifetime.Lifetime
-import com.jetbrains.rider.util.reactive.IProperty
-import com.jetbrains.rider.util.reactive.Property
-import com.jetbrains.rider.util.reactive.ViewableList
 
 class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
 

@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityInstallationSynchronizer(Lifetime lifetime, UnitySolutionTracker solutionTracker,
                                              UnityHost host, UnityInstallationFinder finder, UnityVersion unityVersion)
         {
-            solutionTracker.IsUnityProjectFolder.AdviseNotNull(lifetime, isUnityProjectFolder =>
+            solutionTracker.IsUnityProjectFolder.Advise(lifetime, isUnityProjectFolder =>
             {
                 if (!isUnityProjectFolder) return;
                 var version = unityVersion.GetActualVersionForSolution();

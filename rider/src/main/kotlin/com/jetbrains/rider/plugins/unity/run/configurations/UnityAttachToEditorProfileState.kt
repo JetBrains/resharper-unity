@@ -11,9 +11,9 @@ import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
-import com.jetbrains.rider.util.lifetime.Lifetime
-import com.jetbrains.rider.util.reactive.Signal
-import com.jetbrains.rider.util.reactive.adviseOnce
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Signal
+import com.jetbrains.rd.util.reactive.adviseOnce
 
 class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAttachToEditorRunConfiguration, executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {

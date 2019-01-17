@@ -5,9 +5,10 @@ import com.intellij.codeInsight.lookup.impl.LookupImpl
 import com.intellij.codeInsight.lookup.impl.LookupManagerImpl
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.reactive.valueOrDefault
+import com.jetbrains.rd.util.reactive.valueOrDefault
 
 class CgCompletionContributor : WordCompletionContributor() {
 

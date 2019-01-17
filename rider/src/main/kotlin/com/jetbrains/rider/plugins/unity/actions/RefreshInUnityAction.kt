@@ -3,10 +3,10 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.application
-import com.jetbrains.rider.util.reactive.valueOrDefault
 
 class RefreshInUnityAction : AnAction("Refresh", "Triggers Refresh in Unity Editor", AllIcons.Actions.Refresh) {
     override fun actionPerformed(e: AnActionEvent) {

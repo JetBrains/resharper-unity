@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            unitySolutionTracker.IsUnityProject.ViewNotNull(lifetime, (lf, args) => 
+            unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) => 
             {
                 if (!args) return;
 
@@ -103,10 +103,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseModelData(Lifetime lifetime)
         {   
-           myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
-           myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
+           myHost.PerformModelAction(rd => rd.Play.Advise(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
+           myHost.PerformModelAction(rd => rd.Pause.Advise(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
-           myHost.PerformModelAction(model => {model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime, 
+           myHost.PerformModelAction(model => {model.SetScriptCompilationDuringPlay.Advise(lifetime, 
              scriptCompilationDuringPlay => UnityModel.Value.DoIfNotNull(editor => editor.SetScriptCompilationDuringPlay.Fire((int)scriptCompilationDuringPlay)));});
         }
 
@@ -149,7 +149,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     protocol.ThrowErrorOnOutOfSyncModels = false;
                     
-                    protocol.OutOfSyncModels.AdviseNotNull(lf, e =>
+                    protocol.OutOfSyncModels.Advise(lf, e =>
                     {
                         var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
                         var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Value;
@@ -175,8 +175,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     SubscribeToLogs(lf, editor);
                     SubscribeToOpenFile(editor);
 
-                    editor.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
-                    editor.Pause.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
+                    editor.Play.Advise(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
+                    editor.Pause.Advise(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
 
                     
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
@@ -249,7 +249,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             else
                 myUsageStatistics.TrackActivity("UnityVersion", editor.ApplicationVersion.Value);
             if (!editor.ScriptingRuntime.HasValue())
-                editor.ScriptingRuntime.AdviseNotNull(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
+                editor.ScriptingRuntime.Advise(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
             else
                 myUsageStatistics.TrackActivity("ScriptingRuntime", editor.ScriptingRuntime.Value.ToString());
         }
