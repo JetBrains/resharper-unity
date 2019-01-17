@@ -226,6 +226,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static readonly string PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
     private static readonly string EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
     private static readonly int ourApiCompatibilityLevel = GetApiCompatibilityLevel();
+    private const int apiCompatibilityLevelNet20Subset = 2;
     private const int apiCompatibilityLevelNet46 = 3;
 
     private static bool SetManuallyDefinedCompilerSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
@@ -444,16 +445,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       var mask = "4.*";
       if (UnityUtils.ScriptingRuntime == 0)
       {
-        mask = "2.*";
-        switch (ourApiCompatibilityLevel)
-        {
-          case 0: // ApiCompatibilityLevel.NET_2_0_Subset
-            mask = "unity";
-            break;
-          case 1: // ApiCompatibilityLevel.NET_2_0
-            mask = "2.0";
-            break;
-        }
+        mask = "2.*"; // 1 = ApiCompatibilityLevel.NET_2_0
+        if (ourApiCompatibilityLevel == apiCompatibilityLevelNet20Subset) // ApiCompatibilityLevel.NET_2_0_Subset
+          mask = "unity";
       }
       
       var apiDir = monoDir.GetDirectories(mask).LastOrDefault(); // take newest
