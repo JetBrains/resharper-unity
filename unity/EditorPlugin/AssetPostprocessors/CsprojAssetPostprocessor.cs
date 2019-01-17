@@ -433,7 +433,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     [CanBeNull]
     private static string GetHintPath(string name)
     {
-      // Without hintpath non-Unity MSBuild will resolve assembly from dotnetframework targets path
+      // Without HintPath non-Unity MSBuild will resolve assembly from DotNetFramework targets path
       string hintPath = null;
       
       var unityAppBaseFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
@@ -443,7 +443,18 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       var mask = "4.*";
       if (UnityUtils.ScriptingRuntime == 0)
+      {
         mask = "2.*";
+        switch (ourApiCompatibilityLevel)
+        {
+          case 0: // ApiCompatibilityLevel.NET_2_0_Subset
+            mask = "unity";
+            break;
+          case 1: // ApiCompatibilityLevel.NET_2_0
+            mask = "2.0";
+            break;
+        }
+      }
       
       var apiDir = monoDir.GetDirectories(mask).LastOrDefault(); // take newest
       if (apiDir != null)
