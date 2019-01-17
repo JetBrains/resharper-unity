@@ -258,7 +258,7 @@ namespace JetBrains.Rider.Unity.Editor
             var json = File.ReadAllText(a).Replace("active-application", "active_application");
             var toolbox = ToolboxInstallData.FromJson(json);
             var builds = toolbox.active_application.builds;
-            if (builds.Any())
+            if (builds != null && builds.Any())
             {
               var build = builds.First();
               var folder = Path.Combine(Path.Combine(channelDir, build), dirName);
