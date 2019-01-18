@@ -142,80 +142,36 @@
 
   <description><![CDATA[
 <p>Adds support for the Unity engine.</p>
-<p></p>
-<p><b>Features</b></p>
 <p>
+<strong>Features</strong>
 <ul>
   <li>Code completion of event function declarations in a class.</li>
   <li>Use Generate Code to create event functions, with parameters, or start typing for automatic completion.</li>
   <li>Highlights Unity event functions and serializable fields and marks as implicitly used by Unity.</li>
-  <li>Supports Unity API 5.0 - 2018.2, plus undocumented functions.</li>
-  <li>Inspections, Quick Fixes and Context Actions for Unity specific issues, with documented explantations.</li>
+  <li>Supports Unity API 5.0 - 2018.3, plus undocumented functions.</li>
+  <li>Inspections, Quick Fixes and Context Actions for Unity specific issues, with documented explanations.</li>
+  <li>Performance indicators to avoid known code patterns that affect performance.</li>
+  <li>Parse class and method usage from scene, prefab and assets.</li>
+  <li>Support for ShaderLab and Assembly Definition files.</li>
   <li>Automatically connect debugger to Unity editor.</li>
   <li>Lists and debugs external players.</li>
+  <li>Extra Unity data in debugger views.</li>
   <li>Play/pause/step directly from Rider.</li>
   <li>View Unity console in Rider, with parsed stack traces and text filter.</li>
   <li>Run Unity editor tests directly from Rider.</li>
   <li>Unity Explorer to view project as shown in Unity's Assets view, with Packages.</li>
   <li>Navigate to external Unity documentation.</li>
-  <li>Correctly updates .meta files.</li>
-  <li>Code completion and rename support for "magic strings" in Invoke and Start/StopCoroutine methods.</li>
-  <li>Code completion and rename support for "magic strings" in SyncVar attributes.</li>
-  <li>Automatically adds FormerlySerializedAs attribute when renaming fields.</li>
+  <li>Correctly updates <tt>.meta</tt> files.</li>
+  <li>Code completion, rename and find usages for "magic strings" in method calls.</li>
+  <li>Automatically adds <tt>FormerlySerializedAs</tt> attribute when renaming fields.</li>
   <li>Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!</li>
-  <li>Highlights UnityEngine.Color and Color32. Edit via colour palette quick fix.</li>
+  <li>Highlights <tt>UnityEngine.Color</tt> and <tt>Color32</tt>. Edit via colour palette quick fix.</li>
   <li>Unity specific file and live templates.</li>
+  <li>And much more!</li>
 </ul>
 </p>
-<p></p>
-<p><b>Inspections, Quick Fixes and Context Actions:</b></p>
 <p>
-<ul>
-  <li>Marks empty event methods as dead code.</li>
-  <li>Inspections and Quick Fixes for incorrect event function method signature and return types.</li>
-  <li>Inspection for usage of Camera.main in Update methods.</li>
-  <li>Inspection for incorrect usage of null propogation and coalescing operators with Unity types.</li>
-  <li>Warns if a coroutine return value is unused.</li>
-  <li>Context actions to add SerializeField or NonSerialized attributes to fields.</li>
-  <li>Context actions to mark a field serialized or non-serialized.</li>
-  <li>Context actions to mark a field with HideInInspector, or remove the attribute.</li>
-  <li>Context action to convert auto-property to property with serialized backing field.</li>
-  <li>Context action to convert event function method signature to/from coroutine.</li>
-  <li>Event function descriptions for methods and parameters displayed in tooltips and QuickDoc</li>
-  <li>Code completion, find usages and rename support for Invoke, InvokeRepeating, IsInvoking and CancelInvoke. Also Start/StopCoroutine.</li>
-  <li>Inspections for incorrectly applied attributes.</li>
-  <li>Inspection and Quick Fix to use CompareTag instead of string comparison.</li>
-  <li>Inspection and Quick Fix for using new with ScriptableObject or MonoBehaviour.</li>
-  <li>Inspection and Quick Fix for redundant SerializeField attribute usage.</li>
-  <li>Inspection and Quick Fix for redundant HideInInspector attribute usage.</li>
-  <li>Inspection and Quick Fix for redundant or mis-applied FormerlySerializedAs attribute usage.</li>
-  <li>"Create serialized field" from usage Quick Fix.</li>
-  <li>Inspections for incorrect SyncVarAttribute usage.</li>
-</ul>
-</p>
-<p></p>
-<p><b>ShaderLab support:</b></p>
-<p>
-<ul>
-  <li>Parse ShaderLab files, with syntax highlighting and syntax error highlighting.</li>
-  <li>Simple highlighting and code completion in Cg and HLSL code blocks and files.</li>
-  <li>Brace matching, todo explorer and commenting support for ShaderLab files.</li>
-  <li>Colour highlighting and editing in ShaderLab files.</li>
-  <li>Code completion, navigation and find usages for ShaderLab variables.</li>
-</ul>
-</p>
-<p></p>
-<p><b>Assembly Definition file support:</b></p>
-<p>
-<ul>
-  <li>Code completion and validation of references.</li>
-  <li>Navigation to referenced assembly definition files.</li>
-  <li>Rename of assembly definition files.</li>
-  <li>JSON validation and code completion of e.g. allowed platforms.</li>
-</ul>
-<p></p>
-<p><b>Links</b></p>
-<p>
+<strong>Links</strong>
 <ul>
   <li><a href="https://github.com/JetBrains/resharper-unity">GitHub</a>
   <li><a href="https://github.com/JetBrains/resharper-unity/issues">Issues</a>
@@ -225,136 +181,118 @@
   </description>
   <change-notes>
 <![CDATA[
+<p>
+<strong>New in 2018.3.2</strong>
+<em>Added:</em>
 <ul>
-  <li>Improve performance of code completion for event functions (<a href="https://github.com/JetBrains/resharper-unity/issues/471">#471</a>)</li>
-  <li>Add an action to the Unity toolbar to manually install the editor plugin (<a href="https://github.com/JetBrains/resharper-unity/pull/765">#765</a>)</li>
-  <li>Improved text in notifications when the editor plugin is installed or updated, or a project is opened as a folder (<a href="https://github.com/JetBrains/resharper-unity/pull/756">#756</a>)</li>
-  <li>Fix incorrect implicit usage inspections (<a href="https://youtrack.jetbrains.com/issues/RIDER-19408">RIDER-19408</a>, <a href="https://github.com/JetBrains/resharper-uniy/pull/760">#760</a>)</li>
-  <li>Fix exception when pausing a running game from Rider (<a href="https://youtrack.jetbrains.com/issues/RIDER-19401">RIDER-19401</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/758">#758</a>)</li>
-  <li>Unity editor: Fix LangVersion not correctly set in generated projects on older versions of Unity (<a href="https://github.com/JetBrains/resharper-unity/issues/751">#751</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/752">#752</a>)</li>
-  <li>Unity editor: Fix projects not compiling with TargetFrameworkAttribute errors (<a href="https://github.com/JetBrains/resharper-unity/pull/747">#747</a>, <a href="https://youtrack.jetbrains.com/issues/RIDER-17390">RIDER-17390</a>)</li>
-  <li>Unity editor: Add reference to Microsoft.CSharp.dll to generated projects (<a href="https://github.com/JetBrains/resharper-unity/issues/721">#721</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/740">#740</a>)</li>
-  <li>Unity editor: Fix missing file type registration for some shader files (<a href="https://github.com/JetBrains/resharper-unity/issues/717">#717</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/741">#741</a>)</li>
-  <li>Unity editor: Speed up initialising logging on each plugin reload (<a href="https://github.com/JetBrains/resharper-unity/pull/750">#750</a>)</li>
-  <li>Unity editor: Fix exception with plugin on older versions of Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/762">#762</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/766">#766</a>)</li>
+  <li>Unity editor: Add extra logging for switching to play mode and background refresh of assets (<a href="https://github.com/JetBrains/resharper-unity/issues/987">#987</a>)</li>
 </ul>
-<p>From Rider 2018.2.1:</p>
+<em>Changed:</em>
 <ul>
-  <li>Unity editor: Fix project failing to load due to Unicode issue (<a href="https://github.com/JetBrains/resharper-unity/issues/727">#727</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/732">#732</a>)</li>
-  <li>Unity editor: Fix response file defines and references not being applied to generated project files (<a href="https://github.com/JetBrains/resharper-unity/pull/729">#729</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/735">#735</a>)</li>
+  <li>Improve performance of rename and find usages with YAML files (<a href="https://github.com/JetBrains/resharper-unity/issues/983">#983</a>)</li>
+  <li>Improve performance of typing in YAML files, by incrementally re-parsing only the YAML document that contains the change (<a href="https://github.com/JetBrains/resharper-unity/issues/993">#993</a>)</li>
 </ul>
-<p>From Rider 2018.2:</p>
+<em>Fixed:</em>
 <ul>
-  <li>Add support for .asmdef files (<a href="https://github.com/JetBrains/resharper-unity/pull/283">#283</a>)</li>
-  <li>Add Packages node to Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/476">#476</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/629">#629</a>)</li>
-  <li>Add Scratches node to Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/629">#629</a>)</li>
-  <li>Open editor and player log from Unity Log View tool window (<a href="https://github.com/JetBrains/resharper-unity/pull/575">#575</a>)</li>
-  <li>Add text filter to Unity Log View (<a href="https://github.com/JetBrains/resharper-unity/issues/599">#599</a>)</li>
-  <li>Add collapsing similar log items to Unity Log View (<a href="https://github.com/JetBrains/resharper-unity/issues/512">#512</a>)</li>
-  <li>Recognise custom serializable classes and handle serialized fields and usge (<a href="https://github.com/JetBrains/resharper-unity/issues/419">#419</a>, <a href="https://youtrack.jetbrains.com/issues/RIDER-9341">RIDER-9341</a>, <a href="https://youtrack.jetbrains.com/issues/RIDER-12239">RIDER-12239</a>)</li>
-  <li>Update API details to 2018.2.0b9 (<a href="https://github.com/JetBrain/resharper-unity/issues/611">#611</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/613">#613</a>)</li>
-  <li>Add undocumented API methods in AssetPostprocessor (OnGeneratedCSProject and OnGeneratedSlnSolution)</li>
-  <li>Consolidate multiple incorrect method signature inspections into one, with quick fix (<a href="https://github.com/JetBrains/resharper-unity/issues/534">#534</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/580">#580</a>)</li>
-  <li>Add redundant SerializeField attribute on readonly field inspection, plus quick fix (<a href="https://github.com/JetBrains/resharper-unity/issues/503">#503</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/586">#586</a>)</li>
-  <li>Add redundant HighlightInInspector attribute on serialised field, plus quick fix (<a href="https://github.com/JetBrains/resharper-unity/issues/585">#585</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/586">#586</a>)</li>
-  <li>Add context actions to toggle HideInInspector attribute on serialised fields (<a href="https://github.com/JetBrains/resharper-unity/issues/494">#494</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/586">#586</a>)</li>
-  <li>Rework make serialised/non-serialised field context actions (<a href="https://github.com/JetBrains/resharper-unity/issues/583">#583</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/586">#586</a>)</li>
-  <li>Serialised field context action and quick fixes work correctly with multiple field declarations (<a href="https://github.com/JetBrains/resharper-unity/pull/586">#586</a>)</li>
-  <li>Add FormerlySerializedAs attribute when renaming a serialised field (<a href="https://github.com/JetBrains/resharper-unity/issues/54">#54</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/659">#659</a>, <a href="https://youtrack.jetbrains.com/issues/RIDER-12298">RIDER-12298</a>, <a href="https://youtrack.jetbrains.com/issues/RIDER-17887">RIDER-17887</a>)</li>
-  <li>Add redundant FormerlySerializedAs attribute inspection and quick fix, with code wiki entry</li>
-  <li>Add possible mis-application of FormerlySerializedAs attribute on multiple field declaration, with quick fix and code wiki entry</li>
-  <li>Add inspection for usage of Camera.main in Update methods (<a href="https://github.com/JetBrains/resharper-unity/issues/196">#196</a>)</li>
-  <li>Mark potential event handler methods and property setters as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/625">#625</a>, <a href="https://youtrack.jetbrains.com/issues/RIDER-17276">RIDER-17276</a>)</li>
-  <li>Add sprop and sfield Live Templates (<a href="https://github.com/JetBrains/resharper-unity/pull/565">#565</a>)</li>
-  <li>Don't show incorrect "always false" warning for "this == null" in Unity types (<a href="https://github.com/JetBrains/resharper-unity/issues/368">#368</a>)</li>
-  <li>Remove highlighted background for Cg blocks in ShaderLab files (<a href="https://youtrack.jetbrains.com/issues/RIDER-16438">RIDER-16438</a>)</li>
-  <li>Add ShaderLab colour scheme settings page (<a href="https://youtrack.jetbrains.com/issues/RIDER-17305">RIDER-17305</a>)</li>
-  <li>Fix ShaderLab highlighting of keywords (<a href="https://youtrack.jetbrains.com/issues/RIDER-17287">RIDER-17287</a>)</li>
-  <li>Fix rename's "find in text" renaming non-text elements in ShaderLab files</li>
-  <li>Fix Unity specific inspections not showing in Solution Wide Errors tool window (<a href="https://github.com/JetBrains/resharper-unity/pull/680">#680</a>)</li>
-  <li>Fix list of Unity players in Attach to Unity Process dialog (<a href="https://github.com/JetBrains/resharper-unity/pull/634">#634</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/650">#650</a>, <a href="https://youtrack.jetbrains.com/issues/RIDER-17130">RIDER-17130</a>)</li>
-  <li>Use correct IP address when attaching debugging to remote player (<a href="https://github.com/JetBrains/resharper-unity/pull/650">#650</a>, <a href="https://youtrack.jetbrains.com/issues/RIDER-17130">RIDER-17130</a>)</li>
-  <li>Add Attach to Unity Process action to Unity actions dropdown</li>
-  <li>Updated icons for run configurations (<a href="https://youtrack.jetbrains.com/issues/RIDER-18576">RIDER-18576</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/694">#694</a>)</li>
-  <li>Advanced integration feature (play/pause, etc.) available in all solutions in project folder (<a href="https://github.com/JetBrains/resharper-unity/issues/581">#581</a>)</li>
-  <li>Fixed showing tool windows after hiding for Unity projects</li>
-  <li>Fix incorrect connection icon shown when Unity is in play mode (<a href="https://youtrack.jetbrains.com/issues/RIDER-15758">RIDER-15758</a>)</li>
-  <li>Enable editing of Unity specific Live Templates (<a href="https://github.com/JetBrains/resharper-unity/pull/654">#654</a>)</li>
-  <li>Prevent editor plugin being installed each time project is loaded (<a href="https://github.com/JetBrains/resharper-unity/pull/656">#656</a>)</li>
-  <li>Show a notification if the project is incorrectly opened as a folder (<a href="https://github.com/JetBrains/resharepr-unity/pull/658">#658</a>)</li>
-  <li>Show a meaningful message when trying to run Unity tests under dotCover (<a href="https://youtrack.jetbrains.com/issues/RIDER-17815">RIDER-17815</a>)</li>
-  <li>Unity editor: Add option to disable reloading assemblies during Play mode. Only for Unity 2018.1 and below (<a href="https://github.com/JetBrains/resharper-unity/issues/520">#520</a>)</li>
-  <li>Unity editor: Only write file to disk if it's changed (requires Unity 2018.1+)</li>
-  <li>Unity editor: Fix crash with Unity 5.6.x (<a href="https://github.com/JetBrains/resharper-unity/issues/660">#660</a>)</li>
-  <li>Unity editor: Support Roslyn compiler response files (csc.rsp) (<a href="https://github.com/JetBrains/resharper-unity/pull/690">#690</a>)</li>
+  <li>Fix processing hierarchy for YAML scene files (<a href="https://github.com/JetBrains/resharper-unity/issues/985">#985</a>)</li>
+  <li>Rider: Fix implicitly referenced system assemblies referencing incorrect Mono version in generated project files (<a href="https://github.com/JetBrains/resharper-unity/issues/988">#988</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/992">#992</a>)</li>
+  <li>Rider: Fix search for Rider installations in Toolbox (<a href="https://github.com/JetBrains/resharper-unity/pull/997">#997</a>)</li>
+  <li>Unity editor: Fix merging different game objects in find results window (<a href="https://github.com/JetBrains/resharper-unity/issues/985">#985</a>)</li>
 </ul>
-<p>From Rider 2018.1.2:</p>
+</p>
+<p>
+<strong>New in 2018.3.1</strong>
+<em>Added:</em>
 <ul>
-  <li>Only override language version if new value is higher than current version</li>
-  <li>Fix Rider's BringToFront after opening script from Unity</li>
-  <li>Fix opening non-code assets from Unity</li>
+  <li>Automatically disable YAML parsing if the project is too large (<a href="https://github.com/JetBrain/resharper-unity/issues/973">#973</a>)</li>
 </ul>
-<p>From Rider 2018.1:</p>
+<em>Fixed:</em>
 <ul>
-  <li>Add Assets View as alternative to Solution Explorer</li>
-  <li>Add Unity tool window to view Unity editor console logs, with parsed stack traces</li>
-  <li>Play/pause/step Unity from within Rider</li>
-  <li>Background refresh Unity projects</li>
-  <li>Hides unnecessary UI tool windows when opening a Unity project</li>
-  <li>Run Unity editor tests in the Editor instance, but displayed in Rider</li>
-  <li>Add inspections for null coalescing and null propagation opertators (<a href="https://github.com/JetBrains/resharper-unity/pull/342">#342</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/35">#35</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/148">#148</a>)</li>
-  <li>Add go to definition, find usages, highlighting, code completion for ShaderLab variable references (<a href="https://github.com/JetBrains/resharper-unity/pull/362">#362</a>)</li>
-  <li>Add undocumented UIBehaviour APIs (<a href="https://github.com/JetBrains/resharper-unity/pull/394">#394</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/395">#395</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-12649">RIDER-12649</a>)</li>
-  <li>Add code inspection wiki for most inspections</li>
-  <li>Workaround Unity's old version of annotations and make [PublicAPI] mark all members as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/337">#337</a>)</li>
-  <li>Change inspection for incorrectly applied attributes from error to redundant code (<a href="https://github.com/JetBrains/resharper-unity/issues/325">#325</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/322">#322</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/376">#376</a>)</li>
-  <li>Remove option to disable ShaderLab parsing from UI (#236)</li>
-  <li>Fix ShaderLab colour reference handling with non-US cultures (<a href="https://github.com/JetBrains/resharper-unity/pull/346">#346</a>)</li>
-  <li>Fix ShaderLab vector properties showing colour highlighting or throwing exceptions (<a href="https://github.com/JetBrains/resharper-unity/issues/384">#384</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/397">#397</a>)</li>
-  <li>Fix parse error with trailing whitespace in ShaderLab variable references (<a href="https://github.com/JetBrains/resharper-unity/issues/257">#257</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/257">#357</a>)</li>
-  <li>Fix exceptions with existing features</li>
+  <li>Rider: Fix reference to <tt>UnityEditor.iOS.Extensions.Xcode.dll</tt> in generated projects (<a href="https://github.com/JetBrains/resharper-unity/issues/974">#974</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/976">#976</a>)</li>
+  <li>Rider: Fix bug in setting reference to <tt>UnityEditor.iOS.Extensions.Xcode.dll</tt> in generated projects (<a href="https://github.com/JetBrains/resharper-unity/issues/976">#976</a>)</li>
+  <li>Rider: Fix bug failing to copy script assemblies during debugging (<a href="https://github.com/JetBrains/resharper-unity/issues/964">#964</a>)</li>
 </ul>
-<p>From Rider 2017.3:</p>
+</p>
+<p>
+<strong>New in 2018.3</strong>
+<em>Added:</em>
 <ul>
-  <li>Open local or web documentation for Unity symbols (<a href="https://github.com/JetBrains/resharper-unity/issues/98">#98</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/304">#304</a>)</li>
-  <li>Add context action to convert auto-property to property with serialized backing field (<a href="https://github.com/JetBrains/resharper-unity/issues/195">#195</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/302">#302</a>)</li>
-  <li>Add context action to mark field as serialized or non-serizable (<a href="https://github.com/JetBrains/resharper-unity/issues/191">#191</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/295">#295</a>)</li>
-  <li>Add inspection and quick fix for redundant SerializeField attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/295">#295</a>)</li>
-  <li>Add inspections and quick fixes for method signature of methods with Unity attributes (<a href="https://github.com/JetBrains/resharper-unity/issues/248">#248</a>)</li>
-  <li>Add inspections for incorrectly applied attributes (<a href="https://github.com/JetBrains/resharper-unity/issues/247">#247</a>)</li>
-  <li>Fix code completion before a field with an attribute (<a href="https://github.com/JetBrains/resharper-unity/issues/259">#259</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/286">#286</a>)</li>
-  <li>Improve relevance of Unity event functions in code completion (<a href="https://github.com/JetBrains/resharper-unity/issues/260">#260</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/273">#273</a>)</li>
-  <li>Improve reliability of attaching debugger to Unity Editor (<a href="https://github.com/JetBrains/resharper-unity/issues/262">#262</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/268">#268</a>)</li>
-  <li>Rider: Treat .compute files as HLSL (<a href="https://youtrack.jetbrains.com/issue/RIDER-11221">RIDER-11221</a>)</li>
-  <li>Rider: Fix running simple non-Unity Editor based nunit tests (<a href="https://github.com/JetBrains/resharper-unity/issues/256">#256</a>)</li>
-  <li>Rider: Improve updating Solution Explorer when updating .meta files (<a href="https://github.com/JetBrains/resharper-unity/pull/296">#296</a>)</li>
-  <li>Rider: Add project template for Unity based class library (<a href="https://github.com/JetBrains/resharper-unity/pull/303">#303</a>)</li>
-  <li>Unity Editor: Support references from mcs.rsp (<a href="https://github.com/JetBrains/resharper-unity/issues/270">#270</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/273">#273</a>)</li>
-  <li>Unity Editor: Plugin regenerates project files on initialisation</li>
-  <li>Unity Editor: Generated project includes Visual Studio for Tools flavour GUID</li>
-  <li>Unity Editor: Split TargetFrameworkVersion overrides per scripting runtime</li>
-  <li>Unity Editor: Integrate pdb2mdb to generate debugging info for class libraries (<a href="https://github.com/JetBrains/resharper-unity/pull/290">290</a>)</li>
+  <li>Add parsing of method and class usage from scene, prefab and asset files (<a href="https://github.com/JetBrains/resharper-unity/issues/263">#263</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-7460">RIDER-7460</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/870">#870</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/873">#873</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/903">#903</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/921">#921</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-21907">RIDER-21907</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-21897">RIDER-21897</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/943">#943</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/949">#949</a>)<li>
+  <li>Add "Unity event handler" gutter icon to method and property setters registered to a Unity event via the Unity editor</li>
+  <li>Correctly mark event handlers as in use</li>
+  <li>Unity files appear in Find Usages for event handlers and classes deriving from <tt>MonoBehaviour</tt>, grouped by type, component and object</li>
+  <li>Disable rename for event handler methods to prevent breaking the registration in scene files</li>
+  <li>Add Code Vision highlighting for implicitly used classes, methods, properties and fields</li>
+  <li>Add option to hide gutter icons (automatically disabled when Code Vision enabled)</li>
+  <li>Add performance indicators for performance critical code contexts (<a href="https://github.com/JetBrains/resharper-unity/issues/816">#816</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/878">#878</a>)</li>
+  <li>Add performance indicator for null comparison against Unity object (<a href="https://youtrack.jetbrains.com/issue/RIDER-19297">RIDER-19297</a>)</li>
+  <li>Add performance indicator for <tt>AddComponent</tt> as an expensive method invocation (<a href="https://youtrack.jetbrains.com/issue/RIDER-19299">RIDER-19299</a>)</li>
+  <li>Add performance indicator for <tt>Find</tt> methods (<a href="https://youtrack.jetbrains.com/issue/RIDER-19287">RIDER-19287</a>)</li>
+  <li>Add performance indicator for <tt>GetComponent</tt> methods (<a href="https://youtrack.jetbrains.com/issue/RIDER-19288">RIDER-19288</a>)</li>
+  <li>Add performance indicator for indirect invocation of expensive methods (<a href="https://github.com/JetBrains/resharper-unity/issues/816">#816</a>)</li>
+  <li>Add inspection to avoid string based method invocation (<a href="https://youtrack.jetbrains.com/issue/RIDER-19295">RIDER-19295</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/798">#798</a>)</li>
+  <li>Add inspection and Quick Fix to avoid repeat access of properties that make native calls (<a href="https://youtrack.jetbrains.com/issue/RIDER-19289">RIDER-19289</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/797">#797</a>)</li>
+  <li>Add inspection and Quick Fix to avoid instantiating an object and setting parent transform immediately after (<a href="https://youtrack.jetbrains.com/issue/RIDER-19298">RIDER-19298</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/797">#797</a>)</li>
+  <li>Add inspection and Quick Fix to use static <tt>int</tt> field to access graphics properties instead of string access (<a href="https://youtrack.jetbrains.com/issue/RIDER-19296">RIDER-19296</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/783">#783</a>)</li>
+  <li>Add inspection and Quick Fix to use non-allocating physics functions (<a href="https://youtrack.jetbrains.com/issue/RIDER-19290">RIDER-19290</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/784">#784</a>)</li>
+  <li>Add Context Action to move expensive expression to <tt>Start</tt>, <tt>Awake</tt> or outside of loop (<a href="https://youtrack.jetbrains.com/issue/RIDER-19297">RIDER-19297</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-19291">RIDER-19291</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-19287">RIDER-19287</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/878">#878</a>)</li>
+  <li>Add inspection and Quick Fix to avoid string based versions of <tt>GetComponent</tt>, <tt>AddComponent</tt> and <tt>ScriptableObject.CreateInstance</tt> (<a href="https://youtrack.jetbrains.com/issue/RIDER-19293">RIDER-19293</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/763">#763</a>)</li>
+  <li>Add inspection and Quick Fix for correct method signature for <tt>DrawGizmo</tt> attribute (<a href="https://github.com/JetBrains/resharper-unity/issues/36">#36</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/772">#772</a>)</li>
+  <li>Add inspection for calling <tt>base.OnGUI</tt> in <tt>PropertyDrawer</tt> derived class (<a href="https://github.com/JetBrains/resharper-unity/issues/886">#886</a>, thanks @vinhui!)</li>
+  <li>Add suspicious comparison warning if comparing two Unity objects which don't have a common subtype (<a href="https://youtrack.jetbrains.com/issue/RIDER-18671">RIDER-18671</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/764">#764</a>)</li>
+  <li>Add "Why is ReSharper/Rider suggesting this?" for most new inspections</li>
+  <li>Add code completion, rename and find usages to string literal component and scriptable object type names (<a href="https://github.com/JetBrains/resharper-unity/issues/835">#835</a>)</li>
+  <li>Add file template for <tt>[InitializeOnLoad]</tt> class (<a href="https://github.com/JetBrains/resharper-unity/issues/795">#795</a>)</li>
+  <li>Rider: Syntax highlighting for YAML files</li>
+  <li>Rider: Add entity component data to debugger (<a href="https://github.com/JetBrains/resharper-unity/issues/720">#720</a>)</li>
+  <li>Rider: Add components and children of <tt>GameObject</tt> to debugger (<a href="https://github.com/JetBrains/resharper-unity/issues/838">#838</a>)</li>
+  <li>Rider: Add child game objects of <tt>Scene</tt> to debugger (<a href="https://github.com/JetBrains/resharper-unity/issues/838">#838</a>)</li>
+  <li>Rider: Add double click to start debugger in Attach to Unity Process dialog (<a href="https://github.com/JetBrains/resharper-unity/issues/814">#814</a>)</li>
+  <li>Rider: Add setting to disable sending Unity Console to Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/829">#829</a>)</li>
+  <li>Rider: Add prefix, suffix and "disable inspections" options to custom serialised fields naming rule (<a href="https://github.com/JetBrains/resharper-unity/issues/930">#930</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/928">#928</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-22036">RIDER-22026</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-21193">RIDER-21193</a>)</li>
+  <li>Rider: Ensure code is compiled before running tests via Unity (<a href="https://github.com/JetBrains/resharper-unity/issues/916">#916</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/931">#931</a>)</li>
+  <li>Unity editor: Show version of editor plugin on Rider plugin page (<a href="https://github.com/JetBrains/resharper-unity/issues/818">#818</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/822">#822</a>)</li>
+  <li>Unity editor: Generate projects once per Unity startup (<a href="https://github.com/JetBrains/resharper-unity/issues/874">#874</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/884">#884</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-21237">RIDER-21237</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-21035">RIDER-21035</a>)</li>
+  <li>Unity editor: Add editor window to show results of Find Usages (<a href="https://github.com/JetBrains/resharper-unity/issues/918">#918</a>)</li>
+  <li>Unity editor: Add action to start Unity from Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/942">#942</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/946">#946</a>)</li>
 </ul>
-<p>From 2.1.2 (Rider 2017.2):</p>
+<em>Changed:</em>
 <ul>
-  <li>Fix code completion and generation not working with newer versions of Unity (<a href="https://github.com/JetBrains/resharper-unity/issues/219">#219</a>)</li>
-  <li>Support Unity API up to 2017.3.0b3 (<a href="https://github.com/JetBrains/resharper-unity/issues/218">#218</a>)</li>
-  <li>Recognise projects with modularised UnityEngine assembly references (<a href="https://github.com/JetBrains/resharper-unity/issues/241">#241</a>)</li>
-  <li>Add Unity specific file templates (<a href="https://github.com/JetBrains/resharper-unity/issues/232">#232</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/237">#237</a>)</li>
-  <li>Improve parsing and syntax highlighting of Cg/HLSL</li>
-  <li>Fix parsing of 2DArray (<a href="https://youtrack.jetbrains.com/issue/RIDER-9786">RIDER-9786</a>)</li>
-  <li>Add colour highlighting and editing to ShaderLab</li>
+  <li>Update API to Unity 2018.3.0b9 (<a href="https://github.com/JetBrains/resharper-unity/issues/819">#819</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/897">#897</a>)</li>
+  <li>Mark event handler methods and property setters as in use if they're declared on a base type (<a href="https://github.com/JetBrains/resharper-unity/issues/922">#922</a>)</li>
+  <li>Remove duplicate event functions from code completion (<a href="https://github.com/JetBrains/resharper-unity/issues/685">#685</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/823">#823</a>)</li>
+  <li>Improve redundant event function warnings (<a href="https://youtrack.jetbrains.com/issue/RIDER-19894">RIDER-19894</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/794">#794</a>)</li>
+  <li>Stop Generate Code dialog selecting all event functions by default when called from the gutter icon or Code Vision marker (<a href="https://youtrack.jetbrains.com/issue/RIDER-22211">RIDER-22211</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/939">#939</a>)</li>
+  <li>Prevent Respeller running on .asmdef files (<a href="https://youtrack.jetbrains.com/issue/RIDER-17701">RIDER-17701</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/748">#748</a>)</li>
+  <li>Rider: Updated icons in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/836">#836</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-18475">RIDER-18475</a>)</li>
+  <li>Rider: Set font similar to Console for Unity Log View (<a href="https://github.com/JetBrains/resharper-unity/issues/842">#842</a>)</li>
+  <li>Rider: Explicit background refresh assets action will force AppDomain reload (<a href="https://github.com/JetBrains/resharper-unity/issues/846">#846</a>)</li>
+  <li>Rider: Detect non-default Unity installed (<a href="https://github.com/JetBrains/resharper-unity/issues/854">#854</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/850">#850</a>)</li>
+  <li>Rider: Refine auto-save notification advice (<a href="https://github.com/JetBrains/resharper-unity/issues/707">#707</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/877">#877</a>)</li>
+  <li>Rider: Preserve custom editor location (<a href="https://github.com/JetBrains/resharper-unity/issues/872">#872</a>)</li>
+  <li>Unity editor: Generated projects for Unity 2018.1+ no longer require .NET or Mono installed (<a href="https://github.com/JetBrains/resharper-unity/issues/756">#756</a>)</li>
+  <li>Unity editor: Add HintPaths to system libraries in generated projects (<a href="https://youtrack.jetbrains.com/issue/RIDER-20161">RIDER-20161</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/832">#832</a>)</li>
+  <li>Unity editor: Speed up writing JSON file during plugin startup (<a href="https://github.com/JetBrains/resharper-unity/issues/753">#753</a>)</li>
+  <li>Unity editor: Stop capturing log events unless connected to a Unity project (<a href="https://github.com/JetBrains/resharper-unity/issues/946">#946</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-22361">RIDER-22361</a>)</li>
 </ul>
-<p>From 2.1.1 (Rider 2017.2 EAP2):</p>
+<em>Fixed:</em>
 <ul>
-  <li>Improve ShaderLab parsing (<a href="https://github.com/JetBrains/resharper-unity/issues/228">#228</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/223">#223</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-9214">RIDER-9214</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/222">#222</a>)</li>
-  <li>Show event function descriptions in generat dialog (<a href="https://youtrack.jetbrains.com/issue/RIDER-4904">RIDER-4904</a>)</li>
-  <li>Add support for mcs.rsp (<a href="https://github.com/JetBrains/resharper-unity/issues/230">#230</a>)</li>
+  <li>Fix C# language level override incorrectly handling <tt>latest</tt> (<a href="https://github.com/JetBrains/resharper-unity/issues/871">#871</a>)</li>
+  <li>Fix to stop generating <tt>readonly</tt> modifier when converting auto property to property with serialised backing field (<a href="https://github.com/JetBrains/resharper-unity/issues/892">#892</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/893">#893</a>)</li>
+  <li>Fix bug in ShaderLab parsing <tt>Blend</tt> operations (<a href="https://github.com/JetBrains/resharper-unity/issues/723">#723</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/785">#785</a>)</li>
+  <li>Fix exception after renaming type (<a href="https://github.com/JetBrains/resharper-unity/issues/820">#820</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-18699">RIDER-18699</a>)</li>
+  <li>Rider: Fix filter in Unity log view to be case insensitive (<a href="https://github.com/JetBrains/resharper-unity/issues/761">#761</a>)</li>
+  <li>Rider: Fix running unit tests via Unity on Mac (<a href="https://youtrack.jetbrains.com/issue/RIDER-20514">RIDER-20514</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/530">#530</a>)</li>
+  <li>Rider: Fix Unity Explorer not showing on Linux (<a href="https://github.com/JetBrains/resharper-unity/issues/792">#792</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/793">#793</a>)</li>
+  <li>Rider: Fix Unity Explorer and packages with fully qualified paths (<a href="https://github.com/JetBrains/resharper-unity/issues/952">#952</a>)</li>
+  <li>Rider: Fix list of debuggable Unity apps to include apps started from symlinks (<a href="https://github.com/JetBrains/resharper-unity/issues/713">#713</a>)</li>
+  <li>Rider: Fix prompt for <tt>npm install</tt> in <tt>package.json</tt> in Unity packages (<a href="https://github.com/JetBrains/resharper-unity/issues/703">#703</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/789">#789</a>)</li>
+  <li>Rider: Fix for ignored tests displaying wrong result status (<a href="https://github.com/JetBrains/resharper-unity/issues/657">#657</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/718">#718</a>)</li>
+  <li>Unity editor: Fix <tt>mcs.rsp</tt>/<tt>csc.rsp</tt> processing for references in quotes</li>
+  <li>Unity editor: Fix adding reference to <tt>UnityEditor.iOS.Extensions.Xcode.dll</tt> for Unity installed from Hub (<a href="https://github.com/JetBrains/resharper-unity/issues/843">#843</a>)</li>
 </ul>
-<p>From 2.1.0 (Rider 2017.1 EAP1):</p>
-<ul>
-  <li>Add annotations for modularised UnityEngine assemblies (<a href="https://github.com/JetBrains/resharper-unity/issues/2017">#207</a>)</li>
-</ul>
+</p>
+<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/183/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
 ]]>
   </change-notes>
 </idea-plugin>

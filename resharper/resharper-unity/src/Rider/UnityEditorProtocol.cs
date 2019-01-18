@@ -17,6 +17,7 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
@@ -37,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private readonly Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
+        private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
-            ISettingsStore settingsStore, Application.ActivityTrackingNew.UsageStatistics usageStatistics,
+            ISettingsStore settingsStore, JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics,
             UnitySolutionTracker unitySolutionTracker)
         {
             myComponentLifetime = lifetime;
@@ -64,13 +65,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            unitySolutionTracker.IsUnityProject.ViewNotNull(lifetime, (lf, args) => 
+            unitySolutionTracker.IsUnityProject.ViewNotNull(lifetime, (lf, args) =>
             {
                 if (!args) return;
 
                 var solFolder = mySolution.SolutionFilePath.Directory;
                 AdviseModelData(lifetime);
-                
+
                 // todo: consider non-Unity Solution with Unity-generated projects
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
                 protocolInstancePath.Directory.CreateDirectory();
@@ -91,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 CreateProtocols(protocolInstancePath);
             });
         }
-        
+
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
@@ -102,11 +103,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         private void AdviseModelData(Lifetime lifetime)
-        {   
+        {
            myHost.PerformModelAction(rd => rd.Play.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
            myHost.PerformModelAction(rd => rd.Pause.AdviseNotNull(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
-           myHost.PerformModelAction(model => {model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime, 
+           myHost.PerformModelAction(model => {model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime,
              scriptCompilationDuringPlay => UnityModel.Value.DoIfNotNull(editor => editor.SetScriptCompilationDuringPlay.Fire((int)scriptCompilationDuringPlay)));});
         }
 
@@ -147,7 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         new Identities(IdKind.Client), myDispatcher, wire);
                     var editor = new EditorPluginModel(lf, protocol);
                     editor.IsBackendConnected.Set(rdVoid => true);
-                    
+
                     if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                     {
                         var frontendProcess = Process.GetCurrentProcess().GetParent(); // RiderProcessId is not used on non-Windows, but this line gives bad warning in the log
@@ -165,20 +166,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     editor.Play.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
                     editor.Pause.AdviseNotNull(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
 
-                    
+
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
-                    
+
                     // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
                     myHost.PerformModelAction(t => t.ShowGameObjectOnScene.Advise(lf, v => editor.ShowGameObjectOnScene.Fire(v.ConvertToUnityModel())));
-                    
+
                     // pass all references to Unity TODO temp workaround, replace with async api
                     myHost.PerformModelAction(t => t.FindUsageResults.Advise(lf, v =>editor.FindUsageResults.Fire(v.ConvertToUnityModel())));
-                    
-                    editor.EditorLogPath.Advise(lifetime,                    
+
+                    editor.EditorLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
                     editor.PlayerLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.PlayerLogPath.SetValue(s)));
-                        
+
                     // Note that these are late-init properties. Once set, they are always set and do not allow nulls.
                     // This means that if/when the Unity <-> Backend protocol closes, they still retain the last value
                     // they had - so the front end will retain the log and application paths of the just-closed editor.
@@ -257,7 +258,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             CaretVisualPlacement.Generic);
                     }
                 }
-                
+
                 myHost.PerformModelAction(m => m.ActivateRider.Fire());
                 return true;
             });

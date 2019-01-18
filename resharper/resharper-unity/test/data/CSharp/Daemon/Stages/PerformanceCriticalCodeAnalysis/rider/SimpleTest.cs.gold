@@ -5,7 +5,7 @@ namespace DefaultNamespace
     public class SimpleTest : MonoBehaviour
     {
         private RigidBody2D myRigidBody2D;
-        |public void FixedUpdate()
+        |public void Update()
         {
             if (myRigidBody2D == null)
             {
@@ -15,5 +15,5 @@ namespace DefaultNamespace
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(1): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
+(0): ReSharper Unity Performance Critical Context: Performance critical context
+(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation

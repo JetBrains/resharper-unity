@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.UsageStatistics;
 using Newtonsoft.Json.Linq;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Statistics
+namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.UsageStatistics
 {
     [SolutionComponent]
     public class UnityProjectTypeLogContributor : IActivityLogContributorSolutionComponent
@@ -12,7 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Statistics
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly UnityReferencesTracker myUnityReferencesTracker;
 
-        public UnityProjectTypeLogContributor(UnitySolutionTracker unitySolutionTracker, UnityReferencesTracker unityReferencesTracker)
+        public UnityProjectTypeLogContributor(UnitySolutionTracker unitySolutionTracker,
+                                              UnityReferencesTracker unityReferencesTracker)
         {
             myUnitySolutionTracker = unitySolutionTracker;
             myUnityReferencesTracker = unityReferencesTracker;
@@ -20,9 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Statistics
 
         public void ProcessSolutionStatistics([NotNull] JObject log)
         {
-            if (myUnitySolutionTracker.IsUnityGeneratedProject.Value) 
+            if (myUnitySolutionTracker.IsUnityGeneratedProject.Value)
                 log["unity_pt"] = "UnityGenerated";
-            else if (myUnitySolutionTracker.IsUnityProject.Value) 
+            else if (myUnitySolutionTracker.IsUnityProject.Value)
                 log["unity_pt"] = "UnitySidecar";
             else if (myUnityReferencesTracker.HasUnityReference.Value)
                 log["unity_pt"] = "UnityClassLib";

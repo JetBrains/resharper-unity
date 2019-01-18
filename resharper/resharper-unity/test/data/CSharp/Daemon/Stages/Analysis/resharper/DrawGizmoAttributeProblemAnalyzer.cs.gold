@@ -73,6 +73,6 @@ public class TestDrawGizmoMethod
 (8): ReSharper Warning: Incorrect method parameters. Expected '(Transform arg2, GizmoType arg3)'
 (9): ReSharper Warning: Incorrect method parameters. Expected '(Transform arg1, GizmoType arg2)'
 (10): Unity Gutter Icon: Unity scripting component
-(11): Unity implicitly used identifier: 
+(11): ReSharper Unity Implicitly Used Identifier: 
 (12): Unity Gutter Icon: Unity scripting component
-(13): Unity implicitly used identifier: 
+(13): ReSharper Unity Implicitly Used Identifier: 

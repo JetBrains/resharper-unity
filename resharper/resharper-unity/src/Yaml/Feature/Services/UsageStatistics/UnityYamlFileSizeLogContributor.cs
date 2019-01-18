@@ -1,11 +1,11 @@
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Rider;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.UsageStatistics;
 using Newtonsoft.Json.Linq;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.UsageStatistics
 {
     [SolutionComponent]
     public class UnityYamlFileSizeLogContributor : IActivityLogContributorSolutionComponent

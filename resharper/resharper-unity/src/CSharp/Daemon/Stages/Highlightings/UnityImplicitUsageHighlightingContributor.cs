@@ -84,9 +84,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 
         public virtual void AddConfigurableHighlighter(IHighlightingConsumer consumer, ICSharpDeclaration element)
         {
-            if (SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode) == GutterIconMode.None)
-                return;
-
             consumer.AddHighlighting(new UnityImplicitlyUsedIdentifierHighlighting(element.NameIdentifier.GetDocumentRange()));
         }
 
