@@ -11,6 +11,16 @@ namespace DefaultNamespace
             {
                 myRigidBody2D = GetComponent<RigidBody2D>();
             }
+            
+            Debug.Log("");
+            Debug.LogFormat("");
+            Debug.LogError("");
+            Debug.LogErrorFormat("");
+            Debug.LogException("");
+            Debug.LogWarning("");
+            Debug.LogWarningFormat("");
+            Debug.LogAssertion("");
+            Debug.LogAssertionFormat("");
         }
     }
 }

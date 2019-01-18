@@ -14,6 +14,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Unity editor: Add extra logging for switching to play mode and background refresh of assets (#987)
 
 ### Changed
+- Mark more methods as expensive inside a performance critical context (#1000)
 - Improve performance of rename and find usages with YAML files (#983)
 - Improve performance of typing in YAML files, by incrementally re-parsing only the YAML document that contains the change (#993)
 

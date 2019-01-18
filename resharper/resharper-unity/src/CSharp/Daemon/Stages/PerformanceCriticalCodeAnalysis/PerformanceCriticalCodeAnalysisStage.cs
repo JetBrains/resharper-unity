@@ -242,27 +242,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
                         var containingType = declaredElement.GetContainingType();
 
-                        if (containingType == null || containingType.GetClrName().Equals(KnownTypes.MonoBehaviour) &&
-                            declaredElement.ShortName.Equals("StartCoroutine"))
+                        if (containingType == null || containingType.GetClrName().Equals(KnownTypes.MonoBehaviour))
                         {
-                            var arguments = invocationExpression.Arguments;
-                            if (arguments.Count == 0 || arguments.Count > 2)
+                            if (!declaredElement.ShortName.Equals("StartCoroutine") &&
+                                !declaredElement.ShortName.Equals("InvokeRepeating"))
+                            {
                                 break;
+                            }
 
-                            var firstArgument = arguments[0].Value;
+                            var firstArgument = invocationExpression.Arguments.FirstOrDefault()?.Value;
                             if (firstArgument == null)
                                 break;
-
+                            
                             var coroutineMethodDeclaration = ExtractMethodDeclarationFromStartCoroutine(firstArgument);
                             if (coroutineMethodDeclaration == null)
                                 break;
 
-                            var declarations = coroutineMethodDeclaration.GetDeclarationsIn(sourceFile).Where(t => t.GetSourceFile() == sourceFile);
+                            var declarations = coroutineMethodDeclaration.GetDeclarationsIn(sourceFile);
                             foreach (var declaration in declarations)
                             {
                                 result.Add(declaration);
                             }
-                        }
+                        } 
                         break;
                 }
             }
@@ -325,9 +326,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                     return;
 
                 context.RegisterInvocationInMethod(declaredElement, invocationExpressionParam);
+                RegisterImplicitInvocation(invocationExpressionParam, context);
+                
+                HandleInvokedMethod(declaredElement, context);
+            }
 
+            private void HandleInvokedMethod(IDeclaredElement declaredElement, HotMethodAnalyzerContext context)
+            {
                 // find all declarations in current file
-                var declarations = declaredElement.GetDeclarationsIn(mySourceFile).Where(t => t.GetSourceFile() == mySourceFile);
+                var declarations = declaredElement.GetDeclarationsIn(mySourceFile);
 
                 // update current declared element in context and then restore it
                 var originDeclaredElement = context.CurrentDeclaredElement;
@@ -356,6 +363,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 if (context.IsDeclaredElementCostly(declaredElement))
                 {
                     context.MarkCurrentAsCostly();
+                }
+            }
+
+            private void RegisterImplicitInvocation(IInvocationExpression invocationExpression, HotMethodAnalyzerContext context)
+            {
+                var name = invocationExpression.Reference?.Resolve().DeclaredElement?.ShortName;
+                if (name == null)
+                    return;
+
+                if (name.Equals("Invoke") || name.Equals("InvokeRepeating"))
+                {
+                    var implicitlyInvokeDeclaredElement = invocationExpression.Arguments.FirstOrDefault()?.Value
+                        ?.GetReferences<UnityEventFunctionReference>().FirstOrDefault()?.Resolve().DeclaredElement;
+                    if (implicitlyInvokeDeclaredElement == null)
+                        return;
+
+                    HandleInvokedMethod(implicitlyInvokeDeclaredElement, context);
                 }
             }
 
