@@ -189,6 +189,7 @@
 </ul>
 <em>Changed:</em>
 <ul>
+  <li>Mark more methods as expensive inside a performance critical context (<a href="https://github.com/JetBrains/resharper-unity/issues/1000">#1000</a>)</li>
   <li>Improve performance of rename and find usages with YAML files (<a href="https://github.com/JetBrains/resharper-unity/issues/983">#983</a>)</li>
   <li>Improve performance of typing in YAML files, by incrementally re-parsing only the YAML document that contains the change (<a href="https://github.com/JetBrains/resharper-unity/issues/993">#993</a>)</li>
 </ul>
