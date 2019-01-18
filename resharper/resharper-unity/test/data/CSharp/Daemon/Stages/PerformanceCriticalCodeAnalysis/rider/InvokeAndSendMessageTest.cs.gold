@@ -161,54 +161,54 @@ public class Test : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(1): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(2): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(3): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(4): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(5): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(6): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(7): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(8): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(9): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(10): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(11): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(12): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(13): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(14): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(15): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(16): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(17): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(18): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(19): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(20): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(21): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(22): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(23): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(24): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(25): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(26): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(27): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(28): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(29): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(30): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(31): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(32): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(33): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(34): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(35): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(36): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(37): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(38): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(39): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(40): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(41): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(42): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(43): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(44): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(45): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(46): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(47): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(48): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(49): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(50): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(0): ReSharper Unity Performance Critical Context: Performance critical context
+(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(4): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(5): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(6): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(8): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(10): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(11): ReSharper Unity Performance Critical Context: Performance critical context
+(12): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(13): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(14): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(15): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(16): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(17): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(18): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(19): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(20): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(21): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(22): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(23): ReSharper Unity Performance Critical Context: Performance critical context
+(24): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(25): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(26): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(27): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(28): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(29): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(30): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(31): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(32): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(33): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(34): ReSharper Unity Performance Critical Context: Performance critical context
+(35): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(36): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(37): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(38): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(39): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(40): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(41): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(42): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(43): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(44): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(45): ReSharper Unity Performance Critical Context: Performance critical context
+(46): ReSharper Unity Performance Critical Context: Performance critical context
+(47): ReSharper Unity Performance Critical Context: Performance critical context
+(48): ReSharper Unity Performance Critical Context: Performance critical context
+(49): ReSharper Unity Performance Critical Context: Performance critical context
+(50): ReSharper Unity Performance Critical Context: Performance critical context

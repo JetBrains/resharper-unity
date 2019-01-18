@@ -12,6 +12,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
 using JetBrains.Threading;
@@ -29,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
-        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution, 
+        public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
             UnityEditorProtocol editorProtocol, ISettingsStore settingsStore,
             ILogger logger)
         {
@@ -41,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
-                        
+
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
         }
 
@@ -62,14 +63,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force}");
             var task = myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
             CurrentTask = task;
-            
+
             var lifetimeDef = Lifetimes.Define(myLifetime);
             var solution = mySolution.GetProtocolSolution();
             var solFolder = mySolution.SolutionFilePath.Directory;
-                
-            mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime, 
+
+            mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime,
                 RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...").AsIndeterminate().AsNonCancelable());
-                        
+
             task.ContinueWith(_ =>
             {
                 mySolution.Locks.ExecuteOrQueueEx(lifetimeDef.Lifetime, "RefreshPaths", () =>
@@ -98,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher,
             ILogger logger,
-            IFileSystemTracker fileSystemTracker, 
+            IFileSystemTracker fileSystemTracker,
             UnityHost host,
             UnitySolutionTracker unitySolutionTracker)
         {
@@ -113,16 +114,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 // send refresh, when we detect UnitySolution
                 host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => { refresher.Refresh(force); }));
             });
-            
+
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-                
+
                 // Rgc.Guarded - beware RIDER-15577
                 myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent",
                     TimeSpan.FromMilliseconds(500),
                     Rgc.Guarded, () => refresher.Refresh(false));
-                
+
                 var protocolSolution = solution.GetProtocolSolution();
                 protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
                 {
@@ -133,14 +134,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
             });
         }
-        
+
         private void FileSystemChange(FileSystemChange fileSystemChange)
         {
             var visitor = new Visitor(this);
             foreach (var fileSystemChangeDelta in fileSystemChange.Deltas)
                 fileSystemChangeDelta.Accept(visitor);
         }
-        
+
         private class Visitor : RecursiveFileSystemChangeDeltaVisitor
         {
             private readonly UnityRefreshTracker myRefreshTracker;

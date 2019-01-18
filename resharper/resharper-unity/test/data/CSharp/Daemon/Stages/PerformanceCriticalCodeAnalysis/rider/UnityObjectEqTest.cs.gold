@@ -20,7 +20,7 @@ namespace DefaultNamespace
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(1): ReSharper Unity PerformanceCostlyMethodInvocation: Expensive method invocation
-(2): ReSharper Unity PerformanceCostlyMethodHighlighter: 
-(3): ReSharper Unity PerformanceNullComparison: Comparison to 'null' is expensive
+(0): ReSharper Unity Performance Critical Context: Performance critical context
+(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(2): ReSharper Unity Performance Critical Context: Performance critical context
+(3): ReSharper Unity Expensive Null Comparison: Comparison to 'null' is expensive

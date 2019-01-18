@@ -1,16 +1,13 @@
-using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
-using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
     [TestUnity]
-    public class PerformanceStageTest : CSharpHighlightingTestBase
+    public class PerformanceStageTest : CSharpHighlightingTestWithProductDependentGoldBase<PerformanceHighlightingBase>
     {
-        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\PerformanceCriticalCodeAnalysis";
+        protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\PerformanceCriticalCodeAnalysis";
 
         [Test] public void SimpleTest() { DoNamedTest(); }
         [Test] public void SimpleTest2() { DoNamedTest(); }
@@ -21,11 +18,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
         [Test] public void InefficientCameraMainUsageWarningTest() {DoNamedTest();}
         [Test] public void InvokeAndSendMessageTest() {DoNamedTest();}
         [Test] public void DisabledWarningTest() {DoNamedTest();}
-
-        protected sealed override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
-            IContextBoundSettingsStore settingsStore)
-        {
-            return highlighting is PerformanceHighlightingBase;
-        }
     }
 }

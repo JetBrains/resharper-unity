@@ -115,6 +115,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="**\VisualStudio\**" />
+    <EmbeddedResource Remove="**\VisualStudio\**" />
+    <None Remove="**\VisualStudio\**" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\resharper-yaml\src\rider-yaml.csproj" />
   </ItemGroup>
 </Project>

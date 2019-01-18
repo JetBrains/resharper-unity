@@ -5,6 +5,7 @@ using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 using ILogger = JetBrains.Util.ILogger;
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class ConnectionTracker
     {
         private UnityEditorState myLastCheckResult = UnityEditorState.Disconnected;
-        
+
         public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol, IShellLocks locks, UnitySolutionTracker unitySolutionTracker)
         {
             // TODO: this shouldn't be up in tests until we figure out how to test unity-editor requiring features

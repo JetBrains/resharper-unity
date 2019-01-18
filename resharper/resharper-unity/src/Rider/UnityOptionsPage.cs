@@ -7,6 +7,7 @@ using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions.ViewModel;
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
+using JetBrains.ReSharper.Plugins.Unity.Application.UI.Options;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Settings;

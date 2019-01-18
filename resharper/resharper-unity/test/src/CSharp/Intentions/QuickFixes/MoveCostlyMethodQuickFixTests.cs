@@ -20,12 +20,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
         {
-            IHighlightingTestBehaviour highlightingTestBehaviour = highlighting as IHighlightingTestBehaviour;
-            return (highlightingTestBehaviour == null || !highlightingTestBehaviour.IsSuppressed) && highlighting is PerformanceHighlightingBase;
+            return (!(highlighting is IHighlightingTestBehaviour highlightingTestBehaviour) ||
+                    !highlightingTestBehaviour.IsSuppressed) &&
+                   highlighting is PerformanceHighlightingBase && !(highlighting is PerformanceHighlighting);
         }
     }
 
-    
+
     [TestUnity]
     public class MoveCostlyMethodQuickFixTests : CSharpQuickFixTestBase<MoveCostlyInvocationQuickFix>
     {

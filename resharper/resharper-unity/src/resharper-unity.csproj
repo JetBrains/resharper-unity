@@ -106,7 +106,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ThemedIconsXamlV3>
-    <Compile Remove="VisualStudio\FormatDefinitions\CgFormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
   <!-- References -->
   <ItemGroup>
@@ -122,6 +121,10 @@
     <Compile Remove="**\Rider\**" />
     <EmbeddedResource Remove="**\Rider\**" />
     <None Remove="**\Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Format definitions can't compile on Mac/Linux due to missing PresentationCore dependencies -->
+    <Compile Remove="**\VisualStudio\**\*FormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ShaderLab\Host\**" />

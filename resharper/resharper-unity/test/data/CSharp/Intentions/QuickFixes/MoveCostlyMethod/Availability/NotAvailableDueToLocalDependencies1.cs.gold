@@ -4,28 +4,24 @@ namespace DefaultNamespace
 {
     public class EveryThingAvailable : MonoBehaviour
     {
-        |public GameObject MyGetComponent(int i)
+        public GameObject MyGetComponent(int i)
         {
-            return |GetComponent|(1)<Transform>();
-        }|(0)
+            return |GetComponent|(0)<Transform>();
+        }
         
-        |public void Update()
+        public void Update()
         {
             for (int i = 0; i < 100; i++)
             {
-                var transform = |MyGetComponent|(3)(i);
+                var transform = |MyGetComponent|(1)(i);
             }
-        }|(2)
+        }
     }
 }
 ------------------------------------------------
-0: 
-NO QUICKFIXES
-1: Expensive method invocation
+0: Expensive method invocation
 QUICKFIXES:
 Introduce field and initialise in 'Start'
 Introduce field and initialise in 'Awake'
-2: 
-NO QUICKFIXES
-3: Expensive method invocation
+1: Expensive method invocation
 NO QUICKFIXES
