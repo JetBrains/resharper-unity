@@ -110,7 +110,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         private static readonly ISet<string> ourKnownDebugCostlyMethods = new HashSet<string>()
         {
-            "Log"
+            "Log",
+            "LogFormat",
+            "LogError",
+            "LogErrorFormat",
+            "LogException",
+            "LogWarning",
+            "LogWarningFormat",
+            "LogAssertion",
+            "LogAssertionFormat"
         };
         #endregion
     }
