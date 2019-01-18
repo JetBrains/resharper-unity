@@ -266,6 +266,17 @@ namespace JetBrains.Rider.Unity.Editor
                 return new[] {Path.Combine(folder, searchPattern)};
               return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName);
             }
+
+            // new toolbox format doesn't have active-application block, so return all found Rider installations
+            return Directory.GetDirectories(channelDir)
+              .SelectMany(b=>
+              {
+                var folder = Path.Combine(b, dirName);
+                if (!isMac)
+                  return new[] {Path.Combine(folder, searchPattern)};
+                return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName);
+              })
+              .Where(File.Exists).ToArray();
           }
           catch (Exception e)
           {
