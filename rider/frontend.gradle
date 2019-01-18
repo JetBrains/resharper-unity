@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.tasks.PrepareSandboxTask
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -76,77 +78,7 @@ def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 def unityeditorplugin_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
 def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Full/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
 
-prepareTestingSandbox{
-    // Default dependsOn includes the standard Java build/jar task
-
-    // "skipDotnet" is easier to type (and remember), but "dotNetUpToDate" is already in use
-    if (skipDotnet.equalsIgnoreCase("false") &&
-            dotNetUpToDate.equalsIgnoreCase("false")) {
-        dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
-    }
-
-    // TODO: Move this dependency
-    // It doesn't really fit with prepareSandbox. It's a better fit for buildPlugin,
-    // or as a top-level task that is called separately, e.g. gradle buildPlugin nunit
-    // (and we could get rid of RunTests then, too)
-    if (RunTests.equalsIgnoreCase("true")) {
-        dependsOn nunit
-    }
-
-    // Have dependent tasks use uptodateWhen { project.buildServer.automatedBuild etc. }
-    //inputs.files(buildRiderPlugin.outputs)
-    //inputs.files(buildUnityEditorPlugin.packedPath)
-
-    // Backend:
-    // Copy unity editor plugin repacked file to `rider-unity/EditorPlugin`
-    // Copy JetBrains.ReSharper.Plugins.Unity.dll to `rider-unity/dotnet`
-    // Copy annotations to `rider-unity/dotnet/Extensions/JetBrains.Unity/annotations`
-
-    // Frontend:
-    // Copy projectTemplates to `rider-unity/projectTemplates`
-
-    // Assert these files exist?
-
-    doLast {
-        assert file(unityeditorplugin_path).exists()
-        assert file(unityeditorplugin_full_path).exists()
-
-        dllFiles.forEach({ f ->
-            def file = file("$f")
-            if (!file.exists()) throw new RuntimeException("File $file does not exist")
-        })
-
-        debuggerDllFiles.forEach({ f ->
-            def file = file("$f")
-            if (!file.exists()) throw new RuntimeException("File $file does not exist")
-        })
-    }
-
-    from(unityeditorplugin_path, {
-        into "$intellij.pluginName/EditorPlugin"
-    })
-
-    from(unityeditorplugin_full_path, {
-        into "$intellij.pluginName/EditorPlugin"
-    })
-
-    dllFiles.forEach({ f ->
-        def file = file(f)
-        from(file, { into "$intellij.pluginName/dotnet" })
-    })
-
-    debuggerDllFiles.forEach({ f ->
-        def file = file(f)
-        from(file, { into "$intellij.pluginName/dotnetDebuggerWorker" })
-    })
-
-    from(annotationsFrom, { into "$intellij.pluginName/dotnet/$annotationsTo" })
-    into("$intellij.pluginName/projectTemplates") {
-        from 'projectTemplates'
-    }
-}
-
-prepareSandbox {
+tasks.withType(PrepareSandboxTask).configureEach {
     // Default dependsOn includes the standard Java build/jar task
 
     // "skipDotnet" is easier to type (and remember), but "dotNetUpToDate" is already in use
@@ -215,7 +147,6 @@ prepareSandbox {
         from 'projectTemplates'
     }
 }
-
 
 task validatePluginXml {
   def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
