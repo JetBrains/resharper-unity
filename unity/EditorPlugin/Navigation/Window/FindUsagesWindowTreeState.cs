@@ -4,7 +4,7 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation
+namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 {
   [Serializable]
   internal class FindUsagesWindowTreeState : TreeViewState

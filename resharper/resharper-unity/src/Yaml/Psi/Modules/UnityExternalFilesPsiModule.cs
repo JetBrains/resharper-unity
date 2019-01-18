@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
-using JetBrains.Application.FileSystemTracker;
 using JetBrains.DataFlow;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
@@ -20,18 +19,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         [NotNull] private readonly ISolution mySolution;
         private readonly string myPersistentId;
-        private readonly IFileSystemTracker myFileSystemTracker;
         private readonly Lifetime myLifetime;
         private readonly CompactMap<FileSystemPath, Pair<IPsiSourceFile, LifetimeDefinition>> mySourceFiles;
-        private readonly List<IPsiModuleReference> myModules = new List<IPsiModuleReference>();
 
         public UnityExternalFilesPsiModule([NotNull] ISolution solution, string moduleName, string persistentId,
-                                           TargetFrameworkId targetFrameworkId,
-                                           IFileSystemTracker fileSystemTracker, Lifetime lifetime)
+                                           TargetFrameworkId targetFrameworkId, Lifetime lifetime)
         {
             mySolution = solution;
             myPersistentId = persistentId;
-            myFileSystemTracker = fileSystemTracker;
             myLifetime = lifetime;
             Name = moduleName;
             TargetFrameworkId = targetFrameworkId;
@@ -44,12 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         IEnumerable<IPsiModuleReference> IPsiModule.GetReferences(
             IModuleReferenceResolveContext moduleReferenceResolveContext)
         {
-            // TODO: There is a bug in PsiModuleAttrCache that causes tests to fail if this module has references
-            // Disable references in tests. Will fix up later...
-            if (JetBrains.ReSharper.Resources.Shell.Shell.Instance.IsTestShell)
-                return EmptyList<IPsiModuleReference>.Instance;
-
-            return myModules;
+            return EmptyList<IPsiModuleReference>.Instance;
         }
 
         public ICollection<PreProcessingDirective> GetAllDefines() => EmptyList<PreProcessingDirective>.InstanceList;
@@ -62,11 +52,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         public ProjectFileType ProjectFileType => UnknownProjectFileType.Instance;
         public IModule ContainingProjectModule => mySolution.MiscFilesProject;
         public IEnumerable<IPsiSourceFile> SourceFiles => mySourceFiles.Values.Select(pair => pair.First);
-
-        public void AddModuleReference(IPsiModule module)
-        {
-            myModules.Add(new PsiModuleReference(module));
-        }
 
         public bool ContainsPath(FileSystemPath path) => mySourceFiles.ContainsKey(path);
 
@@ -89,17 +74,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             var fileLifetime = Lifetimes.Define(myLifetime, path.FullPath);
             mySourceFiles.Add(path, Pair.Of(file, fileLifetime));
-            if (processFileChange == null)
-                return;
 
-            // Not sure we need this. We do all our file modification via another tracker. But it's part of the API...
-            if (file is IPsiSourceFileWithLocation sourceFile)
-            {
-                sourceFile.TrackChanges(fileLifetime.Lifetime, myFileSystemTracker,
-                    (delta, externalChangeType) => processFileChange(delta));
-            }
-            else
-                myFileSystemTracker.AdviseFileChanges(fileLifetime.Lifetime, path, processFileChange);
+            // Explicitly assert if we're given a file change handler. We're expecting a lot of files in this module, it
+            // will be much better to add a couple of directory change handlers than to add several thousand file change
+            // handlers.
+            // We also need to call the equivalent of PsiSourceFileWithLocationEx.TrackChanges, without registering
+            // thousands of file change handlers.
+            if (processFileChange != null)
+                Assertion.Fail("Individual file change handler not supported. Use a directory change handler");
         }
 
         public void Remove(FileSystemPath path)

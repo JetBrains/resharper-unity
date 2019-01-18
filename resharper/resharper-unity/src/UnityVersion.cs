@@ -203,21 +203,22 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static Version ReadUnityVersionFromExe(FileSystemPath exePath)
         {
-            Version version;
-            var resource = new VersionResource();
-            resource.LoadFrom(exePath.FullPath);
-            var unityVersionList = resource.Resources.Values.OfType<StringFileInfo>()
-                .Where(c => c.Default.Strings.Keys.Any(b => b == "Unity Version")).ToArray();
-            if (unityVersionList.Any())
+            Version version = null;
+            ourLogger.CatchWarn(() => // RIDER-23674
             {
-                var unityVersion = unityVersionList.First().Default.Strings["Unity Version"].StringValue;
-                version = Parse(unityVersion);
-            }
-            else
-            {
-                version = new Version(new Version(FileVersionInfo.GetVersionInfo(exePath.FullPath).FileVersion).ToString(3));
-            }
-
+                version = new Version(new Version(FileVersionInfo.GetVersionInfo(exePath.FullPath).FileVersion)
+                    .ToString(3));
+                
+                var resource = new VersionResource();
+                resource.LoadFrom(exePath.FullPath);
+                var unityVersionList = resource.Resources.Values.OfType<StringFileInfo>()
+                    .Where(c => c.Default.Strings.Keys.Any(b => b == "Unity Version")).ToArray();
+                if (unityVersionList.Any())
+                {
+                    var unityVersion = unityVersionList.First().Default.Strings["Unity Version"].StringValue;
+                    version = Parse(unityVersion);
+                }
+            });
             return version;
         }
     }

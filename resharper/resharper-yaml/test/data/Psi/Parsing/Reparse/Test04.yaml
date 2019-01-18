@@ -1,0 +1,19 @@
+# ${ACTION0:+123}
+%YAML 1.1
+--- !!str
+key1: 0
+key2: 0
+key3: 0
+...
+%YAML 1.2
+--- !!str
+key1: 1
+key2: 0{caret}
+key3: 0
+...
+%YAML 1.2
+--- !!str
+key1: 0
+key2: 0
+key3: 0
+...
