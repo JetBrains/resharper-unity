@@ -1,3 +1,5 @@
+// NOTE: This file is explicitly excluded by the .csproj for Mac/Linux!
+
 using System.ComponentModel.Composition;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
 using Microsoft.VisualStudio.Text.Classification;
