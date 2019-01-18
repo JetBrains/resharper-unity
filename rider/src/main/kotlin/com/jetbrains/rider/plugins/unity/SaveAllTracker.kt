@@ -22,10 +22,10 @@ class SaveAllTracker(project: Project) : ProjectComponent, Disposable {
     }
 
     class FileListenerImpl(val project: Project) : AnActionListener {
-        override fun afterActionPerformed(action: AnAction?, dataContext: DataContext, event: AnActionEvent?) {
+        override fun afterActionPerformed(action: AnAction, dataContext: DataContext, event: AnActionEvent) {
             super.afterActionPerformed(action, dataContext, event)
 
-            if (action!=null && (action is SaveAllAction || action is SaveDocumentAction)) {
+            if (action is SaveAllAction || action is SaveDocumentAction) {
                 project.solution.rdUnityModel.refresh.fire(false)
             }
         }
