@@ -65,8 +65,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 if (IsStripped(currentUnityObject))
                 {
                     var file = (IYamlFile) currentUnityObject.GetContainingFile();
-                    var correspondingId = currentUnityObject.GetUnityObjectPropertyValue(GetCorrespondingSourceObjectProperty())?.AsFileID();
-                    var prefabInstanceId = currentUnityObject.GetUnityObjectPropertyValue(GetPrefabInstanceProperty())?.AsFileID();
+                    var correspondingId = GetCorrespondingSourceObjectFileId(currentUnityObject);
+                    var prefabInstanceId = GetPrefabInstanceFileId(currentUnityObject);
                     
                     // assert not null
                     if (correspondingId == null || prefabInstanceId == null)
@@ -125,18 +125,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             return tag;
         }
         
-        private string GetCorrespondingSourceObjectProperty()
+        private FileID GetCorrespondingSourceObjectFileId(IYamlDocument document)
         {
-            return myVersion.GetActualVersionForSolution().Major == 2017
-                ? UnityYamlConstants.CorrespondingSourceObjectProperty2017
-                : UnityYamlConstants.CorrespondingSourceObjectProperty;
+            if (myVersion.GetActualVersionForSolution().Major == 2017)
+            {
+                return document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty2017)?.AsFileID();
+            } else
+            {
+                return document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty2017)?.AsFileID() ??
+                       document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty)?.AsFileID();
+            }
         }
         
-        private string GetPrefabInstanceProperty()
+        private FileID GetPrefabInstanceFileId(IYamlDocument document)
         {
-            return myVersion.GetActualVersionForSolution().Major == 2017
-                ? UnityYamlConstants.PrefabInstanceProperty2017
-                : UnityYamlConstants.PrefabInstanceProperty;
+            if (myVersion.GetActualVersionForSolution().Major == 2017)
+            {
+                return document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty2017)?.AsFileID();
+            } else
+            {
+                return document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty2017)?.AsFileID() ??
+                       document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty)?.AsFileID();
+            }
         }
     }
 
