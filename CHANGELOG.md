@@ -43,7 +43,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add performance indicator for null comparison against Unity object ([RIDER-19297](https://youtrack.jetbrains.com/issue/RIDER-19297))
 - Add performance indicator for `AddComponent` as an expensive method invocation ([RIDER-19299](https://youtrack.jetbrains.com/issue/RIDER-19299))
 - Add performance indicator for `Find` methods ([RIDER-19287](https://youtrack.jetbrains.com/issue/RIDER-19287))
-- Add performance indicator for `GetCopmonent` methods ([RIDER-19288](https://youtrack.jetbrains.com/issue/RIDER-19288))
+- Add performance indicator for `GetComponent` methods ([RIDER-19288](https://youtrack.jetbrains.com/issue/RIDER-19288))
 - Add performance indicator for indirect invocation of expensive methods (#816)
 - Add inspection to avoid string based method invocation ([RIDER-19295](https://youtrack.jetbrains.com/issue/RIDER-19295), #798)
 - Add inspection and Quick Fix to avoid repeat access of properties that make native calls ([RIDER-19289](https://youtrack.jetbrains.com/issue/RIDER-19289), #797)
@@ -52,7 +52,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add inspection and Quick Fix to use non-allocating physics functions ([RIDER-19290](https://youtrack.jetbrains.com/issue/RIDER-19290), #784)
 - Add Context Action to move expensive expression to `Start`, `Awake` or outside of loop ([RIDER-19297](https://youtrack.jetbrains.com/issue/RIDER-19297), [RIDER-19291](https://youtrack.jetbrains.com/issue/RIDER-19291), [RIDER-19287](https://youtrack.jetbrains.com/issue/RIDER-19287), #878)
 - Add inspection and Quick Fix to avoid string based versions of `GetComponent`, `AddComponent` and `ScriptableObject.CreateInstance` ([RIDER-19293](https://youtrack.jetbrains.com/issue/RIDER-19293), #763)
-- Add inspection and Quick Fix for correct method signature for `DrawGizmo` attribute (#36, #772))
+- Add inspection and Quick Fix for correct method signature for `DrawGizmo` attribute (#36, #772)
 - Add inspection for calling `base.OnGUI` in `PropertyDrawer` derived class (#886, thanks @vinhui!)
 - Add suspicious comparison warning if comparing two Unity objects which don't have a common subtype ([RIDER-18671](https://youtrack.jetbrains.com/issue/RIDER-18671), #7864))
 - Add "Why is ReSharper/Rider suggesting this?" for most new inspections
@@ -97,8 +97,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ## 2018.3 - 2018-12-17
 * For Rider 2018.3. Not released for ReSharper
-* 183-eap10-rtm
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap11-2018.2.2...182-eap12-2018.2.3)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap12-2018.2.3...183-eap10-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/19?closed=1)
 * [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap11-rtm)
 
@@ -114,7 +113,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add performance indicator for null comparison against Unity object ([RIDER-19297](https://youtrack.jetbrains.com/issue/RIDER-19297))
 - Add performance indicator for `AddComponent` as an expensive method invocation ([RIDER-19299](https://youtrack.jetbrains.com/issue/RIDER-19299))
 - Add performance indicator for `Find` methods ([RIDER-19287](https://youtrack.jetbrains.com/issue/RIDER-19287))
-- Add performance indicator for `GetCopmonent` methods ([RIDER-19288](https://youtrack.jetbrains.com/issue/RIDER-19288))
+- Add performance indicator for `GetComponent` methods ([RIDER-19288](https://youtrack.jetbrains.com/issue/RIDER-19288))
 - Add performance indicator for indirect invocation of expensive methods (#816)
 - Add inspection to avoid string based method invocation ([RIDER-19295](https://youtrack.jetbrains.com/issue/RIDER-19295), #798)
 - Add inspection and Quick Fix to avoid repeat access of properties that make native calls ([RIDER-19289](https://youtrack.jetbrains.com/issue/RIDER-19289), #797)
@@ -123,7 +122,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add inspection and Quick Fix to use non-allocating physics functions ([RIDER-19290](https://youtrack.jetbrains.com/issue/RIDER-19290), #784)
 - Add Context Action to move expensive expression to `Start`, `Awake` or outside of loop ([RIDER-19297](https://youtrack.jetbrains.com/issue/RIDER-19297), [RIDER-19291](https://youtrack.jetbrains.com/issue/RIDER-19291), [RIDER-19287](https://youtrack.jetbrains.com/issue/RIDER-19287), #878)
 - Add inspection and Quick Fix to avoid string based versions of `GetComponent`, `AddComponent` and `ScriptableObject.CreateInstance` ([RIDER-19293](https://youtrack.jetbrains.com/issue/RIDER-19293), #763)
-- Add inspection and Quick Fix for correct method signature for `DrawGizmo` attribute (#36, #772))
+- Add inspection and Quick Fix for correct method signature for `DrawGizmo` attribute (#36, #772)
 - Add inspection for calling `base.OnGUI` in `PropertyDrawer` derived class (#886, thanks @vinhui!)
 - Add suspicious comparison warning if comparing two Unity objects which don't have a common subtype ([RIDER-18671](https://youtrack.jetbrains.com/issue/RIDER-18671), #7864))
 - Add "Why is ReSharper/Rider suggesting this?" for most new inspections
