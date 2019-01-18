@@ -8,7 +8,7 @@ using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions;
 using JetBrains.DataFlow;
 using JetBrains.UI.RichText;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
 {
     public class OptionsPageBase : CustomSimpleOptionsPage
     {
@@ -18,8 +18,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             : base(lifetime, settingsStore)
         {
         }
-
-        #region CheckBox
 
         [NotNull]
         protected IOptionEntity CheckBox<TKeyClass, TEntryMemberType>(
@@ -39,10 +37,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             return option;
         }
-
-        #endregion CheckBox
-
-        #region Section
 
         private int myCurrentIndent;
 
@@ -65,7 +59,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             myCurrentIndent--;
         }
-
-        #endregion
     }
 }

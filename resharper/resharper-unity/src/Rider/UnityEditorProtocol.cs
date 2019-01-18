@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private readonly Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
+        private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
-            ISettingsStore settingsStore, Application.ActivityTrackingNew.UsageStatistics usageStatistics,
+            ISettingsStore settingsStore, JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics,
             UnitySolutionTracker unitySolutionTracker)
         {
             myComponentLifetime = lifetime;
