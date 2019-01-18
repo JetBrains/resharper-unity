@@ -13,11 +13,11 @@ import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.util.idea.tryGetComponent
-import com.jetbrains.rider.util.lifetime.Lifetime
-import com.jetbrains.rider.util.lifetime.SequentialLifetimes
-import com.jetbrains.rider.util.lifetime.onTermination
-import com.jetbrains.rider.util.reactive.Property
-import com.jetbrains.rider.util.reactive.whenTrue
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.SequentialLifetimes
+import com.jetbrains.rd.util.lifetime.onTermination
+import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.whenTrue
 import org.jdom.Element
 
 @State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])

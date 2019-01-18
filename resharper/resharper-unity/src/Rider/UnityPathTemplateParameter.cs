@@ -38,10 +38,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 var optionContext = new Dictionary<string, string>(context) {{Name, path.FullPath}};
                 var content1 = factory.CreateNextParameters(new[] {expander}, index + 1, optionContext);
-                options.Add(new RdProjectTemplateGroupOption(path.FullPath, path.FullPath, content1));
+                options.Add(new RdProjectTemplateGroupOption(path.FullPath, path.FullPath, null, content1));
             }
 
-            options.Add(new RdProjectTemplateGroupOption("Custom", "Custom",
+            options.Add(new RdProjectTemplateGroupOption(
+                "Custom",
+                "Custom",
+                null,
                 new RdProjectTemplateTextParameter(Name, "Path", null, Tooltip, RdTextParameterStyle.FileChooser, content)));
             
             return new RdProjectTemplateGroupParameter(Name, "UnityEngine", possiblePaths.Last().FullPath, Tooltip, options);

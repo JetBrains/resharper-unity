@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
+import com.jetbrains.rd.util.getOrCreate
 import com.jetbrains.rider.model.*
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectDir
@@ -16,7 +17,6 @@ import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import com.jetbrains.rider.projectView.views.addAdditionalText
-import com.jetbrains.rider.util.getOrCreate
 import javax.swing.Icon
 
 class UnityExplorerRootNode(project: Project, private val packagesManager: PackagesManager)

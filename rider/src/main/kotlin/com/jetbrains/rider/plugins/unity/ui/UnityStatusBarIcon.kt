@@ -7,7 +7,7 @@ import com.intellij.util.Consumer
 import com.jetbrains.rider.model.EditorState
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
-import com.jetbrains.rider.util.reactive.valueOrDefault
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import java.awt.event.MouseEvent
 import javax.swing.Icon
 

@@ -266,7 +266,7 @@ namespace JetBrains.Rider.Unity.Editor
           model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
           model.ApplicationPath.SetValue(EditorApplication.applicationPath);
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
-          model.ApplicationVersion.SetValue(Application.unityVersion);
+          model.ApplicationVersion.SetValue(UnityUtils.UnityApplicationVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
           
           if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
@@ -465,7 +465,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       File.WriteAllText(editorInstanceJsonPath, $@"{{
   ""process_id"": {Process.GetCurrentProcess().Id},
-  ""version"": ""{Application.unityVersion}""
+  ""version"": ""{UnityUtils.UnityApplicationVersion}""
 }}");
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>

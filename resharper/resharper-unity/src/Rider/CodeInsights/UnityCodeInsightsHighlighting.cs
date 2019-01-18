@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
         public UnityCodeInsightsHighlighting(DocumentRange range, [NotNull] string lenText, [NotNull] string moreText,
                                              [NotNull] ICodeInsightsProvider provider, IDeclaredElement element,
-                                             [CanBeNull] Icon icon, IEnumerable<BulbMenuItem> menuItems,
+                                             [CanBeNull] IconModel icon, IEnumerable<BulbMenuItem> menuItems,
                                              List<CodeLensEntryExtraActionModel> extraActions = null)
             : base(range, lenText, moreText, provider, element, icon, extraActions)
         {

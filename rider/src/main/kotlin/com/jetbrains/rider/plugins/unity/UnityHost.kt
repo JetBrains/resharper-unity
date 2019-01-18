@@ -10,9 +10,9 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.getComponent
-import com.jetbrains.rider.util.reactive.Signal
-import com.jetbrains.rider.util.reactive.adviseNotNull
-import com.jetbrains.rider.util.reactive.valueOrDefault
+import com.jetbrains.rd.util.reactive.Signal
+import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rd.util.reactive.valueOrDefault
 
 class UnityHost(project: Project) : LifetimedProjectComponent(project) {
     val model = project.solution.rdUnityModel

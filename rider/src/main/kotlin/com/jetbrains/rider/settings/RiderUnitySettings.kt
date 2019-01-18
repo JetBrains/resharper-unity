@@ -2,9 +2,9 @@ package com.jetbrains.rider.settings
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.util.lifetime.Lifetime
-import com.jetbrains.rider.util.reactive.Signal
+import com.jetbrains.rd.util.reactive.Signal
 
 class RiderUnitySettings(project: Project) : LifetimedProjectComponent(project) {
     companion object {

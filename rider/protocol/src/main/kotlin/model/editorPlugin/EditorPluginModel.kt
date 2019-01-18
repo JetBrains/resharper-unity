@@ -1,7 +1,7 @@
 package model.editorPlugin
 
-import com.jetbrains.rider.generator.nova.*
-import com.jetbrains.rider.generator.nova.PredefinedType.*
+import com.jetbrains.rd.generator.nova.*
+import com.jetbrains.rd.generator.nova.PredefinedType.*
 
 @Suppress("unused")
 object EditorPluginModel: Root() {

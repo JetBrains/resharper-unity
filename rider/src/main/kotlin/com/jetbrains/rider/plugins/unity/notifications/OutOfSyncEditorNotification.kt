@@ -5,10 +5,10 @@ import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction
-import com.jetbrains.rider.util.reactive.adviseNotNull
 
 class OutOfSyncEditorNotification(project: Project, unityHost: UnityHost): LifetimedProjectComponent(project) {
     companion object {
