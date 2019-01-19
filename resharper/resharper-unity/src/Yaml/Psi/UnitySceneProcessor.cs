@@ -128,25 +128,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         private FileID GetCorrespondingSourceObjectFileId(IYamlDocument document)
         {
             if (myVersion.GetActualVersionForSolution().Major == 2017)
-            {
                 return document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty2017)?.AsFileID();
-            } else
-            {
-                return document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty2017)?.AsFileID() ??
-                       document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty)?.AsFileID();
-            }
-        }
+            return document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty)?.AsFileID() ??
+                   document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty2017)?.AsFileID();
+    }
         
         private FileID GetPrefabInstanceFileId(IYamlDocument document)
         {
             if (myVersion.GetActualVersionForSolution().Major == 2017)
-            {
                 return document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty2017)?.AsFileID();
-            } else
-            {
-                return document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty2017)?.AsFileID() ??
-                       document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty)?.AsFileID();
-            }
+            return document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty)?.AsFileID() ??
+                   document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty2017)?.AsFileID();
         }
     }
 
