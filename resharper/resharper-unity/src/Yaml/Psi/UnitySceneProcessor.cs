@@ -129,6 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             if (myVersion.GetActualVersionForSolution().Major == 2017)
                 return document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty2017)?.AsFileID();
+            
             return document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty)?.AsFileID() ??
                    document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty2017)?.AsFileID();
     }
@@ -137,6 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             if (myVersion.GetActualVersionForSolution().Major == 2017)
                 return document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty2017)?.AsFileID();
+            
             return document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty)?.AsFileID() ??
                    document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty2017)?.AsFileID();
         }
