@@ -1,12 +1,10 @@
-using UnityEditor.IMGUI.Controls;
-
-namespace JetBrains.Rider.Unity.Editor.Navigation
+namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 {
   internal class FindUsagesTreeViewItem : FindUsagePathElement
   {
     public AbstractUsageElement UsageElement { get; }
 
-    public FindUsagesTreeViewItem(AbstractUsageElement sceneElement)
+    public FindUsagesTreeViewItem(int id, AbstractUsageElement sceneElement) : base(id)
     {
       UsageElement = sceneElement;
     } 

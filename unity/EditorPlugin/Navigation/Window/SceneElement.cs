@@ -1,7 +1,6 @@
 using System;
-using UnityEngine;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation
+namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 {
   [Serializable]
   internal class SceneElement : AbstractUsageElement

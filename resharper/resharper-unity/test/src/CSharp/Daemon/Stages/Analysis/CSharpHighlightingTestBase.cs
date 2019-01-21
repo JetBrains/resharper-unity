@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
             return highlighting is T;
         }
     }
-    
+
     public abstract class CSharpHighlightingTestWithProductDependentGoldBase<T> : CSharpHighlightingTestBase
     {
         protected abstract string RelativeTestDataRoot { get; }
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
                 "resharper"
 #endif
             ;
-        
+
         protected sealed override string RelativeTestDataPath => $@"{RelativeTestDataRoot}\{ProductGoldSuffix}";
         protected sealed override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)

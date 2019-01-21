@@ -1,28 +1,35 @@
 using System.Collections.Generic;
 using UnityEditor.IMGUI.Controls;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation
+namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 {
   internal class FindUsagePathElement : TreeViewItem
   {
-    private readonly Dictionary<string, FindUsagePathElement> myChildren = new Dictionary<string, FindUsagePathElement>();
+    private readonly int myChildId;
+
+    public FindUsagePathElement(int childId)
+    {
+      myChildId = childId;
+    }
+    
+    private readonly Dictionary<int, FindUsagePathElement> myChildren = new Dictionary<int, FindUsagePathElement>();
 
     public FindUsagePathElement CreateChild(FindUsagePathElement item)
     {
-      myChildren[item.displayName] = item;
+      myChildren[item.myChildId] = item;
       AddChild(item);
       return item;
     }
 
-    public FindUsagePathElement GetChild(string name)
+    public FindUsagePathElement GetChild(int childId)
     {
-      myChildren.TryGetValue(name, out var result);
+      myChildren.TryGetValue(childId, out var result);
       return result;
     }
     
-    public bool HasChild(string name)
+    public bool HasChild(int childId)
     {
-      return myChildren.ContainsKey(name);
+      return myChildren.ContainsKey(childId);
     }
   }
 }

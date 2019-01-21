@@ -76,16 +76,16 @@ namespace Nested1
 }
 
 ------------------------------------------------
-0: result=NOT_RESOLVED declaredElem=null
-1: result=NOT_RESOLVED declaredElem=null
+0: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+1: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
 2: result=TYPE_EXPECTED declaredElem=INotAClass
-3: result=NOT_RESOLVED declaredElem=null
-4: result=NOT_RESOLVED declaredElem=null
-5: result=NOT_RESOLVED declaredElem=null
-6: result=NOT_RESOLVED declaredElem=null
+3: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+4: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+5: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+6: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
 7: result=OK declaredElem=Other
-8: result=NOT_RESOLVED declaredElem=null
-9: result=NOT_RESOLVED declaredElem=null
+8: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+9: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
 10: result=EXPECTED_SCRIPTABLE_OBJECT declaredElem=WrongBaseType
 11: result=INCORRECT_TYPE_PARAMETER_NUMBER declaredElem=ScriptableObjectWithTypeParameter<T>
 12: result=OK declaredElem=ScriptableObjectInGlobalNamespace
@@ -100,11 +100,11 @@ namespace Nested1
 21: result=OK declaredElem=Nested1.Nested2.Nested3.Nested4.ScriptableObjectInNestedNamespace
 22: result=OK declaredElem=Other
 23: result=OK declaredElem=Other.ScriptableObjectInOtherNamespace
-24: result=NOT_RESOLVED declaredElem=null
+24: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
 25: result=MULTIPLE_CANDIDATES declaredElem=null
 Candidates:
   MultipleCandidates
   Other.MultipleCandidates
 26: result=OK declaredElem=Other
 27: result=OK declaredElem=Other.ScriptableObjectInOtherNamespace
-28: result=NOT_RESOLVED declaredElem=null
+28: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null

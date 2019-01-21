@@ -2,6 +2,7 @@ using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {

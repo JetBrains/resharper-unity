@@ -23,12 +23,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityEditorFindUsageResultCreator
     {
         private readonly ISolution mySolution;
+        private readonly UnitySceneProcessor mySceneProcessor;
         private readonly UnityHost myUnityHost;
         private readonly FileSystemPath mySolutionDirectoryPath;
 
-        public UnityEditorFindUsageResultCreator(ISolution solution, UnityHost unityHost)
+        public UnityEditorFindUsageResultCreator(ISolution solution, UnitySceneProcessor sceneProcessor, UnityHost unityHost)
         {
             mySolution = solution;
+            mySceneProcessor = sceneProcessor;
             myUnityHost = unityHost;
             mySolutionDirectoryPath = solution.SolutionDirectory;
         }
@@ -70,34 +72,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         
         private FindUsageResultElement CreateRequest([NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
         {
-            var gameObjectDocument = currentReference.ComponentDocument.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty) ?? currentReference.ComponentDocument;
+            var monoScriptDocument = currentReference.ComponentDocument;
 
-            var sourceFile = gameObjectDocument?.GetSourceFile();
+            var sourceFile = monoScriptDocument?.GetSourceFile();
             if (sourceFile == null)
                 return null;
 
-            var pathElements = UnityObjectPsiUtil.GetGameObjectPathFromComponent(currentReference.ComponentDocument).RemoveEnd("\\").Split("\\");
-            var rootIndices = new FrugalLocalList<int>();
+            var pathElements = UnityObjectPsiUtil.GetGameObjectPathFromComponent(mySceneProcessor, currentReference.ComponentDocument).RemoveEnd("\\").Split("\\");
             
             // Constructing path of child indices
-            UnityObjectPsiUtil.ProcessToRoot(gameObjectDocument,(currentGameObject, modification) =>
-                {
-                    int rootOrder = -1;
-                    var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(currentGameObject);
-                    if (modification != null)
-                    {
-                        if (!int.TryParse(UnityObjectPsiUtil.GetValueFromModifications(modification, transform.GetFileId(), UnityYamlConstants.RootOrderProperty)
-                            , out rootOrder))
-                            rootOrder = -1;
-                    }
-                    if (rootOrder == -1)
-                    {
-                        var rootOrderAsString = transform.GetUnityObjectPropertyValue(UnityYamlConstants.RootOrderProperty).AsString();
-                        if (!int.TryParse(rootOrderAsString, out rootOrder))
-                            rootOrder = -1;
-                    }
-                    rootIndices.Add(rootOrder);
-                });
+            var consumer = new UnityChildPathSceneConsumer();
+            mySceneProcessor.ProcessSceneHierarchyFromComponentToRoot(monoScriptDocument, consumer);
 
 
             if (!GetPathFromAssetFolder(sourceFile, out var pathFromAsset, out var fileName, out var extension))
@@ -105,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             bool needExpand = currentReference == selectedReference;
             bool isPrefab = extension.Equals(UnityYamlConstants.Prefab, StringComparison.OrdinalIgnoreCase);
             
-            return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, pathElements, rootIndices.ToArray().Reverse().ToArray());
+            return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, pathElements, consumer.RootIndices.ToArray().Reverse().ToArray());
         }
 
         private bool GetPathFromAssetFolder([NotNull] IPsiSourceFile file, out string filePath, out string fileName, out string extension)
@@ -125,6 +110,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             filePath =  String.Join("/", pathComponents);
 
             return true;
+        }
+
+        private class UnityChildPathSceneConsumer : IUnitySceneProcessorConsumer
+        {
+            public readonly List<int> RootIndices = new List<int>();
+            
+            public void ConsumeGameObject(IYamlDocument gameObject, IBlockMappingNode modifications)
+            {
+                {
+                    int rootOrder = -1;
+                    var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(gameObject);
+                    if (modifications != null)
+                    {
+                        if (!int.TryParse(UnityObjectPsiUtil.GetValueFromModifications(modifications, transform.GetFileId(), UnityYamlConstants.RootOrderProperty)
+                            , out rootOrder))
+                            rootOrder = -1;
+                    }
+                    if (rootOrder == -1)
+                    {
+                        var rootOrderAsString = transform.GetUnityObjectPropertyValue(UnityYamlConstants.RootOrderProperty).AsString();
+                        if (!int.TryParse(rootOrderAsString, out rootOrder))
+                            rootOrder = -1;
+                    }
+                    RootIndices.Add(rootOrder);
+                }
+            }
         }
     }
 }
