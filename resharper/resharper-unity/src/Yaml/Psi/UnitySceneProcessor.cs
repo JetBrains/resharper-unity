@@ -87,6 +87,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     var prefabFile = (IYamlFile)sourceFile.GetDominantPsiFile<YamlLanguage>();
 
                     var prefabStartGameObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID);
+                    
+                    if (prefabStartGameObject == null)
+                        return; // TODO [vkrasnotsvetov] 19.1 Handle case, when prefab contains prefab which contains prefab
+                    
                     if (!IsStripped(prefabStartGameObject))
                     {
                         // !u!4 is transform. If tag is different, let's extract transform, there are two cases:

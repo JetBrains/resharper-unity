@@ -53,6 +53,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             sceneProcessor.ProcessSceneHierarchyFromComponentToRoot(componentDocument, consumer);
 
             var parts = consumer.NameParts;
+
+            if (parts.Count == 0)
+                return "Unknown";
+            
             if (parts.Count == 1)
                 return parts[0];
 
