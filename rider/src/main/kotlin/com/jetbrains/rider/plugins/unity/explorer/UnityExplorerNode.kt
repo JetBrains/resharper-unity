@@ -61,47 +61,125 @@ open class UnityExplorerNode(project: Project,
         presentation.setIcon(calculateIcon())
 
         // Add additional info for directories
-        if (!virtualFile.isDirectory) return
+        if (!virtualFile.isDirectory || !UnityExplorer.getInstance(myProject).myShowProjectNames) return
         addProjects(presentation)
     }
 
     protected fun addProjects(presentation: PresentationData) {
-        val projectNames = nodes
-                .mapNotNull { it.containingProject() }
+        val projectNames = nodes   // One node for each project that this directory is part of
+                .mapNotNull { containingProjectNode(it) }
                 .map { it.name.removePrefix(UnityExplorer.DefaultProjectPrefix + "-").removePrefix(UnityExplorer.DefaultProjectPrefix) }
                 .filter { it.isNotEmpty() }
-                .sorted()
+                .sortedWith(String.CASE_INSENSITIVE_ORDER)
         if (projectNames.any()) {
             var description = projectNames.take(3).joinToString(", ")
             if (projectNames.count() > 3) {
                 description += ", …"
-                presentation.tooltip = "Contains code from multiple projects:\n" + projectNames.joinToString(",\n")
+                presentation.tooltip = "Contains files from multiple projects:\n" + projectNames.joinToString("\n")
             }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
         }
+    }
+
+    private fun containingProjectNode(node: IProjectModelNode): ProjectModelNode? {
+        if (node is ProjectModelNode && node.isProject())
+            return null
+
+        val projectNode = node.containingProject() ?: return null
+
+        // Show the project on the owner of the assembly definition file
+        val dir = node.getVirtualFile()
+        if (dir != null && hasAssemblyDefinitionFile(dir)) {
+            return projectNode
+        }
+
+        // Hide the project if we're under an assembly definition - the first .asmdef we meet is the root of this project
+        if (isUnderAssemblyDefinition()) {
+            return null
+        }
+
+        // These special folders aren't used in Packages
+        if (isUnderAssets) {
+
+            // This won't work if the projects are renamed by some kind of Unity plugin
+            // If the project is -Editor, hide if this node is under the Editor folder
+            // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
+            // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
+            //   Plugins, Standard Assets, Pro Standard Assets
+            if (projectNode.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
+                return null
+            }
+            if (projectNode.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
+                return null
+            }
+            if (projectNode.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
+                val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
+                if (editor != null && isUnderFirstpassFolder(editor)) {
+                    return null
+                }
+            }
+        }
+
+        return projectNode
+    }
+
+    private fun forEachAncestor(root: FileSystemNodeBase?, action: FileSystemNodeBase.() -> Boolean): FileSystemNodeBase? {
+        var node: FileSystemNodeBase? = root
+        while (node != null) {
+            if (node.action())
+                return node
+            node = node.parent as? FileSystemNodeBase
+        }
+        return null
+    }
+
+    private fun findAncestor(root: FileSystemNodeBase?, name: String): FileSystemNodeBase? {
+        return forEachAncestor(root) { this.name.equals(name, true) }
+    }
+
+    private fun isUnderEditorFolder(): Boolean {
+        return findAncestor(this.parent as? FileSystemNodeBase?, "Editor") != null
+    }
+
+    private fun isUnderFirstpassFolder(root: FileSystemNodeBase? = null): Boolean {
+        return forEachAncestor(root ?: this.parent as? FileSystemNodeBase?) {
+            this.name.equals("Plugins", true)
+                    || this.name.equals("Standard Assets", true)
+                    || this.name.equals("Pro Standard Assets", true)
+        } != null
+    }
+
+    private fun isUnderAssemblyDefinition(): Boolean {
+        return forEachAncestor(this.parent as? FileSystemNodeBase) {
+            this.virtualFile.children.any { it.extension.equals("asmdef", true) }
+        } != null
+    }
+
+    private fun hasAssemblyDefinitionFile(dir: VirtualFile): Boolean {
+        return dir.children.any { it.extension.equals("asmdef", true) }
     }
 
     private fun calculateIcon(): Icon? {
         // Under Packages, the only special folder is "Resources". As per Maxime @ Unity:
         // "Resources folders work the same in packages as under Assets, but that's mostly it. Editor folders have no
         // special semantics, Gizmos don't work, there's no StreamingAssets, no Plugins"
-        if (name == "Resources") {
+        if (name.equals("Resources", true)) {
             return UnityIcons.Explorer.ResourcesFolder
         }
 
         if (isUnderAssets) {
-            if (name == "Editor" && !underAssemblyDefinition()) {
+            if (name.equals("Editor", true) && !isUnderAssemblyDefinition()) {
                 return UnityIcons.Explorer.EditorFolder
             }
 
             if (parent is AssetsRoot) {
-                val rootSpecialIcon = when (name) {
-                    "Editor Default Resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
-                    "Gizmos" -> UnityIcons.Explorer.GizmosFolder
-                    "Plugins" -> UnityIcons.Explorer.PluginsFolder
-                    "Standard Assets" -> UnityIcons.Explorer.AssetsFolder
-                    "Pro Standard Assets" -> UnityIcons.Explorer.AssetsFolder
-                    "StreamingAssets" -> UnityIcons.Explorer.StreamingAssetsFolder
+                val rootSpecialIcon = when (name.toLowerCase()) {
+                    "editor default resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
+                    "gizmos" -> UnityIcons.Explorer.GizmosFolder
+                    "plugins" -> UnityIcons.Explorer.PluginsFolder
+                    "standard assets" -> UnityIcons.Explorer.AssetsFolder
+                    "pro standard assets" -> UnityIcons.Explorer.AssetsFolder
+                    "streamingassets" -> UnityIcons.Explorer.StreamingAssetsFolder
                     else -> null
                 }
                 if (rootSpecialIcon != null) {
@@ -110,28 +188,11 @@ open class UnityExplorerNode(project: Project,
             }
         }
 
-        if (hasAssemblyDefinitionFile()) {
+        if (hasAssemblyDefinitionFile(virtualFile)) {
             return UnityIcons.Explorer.AsmdefFolder
         }
 
         return virtualFile.calculateFileSystemIcon(project!!)
-    }
-
-    private fun underAssemblyDefinition(): Boolean {
-        // Fix for #380
-        var parent = this.parent
-        while (parent != null && parent is UnityExplorerNode) {
-            if (parent.virtualFile.children.any { it.extension.equals("asmdef", true) }) {
-                return true
-            }
-
-            parent = parent.parent
-        }
-        return false
-    }
-
-    private fun hasAssemblyDefinitionFile(): Boolean {
-        return virtualFile.children.any { it.extension.equals("asmdef", true) }
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
@@ -149,7 +210,7 @@ open class UnityExplorerNode(project: Project,
 
         // See https://docs.unity3d.com/Manual/SpecialFolders.html
         val extension = file.extension?.toLowerCase()
-        if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension.toLowerCase())) {
+        if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
             return false
         }
 
