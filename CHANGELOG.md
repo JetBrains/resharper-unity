@@ -17,6 +17,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Mark more methods as expensive inside a performance critical context (#1000)
 - Improve performance of rename and find usages with YAML files (#983)
 - Improve performance of typing in YAML files, by incrementally re-parsing only the YAML document that contains the change (#993)
+- Remove repeated use of project name from Unity Explorer when under assembly definition (#982, #989)
+- Changed unresolved symbol error in `GetComponent`, `AddComponent` and `ScriptableObject.CreateInstance` to a configurable warning ([RIDER-23429](https://youtrack.jetbrains.com/issue/RIDER-23429), #1003)
 
 ### Fixed
 - Fix processing hierarchy for YAML scene files (#985)
@@ -84,7 +86,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 * For Rider 2018.3.1. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap10-rtm...183-eap11-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/23?closed=1)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap11-rtm)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap11-rtm)
 
 ### Added
 - Automatically disable YAML parsing if the project is too large (#973)
@@ -100,7 +102,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 * For Rider 2018.3. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap12-2018.2.3...183-eap10-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/19?closed=1)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap11-rtm)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap10-rtm)
 
 ### Added
 - Add parsing of method and class usage from scene, prefab and asset files (#263, [RIDER-7460](https://youtrack.jetbrains.com/issue/RIDER-7460), #870, #873, #903, #921, [RIDER-21907](https://youtrack.jetbrains.com/issue/RIDER-21907), [RIDER-21897](https://youtrack.jetbrains.com/issue/RIDER-21897), #943, #949)

@@ -192,6 +192,8 @@
   <li>Mark more methods as expensive inside a performance critical context (<a href="https://github.com/JetBrains/resharper-unity/issues/1000">#1000</a>)</li>
   <li>Improve performance of rename and find usages with YAML files (<a href="https://github.com/JetBrains/resharper-unity/issues/983">#983</a>)</li>
   <li>Improve performance of typing in YAML files, by incrementally re-parsing only the YAML document that contains the change (<a href="https://github.com/JetBrains/resharper-unity/issues/993">#993</a>)</li>
+  <li>Remove repeated use of project name from Unity Explorer when under assembly definition (<a href="https://github.com/JetBrains/resharper-unity/issues/982">#982</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/989">#989</a>)</li>
+  <li>Changed unresolved symbol error in `GetComponent`, `AddComponent` and `ScriptableObject.CreateInstance` to a configurable warning (<a href="https://youtrack.jetbrains.com/issue/RIDER-23429">RIDER-23429</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1003">#1003</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
