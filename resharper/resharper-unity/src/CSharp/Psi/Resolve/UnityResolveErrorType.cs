@@ -24,5 +24,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 
         [NotNull] public static readonly ResolveErrorType EXPECTED_SCRIPTABLE_OBJECT =
             new UnityResolveErrorType("EXPECTED_SCRIPTABLE_OBJECT");
+
+        [NotNull] public static readonly ResolveErrorType UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT =
+            new UnityResolveErrorType("UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT");
     }
 }

@@ -194,6 +194,14 @@
         </Description>
         <CompoundItemName>Possible unintended bypass of lifetime check of underlying Unity engine object</CompoundItemName>
       </Tag>
+
+      <Tag externalName="UnresolvedComponentOrScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Cannot resolve component or scriptable object</Title>
+        <Description>
+          The class referred to in the call to 'GetComponent', 'AddComponent' or 'ScriptableObject.CreateInstance' cannot
+          be found in the current project or referenced assemblies. The call is likely to fail at runtime and return null.
+        </Description>
+      </Tag>
     </Group>
   </SeverityConfiguration>
 
@@ -485,5 +493,13 @@
     <Message value="'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />
     <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="UnresolvedComponentOrScriptableObject" configurableSeverity="Unity.UnresolvedComponentOrScriptableObject">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Cannot resolve symbol '{0}'">
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
   </Warning>
 </Errors>

@@ -66,6 +66,7 @@
 - Improve redundant event function warnings
 - Stop Generate Code dialog selecting all event functions by default when called from the gutter icon or Code Vision marker
 - Prevent Respeller running on .asmdef files
+- Changed unresolved symbol error in `GetComponent`, `AddComponent` and `ScriptableObject.CreateInstance` to a configurable warning (RIDER-23429, #1003)
 - Fix C# language level override incorrectly handling latest
 - Fix to stop generating readonly modifier when converting auto property to property with serialised backing field
 - Fix bug in ShaderLab parsing Blend operations
