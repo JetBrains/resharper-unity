@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
 
     protected override void WriteToken(TextWriter writer, ILexer lexer)
     {
-      var text = lexer.GetCurrTokenText();
+      var text = lexer.GetTokenText();
 
       var token = lexer.TokenType;
       if (token == YamlTokenType.NON_PRINTABLE)
