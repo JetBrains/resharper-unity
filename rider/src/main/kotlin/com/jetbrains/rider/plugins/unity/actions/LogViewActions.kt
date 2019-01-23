@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.actions
 
+import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -38,6 +39,13 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction("Open Unity Player
             {
                 val descriptor = OpenFileDescriptor(project, vf)
                 FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
+            }
+            else
+            {
+                val groupId = NotificationGroup("Unity log open", NotificationDisplayType.BALLOON, true)
+                val title = "Could not open Unity Player Log"
+                val notification = Notification(groupId.displayId, title, f, NotificationType.INFORMATION)
+                Notifications.Bus.notify(notification, project)
             }
         }
     }
