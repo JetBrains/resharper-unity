@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
 
       try
       {
-        using (var textControl = OpenTextControl(testProject))
+        var textControl = OpenTextControl();
         {
           using (CompilationContextCookie.GetOrCreate(testProject.GetResolveContext()))
           {
@@ -152,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
                   break;
                 default:
                   var actionManager = ShellInstance.GetComponent<IActionManager>();
-                  actionManager.Defs.GetActionDefById(TextControlActions.ACTION_PREFIX + action)
+                  actionManager.Defs.GetActionDefById(TextControlActions.Composition.Compose(action, false))
                     .EvaluateAndExecute(actionManager);
                   break;
               }

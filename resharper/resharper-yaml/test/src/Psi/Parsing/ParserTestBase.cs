@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
     protected override void DoTest(IProject testProject)
     {
       ShellInstance.GetComponent<TestIdGenerator>().Reset();
-      using (var textControl = OpenTextControl(testProject))
+      var textControl = OpenTextControl();
       {
         ExecuteWithGold(textControl.Document, sw =>
         {
