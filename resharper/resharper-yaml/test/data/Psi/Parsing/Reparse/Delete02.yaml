@@ -1,0 +1,14 @@
+# ${ACTION0:-8}
+%YAML 1.1
+---
+key1: 1
+key2: 2
+key3: 3
+---
+key1: 1{caret}
+key2: 2
+key3: 3
+---
+key1: 1
+key2: 2
+key3: 3

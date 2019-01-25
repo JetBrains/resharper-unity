@@ -20,7 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         public static readonly string ScriptProperty = "m_Script";
         public static readonly string FatherProperty = "m_Father";
         public static readonly string CorrespondingSourceObjectProperty = "m_CorrespondingSourceObject";
+        public static readonly string CorrespondingSourceObjectProperty2017 = "m_PrefabParentObject";
         public static readonly string PrefabInstanceProperty = "m_PrefabInstance";
+        public static readonly string PrefabInstanceProperty2017 = "m_PrefabInternal";
         public static readonly string TransformParentProperty = "m_TransformParent";
         public static readonly string ModificationProperty = "m_Modification";
         public static readonly string ModificationsProperty = "m_Modifications";

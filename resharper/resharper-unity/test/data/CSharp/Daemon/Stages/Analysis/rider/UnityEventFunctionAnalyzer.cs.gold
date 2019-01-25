@@ -82,51 +82,51 @@ public class ||AllWrong|(43)|(44) : AssetPostprocessor
 }
 
 ---------------------------------------------------------
-(0): Unity implicitly used identifier: 
+(0): ReSharper Unity Implicitly Used Identifier: 
 (1): UnityCodeInsights: 
-(2): Unity implicitly used identifier: 
+(2): ReSharper Unity Implicitly Used Identifier: 
 (3): UnityCodeInsights: 
-(4): Unity implicitly used identifier: 
+(4): ReSharper Unity Implicitly Used Identifier: 
 (5): UnityCodeInsights: 
 (6): ReSharper Warning: Event function with the same name is already declared
-(7): Unity implicitly used identifier: 
+(7): ReSharper Unity Implicitly Used Identifier: 
 (8): UnityCodeInsights: 
 (9): ReSharper Warning: Event function with the same name is already declared
-(10): Unity implicitly used identifier: 
+(10): ReSharper Unity Implicitly Used Identifier: 
 (11): UnityCodeInsights: 
-(12): Unity implicitly used identifier: 
+(12): ReSharper Unity Implicitly Used Identifier: 
 (13): UnityCodeInsights: 
-(14): Unity implicitly used identifier: 
+(14): ReSharper Unity Implicitly Used Identifier: 
 (15): UnityCodeInsights: 
 (16): ReSharper Warning: Incorrect method parameters. Expected '()'
-(17): ReSharper Unity PerformanceCostlyMethodHighlighter: 
+(17): ReSharper Unity Performance Critical Context: Performance critical context
 (18): ReSharper Warning: Incorrect return type. Expected 'void'
-(19): Unity implicitly used identifier: 
+(19): ReSharper Unity Implicitly Used Identifier: 
 (20): UnityCodeInsights: 
-(21): Unity implicitly used identifier: 
+(21): ReSharper Unity Implicitly Used Identifier: 
 (22): UnityCodeInsights: 
 (23): ReSharper Warning: Incorrect method parameters. Expected '(Collision other)'
-(24): Unity implicitly used identifier: 
+(24): ReSharper Unity Implicitly Used Identifier: 
 (25): UnityCodeInsights: 
 (26): ReSharper Warning: Incorrect method parameters. Expected '(int layerIndex)'
-(27): Unity implicitly used identifier: 
+(27): ReSharper Unity Implicitly Used Identifier: 
 (28): UnityCodeInsights: 
 (29): ReSharper Warning: Missing static modifier
-(30): Unity implicitly used identifier: 
+(30): ReSharper Unity Implicitly Used Identifier: 
 (31): UnityCodeInsights: 
 (32): ReSharper Warning: Missing static modifier
-(33): Unity implicitly used identifier: 
+(33): ReSharper Unity Implicitly Used Identifier: 
 (34): UnityCodeInsights: 
 (35): ReSharper Warning: Incorrect static modifier
-(36): Unity implicitly used identifier: 
+(36): ReSharper Unity Implicitly Used Identifier: 
 (37): UnityCodeInsights: 
-(38): Unity implicitly used identifier: 
+(38): ReSharper Unity Implicitly Used Identifier: 
 (39): UnityCodeInsights: 
-(40): Unity implicitly used identifier: 
+(40): ReSharper Unity Implicitly Used Identifier: 
 (41): UnityCodeInsights: 
 (42): ReSharper Warning: Incorrect type parameters
-(43): Unity implicitly used identifier: 
+(43): ReSharper Unity Implicitly Used Identifier: 
 (44): UnityCodeInsights: 
 (45): ReSharper Warning: Incorrect method signature. Expected 'static void OnGeneratedCSProjectFiles()'
-(46): Unity implicitly used identifier: 
+(46): ReSharper Unity Implicitly Used Identifier: 
 (47): UnityCodeInsights: 

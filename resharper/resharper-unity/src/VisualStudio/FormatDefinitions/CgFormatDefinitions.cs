@@ -1,5 +1,7 @@
 ﻿#if !RIDER
 
+// NOTE: This file is explicitly excluded by the .csproj for Mac/Linux!
+
 using System.ComponentModel.Composition;
 using System.Windows.Media;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;

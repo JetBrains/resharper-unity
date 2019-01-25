@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             switch (changeType)
             {
                 case PsiModuleChange.ChangeType.Added:
-                    if (projectFile.Location.IsAsset() && myAssetSerializationMode.IsForceText &&
+                    if (projectFile.Location.IsInterestingAsset() && myAssetSerializationMode.IsForceText &&
                         !module.ContainsPath(projectFile.Location))
                     {
                         // Create the PsiSourceFile, add it to the module, add the change to the builder

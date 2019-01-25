@@ -1,12 +1,10 @@
 using System;
-using JetBrains.DataFlow;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation
+namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 {
   internal class FindUsagesWindow : EditorWindow
   {
@@ -21,8 +19,6 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     
     [NonSerialized]
     private FindUsagesTreeView myTreeView;
-    
-    
 
     public static FindUsagesWindow GetWindow(string target)
     {
@@ -74,7 +70,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       var currentY = 0f;
       if (IsDirty) // the data can be out-of-date, notify user to update it from Rider
       {
-        var text = "Save scene and ask Rider to find usages again to get up-to-date results.";
+        var text = "Save the scene and run Find Usages in Rider to get up-to-date results";
         var helpBox = GUILayoutUtility.GetRect(new GUIContent(text), EditorStyles.helpBox, GUILayout.MinHeight(40));
         currentY += helpBox.height;
         EditorGUI.HelpBox(helpBox, text, MessageType.Warning);
