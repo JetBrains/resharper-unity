@@ -159,15 +159,15 @@ static class NotSerialisableClass
 
 ---------------------------------------------------------
 (0): Unity Gutter Icon: Unity scripting component
-(1): Unity implicitly used identifier: 
+(1): ReSharper Unity Implicitly Used Identifier: 
 (2): Unity Gutter Icon: This field is initialised by Unity
-(3): Unity implicitly used identifier: 
+(3): ReSharper Unity Implicitly Used Identifier: 
 (4): Unity Gutter Icon: This field is initialised by Unity
-(5): Unity implicitly used identifier: 
+(5): ReSharper Unity Implicitly Used Identifier: 
 (6): Unity Gutter Icon: This field is initialised by Unity
-(7): Unity implicitly used identifier: 
+(7): ReSharper Unity Implicitly Used Identifier: 
 (8): Unity Gutter Icon: This field is initialised by Unity
-(9): Unity implicitly used identifier: 
+(9): ReSharper Unity Implicitly Used Identifier: 
 (10): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (11): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (12): ReSharper Dead Code: Redundant 'SerializeField' attribute
@@ -176,45 +176,45 @@ static class NotSerialisableClass
 (15): Unity Gutter Icon: Unity event function
 
 Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
-(16): Unity implicitly used identifier: 
+(16): ReSharper Unity Implicitly Used Identifier: 
 (17): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
-(18): Unity implicitly used identifier: 
+(18): ReSharper Unity Implicitly Used Identifier: 
 (19): ReSharper Dead Code: Redundant Unity event function
 (20): Unity Gutter Icon: Unity event function
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
-(21): Unity implicitly used identifier: 
+(21): ReSharper Unity Implicitly Used Identifier: 
 (22): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
 (23): ReSharper Warning: Missing static modifier
 (24): ReSharper Warning: Missing static modifier
 (25): Unity Gutter Icon: Unity custom serializable type
-(26): Unity implicitly used identifier: 
+(26): ReSharper Unity Implicitly Used Identifier: 
 (27): Unity Gutter Icon: This field is initialised by Unity
-(28): Unity implicitly used identifier: 
+(28): ReSharper Unity Implicitly Used Identifier: 
 (29): Unity Gutter Icon: This field is initialised by Unity
-(30): Unity implicitly used identifier: 
+(30): ReSharper Unity Implicitly Used Identifier: 
 (31): Unity Gutter Icon: This field is initialised by Unity
-(32): Unity implicitly used identifier: 
+(32): ReSharper Unity Implicitly Used Identifier: 
 (33): Unity Gutter Icon: This field is initialised by Unity
-(34): Unity implicitly used identifier: 
+(34): ReSharper Unity Implicitly Used Identifier: 
 (35): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (36): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (37): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (38): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (39): Unity Gutter Icon: Unity custom serializable type
-(40): Unity implicitly used identifier: 
+(40): ReSharper Unity Implicitly Used Identifier: 
 (41): Unity Gutter Icon: This field is initialised by Unity
-(42): Unity implicitly used identifier: 
+(42): ReSharper Unity Implicitly Used Identifier: 
 (43): Unity Gutter Icon: This field is initialised by Unity
-(44): Unity implicitly used identifier: 
+(44): ReSharper Unity Implicitly Used Identifier: 
 (45): Unity Gutter Icon: This field is initialised by Unity
-(46): Unity implicitly used identifier: 
+(46): ReSharper Unity Implicitly Used Identifier: 
 (47): Unity Gutter Icon: This field is initialised by Unity
-(48): Unity implicitly used identifier: 
+(48): ReSharper Unity Implicitly Used Identifier: 
 (49): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (50): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (51): ReSharper Dead Code: Redundant 'SerializeField' attribute

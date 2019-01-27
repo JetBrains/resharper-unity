@@ -80,6 +80,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             return this;
         }
 
+        public override ResolveResultWithInfo GetResolveResult(ISymbolTable symbolTable, string referenceName)
+        {
+            var result = base.GetResolveResult(symbolTable, referenceName);
+            if (result.ResolveErrorType == ResolveErrorType.NOT_RESOLVED)
+            {
+                // It's not necessarily an error that we can't resolve. It might be that GetComponent (or whatever) is
+                // being used as part of a modular architecture
+                return new ResolveResultWithInfo(result.Result, UnityResolveErrorType.UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT);
+            }
+
+            return result;
+        }
+
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
             if (myQualifier == null && myIsFinalPart)
