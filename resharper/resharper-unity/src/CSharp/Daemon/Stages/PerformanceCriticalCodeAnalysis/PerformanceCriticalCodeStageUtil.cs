@@ -41,6 +41,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             if (clrTypeName.Equals(KnownTypes.Transform))
                 knownCostlyMethods = ourKnownTransformCostlyMethods;
+            
+            if (clrTypeName.Equals(KnownTypes.Debug))
+                knownCostlyMethods = ourKnownDebugCostlyMethods;
 
             var shortName = declaredElement.ShortName;
 
@@ -59,6 +62,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             "GetComponentsInChildren",
             "GetComponent",
             "GetComponents",
+            "SendMessage",
+            "SendMessageUpwards",
+            "BroadcastMessage"
         };
 
         private static readonly ISet<string> ourKnownGameObjectCostlyMethods = new HashSet<string>()
@@ -81,7 +87,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             "Invoke",
             "InvokeRepeating",
-            "CancelInvoke"
+            "CancelInvoke",
+            "IsInvoking"
         };
 
         private static readonly ISet<string> ourKnownTransformCostlyMethods = new HashSet<string>()
@@ -101,6 +108,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             "FindObjectsOfTypeIncludingAssets",
         };
 
+        private static readonly ISet<string> ourKnownDebugCostlyMethods = new HashSet<string>()
+        {
+            "Log",
+            "LogFormat",
+            "LogError",
+            "LogErrorFormat",
+            "LogException",
+            "LogWarning",
+            "LogWarningFormat",
+            "LogAssertion",
+            "LogAssertionFormat"
+        };
         #endregion
     }
 }

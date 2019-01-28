@@ -112,7 +112,8 @@ class PackageNode(project: Project, private val packagesManager: PackagesManager
         presentation.addNonIndexedMark(myProject, virtualFile)
 
         // Note that this might also set the tooltip if we have too many projects underneath
-        addProjects(presentation)
+        if (UnityExplorer.getInstance(myProject).myShowProjectNames)
+            addProjects(presentation)
 
         // Richer tooltip
         val existingTooltip = presentation.tooltip ?: ""

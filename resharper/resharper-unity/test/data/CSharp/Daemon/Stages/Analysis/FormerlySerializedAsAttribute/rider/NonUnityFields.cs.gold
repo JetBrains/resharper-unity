@@ -19,9 +19,9 @@ public class ||Test02|(3)|(4) : MonoBehaviour
 (0): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (1): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (2): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
-(3): Unity implicitly used identifier: 
+(3): ReSharper Unity Implicitly Used Identifier: 
 (4): UnityCodeInsights: 
 (5): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
-(6): Unity implicitly used identifier: 
+(6): ReSharper Unity Implicitly Used Identifier: 
 (7): UnityCodeInsights: 
 (8): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute

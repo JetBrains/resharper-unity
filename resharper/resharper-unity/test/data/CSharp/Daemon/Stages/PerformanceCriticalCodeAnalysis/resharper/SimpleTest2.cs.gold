@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class SimpleTest : MonoBehaviour
+    {
+        private RigidBody2D myRigidBody2D;
+        public void |FixedUpdate|(0)()
+        {
+            if (myRigidBody2D == null)
+            {
+                myRigidBody2D = |GetComponent|(1)<RigidBody2D>();
+            }
+        }
+    }
+}
+---------------------------------------------------------
+(0): ReSharper Unity Performance Critical Context: Performance critical context
+(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation

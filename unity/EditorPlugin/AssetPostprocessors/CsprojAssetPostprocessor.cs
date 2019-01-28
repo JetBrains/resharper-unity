@@ -121,16 +121,56 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetProjectFlavour(projectContentElement, xmlns);
       changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
       changed |= TrySetHintPathsForSystemAssemblies(projectContentElement, xmlns);
+      changed |= FixImplicitReferences(projectContentElement, xmlns);
+      changed |= AvoidGetReferenceAssemblyPathsCall(projectContentElement, xmlns);
       changed |= AddMicrosoftCSharpReference(projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
-      changed |= AvoidGetReferenceAssemblyPathsCall(projectContentElement, xmlns);
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
       
       return changed;
     }
     
+    /* Since Unity 2018.1.5f1 it looks like this:
+     <PropertyGroup>
+           <NoConfig>true</NoConfig>
+           <NoStdLib>true</NoStdLib>
+           <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+           <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
+           <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
+         </PropertyGroup>
+    */
+    // https://github.com/JetBrains/resharper-unity/issues/988
+    private static bool FixImplicitReferences(XElement projectContentElement, XNamespace xmlns)
+    {
+      var changed = false;
+
+      // For Unity 2017.x, we are adding tags and reference to mscorlib
+      if (UnityUtils.UnityVersion.Major == 2017)
+      {
+        // appears in Unity 2018.1.0b10
+        SetOrUpdateProperty(projectContentElement, xmlns, "NoConfig", existing => "true");
+        SetOrUpdateProperty(projectContentElement, xmlns, "NoStdLib", existing => "true");
+        SetOrUpdateProperty(projectContentElement, xmlns, "AddAdditionalExplicitAssemblyReferences",existing => "false");
+
+        // Unity 2018.x+ itself adds mscorlib reference 
+        var referenceName = "mscorlib.dll";
+        var hintPath = GetHintPath(referenceName);
+        AddCustomReference(referenceName, projectContentElement, xmlns, hintPath);
+        changed = true;
+      }
+
+      if (UnityUtils.UnityVersion.Major == 2017 || UnityUtils.UnityVersion.Major == 2018)
+      {
+        // appears in Unity 2018.1.5f1
+        changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandNETStandardFacades",existing => "false");
+        changed |= SetOrUpdateProperty(projectContentElement, xmlns, "ImplicitlyExpandDesignTimeFacades",existing => "false");
+      }
+
+      return changed;
+    }
+
     // Computer may not have specific TargetFramework, msbuild will resolve System from different TargetFramework
     // If we set HintPaths together with DisableHandlePackageFileConflicts we help msbuild to resolve libs from Unity installation
     // Unity 2018+ already have HintPaths by default
@@ -184,8 +224,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     private static bool AvoidGetReferenceAssemblyPathsCall(XElement projectContentElement, XNamespace xmlns)
     {
-      // Starting with Unity 2018, dotnet target pack is not required
-      if (UnityUtils.UnityVersion < new Version(2018, 1))
+      // Starting with Unity 2017, dotnet target pack is not required
+      if (UnityUtils.UnityVersion.Major < 2017)
         return false;
       
       // Set _TargetFrameworkDirectories and _FullFrameworkReferenceAssemblyPaths to something to avoid GetReferenceAssemblyPaths task being called
@@ -226,6 +266,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static readonly string PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
     private static readonly string EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
     private static readonly int ourApiCompatibilityLevel = GetApiCompatibilityLevel();
+    private const int apiCompatibilityLevelNet20Subset = 2;
     private const int apiCompatibilityLevelNet46 = 3;
 
     private static bool SetManuallyDefinedCompilerSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
@@ -433,7 +474,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     [CanBeNull]
     private static string GetHintPath(string name)
     {
-      // Without hintpath non-Unity MSBuild will resolve assembly from dotnetframework targets path
+      // Without HintPath non-Unity MSBuild will resolve assembly from DotNetFramework targets path
       string hintPath = null;
       
       var unityAppBaseFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
@@ -443,7 +484,11 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       var mask = "4.*";
       if (UnityUtils.ScriptingRuntime == 0)
-        mask = "2.*";
+      {
+        mask = "2.*"; // 1 = ApiCompatibilityLevel.NET_2_0
+        if (ourApiCompatibilityLevel == apiCompatibilityLevelNet20Subset) // ApiCompatibilityLevel.NET_2_0_Subset
+          mask = "unity";
+      }
       
       var apiDir = monoDir.GetDirectories(mask).LastOrDefault(); // take newest
       if (apiDir != null)

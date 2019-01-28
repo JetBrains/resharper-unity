@@ -21,9 +21,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                                              OptionsSettingsSmartContext optionsSettingsSmartContext,
                                              StoredTemplatesProvider storedTemplatesProvider,
                                              ScopeCategoryManager scopeCategoryManager,
+                                             IDialogHost dialogHost,
                                              TemplatesUIFactory uiFactory, IconHostBase iconHostBase)
             : base(lifetime, uiProvider, optionsPageContext, optionsSettingsSmartContext, storedTemplatesProvider, scopeCategoryManager,
-                uiFactory, iconHostBase, "CSHARP")
+                uiFactory, iconHostBase, dialogHost, "CSHARP")
         {
         }
     }

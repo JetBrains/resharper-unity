@@ -1,4 +1,3 @@
-using System;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
@@ -15,14 +14,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
         {
             if (projectModelElement is IProjectFile projectFile && projectFile.LanguageType.Is<YamlProjectFileType>())
             {
-                var extension = projectFile.Location.ExtensionNoDot;
-                if (extension.Equals("asset", StringComparison.InvariantCultureIgnoreCase))
+                var location = projectFile.Location;
+                if (location.IsAsset())
                     return UnityFileTypeThemedIcons.FileUnityAsset.Id;
-                if (extension.Equals("unity", StringComparison.InvariantCultureIgnoreCase))
+                if (location.IsScene())
                     return UnityFileTypeThemedIcons.FileUnity.Id;
-                if (extension.Equals("prefab", StringComparison.InvariantCultureIgnoreCase))
+                if (location.IsPrefab())
                     return UnityFileTypeThemedIcons.FileUnityPrefab.Id;
-                if (extension.Equals("meta", StringComparison.InvariantCultureIgnoreCase))
+                if (location.IsMeta())
                     return UnityFileTypeThemedIcons.FileUnityMeta.Id;
             }
 
