@@ -29,11 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             
             var possiblePaths = myUnityMonoPathProvider.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).Where(b => b.ExistsFile).ToArray();
             var options = new List<RdProjectTemplateGroupOption>();
-            if (possiblePaths.IsEmpty())
-            {
-                options.Add(new RdProjectTemplateInvalidParameter(Name, Name, "Unity installation is not found", null, null, null, content));
-            }
-
+            
             foreach (var path in possiblePaths)
             {
                 var optionContext = new Dictionary<string, string>(context) {{Name, path.FullPath}};
@@ -44,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             options.Add(new RdProjectTemplateGroupOption(
                 "Custom",
                 "Custom",
-                null,
+                possiblePaths.Any()?null:"Unity installation was not found",
                 new RdProjectTemplateTextParameter(Name, "Path", null, Tooltip, RdTextParameterStyle.FileChooser, content)));
             
             return new RdProjectTemplateGroupParameter(Name, "UnityEngine", possiblePaths.Last().FullPath, Tooltip, options);
