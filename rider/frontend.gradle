@@ -144,7 +144,6 @@ tasks.withType(PrepareSandboxTask).configureEach {
 if (RunTests.equalsIgnoreCase("true")) {
     nunit.shouldRunAfter(buildReSharperHostPlugin, buildUnityEditorPlugin)
     buildReSharperHostPlugin.finalizedBy(nunit)
-    compileTestKotlin.finalizedBy(test)
 }
 
 task validatePluginXml {
@@ -168,7 +167,6 @@ task validatePluginXml {
   }
 }
 prepareSandbox.dependsOn validatePluginXml
-
 
 test {
     useTestNG() {}
