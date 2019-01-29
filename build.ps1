@@ -2,7 +2,7 @@ param (
   [string]$Source, # Rider SDK Packages folder, optional
   [string]$BuildCounter = 9999, # Sets Rider plugin version to version from Packaging.Props with the last zero replaced by $BuildCounter
   [string]$Configuration = "Debug", # Release / Debug
-  [switch]$RunTests = $true,
+  [switch]$RunTests,
   [switch]$Verbose
 )
 
