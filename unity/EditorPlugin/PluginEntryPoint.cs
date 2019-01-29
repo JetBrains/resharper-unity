@@ -96,9 +96,7 @@ namespace JetBrains.Rider.Unity.Editor
       get
       {
         var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
-        return !string.IsNullOrEmpty(defaultApp) && 
-               Path.GetFileName(defaultApp).ToLower().Contains("rider") && 
-               (!UnityEditorInternal.InternalEditorUtility.inBatchMode || Environment.GetCommandLineArgs().Any(a => a == "IsRiderTests"));
+        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider") && !UnityEditorInternal.InternalEditorUtility.inBatchMode;
       }
     }
 
