@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     public IFile ParseFile()
     {
-      return Lifetimes.Using(lifetime =>
+      return Lifetime.Using(lifetime =>
       {
         var builder = CreateTreeBuilder(lifetime);
         builder.ParseFile();
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     public IDocumentBody ParseDocumentBody()
     {
-      return Lifetimes.Using(lifetime =>
+      return Lifetime.Using(lifetime =>
       {
         var builder = CreateTreeBuilder(lifetime);
         builder.ParseDocumentBody();
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     public INode ParseRootBlockNode()
     {
-      return Lifetimes.Using(lifetime =>
+      return Lifetime.Using(lifetime =>
       {
         var builder = CreateTreeBuilder(lifetime);
         builder.ParseRootBlockNode();

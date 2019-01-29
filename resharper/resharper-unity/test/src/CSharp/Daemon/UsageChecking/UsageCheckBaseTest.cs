@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
             using (TestPsiConfigurationSettings.Instance.PersistCachesCookie())
             using (swea.RunAnalysisCookie())
             {
-                Lifetimes.Using(lifetime =>
+                Lifetime.Using(lifetime =>
                 {
                     ChangeSettingsTemporarily(lifetime).BoundStore.SetValue(HighlightingSettingsAccessor.AnalysisEnabled, AnalysisScope.SOLUTION);
 
