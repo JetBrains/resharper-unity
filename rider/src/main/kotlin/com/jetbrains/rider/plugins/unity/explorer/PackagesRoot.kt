@@ -389,6 +389,8 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
     }
 }
 
+class LockDetails(val hash: String, val revision: String)
+
 // TODO: What are "testables"?
-class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?)
+class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?, val lock: Map<String, LockDetails>)
 

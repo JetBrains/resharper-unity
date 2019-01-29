@@ -103,14 +103,15 @@ class PackagesManager(private val project: Project) {
             gson.fromJson(manifestJson.inputStream.reader(), ManifestJson::class.java)
         } catch (e: Throwable) {
             logger.error("Error deserializing Packages/manifest.json", e)
-            ManifestJson(emptyMap(), emptyArray(), null)
+            ManifestJson(emptyMap(), emptyArray(), null, emptyMap())
         }
 
         val registry = manifest.registry ?: "https://packages.unity.com"
         for ((name, version) in manifest.dependencies) {
             if (version.equals("exclude", true)) continue
 
-            val packageData = getPackageData(packagesFolder, name, version, registry, builtInPackagesFolder)
+            val lockDetails = manifest.lock[name]
+            val packageData = getPackageData(packagesFolder, name, version, registry, builtInPackagesFolder, lockDetails)
             packagesByCanonicalName[name] = packageData
             if (packageData.packageFolder != null) {
                 packagesByFolderName[packageData.packageFolder.name] = packageData
@@ -174,14 +175,20 @@ class PackagesManager(private val project: Project) {
         // Now find all of the packages for all of these dependencies
         val newPackages = mutableListOf<PackageData>()
         for ((name, version) in dependencies) {
-            newPackages.add(getPackageData(packagesFolder, name, version.toString(), registry, builtInPackagesFolder))
+            newPackages.add(getPackageData(packagesFolder, name, version.toString(), registry, builtInPackagesFolder, null))
         }
         return newPackages
     }
 
-    private fun getPackageData(packagesFolder: VirtualFile, name: String, version: String, registry: String, builtInPackagesFolder: Path?): PackageData {
+    private fun getPackageData(packagesFolder: VirtualFile,
+                               name: String,
+                               version: String,
+                               registry: String,
+                               builtInPackagesFolder: Path?,
+                               lockDetails: LockDetails?)
+            : PackageData {
         return getLocalPackage(packagesFolder, name, version)
-                ?: getGitPackage(name, version)
+                ?: getGitPackage(name, lockDetails)
                 ?: getEmbeddedPackage(packagesFolder, name)
                 ?: getRegistryPackage(name, version, registry)
                 ?: getBuiltInPackage(name, version, builtInPackagesFolder)
@@ -211,10 +218,11 @@ class PackagesManager(private val project: Project) {
         return null
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    private fun getGitPackage(name: String, version: String): PackageData? {
-        // Not yet documented/supported in Unity
-        return null
+    private fun getGitPackage(name: String, lockDetails: LockDetails?): PackageData? {
+        if (lockDetails == null) return null
+
+        val packageFolder = project.refreshAndFindFile("Library/PackageCache/$name@${lockDetails.hash}")
+        return getPackageDataFromFolder(name, packageFolder, PackageSource.Git)
     }
 
     private fun getEmbeddedPackage(packagesFolder: VirtualFile, name: String): PackageData? {
