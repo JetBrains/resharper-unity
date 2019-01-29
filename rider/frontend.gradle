@@ -59,7 +59,6 @@ intellij {
 }
 
 
-
 def dllFiles = [
     "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
@@ -85,14 +84,6 @@ tasks.withType(PrepareSandboxTask).configureEach {
     if (skipDotnet.equalsIgnoreCase("false") &&
         dotNetUpToDate.equalsIgnoreCase("false")) {
         dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
-    }
-
-    // TODO: Move this dependency
-    // It doesn't really fit with prepareSandbox. It's a better fit for buildPlugin,
-    // or as a top-level task that is called separately, e.g. gradle buildPlugin nunit
-    // (and we could get rid of RunTests then, too)
-    if (RunTests.equalsIgnoreCase("true")) {
-        dependsOn nunit
     }
 
     // Have dependent tasks use uptodateWhen { project.buildServer.automatedBuild etc. }
@@ -146,6 +137,13 @@ tasks.withType(PrepareSandboxTask).configureEach {
     into("$intellij.pluginName/projectTemplates") {
         from 'projectTemplates'
     }
+}
+
+// It might be better to make it top-level task that is called separately, e.g. gradle buildPlugin nunit
+// (and we could get rid of RunTests then, too)
+if (RunTests.equalsIgnoreCase("true")) {
+    nunit.shouldRunAfter(buildReSharperHostPlugin, buildUnityEditorPlugin)
+    test.shouldRunAfter(compileTestKotlin)
 }
 
 task validatePluginXml {
