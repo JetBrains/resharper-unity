@@ -1,11 +1,10 @@
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.framework.closeProjectsWaitForBackendWillBeClosed
+import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.util.idea.getComponent
 import org.testng.annotations.Test
 import java.io.File
 
@@ -46,7 +45,9 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
             params: OpenSolutionParams
     ): Project {
         closeProjectsWaitForBackendWillBeClosed(60, false)
-        val newProject = createSolutionFromTemplate(templateId, null, activeSolutionDirectory, sameDirectory) { solutionFile ->
+        val parameters: HashMap<String, String> = hashMapOf()
+        parameters["PathToUnityEngine"] = testDirectory.combine("lib", "UnityEngine.dll").absolutePath
+        val newProject = createSolutionFromTemplate(templateId, null, activeSolutionDirectory, sameDirectory, null, parameters) { solutionFile ->
 
         }!!
 
