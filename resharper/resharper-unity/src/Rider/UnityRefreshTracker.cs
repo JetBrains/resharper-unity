@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var task = myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
             CurrentTask = task;
 
-            var lifetimeDef = Lifetimes.Define(myLifetime);
+            var lifetimeDef = Lifetime.Define(myLifetime);
             var solution = mySolution.GetProtocolSolution();
             var solFolder = mySolution.SolutionFilePath.Directory;
 
