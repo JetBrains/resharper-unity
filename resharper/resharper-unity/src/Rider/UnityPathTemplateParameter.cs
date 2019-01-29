@@ -28,12 +28,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             
             var possiblePaths = myUnityMonoPathProvider.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).Where(b => b.ExistsFile).ToArray();
+            var options = new List<RdProjectTemplateGroupOption>();
             if (possiblePaths.IsEmpty())
             {
-                return new RdProjectTemplateInvalidParameter(Name, Name, "Unity installation is not found", null, null, null, content); //TODO what is 'Message'?
+                options.Add(new RdProjectTemplateInvalidParameter(Name, Name, "Unity installation is not found", null, null, null, content));
             }
-            
-            var options = new List<RdProjectTemplateGroupOption>();
+
             foreach (var path in possiblePaths)
             {
                 var optionContext = new Dictionary<string, string>(context) {{Name, path.FullPath}};
