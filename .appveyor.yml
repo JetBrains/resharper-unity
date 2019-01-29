@@ -1,4 +1,7 @@
 image: Visual Studio 2017
 build_script:
-- ps: . .\build.ps1 -RunTests -Verbose
+- ps: . .\build.ps1 -Verbose
+- cd rider
+- gradlew.bat nunit test --no-daemon --stacktrace --info
+- cd ..
 test: off
