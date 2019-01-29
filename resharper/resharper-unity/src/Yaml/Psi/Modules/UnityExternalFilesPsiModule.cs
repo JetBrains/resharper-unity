@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             if (ContainsPath(path))
                 return;
 
-            var fileLifetime = Lifetimes.Define(myLifetime, path.FullPath);
+            var fileLifetime = Lifetime.Define(myLifetime, path.FullPath);
             mySourceFiles.Add(path, Pair.Of(file, fileLifetime));
 
             // Explicitly assert if we're given a file change handler. We're expecting a lot of files in this module, it

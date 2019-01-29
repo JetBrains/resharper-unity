@@ -157,21 +157,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private StringOptionViewModel AddStringOption(Property<string> property, string text, string toolTipText = null,
                                      bool acceptsReturn = false)
         {
-            using (var tempLifetimeDefinition = Lifetimes.Define())
+            return Lifetime.Using(tempLifetime =>
             {
                 // StringOptionViewModel doesn't allow us to pass a Property, but creates one based on the given scalar
                 // entry. We're dealing with a custom object as a custom entry, so this doesn't work for us. Let's hack!
                 // Create a StringOptionViewModel, with a binding to a scalar, let it create a property, then overwrite
                 // it. The temp lifetime will then clean up the binding.
                 // RIDER-8339 is sooo getting fixed in 2019.1
-                var stringOptionViewModel = new StringOptionViewModel(tempLifetimeDefinition.Lifetime,
+                var stringOptionViewModel = new StringOptionViewModel(tempLifetime,
                     OptionsSettingsSmartContext,
                     OptionsSettingsSmartContext.Schema.GetScalarEntry((CSharpNamingSettings s) => s.ExceptionName),
                     text, toolTipText ?? string.Empty, acceptsReturn) {StringProperty = property};
 
                 OptionEntities.Add(stringOptionViewModel);
                 return stringOptionViewModel;
-            }
+            });
         }
     }
 }
