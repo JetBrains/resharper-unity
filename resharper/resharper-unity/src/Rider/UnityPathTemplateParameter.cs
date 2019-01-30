@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private readonly UnityMonoPathProvider myUnityMonoPathProvider;
 
-        public UnityPathTemplateParameter(UnityMonoPathProvider unityMonoPathProvider) : base("PathToUnityEngine", "Path to UnityEngine.dll", null)
+        public UnityPathTemplateParameter(UnityMonoPathProvider unityMonoPathProvider) : base("PathToUnityEngine", "Path to UnityEngine.dll", "Path to UnityEngine.dll")
         {
             myUnityMonoPathProvider = unityMonoPathProvider;
         }
@@ -28,12 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             
             var possiblePaths = myUnityMonoPathProvider.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).Where(b => b.ExistsFile).ToArray();
-            if (possiblePaths.IsEmpty())
-            {
-                return new RdProjectTemplateInvalidParameter(Name, Name, "Unity installation is not found", null, null, null, content); //TODO what is 'Message'?
-            }
-            
             var options = new List<RdProjectTemplateGroupOption>();
+            
             foreach (var path in possiblePaths)
             {
                 var optionContext = new Dictionary<string, string>(context) {{Name, path.FullPath}};
@@ -43,11 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             options.Add(new RdProjectTemplateGroupOption(
                 "Custom",
-                "Custom",
+                possiblePaths.Any()?"Custom":"Custom (Unity installation was not found)",
                 null,
-                new RdProjectTemplateTextParameter(Name, "Path", null, Tooltip, RdTextParameterStyle.FileChooser, content)));
+                new RdProjectTemplateTextParameter(Name, "Custom path", null, Tooltip, RdTextParameterStyle.FileChooser, content)));
             
-            return new RdProjectTemplateGroupParameter(Name, "UnityEngine", possiblePaths.Last().FullPath, Tooltip, options);
+            return new RdProjectTemplateGroupParameter(Name, "UnityEngineDll", 
+                possiblePaths.Any()?possiblePaths.Last().FullPath:string.Empty, null, options);
         }
     }
 
