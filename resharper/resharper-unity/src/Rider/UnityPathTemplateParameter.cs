@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private readonly UnityMonoPathProvider myUnityMonoPathProvider;
 
-        public UnityPathTemplateParameter(UnityMonoPathProvider unityMonoPathProvider) : base("PathToUnityEngine", "Path to UnityEngine.dll", null)
+        public UnityPathTemplateParameter(UnityMonoPathProvider unityMonoPathProvider) : base("PathToUnityEngine", "Path to UnityEngine.dll", "Path to UnityEngine.dll")
         {
             myUnityMonoPathProvider = unityMonoPathProvider;
         }
@@ -39,11 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             options.Add(new RdProjectTemplateGroupOption(
                 "Custom",
-                "Custom",
-                possiblePaths.Any()?null:"Unity installation was not found",
+                possiblePaths.Any()?"Custom":"Custom (Unity installation was not found)",
+                null,
                 new RdProjectTemplateTextParameter(Name, "Path", null, Tooltip, RdTextParameterStyle.FileChooser, content)));
             
-            return new RdProjectTemplateGroupParameter(Name, "UnityEngine", possiblePaths.Last().FullPath, Tooltip, options);
+            return new RdProjectTemplateGroupParameter(Name, "UnityEngineDll", 
+                possiblePaths.Any()?possiblePaths.Last().FullPath:string.Empty, null, options);
         }
     }
 
