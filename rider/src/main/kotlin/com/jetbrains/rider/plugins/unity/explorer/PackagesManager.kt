@@ -231,10 +231,16 @@ class PackagesManager(private val project: Project) {
     }
 
     private fun getRegistryPackage(name: String, version: String, registry: String): PackageData? {
+        // Unity 2018.3 introduced an additional layer of caching, local to the project, so that any edits to the files
+        // in the package only affect this project
+        var packageFolder = project.refreshAndFindFile("Library/PackageCache/$name@$version")
+        val packageData = getPackageDataFromFolder(name, packageFolder, PackageSource.Registry)
+        if (packageData != null) return packageData
+
         val registryRoot = UnityCachesFinder.getPackagesCacheFolder(registry)
         if (registryRoot == null || !registryRoot.isDirectory) return null
 
-        val packageFolder = registryRoot.findChild("$name@$version")
+        packageFolder = registryRoot.findChild("$name@$version")
         return getPackageDataFromFolder(name, packageFolder, PackageSource.Registry)
     }
 
