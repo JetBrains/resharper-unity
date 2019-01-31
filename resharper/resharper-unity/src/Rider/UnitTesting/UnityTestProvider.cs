@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public bool SupportsResultEventsFor(IUnitTestElement element)
         {
-            return true;
+            return false;
         }
 
         public string ID => "UnityTest";
