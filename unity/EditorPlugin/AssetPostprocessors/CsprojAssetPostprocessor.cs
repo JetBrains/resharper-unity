@@ -15,6 +15,14 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
   public class CsprojAssetPostprocessor : AssetPostprocessor
   {
+    static CsprojAssetPostprocessor()
+    {
+      if (!PluginEntryPoint.Enabled)
+        return;
+      
+      ourApiCompatibilityLevel = GetApiCompatibilityLevel(); // fails in batch mode
+    }
+    
     private static readonly ILog ourLogger = Log.GetLog<CsprojAssetPostprocessor>();
 
     // Note that this does not affect the order in which postprocessors are evaluated. Order of execution is undefined.
@@ -265,7 +273,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static readonly string PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
     private static readonly string PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
     private static readonly string EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
-    private static readonly int ourApiCompatibilityLevel = GetApiCompatibilityLevel();
+    private const string UNITY_REFERENCE_KEYWORD = "-r:";
+    private static readonly int ourApiCompatibilityLevel;
     private const int apiCompatibilityLevelNet20Subset = 2;
     private const int apiCompatibilityLevelNet46 = 3;
 
@@ -434,8 +443,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       return true;
     }
-
-    private const string UNITY_REFERENCE_KEYWORD = "-r:";
 
     private static bool ApplyManualCompilerSettingsReferences(XElement projectContentElement, XNamespace xmlns, string configText)
     {
