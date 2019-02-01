@@ -15,6 +15,18 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 {
   public class CsprojAssetPostprocessor : AssetPostprocessor
   {
+    private static readonly ILog ourLogger = Log.GetLog<CsprojAssetPostprocessor>();
+    private const string UnityUnsafeKeyword = "-unsafe";
+    private const string UnityDefineKeyword = "-define:";
+    private const string UnityReferenceKeyword = "-r:";
+    private static readonly string ourProjectManualConfigRoslynFilePath = Path.GetFullPath("Assets/csc.rsp");
+    private static readonly string ourProjectManualConfigFilePath = Path.GetFullPath("Assets/mcs.rsp");
+    private static readonly string ourPlayerProjectManualConfigFilePath = Path.GetFullPath("Assets/smcs.rsp");
+    private static readonly string ourEditorProjectManualConfigFilePath = Path.GetFullPath("Assets/gmcs.rsp");
+    private static readonly int ourApiCompatibilityLevel;
+    private const int apiCompatibilityLevelNet20Subset = 2;
+    private const int apiCompatibilityLevelNet46 = 3;
+    
     static CsprojAssetPostprocessor()
     {
       if (!PluginEntryPoint.Enabled)
@@ -23,8 +35,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       ourApiCompatibilityLevel = GetApiCompatibilityLevel(); // fails in batch mode
     }
     
-    private static readonly ILog ourLogger = Log.GetLog<CsprojAssetPostprocessor>();
-
     // Note that this does not affect the order in which postprocessors are evaluated. Order of execution is undefined.
     // https://github.com/Unity-Technologies/UnityCsReference/blob/2018.2/Editor/Mono/AssetPostprocessor.cs#L152
     public override int GetPostprocessOrder()
@@ -267,17 +277,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       return false;
     }
 
-    private const string UNITY_UNSAFE_KEYWORD = "-unsafe";
-    private const string UNITY_DEFINE_KEYWORD = "-define:";
-    private static readonly string PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH = Path.GetFullPath("Assets/csc.rsp");
-    private static readonly string PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/mcs.rsp");
-    private static readonly string PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/smcs.rsp");
-    private static readonly string EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH = Path.GetFullPath("Assets/gmcs.rsp");
-    private const string UNITY_REFERENCE_KEYWORD = "-r:";
-    private static readonly int ourApiCompatibilityLevel;
-    private const int apiCompatibilityLevelNet20Subset = 2;
-    private const int apiCompatibilityLevelNet46 = 3;
-
     private static bool SetManuallyDefinedCompilerSettings(string projectFile, XElement projectContentElement, XNamespace xmlns)
     {
       var configPath = GetConfigPath(projectFile);
@@ -288,18 +287,18 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static string GetConfigPath(string projectFile)
     {
       // First choice - prefer csc.rsp if it exists
-      if (File.Exists(PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH))
-        return PROJECT_MANUAL_CONFIG_ROSLYN_FILE_PATH;
+      if (File.Exists(ourProjectManualConfigRoslynFilePath))
+        return ourProjectManualConfigRoslynFilePath;
 
       // Second choice - prefer mcs.rsp if it exists
-      if (File.Exists(PROJECT_MANUAL_CONFIG_FILE_PATH))
-        return PROJECT_MANUAL_CONFIG_FILE_PATH;
+      if (File.Exists(ourProjectManualConfigFilePath))
+        return ourProjectManualConfigFilePath;
 
       var filename = Path.GetFileName(projectFile);
       if (filename == "Assembly-CSharp.csproj")
-        return PLAYER_PROJECT_MANUAL_CONFIG_FILE_PATH;
+        return ourPlayerProjectManualConfigFilePath;
       if (filename == "Assembly-CSharp-Editor.csproj")
-        return EDITOR_PROJECT_MANUAL_CONFIG_FILE_PATH;
+        return ourEditorProjectManualConfigFilePath;
 
       return null;
     }
@@ -317,7 +316,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       // Unity sets AllowUnsafeBlocks in 2017.1+ depending on Player settings or asmdef
       // Strictly necessary to compile unsafe code
       // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/VisualStudioIntegration/SolutionSynchronizationSettings.cs#L119
-      if (configText.Contains(UNITY_UNSAFE_KEYWORD) && !isUnity20171OrLater)
+      if (configText.Contains(UnityUnsafeKeyword) && !isUnity20171OrLater)
       {
         changed |= ApplyAllowUnsafeBlocks(projectContentElement, xmlns);
       }
@@ -325,7 +324,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       // Unity natively handles this in 2017.1+
       // https://github.com/Unity-Technologies/UnityCsReference/blob/33cbfe062d795667c39e16777230e790fcd4b28b/Editor/Mono/VisualStudioIntegration/SolutionSynchronizer.cs#L191
       // Also note that we don't support the short "-d" form. Neither does Unity
-      if (configText.Contains(UNITY_DEFINE_KEYWORD) && !isUnity20171OrLater)
+      if (configText.Contains(UnityDefineKeyword) && !isUnity20171OrLater)
       {
         // defines could be
         // 1) -define:DEFINE1,DEFINE2
@@ -340,9 +339,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         foreach (var flag in compileFlags)
         {
           var f = flag.Trim();
-          if (f.Contains(UNITY_DEFINE_KEYWORD))
+          if (f.Contains(UnityDefineKeyword))
           {
-            var defineEndPos = f.IndexOf(UNITY_DEFINE_KEYWORD) + UNITY_DEFINE_KEYWORD.Length;
+            var defineEndPos = f.IndexOf(UnityDefineKeyword) + UnityDefineKeyword.Length;
             var definesSubString = f.Substring(defineEndPos, f.Length - defineEndPos);
             definesSubString = definesSubString.Replace(";", ",");
             definesList.AddRange(definesSubString.Split(','));
@@ -353,7 +352,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       }
 
       // Note that this doesn't handle the long version "-reference:"
-      if (configText.Contains(UNITY_REFERENCE_KEYWORD))
+      if (configText.Contains(UnityReferenceKeyword))
       {
         changed |= ApplyManualCompilerSettingsReferences(projectContentElement, xmlns, configText);
       }
@@ -451,9 +450,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       foreach (var flag in compileFlags)
       {
         var f = flag.Trim();
-        if (f.Contains(UNITY_REFERENCE_KEYWORD))
+        if (f.Contains(UnityReferenceKeyword))
         {
-          var defineEndPos = f.IndexOf(UNITY_REFERENCE_KEYWORD) + UNITY_REFERENCE_KEYWORD.Length;
+          var defineEndPos = f.IndexOf(UnityReferenceKeyword) + UnityReferenceKeyword.Length;
           var definesSubString = f.Substring(defineEndPos, f.Length - defineEndPos);
           definesSubString = definesSubString.Replace(";", ",");
           referenceList.AddRange(definesSubString.Split(','));
