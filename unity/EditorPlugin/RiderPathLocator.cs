@@ -247,24 +247,40 @@ namespace JetBrains.Rider.Unity.Editor
       if (!Directory.Exists(toolboxRiderRootPath))
         return new string[0];
 
-      var channelFiles = Directory.GetDirectories(toolboxRiderRootPath)
-        .Select(b => Path.Combine(b, ".channel.settings.json")).Where(File.Exists).ToArray();
-
-      var paths = channelFiles.SelectMany(a =>
+      var channelDirs = Directory.GetDirectories(toolboxRiderRootPath);
+      var paths = channelDirs.SelectMany(channelDir =>
         {
           try
           {
-            var channelDir = Path.GetDirectoryName(a);
-            var json = File.ReadAllText(a).Replace("active-application", "active_application");
-            var toolbox = ToolboxInstallData.FromJson(json);
-            var builds = toolbox.active_application.builds;
-            if (builds != null && builds.Any())
+            var channelFile = Path.Combine(channelDir, ".channel.settings.json");
+            if (File.Exists(channelFile))
             {
-              var build = builds.First();
-              var folder = Path.Combine(Path.Combine(channelDir, build), dirName);
-              if (!isMac)
-                return new[] {Path.Combine(folder, searchPattern)};
-              return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName);
+              var json = File.ReadAllText(channelFile).Replace("active-application", "active_application");
+              var toolbox = ToolboxInstallData.FromJson(json);
+              var builds = toolbox.active_application.builds;
+              if (builds != null && builds.Any())
+              {
+                var build = builds.First();
+                var folder = Path.Combine(Path.Combine(channelDir, build), dirName);
+                if (!isMac)
+                  return new[] {Path.Combine(folder, searchPattern)};
+                return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName);
+              }
+            }
+            
+            // use history.json - last entry stands for the active build https://jetbrains.slack.com/archives/C07KNP99D/p1547807024066500?thread_ts=1547731708.057700&cid=C07KNP99D
+            var historyFile = Path.Combine(channelDir, ".history.json");
+            if (File.Exists(historyFile))
+            {
+              var json = File.ReadAllText(historyFile);
+              var build = ToolboxHistory.GetLatestBuildFromJson(json);
+              if (build != null)
+              {
+                var folder = Path.Combine(Path.Combine(channelDir, build), dirName);
+                if (!isMac)
+                  return new[] {Path.Combine(folder, searchPattern)};
+                return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName);
+              }
             }
 
             // new toolbox format doesn't have active-application block, so return all found Rider installations
@@ -280,6 +296,7 @@ namespace JetBrains.Rider.Unity.Editor
           }
           catch (Exception e)
           {
+            // do not write to Debug.Log, just log it.
             ourLogger.Warn(e, "Failed to get RiderPath via .channel.settings.json");
           }
 
@@ -294,6 +311,34 @@ namespace JetBrains.Rider.Unity.Editor
     // Note that Unity disable this warning in the generated C# projects
 #pragma warning disable 0649
 
+    [Serializable]
+    class ToolboxHistory
+    {
+      public List<ItemNode> history;  
+      
+      [CanBeNull]
+      public static string GetLatestBuildFromJson(string json)
+      {
+#if UNITY_4_7 || UNITY_5_5
+        return JsonConvert.DeserializeObject<ToolboxHistory>(json).history.LastOrDefault()?.item.build;
+#else
+        return JsonUtility.FromJson<ToolboxHistory>(json).history.LastOrDefault()?.item.build;
+#endif
+      }
+    }
+
+    [Serializable]
+    class ItemNode
+    {
+      public BuildNode item;
+    }
+    
+    [Serializable]
+    class BuildNode
+    {
+      public string build;
+    }
+    
     // ReSharper disable once ClassNeverInstantiated.Global
     [Serializable]
     class ToolboxInstallData
