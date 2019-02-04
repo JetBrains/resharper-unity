@@ -115,23 +115,38 @@ class PackageNode(project: Project, private val packagesManager: PackagesManager
         if (UnityExplorer.getInstance(myProject).myShowProjectNames)
             addProjects(presentation)
 
-        // Richer tooltip
         val existingTooltip = presentation.tooltip ?: ""
-        var newTooltip = ""
-        if (name != virtualFile.name) {
-            newTooltip += virtualFile.name + "\n"
+
+        var newTooltip = name
+        if (packageData.details.version.isNotEmpty()) {
+            newTooltip += " ${packageData.details.version}"
         }
         if (name != packageData.details.canonicalName) {
-            newTooltip += packageData.details.canonicalName + "\n"
+            newTooltip += "\n" + packageData.details.canonicalName
         }
-        if (!packageData.details.version.isEmpty()) {
-            newTooltip += packageData.details.version
+        if (packageData.details.author.isNotEmpty()) {
+            newTooltip += "\n${packageData.details.author}"
         }
-        if (!packageData.details.description.isEmpty()) {
-            newTooltip += "\n${packageData.details.description}"
+        if (packageData.details.description.isNotEmpty()) {
+            newTooltip += "\n\n${packageData.details.description}"
+        }
+        newTooltip += when (packageData.source) {
+            PackageSource.Embedded -> if (virtualFile.name != name) "\n\nFolder name: ${virtualFile.name}" else ""
+            PackageSource.Local -> "\n\nFolder location: ${virtualFile.path}"
+            PackageSource.Git -> {
+                var text = "\n\nGit URL: ${packageData.gitDetails?.url}"
+                if (!packageData.gitDetails?.hash.isNullOrEmpty()) {
+                    text += "\nHash: ${packageData.gitDetails?.hash}"
+                }
+                if (!packageData.gitDetails?.revision.isNullOrEmpty()) {
+                    text += "\nRevision: ${packageData.gitDetails?.revision}"
+                }
+                text
+            }
+            else -> ""
         }
         if (existingTooltip.isNotEmpty()) {
-            newTooltip += "\n" + existingTooltip
+            newTooltip += "\n\n" + existingTooltip
         }
         presentation.tooltip = newTooltip
     }
@@ -335,17 +350,22 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.BuiltInPackage)
 
-        var newTooltip = ""
-        if (name != virtualFile.name) {
-            newTooltip = virtualFile.name + "\n"
+        var newTooltip = name
+        if (packageData.details.version.isNotEmpty()) {
+            newTooltip += " ${packageData.details.version}"
         }
-        if (!packageData.details.version.isEmpty()) {
-            newTooltip += packageData.details.version
+        if (name != packageData.details.canonicalName) {
+            newTooltip += "\n${packageData.details.canonicalName}"
         }
-        if (!packageData.details.description.isEmpty()) {
-            newTooltip += "\n${packageData.details.description}"
+        if (packageData.details.author.isNotEmpty()) {
+            newTooltip += "\n${packageData.details.author}"
         }
-        presentation.tooltip = newTooltip
+        if (packageData.details.description.isNotEmpty()) {
+            newTooltip += "\n\n${packageData.details.description}"
+        }
+        if (newTooltip != name) {
+            presentation.tooltip = newTooltip
+        }
     }
 
     override fun compareTo(other: AbstractTreeNode<*>): Int {
@@ -378,6 +398,9 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(icon)
+        if (packageData.details.description.isNotEmpty()) {
+            presentation.tooltip = packageData.details.description
+        }
     }
 
     override fun compareTo(other: AbstractTreeNode<*>): Int {
@@ -389,8 +412,8 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
     }
 }
 
-class LockDetails(val hash: String, val revision: String)
+class LockDetails(val hash: String?, val revision: String?)
 
 // TODO: What are "testables"?
-class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?, val lock: Map<String, LockDetails>)
+class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?, val lock: Map<String, LockDetails>?)
 
