@@ -273,10 +273,10 @@ namespace JetBrains.Rider.Unity.Editor
               {
                 var folder = Path.Combine(b, dirName);
                 if (!isMac)
-                  return new[] {Path.Combine(folder, searchPattern)};
-                return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName);
-              })
-              .Where(File.Exists).ToArray();
+                  return new[] {Path.Combine(folder, searchPattern)}.Where(File.Exists);
+                return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName)
+                  .Where(Directory.Exists);
+              }).ToArray();
           }
           catch (Exception e)
           {
