@@ -314,8 +314,8 @@ namespace JetBrains.Rider.Unity.Editor
     [Serializable]
     class ToolboxHistory
     {
-      public List<ItemNode> history;  
-      
+      public List<ItemNode> history;
+
       [CanBeNull]
       public static string GetLatestBuildFromJson(string json)
       {
@@ -329,9 +329,9 @@ namespace JetBrains.Rider.Unity.Editor
         }
         catch (Exception)
         {
-          return null;
+          ourLogger.Warn($"Failed to get latest build from json {json}");
         }
-
+        return null;
       }
     }
 
@@ -368,7 +368,10 @@ namespace JetBrains.Rider.Unity.Editor
           if (builds != null && builds.Any())
             return builds.First();
         }
-        catch (Exception){}
+        catch (Exception)
+        {
+          ourLogger.Warn($"Failed to get latest build from json {json}");
+        }
         return null;
       }
     }
