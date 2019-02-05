@@ -224,10 +224,12 @@ namespace JetBrains.Rider.Unity.Editor
           {
             if (newPlayModeState == PlayModeState.Playing)
             {
+              ourLogger.Info("LockReloadAssemblies");
               EditorApplication.LockReloadAssemblies();
             }
             else if (newPlayModeState == PlayModeState.Stopped)
             {
+              ourLogger.Info("UnlockReloadAssemblies");
               EditorApplication.UnlockReloadAssemblies();
             }
           }
