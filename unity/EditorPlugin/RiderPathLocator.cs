@@ -251,23 +251,7 @@ namespace JetBrains.Rider.Unity.Editor
       var paths = channelDirs.SelectMany(channelDir =>
         {
           try
-          {
-            var channelFile = Path.Combine(channelDir, ".channel.settings.json");
-            if (File.Exists(channelFile))
-            {
-              var json = File.ReadAllText(channelFile).Replace("active-application", "active_application");
-              var toolbox = ToolboxInstallData.FromJson(json);
-              var builds = toolbox.active_application.builds;
-              if (builds != null && builds.Any())
-              {
-                var build = builds.First();
-                var folder = Path.Combine(Path.Combine(channelDir, build), dirName);
-                if (!isMac)
-                  return new[] {Path.Combine(folder, searchPattern)};
-                return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName);
-              }
-            }
-            
+          {            
             // use history.json - last entry stands for the active build https://jetbrains.slack.com/archives/C07KNP99D/p1547807024066500?thread_ts=1547731708.057700&cid=C07KNP99D
             var historyFile = Path.Combine(channelDir, ".history.json");
             if (File.Exists(historyFile))
@@ -276,28 +260,35 @@ namespace JetBrains.Rider.Unity.Editor
               var build = ToolboxHistory.GetLatestBuildFromJson(json);
               if (build != null)
               {
-                var folder = Path.Combine(Path.Combine(channelDir, build), dirName);
-                if (!isMac)
-                  return new[] {Path.Combine(folder, searchPattern)};
-                return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName);
+                var buildDir = Path.Combine(channelDir, build);
+                var executablePaths = GetExecutablePaths(dirName, searchPattern, isMac, buildDir);
+                if (executablePaths.Any())
+                  return executablePaths;
               }
             }
-
-            // new toolbox format doesn't have active-application block, so return all found Rider installations
-            return Directory.GetDirectories(channelDir)
-              .SelectMany(b=>
+            
+            var channelFile = Path.Combine(channelDir, ".channel.settings.json");
+            if (File.Exists(channelFile))
+            {
+              var json = File.ReadAllText(channelFile).Replace("active-application", "active_application");
+              var build = ToolboxInstallData.GetLatestBuildFromJson(json);
+              if (build != null)
               {
-                var folder = Path.Combine(b, dirName);
-                if (!isMac)
-                  return new[] {Path.Combine(folder, searchPattern)}.Where(File.Exists);
-                return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName)
-                  .Where(Directory.Exists);
-              }).ToArray();
+                var buildDir = Path.Combine(channelDir, build);
+                var executablePaths = GetExecutablePaths(dirName, searchPattern, isMac, buildDir);
+                if (executablePaths.Any())
+                  return executablePaths;
+              }
+            }
+            
+            // changes in toolbox json files format may brake the logic above, so return all found Rider installations
+            return Directory.GetDirectories(channelDir)
+              .SelectMany(buildDir=> GetExecutablePaths(dirName, searchPattern, isMac, buildDir));
           }
           catch (Exception e)
           {
             // do not write to Debug.Log, just log it.
-            ourLogger.Warn(e, "Failed to get RiderPath via .channel.settings.json");
+            ourLogger.Warn(e, $"Failed to get RiderPath from {channelDir}");
           }
 
           return new string[0];
@@ -305,6 +296,15 @@ namespace JetBrains.Rider.Unity.Editor
         .Where(c => !string.IsNullOrEmpty(c))
         .ToArray();
       return paths;
+    }
+
+    private static string[] GetExecutablePaths(string dirName, string searchPattern, bool isMac, string buildDir)
+    {
+      var folder = Path.Combine(buildDir, dirName);
+      if (!isMac)
+        return new[] {Path.Combine(folder, searchPattern)}.Where(File.Exists).ToArray();
+      return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName)
+        .Where(Directory.Exists).ToArray();
     }
 
     // Disable the "field is never assigned" compiler warning. We never assign it, but Unity does.
@@ -319,11 +319,19 @@ namespace JetBrains.Rider.Unity.Editor
       [CanBeNull]
       public static string GetLatestBuildFromJson(string json)
       {
+        try
+        {
 #if UNITY_4_7 || UNITY_5_5
-        return JsonConvert.DeserializeObject<ToolboxHistory>(json).history.LastOrDefault()?.item.build;
+          return JsonConvert.DeserializeObject<ToolboxHistory>(json).history.LastOrDefault()?.item.build;
 #else
-        return JsonUtility.FromJson<ToolboxHistory>(json).history.LastOrDefault()?.item.build;
+          return JsonUtility.FromJson<ToolboxHistory>(json).history.LastOrDefault()?.item.build;
 #endif
+        }
+        catch (Exception)
+        {
+          return null;
+        }
+
       }
     }
 
@@ -346,13 +354,22 @@ namespace JetBrains.Rider.Unity.Editor
       // ReSharper disable once InconsistentNaming
       public ActiveApplication active_application;
 
-      public static ToolboxInstallData FromJson(string json)
+      [CanBeNull]
+      public static string GetLatestBuildFromJson(string json)
       {
+        try
+        {
 #if UNITY_4_7 || UNITY_5_5
-        return JsonConvert.DeserializeObject<ToolboxInstallData>(json);
+          var toolbox = JsonConvert.DeserializeObject<ToolboxInstallData>(json);
 #else
-        return JsonUtility.FromJson<ToolboxInstallData>(json);
+          var toolbox = JsonUtility.FromJson<ToolboxInstallData>(json);
 #endif
+          var builds = toolbox.active_application.builds;
+          if (builds != null && builds.Any())
+            return builds.First();
+        }
+        catch (Exception){}
+        return null;
       }
     }
 
