@@ -1,6 +1,5 @@
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
-using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
@@ -17,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         public readonly RProperty<bool> IsUnityGeneratedProject = new RProperty<bool>();
         public readonly RProperty<bool> IsUnityProject = new RProperty<bool>();
 
-        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, IShellLocks locks)
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
         {
             mySolution = solution;
             if (!solution.SolutionDirectory.IsAbsolute) return; // True in tests
