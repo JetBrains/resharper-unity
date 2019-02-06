@@ -20,8 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, IShellLocks locks)
         {
             mySolution = solution;
-            if (locks.Dispatcher.IsAsyncBehaviorProhibited) // for tests
-                return;
+            if (!solution.SolutionDirectory.IsAbsolute) return; // True in tests
 
             SetValues();
 
