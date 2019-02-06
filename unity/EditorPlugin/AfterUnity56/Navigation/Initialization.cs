@@ -1,31 +1,13 @@
-using System;
+using JetBrains.Rider.Unity.Editor.Navigation;
 using JetBrains.Rider.Unity.Editor.Navigation.Window;
-using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
 {
-  [InitializeOnLoad]
-  public static class EntryPoint
-  {
-    private static readonly ILog ourLogger = Log.GetLog("UnitTesting.EntryPoint");
-    
-    static EntryPoint()
-    {
-      if (!PluginEntryPoint.Enabled)
-        return;
-      ourLogger.Verbose("UnitTesting.EntryPoint");
-
-      PluginEntryPoint.OnModelInitialization += OnModelInitializationHandler;
-      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
-      {
-        PluginEntryPoint.OnModelInitialization -= OnModelInitializationHandler;
-      });
-    }
-    
-    
-    private static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
+  public static class Initialization
+  {    
+    public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
     {
       var modelValue = modelAndLifetime.Model;
       var connectionLifetime = modelAndLifetime.Lifetime;

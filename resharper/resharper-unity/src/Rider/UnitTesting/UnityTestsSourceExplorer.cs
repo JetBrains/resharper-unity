@@ -18,7 +18,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
     [SolutionComponent]
-    public class UnityTestsSourceExplorer : UnitTestExplorerFrom.DotNetArtefacts, IUnitTestExplorerFromFile
+    public class UnityTestsSourceExplorer : UnitTestExplorerFrom.DotNetArtifacts, IUnitTestExplorerFromFile
     {
         private readonly ClrLanguagesKnown myClrLanguagesKnown;
         private readonly IUnitTestElementIdFactory myIdFactory;
@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             [NotNull] AssemblyToAssemblyReferencesResolveManager resolveManager, IUnitTestElementIdFactory idFactory,
             [NotNull] ResolveContextManager resolveContextManager, [NotNull] ILogger logger,
             UnitTestAttributeCache unitTestAttributeCache, IUnitTestElementIdFactory unitTestElementIdFactory, IUnitTestElementManager unitTestElementManager, UnityNUnitServiceProvider serviceProvider)
-            : base(solution, provider, resolveManager, resolveContextManager, logger)
+            : base(provider, resolveManager, resolveContextManager, logger)
         {
             myClrLanguagesKnown = clrLanguagesKnown;
             myIdFactory = idFactory;
@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myServiceProvider = serviceProvider;
         }
 
-        public override void ProcessProject(IProject project, FileSystemPath assemblyPath, MetadataLoader loader,
+        protected override void ProcessProject(IProject project, FileSystemPath assemblyPath, MetadataLoader loader,
             IUnitTestElementsObserver observer, CancellationToken token)
         {
             MetadataElementsSource.ExploreProject(project, assemblyPath, loader, observer, myLogger, token,
