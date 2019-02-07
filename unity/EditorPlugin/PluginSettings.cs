@@ -25,6 +25,8 @@ namespace JetBrains.Rider.Unity.Editor
 
   public class PluginSettings : IPluginSettings
   {
+    private static readonly ILog ourLogger = Log.GetLog<PluginSettings>();
+    
     internal static LoggingLevel SelectedLoggingLevel
     {
       get => (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 0);
@@ -283,10 +285,12 @@ namespace JetBrains.Rider.Unity.Editor
         {
           if (AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
           {
+            ourLogger.Info("LockReloadAssemblies");
             EditorApplication.LockReloadAssemblies();
           }
           else
           {
+            ourLogger.Info("UnlockReloadAssemblies");
             EditorApplication.UnlockReloadAssemblies();
           }
         }  

@@ -1,34 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Unity.Editor.UnitTesting;
 using JetBrains.Util.Logging;
 using UnityEditor;
-using UnityEngine;
 
-namespace JetBrains.Rider.Unity.Editor.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
-  [InitializeOnLoad]
-  public static class EntryPoint
+  public static class Initialization
   {
-    private static readonly ILog ourLogger = Log.GetLog("UnitTesting.EntryPoint");
+    private static readonly ILog ourLogger = Log.GetLog("UnitTesting.Initialization");
     
-    static EntryPoint()
-    {
-      if (!PluginEntryPoint.Enabled)
-        return;
-      ourLogger.Verbose("UnitTesting.EntryPoint");
-
-      PluginEntryPoint.OnModelInitialization += OnModelInitializationHandler;
-      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
-      {
-        PluginEntryPoint.OnModelInitialization -= OnModelInitializationHandler;
-      });
-    }
-
-    private static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
+    public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
     {
       ourLogger.Verbose("AdviseUnitTestLaunch");
       var modelValue = modelAndLifetime.Model;
