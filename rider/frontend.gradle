@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.tasks.PrepareSandboxTask
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -7,6 +9,13 @@ compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
         allWarningsAsErrors = warningsAsErrors.toBoolean()
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        allWarningsAsErrors = false
     }
 }
 
@@ -46,9 +55,8 @@ intellij {
     // Sources aren't available for Rider
     downloadSources = false
 
-    plugins = [ 'JavaScriptLanguage', 'rider-plugins-appender' ]
+    plugins = [ 'rider-plugins-appender' ]
 }
-
 
 
 def dllFiles = [
@@ -69,21 +77,13 @@ def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
 def unityeditorplugin_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
 def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Full/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
 
-prepareSandbox {
+tasks.withType(PrepareSandboxTask).configureEach {
     // Default dependsOn includes the standard Java build/jar task
 
     // "skipDotnet" is easier to type (and remember), but "dotNetUpToDate" is already in use
     if (skipDotnet.equalsIgnoreCase("false") &&
         dotNetUpToDate.equalsIgnoreCase("false")) {
         dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
-    }
-
-    // TODO: Move this dependency
-    // It doesn't really fit with prepareSandbox. It's a better fit for buildPlugin,
-    // or as a top-level task that is called separately, e.g. gradle buildPlugin nunit
-    // (and we could get rid of RunTests then, too)
-    if (RunTests.equalsIgnoreCase("true")) {
-        dependsOn nunit
     }
 
     // Have dependent tasks use uptodateWhen { project.buildServer.automatedBuild etc. }
@@ -139,6 +139,12 @@ prepareSandbox {
     }
 }
 
+// It might be better to make it top-level task that is called separately, e.g. gradle buildPlugin nunit
+// (and we could get rid of RunTests then, too)
+if (RunTests.equalsIgnoreCase("true")) {
+    nunit.shouldRunAfter(buildReSharperHostPlugin, buildUnityEditorPlugin)
+    buildReSharperHostPlugin.finalizedBy(nunit)
+}
 
 task validatePluginXml {
   def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
@@ -161,7 +167,6 @@ task validatePluginXml {
   }
 }
 prepareSandbox.dependsOn validatePluginXml
-
 
 test {
     useTestNG() {}

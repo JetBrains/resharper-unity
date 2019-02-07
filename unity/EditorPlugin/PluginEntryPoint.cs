@@ -224,10 +224,12 @@ namespace JetBrains.Rider.Unity.Editor
           {
             if (newPlayModeState == PlayModeState.Playing)
             {
+              ourLogger.Info("LockReloadAssemblies");
               EditorApplication.LockReloadAssemblies();
             }
             else if (newPlayModeState == PlayModeState.Stopped)
             {
+              ourLogger.Info("UnlockReloadAssemblies");
               EditorApplication.UnlockReloadAssemblies();
             }
           }
@@ -469,7 +471,7 @@ namespace JetBrains.Rider.Unity.Editor
       editorPluginModel.PlayerLogPath.SetValue(playerLogPath);
     }
 
-    internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), "JetBrains.Rider.Unity.Editor.Plugin.log");
+    internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), $"{DateTime.Now:yyyy-MM-ddT-HH-mm-ss}.log");
     private static OnOpenAssetHandler ourOpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
