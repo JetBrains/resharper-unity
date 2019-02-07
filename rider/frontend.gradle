@@ -54,6 +54,7 @@ intellij {
 
     // Sources aren't available for Rider
     downloadSources = false
+    instrumentCode = false
 
     plugins = [ 'rider-plugins-appender' ]
 }
