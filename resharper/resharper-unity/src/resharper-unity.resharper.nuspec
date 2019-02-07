@@ -27,7 +27,7 @@
 - Navigate to external Unity documentation.
 - Correctly updates .meta files.
 - Code completion, rename and find usages for "magic strings" in method calls.
-- Automatically adds FormerlySerializedAs> attribute when renaming fields.
+- Automatically adds FormerlySerializedAs attribute when renaming fields.
 - Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!
 - Highlights UnityEngine.Color and Color32. Edit via colour palette quick fix.
 - Unity specific file and live templates.

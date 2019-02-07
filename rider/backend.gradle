@@ -9,13 +9,6 @@ nuget {
     version = "4.4.1"
 }
 
-// Workaround for https://github.com/Ullink/gradle-nuget-plugin/issues/66
-nugetSources {
-    operation = 'add'
-    sourceName = 'foo'
-    sourceUrl = '/tmp'
-}
-
 // if there's no bundled SDK and we have to build R#, we download & unzip it, changing SDK path
 task unzipReSharperSdk(type: Sync) {
     group backendGroup
@@ -140,48 +133,23 @@ task buildUnityEditorPlugin(type: MSBuildTask) {
 }
 
 
-task packReSharperPlugin(type: MonoExecTask) {
+task packReSharperPlugin(type: nugetPack.class) {
     dependsOn buildReSharperHostPlugin
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
-    def nuspecFile = file(new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec'))
-    def outputDir = file(new File(backend.backendRoot, "build/distributions/$BuildConfiguration"))
-    def nupkgFile = file(new File(outputDir, "JetBrains.Unity.${version}.nupkg"))
-
-    // TODO: Make the output of the compile step the inputs of this step, as well as the nuspec
-    // inputs.files(nuspecFile)
-    outputs.files(nupkgFile)
-
-    def nugetExe = file(new File(backend.repositoryRoot, 'tools/nuget.exe'))
-    def arguments = [ 'pack', nuspecFile, '-NoPackageAnalysis', '-Properties', "Configuration=$BuildConfiguration", '-Version', "$version", '-OutputDirectory', outputDir ]
-
-    executable = nugetExe
-    args = arguments
+    nuspecFile = new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec')
+    destinationDir = new File(backend.backendRoot, "build/distributions/$BuildConfiguration")
+    packageAnalysis = false
+    packageVersion = version
+    properties = [
+            'Configuration': BuildConfiguration
+    ]
 
     doFirst {
         buildServer.progress("Packing: $nuspecFile.name")
     }
 }
-
-// This doesn't work right now. See https://github.com/Ullink/gradle-nuget-plugin/pull/69
-//task packReSharperPlugin(type: nugetPack.class) {
-//    dependsOn buildReSharperHostPlugin
-//    group = backendGroup
-//    description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
-//
-//    nuspecFile = new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec')
-//    destinationDir = new File(backend.backendRoot, "build/resharper-unity.resharper/bin/$BuildConfiguration")
-//    packageAnalysis = false
-//    packageVersion = version
-//    properties = [
-//            'Configuration': BuildConfiguration
-//    ]
-//
-//    doFirst {
-//        buildServer.progress("Packing: $nuspecFile.name")
-//    }
-//}
 
 nunit {
     dependsOn buildReSharperHostPlugin
