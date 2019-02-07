@@ -146,6 +146,9 @@ task packReSharperPlugin(type: nugetPack.class) {
             'Configuration': BuildConfiguration
     ]
 
+    def nupkgFile = file(new File(destinationDir, "JetBrains.Unity.${version}.nupkg"))
+    outputs.files(nupkgFile)
+
     doFirst {
         buildServer.progress("Packing: $nuspecFile.name")
     }
