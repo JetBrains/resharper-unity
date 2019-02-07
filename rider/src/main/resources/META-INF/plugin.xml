@@ -182,6 +182,13 @@
   <change-notes>
 <![CDATA[
 <p>
+<strong>New in 2018.3.3</strong>
+<em>Fixed:</em>
+<ul>
+  <li>Unity Editor: Fix finding install path from JetBrains Toolbox (<a href="https://youtrack.jetbrains.com/issue/RIDER-24173">RIDER-24173</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1024">#1024</a>)</li>
+</ul>
+</p>
+<p>
 <strong>New in 2018.3.2</strong>
 <em>Added:</em>
 <ul>
@@ -193,7 +200,7 @@
   <li>Improve performance of rename and find usages with YAML files (<a href="https://github.com/JetBrains/resharper-unity/issues/983">#983</a>)</li>
   <li>Improve performance of typing in YAML files, by incrementally re-parsing only the YAML document that contains the change (<a href="https://github.com/JetBrains/resharper-unity/issues/993">#993</a>)</li>
   <li>Remove repeated use of project name from Unity Explorer when under assembly definition (<a href="https://github.com/JetBrains/resharper-unity/issues/982">#982</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/989">#989</a>)</li>
-  <li>Changed unresolved symbol error in `GetComponent`, `AddComponent` and `ScriptableObject.CreateInstance` to a configurable warning (<a href="https://youtrack.jetbrains.com/issue/RIDER-23429">RIDER-23429</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1003">#1003</a>)</li>
+  <li>Changed unresolved symbol error in <tt>GetComponent</tt>, <tt>AddComponent</tt> and <tt>ScriptableObject.CreateInstance</tt> to a configurable warning (<a href="https://youtrack.jetbrains.com/issue/RIDER-23429">RIDER-23429</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1003">#1003</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
