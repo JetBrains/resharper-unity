@@ -6,8 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
-## Unreleased (2018.3.2)
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap11-rtm...HEAD)
+## Unreleased (2019.1)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/22?closed=1)
+
+### Added
+- Rider: Support for git packages in Unity Explorer
+- Rider: Add notification if there isn't a player log to show ([#820](https://github.com/JetBrains/resharper-unity/issues/820), [#1006](https://github.com/JetBrains/resharper-unity/pull/1006) - thanks @ajon542!)
+
+### Changed
+- Rider: Graceful handling of out of sync Unity Editor plugin versions ([#963](https://github.com/JetBrains/resharper-unity/pull/963))
+- Unity Editor: Allow opening assets imported by ScriptedImporters ([#981](https://github.com/JetBrains/resharper-unity/issues/981), [#995](https://github.com/JetBrains/resharper-unity/pull/995))
+
+### Fixed
+- Rider: Show packages from correct per-project cache in Unity Explorer
+- Rider: Fix creation of Unity class library project if can't find Unity install ([#1013](https://github.com/JetBrains/resharper-unity/issue/1013), [#1014](https://github.com/JetBrains/resharper-unity/pull/1014))
+- Unity Editor: Use unique name for log file ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
+- Unity Editor: Don't call Unity API in batch mode ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
+- Unity Editor: Fix exception during Unity shutdown ([RIDER-19688](https://youtrack.jetbrains.com/issue/RIDER-19688), [#979](https://github.com/JetBrains/resharper-unity/pull/979))
+
+
+
+## 2018.3.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap12-rtm...183-eap13-rtm)
+
+### Fixed
+- Unity Editor: Fix finding install path from JetBrains Toolbox ([RIDER-24173](https://youtrack.jetbrains.com/issue/RIDER-24173), [#1024](https://github.com/JetBrains/resharper-unity/pull/1024))
+
+
+
+## 2018.3.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap11-rtm...183-eap12-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/26?closed=1)
 
 ### Added
