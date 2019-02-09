@@ -78,6 +78,12 @@
         <Description>Method does not match expected signature.</Description>
       </Tag>
 
+      <Tag externalName="InefficientMultiplyOrderWarning.HIGHLIGHTING_ID"
+           default="WARNING">
+          <Title>Order of multiplication operations is inefficient</Title>
+        <Description>Reordering multiplication operations will improve performance</Description>
+      </Tag>
+
       <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Repeated access of property on built in component is inefficient</Title>
@@ -288,6 +294,13 @@
     <Parameter type="bool" name="inlineRestoreValue" />
     <Message value="Repeated property access of built in component is inefficient" />
     <Range>HighlightedReference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="InefficientMultiplyOrder" configurableSeverity="Unity.InefficientMultiplyOrder">
+    <Parameter type="IMultiplicativeExpression" name="expression"/>
+    <Message value="Order of multiplication operations is inefficient" />
+    <Range>Expression.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
