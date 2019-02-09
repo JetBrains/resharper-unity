@@ -7,12 +7,9 @@
     <DefineConstants>UNITY_5_5</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="UnitTesting\**" />
-    <Compile Remove="Navigation\**" />
-    <EmbeddedResource Remove="UnitTesting\**" />
-    <EmbeddedResource Remove="Navigation\**" />
-    <None Remove="UnitTesting\**" />
-    <None Remove="Navigation\**" />
+    <Compile Remove="AfterUnity56\**" />
+    <None Remove="AfterUnity56\**" />
+    <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.5.5.0f3" Version="2017.7.21" />
