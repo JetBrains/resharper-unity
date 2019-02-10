@@ -31,13 +31,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         protected override void Analyze(IMultiplicativeExpression expression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            var byLeft =
-                MultiplicativeExpressionNavigator.GetByLeftOperand(expression.GetContainingParenthesizedExpression());
+            var byLeft = MultiplicativeExpressionNavigator.GetByLeftOperand(expression.GetContainingParenthesizedExpression());
             if (byLeft != null)
                 return;
 
-            var byRight =
-                MultiplicativeExpressionNavigator.GetByRightOperand(expression.GetContainingParenthesizedExpression());
+            var byRight = MultiplicativeExpressionNavigator.GetByRightOperand(expression.GetContainingParenthesizedExpression());
             if (byRight != null)
                 return;
 
@@ -97,6 +95,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 myMulCount += GetElementCount(leftType);
             }
 
+            if (IsMatrixType(rightType) && left.GetExpressionType().ToIType().IsPredefinedNumeric())
+            {
+                myMulCount += GetElementCount(rightType);
+            }
+            
             return (leftMulCount + rightMulCount + myMulCount, false);
         }
 
