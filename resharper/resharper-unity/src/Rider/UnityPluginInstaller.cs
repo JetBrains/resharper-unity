@@ -9,6 +9,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
