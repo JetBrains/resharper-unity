@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             }
             catch (Exception e)
             {
-                myLogger.Warn(e, $"Failed to get {expression} instance");
+                myLogger.Warn(e, ExceptionOrigin.Algorithmic, $"Failed to get {expression} instance");
                 return null;
             }
         }
