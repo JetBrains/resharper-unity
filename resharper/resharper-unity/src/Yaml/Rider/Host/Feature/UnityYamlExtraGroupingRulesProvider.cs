@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Rider.Model;
 using JetBrains.UI.Icons;
 
@@ -71,6 +72,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         public bool Configurable => true;
         public bool PriorityDependsOnUsages => true;
         public double SortingPriority { get; }
+        public IDeclaredElement GetDeclaredElement(IOccurrence occurrence) => null;
+        public IProjectItem GetProjectItem(IOccurrence occurrence) => null;
     }
 
     // The priorities here put us after directory, file, namespace, type and member
