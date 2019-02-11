@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using UnityEditor;
 using UnityEngine;
 

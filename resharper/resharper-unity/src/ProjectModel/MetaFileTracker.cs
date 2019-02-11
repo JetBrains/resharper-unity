@@ -2,8 +2,8 @@
 using System.IO;
 using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
-using JetBrains.DataFlow;
 using JetBrains.DocumentManagers.Transactions;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Resources.Shell;

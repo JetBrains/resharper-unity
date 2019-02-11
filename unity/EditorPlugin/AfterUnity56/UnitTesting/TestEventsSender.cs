@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using JetBrains.Platform.Unity.EditorPluginModel;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;

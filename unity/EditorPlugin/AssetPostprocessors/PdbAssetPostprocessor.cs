@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using UnityEditor;
 using UnityEngine;
 

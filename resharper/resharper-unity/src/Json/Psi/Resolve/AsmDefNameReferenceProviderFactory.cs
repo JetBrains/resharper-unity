@@ -1,4 +1,5 @@
 ﻿using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;

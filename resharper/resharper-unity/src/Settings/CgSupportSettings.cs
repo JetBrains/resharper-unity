@@ -3,6 +3,7 @@ using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {

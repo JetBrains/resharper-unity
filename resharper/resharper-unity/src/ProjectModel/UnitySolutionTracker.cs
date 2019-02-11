@@ -1,6 +1,6 @@
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;

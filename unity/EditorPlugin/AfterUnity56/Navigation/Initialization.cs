@@ -13,36 +13,36 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
       var connectionLifetime = modelAndLifetime.Lifetime;
       modelValue.ShowGameObjectOnScene.Advise(connectionLifetime,  findUsagesResult =>
       {
-        if (findUsagesResult == null)
-          return;
-        
-        MainThreadDispatcher.Instance.Queue(() =>
+        if (findUsagesResult != null)
         {
-          if (findUsagesResult.IsPrefab)
+          MainThreadDispatcher.Instance.Queue(() =>
           {
-            ShowUtil.ShowPrefabUsage(findUsagesResult.FilePath, findUsagesResult.PathElements);
-          }
-          else
-          {
-            ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath,  findUsagesResult.FileName, findUsagesResult.PathElements, findUsagesResult.RootIndices);
-          }
-        });
+            if (findUsagesResult.IsPrefab)
+            {
+              ShowUtil.ShowPrefabUsage(findUsagesResult.FilePath, findUsagesResult.PathElements);
+            }
+            else
+            {
+              ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath,  findUsagesResult.FileName, findUsagesResult.PathElements, findUsagesResult.RootIndices);
+            }
+          });  
+        }
       });
       
       modelValue.FindUsageResults.Advise(connectionLifetime, result =>
       {
-        if (result == null)
-          return;
-
-        MainThreadDispatcher.Instance.Queue(() =>
+        if (result != null)
         {
-          GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
-          GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());      
-          GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).GetInstanceID());
+          MainThreadDispatcher.Instance.Queue(() =>
+          {
+            GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
+            GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());      
+            GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).GetInstanceID());
 
-          var window = FindUsagesWindow.GetWindow(result.Target);
-          window.SetDataToEditor(result.Elements);
-        });
+            var window = FindUsagesWindow.GetWindow(result.Target);
+            window.SetDataToEditor(result.Elements);
+          });  
+        }
       });
     }
   }

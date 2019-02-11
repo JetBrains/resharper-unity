@@ -1,5 +1,6 @@
 ﻿using JetBrains.DataFlow;
 using JetBrains.IDE.UI.Extensions;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.Rider.Model.UIAutomation;
 

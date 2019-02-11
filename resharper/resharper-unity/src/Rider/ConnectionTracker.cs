@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Application.Threading;
-using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework;
+using JetBrains.Core;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     }
                     else
                     {
-                        var rdTask = editorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
+                        var rdTask = editorProtocol.UnityModel.Value.GetUnityEditorState.Start(Unit.Instance);
                         rdTask?.Result.Advise(lifetime, result =>
                         {
                             myLastCheckResult = result.Result;

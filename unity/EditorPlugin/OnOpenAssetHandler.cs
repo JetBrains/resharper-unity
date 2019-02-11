@@ -8,7 +8,7 @@ using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -81,7 +81,7 @@ namespace JetBrains.Rider.Unity.Editor
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
       }
 
-      var models = PluginEntryPoint.UnityModels.Where(a=>!a.Lifetime.IsTerminated).ToArray();
+      var models = PluginEntryPoint.UnityModels.Where(a=>a.Lifetime.IsAlive).ToArray();
       if (models.Any())
       {
         var model = models.First().Model;
