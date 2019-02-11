@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Tests</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor.Tests</RootNamespace>
     <DebugType>full</DebugType>
