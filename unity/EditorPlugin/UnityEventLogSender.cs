@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEngine;
@@ -19,7 +19,7 @@ namespace JetBrains.Rider.Unity.Editor
       var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public); // Unity 2017.x+
       if (eventInfo == null)
         eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
-      var domainLifetime = Lifetimes.Define();
+      var domainLifetime = Lifetime.Define();
       
       if (eventInfo != null)
       {
@@ -107,7 +107,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
         {
-          if (!modelWithLifetime.Lifetime.IsTerminated)
+          if (modelWithLifetime.Lifetime.IsAlive)
           {
             modelWithLifetime.Model.Log.Fire(logEvent);
           }

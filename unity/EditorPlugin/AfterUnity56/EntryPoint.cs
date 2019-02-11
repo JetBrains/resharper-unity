@@ -1,5 +1,5 @@
 ﻿using System;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56

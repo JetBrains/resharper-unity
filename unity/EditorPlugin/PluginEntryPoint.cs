@@ -5,15 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
-using JetBrains.DataFlow;
+using JetBrains.Core;
 using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
-using JetBrains.Util;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
+using JetBrains.Platform.RdFramework.Base;
 using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
@@ -69,7 +69,7 @@ namespace JetBrains.Rider.Unity.Editor
       try
       {
         // HostConnected also means that in Rider and in Unity the same solution is opened
-        connected = model.IsBackendConnected.Sync(RdVoid.Instance,
+        connected = model.IsBackendConnected.Sync(Unit.Instance,
           new RpcTimeouts(TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(200)));
       }
       catch (Exception)
@@ -118,7 +118,7 @@ namespace JetBrains.Rider.Unity.Editor
         EditorApplication.update += SyncSolutionOnceCallBack;
       }
 
-      var lifetimeDefinition = Lifetimes.Define(EternalLifetime.Instance);
+      var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
       var lifetime = lifetimeDefinition.Lifetime;
 
       AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
@@ -274,7 +274,7 @@ namespace JetBrains.Rider.Unity.Editor
           InitEditorLogPath(model);
           AdviseScriptCompilationDuringPlay(model, connectionLifetime);
 
-          model.UnityProcessId.Set(Process.GetCurrentProcess().Id);
+          model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
           model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
           model.ApplicationPath.SetValue(EditorApplication.applicationPath);
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
@@ -288,7 +288,7 @@ namespace JetBrains.Rider.Unity.Editor
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
-          connectionLifetime.AddAction(() => { UnityModels.Remove(pair); });
+          connectionLifetime.OnTermination(() => { UnityModels.Remove(pair); });
           UnityModels.Add(pair);
           new UnityEventLogSender(ourLogEventCollector);
         });
@@ -301,7 +301,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void AdviseScriptCompilationDuringPlay(EditorPluginModel model, Lifetime lifetime)
     {
-      model.SetScriptCompilationDuringPlay.AdviseNotNull(lifetime,
+      model.SetScriptCompilationDuringPlay.Advise(lifetime,
         scriptCompilationDuringPlay =>
         {
           if (UnityUtils.UnityVersion >= new Version(2018, 2))
@@ -333,7 +333,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       model.Refresh.Set((l, force) =>
       {
-        var task = new RdTask<RdVoid>();
+        var task = new RdTask<Unit>();
         MainThreadDispatcher.Instance.Queue(() =>
         {
           if (!EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || force)
@@ -349,7 +349,7 @@ namespace JetBrains.Rider.Unity.Editor
           }
           else
             ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
-          task.Set(RdVoid.Instance);
+          task.Set(Unit.Instance);
         });
         return task;
       });

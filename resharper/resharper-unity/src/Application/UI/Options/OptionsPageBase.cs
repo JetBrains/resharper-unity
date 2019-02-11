@@ -6,6 +6,7 @@ using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions;
 using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options

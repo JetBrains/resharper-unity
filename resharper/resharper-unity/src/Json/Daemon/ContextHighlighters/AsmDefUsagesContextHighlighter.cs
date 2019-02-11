@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;

@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 

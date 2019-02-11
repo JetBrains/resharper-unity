@@ -13,7 +13,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         public const string AssetsFolder = "Assets";
         public const string ProjectSettingsFolder = "ProjectSettings";
-        public const string LibraryFolder = "Library";
 
         private static readonly AssemblyNameInfo ourUnityEngineReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine", null);
         private static readonly AssemblyNameInfo ourUnityEditorReferenceName = AssemblyNameInfoFactory.Create2("UnityEditor", null);
