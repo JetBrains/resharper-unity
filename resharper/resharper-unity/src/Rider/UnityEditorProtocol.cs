@@ -89,6 +89,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 watcher.Changed += OnChanged;
                 watcher.Created += OnChanged;
 
+                lf.Bracket(() => { }, () =>
+                {
+                    watcher.Dispose();
+                });
+
                 watcher.EnableRaisingEvents = true; // Begin watching.
                 // connect on start of Rider
                 CreateProtocols(protocolInstancePath);

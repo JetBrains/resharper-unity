@@ -57,7 +57,7 @@ class OpenUnityProjectAsFolderNotification(project: Project, unityHost: UnityHos
                         WelcomeFrame.showIfNoProjectOpened()
                     }
                     if (hyperlinkEvent.description == "reopen") {
-                        StartUnityAction.StartUnityAndRider(project)
+                        StartUnityAction.startUnityAndRider(project)
                         ProjectUtil.closeAndDispose(project)
                         WelcomeFrame.showIfNoProjectOpened()
                     }
