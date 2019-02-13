@@ -23,7 +23,7 @@ class ConnectionTest : BaseTestWithSolution() {
 
     var unityPackedUrl = "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped_v4.zip";
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     fun test() {
 
         val editorPluginPath = Paths.get(project.basePath).resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
