@@ -5,7 +5,6 @@ import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
 import com.jetbrains.rider.test.scriptingApi.checkSwea
-import com.jetbrains.rider.test.scriptingApi.wait
 import com.jetbrains.rider.util.idea.lifetime
 import org.testng.annotations.Test
 import java.nio.file.Paths
@@ -20,7 +19,7 @@ class ConnectionTest : BaseTestWithSolution() {
 
     var unityPackedUrl = "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped_v4.zip";
 
-    @Test
+    @Test(enabled = false)
     fun test() {
 
         val editorPluginPath = Paths.get(project.basePath).resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
@@ -30,7 +29,9 @@ class ConnectionTest : BaseTestWithSolution() {
         val logPath = Paths.get(project.basePath).resolve("Editor.log")
         val root = downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
         val args =
-            arrayOf("-logfile", "\"$logPath\"", "-batchMode", "-quit", "-silent-crashes","-username", "\"rider-unity@jetbrains.com\"", "-password", "\"Rider-unity1\"", "\"-executeMethod\"", "\"JetBrains.Rider.Unity.Editor.UnityUtils.SyncSolution\"")
+            arrayOf("-logfile", "\"$logPath\"", "-batchMode", "-quit", "-silent-crashes","-username", "\"rider-unity@jetbrains.com\"",
+                "-password", "\"Rider-unity1\"", "\"-executeMethod\"", "\"JetBrains.Rider.Unity.Editor.UnityUtils.SyncSolution\"",
+                "-riderTests")
         val process = StartUnityAction.StartUnity(root.combine("Unity.exe").toPath(), project, args)
         assertNotNull(process)
 
