@@ -1,4 +1,5 @@
 using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;

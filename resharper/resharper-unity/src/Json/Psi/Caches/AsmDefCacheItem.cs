@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Serialization;
 using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Json.Psi.Caches

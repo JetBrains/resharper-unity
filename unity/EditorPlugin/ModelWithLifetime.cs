@@ -1,4 +1,4 @@
-﻿using JetBrains.DataFlow;
+﻿using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 
 namespace JetBrains.Rider.Unity.Editor

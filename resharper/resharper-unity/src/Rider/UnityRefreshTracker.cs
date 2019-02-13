@@ -6,6 +6,7 @@ using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;

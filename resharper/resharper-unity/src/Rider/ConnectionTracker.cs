@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Application.Threading;
-using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework;
+using JetBrains.Core;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
@@ -19,10 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol, IShellLocks locks, UnitySolutionTracker unitySolutionTracker)
         {
-            // TODO: this shouldn't be up in tests until we figure out how to test unity-editor requiring features
-            if (locks.Dispatcher.IsAsyncBehaviorProhibited)
-                return;
-
             unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 //check connection between backend and unity editor
@@ -34,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     }
                     else
                     {
-                        var rdTask = editorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
+                        var rdTask = editorProtocol.UnityModel.Value.GetUnityEditorState.Start(Unit.Instance);
                         rdTask?.Result.Advise(lifetime, result =>
                         {
                             myLastCheckResult = result.Result;

@@ -31,7 +31,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!PluginEntryPoint.Enabled)
         return false;
-      var model = PluginEntryPoint.UnityModels.FirstOrDefault(a => !a.Lifetime.IsTerminated);
+      var model = PluginEntryPoint.UnityModels.FirstOrDefault(a => a.Lifetime.IsAlive);
       if (model == null)
         return true;
       return false;

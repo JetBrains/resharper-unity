@@ -165,8 +165,8 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
 
     fun getMainSplitterIcon(invert: Boolean = false): Icon? = when (mainSplitterOrientation.value xor invert) {
-        true -> RiderUnitTestSessionPanel.splitBottomIcon
-        false -> RiderUnitTestSessionPanel.splitRightIcon
+        true -> com.intellij.icons.AllIcons.Actions.SplitHorizontally
+        false -> com.intellij.icons.AllIcons.Actions.SplitVertically
     }
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)

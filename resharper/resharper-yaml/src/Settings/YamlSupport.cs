@@ -1,6 +1,7 @@
 using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Settings
 {
