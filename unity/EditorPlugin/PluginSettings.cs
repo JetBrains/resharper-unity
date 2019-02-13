@@ -27,10 +27,10 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly ILog ourLogger = Log.GetLog<PluginSettings>();
     
-    internal static LoggingLevel SelectedLoggingLevel
+    public static LoggingLevel SelectedLoggingLevel
     {
       get => (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 0);
-      private set
+      set
       {
         EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
         InitLog();
