@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.Utils;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEditor.Events;

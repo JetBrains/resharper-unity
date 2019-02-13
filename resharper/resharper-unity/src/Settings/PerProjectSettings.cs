@@ -7,6 +7,7 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.Settings.Storage.DefaultBody;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Properties.CSharp;

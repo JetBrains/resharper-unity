@@ -1,8 +1,8 @@
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
-using JetBrains.DataFlow;
 using JetBrains.IDE.UI;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Settings;
 using JetBrains.ReSharper.LiveTemplates.UI;

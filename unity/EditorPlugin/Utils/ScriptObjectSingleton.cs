@@ -25,7 +25,7 @@ SOFTWARE.
 using System;
 using System.IO;
 using System.Linq;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using UnityEditorInternal;
 using UnityEngine;
 using Debug = System.Diagnostics.Debug;

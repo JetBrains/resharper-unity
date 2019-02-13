@@ -6,9 +6,9 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
-using JetBrains.DataFlow;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Impl;
@@ -39,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
         private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
+        private readonly IThreading myThreading;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -49,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
             ISettingsStore settingsStore, JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics,
-            UnitySolutionTracker unitySolutionTracker)
+            UnitySolutionTracker unitySolutionTracker, IThreading threading)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
@@ -58,6 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution = solution;
             myPluginPathsProvider = pluginPathsProvider;
             myUsageStatistics = usageStatistics;
+            myThreading = threading;
             myHost = host;
             myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
@@ -259,21 +261,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             editor.OpenFileLineCol.Set(args =>
             {
+                var result = false;
                 using (ReadLockCookie.Create())
                 {
-                    var textControl = mySolution.GetComponent<IEditorManager>()
-                        .OpenFile(FileSystemPath.Parse(args.Path), OpenFileOptions.DefaultActivate);
-                    if (textControl == null)
-                        return false;
-                    if (args.Line > 0 || args.Col > 0)
-                    {
-                        textControl.Caret.MoveTo((Int32<DocLine>) (args.Line - 1), (Int32<DocColumn>) args.Col,
-                            CaretVisualPlacement.Generic);
-                    }
-                }
+                    mySolution.GetComponent<IEditorManager>()
+                        .OpenFile(FileSystemPath.Parse(args.Path), OpenFileOptions.DefaultActivate, myThreading,
+                            textControl =>
+                            {
+                                if (args.Line > 0 || args.Col > 0)
+                                {
+                                    textControl.Caret.MoveTo((Int32<DocLine>) (args.Line - 1),
+                                        (Int32<DocColumn>) args.Col,
+                                        CaretVisualPlacement.Generic);
+                                }
 
-                myHost.PerformModelAction(m => m.ActivateRider.Fire());
-                return true;
+                                myHost.PerformModelAction(m => m.ActivateRider.Fire());
+                                result = true;
+                            },
+                            () => { result = false; });
+                }
+                return result;
             });
         }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.Util;

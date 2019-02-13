@@ -32,7 +32,7 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
             }
 
             // todo: fix UnityEngine.dll reference - either install Unity or from nuget
-            //checkSwea(newProject)
+            checkSwea(newProject)
 
         } finally {
             closeSolutionAndResetSettings(newProject)
