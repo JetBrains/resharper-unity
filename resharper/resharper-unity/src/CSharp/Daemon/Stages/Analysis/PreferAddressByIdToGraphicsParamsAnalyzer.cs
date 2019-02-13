@@ -87,7 +87,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             containingType = null;
             var stringMethodName = stringMethod.ShortName;
             
-            if (!stringMethodName.StartsWith("Get") && !stringMethodName.StartsWith("Set")) return false;
+            if (!stringMethodName.StartsWith("Get") && !stringMethodName.StartsWith("Set") && !stringMethodName.Equals("ResetTrigger")) 
+                return false;
             
             containingType = stringMethod.GetContainingType();
 

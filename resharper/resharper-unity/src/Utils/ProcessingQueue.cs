@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Utils

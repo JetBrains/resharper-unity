@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Impl;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 
 namespace JetBrains.Rider.Unity.Editor.NonUnity
 {

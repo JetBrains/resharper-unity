@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using JetBrains.Application.Threading;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.PropertiesExtender;
 

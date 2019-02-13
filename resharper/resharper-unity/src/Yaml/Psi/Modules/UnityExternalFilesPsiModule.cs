@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;

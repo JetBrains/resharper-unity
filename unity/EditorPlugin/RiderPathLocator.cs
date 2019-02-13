@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using Microsoft.Win32;
 #if UNITY_4_7 || UNITY_5_5
 // ReSharper disable once RedundantUsingDirective

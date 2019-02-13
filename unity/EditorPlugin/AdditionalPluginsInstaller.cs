@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Json.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;

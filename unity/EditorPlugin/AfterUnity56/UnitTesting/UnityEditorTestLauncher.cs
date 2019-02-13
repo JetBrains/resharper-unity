@@ -4,7 +4,7 @@ using System.Reflection;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Util;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
