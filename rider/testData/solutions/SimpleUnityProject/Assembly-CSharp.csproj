@@ -45,12 +45,6 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="UnityEngine">
-      <HintPath>F:\Program Files\2018.3.3f1\Editor\Data\Managed/UnityEngine/UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor">
-      <HintPath>F:\Program Files\2018.3.3f1\Editor\Data\Managed/UnityEditor.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\NewBehaviourScript.cs" />
