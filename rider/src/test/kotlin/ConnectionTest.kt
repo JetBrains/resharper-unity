@@ -47,7 +47,6 @@ class ConnectionTest : BaseTestWithSolution() {
         val projectVirtualFile = File(project.basePath).combine("Assembly-CSharp.csproj")
         changeFileSystem2(project){ arrayOf(projectVirtualFile) }
 
-        // todo: fix UnityEngine.dll reference - either install Unity or from nuget
         checkSwea(project)
     }
 }
