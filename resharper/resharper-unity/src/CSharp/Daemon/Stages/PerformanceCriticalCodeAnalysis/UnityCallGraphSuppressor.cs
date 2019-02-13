@@ -1,7 +1,10 @@
+using JetBrains.Application.Settings;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
@@ -10,9 +13,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         private readonly bool myAvailable;
 
-        public UnityCallGraphSuppressor(UnitySolutionTracker tracker)
+        public UnityCallGraphSuppressor(ISolution solution, UnitySolutionTracker tracker, ISettingsStore settingsStore)
         {
-            myAvailable = tracker.IsUnityProject.HasTrueValue();
+            var settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
+            var enabled = settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
+            myAvailable = enabled && tracker.IsUnityProject.HasTrueValue();
         }
 
         public int GetPriority() => 10;
