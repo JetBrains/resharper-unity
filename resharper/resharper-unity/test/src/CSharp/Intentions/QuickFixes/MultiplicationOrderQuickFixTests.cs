@@ -11,9 +11,9 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 {
     [TestUnity]
-    public class MulOrderQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
+    public class MultiplicationOrderQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MulOrder\Availability";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MultiplicationOrder\Availability";
 
         [Test] public void Available01() { DoNamedTest(); }
         [Test] public void Available02() { DoNamedTest(); }
@@ -23,15 +23,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
         {
-            return highlighting is InefficientMultiplyOrderWarning;
+            return highlighting is InefficientMultiplicationOrderWarning;
         }
     }
 
     
     [TestUnity]
-    public class MulOrderQuickFixTests : CSharpQuickFixTestBase<MulOrderQuickFix>
+    public class MultiplicationOrderQuickFixTests : CSharpQuickFixTestBase<MultiplicationOrderQuickFix>
     {
-        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MulOrder";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MultiplicationOrder";
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }

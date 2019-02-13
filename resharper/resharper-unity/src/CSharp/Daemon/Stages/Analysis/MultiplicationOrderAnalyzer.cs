@@ -1,29 +1,30 @@
-using System.Collections.Generic;
+using     System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
+using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IMultiplicativeExpression), HighlightingTypes =
-        new[] {typeof(InefficientMultiplyOrderWarning)})]
-    public class MulOrderAnalyzer : UnityElementProblemAnalyzer<IMultiplicativeExpression>
+        new[] {typeof(InefficientMultiplicationOrderWarning)})]
+    public class MultiplicationOrderAnalyzer : UnityElementProblemAnalyzer<IMultiplicativeExpression>
     {
-        private static Dictionary<string, int> knownTypes = new Dictionary<string, int>()
+        private static Dictionary<IClrTypeName, int> knownTypes = new Dictionary<IClrTypeName, int>()
         {
-            {"UnityEngine.Vector2", 2},
-            {"UnityEngine.Vector3", 3},
-            {"UnityEngine.Vector4", 4},
-            {"UnityEngine.Vector2Int", 2},
-            {"UnityEngine.Vector3Int", 3},
+            {new ClrTypeName("UnityEngine.Vector2"), 2},
+            {new ClrTypeName("UnityEngine.Vector3"), 3},
+            {new ClrTypeName("UnityEngine.Vector4"), 4},
+            {new ClrTypeName("UnityEngine.Vector2Int"), 2},
+            {new ClrTypeName("UnityEngine.Vector3Int"), 3},
         };
 
-        public MulOrderAnalyzer(UnityApi unityApi)
+        public MultiplicationOrderAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
         }
@@ -45,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return;
 
             if (count > GetElementCount(expression.GetExpressionType()))
-                consumer.AddHighlighting(new InefficientMultiplyOrderWarning(expression));
+                consumer.AddHighlighting(new InefficientMultiplicationOrderWarning(expression));
         }
 
         private (int, bool) CalculateMatrixIntMulCount(ICSharpExpression expression)
@@ -88,28 +89,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 rightMulCount += newCount;
             }
 
-            var myMulCount = 0;
+            var mulCount = 0;
 
             if (IsMatrixType(leftType) && right.GetExpressionType().ToIType().IsPredefinedNumeric())
             {
-                myMulCount += GetElementCount(leftType);
+                mulCount += GetElementCount(leftType);
             }
 
             if (IsMatrixType(rightType) && left.GetExpressionType().ToIType().IsPredefinedNumeric())
             {
-                myMulCount += GetElementCount(rightType);
+                mulCount += GetElementCount(rightType);
             }
             
-            return (leftMulCount + rightMulCount + myMulCount, false);
+            return (leftMulCount + rightMulCount + mulCount, false);
         }
 
-        private int GetElementCount(IExpressionType expression)
-        {
-            var name = expression.GetLongPresentableName(CSharpLanguage.Instance);
-            if (knownTypes.ContainsKey(name))
-                return knownTypes[name];
-            return 0;
-        }
 
         private bool IsAcceptableType(IExpressionType rightType)
         {
@@ -118,7 +112,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private bool IsMatrixType([NotNull] IExpressionType expression)
         {
-            return knownTypes.ContainsKey(expression.GetLongPresentableName(CSharpLanguage.Instance));
+            var clrType = (expression as IDeclaredType)?.GetClrName();
+            if (clrType == null)
+                return false;
+            return knownTypes.ContainsKey(clrType);
+        }
+        
+        private int GetElementCount(IExpressionType expression)
+        {
+            var clrType = (expression as IDeclaredType)?.GetClrName();
+            if (clrType == null || !knownTypes.ContainsKey(clrType))
+                return 0;
+            
+            return knownTypes[clrType];
         }
     }
 }

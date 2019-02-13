@@ -16,32 +16,26 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class MulOrderQuickFix : QuickFixBase
+    public class  MultiplicationOrderQuickFix : QuickFixBase
     {
         private readonly IMultiplicativeExpression myExpression;
 
-        public MulOrderQuickFix(InefficientMultiplyOrderWarning warning)
+        public MultiplicationOrderQuickFix(InefficientMultiplicationOrderWarning warning)
         {
             myExpression = warning.Expression;
         }
         
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
-            var operands = GetAllOperands(myExpression);
-
-            var numerics = operands.Where(t => t.GetExpressionType().ToIType().IsPredefinedNumeric()).ToList();
-            var vector = operands.Single(t => !t.GetExpressionType().ToIType().IsPredefinedNumeric());
-
+            var operands = GetAllOperands(myExpression).OrderBy(t => !t.GetExpressionType().ToIType().IsPredefinedNumeric()).ToList();
             var factory = CSharpElementFactory.GetInstance(myExpression);
 
             const string mul = "$0 * $1";
-            var newExpr = factory.CreateExpression(mul, numerics[0].CopyWithResolve(), numerics[1].CopyWithResolve());
-            for (int i = 2; i < numerics.Count; i++)
-                newExpr = factory.CreateExpression(mul, newExpr, numerics[i].CopyWithResolve());
-
-            newExpr = factory.CreateExpression(mul, newExpr, vector.CopyWithResolve());
+            var newExpr = operands[0];
+            for (int i = 1; i < operands.Count; i++)
+                newExpr = factory.CreateExpression(mul, newExpr, operands[i].CopyWithResolve());
+           
             myExpression.ReplaceBy(newExpr);
-            
             return null;
         }
 
@@ -74,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         public override bool IsAvailable(IUserDataHolder cache) => myExpression.IsValid();
 
-        public override string Text => "Reorder operations";
+        public override string Text => "Reorder multiplication";
 
     }
 }

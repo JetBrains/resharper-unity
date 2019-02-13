@@ -78,7 +78,7 @@
         <Description>Method does not match expected signature.</Description>
       </Tag>
 
-      <Tag externalName="InefficientMultiplyOrderWarning.HIGHLIGHTING_ID"
+      <Tag externalName="InefficientMultiplicationOrderWarning.HIGHLIGHTING_ID"
            default="WARNING">
           <Title>Order of multiplication operations is inefficient</Title>
         <Description>Reordering multiplication operations will improve performance</Description>
@@ -297,7 +297,7 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
-  <Warning name="InefficientMultiplyOrder" configurableSeverity="Unity.InefficientMultiplyOrder">
+  <Warning name="InefficientMultiplicationOrder" configurableSeverity="Unity.InefficientMultiplicationOrder">
     <Parameter type="IMultiplicativeExpression" name="expression"/>
     <Message value="Order of multiplication operations is inefficient" />
     <Range>Expression.GetDocumentRange()</Range>
