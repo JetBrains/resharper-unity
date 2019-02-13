@@ -1,22 +1,28 @@
-﻿using System.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.Impl;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.ReSharper.TestFramework.Components.Psi;
 using JetBrains.Util;
+using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
-    public abstract class UsageCheckBaseTest : BaseTestWithSingleProject
+    [Category("Daemon"), Category("PerformanceCriticalCode")]
+    public abstract class PerformanceCriticalCodeStageTestBase : BaseTestWithSingleProject
     {
-        protected override string RelativeTestDataPath => @"CSharp\Daemon\UsageChecking";
         protected override void DoTest(IProject project)
         {
             var swea = SolutionAnalysisService.GetInstance(Solution);
@@ -32,9 +38,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
                     foreach (var file in files)
                         swea.AnalyzeInvisibleFile(file);
 
-                    ExecuteWithGold(writer =>
+                    ExecuteWithGold(this.TestMethodName + ".cs", writer =>
                     {
-                        var highlightingSettingsManager = HighlightingSettingsManager.Instance;
                         foreach (var file in files)
                         {
                             if (file.LanguageType.IsNullOrUnknown()) continue;
@@ -46,15 +51,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
                                 DaemonStageManager.GetInstance(Solution).Stages,
                                 (highlighting, psiSourceFile, settingsStore) =>
                                 {
-                                    var attribute = highlightingSettingsManager.GetHighlightingAttribute(highlighting);
-                                    var severity = highlightingSettingsManager.GetSeverity(highlighting, psiSourceFile, Solution, settingsStore);
-                                    return severity != Severity.INFO || attribute.OverlapResolve != OverlapResolveKind.NONE;
+                                    return highlighting is PerformanceHighlightingBase;
                                 },
                                 CSharpLanguage.Instance);
                             process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
                             process.DoHighlighting(DaemonProcessKind.GLOBAL_WARNINGS);
                             process.Dump();
-                            writer.WriteLine();
                         }
                     });
                 });
