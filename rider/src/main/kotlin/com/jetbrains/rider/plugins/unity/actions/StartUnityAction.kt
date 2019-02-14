@@ -41,7 +41,7 @@ open class StartUnityAction : DumbAwareAction("Start Unity", "Start Unity with c
             if (SystemInfo.isMac)
                 path = Path.combine(path, "Contents/MacOS/Unity")
             val projectPath = project.basePath.toString();
-            val processBuilderArgs = mutableListOf("\"$path\"", "-projectPath", "\"$projectPath\"")
+            val processBuilderArgs = mutableListOf(path, "-projectPath", projectPath)
             processBuilderArgs.addAll(args)
 
             val processBuilder = ProcessBuilder(processBuilderArgs)
