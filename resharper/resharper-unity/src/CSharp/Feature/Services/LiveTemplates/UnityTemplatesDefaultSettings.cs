@@ -2,7 +2,7 @@
 using System.Reflection;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates

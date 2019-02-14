@@ -5,9 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.Rider.Unity.Editor.NonUnity;
-using JetBrains.Util;
-using JetBrains.Util.Logging;
 using UnityEditor;
 using UnityEngine;
 

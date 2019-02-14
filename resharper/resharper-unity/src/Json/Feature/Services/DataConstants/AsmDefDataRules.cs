@@ -2,7 +2,7 @@
 using JetBrains.Application;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.UI.Actions.ActionManager;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Json.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;

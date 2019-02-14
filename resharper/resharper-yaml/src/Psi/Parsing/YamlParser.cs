@@ -1,4 +1,4 @@
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;

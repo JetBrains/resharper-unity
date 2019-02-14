@@ -1,3 +1,4 @@
+using JetBrains.Collections;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util.Util;

@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Host.Features;

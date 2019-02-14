@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
-using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.Serialization;
 using JetBrains.Threading;
 using JetBrains.Util.PersistentMap;
 

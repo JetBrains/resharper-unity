@@ -1,4 +1,4 @@
-﻿using JetBrains.DataFlow;
+﻿using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Descriptions;

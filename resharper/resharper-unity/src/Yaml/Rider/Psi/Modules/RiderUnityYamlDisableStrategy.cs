@@ -1,6 +1,6 @@
 using JetBrains.Application.Settings;
-using JetBrains.DataFlow;
-using JetBrains.Platform.RdFramework;
+using JetBrains.Core;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider;
 
@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         protected override void NotifyYamlParsingDisabled()
         {
-            myUnityHost.PerformModelAction(t => t.NotifyYamlHugeFiles.Fire(RdVoid.Instance));
+            myUnityHost.PerformModelAction(t => t.NotifyYamlHugeFiles.Fire(Unit.Instance));
         }
     }
 }

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
-using JetBrains.DataFlow;
+using JetBrains.Core;
+using JetBrains.Lifetimes;
 using JetBrains.Metadata.Access;
-using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Base;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
@@ -139,7 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         return;
                     }
 
-                    var task = myEditorProtocol.UnityModel.Value.GetCompilationResult.Start(RdVoid.Instance);
+                    var task = myEditorProtocol.UnityModel.Value.GetCompilationResult.Start(Unit.Instance);
                     task.Result.AdviseNotNull(run.Lifetime, result =>
                     {
                         if (!result.Result)
@@ -171,7 +171,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                     SubscribeResults(run, lt, tcs, launch);
                                 });
 
-                                myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(RdVoid.Instance);
+                                myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(Unit.Instance);
                             });
                         }
                     });
@@ -205,7 +205,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     {
                         if (myEditorProtocol.UnityModel.Value != null)
                         {
-                            var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(RdVoid.Instance);
+                            var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(Unit.Instance);
                             rdTask?.Result.Advise(lifetime, result =>
                             {
                                 // [TODO] Backend ConnectionTracker has IsConnectionEstablished method which has same logic
@@ -359,7 +359,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         {
                             var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
                             if (launchProperty != null && launchProperty.HasValue())
-                                launchProperty.Value?.Abort.Start(RdVoid.Instance);
+                                launchProperty.Value?.Abort.Start(Unit.Instance);
                              run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
                         });
         }
