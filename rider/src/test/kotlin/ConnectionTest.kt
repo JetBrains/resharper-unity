@@ -49,7 +49,7 @@ class ConnectionTest : BaseTestWithSolution() {
             appPath = localAppPath
         }
 
-        val args = mutableListOf("-logfile", "\"$logPath\"", "-batchMode", "-quit", "-silent-crashes",
+        val args = mutableListOf("-logfile", logPath.toString(), "-batchMode", "-quit", "-silent-crashes",
             "\"-executeMethod\"", "\"JetBrains.Rider.Unity.Editor.Internal.RiderTests.EnableLogsSyncSolution\"",
             "-riderTests")
         if (isRunningInTeamCity)
