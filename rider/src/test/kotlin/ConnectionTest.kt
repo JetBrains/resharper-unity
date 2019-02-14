@@ -1,3 +1,4 @@
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.io.exists
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rdclient.util.idea.waitAndPump
@@ -19,7 +20,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.test.assertNotNull
 
-@TestEnvironment(platform = [PlatformType.WINDOWS]) // todo: allow Mac and Linux
+@TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS]) // todo: allow Linux
 class ConnectionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String {
         return "SimpleUnityProject"
@@ -27,7 +28,11 @@ class ConnectionTest : BaseTestWithSolution() {
 
     override val waitForCaches = true;
 
-    var unityPackedUrl = "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped_v4.zip";
+    var unityPackedUrl = when{
+        SystemInfo.isWindows -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped_v4.zip"
+        SystemInfo.isMac -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1.tar.gz"
+        else -> throw Exception("Not implemented")
+    }
 
     @Test(enabled = false)
     fun test() {
@@ -41,7 +46,14 @@ class ConnectionTest : BaseTestWithSolution() {
         val appPath: Path
         val isRunningInTeamCity = TeamCityHelper.isUnderTeamCity
         if (isRunningInTeamCity) // on teamcity download Unity
-            appPath = downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl).combine("Unity.exe").toPath()
+        {
+            val folder = downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
+            appPath = when {
+                SystemInfo.isWindows -> folder.combine("Unity.exe").toPath()
+                SystemInfo.isMac -> folder.toPath()
+                else -> throw Exception("Not implemented")
+            }
+        }
         else
         {
             val localAppPath = UnityInstallationFinder.getInstance(project).getApplicationPath()
