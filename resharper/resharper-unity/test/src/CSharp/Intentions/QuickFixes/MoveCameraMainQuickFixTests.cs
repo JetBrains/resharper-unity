@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 {
     [TestUnity]
-    public class MoveCameraMainQuickFixTests : CSharpQuickFixTestBase<MoveCameraMainQuickFix>
+    public class MoveCameraMainQuickFixTests : CSharpQuickFixAfterSwaTestBase<MoveCameraMainQuickFix>
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCameraMain";
 

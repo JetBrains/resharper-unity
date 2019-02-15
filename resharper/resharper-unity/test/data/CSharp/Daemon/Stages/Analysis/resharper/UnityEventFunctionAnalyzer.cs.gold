@@ -17,65 +17,65 @@ public class ||HighlightMultipleExactMatches|(4)|(5) : MonoBehaviour
 {
     // Both overloads are correct - collisionInfo is optional.
     // Which is picked is ambiguous, so mark both with a warning
-    public void |||OnCollisionStay|(7)|(8)(Collision collisionInfo)|(6)
+    public void ||OnCollisionStay|(6)|(7)(Collision collisionInfo)
     {
     }
 
-    public void |||OnCollisionStay|(10)|(11)()|(9)
+    public void ||OnCollisionStay|(8)|(9)()
     {
     }
 }
 
 // Incorrect signatures should still be marked as event functions,
 // as long as there isn't an exact match
-public class ||HighlightIncorrectOverloads|(12)|(13) : MonoBehaviour
+public class ||HighlightIncorrectOverloads|(10)|(11) : MonoBehaviour
 {
-    public void ||Start|(14)|(15)(|int i|(16))
+    public void ||Start|(12)|(13)(int i)
     {
     }
 
-    public |int|(17) |||Update|(18)|(19)|(20)()
+    public int ||Update|(14)|(15)()
     {
         return 0;
     }
 
-    public void ||OnCollisionStay|(21)|(22)(|Collision collisionInfo, int i|(23))
+    public void ||OnCollisionStay|(16)|(17)(Collision collisionInfo, int i)
     {
     }
 
     // Missing all parameters
-    public void ||OnAnimatorIK|(24)|(25)|()|(26)
+    public void ||OnAnimatorIK|(18)|(19)()
     {
     }
 }
 
-public class ||StaticModifier|(27)|(28) : AssetPostprocessor
+public class ||StaticModifier|(20)|(21) : AssetPostprocessor
 {
     // Should be static
-    public void |||OnGeneratedCSProjectFiles|(29)|(30)|(31)()
+    public void ||OnGeneratedCSProjectFiles|(22)|(23)()
     {
     }
 
-    bool |||OnPreGeneratingCSProjectFiles|(32)|(33)|(34)()
+    bool ||OnPreGeneratingCSProjectFiles|(24)|(25)()
     {
     }
 
     // Should not be static
-    |static|(35) void ||OnPreprocessAssembly|(36)|(37)(string pathName)
+    static void ||OnPreprocessAssembly|(26)|(27)(string pathName)
     {
     }
 }
 
-public class ||TypeParameters|(38)|(39) : MonoBehaviour
+public class ||TypeParameters|(28)|(29) : MonoBehaviour
 {
-    public void ||Start|(40)|(41)|<T1, T2>|(42)()
+    public void ||Start|(30)|(31)<T1, T2>()
     {
     }
 }
 
-public class ||AllWrong|(43)|(44) : AssetPostprocessor
+public class ||AllWrong|(32)|(33) : AssetPostprocessor
 {
-    public int |||OnGeneratedCSProjectFiles|(45)|(46)|(47)<T1, T2>(int value)
+    public int ||OnGeneratedCSProjectFiles|(34)|(35)<T1, T2>(int value)
     {
         return 42;
     }
@@ -91,70 +91,58 @@ This function can be a coroutine.
 (3): ReSharper Unity Implicitly Used Identifier: 
 (4): Unity Gutter Icon: Unity scripting component
 (5): ReSharper Unity Implicitly Used Identifier: 
-(6): ReSharper Warning: Event function with the same name is already declared
-(7): Unity Gutter Icon: Unity event function
+(6): Unity Gutter Icon: Unity event function
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
-(8): ReSharper Unity Implicitly Used Identifier: 
-(9): ReSharper Warning: Event function with the same name is already declared
-(10): Unity Gutter Icon: Unity event function
+(7): ReSharper Unity Implicitly Used Identifier: 
+(8): Unity Gutter Icon: Unity event function
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
+(9): ReSharper Unity Implicitly Used Identifier: 
+(10): Unity Gutter Icon: Unity scripting component
 (11): ReSharper Unity Implicitly Used Identifier: 
-(12): Unity Gutter Icon: Unity scripting component
+(12): Unity Gutter Icon: Unity event function
+
+Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
+This function can be a coroutine.
 (13): ReSharper Unity Implicitly Used Identifier: 
 (14): Unity Gutter Icon: Unity event function
 
-Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
-This function can be a coroutine.
-(15): ReSharper Unity Implicitly Used Identifier: 
-(16): ReSharper Warning: Incorrect method parameters. Expected '()'
-(17): ReSharper Warning: Incorrect return type. Expected 'void'
-(18): ReSharper Unity Implicitly Used Identifier: 
-(19): ReSharper Unity Performance Critical Context: Performance critical context
-(20): Unity Gutter Icon: Unity event function
-
 Update is called every frame, if the MonoBehaviour is enabled.
-(21): Unity Gutter Icon: Unity event function
+(15): ReSharper Unity Implicitly Used Identifier: 
+(16): Unity Gutter Icon: Unity event function
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
-(22): ReSharper Unity Implicitly Used Identifier: 
-(23): ReSharper Warning: Incorrect method parameters. Expected '(Collision other)'
-(24): Unity Gutter Icon: Unity event function
+(17): ReSharper Unity Implicitly Used Identifier: 
+(18): Unity Gutter Icon: Unity event function
 
 Callback for setting up animation IK (inverse kinematics).
-(25): ReSharper Unity Implicitly Used Identifier: 
-(26): ReSharper Warning: Incorrect method parameters. Expected '(int layerIndex)'
-(27): Unity Gutter Icon: Unity scripting component
-(28): ReSharper Unity Implicitly Used Identifier: 
-(29): ReSharper Warning: Missing static modifier
-(30): Unity Gutter Icon: Unity event function
+(19): ReSharper Unity Implicitly Used Identifier: 
+(20): Unity Gutter Icon: Unity scripting component
+(21): ReSharper Unity Implicitly Used Identifier: 
+(22): Unity Gutter Icon: Unity event function
 
 This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
-(31): ReSharper Unity Implicitly Used Identifier: 
-(32): ReSharper Warning: Missing static modifier
-(33): Unity Gutter Icon: Unity event function
+(23): ReSharper Unity Implicitly Used Identifier: 
+(24): Unity Gutter Icon: Unity event function
 
 This callback is used by UnityVS to take over project generation from Unity
-(34): ReSharper Unity Implicitly Used Identifier: 
-(35): ReSharper Warning: Incorrect static modifier
-(36): Unity Gutter Icon: Unity event function
-(37): ReSharper Unity Implicitly Used Identifier: 
-(38): Unity Gutter Icon: Unity scripting component
-(39): ReSharper Unity Implicitly Used Identifier: 
-(40): Unity Gutter Icon: Unity event function
+(25): ReSharper Unity Implicitly Used Identifier: 
+(26): Unity Gutter Icon: Unity event function
+(27): ReSharper Unity Implicitly Used Identifier: 
+(28): Unity Gutter Icon: Unity scripting component
+(29): ReSharper Unity Implicitly Used Identifier: 
+(30): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
-(41): ReSharper Unity Implicitly Used Identifier: 
-(42): ReSharper Warning: Incorrect type parameters
-(43): Unity Gutter Icon: Unity scripting component
-(44): ReSharper Unity Implicitly Used Identifier: 
-(45): ReSharper Warning: Incorrect method signature. Expected 'static void OnGeneratedCSProjectFiles()'
-(46): Unity Gutter Icon: Unity event function
+(31): ReSharper Unity Implicitly Used Identifier: 
+(32): Unity Gutter Icon: Unity scripting component
+(33): ReSharper Unity Implicitly Used Identifier: 
+(34): Unity Gutter Icon: Unity event function
 
 This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
-(47): ReSharper Unity Implicitly Used Identifier: 
+(35): ReSharper Unity Implicitly Used Identifier: 
