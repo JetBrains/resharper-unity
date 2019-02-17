@@ -17,14 +17,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
     {
         private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
 
-        public UnityTypeDetector(UnityApi unityApi, UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
+        public UnityTypeDetector(UnityApi unityApi,
+            UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
             : base(unityApi)
         {
             myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
         }
 
         protected override void Analyze(IClassLikeDeclaration element, ElementProblemAnalyzerData data,
-                                        IHighlightingConsumer consumer)
+            IHighlightingConsumer consumer)
         {
             var typeElement = element.DeclaredElement;
             if (typeElement != null)
@@ -33,6 +34,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
                 {
                     myImplicitUsageHighlightingContributor.AddUnityImplicitClassUsage(consumer, element,
                         "Unity scripting component");
+                }
+                else if (Api.IsUnityECSType(typeElement))
+                {
+                    myImplicitUsageHighlightingContributor.AddUnityImplicitClassUsage(consumer, element,
+                        "Unity ECS");
                 }
                 else if (Api.IsSerializableType(typeElement))
                 {
