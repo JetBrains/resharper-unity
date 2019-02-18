@@ -33,17 +33,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
                 if (Api.IsUnityType(typeElement))
                 {
                     myImplicitUsageHighlightingContributor.AddUnityImplicitClassUsage(consumer, element,
-                        "Unity scripting component");
+                        "Unity scripting component", "Scripting component");
                 }
                 else if (Api.IsUnityECSType(typeElement))
                 {
                     myImplicitUsageHighlightingContributor.AddUnityImplicitClassUsage(consumer, element,
-                        "Unity ECS");
+                        "Unity entity component system object", "Unity ECS");
                 }
                 else if (Api.IsSerializableType(typeElement))
                 {
                     myImplicitUsageHighlightingContributor.AddUnityImplicitClassUsage(consumer, element,
-                        "Unity custom serializable type");
+                        "Unity custom serializable type", "Unity serializable");
                 }
             }
         }

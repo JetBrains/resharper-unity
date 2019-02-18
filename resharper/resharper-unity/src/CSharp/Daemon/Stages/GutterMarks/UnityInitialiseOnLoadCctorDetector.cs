@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
                 containingType.HasAttributeInstance(KnownTypes.InitializeOnLoadAttribute, false))
             {
                 myImplicitUsageHighlightingContributor.AddInitializeOnLoadMethod(consumer, element,
-                    "Called when Unity first launches the editor, the player, or recompiles scripts");
+                    "Called when Unity first launches the editor, the player, or recompiles scripts", "Unity implicit usage");
             }
         }
     }

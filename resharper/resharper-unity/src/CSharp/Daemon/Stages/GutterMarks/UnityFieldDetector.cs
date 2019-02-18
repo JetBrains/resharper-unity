@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
             if (Api.IsSerialisedField(field) || Api.IsInjectedField(field))
             {
                 myImplicitUsageHighlightingContributor.AddUnityImplicitFieldUsage(consumer, element,
-                    "This field is initialised by Unity");
+                    "This field is initialised by Unity", "Set by Unity");
             }
         }
     }
