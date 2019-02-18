@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.UI.Components.Theming;
 using JetBrains.Application.UI.Help;
+using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel.DataContext;
 using JetBrains.ProjectModel;

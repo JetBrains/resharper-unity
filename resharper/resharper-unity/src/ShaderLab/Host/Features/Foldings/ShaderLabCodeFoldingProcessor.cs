@@ -1,3 +1,4 @@
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CodeFolding;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;

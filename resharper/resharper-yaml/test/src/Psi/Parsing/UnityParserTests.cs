@@ -1,3 +1,4 @@
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;

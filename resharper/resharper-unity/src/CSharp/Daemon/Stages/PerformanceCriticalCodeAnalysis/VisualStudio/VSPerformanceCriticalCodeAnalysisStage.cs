@@ -12,15 +12,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [DaemonStage(GlobalAnalysisStage = true)]
     public class VSPerformanceCriticalCodeAnalysisStage : PerformanceCriticalCodeAnalysisStage
     {
-        public VSPerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa, CallGraphActivityTracker tracker)
-            : base(swa, tracker)
+        public VSPerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa, CallGraphActivityTracker tracker, PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
+            ExpensiveCodeCallGraphAnalyzer expensiveAnalyzer)
+            : base(swa, tracker, performanceAnalyzer, expensiveAnalyzer)
         {
         }
         
         protected override IDaemonStageProcess GetProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            return new VSPerformanceCriticalCodeAnalysisProcess(process, file, Swa, Tracker);
+            return new VSPerformanceCriticalCodeAnalysisProcess(process, file, Swa, Tracker, PerformanceAnalyzer, ExpensiveAnalyzer);
         }
     }
 
@@ -28,8 +29,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     internal class VSPerformanceCriticalCodeAnalysisProcess : PerformanceCriticalCodeAnalysisProcess
     {
         public VSPerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file, 
-            [NotNull] SolutionAnalysisService swa, [NotNull] CallGraphActivityTracker tracker)
-            : base(process, file, swa, tracker)
+            [NotNull] SolutionAnalysisService swa, [NotNull] CallGraphActivityTracker tracker, [NotNull]PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
+            ExpensiveCodeCallGraphAnalyzer expensiveAnalyzer)
+            : base(process, file, swa, tracker, performanceAnalyzer, expensiveAnalyzer)
         {
         }
 

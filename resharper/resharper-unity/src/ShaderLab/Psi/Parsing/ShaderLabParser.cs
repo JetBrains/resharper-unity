@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.Application.Threading;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Gen;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;

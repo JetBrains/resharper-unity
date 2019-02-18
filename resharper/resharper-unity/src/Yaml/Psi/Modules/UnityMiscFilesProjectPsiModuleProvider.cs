@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
