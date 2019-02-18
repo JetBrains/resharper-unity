@@ -29,26 +29,36 @@ enum class PackageSource {
     }
 }
 
-data class PackageData(val name: String, val packageFolder: VirtualFile?, val details: PackageDetails, val source: PackageSource) {
+data class PackageData(val name: String, val packageFolder: VirtualFile?, val details: PackageDetails,
+                       val source: PackageSource, val gitDetails: GitDetails? = null) {
     companion object {
         fun unknown(name: String, version: String, source: PackageSource = PackageSource.Unknown): PackageData {
-            return PackageData(name, null, PackageDetails(name, "$name@$version", version, "", mapOf()), source)
+            return PackageData(name, null, PackageDetails(name, "$name@$version", version,
+                    "Cannot resolve package '$name' with version '$version'", "", mapOf()), source)
         }
     }
 }
 
-data class PackageDetails(val canonicalName: String, val displayName: String, val version: String, val description: String, val dependencies: Map<String, String>) {
+// Canonical name is the name from package.json, or the package's folder name if missing
+// Display name is the display name from package.json, falling back to package.json name and then folder name
+// For unresolved packages, name is the name from manifest.json and display name is name@version from manifest.json
+data class PackageDetails(val canonicalName: String, val displayName: String, val version: String,
+                          val description: String, val author: String, val dependencies: Map<String, String>) {
     companion object {
         fun fromPackageJson(packageFolder: VirtualFile, packageJson: PackageJson?): PackageDetails? {
             if (packageJson == null) return null
             val name = packageJson.name ?: packageFolder.name
-            return PackageDetails(name, packageJson.displayName ?: name, packageJson.version ?: "", packageJson.description ?: "", packageJson.dependencies ?: mapOf())
+            return PackageDetails(name, packageJson.displayName ?: name, packageJson.version ?: "",
+                    packageJson.description ?: "", packageJson.author ?: "", packageJson.dependencies ?: mapOf())
         }
     }
 }
 
-// Other properties are available: category, keywords, unity (supported version), author
-data class PackageJson(val name: String?, val displayName: String?, val version: String?, val description: String?, val dependencies: Map<String, String>?)
+data class GitDetails(val url: String, val revision: String, val hash: String)
+
+// Other properties are available: category, keywords, unity (supported version)
+data class PackageJson(val name: String?, val displayName: String?, val version: String?, val description: String?,
+                       val author: String?, val dependencies: Map<String, String>?)
 
 class PackagesManager(private val project: Project) {
 
@@ -103,14 +113,15 @@ class PackagesManager(private val project: Project) {
             gson.fromJson(manifestJson.inputStream.reader(), ManifestJson::class.java)
         } catch (e: Throwable) {
             logger.error("Error deserializing Packages/manifest.json", e)
-            ManifestJson(emptyMap(), emptyArray(), null)
+            ManifestJson(emptyMap(), emptyArray(), null, emptyMap())
         }
 
         val registry = manifest.registry ?: "https://packages.unity.com"
         for ((name, version) in manifest.dependencies) {
             if (version.equals("exclude", true)) continue
 
-            val packageData = getPackageData(packagesFolder, name, version, registry, builtInPackagesFolder)
+            val lockDetails = manifest.lock?.get(name)
+            val packageData = getPackageData(packagesFolder, name, version, registry, builtInPackagesFolder, lockDetails)
             packagesByCanonicalName[name] = packageData
             if (packageData.packageFolder != null) {
                 packagesByFolderName[packageData.packageFolder.name] = packageData
@@ -174,16 +185,26 @@ class PackagesManager(private val project: Project) {
         // Now find all of the packages for all of these dependencies
         val newPackages = mutableListOf<PackageData>()
         for ((name, version) in dependencies) {
-            newPackages.add(getPackageData(packagesFolder, name, version.toString(), registry, builtInPackagesFolder))
+            newPackages.add(getPackageData(packagesFolder, name, version.toString(), registry, builtInPackagesFolder, null))
         }
         return newPackages
     }
 
-    private fun getPackageData(packagesFolder: VirtualFile, name: String, version: String, registry: String, builtInPackagesFolder: Path?): PackageData {
-        return getLocalPackage(packagesFolder, name, version)
-                ?: getGitPackage(name, version)
-                ?: getEmbeddedPackage(packagesFolder, name)
+    private fun getPackageData(packagesFolder: VirtualFile,
+                               name: String,
+                               version: String,
+                               registry: String,
+                               builtInPackagesFolder: Path?,
+                               lockDetails: LockDetails?)
+            : PackageData {
+
+        // Order is important here. Embedded packages in the Packages folder take precedence over everything. Registry
+        // packages are the most likely, and can't clash with other packages, so put them high up. The file: protocol is
+        // used by local and can also be a protocol for git (although I can't get it to work), so check git first
+        return getEmbeddedPackage(packagesFolder, name)
                 ?: getRegistryPackage(name, version, registry)
+                ?: getGitPackage(name, version, lockDetails)
+                ?: getLocalPackage(packagesFolder, name, version)
                 ?: getBuiltInPackage(name, version, builtInPackagesFolder)
                 ?: PackageData.unknown(name, version)
     }
@@ -211,10 +232,12 @@ class PackagesManager(private val project: Project) {
         return null
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    private fun getGitPackage(name: String, version: String): PackageData? {
-        // Not yet documented/supported in Unity
-        return null
+    private fun getGitPackage(name: String, version: String, lockDetails: LockDetails?): PackageData? {
+        if (lockDetails == null) return null
+        if (lockDetails.revision == null || lockDetails.hash == null) return null
+
+        val packageFolder = project.refreshAndFindFile("Library/PackageCache/$name@${lockDetails.hash}")
+        return getPackageDataFromFolder(name, packageFolder, PackageSource.Git, GitDetails(version, lockDetails.revision, lockDetails.hash))
     }
 
     private fun getEmbeddedPackage(packagesFolder: VirtualFile, name: String): PackageData? {
@@ -223,10 +246,17 @@ class PackagesManager(private val project: Project) {
     }
 
     private fun getRegistryPackage(name: String, version: String, registry: String): PackageData? {
+        // Unity 2018.3 introduced an additional layer of caching, local to the project, so that any edits to the files
+        // in the package only affect this project. This is primarily for the API updater, which would otherwise modify
+        // files in the per-user cache
+        var packageFolder = project.refreshAndFindFile("Library/PackageCache/$name@$version")
+        val packageData = getPackageDataFromFolder(name, packageFolder, PackageSource.Registry)
+        if (packageData != null) return packageData
+
         val registryRoot = UnityCachesFinder.getPackagesCacheFolder(registry)
         if (registryRoot == null || !registryRoot.isDirectory) return null
 
-        val packageFolder = registryRoot.findChild("$name@$version")
+        packageFolder = registryRoot.findChild("$name@$version")
         return getPackageDataFromFolder(name, packageFolder, PackageSource.Registry)
     }
 
@@ -248,12 +278,13 @@ class PackagesManager(private val project: Project) {
         return null
     }
 
-    private fun getPackageDataFromFolder(name: String, packageFolder: VirtualFile?, source: PackageSource): PackageData? {
+    private fun getPackageDataFromFolder(name: String, packageFolder: VirtualFile?, source: PackageSource,
+                                         gitDetails: GitDetails? = null): PackageData? {
         packageFolder?.let {
             if (packageFolder.isDirectory) {
                 val packageDetails = readPackagesJson(packageFolder)
                 if (packageDetails != null) {
-                    return PackageData(name, packageFolder, packageDetails, source)
+                    return PackageData(name, packageFolder, packageDetails, source, gitDetails)
                 }
             }
         }
