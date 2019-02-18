@@ -184,6 +184,9 @@
 <strong>New in 2019.1</strong>
 <em>Added:</em>
 <ul>
+  <li>Add inspection and quick fix to avoid inefficient order of multiplication operations (<a href="https://github.com/JetBrains/resharper-unity/issues/1031">#1031</a>)</li>
+  <li>Add warning for string literal use in <tt>Animator.ResetTrigger</tt> (<a href="https://youtrack.jetbrains.com/issue/RIDER-24421">RIDER-24421</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1035">#1035</a>)</li>
+  <li>Add support for marking ECS types and fields as "in use" (<a href="https://github.com/JetBrains/resharper-unity/issues/1010">#1010</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1036">#1036</a>)</li>
   <li>Rider: Support for git packages in Unity Explorer</li>
   <li>Rider: Add notification if there isn't a player log to show (<a href="https://github.com/JetBrains/resharper-unity/issues/820">#820</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1006">#1006</a> - thanks @ajon542!)</li>
 </ul>
