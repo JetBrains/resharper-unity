@@ -13,7 +13,7 @@ open class StartUnityAction : DumbAwareAction("Start Unity", "Start Unity with c
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        StartUnity(project)
+        startUnity(project)
     }
 
     override fun update(e: AnActionEvent) {
@@ -31,19 +31,25 @@ open class StartUnityAction : DumbAwareAction("Start Unity", "Start Unity with c
     }
 
     companion object {
-        fun StartUnity(project: Project, vararg args: String) {
-            val appPath = UnityInstallationFinder.getInstance(project).getApplicationPath() ?: return
+        fun startUnity(project: Project, vararg args: String): Process? {
+            val appPath = UnityInstallationFinder.getInstance(project).getApplicationPath() ?: return null
+            return startUnity(appPath, project, args)
+        }
+
+        fun startUnity(appPath: java.nio.file.Path, project: Project, args: Array<out String>): Process? {
             var path = appPath.toString()
             if (SystemInfo.isMac)
                 path = Path.combine(path, "Contents/MacOS/Unity")
-            val processBuilderArgs = mutableListOf<String>(path, "-projectPath", project.basePath.toString())
+            val projectPath = project.basePath.toString();
+            val processBuilderArgs = mutableListOf(path, "-projectPath", projectPath)
             processBuilderArgs.addAll(args)
 
-            ProcessBuilder(processBuilderArgs).start()
+            val processBuilder = ProcessBuilder(processBuilderArgs)
+            return processBuilder.start()
         }
 
-        fun StartUnityAndRider(project: Project) {
-            StartUnity(project, "-executeMethod", "JetBrains.Rider.Unity.Editor.RiderMenu.MenuOpenProject")
+        fun startUnityAndRider(project: Project) {
+            startUnity(project, "-executeMethod", "JetBrains.Rider.Unity.Editor.RiderMenu.MenuOpenProject")
         }
     }
 }

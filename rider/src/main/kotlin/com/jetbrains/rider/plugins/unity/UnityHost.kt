@@ -36,7 +36,7 @@ class UnityHost(project: Project) : LifetimedProjectComponent(project) {
         }
 
         model.startUnity.advise(componentLifetime) {
-            StartUnityAction.StartUnity(project)
+            StartUnityAction.startUnity(project)
         }
     }
 

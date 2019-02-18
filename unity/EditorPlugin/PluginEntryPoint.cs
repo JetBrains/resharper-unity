@@ -95,6 +95,12 @@ namespace JetBrains.Rider.Unity.Editor
     {
       get
       {
+        // When Unity is started by Rider tests
+        string[] args = Environment.GetCommandLineArgs ();
+        if (args.Contains("-riderTests"))
+          return true;
+        
+        // Regular check
         var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
         return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider") && !UnityEditorInternal.InternalEditorUtility.inBatchMode;
       }
