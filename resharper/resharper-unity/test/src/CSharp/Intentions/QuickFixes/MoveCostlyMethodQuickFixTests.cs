@@ -13,9 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCostlyMethod\Availability";
 
-        [Test] public void EveryThingAvailable() { DoNamedTest(); }
-        [Test] public void NotAvailableDueToLocalDependencies1() { DoNamedTest(); }
-        [Test] public void NotAvailableDueToLocalDependencies2() { DoNamedTest(); }
+        [Test][Ignore]  public void EveryThingAvailable() { DoNamedTest(); }
+        [Test][Ignore]  public void NotAvailableDueToLocalDependencies1() { DoNamedTest(); }
+        [Test][Ignore]  public void NotAvailableDueToLocalDependencies2() { DoNamedTest(); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 
 
     [TestUnity]
-    public class MoveCostlyMethodQuickFixTests : CSharpQuickFixTestBase<MoveCostlyInvocationQuickFix>
+    public class MoveCostlyMethodQuickFixTests : CSharpQuickFixAfterSwaTestBase<MoveCostlyInvocationQuickFix>
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCostlyMethod";
 
