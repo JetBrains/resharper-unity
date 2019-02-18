@@ -34,53 +34,21 @@
 - And much more!
 </description>
 <releaseNotes>
-- Updated to ReSharper 2018.3
-- Add parsing of method and class usage from scene, prefab and asset files
-- Automatically disable YAML parsing if the project is too large
-- Add "Unity event handler" gutter icon to method and property setters registered to a Unity event via the Unity editor
-- Correctly mark event handlers as in use
-- Unity files appear in Find Usages for event handlers and classes deriving from MonoBehaviour, grouped by type, component and object
-- Disable rename for event handler methods to prevent breaking the registration in scene files
-- Add option to hide gutter icons
-- Add performance indicators for performance critical code contexts
-- Add performance indicator for null comparison against Unity object
-- Add performance indicator for AddComponent as an expensive method invocation
-- Add performance indicator for Find methods
-- Add performance indicator for GetComponent methods
-- Add performance indicator for indirect invocation of expensive methods
-- Add inspection to avoid string based method invocation
-- Add inspection and Quick Fix to avoid repeat access of properties that make native calls
-- Add inspection and Quick Fix to avoid instantiating an object and setting parent transform immediately after
-- Add inspection and Quick Fix to use static int field to access graphics properties instead of string access
-- Add inspection and Quick Fix to use non-allocating physics functions
-- Add Context Action to move expensive expression to Start, Awake or outside of loop
-- Add inspection and Quick Fix to avoid string based versions of GetComponent, AddComponent and ScriptableObject.CreateInstance
-- Add inspection and Quick Fix for correct method signature for DrawGizmo attribute
-- Add inspection for calling base.OnGUI in PropertyDrawer derived class (thanks @vinhui!)
-- Add suspicious comparison warning if comparing two Unity objects which don't have a common subtype
-- Add "Why is ReSharper/Rider suggesting this?" for most new inspections
-- Add code completion, rename and find usages to string literal component and scriptable object type names
-- Add file template for [InitializeOnLoad] class
-- Update API to Unity 2018.3.0b9
-- Remove duplicate event functions from code completion
-- Improve redundant event function warnings
-- Stop Generate Code dialog selecting all event functions by default when called from the gutter icon or Code Vision marker
-- Prevent Respeller running on .asmdef files
-- Changed unresolved symbol error in `GetComponent`, `AddComponent` and `ScriptableObject.CreateInstance` to a configurable warning (RIDER-23429, #1003)
-- Fix C# language level override incorrectly handling latest
-- Fix to stop generating readonly modifier when converting auto property to property with serialised backing field
-- Fix bug in ShaderLab parsing Blend operations
-- Fix exception after renaming type
+Added:
+
+- Add inspection and quick fix to avoid inefficient order of multiplication operations (#1031)
+- Add warning for string literal use in Animator.ResetTrigger (RIDER-24421, #1035)
+- Add support for marking ECS types and fields as "in use" (#1010, #1036)
 
 See CHANGELOG.md in the project repo for more details and history.
 </releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
     <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
-    <copyright>Copyright 2018 JetBrains, s.r.o</copyright>
+    <copyright>Copyright 2019 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[183.0]" />
+      <dependency id="Wave" version="[191.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>
