@@ -46,36 +46,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             myIconHost = iconHost;
         }
 
-        public override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
+        public override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip, string displayName)
         {
-            switch (element)
-            {
-                case IFieldDeclaration _:
-                    AddHighlighting(consumer, myFieldUsageProvider, element, tooltip, "Set by Unity");
-                    break;
-                case IClassLikeDeclaration _:
-                    AddHighlighting(consumer, myCodeInsightProvider, element, tooltip, "Scripting component");
-                    break;
-                case IMethodDeclaration _:
-                    AddHighlighting(consumer, myCodeInsightProvider, element, tooltip, "Event function");
-                    break;
-                default:
-                    AddHighlighting(consumer, myCodeInsightProvider, element, tooltip, "Implicit usage");
-                    break;
-            }
+            if (element is IFieldDeclaration)
+                AddHighlighting(consumer, myFieldUsageProvider, element, tooltip, displayName);
+            else
+                AddHighlighting(consumer, myCodeInsightProvider, element, tooltip, displayName);
         }
 
         private void AddHighlighting(IHighlightingConsumer consumer, AbstractUnityCodeInsightProvider codeInsightsProvider, ICSharpDeclaration element, string tooltip, string displayName)
         {
             if (SettingsStore.GetIndexedValue((CodeInsightsSettings key) => key.DisabledProviders, codeInsightsProvider.ProviderId))
             {
-                base.AddHighlighting(consumer, element, tooltip);
+                base.AddHighlighting(consumer, element, tooltip, displayName);
                 return;
             }
 
             if (SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode) == GutterIconMode.Always)
             {
-                base.AddHighlighting(consumer, element, tooltip);
+                base.AddHighlighting(consumer, element, tooltip, displayName);
             }
 
             displayName = displayName ?? codeInsightsProvider.DisplayName;
@@ -100,10 +89,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         public override IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api, ITextControl textControl)
         {
             var declaredElement = declaration.DeclaredElement;
-            if (declaredElement != null && (declaredElement is IMethod method && !api.IsEventFunction(method) ||
-                                            declaration is IClassDeclaration))
+            if (CanHaveAnyUsagesInUnity(declaredElement, api))
             {
-                var action = new UnityFindUsagesNavigationAction(declaredElement,
+                var action = new UnityFindUsagesNavigationAction(declaredElement.NotNull("declaredElement != null"),
                     declaration.GetSolution().GetComponent<UnityEditorFindUsageResultCreator>(),  myConnectionTracker);
                 return new[]
                 {
@@ -116,6 +104,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
 
             return EmptyList<BulbMenuItem>.Instance;
+        }
+
+        private bool CanHaveAnyUsagesInUnity(IDeclaredElement declaredElement, UnityApi api)
+        {
+            if (declaredElement == null)
+                return false;
+            if (declaredElement is IMethod method && !api.IsEventFunction(method) &&
+                !api.IsUnityECSType(method.GetContainingType()))
+                return true;
+
+            if (declaredElement is IClass type && !api.IsUnityECSType(type))
+                return true;
+            
+            return false;
+
         }
 
         internal class UnityFindUsagesNavigationAction : BulbActionBase

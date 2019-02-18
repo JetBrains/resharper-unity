@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             switch (element)
             {
-                case IClass cls when unityApi.IsUnityType(cls):
+                case IClass cls when unityApi.IsUnityType(cls) || unityApi.IsUnityECSType(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
 
@@ -86,12 +86,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     }
                     break;
 
-                case IField field when unityApi.IsSerialisedField(field):
+                case IField field when unityApi.IsSerialisedField(field) || unityApi.IsInjectedField(field):
+                    // comment for serialized field:
                     // Public fields gets exposed to the Unity Editor and assigned from the UI.
                     // But it still should be checked if the field is ever accessed from the code.
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
-
+                
                 case IProperty property when IsEventHandler(unityApi, property.Setter):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;

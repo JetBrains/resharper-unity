@@ -17,14 +17,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
     {
         private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
 
-        public UnityTypeDetector(UnityApi unityApi, UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
+        public UnityTypeDetector(UnityApi unityApi,
+            UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
             : base(unityApi)
         {
             myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
         }
 
         protected override void Analyze(IClassLikeDeclaration element, ElementProblemAnalyzerData data,
-                                        IHighlightingConsumer consumer)
+            IHighlightingConsumer consumer)
         {
             var typeElement = element.DeclaredElement;
             if (typeElement != null)
@@ -32,12 +33,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.GutterMarks
                 if (Api.IsUnityType(typeElement))
                 {
                     myImplicitUsageHighlightingContributor.AddUnityImplicitClassUsage(consumer, element,
-                        "Unity scripting component");
+                        "Unity scripting component", "Scripting component");
+                }
+                else if (Api.IsUnityECSType(typeElement))
+                {
+                    myImplicitUsageHighlightingContributor.AddUnityImplicitClassUsage(consumer, element,
+                        "Unity entity component system object", "Unity ECS");
                 }
                 else if (Api.IsSerializableType(typeElement))
                 {
                     myImplicitUsageHighlightingContributor.AddUnityImplicitClassUsage(consumer, element,
-                        "Unity custom serializable type");
+                        "Unity custom serializable type", "Unity serializable");
                 }
             }
         }

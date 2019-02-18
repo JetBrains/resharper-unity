@@ -52,5 +52,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName OnOpenAssetAttribute = new ClrTypeName("UnityEditor.Callbacks.OnOpenAssetAttribute");
         public static readonly IClrTypeName PostProcessBuildAttribute = new ClrTypeName("UnityEditor.Callbacks.PostProcessBuildAttribute");
         public static readonly IClrTypeName PostProcessSceneAttribute = new ClrTypeName("UnityEditor.Callbacks.PostProcessSceneAttribute");
+        
+        // ECS
+        public static readonly IClrTypeName JobComponentSystem = new ClrTypeName("Unity.Entities.JobComponentSystem");
+        public static readonly IClrTypeName ComponentSystem = new ClrTypeName("Unity.Entities.ComponentSystem");
+        public static readonly IClrTypeName InjectAttribute = new ClrTypeName("Unity.Entities.InjectAttribute");
     }
 }

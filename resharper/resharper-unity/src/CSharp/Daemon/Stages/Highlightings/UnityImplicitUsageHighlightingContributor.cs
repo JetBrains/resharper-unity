@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Resources.Icons;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -51,34 +52,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             foreach (var declaration in method.GetDeclarations())
             {
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
-                    AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip);
+                    AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip, "Event function");
             }
         }
 
-        public virtual void AddUnityImplicitClassUsage(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string tooltip)
+        public virtual void AddUnityImplicitClassUsage(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string tooltip, string displayName)
         {
-            AddHighlightingWithConfigurableHighlighter(consumer, declaration, tooltip);
+            AddHighlightingWithConfigurableHighlighter(consumer, declaration, tooltip, displayName);
         }
 
-        public virtual void AddInitializeOnLoadMethod(IHighlightingConsumer consumer, IConstructorDeclaration constructorDeclaration, string tooltip)
+        public virtual void AddInitializeOnLoadMethod(IHighlightingConsumer consumer, IConstructorDeclaration constructorDeclaration, string tooltip, string displayName)
         {
-            AddHighlightingWithConfigurableHighlighter(consumer, constructorDeclaration, tooltip);
+            AddHighlightingWithConfigurableHighlighter(consumer, constructorDeclaration, tooltip, displayName);
         }
 
-        public virtual void AddUnityImplicitFieldUsage(IHighlightingConsumer consumer, IFieldDeclaration field, string tooltip)
+        public virtual void AddUnityImplicitFieldUsage(IHighlightingConsumer consumer, IFieldDeclaration field, string tooltip, string displayName)
         {
-            AddHighlightingWithConfigurableHighlighter(consumer, field, tooltip);
+            AddHighlightingWithConfigurableHighlighter(consumer, field, tooltip, displayName);
         }
 
-        public virtual void AddUnityEventHandler(IHighlightingConsumer consumer, IDeclaration element, string tooltip)
+        public virtual void AddUnityEventHandler(IHighlightingConsumer consumer, IDeclaration element, string tooltip, string displayName)
         {
             if (element is ICSharpDeclaration cSharpDeclaration)
-                AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip);
+                AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip, displayName);
         }
 
-        public virtual void AddHighlightingWithConfigurableHighlighter(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
+        public virtual void AddHighlightingWithConfigurableHighlighter(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip, string displayName)
         {
-            AddHighlighting(consumer, element, tooltip);
+            AddHighlighting(consumer, element, tooltip, displayName);
             AddConfigurableHighlighter(consumer, element);
         }
 
@@ -87,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             consumer.AddHighlighting(new UnityImplicitlyUsedIdentifierHighlighting(element.NameIdentifier.GetDocumentRange()));
         }
 
-        public virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip)
+        public virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip, string displayName)
         {
             var mode = SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode);
             if (mode == GutterIconMode.None)
@@ -105,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             {
 
                 var result = new List<BulbMenuItem>();
-                if (declaration is IClassLikeDeclaration classDeclaration)
+                if (declaration is IClassLikeDeclaration classDeclaration && !unityApi.IsUnityECSType(declaration.DeclaredElement as ITypeElement))
                 {
                     var fix = new GenerateUnityEventFunctionsFix(classDeclaration);
                     result.Add(

@@ -50,6 +50,21 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(type).Any();
         }
 
+        public bool IsUnityECSType([CanBeNull] ITypeElement type)
+        {
+            if (type == null)
+                return false;
+            
+            var jobComponentSystem = TypeFactory.CreateTypeByCLRName(KnownTypes.JobComponentSystem, type.Module);
+            if (type.IsDescendantOf(jobComponentSystem.GetTypeElement()))
+                return true;
+            
+            var componentSystem = TypeFactory.CreateTypeByCLRName(KnownTypes.ComponentSystem, type.Module);
+            if (type.IsDescendantOf(componentSystem.GetTypeElement()))
+                return true;
+
+            return false;
+        }
         public bool IsSerializableType([CanBeNull] ITypeElement type)
         {
             // A class or struct with the `[System.Serializable]` attribute
@@ -95,6 +110,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return field.GetAccessRights() == AccessRights.PUBLIC;
         }
 
+        public bool IsInjectedField([CanBeNull] IField field)
+        {
+            if (field == null || field.IsStatic || field.IsConstant || field.IsReadonly)
+                return false;
+
+            var containingType = field.GetContainingType();
+            if (containingType == null || !IsUnityECSType(containingType))
+                return false;
+
+            return field.HasAttributeInstance(KnownTypes.InjectAttribute, false);
+        }
+        
         // Best effort attempt at preventing false positives for type members that are actually being used inside a
         // scene. We don't have enough information to do this by name, so we'll mark all potential event handlers as
         // implicitly used by Unity
