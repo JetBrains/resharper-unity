@@ -9,7 +9,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
     [ShellComponent]
-    public class StringBasedInvocationEdgeChecker : ICallGraphImplicitEdgeProvider
+    public class StringBasedInvocationEdgeProvider : ICallGraphImplicitEdgeProvider
     {
         public LocalList<IDeclaredElement> ResolveImplicitlyInvokedDeclaredElements(ITreeNode treeNode)
         {
@@ -21,9 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 {
                     var implicitlyInvokeDeclaredElement = invocationExpression.Arguments.FirstOrDefault()?.Value
                         ?.GetReferences<UnityEventFunctionReference>().FirstOrDefault()?.Resolve().DeclaredElement;
-                   var result =  new LocalList<IDeclaredElement>(1);
-                   result.Add(implicitlyInvokeDeclaredElement);
-                   return result;
+                    if (implicitlyInvokeDeclaredElement != null)
+                    {
+                        var result =  new LocalList<IDeclaredElement>(1);
+                        result.Add(implicitlyInvokeDeclaredElement);
+                        return result;
+                    }
                 }
             }
 

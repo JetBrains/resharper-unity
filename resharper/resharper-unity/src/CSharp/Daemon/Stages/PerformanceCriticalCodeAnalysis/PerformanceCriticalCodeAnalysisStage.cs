@@ -72,8 +72,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             mySwa = swa;
             myTracker = tracker;
-            myPerformanceAnalyzerId = performanceAnalyzer.GetMarkId();
-            myExpensiveAnalyzerId = expensiveCodeCallGraphAnalyzer.GetMarkId();
+            myPerformanceAnalyzerId = performanceAnalyzer.AnalyzerId;
+            myExpensiveAnalyzerId = expensiveCodeCallGraphAnalyzer.AnalyzerId;
         }
 
         public override void Execute(Action<DaemonStageResult> committer)
