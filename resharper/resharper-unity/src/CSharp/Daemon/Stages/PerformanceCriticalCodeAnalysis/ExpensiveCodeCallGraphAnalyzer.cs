@@ -23,17 +23,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
         }
         
-        public override bool IsFunctionMarked(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
+            var result = new LocalList<IDeclaredElement>();
             switch (currentNode)
             {
                 case IInvocationExpression invocationExpression when PerformanceCriticalCodeStageUtil.IsInvocationExpensive(invocationExpression):
                 case IReferenceExpression referenceExpression when PerformanceCriticalCodeStageUtil.IsCameraMainUsage(referenceExpression):
                 case IEqualityExpression equalityExpressionParam when PerformanceCriticalCodeStageUtil.IsNullComparisonWithUnityObject(equalityExpressionParam, out _):
-                    return true;
+                    result.Add(containingFunction);
+                    break;
             }
 
-            return false;
+            return result;
         }
     }
 }

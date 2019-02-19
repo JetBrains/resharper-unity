@@ -29,23 +29,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
         }
         
-        public override bool IsFunctionMarked(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
+            var result = new LocalList<IDeclaredElement>();
             if (currentNode is IMethodDeclaration methodDeclaration &&
                 ourKnownHotMonoBehaviourMethods.Contains(methodDeclaration.DeclaredName))
             {
                 var containingTypeDeclaration = methodDeclaration.GetContainingTypeDeclaration();
 
-                return containingTypeDeclaration != null &&
-                       containingTypeDeclaration.SuperTypes.Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour));
+                if (containingTypeDeclaration != null && containingTypeDeclaration.SuperTypes.Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour)))
+                    result.Add(containingFunction);
             }
 
-            //TODO waiting changes in SDK
-//            var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
-//            if (coroutineOrInvoke != null)
-//                result.Add(coroutineOrInvoke);
+            var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
+            if (coroutineOrInvoke != null)
+                result.Add(coroutineOrInvoke);
 
-            return false;
+            return result;
         }
 
         private IDeclaredElement ExtractCoroutineOrInvokeRepeating(ITreeNode currentNode)
