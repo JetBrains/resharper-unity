@@ -72,8 +72,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             mySwa = swa;
             myTracker = tracker;
-            myPerformanceAnalyzerId = performanceAnalyzer.GetMarkId();
-            myExpensiveAnalyzerId = expensiveCodeCallGraphAnalyzer.GetMarkId();
+            myPerformanceAnalyzerId = performanceAnalyzer.AnalyzerId;
+            myExpensiveAnalyzerId = expensiveCodeCallGraphAnalyzer.AnalyzerId;
         }
 
         public override void Execute(Action<DaemonStageResult> committer)
@@ -150,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 return false;
             
             return myTracker.RegisterCallGraphQueryTime(() =>
-                usageChecker.IsMarked(analyzerId, id.Value, true));
+                usageChecker.IsMarkedByCallGraphAnalyzer(analyzerId, id.Value, true));
         }
 
         protected virtual void HighlightHotMethod(IDeclaration node, IHighlightingConsumer consumer)

@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Application;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -16,7 +16,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
     [SolutionComponent]
-    public class PerformanceCriticalCodeCallGraphAnalyzer : CallGraphFunctionAnalyzerBase
+    public class PerformanceCriticalCodeCallGraphAnalyzer : CallGraphAnalyzerBase
     {
         public static readonly string MarkId = "Unity.PerformanceCriticalContext";
         private static readonly ISet<string> ourKnownHotMonoBehaviourMethods = new HashSet<string>()
@@ -24,28 +24,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             "Update", "LateUpdate", "FixedUpdate",
         };
 
-        public PerformanceCriticalCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, ICallGraphFunctionAnalyzersProvider provider)
+        public PerformanceCriticalCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
+            UnitySolutionTracker tracker, ICallGraphFunctionAnalyzersProvider provider)
             : base(lifetime, provider, MarkId, new CallerToCalleeCallGraphPropagator(solution, MarkId))
         {
+            Enabled.Value = tracker.IsUnityProject.HasTrueValue();
         }
         
-        public override bool IsFunctionMarked(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
+            var result = new LocalList<IDeclaredElement>();
             if (currentNode is IMethodDeclaration methodDeclaration &&
                 ourKnownHotMonoBehaviourMethods.Contains(methodDeclaration.DeclaredName))
             {
                 var containingTypeDeclaration = methodDeclaration.GetContainingTypeDeclaration();
 
-                return containingTypeDeclaration != null &&
-                       containingTypeDeclaration.SuperTypes.Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour));
+                if (containingTypeDeclaration != null && containingTypeDeclaration.SuperTypes.Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour)))
+                    result.Add(containingFunction);
             }
 
-            //TODO waiting changes in SDK
-//            var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
-//            if (coroutineOrInvoke != null)
-//                result.Add(coroutineOrInvoke);
 
-            return false;
+            var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
+            if (coroutineOrInvoke != null)
+                result.Add(coroutineOrInvoke);
+
+            return result;
         }
 
         private IDeclaredElement ExtractCoroutineOrInvokeRepeating(ITreeNode currentNode)
