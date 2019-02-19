@@ -20,11 +20,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         protected readonly SolutionAnalysisService Swa;
         protected readonly CallGraphActivityTracker Tracker;
+        protected readonly PerformanceCriticalCodeCallGraphAnalyzer PerformanceAnalyzer;
+        protected readonly ExpensiveCodeCallGraphAnalyzer ExpensiveAnalyzer;
 
-        public PerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa, CallGraphActivityTracker tracker)
+        public PerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa, CallGraphActivityTracker tracker, PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
+            ExpensiveCodeCallGraphAnalyzer expensiveAnalyzer)
         {
             Swa = swa;
             Tracker = tracker;
+            PerformanceAnalyzer = performanceAnalyzer;
+            ExpensiveAnalyzer = expensiveAnalyzer;
         }
         
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
@@ -41,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         protected virtual IDaemonStageProcess GetProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            return new PerformanceCriticalCodeAnalysisProcess(process, file, Swa, Tracker);
+            return new PerformanceCriticalCodeAnalysisProcess(process, file, Swa, Tracker, PerformanceAnalyzer, ExpensiveAnalyzer);
         }
         
         protected override bool IsSupported(IPsiSourceFile sourceFile)
@@ -61,13 +66,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         private readonly int myExpensiveAnalyzerId;
 
         public PerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file,
-            [NotNull] SolutionAnalysisService swa, CallGraphActivityTracker tracker)
+            [NotNull] SolutionAnalysisService swa, CallGraphActivityTracker tracker, [NotNull] PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
+            [NotNull] ExpensiveCodeCallGraphAnalyzer expensiveCodeCallGraphAnalyzer)
             : base(process, file)
         {
             mySwa = swa;
             myTracker = tracker;
-            myPerformanceAnalyzerId = CallGraphAnalyzerIdToIntConverter.GetId(PerformanceCriticalCodeCallGraphAnalyzer.MarkId);
-            myExpensiveAnalyzerId = CallGraphAnalyzerIdToIntConverter.GetId(ExpensiveCodeCallGraphAnalyzer.MarkId);
+            myPerformanceAnalyzerId = performanceAnalyzer.GetMarkId();
+            myExpensiveAnalyzerId = expensiveCodeCallGraphAnalyzer.GetMarkId();
         }
 
         public override void Execute(Action<DaemonStageResult> committer)

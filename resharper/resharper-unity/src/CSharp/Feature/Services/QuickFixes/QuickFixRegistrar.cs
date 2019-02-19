@@ -1,4 +1,5 @@
 ﻿using JetBrains.Application;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.QuickFixes.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -10,9 +11,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
     [ShellComponent]
     public class QuickFixRegistrar
     {
-        public QuickFixRegistrar(IQuickFixes table)
+        public QuickFixRegistrar(Lifetime lifetime, IQuickFixes table)
         {
-            table.RegisterQuickFix<RedundantEventFunctionWarning>(null,
+            table.RegisterQuickFix<RedundantEventFunctionWarning>(lifetime,
                 h => new RemoveUnusedElementFix(h.MethodDeclaration, "Remove redundant Unity event function"),
                 typeof(RemoveUnusedElementFix));
         }

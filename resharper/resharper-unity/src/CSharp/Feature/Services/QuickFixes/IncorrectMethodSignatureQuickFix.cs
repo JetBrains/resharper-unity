@@ -4,6 +4,7 @@ using JetBrains.Application.Progress;
 using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.Application.UI.ActionsRevised.Handlers;
 using JetBrains.Application.UI.ActionSystem;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;

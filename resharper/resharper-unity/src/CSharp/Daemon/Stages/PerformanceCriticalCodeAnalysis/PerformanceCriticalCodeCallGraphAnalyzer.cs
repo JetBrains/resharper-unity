@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
@@ -9,39 +11,45 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
-    [ShellComponent]
-    public class PerformanceCriticalCodeCallGraphAnalyzer : ICallGraphElementAnalyzer
+    [SolutionComponent]
+    public class PerformanceCriticalCodeCallGraphAnalyzer : CallGraphFunctionAnalyzerBase
     {
-        public const string MarkId = "PerformanceCriticalCode";
-
-        public ICallGraphPropagator CreatePropagator(ISolution solution) =>
-            new CallerToCallingCallGraphPropagator(solution, MarkId);
-
-        public string GetMarkId() => MarkId;
-
+        public static readonly string MarkId = "Unity.PerformanceCriticalContext";
         private static readonly ISet<string> ourKnownHotMonoBehaviourMethods = new HashSet<string>()
         {
             "Update", "LateUpdate", "FixedUpdate",
         };
 
-        public IDeclaredElement Mark(ITreeNode currentNode)
+        public PerformanceCriticalCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, ICallGraphFunctionAnalyzersProvider provider)
+            : base(lifetime, provider, MarkId, new CallerToCalleeCallGraphPropagator(solution, MarkId))
+        {
+        }
+        
+        public override bool IsFunctionMarked(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
             if (currentNode is IMethodDeclaration methodDeclaration &&
                 ourKnownHotMonoBehaviourMethods.Contains(methodDeclaration.DeclaredName))
             {
                 var containingTypeDeclaration = methodDeclaration.GetContainingTypeDeclaration();
-                if (containingTypeDeclaration == null)
-                    return null;
 
-                if (containingTypeDeclaration.SuperTypes.Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour)))
-                    return methodDeclaration.DeclaredElement;;
-
-                return null;
+                return containingTypeDeclaration != null &&
+                       containingTypeDeclaration.SuperTypes.Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour));
             }
 
+            //TODO waiting changes in SDK
+//            var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
+//            if (coroutineOrInvoke != null)
+//                result.Add(coroutineOrInvoke);
+
+            return false;
+        }
+
+        private IDeclaredElement ExtractCoroutineOrInvokeRepeating(ITreeNode currentNode)
+        {
             if (currentNode is IInvocationExpression invocationExpression)
             {
                 // we should find 'StartCoroutine' method, because passed symbol will be hot too
@@ -61,6 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
                 if (containingType == null || containingType.GetClrName().Equals(KnownTypes.MonoBehaviour))
                 {
+                    
                     if (!declaredElement.ShortName.Equals("StartCoroutine") &&
                         !declaredElement.ShortName.Equals("InvokeRepeating"))
                     {
@@ -71,8 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                     if (firstArgument == null)
                         return null;
 
-                    var coroutineMethodDeclaration = ExtractMethodDeclarationFromStartCoroutine(firstArgument);
-                    return coroutineMethodDeclaration;
+                    return ExtractMethodDeclarationFromStartCoroutine(firstArgument);
                 }
             }
 

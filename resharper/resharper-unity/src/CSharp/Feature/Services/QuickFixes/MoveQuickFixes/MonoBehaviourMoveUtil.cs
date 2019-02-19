@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
@@ -13,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings => new [] {new CodeLensRelativeOrderingLast()};
 
-        public UnityCodeInsightFieldUsageProvider(UnityHost host, BulbMenuComponent bulbMenu)
-            : base(host, bulbMenu)
+        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, UnityHost host, BulbMenuComponent bulbMenu)
+            : base(unitySolutionTracker, host, bulbMenu)
         {
         }
     }

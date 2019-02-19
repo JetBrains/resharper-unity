@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using Mono.Debugger.Soft;

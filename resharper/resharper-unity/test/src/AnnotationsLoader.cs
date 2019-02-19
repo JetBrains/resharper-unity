@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Diagnostics;
 using JetBrains.Metadata.Utils;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.ExternalAnnotations;
 using JetBrains.TestFramework.Utils;

@@ -2,6 +2,7 @@
 using System.Reflection;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Util;
 

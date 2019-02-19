@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Core;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Access;
 using JetBrains.Platform.RdFramework.Base;
@@ -149,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RunViaUnityEditorStrategy compilation failed", () =>
                             {
                                 var notification = new NotificationModel("Compilation failed", "Script compilation in Unity failed, so tests were not started.", true, RdNotificationEntryType.INFO);
-                                myNotificationsModel.Notification.Fire(notification);
+                                myNotificationsModel.Notification(notification);
                             });
                             myUnityHost.PerformModelAction(model => model.ActivateUnityLogView.Fire());
                         }

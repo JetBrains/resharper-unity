@@ -200,7 +200,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var notification = new NotificationModel(userTitle, userMessage, true, RdNotificationEntryType.INFO);
 
-                myShellLocks.ExecuteOrQueueEx(myLifetime, "UnityPluginInstaller.Notify", () => myNotifications.Notification.Fire(notification));
+                myShellLocks.ExecuteOrQueueEx(myLifetime, "UnityPluginInstaller.Notify", () => myNotifications.Notification(notification));
             }
         }
 

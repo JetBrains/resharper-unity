@@ -99,11 +99,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             filePath = null;
             fileName = null;
             var path = file.GetLocation().MakeRelativeTo(mySolutionDirectoryPath);
-            var assetFolder = path.FirstComponent;
+            var assetFolder = path.Components.FirstOrEmpty;
             if (!assetFolder.Equals(UnityYamlConstants.AssetsFolder)) 
                 return false;
             
-            var pathComponents = path.GetPathComponents();
+            var pathComponents = path.Components;
 
             extension = path.ExtensionWithDot;
             fileName = path.NameWithoutExtension;
