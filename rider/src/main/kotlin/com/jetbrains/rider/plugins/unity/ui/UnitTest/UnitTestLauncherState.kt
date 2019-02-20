@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.model.UnitTestLaunchPreference
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.util.idea.lifetime
 import org.jdom.Element
 
 @State(name = "UnityUnitTestConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
@@ -21,6 +22,20 @@ class UnitTestLauncherState(val project: Project, val propertiesComponent: Prope
         private const val NUnit = "NUnit"
         private const val EditMode = "EditMode"
         private const val PlayMode = "PlayMode"
+    }
+
+    init {
+        if (!propertiesComponent.getBoolean(discoverLaunchViaUnity)) {
+            val nestedLifetime = project.lifetime.createNested()
+            project.solution.rdUnityModel.sessionInitialized.advise(nestedLifetime){ isConnected ->
+                if(isConnected ) {
+                    project.solution.rdUnityModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
+                    propertiesComponent.setValue(discoverLaunchViaUnity, true)
+                    nestedLifetime.terminate()
+                }
+
+            }
+        }
     }
 
     override fun getState(): Element? {
