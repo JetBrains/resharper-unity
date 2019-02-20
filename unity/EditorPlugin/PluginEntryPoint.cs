@@ -519,7 +519,7 @@ namespace JetBrains.Rider.Unity.Editor
     /// Called when Unity is about to open an asset. This method is for pre-2019.2
     /// </summary>
     [OnOpenAsset]
-    private static bool OnOpenedAsset(int instanceID, int line)
+    static bool OnOpenedAsset(int instanceID, int line)
     {
       if (!Enabled || UnityUtils.UnityVersion >= new Version(2019, 2))
         return false;
@@ -529,8 +529,8 @@ namespace JetBrains.Rider.Unity.Editor
     /// <summary>
     /// Called when Unity is about to open an asset. This method is new for 2019.2
     /// </summary>
-    [OnOpenAsset]
-    public static bool OnOpenedAsset(int instanceID, int line, int column)
+    //[OnOpenAsset] // todo: restore, when we move this code to package, otherwise when OnOpenedAsset is called, there is a LogError in older Unity
+    static bool OnOpenedAsset(int instanceID, int line, int column)
     {
       if (!Enabled || UnityUtils.UnityVersion < new Version(2019, 2))
         return false;
