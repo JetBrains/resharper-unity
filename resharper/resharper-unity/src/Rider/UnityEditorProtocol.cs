@@ -273,10 +273,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         .OpenFile(FileSystemPath.Parse(args.Path), OpenFileOptions.DefaultActivate, myThreading,
                             textControl =>
                             {
-                                if (args.Line > 0 || args.Col > 0)
+                                var line = args.Line;
+                                var column = args.Col;
+                                    
+                                if (line > 0 || column > 0) // avoid changing placement when it is not requested
                                 {
-                                    textControl.Caret.MoveTo((Int32<DocLine>) (args.Line - 1),
-                                        (Int32<DocColumn>) args.Col,
+                                    if (line > 0) line = line - 1;
+                                    if (line < 0) line = 0;
+                                    if (column > 0) column = column - 1;
+                                    if (column < 0) column = 0;
+                                    textControl.Caret.MoveTo((Int32<DocLine>) line,
+                                        (Int32<DocColumn>) column,
                                         CaretVisualPlacement.Generic);
                                 }
 

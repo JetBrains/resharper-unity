@@ -516,13 +516,29 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     /// <summary>
-    /// Called when Unity is about to open an asset.
+    /// Called when Unity is about to open an asset. This method is for pre-2019.2
     /// </summary>
     [OnOpenAsset]
     private static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (!Enabled)
+      if (!Enabled || UnityUtils.UnityVersion >= new Version(2019, 2))
         return false;
+      return OnOpenedAssetInternal(instanceID, line, 0);
+    }
+    
+    /// <summary>
+    /// Called when Unity is about to open an asset. This method is new for 2019.2
+    /// </summary>
+    [OnOpenAsset]
+    public static bool OnOpenedAsset(int instanceID, int line, int column)
+    {
+      if (!Enabled || UnityUtils.UnityVersion < new Version(2019, 2))
+        return false;
+      return OnOpenedAssetInternal(instanceID, line, column);
+    }
+
+    private static bool OnOpenedAssetInternal(int instanceID, int line, int column)
+    {
       if (!ourInitialized)
       {
         // make sure the plugin was initialized first.
@@ -530,7 +546,7 @@ namespace JetBrains.Rider.Unity.Editor
         Init();
       }
 
-      return ourOpenAssetHandler.OnOpenedAsset(instanceID, line);
+      return ourOpenAssetHandler.OnOpenedAsset(instanceID, line, column);
     }
 
     public static bool IsLoadedFromAssets()
