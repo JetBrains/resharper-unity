@@ -1,4 +1,4 @@
-﻿<api minimumVersion="5.0" maximumVersion="2018.3">
+﻿<api minimumVersion="5.0" maximumVersion="2019.1">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="IsOpenForEdit" static="True" description="This is called by Unity when inspecting an asset to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
       <parameters>
@@ -363,7 +363,7 @@
     <message name="Awake" static="False" description="Awake is called when the script instance is being loaded." path="Documentation/en/ScriptReference/MonoBehaviour.Awake.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="FixedUpdate" static="False" description="This function is called every fixed framerate frame, if the MonoBehaviour is enabled." path="Documentation/en/ScriptReference/MonoBehaviour.FixedUpdate.html">
+    <message name="FixedUpdate" static="False" description="Frame-rate independent MonoBehaviour.FixedUpdate message for physics calculations." path="Documentation/en/ScriptReference/MonoBehaviour.FixedUpdate.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="LateUpdate" static="False" description="LateUpdate is called every frame, if the Behaviour is enabled." path="Documentation/en/ScriptReference/MonoBehaviour.LateUpdate.html">
@@ -553,7 +553,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnParticleTrigger" static="False" minimumVersion="5.5" description="OnParticleTrigger is called when any particles in a particle system meet the conditions in the trigger module." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleTrigger.html">
+    <message name="OnParticleTrigger" static="False" minimumVersion="5.5" description="OnParticleTrigger is called when any particles in a Particle System meet the conditions in the trigger module." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleTrigger.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPlayerConnected" static="False" description="Called on the server whenever a new player has successfully connected." path="Documentation/en/ScriptReference/MonoBehaviour.OnPlayerConnected.html">
@@ -603,9 +603,9 @@
     <message name="OnTransformParentChanged" static="False" description="This function is called when the parent property of the transform of the GameObject has changed." path="Documentation/en/ScriptReference/MonoBehaviour.OnTransformParentChanged.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTriggerEnter" static="False" coroutine="True" description="OnTriggerEnter is called when the Collider other enters the trigger." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter.html">
+    <message name="OnTriggerEnter" static="False" coroutine="True" description="OnTriggerEnter is called when the GameObject collides with another GameObject." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter.html">
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
+        <parameter type="UnityEngine.Collider" array="False" name="other" description="A Collider involved in this collision." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -639,7 +639,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnValidate" static="False" description="This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnValidate.html">
+    <message name="OnValidate" static="False" description="This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnValidate.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnWillRenderObject" static="False" description="OnWillRenderObject is called for each camera if the object is visible and not a UI element." path="Documentation/en/ScriptReference/MonoBehaviour.OnWillRenderObject.html">
@@ -800,6 +800,14 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnWizardUpdate" static="False" description="This is called when the wizard is opened or whenever the user changes something in the wizard." path="Documentation/en/ScriptReference/ScriptableWizard.OnWizardUpdate.html">
+      <returns type="System.Void" array="False" />
+    </message>
+  </type>
+  <type kind="class" name="ScriptedImporter" ns="UnityEditor.Experimental.AssetImporters" minimumVersion="2019.1" path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.html">
+    <message name="OnValidate" static="False" description="This function is called when the importer is loaded or a value is changed in the Inspector." path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.OnValidate.html">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="Reset" static="False" description="Reset to default values." path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.Reset.html">
       <returns type="System.Void" array="False" />
     </message>
   </type>
