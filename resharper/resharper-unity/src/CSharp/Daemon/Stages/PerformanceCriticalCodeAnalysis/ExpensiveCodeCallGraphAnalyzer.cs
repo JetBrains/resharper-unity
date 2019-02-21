@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public const string MarkId = "Unity.ExpensiveCode";
 
         public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
-            UnitySolutionTracker unitySolutionTracker, ICallGraphFunctionAnalyzersProvider provider)
+            UnitySolutionTracker unitySolutionTracker, ICallGraphAnalyzersProvider provider)
             : base(lifetime, provider, MarkId, new CalleeToCallerCallGraphPropagator(solution, MarkId))
         {
             Enabled.Value = unitySolutionTracker.IsUnityProject.HasTrueValue();
