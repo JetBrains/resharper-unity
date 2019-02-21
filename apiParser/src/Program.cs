@@ -51,7 +51,7 @@ namespace ApiParser
 
             var docVersions = DocVersions;
             var latestVersion = Regex.Match(docVersions.Last().Item1, @"Documentation-(.*)$").Groups[1].Value;
-            var apiXml = FileSystemPath.Empty;
+            var apiXml = FileSystemPath.Parse("api.xml");
 
             if (args.Length == 1)
                 Directory.SetCurrentDirectory(args[0]);
@@ -110,7 +110,7 @@ namespace ApiParser
             AddUndocumentedCoroutines(unityApi);
             FixDataFromIncorrectDocs(unityApi);
 
-            using (var writer = new XmlTextWriter(@"api.xml", Encoding.UTF8) {Formatting = Formatting.Indented})
+            using (var writer = new XmlTextWriter(apiXml.FullPath, Encoding.UTF8) {Formatting = Formatting.Indented})
             {
                 parser.ExportTo(writer);
             }
