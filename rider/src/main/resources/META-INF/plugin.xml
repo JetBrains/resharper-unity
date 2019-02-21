@@ -73,11 +73,7 @@
   </extensions>
 
   <project-components>
-    <component>
-      <interface-class>com.jetbrains.rider.unitTesting.RiderUnitTestUIService</interface-class>
-      <implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUnitTestUIService</implementation-class>
-      <option name="overrides" value="true"/>
-    </component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnitTest.UnitTestLauncherState</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityProjectDiscoverer</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
@@ -115,6 +111,11 @@
       <action id="TriggerPauseInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"  />
       <action id="TriggerStepInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" />
       <separator/>
+    </group>
+
+    <group id="Rider.UnitTesting.TopToolbar.MiscOptions.Unity">
+      <add-to-group group-id="Rider.UnitTesting.TopToolbar.MiscOptions.Plugin" anchor="last"/>
+      <action id="UnityTestLauncher" class="com.jetbrains.rider.plugins.unity.ui.UnitTest.SwitchUnitTestLauncherComboBoxAction"/>
     </group>
 
     <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction">
