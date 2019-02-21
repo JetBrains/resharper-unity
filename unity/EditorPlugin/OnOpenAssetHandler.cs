@@ -27,7 +27,7 @@ namespace JetBrains.Rider.Unity.Editor
       mySlnFile = slnFile;
     }
     
-    public bool OnOpenedAsset(int instanceID, int line)
+    public bool OnOpenedAsset(int instanceID, int line, int column)
     {
       // determine asset that has been double clicked in the project view
       var selected = EditorUtility.InstanceIDToObject(instanceID);
@@ -45,7 +45,7 @@ namespace JetBrains.Rider.Unity.Editor
             ))
         return false;
 
-      return OnOpenedAsset(assetFilePath, line);
+      return OnOpenedAsset(assetFilePath, line, column);
     }
 
     private static string[] GetExtensionStrings()
@@ -69,7 +69,7 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     [UsedImplicitly] // https://github.com/JetBrains/resharper-unity/issues/475
-    public bool OnOpenedAsset(string assetFilePath, int line)
+    public bool OnOpenedAsset(string assetFilePath, int line, int column = 0)
     {
       var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
       myLogger.Verbose("ModifiedSource: {0} EditorApplication.isPlaying: {1} EditorPrefsWrapper.AutoRefresh: {2}",
@@ -87,7 +87,6 @@ namespace JetBrains.Rider.Unity.Editor
         var model = models.First().Model;
         if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
-          const int column = 0;
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
           if (model.RiderProcessId.HasValue())
             ActivateWindow(model.RiderProcessId.Value);
