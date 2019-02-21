@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         };
 
         public PerformanceCriticalCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
-            UnitySolutionTracker tracker, ICallGraphFunctionAnalyzersProvider provider)
+            UnitySolutionTracker tracker, ICallGraphAnalyzersProvider provider)
             : base(lifetime, provider, MarkId, new CallerToCalleeCallGraphPropagator(solution, MarkId))
         {
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
