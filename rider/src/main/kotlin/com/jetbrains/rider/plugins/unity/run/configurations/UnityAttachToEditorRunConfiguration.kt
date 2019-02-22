@@ -15,16 +15,20 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
+import com.jetbrains.rider.run.configurations.unity.UnityEditorProfilerConfiguration
 import org.jdom.Element
+import java.nio.file.Path
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
         RunConfigurationWithSuppressedDefaultRunAction,
         RemoteConfiguration,
-        WithoutOwnBeforeRunSteps {
+        WithoutOwnBeforeRunSteps,
+        UnityEditorProfilerConfiguration {
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
     override var port: Int = -1
@@ -117,5 +121,9 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
             element.setAttribute("pid", pid.toString())
         }
     }
+
+    override val unityEditorPathByHeuristic: Path? = UnityInstallationFinder.getInstance(project).getApplicationPath();
+    override val unityEditorPid : Int? = pid
+    override val args : List<String> = mutableListOf("-projectPath", project.basePath.toString())
 }
 

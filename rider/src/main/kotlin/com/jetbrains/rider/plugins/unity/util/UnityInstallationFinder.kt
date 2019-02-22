@@ -31,7 +31,7 @@ class UnityInstallationFinder(private val project: Project) {
         val contentsPath = getApplicationContentsPathFromProtocol()
         if (contentsPath != null) return contentsPath
 
-        val root = getApplicationPath() ?: return null
+        val root = tryGetApplicationPathFromProtocol() ?: return null
         return when {
             SystemInfo.isMac -> root.resolve("Contents")
             SystemInfo.isWindows -> root.parent.resolve("Data")
@@ -40,13 +40,15 @@ class UnityInstallationFinder(private val project: Project) {
         }
     }
 
-    // The same as EditorApplication.applicationPath, minus the executable name
-    // Note that on Mac, the Unity.app remains, as this is also a folder
-    // E.g. Mac: /Applications/Unity/Hub/Editor/2018.2.0f2/Unity.app
+    // Path to Unity executable
+    // E.g. Mac: /Applications/Unity/Hub/Editor/2018.2.0f2/Unity.app/Contents/MacOS/Unity
     // Windows: C:\Program Files\Unity\Hub\Editor\2018.2.1f1\Editor\Unity.exe
     // Linux: /home/ivan/Unity-2018.1.0f2/Editor/Unity
     fun getApplicationPath(): Path? {
-        return tryGetApplicationPathFromProtocol()
+        var path =  tryGetApplicationPathFromProtocol()
+        if (SystemInfo.isMac)
+            path = path?.resolve("Contents/MacOS/Unity")
+        return path
     }
 
     private fun getApplicationContentsPathFromProtocol(): Path? {
