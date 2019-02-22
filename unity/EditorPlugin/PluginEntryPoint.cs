@@ -255,22 +255,21 @@ namespace JetBrains.Rider.Unity.Editor
       };
     }
 
-    private static void CreateProtocolAndAdvise(Lifetime lifetime, List<ProtocolInstance> list, string solutionFileName)
+    private static void CreateProtocolAndAdvise(Lifetime lifetime, List<ProtocolInstance> list, string solutionName)
     {
       try
       {
         var dispatcher = MainThreadDispatcher.Instance;
         var riderProtocolController = new RiderProtocolController(dispatcher, lifetime);
-        list.Add(new ProtocolInstance(riderProtocolController.Wire.Port, solutionFileName));
+        list.Add(new ProtocolInstance(riderProtocolController.Wire.Port, solutionName));
 
         var serializers = new Serializers();
         var identities = new Identities(IdKind.Server);
 
         MainThreadDispatcher.AssertThread();
-
+        var protocol = new Protocol("UnityEditorPlugin" + solutionName, serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
         riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
         {
-          var protocol = new Protocol("UnityEditorPlugin", serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
           var model = new EditorPluginModel(connectionLifetime, protocol);
           AdviseUnityActions(model, connectionLifetime);
