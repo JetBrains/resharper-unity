@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ILogger myLogger;
 
         private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
-        private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
+        private readonly WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
 
         public RunViaUnityEditorStrategy(ISolution solution,
             IUnitTestResultManager unitTestResultManager, 
