@@ -252,18 +252,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         
             launch.TestResult.AdviseNotNull(connectionLifetime, result =>
             {
-                var unitTestElement = GetElementById(result.TestId);
+                var unitTestElement = GetElementById(result.AssemblyName, result.TestId);
                 if (unitTestElement == null) //https://youtrack.jetbrains.com/issue/RIDER-15849
                 {
                     var name = result.ParentId.Substring(result.ParentId.LastIndexOf(".", StringComparison.Ordinal) + 1);
                     var brackets = result.TestId.Substring(result.ParentId.Length);
                     var newID = result.ParentId+"."+name+brackets;
-                    unitTestElement = GetElementById(newID);
+                    unitTestElement = GetElementById(result.AssemblyName, newID);
                 }
                 if (unitTestElement == null)
                 {
                     // add dynamic tests
-                    var parent = GetElementById(result.ParentId) as NUnitTestElement;
+                    var parent = GetElementById(result.AssemblyName, result.ParentId) as NUnitTestElement;
                     if (parent == null)
                         return;
 
@@ -338,7 +338,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement || unitTestElement is UnityTestElement)
                 {
-                    var unityName = unitTestElement.Id; 
+                    var unityName = $"[{unitTestElement.Id.Project.Name}]{unitTestElement.Id.Id}"; 
                     myElements[unitTestElement.Id] = unitTestElement;
                     result.Add(unityName);
                 }
@@ -348,9 +348,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         }
 
         [CanBeNull]
-        private IUnitTestElement GetElementById(string resultTestId)
+        private IUnitTestElement GetElementById(string assemblyName, string resultTestId)
         {
-            var unitTestElement = myElements.Where(a=>a.Key.Id == resultTestId).Select(b=>b.Value).SingleOrDefault();
+            var unitTestElement = myElements.Where(a=>a.Key.Id == resultTestId && a.Key.Project.Name == assemblyName).Select(b=>b.Value).SingleOrDefault();
             return unitTestElement;
         }
 

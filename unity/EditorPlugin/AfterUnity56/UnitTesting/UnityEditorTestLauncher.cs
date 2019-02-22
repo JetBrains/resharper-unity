@@ -3,12 +3,10 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.EditorPluginModel;
-using JetBrains.Util;
 using JetBrains.Diagnostics;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
@@ -25,7 +23,27 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       myLaunch = launch;
     }
 
-    public void TryLaunchUnitTests()
+    public void TryLaunchUnitAllTests()
+    {
+      var assemblyTestPack = myLaunch.TestNames.Select(a =>
+      {
+        var index = a.IndexOf(']');
+        return new
+        {
+          AssemblyName = a.Substring(1,index-1),
+          TestName = a.Substring(index+1)
+        };
+      }).GroupBy(
+        p => p.AssemblyName, 
+        p => p.TestName,
+        (key, g) => new { AssemblyName = key, TestNames = g.ToArray() });
+      foreach (var grouping in assemblyTestPack)
+      {
+        TryLaunchUnitTests(grouping.AssemblyName, grouping.TestNames);
+      }
+    }
+
+    public void TryLaunchUnitTests(string assemblyName, string[] testNames)
     {
       try
       {
@@ -68,8 +86,19 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           return;
         }
         
-        var testNameStrings = (object) myLaunch.TestNames.ToArray();
+        var testNameStrings = testNames.ToArray();
         fieldInfo.SetValue(filter, testNameStrings);
+        
+        var assemblyNamesFieldInfo = filter.GetType().GetField("assemblyNames", BindingFlags.Instance | BindingFlags.Public);
+        if (assemblyNamesFieldInfo == null)
+        {
+          ourLogger.Verbose("Could not find assemblyNames field via reflection");
+        }
+        else
+        {
+          assemblyNamesFieldInfo.SetValue(filter, new []{assemblyName});
+        }
+
 
         if (myLaunch.TestMode == TestMode.Play)
         {
@@ -130,7 +159,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           {
             if (!(test is TestMethod)) return;
             ourLogger.Verbose("TestStarted : {0}", test.FullName);
-            var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), string.Empty, 0, Status.Running,
+            var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running,
               TestEventsSender.GetIdFromNUnitTest(test.Parent));
             TestEventsSender.TestStarted(myLaunch, tResult);
           }))

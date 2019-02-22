@@ -23,14 +23,16 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   public class TestInternalEvent
   {
     public string myID;
+    public readonly string myAssemblyName;
     public string myOutput;
     public Status myStatus;
     public int myDuration;
     public string myParentID;
 
-    public TestInternalEvent(string id, string output, int duration, Status status, string parentID)
+    public TestInternalEvent(string id, string assemblyName, string output, int duration, Status status, string parentID)
     {
       myID = id;
+      myAssemblyName = assemblyName;
       myOutput = output;
       myStatus = status;
       myDuration = duration;

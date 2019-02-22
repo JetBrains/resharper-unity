@@ -43,7 +43,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
             TestFinished(myUnitTestLaunch, GetTestResult(myEvent.Event));
             break;
           case EventType.TestStarted:
-            var tResult = new TestResult(myEvent.Event.myID, string.Empty, 0, Status.Running, myEvent.Event.myParentID);
+            var tResult = new TestResult(myEvent.Event.myID, myEvent.Event.myAssemblyName,string.Empty, 0, Status.Running, myEvent.Event.myParentID);
             TestStarted(myUnitTestLaunch, tResult);
             break;
         }        
@@ -69,13 +69,14 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
     internal static TestResult GetTestResult(TestInternalEvent tEvent)
     {
-      return new TestResult(tEvent.myID, tEvent.myOutput, tEvent.myDuration, tEvent.myStatus, tEvent.myParentID);
+      return new TestResult(tEvent.myID, tEvent.myAssemblyName, tEvent.myOutput, tEvent.myDuration, tEvent.myStatus, tEvent.myParentID);
     }
 
     internal static TestInternalEvent GetTestResult(ITestResult testResult)
     {
       //ourLogger.Verbose("TestFinished : {0}, result : {1}", test.FullName, testResult.ResultState);
       var id = GetIdFromNUnitTest(testResult.Test);
+      var assemblyName = testResult.Test.TypeInfo.Assembly.GetName().Name;
 
       var output = ExtractOutput(testResult);
       Status status;
@@ -88,7 +89,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         status = Status.Inconclusive;
       else
         status = Status.Failure;
-      return new TestInternalEvent(id, output,
+      return new TestInternalEvent(id, assemblyName, output,
         (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
         status, GetIdFromNUnitTest(testResult.Test.Parent));
     }

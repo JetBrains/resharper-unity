@@ -34,7 +34,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         {
           if (!(test is TestMethod)) return;
           ourLogger.Verbose("TestStarted : {0}", test.FullName);
-          var internalEvent = new TestInternalEvent(TestEventsSender.GetIdFromNUnitTest(test), "", 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
+          var internalEvent = new TestInternalEvent(TestEventsSender.GetIdFromNUnitTest(test), test.Method.TypeInfo.Assembly.GetName().Name, "", 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
           TestEventReceived(new TestEvent(EventType.TestStarted, internalEvent));
         })
         );
@@ -50,7 +50,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           BindingFlags.NonPublic | BindingFlags.Instance).GetValue(runner),
         new UnityAction<ITestResult>(result =>
         {
-          var internalEvent = new TestInternalEvent("", "", 0, Status.Success, ""); 
+          var internalEvent = new TestInternalEvent("", "","", 0, Status.Success, ""); 
           TestEventReceived(new TestEvent(EventType.RunFinished, internalEvent));
         }));
     }
