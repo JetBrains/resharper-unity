@@ -70,8 +70,13 @@ object EditorPluginModel: Root() {
         +"Play"
     }
 
+    val TestFilter = structdef{
+        field("testName", string)
+        field("assemblyName", string)
+    }
+
     val UnitTestLaunch = classdef {
-        field("testNames", immutableList(string))
+        field("testNames", immutableList(TestFilter))
         field("testGroups", immutableList(string))
         field("testCategories", immutableList(string))
         field("testMode", TestMode)

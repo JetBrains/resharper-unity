@@ -331,16 +331,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return result.ToList();
         }
 
-        private List<string> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
+        private List<TestFilter> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
         {
-            var result = new JetHashSet<string>();
+            var result = new JetHashSet<TestFilter>();
             foreach (var unitTestElement in unitTestElements)
             {
                 if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement || unitTestElement is UnityTestElement)
                 {
-                    var unityName = $"[{unitTestElement.Id.Project.Name}]{unitTestElement.Id.Id}"; 
                     myElements[unitTestElement.Id] = unitTestElement;
-                    result.Add(unityName);
+                    result.Add(new TestFilter(unitTestElement.Id.Id, unitTestElement.Id.Project.Name));
                 }
             }
 
