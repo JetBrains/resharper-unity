@@ -84,7 +84,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         var assemblyNamesFieldInfo = filter.GetType().GetField("assemblyNames", BindingFlags.Instance | BindingFlags.Public);
         if (assemblyNamesFieldInfo == null)
         {
-          ourLogger.Verbose("Could not find assemblyNames field via reflection");
+          ourLogger.Warn("Could not find assemblyNames field via reflection");
         }
         else
         {
