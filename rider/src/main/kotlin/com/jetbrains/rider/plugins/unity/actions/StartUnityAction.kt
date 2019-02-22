@@ -37,9 +37,8 @@ open class StartUnityAction : DumbAwareAction("Start Unity", "Start Unity with c
         }
 
         fun startUnity(appPath: java.nio.file.Path, project: Project, args: Array<out String>): Process? {
-            var path = appPath.toString()
-            if (SystemInfo.isMac)
-                path = Path.combine(path, "Contents/MacOS/Unity")
+            val path = appPath.toString()
+
             val projectPath = project.basePath.toString();
             val processBuilderArgs = mutableListOf(path, "-projectPath", projectPath)
             processBuilderArgs.addAll(args)
