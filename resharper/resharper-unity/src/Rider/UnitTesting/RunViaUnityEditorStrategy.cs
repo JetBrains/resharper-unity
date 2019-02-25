@@ -225,7 +225,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
             
             var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
-            var allNames = InitElementsMap(unitTestElements);
+            var tests = InitElementsMap(unitTestElements);
             var emptyList = new List<string>();
 
             var mode = TestMode.Edit;
@@ -236,7 +236,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     : TestMode.Edit;    
             }
               
-            var launch = new UnitTestLaunch(allNames, emptyList, emptyList, mode);
+            var launch = new UnitTestLaunch(tests, emptyList, emptyList, mode);
             return launch;
         }
         
@@ -327,23 +327,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private List<TestFilter> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
         {
-            var result = new JetHashSet<TestFilter>();
-            foreach (var unitTestElement in unitTestElements)
+            var elements = unitTestElements
+                .Where(unitTestElement => unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement ||
+                                                                             unitTestElement is UnityTestElement).ToArray();
+            foreach (var unitTestElement in elements)
             {
-                if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement || unitTestElement is UnityTestElement)
-                {
-                    myElements[unitTestElement.Id] = unitTestElement;
-                    result.Add(new TestFilter(unitTestElement.Id.Project.Name, unitTestElement.Id.Id));
-                }
-            }
-
-            return result.ToList();
+                myElements[unitTestElement.Id] = unitTestElement;
+            }    
+            var filters = elements
+                .GroupBy(
+                p => p.Id.Project.Name, 
+                p => p.Id.Id,
+                (key, g) => new TestFilter(key, g.ToList()));
+            
+            return filters.ToList();
         }
 
         [CanBeNull]
-        private IUnitTestElement GetElementById(string assemblyName, string resultTestId)
+        private IUnitTestElement GetElementById(string projectName, string resultTestId)
         {
-            var unitTestElement = myElements.Where(a=>a.Key.Id == resultTestId && a.Key.Project.Name == assemblyName).Select(b=>b.Value).SingleOrDefault();
+            var unitTestElement = myElements.Where(a=>a.Key.Id == resultTestId && a.Key.Project.Name == projectName).Select(b=>b.Value).SingleOrDefault();
             return unitTestElement;
         }
 

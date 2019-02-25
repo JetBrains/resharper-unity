@@ -25,13 +25,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
     public void TryLaunchUnitTests()
     {
-      var assemblyTestPack = myLaunch.TestNames.GroupBy(
-        p => p.AssemblyName, 
-        p => p.TestName,
-        (key, g) => new { AssemblyName = key, TestNames = g.ToArray() });
-      foreach (var grouping in assemblyTestPack)
+      foreach (var filter in myLaunch.TestFilters)
       {
-        TryLaunchUnitTestsInAssembly(grouping.AssemblyName, grouping.TestNames);
+        TryLaunchUnitTestsInAssembly(filter.AssemblyName, filter.TestNames.ToArray());
       }
     }
 

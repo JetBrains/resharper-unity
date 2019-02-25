@@ -72,11 +72,11 @@ object EditorPluginModel: Root() {
 
     val TestFilter = structdef{
         field("assemblyName", string)
-        field("testName", string)
+        field("testNames", immutableList(string))
     }
 
     val UnitTestLaunch = classdef {
-        field("testNames", immutableList(TestFilter))
+        field("testFilters", immutableList(TestFilter))
         field("testGroups", immutableList(string))
         field("testCategories", immutableList(string))
         field("testMode", TestMode)
