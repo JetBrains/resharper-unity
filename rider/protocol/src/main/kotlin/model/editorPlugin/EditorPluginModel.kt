@@ -47,7 +47,7 @@ object EditorPluginModel: Root() {
 
     val TestResult = structdef {
         field("testId", string)
-        field("assemblyName", string)
+        field("projectName", string)
         field("output", string)
         field("duration", int)
         field("status", enum {

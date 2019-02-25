@@ -246,18 +246,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         
             launch.TestResult.AdviseNotNull(connectionLifetime, result =>
             {
-                var unitTestElement = GetElementById(result.AssemblyName, result.TestId);
+                var unitTestElement = GetElementById(result.ProjectName, result.TestId);
                 if (unitTestElement == null) //https://youtrack.jetbrains.com/issue/RIDER-15849
                 {
                     var name = result.ParentId.Substring(result.ParentId.LastIndexOf(".", StringComparison.Ordinal) + 1);
                     var brackets = result.TestId.Substring(result.ParentId.Length);
                     var newID = result.ParentId+"."+name+brackets;
-                    unitTestElement = GetElementById(result.AssemblyName, newID);
+                    unitTestElement = GetElementById(result.ProjectName, newID);
                 }
                 if (unitTestElement == null)
                 {
                     // add dynamic tests
-                    var parent = GetElementById(result.AssemblyName, result.ParentId) as NUnitTestElement;
+                    var parent = GetElementById(result.ProjectName, result.ParentId) as NUnitTestElement;
                     if (parent == null)
                         return;
 
