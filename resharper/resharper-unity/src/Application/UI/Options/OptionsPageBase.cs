@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
     public class OptionsPageBase : CustomSimpleOptionsPage
     {
         protected OptionsPageBase(
-            [NotNull] Lifetime lifetime,
+            Lifetime lifetime,
             [NotNull] OptionsSettingsSmartContext settingsStore)
             : base(lifetime, settingsStore)
         {

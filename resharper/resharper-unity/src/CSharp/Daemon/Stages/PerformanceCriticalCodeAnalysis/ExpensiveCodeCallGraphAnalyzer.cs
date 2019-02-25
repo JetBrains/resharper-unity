@@ -1,3 +1,4 @@
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;

@@ -1,5 +1,6 @@
 ﻿using System;
 using JetBrains.Application.Threading;
+using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;

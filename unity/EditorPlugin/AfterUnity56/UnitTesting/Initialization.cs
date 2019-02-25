@@ -1,6 +1,6 @@
+using JetBrains.Collections.Viewable;
 using JetBrains.Rider.Unity.Editor.UnitTesting;
 using JetBrains.Diagnostics;
-using JetBrains.Platform.RdFramework.Util;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting

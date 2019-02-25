@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
+using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Access;
-using JetBrains.Platform.RdFramework.Base;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
+using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -152,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                 var notification = new NotificationModel("Compilation failed", "Script compilation in Unity failed, so tests were not started.", true, RdNotificationEntryType.INFO);
                                 myNotificationsModel.Notification(notification);
                             });
-                            myUnityHost.PerformModelAction(model => model.ActivateUnityLogView.Fire());
+                            myUnityHost.PerformModelAction(model => model.ActivateUnityLogView());
                         }
                         else
                         {
@@ -172,7 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                     SubscribeResults(run, lt, tcs, launch);
                                 });
 
-                                myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Fire(Unit.Instance);
+                                myEditorProtocol.UnityModel.Value.RunUnitTestLaunch();
                             });
                         }
                     });

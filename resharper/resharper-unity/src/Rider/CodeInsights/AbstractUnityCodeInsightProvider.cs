@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.PopupLayout;
-using JetBrains.Core;
-using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.RdFramework.Util;
+using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Host.Features.TextControls;
@@ -48,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         {
            if (actionId.Equals(StartUnityActionId))
            {
-               myHost.PerformModelAction(model => model.StartUnity.Fire(Unit.Instance));
+               myHost.PerformModelAction(model => model.StartUnity());
            }
         }
 

@@ -6,16 +6,16 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
+using JetBrains.Collections.Viewable;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.RdFramework.Base;
-using JetBrains.Platform.RdFramework.Impl;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
+using JetBrains.Rd;
+using JetBrains.Rd.Base;
+using JetBrains.Rd.Impl;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
-        public readonly RProperty<EditorPluginModel> UnityModel = new RProperty<EditorPluginModel>(null);
+        public readonly ViewableProperty<EditorPluginModel> UnityModel = new ViewableProperty<EditorPluginModel>(null);
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
@@ -113,9 +113,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
            myHost.PerformModelAction(rd => rd.Play.Advise(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
            myHost.PerformModelAction(rd => rd.Pause.Advise(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
-           myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step.Fire())));
+           myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step())));
            myHost.PerformModelAction(model => {model.SetScriptCompilationDuringPlay.Advise(lifetime, 
-             scriptCompilationDuringPlay => UnityModel.Value.DoIfNotNull(editor => editor.SetScriptCompilationDuringPlay.Fire((int)scriptCompilationDuringPlay)));});
+             scriptCompilationDuringPlay => UnityModel.Value.DoIfNotNull(editor => editor.SetScriptCompilationDuringPlay((int)scriptCompilationDuringPlay)));});
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -153,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     myLogger.Info("WireConnected.");
 
                     var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
-                        new Identities(IdKind.Client), myDispatcher, wire);
+                        new Identities(IdKind.Client), myDispatcher, wire, lf);
 
                     protocol.ThrowErrorOnOutOfSyncModels = false;
                     
@@ -163,7 +163,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Value;
                         if (!isEnabled)
                         {
-                            myHost.PerformModelAction(model => model.OnEditorModelOutOfSync.Fire());
+                            myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
                         }
                     });
                     var editor = new EditorPluginModel(lf, protocol);
@@ -209,7 +209,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     editor.ApplicationContentsPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
                     editor.NotifyIsRecompileAndContinuePlaying.AdviseOnce(lifetime,
-                        s => myHost.PerformModelAction(a => a.NotifyIsRecompileAndContinuePlaying.Fire(s)));
+                        s => myHost.PerformModelAction(a => a.NotifyIsRecompileAndContinuePlaying(s)));
 
                     BindPluginPathToSettings(lf, editor);
 
@@ -287,7 +287,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                         CaretVisualPlacement.Generic);
                                 }
 
-                                myHost.PerformModelAction(m => m.ActivateRider.Fire());
+                                myHost.PerformModelAction(m => m.ActivateRider());
                                 result = true;
                             },
                             () => { result = false; });
@@ -302,7 +302,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 myLogger.Verbose(entry.Time + " " + entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
                 var logEntry = new EditorLogEntry((int)entry.Type, (int)entry.Mode, entry.Time, entry.Message, entry.StackTrace);
-                myHost.PerformModelAction(m => m.OnUnityLogEvent.Fire(logEntry));
+                myHost.PerformModelAction(m => m.OnUnityLogEvent(logEntry));
             });
         }
     }
