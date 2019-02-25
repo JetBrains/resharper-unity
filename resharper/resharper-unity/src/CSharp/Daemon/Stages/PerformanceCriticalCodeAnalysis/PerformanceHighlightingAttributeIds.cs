@@ -7,5 +7,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public const string COSTLY_METHOD_INVOCATION = "ReSharper Unity Expensive Method Invocation";
         public const string NULL_COMPARISON = "ReSharper Unity Expensive Null Comparison";
         public const string COSTLY_METHOD_HIGHLIGHTER = "ReSharper Unity Performance Critical Context";
+        public const string COSTLY_METHOD_CONTEXT_HIGHLIGHTER = "ReSharper Unity Performance Critical Context";
     }
 }
