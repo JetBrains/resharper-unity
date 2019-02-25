@@ -1,5 +1,6 @@
 ﻿using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Extentions;
+using JetBrains.Collections.Viewable;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     {
         private readonly RunViaUnityEditorStrategy myUnityEditorStrategy;
         private readonly RdUnityModel myRdUnityModel;
-        private readonly RProperty<EditorPluginModel> myEditorModel;
+        private readonly ViewableProperty<EditorPluginModel> myEditorModel;
 
         public UnityNUnitServiceProvider(ISolution solution, IPsiModules psiModules, ISymbolCache symbolCache,
             IUnitTestElementIdFactory idFactory, IUnitTestElementManager elementManager, NUnitTestProvider provider,

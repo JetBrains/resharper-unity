@@ -5,15 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using JetBrains.Collections.Viewable;
 using JetBrains.Core;
-using JetBrains.Platform.RdFramework;
-using JetBrains.Platform.RdFramework.Impl;
-using JetBrains.Platform.RdFramework.Tasks;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.RdFramework.Base;
+using JetBrains.Rd;
+using JetBrains.Rd.Base;
+using JetBrains.Rd.Impl;
+using JetBrains.Rd.Tasks;
 using UnityEditor;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
@@ -267,7 +267,7 @@ namespace JetBrains.Rider.Unity.Editor
         var identities = new Identities(IdKind.Server);
 
         MainThreadDispatcher.AssertThread();
-        var protocol = new Protocol("UnityEditorPlugin" + solutionName, serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire);
+        var protocol = new Protocol("UnityEditorPlugin" + solutionName, serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire, lifetime);
         riderProtocolController.Wire.Connected.WhenTrue(lifetime, connectionLifetime =>
         {
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
@@ -287,9 +287,9 @@ namespace JetBrains.Rider.Unity.Editor
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
-            model.NotifyIsRecompileAndContinuePlaying.Fire("General");
+            model.NotifyIsRecompileAndContinuePlaying("General");
           else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
-            model.NotifyIsRecompileAndContinuePlaying.Fire("Rider");
+            model.NotifyIsRecompileAndContinuePlaying("Rider");
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);

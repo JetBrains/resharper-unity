@@ -1,5 +1,4 @@
 ﻿using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;

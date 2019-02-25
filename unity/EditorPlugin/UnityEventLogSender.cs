@@ -94,7 +94,7 @@ namespace JetBrains.Rider.Unity.Editor
     
     private void ProcessQueue(UnityEventCollector collector)
     {
-      RdLogEvent element;;
+      RdLogEvent element;
       while ((element  = collector.DelayedLogEvents.Dequeue()) != null)
       {
         SendLogEvent(element);
@@ -109,7 +109,7 @@ namespace JetBrains.Rider.Unity.Editor
         {
           if (modelWithLifetime.Lifetime.IsAlive)
           {
-            modelWithLifetime.Model.Log.Fire(logEvent);
+            modelWithLifetime.Model.Log(logEvent);
           }
         }
       });  

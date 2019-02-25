@@ -1,9 +1,12 @@
-﻿#if RIDER
+﻿
+using JetBrains.Collections.Viewable;
+using JetBrains.Rd;
+using JetBrains.Rd.Reflection;
+#if RIDER
 using JetBrains.Application;
 using JetBrains.Application.Components;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.RdFramework;
 using JetBrains.Platform.RdFramework.Impl;
 using JetBrains.ReSharper.Host.Features.Components;
 using JetBrains.Rider.Model;
@@ -23,13 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     [ShellComponent]
     public class MyProtocol : ProtocolComponent, IHideImplementation<ShellProtocol>
     {
-        public MyProtocol(string name, ISerializers serializers, IIdentities identities, IScheduler scheduler, IWire wire)
-            : base(name, serializers, identities, scheduler, wire)
+        public MyProtocol(string name, ISerializers serializers, IIdentities identities, IScheduler scheduler, IWire wire, Lifetime lifetime)
+            : base(name, serializers, identities, scheduler, wire, lifetime)
         {
         }
 
-        public MyProtocol(IShellLocks locks, IPolymorphicTypesCatalog typesCatalog)
-            : base(locks, typesCatalog)
+        public MyProtocol(IShellLocks locks, IPolymorphicTypesCatalog typesCatalog, Lifetime lifetime)
+            : base(locks, typesCatalog, lifetime)
         {
         }
     }

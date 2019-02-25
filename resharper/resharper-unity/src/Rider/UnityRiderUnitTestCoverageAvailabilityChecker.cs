@@ -1,6 +1,6 @@
 using JetBrains.Application;
 using JetBrains.Application.Components;
-using JetBrains.Platform.RdFramework.Util;
+using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.UnitTesting;

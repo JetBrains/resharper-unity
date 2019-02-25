@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Platform.RdFramework.Tasks;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Diagnostics;
+using JetBrains.Rd.Tasks;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;

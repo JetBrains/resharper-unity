@@ -1,15 +1,14 @@
 using JetBrains.Collections;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.Util.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     public static class AttributesUtil
     {
-        public static SmartList<IField> GetFieldsByAttribute(this IAttribute attribute)
+        public static CompactList<IField> GetFieldsByAttribute(this IAttribute attribute)
         {
-            var list = new SmartList<IField>();
+            var list = new CompactList<IField>();
             foreach (var fieldDeclaration in FieldDeclarationNavigator.GetByAttribute(attribute))
             {
                 if (fieldDeclaration.DeclaredElement != null)
