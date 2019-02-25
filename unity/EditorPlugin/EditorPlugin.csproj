@@ -22,11 +22,11 @@
     <Reference Include="JetBrains.Annotations">
       <HintPath>..\lib\JetBrains.Annotations.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Platform.RdCore">
-      <HintPath>..\lib\JetBrains.Platform.RdCore.dll</HintPath>
+    <Reference Include="JetBrains.Platform.RdCore35">
+      <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Platform.RdFramework">
-      <HintPath>..\lib\JetBrains.Platform.RdFramework.dll</HintPath>
+    <Reference Include="JetBrains.Platform.RdFramework35">
+      <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

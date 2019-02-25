@@ -1,9 +1,9 @@
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.RdFramework.Base;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
+using JetBrains.Rd.Base;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
@@ -12,9 +12,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     public class UnitySolutionTracker
     {
         private readonly ISolution mySolution;
-        public readonly RProperty<bool> IsUnityProjectFolder = new RProperty<bool>();
-        public readonly RProperty<bool> IsUnityGeneratedProject = new RProperty<bool>();
-        public readonly RProperty<bool> IsUnityProject = new RProperty<bool>();
+        public readonly ViewableProperty<bool> IsUnityProjectFolder = new ViewableProperty<bool>();
+        public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>();
+        public readonly ViewableProperty<bool> IsUnityProject = new ViewableProperty<bool>();
 
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
         {

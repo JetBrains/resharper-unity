@@ -12,7 +12,6 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using IGotoStatement = JetBrains.ReSharper.Psi.CSharp.Tree.IGotoStatement;
 using IIfStatement = JetBrains.ReSharper.Psi.CSharp.Tree.IIfStatement;
