@@ -1,5 +1,4 @@
 using JetBrains.Collections.Viewable;
-using JetBrains.Rider.Unity.Editor.UnitTesting;
 using JetBrains.Diagnostics;
 using UnityEditor;
 
@@ -28,7 +27,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       {
         if (!modelValue.UnitTestLaunch.HasValue()) return;
         var testLauncher = new UnityEditorTestLauncher(modelValue.UnitTestLaunch.Value);
-        testLauncher.TryLaunchUnitAllTests();
+        testLauncher.TryLaunchUnitTests();
       });
     }
   }

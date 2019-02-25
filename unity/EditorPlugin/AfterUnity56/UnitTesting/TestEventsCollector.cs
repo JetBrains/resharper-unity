@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using JetBrains.Diagnostics;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.Utils;
-using JetBrains.Diagnostics;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEditor.Events;
 using UnityEngine;
 using UnityEngine.Events;
+
 // removing "redundant" new UnityAction<ITestResult> causes events not fire in PlayMode tests in Unity 2017.x
 // ReSharper disable RedundantDelegateCreation
 
-namespace JetBrains.Rider.Unity.Editor.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   [Location("JetBrainsRiderTestEventsCollectorCache.txt", LocationAttribute.Location.LibraryFolder)]
   internal class TestEventsCollector : ScriptObjectSingleton<TestEventsCollector>

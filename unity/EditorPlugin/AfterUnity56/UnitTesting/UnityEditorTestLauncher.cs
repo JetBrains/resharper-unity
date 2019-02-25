@@ -1,15 +1,15 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Diagnostics;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rd.Tasks;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
-namespace JetBrains.Rider.Unity.Editor.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   public class UnityEditorTestLauncher
   {
@@ -23,7 +23,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       myLaunch = launch;
     }
 
-    public void TryLaunchUnitAllTests()
+    public void TryLaunchUnitTests()
     {
       var assemblyTestPack = myLaunch.TestNames.GroupBy(
         p => p.AssemblyName, 
@@ -31,11 +31,11 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         (key, g) => new { AssemblyName = key, TestNames = g.ToArray() });
       foreach (var grouping in assemblyTestPack)
       {
-        TryLaunchUnitTests(grouping.AssemblyName, grouping.TestNames);
+        TryLaunchUnitTestsInAssembly(grouping.AssemblyName, grouping.TestNames);
       }
     }
 
-    public void TryLaunchUnitTests(string assemblyName, string[] testNames)
+    private void TryLaunchUnitTestsInAssembly(string assemblyName, string[] testNames)
     {
       try
       {

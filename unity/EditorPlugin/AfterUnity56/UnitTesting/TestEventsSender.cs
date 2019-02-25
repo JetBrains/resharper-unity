@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Text;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Diagnostics;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
-namespace JetBrains.Rider.Unity.Editor.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   public class TestEventsSender
   {

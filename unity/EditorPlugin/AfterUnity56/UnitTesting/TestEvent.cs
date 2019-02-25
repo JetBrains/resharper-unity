@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Platform.Unity.EditorPluginModel;
 
-namespace JetBrains.Rider.Unity.Editor.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   [Serializable]
   public enum EventType { TestStarted, TestFinished, RunFinished }
