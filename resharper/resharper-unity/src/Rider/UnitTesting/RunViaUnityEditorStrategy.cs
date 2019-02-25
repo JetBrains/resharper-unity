@@ -339,7 +339,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement || unitTestElement is UnityTestElement)
                 {
                     myElements[unitTestElement.Id] = unitTestElement;
-                    result.Add(new TestFilter(unitTestElement.Id.Id, unitTestElement.Id.Project.Name));
+                    result.Add(new TestFilter(unitTestElement.Id.Project.Name, unitTestElement.Id.Id));
                 }
             }
 

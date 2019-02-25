@@ -71,8 +71,8 @@ object EditorPluginModel: Root() {
     }
 
     val TestFilter = structdef{
-        field("testName", string)
         field("assemblyName", string)
+        field("testName", string)
     }
 
     val UnitTestLaunch = classdef {
