@@ -1,20 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using JetBrains.Annotations;
-using JetBrains.Application.Progress;
-using JetBrains.Platform.RdFramework.Base;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
-using JetBrains.Util.dataStructures;
 using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider

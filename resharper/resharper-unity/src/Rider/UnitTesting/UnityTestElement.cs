@@ -3,11 +3,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
@@ -55,10 +57,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private ITypeElement GetTypeElement()
         {
-            if (myProject.IsValid())
-                return myUnitTestingCachingService.GetTypeElement(myProject,
-                    myProject.GetCurrentTargetFrameworkId(), myClrTypeName, true, false);
-            return null;
+            return myUnitTestingCachingService.GetTypeElement(myProject,
+                myProject.GetCurrentTargetFrameworkId(), myClrTypeName, true, false);
         }
 
         public UnitTestElementDisposition GetDisposition()

@@ -54,17 +54,17 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     
     public static void RunFinished(UnitTestLaunch launch)
     {
-      launch.RunResult.Fire(new RunResult(true));
+      launch.RunResult(new RunResult(true));
     }
     
     public static void TestStarted(UnitTestLaunch launch, TestResult testResult)
     {
-      launch.TestResult.Fire(testResult);
+      launch.TestResult(testResult);
     }
 
     public static void TestFinished(UnitTestLaunch launch, TestResult testResult)
     {
-      launch.TestResult.Fire(testResult);
+      launch.TestResult(testResult);
     }
 
     internal static TestResult GetTestResult(TestInternalEvent tEvent)

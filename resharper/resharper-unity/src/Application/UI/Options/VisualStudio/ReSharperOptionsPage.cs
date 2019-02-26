@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
         public const string PID = "UnityPluginSettings";
         public const string Name = "Unity Engine";
 
-        public ReSharperOptionsPage([NotNull] Lifetime lifetime, [NotNull] OptionsSettingsSmartContext settingsStore,
+        public ReSharperOptionsPage(Lifetime lifetime, [NotNull] OptionsSettingsSmartContext settingsStore,
             RunsProducts.ProductConfigurations productConfigurations)
             : base(lifetime, settingsStore)
         {

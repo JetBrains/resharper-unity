@@ -73,7 +73,7 @@ def debuggerDllFiles = [
 ]
 
 def annotationsFrom = '../resharper/resharper-unity/src/annotations'
-def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
+def annotationsTo = 'Extensions/com.intellij.resharper.unity/annotations'
 
 def unityeditorplugin_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
 def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Full/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Collections;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.RdFramework.Base;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
+using JetBrains.Rd.Base;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
         // If you want to be notified that we're a Unity solution, advise this. If you need a per-project lifetime,
         // implement IUnityReferenceChangeHandler
-        public readonly RProperty<bool> HasUnityReference = new RProperty<bool>(false);
+        public readonly ViewableProperty<bool> HasUnityReference = new ViewableProperty<bool>(false);
 
         public UnityReferencesTracker(
             Lifetime lifetime,

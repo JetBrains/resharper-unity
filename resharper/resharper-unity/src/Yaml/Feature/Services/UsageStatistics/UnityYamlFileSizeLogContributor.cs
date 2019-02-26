@@ -1,3 +1,4 @@
+using JetBrains.Collections.Viewable;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
