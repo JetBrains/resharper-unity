@@ -25,13 +25,18 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
     public void TryLaunchUnitTests()
     {
-      foreach (var filter in myLaunch.TestFilters)
-      {
-        TryLaunchUnitTestsInAssembly(filter.AssemblyName, filter.TestNames.ToArray());
-      }
+      // todo: restore, once Unity fixes UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter.BuildNUnitFilter
+      // Currently assemblyName filters are added with OR to testNames filers, should be done with AND
+      
+      //foreach (var filter in myLaunch.TestFilters)
+      //{
+      //  TryLaunchUnitTestsInAssembly(filter.AssemblyName, filter.TestNames.ToArray());
+      //}
+      
+      TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
     }
 
-    private void TryLaunchUnitTestsInAssembly(string assemblyName, string[] testNames)
+    private void TryLaunchUnitTestsInAssembly(string[] testNames)
     {
       try
       {
@@ -73,20 +78,17 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           ourLogger.Verbose("Could not find testNames field via reflection");
           return;
         }
-        
-        var testNameStrings = testNames.ToArray();
-        fieldInfo.SetValue(filter, testNameStrings);
-        
-        var assemblyNamesFieldInfo = filter.GetType().GetField("assemblyNames", BindingFlags.Instance | BindingFlags.Public);
-        if (assemblyNamesFieldInfo == null)
-        {
-          ourLogger.Warn("Could not find assemblyNames field via reflection");
-        }
-        else
-        {
-          assemblyNamesFieldInfo.SetValue(filter, new []{assemblyName});
-        }
+        fieldInfo.SetValue(filter, testNames);
 
+        // todo: restore, once Unity fixes UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter.BuildNUnitFilter
+        // Currently assemblyName filters are added with OR to testNames filers
+//        var assemblyNamesFieldInfo = filter.GetType().GetField("assemblyNames", BindingFlags.Instance | BindingFlags.Public);
+//        if (assemblyNamesFieldInfo == null)
+//        {
+//          ourLogger.Warn("Could not find assemblyNames field via reflection");
+//          return;
+//        }
+//        assemblyNamesFieldInfo.SetValue(filter, new[] { assemblyName });
 
         if (myLaunch.TestMode == TestMode.Play)
         {
