@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
             {
                 TestUtil.SetHomeDir(GetType().Assembly);
 
-                var path = TestDataPath2;
+                var path = TestDataPath;
                 foreach (var file in path.GetChildFiles("*.shader", PathSearchFlags.RecurseIntoSubdirectories))
                     yield return file.MakeRelativeTo(path).ChangeExtension(string.Empty).FullPath;
             }

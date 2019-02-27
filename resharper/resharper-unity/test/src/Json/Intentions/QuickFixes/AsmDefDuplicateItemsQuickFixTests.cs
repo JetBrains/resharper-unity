@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Intentions.QuickFixes
                 throw new ArgumentNullException(nameof(fileSet));
 
             var mainProjectFileSet = fileSet.Where(filename => !filename.Contains("_SecondProject"));
-            var mainAbsoluteFileSet = mainProjectFileSet.Select(path => TestDataPath2.Combine(path)).ToList();
+            var mainAbsoluteFileSet = mainProjectFileSet.Select(path => TestDataPath.Combine(path)).ToList();
 
             var descriptors = new Dictionary<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>> >();
 
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Intentions.QuickFixes
             if (Enumerable.Any(referencedProjectFileSet))
             {
                 var secondAbsoluteFileSet =
-                    referencedProjectFileSet.Select(path => TestDataPath2.Combine(path)).ToList();
+                    referencedProjectFileSet.Select(path => TestDataPath.Combine(path)).ToList();
                 var secondProjectName = "Second_" + ProjectName;
                 var secondDescriptorPair = CreateProjectDescriptor(secondProjectName, secondProjectName,
                     secondAbsoluteFileSet, referencedLibraries, SecondProjectGuid);
