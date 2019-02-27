@@ -13,8 +13,8 @@ plugins {
 
 ext.repoRoot = project.file("..")
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-//ext.bundledRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
-ext.bundledRiderSdkRoot =  new File("F:\\Downloads\\RiderSDK")
+ext.bundledRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
+
 
 
 repositories {
