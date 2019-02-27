@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using JetBrains.Diagnostics;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.Utils;
-using JetBrains.Diagnostics;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEditor.Events;
 using UnityEngine;
 using UnityEngine.Events;
+
 // removing "redundant" new UnityAction<ITestResult> causes events not fire in PlayMode tests in Unity 2017.x
 // ReSharper disable RedundantDelegateCreation
 
-namespace JetBrains.Rider.Unity.Editor.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   [Location("JetBrainsRiderTestEventsCollectorCache.txt", LocationAttribute.Location.LibraryFolder)]
   internal class TestEventsCollector : ScriptObjectSingleton<TestEventsCollector>
@@ -34,7 +35,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         {
           if (!(test is TestMethod)) return;
           ourLogger.Verbose("TestStarted : {0}", test.FullName);
-          var internalEvent = new TestInternalEvent(TestEventsSender.GetIdFromNUnitTest(test), "", 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
+          var internalEvent = new TestInternalEvent(TestEventsSender.GetIdFromNUnitTest(test), test.Method.TypeInfo.Assembly.GetName().Name, "", 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
           TestEventReceived(new TestEvent(EventType.TestStarted, internalEvent));
         })
         );
@@ -50,7 +51,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           BindingFlags.NonPublic | BindingFlags.Instance).GetValue(runner),
         new UnityAction<ITestResult>(result =>
         {
-          var internalEvent = new TestInternalEvent("", "", 0, Status.Success, ""); 
+          var internalEvent = new TestInternalEvent("", "","", 0, Status.Success, ""); 
           TestEventReceived(new TestEvent(EventType.RunFinished, internalEvent));
         }));
     }

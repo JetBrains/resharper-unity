@@ -31,7 +31,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (!PluginEntryPoint.Enabled)
         return;
       
-      ourApiCompatibilityLevel = GetApiCompatibilityLevel(); // fails in batch mode
+      ourApiCompatibilityLevel = GetApiCompatibilityLevel();
     }
     
     // Note that this does not affect the order in which postprocessors are evaluated. Order of execution is undefined.

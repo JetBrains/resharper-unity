@@ -1,15 +1,15 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Diagnostics;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rd.Tasks;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
-namespace JetBrains.Rider.Unity.Editor.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   public class UnityEditorTestLauncher
   {
@@ -24,6 +24,19 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     }
 
     public void TryLaunchUnitTests()
+    {
+      // todo: restore, once Unity fixes UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter.BuildNUnitFilter
+      // Currently assemblyName filters are added with OR to testNames filers, should be done with AND
+      
+      //foreach (var filter in myLaunch.TestFilters)
+      //{
+      //  TryLaunchUnitTestsInAssembly(filter.AssemblyName, filter.TestNames.ToArray());
+      //}
+      
+      TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
+    }
+
+    private void TryLaunchUnitTestsInAssembly(string[] testNames)
     {
       try
       {
@@ -65,9 +78,17 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           ourLogger.Verbose("Could not find testNames field via reflection");
           return;
         }
-        
-        var testNameStrings = (object) myLaunch.TestNames.ToArray();
-        fieldInfo.SetValue(filter, testNameStrings);
+        fieldInfo.SetValue(filter, testNames);
+
+        // todo: restore, once Unity fixes UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter.BuildNUnitFilter
+        // Currently assemblyName filters are added with OR to testNames filers
+//        var assemblyNamesFieldInfo = filter.GetType().GetField("assemblyNames", BindingFlags.Instance | BindingFlags.Public);
+//        if (assemblyNamesFieldInfo == null)
+//        {
+//          ourLogger.Warn("Could not find assemblyNames field via reflection");
+//          return;
+//        }
+//        assemblyNamesFieldInfo.SetValue(filter, new[] { assemblyName });
 
         if (myLaunch.TestMode == TestMode.Play)
         {
@@ -128,7 +149,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           {
             if (!(test is TestMethod)) return;
             ourLogger.Verbose("TestStarted : {0}", test.FullName);
-            var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), string.Empty, 0, Status.Running,
+            var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running,
               TestEventsSender.GetIdFromNUnitTest(test.Parent));
             TestEventsSender.TestStarted(myLaunch, tResult);
           }))

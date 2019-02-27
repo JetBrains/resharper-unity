@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace JetBrains.Rider.Unity.Editor.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   public static class PlayModeSupport
   {

@@ -47,6 +47,7 @@ object EditorPluginModel: Root() {
 
     val TestResult = structdef {
         field("testId", string)
+        field("projectName", string)
         field("output", string)
         field("duration", int)
         field("status", enum {
@@ -69,8 +70,13 @@ object EditorPluginModel: Root() {
         +"Play"
     }
 
-    val UnitTestLaunch = classdef {
+    val TestFilter = structdef{
+        field("assemblyName", string)
         field("testNames", immutableList(string))
+    }
+
+    val UnitTestLaunch = classdef {
+        field("testFilters", immutableList(TestFilter))
         field("testGroups", immutableList(string))
         field("testCategories", immutableList(string))
         field("testMode", TestMode)
