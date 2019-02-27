@@ -132,7 +132,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       var changed = FixTargetFrameworkVersion(projectContentElement, xmlns);
-      changed |= FixUnityEngineReference(projectContentElement, xmlns); // shouldn't be needed in Unity 2018.2
+      changed |= FixUnityEngineReference(projectContentElement, xmlns);
       changed |= FixSystemXml(projectContentElement, xmlns);
       changed |= SetLangVersion(projectContentElement, xmlns);
       changed |= SetProjectFlavour(projectContentElement, xmlns);
@@ -145,10 +145,18 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
+      changed |= SetOutputPath(projectContentElement, xmlns);
       
       return changed;
     }
-    
+
+    // update <OutputPath>Temp\bin\Debug\</OutputPath> into <OutputPath>Library\ScriptAssemblies\</OutputPath>
+    // Particularly useful for UnitTesting
+    private static bool SetOutputPath(XElement projectContentElement, XNamespace xmlns)
+    {
+      return SetOrUpdateProperty(projectContentElement, xmlns, "OutputPath", existing => "Library/ScriptAssemblies/");
+    }
+
     /* Since Unity 2018.1.5f1 it looks like this:
      <PropertyGroup>
            <NoConfig>true</NoConfig>
@@ -682,27 +690,29 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, Func<string, string> updater)
     {
-      var element = root.Elements(xmlns + "PropertyGroup").Elements(xmlns + name).FirstOrDefault();
-      if (element != null)
+      var elements = root.Elements(xmlns + "PropertyGroup").Elements(xmlns + name).ToList();
+      if (elements.Any())
       {
-        var result = updater(element.Value);
-        if (result != element.Value)
+        var updated = false;
+        foreach (var element in elements)
         {
-          ourLogger.Verbose("Overriding existing project property {0}. Old value: {1}, new value: {2}", name, element.Value, result);
+          var result = updater(element.Value);
+          if (result != element.Value)
+          {
+            ourLogger.Verbose("Overriding existing project property {0}. Old value: {1}, new value: {2}", name,
+              element.Value, result);
 
-          element.SetValue(result);
-          return true;
+            element.SetValue(result);
+            updated = true;
+          }
+          ourLogger.Verbose("Property {0} already set. Old value: {1}, new value: {2}", name, element.Value, result);
         }
 
-        ourLogger.Verbose("Property {0} already set. Old value: {1}, new value: {2}", name, element.Value, result);
-      }
-      else
-      {
-        AddProperty(root, xmlns, name, updater(string.Empty));
-        return true;
+        return updated;
       }
 
-      return false;
+      AddProperty(root, xmlns, name, updater(string.Empty));
+      return true;
     }
 
     // Adds a property to the first property group without a condition
