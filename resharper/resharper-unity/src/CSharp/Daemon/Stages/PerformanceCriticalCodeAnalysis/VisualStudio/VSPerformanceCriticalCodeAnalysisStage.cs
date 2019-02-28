@@ -3,6 +3,8 @@ using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -12,9 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [DaemonStage(GlobalAnalysisStage = true)]
     public class VSPerformanceCriticalCodeAnalysisStage : PerformanceCriticalCodeAnalysisStage
     {
-        public VSPerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa, CallGraphActivityTracker tracker, PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
+        public VSPerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa, UnitySolutionTracker solutionTracker, CallGraphActivityTracker tracker, PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
             ExpensiveCodeCallGraphAnalyzer expensiveAnalyzer)
-            : base(swa, tracker, performanceAnalyzer, expensiveAnalyzer)
+            : base(swa, solutionTracker, tracker, performanceAnalyzer, expensiveAnalyzer)
         {
         }
         

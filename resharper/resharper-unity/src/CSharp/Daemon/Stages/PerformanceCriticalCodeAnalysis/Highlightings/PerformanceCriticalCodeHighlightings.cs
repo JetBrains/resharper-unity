@@ -4,6 +4,7 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -123,10 +124,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
 
     [StaticSeverityHighlighting(Severity.INFO, CSharpLanguage.Name, Languages = "CSHARP",
-        AttributeId = PerformanceHighlightingAttributeIds.COSTLY_METHOD_HIGHLIGHTER,
+        AttributeId = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
-    public class PerformanceHighlighting: PerformanceHighlightingBase
+    public class PerformanceHighlighting: PerformanceHighlightingBase , IActiveLineMarkerInfo
     {
         public const string SEVERITY_ID = "Unity.PerformanceCriticalCodeHighlighting";
         public const string TITLE = "Performance critical context";
@@ -135,15 +136,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         private readonly DocumentRange myRange;
 
         public PerformanceHighlighting(DocumentRange range)
-            : base(SEVERITY_ID, PerformanceHighlightingAttributeIds.COSTLY_METHOD_HIGHLIGHTER, MESSAGE)
+            : base(SEVERITY_ID, PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER, MESSAGE)
         {
             myRange = range;
         }
 
         public override bool IsValid() => true;
         public override DocumentRange CalculateRange() => myRange;
-
-        public LineMarkerPosition Position => LineMarkerPosition.LEFT;
+        public string RendererId => null;
+        public int Thickness => 1;
+        public LineMarkerPosition Position =>  LineMarkerPosition.RIGHT;
+        public ExecutableItem LeftClick() => null;
+        public string Tooltip => "Performance critical context";
     }
 
 
@@ -176,17 +180,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override IHighlighter CreateHighlighter(IDocumentMarkup markup)
         {
             var highlighter = base.CreateHighlighter(markup);
-            highlighter.UserData = new PerformanceLineMarker();
+            highlighter.UserData = new PerformanceHighlighting(DocumentRange.InvalidRange);
             return highlighter;
         }
 
-        private class PerformanceLineMarker : IActiveLineMarkerInfo
-        {
-            public string RendererId => null;
-            public int Thickness => 1;
-            public LineMarkerPosition Position =>  LineMarkerPosition.LEFT;
-            public ExecutableItem LeftClick() => null;
-            public string Tooltip => "Performance critical context";
-        }
     }
 }

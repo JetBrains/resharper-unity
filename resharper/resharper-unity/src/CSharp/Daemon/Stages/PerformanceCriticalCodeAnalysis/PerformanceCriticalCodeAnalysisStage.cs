@@ -1,12 +1,15 @@
 using System;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
+using JetBrains.Collections.Viewable;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -18,15 +21,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [DaemonStage(GlobalAnalysisStage = true)]
     public class PerformanceCriticalCodeAnalysisStage : CSharpDaemonStageBase
     {
+        public static object TEMP_LOCK = new object();
+        
         protected readonly SolutionAnalysisService Swa;
+        private readonly UnitySolutionTracker mySolutionTracker;
         protected readonly CallGraphActivityTracker Tracker;
         protected readonly PerformanceCriticalCodeCallGraphAnalyzer PerformanceAnalyzer;
         protected readonly ExpensiveCodeCallGraphAnalyzer ExpensiveAnalyzer;
 
-        public PerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa, CallGraphActivityTracker tracker, PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
+        public PerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa,
+            UnitySolutionTracker solutionTracker, CallGraphActivityTracker tracker,
+            PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
             ExpensiveCodeCallGraphAnalyzer expensiveAnalyzer)
         {
             Swa = swa;
+            mySolutionTracker = solutionTracker;
             Tracker = tracker;
             PerformanceAnalyzer = performanceAnalyzer;
             ExpensiveAnalyzer = expensiveAnalyzer;
@@ -35,7 +44,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            var enabled = settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
+            if (!mySolutionTracker.IsUnityProject.HasTrueValue())
+                return null;
+            
+            var enabled = settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalAnalysis);
 
             if (!enabled)
                 return null;
@@ -64,6 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         private readonly CallGraphActivityTracker myTracker;
         private readonly int myPerformanceAnalyzerId;
         private readonly int myExpensiveAnalyzerId;
+        private readonly bool myLineMarkerEnabled;
 
         public PerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file,
             [NotNull] SolutionAnalysisService swa, CallGraphActivityTracker tracker, [NotNull] PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
@@ -74,6 +87,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             myTracker = tracker;
             myPerformanceAnalyzerId = performanceAnalyzer.AnalyzerId;
             myExpensiveAnalyzerId = expensiveCodeCallGraphAnalyzer.AnalyzerId;
+
+            myLineMarkerEnabled = DaemonProcess.ContextBoundSettingsStore.GetValue((UnitySettings key) =>
+                key.EnableLineMarkerForPerformanceCriticalCode);
         }
 
         public override void Execute(Action<DaemonStageResult> committer)
@@ -109,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (node is IFunctionDeclaration functionDeclaration)
             {
                 var declaredElement = functionDeclaration.DeclaredElement;
-                if (IsMarked(usageChecker, myPerformanceAnalyzerId, declaredElement))
+                if (myLineMarkerEnabled && IsMarked(usageChecker, myPerformanceAnalyzerId, declaredElement))
                     HighlightHotMethod(functionDeclaration, consumer);               
             }
 
@@ -148,9 +164,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             
             if (!id.HasValue)
                 return false;
-            
-            return myTracker.RegisterCallGraphQueryTime(() =>
-                usageChecker.IsMarkedByCallGraphAnalyzer(analyzerId, id.Value, true));
+
+            lock (PerformanceCriticalCodeAnalysisStage.TEMP_LOCK)
+            {
+                return myTracker.RegisterCallGraphQueryTime(() =>
+                    usageChecker.IsMarkedByCallGraphAnalyzer(analyzerId, id.Value, true));
+            }
         }
 
         protected virtual void HighlightHotMethod(IDeclaration node, IHighlightingConsumer consumer)

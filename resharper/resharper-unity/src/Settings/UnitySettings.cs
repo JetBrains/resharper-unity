@@ -21,9 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         [SettingsEntry(false, "Enables syntax error highlighting of CG blocks in ShaderLab files.")]
         public bool EnableCgErrorHighlighting;
 
-        [SettingsEntry(true, "Enables underscore highlighting of costly methods and indirect calls of these methods.")]
-        public bool EnablePerformanceCriticalCodeHighlighting;
-
         [SettingsEntry(GutterIconMode.CodeInsightDisabled, "Unity highlighter scheme for editor.")]
         public GutterIconMode GutterIconMode;
 
@@ -32,5 +29,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of YAML files for Unity")]
         public bool IsYamlParsingEnabled;
+
+        // Analysis
+        [SettingsEntry(true, "Enables performance analysis in frequently called code")]
+        public bool EnablePerformanceCriticalAnalysis;
+        
+        // UX for performance critical analysis
+        [SettingsEntry(false, "Enables showing line marker for active frequently called method")]
+        public bool EnableLineMarkerForPerformanceCriticalCode;
+        
+        [SettingsEntry(true, "Enables showing line marker for each frequently called method")]
+        public bool EnableLineMarkerForActivePerformanceCriticalMethod;
+
+        [SettingsEntry(true, "Enables showing hot icon for frequently called code")]
+        public bool EnableIconsForPerformanceCriticalCode;
     }
 }

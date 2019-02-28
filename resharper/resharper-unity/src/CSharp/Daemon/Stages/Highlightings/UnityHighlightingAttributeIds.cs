@@ -12,6 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     public static class UnityHighlightingAttributeIds
     {
         public const string UNITY_GUTTER_ICON_ATTRIBUTE = "Unity Gutter Icon";
+        public const string UNITY_HOT_GUTTER_ICON_ATTRIBUTE = "Unity Hot Gutter Icon";
         public const string UNITY_IMPLICITLY_USED_IDENTIFIER_ATTRIBUTE = "ReSharper Unity Implicitly Used Identifier";
     }
 

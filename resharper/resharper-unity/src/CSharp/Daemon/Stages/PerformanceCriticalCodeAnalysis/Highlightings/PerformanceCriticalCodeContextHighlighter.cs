@@ -8,14 +8,18 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {  
+    #if RIDER
     [ContainsContextConsumer]
+    #endif
     public class PerformanceCriticalCodeContextHighlighter : ContextHighlighterBase
     {
         [CanBeNull, AsyncContextConsumer]
@@ -34,9 +38,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         protected override void CollectHighlightings(IPsiDocumentRangeView psiDocumentRangeView, HighlightingsConsumer consumer)
         {
             var settingsStore = psiDocumentRangeView.GetSettingsStore();
-            if (!settingsStore.GetValue((UnitySettings key) => key.EnablePerformanceCriticalCodeHighlighting))
+            
+            if (!settingsStore.GetValue((UnitySettings key) => key.EnablePerformanceCriticalAnalysis))
                 return;
 
+            if (settingsStore.GetValue((UnitySettings key) => key.EnableLineMarkerForPerformanceCriticalCode))
+                return;
+            
+            if (!settingsStore.GetValue((UnitySettings key) => key.EnableLineMarkerForActivePerformanceCriticalMethod))
+                return;
             
             var view = psiDocumentRangeView.View<CSharpLanguage>();
             var node = view.ContainingNodes.FirstOrDefault()?.GetContainingNode<IFunctionDeclaration>();
@@ -53,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 var usageChecker = swa.UsageChecker;
                 if (usageChecker == null)
                     return;
-                var elementId = swa.GetElementId(declaredElement);
+                var elementId = swa.GetElementId(declaredElement, true);
                 if (!elementId.HasValue)
                     return;
                 

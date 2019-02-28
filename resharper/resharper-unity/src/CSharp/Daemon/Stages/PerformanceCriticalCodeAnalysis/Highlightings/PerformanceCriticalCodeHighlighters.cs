@@ -1,6 +1,7 @@
 using System.Drawing;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.TextControl.DocumentMarkup;
 
 [assembly:
@@ -13,16 +14,24 @@ using JetBrains.TextControl.DocumentMarkup;
         BackgroundColor = "#ff7526",
         DarkBackgroundColor = "#ff7526",
         EffectType = EffectType.LINE_MARKER,
-        Layer = HighlighterLayer.CARET_ROW - 1),
-#endif
-
-    RegisterHighlighter(PerformanceHighlightingAttributeIds.COSTLY_METHOD_HIGHLIGHTER,
-        GroupId = UnityHighlightingGroupIds.Unity,
-        ForegroundColor = "#ff7526",
-        EffectType = EffectType.TEXT,
-        FontStyle = FontStyle.Bold,
-        Layer = HighlighterLayer.CARET_ROW - 1),
+        Layer = HighlighterLayer.CARET_ROW - 1,
+        NotRecyclable = true,
+        TransmitUpdates = true),
     
+        RegisterHighlighter(PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER,
+        GroupId = UnityHighlightingGroupIds.Unity,
+        BackgroundColor = "#ff7526",
+        DarkBackgroundColor = "#ff7526",
+        EffectType = EffectType.LINE_MARKER,
+        Layer = HighlighterLayer.CARET_ROW - 1),
+#else
+
+    RegisterHighlighter(PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER,
+        GroupId = UnityHighlightingGroupIds.Unity,
+        EffectColor = "#ff7526",
+        EffectType = EffectType.SOLID_UNDERLINE,
+        Layer = HighlighterLayer.WARNING + 1),
+#endif
     RegisterHighlighter(PerformanceHighlightingAttributeIds.COSTLY_METHOD_INVOCATION,
         GroupId = UnityHighlightingGroupIds.Unity,
         EffectType = EffectType.SOLID_UNDERLINE,

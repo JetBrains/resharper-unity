@@ -27,9 +27,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
             CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
                 "Parse text based asset files for implicit script usages");
 
-            Header("C#");
-            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
-                "Highlight expensive method calls in frequently called code");
+            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalAnalysis,
+                "Enable performance analysis in frequently called code");
+            
+            BeginSection();
+            {
+                CheckBox((UnitySettings s) => s.EnableLineMarkerForPerformanceCriticalCode,
+                    "Show gutter line for frequently called code");
+                CheckBox((UnitySettings s) => s.EnableLineMarkerForActivePerformanceCriticalMethod,
+                    "Show gutter line for current frequently called method");
+                CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
+                    "Show icons for performance critical code");
+            }
+            EndSection();
 
             // The default is when code vision is disabled. Let's keep this so that if/when ReSharper ever gets Code
             // Vision, we'll show the items, or if the user installs Rider, the copied settings will still be useful

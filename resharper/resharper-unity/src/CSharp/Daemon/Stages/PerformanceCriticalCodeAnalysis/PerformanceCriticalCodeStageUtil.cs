@@ -135,6 +135,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return false;
         }
 
+        public static bool HasPerformanceSensitiveAttribute(IFunctionDeclaration functionDeclaration)
+        {
+            return HasSpecificAttribute(functionDeclaration, "PerformanceCharacteristicsHintAttribute");
+        }
+        
+        public static bool HasFrequentlyCalledMethodAttribute(IFunctionDeclaration functionDeclaration)
+        {
+            return HasSpecificAttribute(functionDeclaration, "FrequentlyCalledMethodAttribute");
+        }
+        
+        public static bool HasSpecificAttribute(IFunctionDeclaration functionDeclaration, string name)
+        {
+            var declaredElement = functionDeclaration.DeclaredElement;
+            if (declaredElement == null)
+                return false;
+            return declaredElement.GetAttributeInstances(true)
+                .Any(t => t.GetClrName().ShortName.Equals(name));
+        }
+        
         public static IHighlighting CreateHiglighting(ITreeNode treeNode)
         {
             switch (treeNode)
