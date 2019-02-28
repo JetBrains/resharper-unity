@@ -145,16 +145,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
-      changed |= SetOutputPath(projectContentElement, xmlns);
       
       return changed;
-    }
-
-    // update <OutputPath>Temp\bin\Debug\</OutputPath> into <OutputPath>Library\ScriptAssemblies\</OutputPath>
-    // Particularly useful for UnitTesting
-    private static bool SetOutputPath(XElement projectContentElement, XNamespace xmlns)
-    {
-      return SetOrUpdateProperty(projectContentElement, xmlns, "OutputPath", existing => "Library/ScriptAssemblies/");
     }
 
     /* Since Unity 2018.1.5f1 it looks like this:
