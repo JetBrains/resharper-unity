@@ -26,25 +26,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         {
         }
 
-        public override IAnchor Anchor => BulbMenuAnchors.PermanentBackgroundItems;
-
-        public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
-        {
-            var solution = Shell.Instance.GetComponent<SolutionsManager>().Solution;
-            if (solution == null)
-                return EmptyList<BulbMenuItem>.InstanceList;
-
-            var unityImplicitUsageHighlightingContributor = solution.GetComponent<UnityHighlightingContributor>();
-
-            var daemon = solution.GetComponent<IDaemon>();
-            if (daemon.GetHighlighting(highlighter) is UnityGutterMarkInfo highlighting)
-            {
-                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                    return unityImplicitUsageHighlightingContributor.CreateBulbItemsForUnityDeclaration(highlighting
-                        .Declaration);
-            }
-
-            return EmptyList<BulbMenuItem>.InstanceList;
-        }
     }
 }
