@@ -42,28 +42,32 @@ class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyLis
     }
 
     fun getNavigatableForSelected(list: UnityLogPanelEventList, project: Project): Navigatable? {
-        val node = list.selectedValue
-        if (node!=null && (node.stackTrace=="")) {
-            val index = node.message.indexOf("(")
-            if (index<0)
-                return null
-            val path = node.message.substring(0, index)
-            val regex = Regex("^\\(\\d{1,}\\,\\d{1,}\\)")
-            val res = regex.find(node.message.substring(index), 0) ?: return null
-            val coordinates = res.value.substring(1, res.value.length-1).split(",")
-            val line = (coordinates[0])
-            val col = coordinates[1]
+        val node = list.selectedValue ?: return null
 
-            val file = File(project.basePath, path)
-            if (!file.exists())
-                return null
-            val virtualFile = file.toVirtualFile()
-            return if (virtualFile != null)
-                OpenFileDescriptor(project, virtualFile , line.toInt()-1, col.toInt()-1, true)
-            else
-                null
+        val match: MatchResult?
+        var col = 0
+        if (node.stackTrace=="") {
+            val regex = Regex("""(?<path>^.*(?=\())\((?<line>\d+(?=,)),(?<col>\d+(?=\)))""")
+            match = regex.find(node.message) ?: return null
+            col =  (match.groups["col"]?.value?.toInt() ?: return null)-1
         }
-        return null
+        else {
+            // Use first (at Assets/NewBehaviourScript.cs:16) in stacktrace
+            val regex = Regex("""\(at (?<path>.*(?=:)):(?<line>\d+(?=\)))""")
+            match = regex.find(node.stackTrace) ?: return null
+        }
+
+        val path = match.groups["path"]?.value ?: return null
+        val line = (match.groups["line"]?.value?.toInt() ?: return null) - 1
+
+        val file = File(project.basePath, path)
+        if (!file.exists())
+            return null
+        val virtualFile = file.toVirtualFile()
+        return if (virtualFile != null)
+            OpenFileDescriptor(project, virtualFile, line, col, true)
+        else
+            null
     }
 
     override fun getData(dataId: String): Any? = when {
