@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using JetBrains.Application;
+using JetBrains.Diagnostics;
 using JetBrains.Util;
 using JetBrains.Util.Interop;
 
@@ -179,7 +180,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         .Select(ShellLinkHelper.ResolveLinkTarget)
                         .OrderBy(c => new FileInfo(c.FullPath).CreationTime));
 
+                    foreach (var fileSystemPath in unityApps)
+                    {
+                        myLogger.Log(LoggingLevel.VERBOSE, "Possible unity path: " + fileSystemPath);
+                    }
                     return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
+                    
                 }
             }
             myLogger.Error("Unknown runtime platform");
