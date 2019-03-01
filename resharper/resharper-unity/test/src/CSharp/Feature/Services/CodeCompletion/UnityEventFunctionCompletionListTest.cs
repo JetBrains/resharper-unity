@@ -1,5 +1,4 @@
-﻿using System.IO;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
+﻿using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using NUnit.Framework;
 
@@ -26,6 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
         [Test] public void MonoBehaviour07() { DoNamedTest(); }
         [Test] public void MonoBehaviour08() { DoNamedTest(); }
         [Test] public void NoCompletionInsideAttributeSectionList() { DoNamedTest(); }
+        [Test] public void DoNotMatchParameterTypes() { DoNamedTest(); }
         [Test] public void UnityEditor01() { DoNamedTest(); }
         [Test] public void EditorWindow01() { DoNamedTest(); }
 

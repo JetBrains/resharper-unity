@@ -20,7 +20,6 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExpectedTypes;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.PsiGen.Util;
 using JetBrains.Text;
 using JetBrains.TextControl;
 using JetBrains.UI.RichText;
@@ -81,9 +80,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var project = context.BasicContext.File.GetProject();
             var actualVersion = unityVersionApi.GetActualVersion(project);
             var existingMethods = typeElement.Methods.ToList();
-            
+
             var addedFunctions = new HashSet<string>();
-            
+
             foreach (var function in unityApi.GetEventFunctions(typeElement, actualVersion))
             {
                 if (HasAnyPartiallyMatchingExistingMethods(existingMethods, function))
@@ -91,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
                 if (addedFunctions.Contains(function.Name))
                     continue;
-                
+
                 // TODO: Decide what to do with e.g. `void OnAnima{caret}`
                 // If we want to insert a visibility modifier, it has to go *before* the `void`,
                 // which means adding a behaviour here that will remove it
@@ -204,23 +203,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             return LookupItemFactory.CreateLookupItem(declaredElementInfo)
                 .WithPresentation(item =>
-                    {
-                        var displayName = new RichText($"{modifier}{text} {{ ... }}");
+                {
+                    var displayName = new RichText($"{modifier}{text} {{ ... }}");
 
-                        // GenerateMemberPresentation marks everything as bold, and the parameters + block syntax as not important
-                        var parameterStartOffset = modifier.Length + parameterOffset;
-                        LookupUtil.MarkAsNotImportant(displayName,
-                            TextRange.FromLength(parameterStartOffset, displayName.Length - parameterStartOffset));
-                        LookupUtil.AddEmphasize(displayName, new TextRange(modifier.Length, displayName.Length));
+                    // GenerateMemberPresentation marks everything as bold, and the parameters + block syntax as not important
+                    var parameterStartOffset = modifier.Length + parameterOffset;
+                    LookupUtil.MarkAsNotImportant(displayName,
+                        TextRange.FromLength(parameterStartOffset, displayName.Length - parameterStartOffset));
+                    LookupUtil.AddEmphasize(displayName, new TextRange(modifier.Length, displayName.Length));
 
-                        var image = psiIconManager.GetImage(CLRDeclaredElementType.METHOD, PsiIconExtension.Private);
-                        var marker = item.Info.Ranges.CreateVisualReplaceRangeMarker();
-                        return new SimplePresentation(displayName, image, marker);
-                    })
+                    var image = psiIconManager.GetImage(CLRDeclaredElementType.METHOD, PsiIconExtension.Private);
+                    var marker = item.Info.Ranges.CreateVisualReplaceRangeMarker();
+                    return new SimplePresentation(displayName, image, marker);
+                })
                 .WithBehavior(_ => new UnityEventFunctionBehavior(declaredElementInfo, eventFunction))
                 .WithMatcher(_ =>
-                new ShiftedDeclaredElementMatcher(text, modifier.Length, declaredElementInfo,
-                    context.BasicContext.IdentifierMatchingStyle));
+                    new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, declaredElementInfo,
+                        context.BasicContext.IdentifierMatchingStyle));
         }
 
         [ContractAnnotation("=> false, classDeclaration: null; => true, classDeclaration: notnull")]
