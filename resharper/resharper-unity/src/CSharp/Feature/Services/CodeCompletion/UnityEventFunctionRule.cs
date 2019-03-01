@@ -253,12 +253,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             if (methodDeclaration != null)
             {
                 // Don't complete in the parameter list
-                if (nodeInFile.GetContainingNode<IFormalParameterList>() != null)
-                    return false;
+                if (nodeInFile.GetContainingNode<IFormalParameterList>() != null) return false;
 
                 // Don't complete in the attribute list
-                if (nodeInFile.GetContainingNode<IAttributeSectionList>() != null)
-                    return false;
+                if (nodeInFile.GetContainingNode<IAttributeSectionList>() != null) return false;
+
+                // Don't complete if there is a preceding [SerializeField] attribute
+                if (HasSerializedFieldAttribute(methodDeclaration)) return false;
 
                 // Check the whole text of the declaration - if it ends (or even starts)
                 // with "__" (which is the completion marker) then we have an incomplete
@@ -301,7 +302,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 if (fieldDeclaration.FixedBufferSizeExpression == null
                     || !fieldDeclaration.FixedBufferSizeExpression.IsConstantValue())
                 {
+                    if (HasSerializedFieldAttribute(fieldDeclaration))
+                        return false;
+
                     return identifier == fieldDeclaration.NameIdentifier;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasSerializedFieldAttribute(ICSharpTypeMemberDeclaration declaration)
+        {
+            foreach (var attribute in declaration.AttributesEnumerable)
+            {
+                var result = attribute.TypeReference?.Resolve();
+                if (result != null && result.ResolveErrorType.IsAcceptable)
+                {
+                    if (result.DeclaredElement is IClass declaredElement &&
+                        Equals(declaredElement.GetClrName(), KnownTypes.SerializeField))
+                    {
+                        return true;
+                    }
                 }
             }
 
