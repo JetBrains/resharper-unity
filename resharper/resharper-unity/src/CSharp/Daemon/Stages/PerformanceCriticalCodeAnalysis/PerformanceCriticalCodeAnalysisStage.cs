@@ -21,8 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [DaemonStage(GlobalAnalysisStage = true)]
     public class PerformanceCriticalCodeAnalysisStage : CSharpDaemonStageBase
     {
-        public static object TEMP_LOCK = new object();
-        
         protected readonly SolutionAnalysisService Swa;
         private readonly UnitySolutionTracker mySolutionTracker;
         protected readonly CallGraphActivityTracker Tracker;
@@ -165,11 +163,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (!id.HasValue)
                 return false;
 
-            lock (PerformanceCriticalCodeAnalysisStage.TEMP_LOCK)
-            {
-                return myTracker.RegisterCallGraphQueryTime(() =>
-                    usageChecker.IsMarkedByCallGraphAnalyzer(analyzerId, id.Value, true));
-            }
+            return myTracker.RegisterCallGraphQueryTime(() =>
+                usageChecker.IsMarkedByCallGraphAnalyzer(analyzerId, id.Value, true));
         }
 
         protected virtual void HighlightHotMethod(IDeclaration node, IHighlightingConsumer consumer)

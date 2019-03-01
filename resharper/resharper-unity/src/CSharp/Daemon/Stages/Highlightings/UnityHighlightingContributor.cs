@@ -145,11 +145,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             if (!id.HasValue)
                 return false;
 
-            lock (PerformanceCriticalCodeAnalysisStage.TEMP_LOCK)
-            {
-                return usageChecker.IsMarkedByCallGraphAnalyzer(PerformanceAnalyzerId, id.Value, true);
-            }
-
+            return usageChecker.IsMarkedByCallGraphAnalyzer(PerformanceAnalyzerId, id.Value, true);
         }
 
         public IEnumerable<BulbMenuItem> CreateBulbItemsForUnityDeclaration(IDeclaration declaration)
