@@ -69,15 +69,20 @@
  67: Update():System.Void
 
 // ${KIND:Unity.EventFunctions}
-// ${SELECT0:OnSerializeNetworkView(UnityEngine.BitStream,UnityEngine.NetworkMessageInfo):System.Void}
+// ${SELECT0:OnJointBreak(System.Single):System.Void}
 
 using System;
 using UnityEngine;
 
-class A : MonoBehaviour
+// This can cause types in the System namespace to resolve incorrectly
+// E.g. void OnJointBreak could be generated as Void OnJointBreak(Single) { ... }
+namespace Foo.System.Bar
 {
-  private void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
+  class A : MonoBehaviour
   {
-    {selstart}throw new NotImplementedException();{selend}
+    private void OnJointBreak(float breakForce)
+    {
+      {selstart}throw new NotImplementedException();{selend}
+    }
   }
 }

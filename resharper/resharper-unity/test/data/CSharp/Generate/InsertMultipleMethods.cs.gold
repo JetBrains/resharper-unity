@@ -72,22 +72,24 @@
 // ${SELECT0:OnMouseDown():System.Void}
 // ${SELECT1:OnMouseDrag():System.Void}
 // ${SELECT2:OnMouseEnter():System.Void}
+
+using System;
 using UnityEngine;
 
 class A : MonoBehaviour
 {
   private void OnMouseDown()
   {
-    {selstart}throw new System.NotImplementedException();{selend}
+    {selstart}throw new NotImplementedException();{selend}
   }
 
   private void OnMouseDrag()
   {
-    throw new System.NotImplementedException();
+    throw new NotImplementedException();
   }
 
   private void OnMouseEnter()
   {
-    throw new System.NotImplementedException();
+    throw new NotImplementedException();
   }
 }

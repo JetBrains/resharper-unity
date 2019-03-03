@@ -47,6 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             builder.Append("private ");
             if (IsStatic) builder.Append("static ");
+            builder.Append("global::");
             builder.Append(ReturnType.FullName);
             if (ReturnTypeIsArray) builder.Append("[]");
             builder.Append(" ");
@@ -62,6 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 // From reflection point of view, it's a "ByRef" Type, and that's all we know...
                 // The only place it's currently being used is an out parameter
                 if (parameter.IsByRef) builder.Append("out ");
+                builder.Append("global::");
                 builder.Append(parameter.ClrTypeName.FullName);
                 if (parameter.IsArray) builder.Append("[]");
                 builder.Append(' ');

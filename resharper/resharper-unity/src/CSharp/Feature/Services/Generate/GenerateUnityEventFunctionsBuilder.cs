@@ -6,7 +6,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 {
@@ -36,11 +35,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
             var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
             foreach (var selectedMethod in selectedMethods)
             {
-                ISubstitution newSubstitution;
                 var method = (IMethodDeclaration) CSharpGenerateUtil.CreateMemberDeclaration(
-                    context.ClassDeclaration, selectedMethod.Substitution, selectedMethod.DeclaredElement, false, out newSubstitution);
+                    context.ClassDeclaration, selectedMethod.Substitution, selectedMethod.DeclaredElement, false, out _);
                 method.SetStatic(selectedMethod.DeclaredElement.IsStatic);
-                method.SetBody(factory.CreateBlock("{throw new System.NotImplementedException();}"));
+                // It would be nice to use MemberBodyUtil.SetBodyToDefault, but that requires a physical node
+                var predefinedType = method.GetPredefinedType();
+                method.SetBody(factory.CreateBlock("{throw new $0();}", predefinedType.NotImplementedException));
                 method.FormatNode();
                 context.PutMemberDeclaration(method);
             }

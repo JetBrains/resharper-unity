@@ -39,6 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Genera
         [Test] public void InsertWithExistingMethods() { DoNamedTest(); }
         [Test] public void InsertStaticMethod() { DoNamedTest(); }
 
+        [Test] public void ResolvesNamespacesGlobally() { DoNamedTest(); }
+
         // It would be nice if the base test distinguished between unavailable, no items and disabled
         [Test] public void NonUnityType() { DoNamedTest(); }
     }
