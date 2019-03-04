@@ -82,7 +82,7 @@ rider/**/out/*
 
 resharper/**/*_lex.cs
 resharper/**/*_lex.depends
-resharper/test/data/**/*.tmp
+resharper/**/test/data/**/*.tmp
 
 resharper/NuGet.Config
 
