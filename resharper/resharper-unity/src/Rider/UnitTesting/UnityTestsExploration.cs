@@ -8,7 +8,6 @@ using JetBrains.ReSharper.Psi.Impl.Reflection2;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.AttributeChecker;
 using JetBrains.ReSharper.UnitTestFramework.Elements;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
@@ -40,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 myTempMethodsNames = new JetHashSet<string>(200);
 
                 foreach (var type in assembly.GetTypes())
-                    ExploreType(type, assembly, token);
+                    ExploreType(type, token);
             }
 
             finally
@@ -58,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             }
         }
         
-        private void ExploreType(IMetadataTypeInfo type, IMetadataAssembly assembly, CancellationToken cancellationToken)
+        private void ExploreType(IMetadataTypeInfo type, CancellationToken cancellationToken)
         {
             InterruptableActivityCookie.CheckAndThrow();
             cancellationToken.ThrowIfCancellationRequested();

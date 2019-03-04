@@ -23,15 +23,15 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static readonly string ourPlayerProjectManualConfigFilePath = Path.GetFullPath("Assets/smcs.rsp");
     private static readonly string ourEditorProjectManualConfigFilePath = Path.GetFullPath("Assets/gmcs.rsp");
     private static readonly int ourApiCompatibilityLevel;
-    private const int apiCompatibilityLevelNet20Subset = 2;
-    private const int apiCompatibilityLevelNet46 = 3;
+    private const int APICompatibilityLevelNet20Subset = 2;
+    private const int APICompatibilityLevelNet46 = 3;
     
     static CsprojAssetPostprocessor()
     {
       if (!PluginEntryPoint.Enabled)
         return;
       
-      ourApiCompatibilityLevel = GetApiCompatibilityLevel(); // fails in batch mode
+      ourApiCompatibilityLevel = GetApiCompatibilityLevel();
     }
     
     // Note that this does not affect the order in which postprocessors are evaluated. Order of execution is undefined.
@@ -132,7 +132,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
       var changed = FixTargetFrameworkVersion(projectContentElement, xmlns);
-      changed |= FixUnityEngineReference(projectContentElement, xmlns); // shouldn't be needed in Unity 2018.2
+      changed |= FixUnityEngineReference(projectContentElement, xmlns);
       changed |= FixSystemXml(projectContentElement, xmlns);
       changed |= SetLangVersion(projectContentElement, xmlns);
       changed |= SetProjectFlavour(projectContentElement, xmlns);
@@ -148,7 +148,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       
       return changed;
     }
-    
+
     /* Since Unity 2018.1.5f1 it looks like this:
      <PropertyGroup>
            <NoConfig>true</NoConfig>
@@ -231,7 +231,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (UnityUtils.ScriptingRuntime == 0)
         return false;
 
-      if (ourApiCompatibilityLevel != apiCompatibilityLevelNet46)
+      if (ourApiCompatibilityLevel != APICompatibilityLevelNet46)
         return false;
       
       var hintPath = GetHintPath(referenceName);
@@ -491,7 +491,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (UnityUtils.ScriptingRuntime == 0)
       {
         mask = "2.*"; // 1 = ApiCompatibilityLevel.NET_2_0
-        if (ourApiCompatibilityLevel == apiCompatibilityLevelNet20Subset) // ApiCompatibilityLevel.NET_2_0_Subset
+        if (ourApiCompatibilityLevel == APICompatibilityLevelNet20Subset) // ApiCompatibilityLevel.NET_2_0_Subset
           mask = "unity";
       }
       
@@ -631,7 +631,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         return "6";
 
       // Unity 5.5+ supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-      if (ourApiCompatibilityLevel >= apiCompatibilityLevelNet46)
+      if (ourApiCompatibilityLevel >= APICompatibilityLevelNet46)
         return "6";
 
       return "4";
@@ -682,27 +682,29 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool SetOrUpdateProperty(XElement root, XNamespace xmlns, string name, Func<string, string> updater)
     {
-      var element = root.Elements(xmlns + "PropertyGroup").Elements(xmlns + name).FirstOrDefault();
-      if (element != null)
+      var elements = root.Elements(xmlns + "PropertyGroup").Elements(xmlns + name).ToList();
+      if (elements.Any())
       {
-        var result = updater(element.Value);
-        if (result != element.Value)
+        var updated = false;
+        foreach (var element in elements)
         {
-          ourLogger.Verbose("Overriding existing project property {0}. Old value: {1}, new value: {2}", name, element.Value, result);
+          var result = updater(element.Value);
+          if (result != element.Value)
+          {
+            ourLogger.Verbose("Overriding existing project property {0}. Old value: {1}, new value: {2}", name,
+              element.Value, result);
 
-          element.SetValue(result);
-          return true;
+            element.SetValue(result);
+            updated = true;
+          }
+          ourLogger.Verbose("Property {0} already set. Old value: {1}, new value: {2}", name, element.Value, result);
         }
 
-        ourLogger.Verbose("Property {0} already set. Old value: {1}, new value: {2}", name, element.Value, result);
-      }
-      else
-      {
-        AddProperty(root, xmlns, name, updater(string.Empty));
-        return true;
+        return updated;
       }
 
-      return false;
+      AddProperty(root, xmlns, name, updater(string.Empty));
+      return true;
     }
 
     // Adds a property to the first property group without a condition

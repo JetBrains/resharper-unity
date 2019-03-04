@@ -46,8 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnityHost myUnityHost;
         private readonly ILogger myLogger;
 
-        private static Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
-        private WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
+        private static readonly Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
+        private readonly WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
 
         public RunViaUnityEditorStrategy(ISolution solution,
             IUnitTestResultManager unitTestResultManager, 
@@ -122,12 +122,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
             run.PutData(ourCompletionSourceKey, tcs);
 
-            // todo: Refresh Assets DB before running tests #558
-            // You can check EditorApplication.isCompiling after the refresh and if it is true, then a refresh will happen if there are no compile errors.
-            // You can also hook into these event, this will tell you when compilation of assemblies started/finished.
-            // https://docs.unity3d.com/ScriptReference/Compilation.CompilationPipeline-assemblyCompilationFinished.html
-            // https://docs.unity3d.com/ScriptReference/Compilation.CompilationPipeline-assemblyCompilationStarted.html
-            // Note that those events are only available for Unity 5.6+
             myLogger.Verbose("Before calling Refresh.");
             Refresh(mySolution.Locks, run.Lifetime).GetAwaiter().OnCompleted(() =>
             {
@@ -189,7 +183,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 var lifetimeDef = lifetime.CreateNested();
                 myRiderSolutionSaver.Save(lifetime, mySolution, () =>
                 {
-                    myUnityRefresher.Refresh(false).GetAwaiter().OnCompleted(()=>{ lifetimeDef.Terminate(); });
+                    myUnityRefresher.Refresh(true).GetAwaiter().OnCompleted(()=>{ lifetimeDef.Terminate(); });
                 });
                 while (lifetimeDef.Lifetime.IsAlive)
                 {
@@ -231,7 +225,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
             
             var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
-            var allNames = InitElementsMap(unitTestElements);
+            var tests = InitElementsMap(unitTestElements);
             var emptyList = new List<string>();
 
             var mode = TestMode.Edit;
@@ -242,7 +236,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     : TestMode.Edit;    
             }
               
-            var launch = new UnitTestLaunch(allNames, emptyList, emptyList, mode);
+            var launch = new UnitTestLaunch(tests, emptyList, emptyList, mode);
             return launch;
         }
         
@@ -252,18 +246,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         
             launch.TestResult.AdviseNotNull(connectionLifetime, result =>
             {
-                var unitTestElement = GetElementById(result.TestId);
+                var unitTestElement = GetElementById(result.ProjectName, result.TestId);
                 if (unitTestElement == null) //https://youtrack.jetbrains.com/issue/RIDER-15849
                 {
                     var name = result.ParentId.Substring(result.ParentId.LastIndexOf(".", StringComparison.Ordinal) + 1);
                     var brackets = result.TestId.Substring(result.ParentId.Length);
                     var newID = result.ParentId+"."+name+brackets;
-                    unitTestElement = GetElementById(newID);
+                    unitTestElement = GetElementById(result.ProjectName, newID);
                 }
                 if (unitTestElement == null)
                 {
                     // add dynamic tests
-                    var parent = GetElementById(result.ParentId) as NUnitTestElement;
+                    var parent = GetElementById(result.ProjectName, result.ParentId) as NUnitTestElement;
                     if (parent == null)
                         return;
 
@@ -331,26 +325,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return result.ToList();
         }
 
-        private List<string> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
+        private List<TestFilter> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
         {
-            var result = new JetHashSet<string>();
-            foreach (var unitTestElement in unitTestElements)
+            var elements = unitTestElements
+                .Where(unitTestElement => unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement ||
+                                                                             unitTestElement is UnityTestElement).ToArray();
+            foreach (var unitTestElement in elements)
             {
-                if (unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement || unitTestElement is UnityTestElement)
-                {
-                    var unityName = unitTestElement.Id; 
-                    myElements[unitTestElement.Id] = unitTestElement;
-                    result.Add(unityName);
-                }
-            }
-
-            return result.ToList();
+                myElements[unitTestElement.Id] = unitTestElement;
+            }    
+            var filters = elements
+                .GroupBy(
+                p => p.Id.Project.Name, 
+                p => p.Id.Id,
+                (key, g) => new TestFilter(key, g.ToList()));
+            
+            return filters.ToList();
         }
 
         [CanBeNull]
-        private IUnitTestElement GetElementById(string resultTestId)
+        private IUnitTestElement GetElementById(string projectName, string resultTestId)
         {
-            var unitTestElement = myElements.Where(a=>a.Key.Id == resultTestId).Select(b=>b.Value).SingleOrDefault();
+            var unitTestElement = myElements.Where(a=>a.Key.Id == resultTestId && a.Key.Project.Name == projectName).Select(b=>b.Value).SingleOrDefault();
             return unitTestElement;
         }
 
