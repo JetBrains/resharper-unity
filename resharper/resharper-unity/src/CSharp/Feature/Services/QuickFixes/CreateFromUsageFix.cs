@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             CreateFromUsageFixBase.CreateFromUsageAnchor.CreateNext();
 
         private static readonly InvisibleAnchor ourAfterCreateFromUsageOthersAnchor = new InvisibleAnchor(
-            CreateFromUsageFixBase.CreateFromUsageOthersAnchor, AnchorPosition.BasePosition.GetNext());
+            CreateFromUsageFixBase.CreateFromUsageOthersAnchor, AnchorPosition.BeforePosition.GetNext());
 
         private readonly List<ICreateFromUsageActionProvider> myUnfilteredItems;
 
