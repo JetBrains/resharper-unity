@@ -50,7 +50,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         wellKnownMonoRuntimes
                             .Any(runtime =>
                             {
-                                var version = new Version(ProcessOutputUtil.ExtractMonoVersion(runtime.ExePath));
+                                var version = new Version(0, 0); // if we fail to parse version - consider it is old
+                                try
+                                {
+                                    version = new Version(ProcessOutputUtil.ExtractMonoVersion(runtime.ExePath));
+                                }
+                                catch (Exception e)
+                                {
+                                    logger.Warn(e);
+                                }
                                 return new Version(version.Major, version.Minor) >= new Version(5, 16);
                             });
                             
