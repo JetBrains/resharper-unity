@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -15,7 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private readonly Version myMinimumVersion;
         private readonly Version myMaximumVersion;
 
-        public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, bool isCoroutine, string description, bool undocumented, Version minimumVersion, Version maximumVersion, [NotNull] params UnityEventFunctionParameter[] parameters)
+        public UnityEventFunction([NotNull] string name, [NotNull] IClrTypeName typeName,
+                                  [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic,
+                                  bool isCoroutine, string description, bool undocumented, Version minimumVersion,
+                                  Version maximumVersion, [NotNull] params UnityEventFunctionParameter[] parameters)
         {
             Description = description;
             Undocumented = undocumented;
@@ -30,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             Parameters = parameters.Length > 0 ? parameters : EmptyArray<UnityEventFunctionParameter>.Instance;
         }
 
-        [NotNull] public string TypeName { get; }
+        [NotNull] public IClrTypeName TypeName { get; }
         [NotNull] public string Name { get; }
         [NotNull] public UnityEventFunctionParameter[] Parameters { get; }
         [NotNull] public IClrTypeName ReturnType { get; }
