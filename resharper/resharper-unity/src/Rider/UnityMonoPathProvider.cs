@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application;
+using JetBrains.ReSharper.Host.Features.Runtime;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [ShellComponent]
-    public class UnityMonoPathProvider
+    public class UnityMonoPathProvider : IMonoPathProvider
     {
         private readonly ILogger myLogger;
         private readonly UnityInstallationFinder myInstallationFinder;
