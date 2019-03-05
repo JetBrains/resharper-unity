@@ -92,6 +92,12 @@ object EditorPluginModel: Root() {
         +"Refresh"
     }
 
+    val RefreshType = enum {
+        +"ForceRequestScriptReload"
+        +"Force"
+        +"Normal"
+    }
+
     init {
         property("play", bool)
         property("pause", bool)
@@ -114,7 +120,7 @@ object EditorPluginModel: Root() {
         call("getUnityEditorState", void, UnityEditorState)
         callback("openFileLineCol", RdOpenFileArgs, bool)
         call("updateUnityPlugin", string, bool)
-        call("refresh", bool, void)
+        call("refresh", RefreshType, void)
         call("getCompilationResult", void, bool)
 
         property("unitTestLaunch", UnitTestLaunch)
