@@ -192,7 +192,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     if (i > 0) sb.Append(", ");
 
                     var parameter = eventFunction.Parameters[i];
-                    var type = predefinedType.TryGetType(parameter.ClrTypeName);
+                    var type = predefinedType.TryGetType(parameter.ClrTypeName, NullableAnnotation.Unknown);
                     var typeName = type?.GetPresentableName(CSharpLanguage.Instance) ??
                                    parameter.ClrTypeName.ShortName;
                     sb.AppendFormat("{0}{1}{2}", parameter.IsByRef ? "out" : string.Empty,

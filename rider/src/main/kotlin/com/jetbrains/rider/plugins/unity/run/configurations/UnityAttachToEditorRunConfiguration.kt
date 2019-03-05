@@ -10,6 +10,7 @@ import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
+import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
@@ -19,16 +20,19 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import com.jetbrains.rider.run.configurations.unity.UnityEditorProfilerConfiguration
+import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
 import org.jdom.Element
-import java.nio.file.Path
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
         RunConfigurationWithSuppressedDefaultRunAction,
         RemoteConfiguration,
-        WithoutOwnBeforeRunSteps,
-        UnityEditorProfilerConfiguration {
+        WithoutOwnBeforeRunSteps {
+
+    // TEMP, will be removed in 19.2
+    companion object {
+        val EP_NAME = ExtensionPointName<UnityAttachConfigurationExtension>("com.intellij.resharper.unity.unityAttachConfiguration")
+    }
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
     override var port: Int = -1
@@ -48,27 +52,51 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = UnityAttachToEditorSettingsEditor(project)
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
-        if (executor.id != DefaultDebugExecutor.EXECUTOR_ID)
-            return null
-        return UnityAttachToEditorProfileState(this, environment)
+        val executorId = executor.id
+
+        for (ext in EP_NAME.getExtensions(project)) {
+            if (ext.canExecute(executorId)) {
+                UpdatePidAndPort()
+                val finder = UnityInstallationFinder.getInstance(project)
+                val args = mutableListOf("-projectPath", project.basePath.toString())
+                if (play) {
+                    args.add("-executeMethod")
+                    args.add("JetBrains.Rider.Unity.Editor.StartUpMethodExecutor.EnterPlayMode")
+                }
+
+                return ext.executor(UnityAttachConfigurationParametersImpl(pid, finder.getApplicationPath(), args), environment)
+            }
+        }
+
+        if (executorId == DefaultDebugExecutor.EXECUTOR_ID)
+            return UnityAttachToEditorProfileState(this, environment)
+
+
+
+        return null
     }
 
     override var listenPortForConnections: Boolean = false
 
     override fun checkSettingsBeforeRun() {
-
         // We could do this in getState, but if we throw an error there, it just shows a balloon
         // If we throw an error here (at least, RuntimeConfigurationError), it will cause the
         // Edit Run Configurations dialog to be shown
+        if (!UpdatePidAndPort())
+            throw RuntimeConfigurationError("Cannot find Unity Editor instance")
+    }
+
+    private fun UpdatePidAndPort() : Boolean {
 
         val processList = OSProcessUtil.getProcessList()
 
         // We might have a pid from a previous run, but the editor might have died
         pid = checkValidEditorInstance(pid, processList)
-                ?: findUnityEditorInstance(processList)
-                ?: throw RuntimeConfigurationError("Cannot find Unity Editor instance")
+            ?: findUnityEditorInstance(processList)
+            ?: return false
 
         port = convertPidToDebuggerPort(pid!!)
+        return true
     }
 
     private fun checkValidEditorInstance(pid: Int?, processList: Array<ProcessInfo>): Int? {
@@ -121,9 +149,5 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
             element.setAttribute("pid", pid.toString())
         }
     }
-
-    override val unityEditorPathByHeuristic: Path? = UnityInstallationFinder.getInstance(project).getApplicationPath();
-    override val unityEditorPid : Int? = pid
-    override val args : List<String> = mutableListOf("-projectPath", project.basePath.toString())
 }
 

@@ -8,6 +8,10 @@
   <depends optional="true" config-file="PluginYamlPluginPart.xml">org.jetbrains.plugins.yaml</depends>
   <depends optional="true" config-file="PluginAppenderPluginPart.xml">rider.intellij.plugin.appender</depends>
 
+  <extensionPoints>
+    <extensionPoint name="unityAttachConfiguration" area="IDEA_PROJECT" interface="com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension" />
+  </extensionPoints>
+
   <extensions defaultExtensionNs="com.intellij">
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
@@ -70,6 +74,8 @@
     <xdebugger.attachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityAttachEditorDebuggerProvider" />
 
     <rider.android.project.validator implementation="com.jetbrains.rider.android.UnityCustomAndroidProjectValidator"/>
+
+    <rdclient.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
   </extensions>
 
   <project-components>

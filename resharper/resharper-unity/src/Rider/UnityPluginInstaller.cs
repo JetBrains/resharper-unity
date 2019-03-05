@@ -12,7 +12,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.RdFramework.Util;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -122,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
 
             QueueInstall(installationInfo);
-            myQueue.Enqueue(() => { myRefresher.Refresh(false); });
+            myQueue.Enqueue(() => { myRefresher.Refresh(RefreshType.Normal); });
         }
 
         private void QueueInstall(UnityPluginDetector.InstallationInfo installationInfo, bool force = false)
