@@ -7,6 +7,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.Rd.Tasks;
@@ -48,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private Task CurrentTask;
 
-        public Task Refresh(bool force)
+        public Task Refresh(RefreshType force)
         {
             myLocks.AssertMainThread();
             if (CurrentTask != null)
@@ -57,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (myEditorProtocol.UnityModel.Value == null)
                 return new Task(()=>{});
 
-            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && !force)
+            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && force == RefreshType.Normal)
                 return new Task(()=>{});
 
             myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force}");
@@ -112,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (!args) return;
                 // send refresh, when we detect UnitySolution
-                host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => { refresher.Refresh(force); }));
+                host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => { refresher.Refresh(force?RefreshType.Force:RefreshType.Normal); }));
             });
 
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
@@ -122,7 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 // Rgc.Guarded - beware RIDER-15577
                 myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent",
                     TimeSpan.FromMilliseconds(500),
-                    Rgc.Guarded, () => refresher.Refresh(false));
+                    Rgc.Guarded, () => refresher.Refresh(RefreshType.Normal));
 
                 var protocolSolution = solution.GetProtocolSolution();
                 protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
