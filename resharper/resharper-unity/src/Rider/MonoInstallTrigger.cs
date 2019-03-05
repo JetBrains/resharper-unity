@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     using (solution.Locks.UsingReadLock())
                     {
                         shouldShow = solution.GetAllProjects()
-                            .Any(a => a.TargetFrameworkIds.Any(x => x.Version.Major >= 4)
+                            .Any(a => a.TargetFrameworkIds.Any(x => x.Version.Major >= 4 && x.Version.Minor >= 7)
 //                                        && a.TargetFrameworkIds.Any(t =>
 //                                            (a.ProjectProperties.ActiveConfigurations.TryGetConfiguration(t) as
 //                                                ICSharpProjectConfiguration)
