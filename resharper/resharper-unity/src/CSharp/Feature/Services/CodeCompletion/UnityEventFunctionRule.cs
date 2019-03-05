@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -15,11 +15,13 @@ using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExpectedTypes;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 using JetBrains.TextControl;
 using JetBrains.UI.RichText;
@@ -79,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var unityVersionApi = context.BasicContext.Solution.GetComponent<UnityVersion>();
             var project = context.BasicContext.File.GetProject();
             var actualVersion = unityVersionApi.GetActualVersion(project);
-            var existingMethods = typeElement.Methods.ToList();
+            var existingMethods = typeElement.GetAllClassMembers<IMethod>().ToList();
 
             var addedFunctions = new HashSet<string>();
 
@@ -109,12 +111,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return true;
         }
 
-        private bool HasAnyPartiallyMatchingExistingMethods(List<IMethod> existingMethods, UnityEventFunction function)
+        private bool HasAnyPartiallyMatchingExistingMethods(IEnumerable<TypeMemberInstance<IMethod>> existingMethods,
+                                                            UnityEventFunction function)
         {
             // Don't use Any() - it's surprisingly expensive when called for each function we're adding to the lookup list
             foreach (var existingMethod in existingMethods)
             {
-                if (function.Match(existingMethod) != MethodSignatureMatch.NoMatch)
+                if (function.Match(existingMethod.Member) != MethodSignatureMatch.NoMatch)
                     return true;
             }
 
@@ -163,14 +166,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             if (CSharpLanguage.Instance == null)
                 return null;
 
-            var method = eventFunction.CreateDeclaration(CSharpElementFactory.GetInstance(declaration, false), declaration);
+            var accessRights = AccessRights.PRIVATE;
+            var factory = CSharpElementFactory.GetInstance(declaration, false);
+            var method = eventFunction.CreateDeclaration(factory, declaration, accessRights);
             if (method.DeclaredElement == null)
                 return null;
 
             var instance = new DeclaredElementInstance(method.DeclaredElement);
 
-            var declaredElementInfo = new DeclaredElementInfoWithoutParameterInfo(method.DeclaredName, instance, CSharpLanguage.Instance,
-                context.BasicContext.LookupItemsOwner, context)
+            var declaredElementInfo = new DeclaredElementInfoWithoutParameterInfo(method.DeclaredName, instance,
+                CSharpLanguage.Instance, context.BasicContext.LookupItemsOwner, context)
             {
                 Ranges = context.CompletionRanges
             };
@@ -197,7 +202,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
             var text = $"{eventFunction.Name}({parameters})";
             var parameterOffset = eventFunction.Name.Length;
-            var modifier = addModifier ? "private " : string.Empty;
+            var modifier = addModifier
+                ? CSharpDeclaredElementPresenter.Instance.Format(accessRights) + " "
+                : string.Empty;
 
             var psiIconManager = context.BasicContext.LookupItemsOwner.Services.PsiIconManager;
 
@@ -212,7 +219,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                         TextRange.FromLength(parameterStartOffset, displayName.Length - parameterStartOffset));
                     LookupUtil.AddEmphasize(displayName, new TextRange(modifier.Length, displayName.Length));
 
-                    var image = psiIconManager.GetImage(CLRDeclaredElementType.METHOD, PsiIconExtension.Private);
+                    var image = psiIconManager.GetImage(method.DeclaredElement,
+                        method.DeclaredElement.PresentationLanguage, true);
                     var marker = item.Info.Ranges.CreateVisualReplaceRangeMarker();
                     return new SimplePresentation(displayName, image, marker);
                 })

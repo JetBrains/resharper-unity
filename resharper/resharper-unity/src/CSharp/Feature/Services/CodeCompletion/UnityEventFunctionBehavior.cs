@@ -98,8 +98,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 GeneratorUnityKinds.UnityEventFunctions, solution, textControl, identifierNode.Language,
                 configureContext: context =>
                 {
-                    var inputElements = from e in context.ProvidedElements.Cast<GeneratorDeclaredElement<IMethod>>()
-                        where myEventFunction.Match(e.DeclaredElement) != MethodSignatureMatch.NoMatch
+                    var inputElements = from e in context.ProvidedElements.Cast<GeneratorDeclaredElement>()
+                        let m = e.DeclaredElement as IMethod
+                        where m != null && myEventFunction.Match(m) != MethodSignatureMatch.NoMatch
                         select e;
 
                     context.InputElements.Clear();

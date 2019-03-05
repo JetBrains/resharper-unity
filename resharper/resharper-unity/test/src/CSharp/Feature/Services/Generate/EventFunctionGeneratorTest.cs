@@ -28,15 +28,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Genera
         [Test] public void ListElements15() { DoNamedTest(); }
         [Test] public void ListElements16() { DoNamedTest(); }
         [Test] public void ListElements17() { DoNamedTest(); }
-        [Test] public void ListElements18() { DoNamedTest(); }
         [Test] public void ListElements19() { DoNamedTest(); }
 
         [Test] public void MonoBehaviour01() { DoNamedTest(); }
         [Test] public void HasExistingMethods() { DoNamedTest(); }
+        [Test] public void HasExistingBaseFunctions() { DoNamedTest(); }
+        [Test] public void HasExistingVirtualFunction() { DoNamedTest(); }
         [Test] public void InsertSingleMethod01() { DoNamedTest(); }
         [Test] public void InsertSingleMethod02() { DoNamedTest(); }
         [Test] public void InsertMultipleMethods() { DoNamedTest(); }
         [Test] public void InsertWithExistingMethods() { DoNamedTest(); }
+        [Test] public void InsertWithBaseVirtualFunctions01() { DoNamedTest(); }
+        [Test] public void InsertWithBaseVirtualFunctions02() { DoNamedTest(); }
+        [Test] public void InsertWithBaseVirtualFunctions03() { DoNamedTest(); }
         [Test] public void InsertStaticMethod() { DoNamedTest(); }
 
         [Test] public void ResolvesNamespacesGlobally() { DoNamedTest(); }

@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
@@ -44,12 +45,19 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public bool Undocumented { get; }
 
         [NotNull]
-        public IMethodDeclaration CreateDeclaration([NotNull] CSharpElementFactory factory, [NotNull] IClassLikeDeclaration classDeclaration)
+        public IMethodDeclaration CreateDeclaration([NotNull] CSharpElementFactory factory,
+                                                    [NotNull] IClassLikeDeclaration classDeclaration,
+                                                    AccessRights accessRights,
+                                                    bool makeVirtual = false)
         {
             var builder = new StringBuilder(128);
 
-            builder.Append("private ");
+            builder.Append(CSharpDeclaredElementPresenter.Instance.Format(accessRights));
+            builder.Append(" ");
             if (IsStatic) builder.Append("static ");
+
+            // Consider this declaration a template, and the final generated code implements (or overrides) this API
+            if (makeVirtual) builder.Append("virtual ");
             builder.Append("global::");
             builder.Append(ReturnType.FullName);
             if (ReturnTypeIsArray) builder.Append("[]");
@@ -75,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             builder.Append(");");
 
-            var declaration = (IMethodDeclaration)factory.CreateTypeMemberDeclaration(builder.ToString());
+            var declaration = (IMethodDeclaration) factory.CreateTypeMemberDeclaration(builder.ToString());
             declaration.SetResolveContextForSandBox(classDeclaration, SandBoxContextType.Child);
             return declaration;
         }
