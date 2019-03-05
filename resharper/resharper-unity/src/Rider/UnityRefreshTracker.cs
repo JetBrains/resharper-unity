@@ -113,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (!args) return;
                 // send refresh, when we detect UnitySolution
-                host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => { refresher.Refresh(force?RefreshType.Force:RefreshType.Normal); }));
+                host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force => { refresher.Refresh(force ? RefreshType.ForceRequestScriptReload : RefreshType.Normal); }));
             });
 
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
