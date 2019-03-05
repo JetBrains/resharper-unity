@@ -1,7 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
@@ -65,8 +66,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // above types that are in the full pass. Note that we're fast enough to just use
             // Light mode. The worst we do is a little bit of LINQ and checking inheritance.
             // This shouldn't fire as the base class says we only support light evaluation.
-            if (context.BasicContext.Parameters.EvaluationMode != EvaluationMode.Light)
-                return false;
+            var evaluationMode = context.BasicContext.Parameters.EvaluationMode;
+            Assertion.Assert(evaluationMode == EvaluationMode.Light, "evaluationMode == EvaluationMode.Light");
 
             // Don't add anything in double completion - we've already added it. This also
             // shouldn't fire, as the base class says we only support single completion.
@@ -231,12 +232,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         }
 
         [ContractAnnotation("=> false, classDeclaration: null; => true, classDeclaration: notnull")]
-        private bool CheckPosition(CSharpCodeCompletionContext context, out IClassLikeDeclaration classDeclaration,
+        private bool CheckPosition(CSharpCodeCompletionContext context, out IClassDeclaration classDeclaration,
             out bool hasVisibilityModifier, out bool hasReturnType)
         {
-            classDeclaration = null;
+            classDeclaration = GetClassDeclaration(context.NodeInFile);
             hasVisibilityModifier = false;
             hasReturnType = false;
+
+            if (classDeclaration == null)
+                return false;
 
             // Make sure we're completing an identifier
             if (!(context.UnterminatedContext.TreeNode is ICSharpIdentifier identifier))
@@ -250,9 +254,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // complete and what we display
             hasReturnType = HasExistingReturnType(identifier, out var typeUsage);
             hasVisibilityModifier = HasExistingVisibilityModifier(typeUsage);
-            classDeclaration = GetClassDeclaration(context.NodeInFile);
 
-            return classDeclaration != null;
+            return true;
         }
 
         private static bool ShouldComplete(ITreeNode nodeInFile, ICSharpIdentifier identifier)
@@ -370,9 +373,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         }
 
         [CanBeNull]
-        private static IClassLikeDeclaration GetClassDeclaration(ITreeNode completionNode)
+        private static IClassDeclaration GetClassDeclaration(ITreeNode completionNode)
         {
-            return completionNode.GetContainingNode<IClassLikeDeclaration>();
+            return completionNode.GetContainingNode<IClassDeclaration>();
         }
 
         // The code completion tooltip tries to show parameter info, if available. We already show this as part of the
