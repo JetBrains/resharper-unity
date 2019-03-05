@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                 {
                                     logger.Warn(e);
                                 }
-                                return new Version(version.Major, version.Minor) >= new Version(5, 16);
+                                return version.Major>=5 && version.Minor>=16;
                             });
                             
                     if (!installed)
