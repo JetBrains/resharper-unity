@@ -54,11 +54,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             if (type == null)
                 return false;
-            
+
             var jobComponentSystem = TypeFactory.CreateTypeByCLRName(KnownTypes.JobComponentSystem, type.Module);
             if (type.IsDescendantOf(jobComponentSystem.GetTypeElement()))
                 return true;
-            
+
             var componentSystem = TypeFactory.CreateTypeByCLRName(KnownTypes.ComponentSystem, type.Module);
             if (type.IsDescendantOf(componentSystem.GetTypeElement()))
                 return true;
@@ -121,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return field.HasAttributeInstance(KnownTypes.InjectAttribute, false);
         }
-        
+
         // Best effort attempt at preventing false positives for type members that are actually being used inside a
         // scene. We don't have enough information to do this by name, so we'll mark all potential event handlers as
         // implicitly used by Unity
@@ -164,21 +164,31 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             match = MethodSignatureMatch.NoMatch;
 
-            var projectPsiModule = method.Module as IProjectPsiModule;
+            if (!(method.Module is IProjectPsiModule projectPsiModule))
+                return null;
+
+            var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
+            return GetUnityEventFunction(method, unityVersion, out match);
+        }
+
+        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, Version unityVersion,
+                                                        out MethodSignatureMatch match)
+        {
+            match = MethodSignatureMatch.NoMatch;
+
             var containingType = method.GetContainingType();
-            if (containingType != null && projectPsiModule != null)
+            if (containingType == null) return null;
+
+            foreach (var type in GetBaseUnityTypes(containingType, unityVersion))
             {
-                var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
-                foreach (var type in GetBaseUnityTypes(containingType, unityVersion))
+                foreach (var function in type.GetEventFunctions(unityVersion))
                 {
-                    foreach (var function in type.GetEventFunctions(unityVersion))
-                    {
-                        match = function.Match(method);
-                        if (function.Match(method) != MethodSignatureMatch.NoMatch)
-                            return function;
-                    }
+                    match = function.Match(method);
+                    if (function.Match(method) != MethodSignatureMatch.NoMatch)
+                        return function;
                 }
             }
+
             return null;
         }
 

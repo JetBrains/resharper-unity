@@ -66,16 +66,25 @@ public class ||StaticModifier|(20)|(21) : AssetPostprocessor
     }
 }
 
-public class ||TypeParameters|(28)|(29) : MonoBehaviour
+public class ||MyStateMachineBehaviour|(28)|(29) : StateMachineBehaviour
 {
-    public void ||Start|(30)|(31)<T1, T2>()
+    // Do not show incorrect signature warning - the correct signature is implemented in the base class
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)
+    {
+        base.OnStateEnter(animator, stateInfo, layerIndex, controller);
+    }
+}
+
+public class ||TypeParameters|(30)|(31) : MonoBehaviour
+{
+    public void ||Start|(32)|(33)<T1, T2>()
     {
     }
 }
 
-public class ||AllWrong|(32)|(33) : AssetPostprocessor
+public class ||AllWrong|(34)|(35) : AssetPostprocessor
 {
-    public int ||OnGeneratedCSProjectFiles|(34)|(35)<T1, T2>(int value)
+    public int ||OnGeneratedCSProjectFiles|(36)|(37)<T1, T2>(int value)
     {
         return 42;
     }
@@ -118,3 +127,5 @@ public class ||AllWrong|(32)|(33) : AssetPostprocessor
 (33): UnityCodeInsights: 
 (34): ReSharper Unity Implicitly Used Identifier: 
 (35): UnityCodeInsights: 
+(36): ReSharper Unity Implicitly Used Identifier: 
+(37): UnityCodeInsights: 
