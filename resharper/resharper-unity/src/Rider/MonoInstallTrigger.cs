@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             ISolution solution,
             UnitySolutionTracker unitySolutionTracker)
         {
-            unitySolutionTracker.IsUnityProjectFolder.WhenTrue(lifetime,
+            unitySolutionTracker.IsUnityGeneratedProject.WhenTrue(lifetime,
                 (lt =>
                 {
                     if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
