@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsUnityGeneratedProject.WhenTrue(lifetime,
                 (lt =>
                 {
-                    if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
+                    if (PlatformUtil.RuntimePlatform != PlatformUtil.Platform.MacOsX)
                         return;
 
                     bool shouldShow;
