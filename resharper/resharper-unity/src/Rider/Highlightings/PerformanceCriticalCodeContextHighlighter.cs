@@ -17,9 +17,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {  
-    #if RIDER
     [ContainsContextConsumer]
-    #endif
     public class PerformanceCriticalCodeContextHighlighter : ContextHighlighterBase
     {
         [CanBeNull, AsyncContextConsumer]
@@ -66,9 +64,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 var elementId = swa.GetElementId(declaredElement, true);
                 if (!elementId.HasValue)
                     return;
-                
-                if (usageChecker.IsMarkedByCallGraphAnalyzer(callGraphAnalyzer.AnalyzerId, elementId.Value))                
+
+                if (usageChecker.IsMarkedByCallGraphAnalyzer(callGraphAnalyzer.AnalyzerId, elementId.Value))
+                {
                     consumer.ConsumeHighlighting(new PerformanceContextHiglighting(node.GetDocumentRange()));
+                }
             }
         }
     }

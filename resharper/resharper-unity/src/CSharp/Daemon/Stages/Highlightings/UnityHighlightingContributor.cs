@@ -130,9 +130,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             if (!SettingsStore.GetValue((UnitySettings key) => key.EnablePerformanceCriticalAnalysis))
                 return false;
             
-            if (kind != DaemonProcessKind.GLOBAL_WARNINGS)
-                return false;
-            
             var declaredElement = element.DeclaredElement;
             if (declaredElement == null)
                 return false;
@@ -145,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             if (!id.HasValue)
                 return false;
 
-            return usageChecker.IsMarkedByCallGraphAnalyzer(PerformanceAnalyzerId, id.Value, true);
+            return usageChecker.IsMarkedByCallGraphAnalyzer(PerformanceAnalyzerId, id.Value, kind == DaemonProcessKind.GLOBAL_WARNINGS);
         }
 
         public IEnumerable<BulbMenuItem> CreateBulbItemsForUnityDeclaration(IDeclaration declaration)

@@ -16,10 +16,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>();
         public readonly ViewableProperty<bool> IsUnityProject = new ViewableProperty<bool>();
 
-        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime) : this(solution, fileSystemTracker, lifetime, false)
+        {
+
+        }
+        
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, bool inTests)
         {
             mySolution = solution;
-            if (!solution.SolutionDirectory.IsAbsolute) return; // True in tests
+            if (inTests)
+            {
+                IsUnityGeneratedProject.Value = false;
+                IsUnityProject.Value = false;
+                IsUnityProjectFolder.Value = false;
+                return;
+            }
 
             SetValues();
 

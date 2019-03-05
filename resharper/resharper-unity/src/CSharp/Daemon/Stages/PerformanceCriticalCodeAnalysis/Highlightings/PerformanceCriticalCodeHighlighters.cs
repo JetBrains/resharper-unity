@@ -15,7 +15,6 @@ using JetBrains.TextControl.DocumentMarkup;
         DarkBackgroundColor = "#ff7526",
         EffectType = EffectType.LINE_MARKER,
         Layer = HighlighterLayer.CARET_ROW - 1,
-        NotRecyclable = true,
         TransmitUpdates = true),
     
         RegisterHighlighter(PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER,
@@ -26,7 +25,7 @@ using JetBrains.TextControl.DocumentMarkup;
         Layer = HighlighterLayer.CARET_ROW - 1),
 #else
 
-    RegisterHighlighter(PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER,
+    RegisterHighlighter(PerformanceHighlightingAttributeIds.COSTLY_METHOD_CONTEXT_HIGHLIGHTER,
         GroupId = UnityHighlightingGroupIds.Unity,
         EffectColor = "#ff7526",
         EffectType = EffectType.SOLID_UNDERLINE,

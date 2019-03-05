@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            if (!mySolutionTracker.IsUnityProject.HasTrueValue())
+            if (!file.GetProject().IsUnityProject())
                 return null;
             
             var enabled = settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalAnalysis);

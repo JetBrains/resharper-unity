@@ -34,8 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
             {
                 CheckBox((UnitySettings s) => s.EnableLineMarkerForPerformanceCriticalCode,
                     "Show gutter line for frequently called code");
-                CheckBox((UnitySettings s) => s.EnableLineMarkerForActivePerformanceCriticalMethod,
-                    "Show gutter line for current frequently called method");
                 CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
                     "Show icons for performance critical code");
             }
