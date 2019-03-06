@@ -16,6 +16,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add support for marking ECS types and fields as "in use" ([#1010](https://github.com/JetBrains/resharper-unity/issues/1010), [#1036](https://github.com/JetBrains/resharper-unity/pull/1036))
 - Rider: Add support for git packages in Unity Explorer ([#1028](https://github.com/JetBrains/resharper-unity/issues/1028))
 - Rider: Add notification if there isn't a player log to show ([#820](https://github.com/JetBrains/resharper-unity/issues/820), [#1006](https://github.com/JetBrains/resharper-unity/pull/1006) - thanks @ajon542!)
+- Add dialog with proposition to install mono for Unity project with new Scripting runtime ([RIDER-24005](https://youtrack.jetbrains.com/issue/RIDER-24005)
 
 ### Changed
 - Performance critical context now works cross files ([#1037](https://github.com/JetBrains/resharper-unity/pull/1037))
