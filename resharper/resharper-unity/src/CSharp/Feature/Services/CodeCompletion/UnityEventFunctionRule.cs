@@ -59,36 +59,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
         {
-            if (!CheckPosition(context, out var classDeclaration, out var hasVisibilityModifier, out var hasReturnType))
-                return false;
-
-            // Only add items in the light pass. This gives us higher relevance, putting us
-            // above types that are in the full pass. Note that we're fast enough to just use
-            // Light mode. The worst we do is a little bit of LINQ and checking inheritance.
-            // This shouldn't fire as the base class says we only support light evaluation.
-            var evaluationMode = context.BasicContext.Parameters.EvaluationMode;
-            Assertion.Assert(evaluationMode == EvaluationMode.Light, "evaluationMode == EvaluationMode.Light");
-
-            // Don't add anything in double completion - we've already added it. This also
-            // shouldn't fire, as the base class says we only support single completion.
-            if (context.BasicContext.Parameters.Multiplier > 1)
-                return true;
-
-            var typeElement = classDeclaration.DeclaredElement;
-            if (typeElement == null)
-                return false;
+            // Assert base class preconditions. We only add items in the light pass, which gives us higher relevance,
+            // putting us above types that are in the full pass. We need to be super fast in Light mode, and we are -
+            // we're just looking things up
+            Assertion.Assert(context.BasicContext.Parameters.EvaluationMode == EvaluationMode.Light, "evaluationMode == EvaluationMode.Light");
+            Assertion.Assert(context.BasicContext.Parameters.Multiplier == 1, "multiplier == 1");
 
             var unityApi = context.BasicContext.Solution.GetComponent<UnityApi>();
+            if (!CheckPosition(context, unityApi, out var classDeclaration, out var hasVisibilityModifier, out var hasReturnType))
+                return false;
+
+            var typeElement = classDeclaration.DeclaredElement;
+            var baseTypeElement = typeElement?.GetBaseClassType()?.GetTypeElement();
+            if (typeElement == null || baseTypeElement == null)
+                return false;
+
             var unityVersionApi = context.BasicContext.Solution.GetComponent<UnityVersion>();
             var project = context.BasicContext.File.GetProject();
             var actualVersion = unityVersionApi.GetActualVersion(project);
-            var existingMethods = typeElement.GetAllClassMembers<IMethod>().ToList();
+            var thisMethods = typeElement.Methods.ToList();
+            var inheritedMethods = baseTypeElement.GetAllClassMembers<IMethod>().ToList();
 
             var addedFunctions = new HashSet<string>();
 
             foreach (var function in unityApi.GetEventFunctions(typeElement, actualVersion))
             {
-                if (HasAnyPartiallyMatchingExistingMethods(existingMethods, function))
+                if (HasAnyPartiallyMatchingExistingMethods(thisMethods, function))
+                    continue;
+
+                if (HasAnyExactMatchInheritedMethods(inheritedMethods, function))
                     continue;
 
                 if (addedFunctions.Contains(function.Name))
@@ -112,13 +111,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return true;
         }
 
-        private bool HasAnyPartiallyMatchingExistingMethods(IEnumerable<TypeMemberInstance<IMethod>> existingMethods,
+        private bool HasAnyPartiallyMatchingExistingMethods(IEnumerable<IMethod> existingMethods,
                                                             UnityEventFunction function)
         {
             // Don't use Any() - it's surprisingly expensive when called for each function we're adding to the lookup list
             foreach (var existingMethod in existingMethods)
             {
-                if (function.Match(existingMethod.Member) != MethodSignatureMatch.NoMatch)
+                if (function.Match(existingMethod) != MethodSignatureMatch.NoMatch)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool HasAnyExactMatchInheritedMethods(IEnumerable<TypeMemberInstance<IMethod>> inheritedMethods,
+                                                      UnityEventFunction function)
+        {
+            foreach (var existingMethod in inheritedMethods)
+            {
+                if (function.Match(existingMethod.Member) == MethodSignatureMatch.ExactMatch)
                     return true;
             }
 
@@ -232,8 +243,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         }
 
         [ContractAnnotation("=> false, classDeclaration: null; => true, classDeclaration: notnull")]
-        private bool CheckPosition(CSharpCodeCompletionContext context, out IClassDeclaration classDeclaration,
-            out bool hasVisibilityModifier, out bool hasReturnType)
+        private bool CheckPosition(CSharpCodeCompletionContext context, UnityApi unityApi,
+                                   out IClassDeclaration classDeclaration,
+                                   out bool hasVisibilityModifier, out bool hasReturnType)
         {
             classDeclaration = GetClassDeclaration(context.NodeInFile);
             hasVisibilityModifier = false;
@@ -244,6 +256,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             // Make sure we're completing an identifier
             if (!(context.UnterminatedContext.TreeNode is ICSharpIdentifier identifier))
+                return false;
+
+            if (!unityApi.IsUnityType(classDeclaration.DeclaredElement))
                 return false;
 
             // Make sure we're in the correct place for showing Unity event functions.

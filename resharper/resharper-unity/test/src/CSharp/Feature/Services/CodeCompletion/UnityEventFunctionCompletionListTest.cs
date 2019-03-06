@@ -33,6 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
         [Test] public void NoCompletionFollowingSerializeFieldAttribute04() { DoNamedTest(); }
         [Test] public void DoNotMatchParameterTypes() { DoNamedTest(); }
         [Test] public void DoNotListVirtualFunctions() { DoNamedTest(); }
+        [Test] public void DoNotListFunctionsImplementedInBase01() { DoNamedTest(); }
+        [Test] public void DoNotListFunctionsImplementedInBase02() { DoNamedTest(); }
         [Test] public void UnityEditor01() { DoNamedTest(); }
         [Test] public void EditorWindow01() { DoNamedTest(); }
 
