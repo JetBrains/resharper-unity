@@ -183,7 +183,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 var lifetimeDef = lifetime.CreateNested();
                 myRiderSolutionSaver.Save(lifetime, mySolution, () =>
                 {
-                    myUnityRefresher.Refresh(true).GetAwaiter().OnCompleted(()=>{ lifetimeDef.Terminate(); });
+                    myUnityRefresher.Refresh(RefreshType.Force).GetAwaiter().OnCompleted(()=>{ lifetimeDef.Terminate(); });
                 });
                 while (lifetimeDef.Lifetime.IsAlive)
                 {
