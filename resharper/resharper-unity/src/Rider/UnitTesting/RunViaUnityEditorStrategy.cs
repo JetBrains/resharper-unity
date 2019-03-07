@@ -265,7 +265,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var targetFrameworkId = parent.Id.TargetFrameworkId;
                     
                     var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
-                    unitTestElement = new NUnitDynamicRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
+                    unitTestElement = new NUnitRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
                     firstRun.AddDynamicElement(unitTestElement);
                     myElements.Add(myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId), unitTestElement);
                 }
