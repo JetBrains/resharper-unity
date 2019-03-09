@@ -13,6 +13,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.logging.LogLevel
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.lang.IllegalStateException
 
 open class MSBuildTask: DefaultTask() {
 
@@ -62,14 +63,25 @@ open class MSBuildTask: DefaultTask() {
         val stdout = ByteArrayOutputStream()
         project.exec {
             executable = File(project.projectDir, "../tools/vswhere.exe").absolutePath
-            args = listOf("-latest", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-property", "installationPath")
+            args = listOf("-all", "-version", "[15.0,)", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-property", "installationPath")
             standardOutput = stdout
         }
+        val buildToolsDirs = stdout.toString().trim().split("\r\n", "\n")
+        for (buildToolsDirPath in buildToolsDirs) {
+            val buildToolsDir = File(buildToolsDirPath)
+            if (!buildToolsDir.isDirectory) {
+                logger.warn("$buildToolsDir is not a directory")
+                continue
+            }
 
-        val buildToolsDir = File(stdout.toString().trim())
-        assert(buildToolsDir.isDirectory)
-
-        return File(buildToolsDir, "MSBuild/15.0/Bin/MSBuild.exe").absolutePath
+            val msBuild15File = File(buildToolsDir, "MSBuild/15.0/Bin/MSBuild.exe")
+            if (msBuild15File.exists())
+                return msBuild15File.absolutePath
+            val msBuildCurrentFile = File(buildToolsDir, "MSBuild/Current/Bin/MSBuild.exe")
+            if (msBuildCurrentFile.exists())
+                return msBuildCurrentFile.absolutePath
+        }
+        throw IllegalStateException("Failed to find MSBuild.exe inside [${buildToolsDirs.joinToString(", ")}]")
     }
 
     private fun findMSBuildPathUnix(): String {
