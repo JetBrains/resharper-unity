@@ -2,6 +2,8 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
+import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
@@ -14,6 +16,14 @@ import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileSta
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseOnce
+import com.jetbrains.rider.debugger.DebuggerHelperHost
+import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
+import com.jetbrains.rider.plugins.unity.util.addPlayModeArguments
+import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
+import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
+import com.jetbrains.rider.util.idea.application
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 
 class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAttachToEditorRunConfiguration, executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
@@ -39,6 +49,37 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
             }
         }
 
+        return result
+    }
+
+    override fun createModelStartInfoAsync(lifetime: Lifetime): Promise<DebuggerStartInfoBase> {
+        return super.createModelStartInfoAsync(lifetime)
+    }
+
+    override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<GeneralCommandLine> {
+        if (remoteConfiguration.pid != null)
+            return super.createWorkerRunCmd(lifetime, helper, port)
+
+        val result = AsyncPromise<GeneralCommandLine>()
+        application.executeOnPooledThread {
+            try {
+                val args = getUnityWithProjectArgs(project)
+                if (remoteConfiguration.play) {
+                    addPlayModeArguments(args)
+                }
+
+                val process = ProcessBuilder(args).start();
+                val actualPid = OSProcessUtil.getProcessID(process)
+                remoteConfiguration.pid = actualPid
+                remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
+                application.invokeLater {
+                    super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
+                }
+            }
+            catch (e: Exception) {
+                result.setError(e)
+            }
+        }
         return result
     }
 
