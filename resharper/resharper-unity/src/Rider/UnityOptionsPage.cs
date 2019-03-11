@@ -50,8 +50,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             
             BeginSection();
             {
-                CheckBox((UnitySettings s) => s.PerformanceHighlightingMode,
-                    "Show gutter line for frequently called code");
                 AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode, "Show indicator for performance critical code:",
                     new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
                     new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method"),
