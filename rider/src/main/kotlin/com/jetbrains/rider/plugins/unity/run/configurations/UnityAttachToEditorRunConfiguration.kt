@@ -85,7 +85,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
         val processList = OSProcessUtil.getProcessList()
 
         // We might have a pid from a previous run, but the editor might have died
-        pid = findUnityEditorInstance(processList)
+        pid = checkValidEditorInstance(pid, processList) ?: findUnityEditorInstance(processList)
         if (pid == null)
             return false
 
