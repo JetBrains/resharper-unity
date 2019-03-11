@@ -123,6 +123,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, pri
                 val currentPlayerTimeout = unityPlayerDescriptorsHeartbeats[playerDescriptor] ?: continue
                 if (currentPlayerTimeout <= 0) {
                     unityPlayerDescriptorsHeartbeats.remove(playerDescriptor)
+                    logger.trace("Removing old Unity player $playerDescriptor")
                     unityPlayers.remove(playerDescriptor)?.let { onPlayerRemoved(it) }
                 } else
                     unityPlayerDescriptorsHeartbeats[playerDescriptor] = currentPlayerTimeout - 1
