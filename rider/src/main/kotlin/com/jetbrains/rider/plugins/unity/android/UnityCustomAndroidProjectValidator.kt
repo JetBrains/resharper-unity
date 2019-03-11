@@ -1,4 +1,4 @@
-package com.jetbrains.rider.android
+package com.jetbrains.rider.plugins.unity.android
 
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.UnityProjectDiscoverer
