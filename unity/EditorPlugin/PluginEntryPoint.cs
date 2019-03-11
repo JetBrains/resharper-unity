@@ -341,9 +341,9 @@ namespace JetBrains.Rider.Unity.Editor
         var task = new RdTask<Unit>();
         MainThreadDispatcher.Instance.Queue(() =>
         {
-          if (!EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || force)
+          if (!EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || force != RefreshType.Normal)
           {
-            if (force)
+            if (force == RefreshType.ForceRequestScriptReload)
             {
               ourLogger.Verbose("Refresh: RequestScriptReload");
               UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
