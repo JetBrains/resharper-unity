@@ -77,11 +77,11 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
         // We could do this in getState, but if we throw an error there, it just shows a balloon
         // If we throw an error here (at least, RuntimeConfigurationError), it will cause the
         // Edit Run Configurations dialog to be shown
-        if (!UpdatePidAndPort() && UnityInstallationFinder.getInstance(project).getApplicationPath() == null)
+        if (!updatePidAndPort() && UnityInstallationFinder.getInstance(project).getApplicationPath() == null)
             throw RuntimeConfigurationError("Cannot find Unity Editor instance")
     }
 
-    private fun UpdatePidAndPort() : Boolean {
+    private fun updatePidAndPort() : Boolean {
         val processList = OSProcessUtil.getProcessList()
 
         // We might have a pid from a previous run, but the editor might have died
