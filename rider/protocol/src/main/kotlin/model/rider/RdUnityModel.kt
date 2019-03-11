@@ -81,7 +81,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("hasUnityReference", bool)
 
         sink("startUnity", void)
-        sink("notifyIsRecompileAndContinuePlaying", string)
+        property("scriptChangesDuringPlayTabName", string.nullable)
         sink("notifyYamlHugeFiles", void)
         source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
         source("enableYamlParsing", void)
