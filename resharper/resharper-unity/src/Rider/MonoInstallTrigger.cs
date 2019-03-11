@@ -64,11 +64,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     
         private static bool HasModernUnityProjects(ISolution solution)
         {
+            // Either all projects are not loaded, when msbuild is not found or 
             // Unity, which requires new MSBuild with C# 7.3 support, writes TargetFrameworkVersion 4.7.1 to csproj
             using (solution.Locks.UsingReadLock())
             {
-                return solution.GetAllProjects()
-                    .Any(project => 
+                var projects = solution.GetAllProjects();
+                return 
+                    projects.All(project => !project.GetAllTargetFrameworks().Any()) ||
+                    projects.Any(project => 
                         project.TargetFrameworkIds
                             .Any(x => x.IsNetFramework && x.Version.Major >= 4 && x.Version.Minor >= 7 && x.Version.MajorRevision >= 1));
             }
