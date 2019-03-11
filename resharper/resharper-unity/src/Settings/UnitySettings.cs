@@ -32,14 +32,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         // Analysis
         [SettingsEntry(true, "Enables performance analysis in frequently called code")]
-        public bool EnablePerformanceCriticalAnalysis;
+        public bool EnablePerformanceCriticalCodeHighlighting;
         
         // UX for performance critical analysis
-        [SettingsEntry(false, "Enables showing line marker for active frequently called method")]
-        public bool EnableLineMarkerForPerformanceCriticalCode;
+        [SettingsEntry(PerformanceHighlightingMode.CurrentMethod, "Highlighting mode for performance critical code")]
+        public PerformanceHighlightingMode PerformanceHighlightingMode;
         
-        [SettingsEntry(true, "Enables showing line marker for each frequently called method")]
-        public bool EnableLineMarkerForActivePerformanceCriticalMethod;
 
         [SettingsEntry(true, "Enables showing hot icon for frequently called code")]
         public bool EnableIconsForPerformanceCriticalCode;

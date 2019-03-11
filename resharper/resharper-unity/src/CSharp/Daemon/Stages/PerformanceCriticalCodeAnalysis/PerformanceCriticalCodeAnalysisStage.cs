@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (!file.GetProject().IsUnityProject())
                 return null;
             
-            var enabled = settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalAnalysis);
+            var enabled = settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
 
             if (!enabled)
                 return null;
@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             myExpensiveAnalyzerId = expensiveCodeCallGraphAnalyzer.AnalyzerId;
 
             myLineMarkerEnabled = DaemonProcess.ContextBoundSettingsStore.GetValue((UnitySettings key) =>
-                key.EnableLineMarkerForPerformanceCriticalCode);
+                key.PerformanceHighlightingMode) == PerformanceHighlightingMode.Always;
         }
 
         public override void Execute(Action<DaemonStageResult> committer)

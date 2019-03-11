@@ -45,15 +45,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             // TODO: Add to R# options page
             Header("C#");
-            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalAnalysis,
+            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
                 "Enable performance analysis in frequently called code");
             
             BeginSection();
             {
-                CheckBox((UnitySettings s) => s.EnableLineMarkerForPerformanceCriticalCode,
+                CheckBox((UnitySettings s) => s.PerformanceHighlightingMode,
                     "Show gutter line for frequently called code");
-                CheckBox((UnitySettings s) => s.EnableLineMarkerForActivePerformanceCriticalMethod,
-                    "Show gutter line for current frequently called method");
+                AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode, "Show indicator for performance critical code:",
+                    new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
+                );
                 CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
                     "Show icons for performance critical code");
             }
