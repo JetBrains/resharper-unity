@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
                 Lifetime.Using(lifetime =>
                 {
                     ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) => 
-                        key.EnableLineMarkerForPerformanceCriticalCode, true);
+                        key.PerformanceHighlightingMode, PerformanceHighlightingMode.Always);
 
                     var files = swea.GetFilesToAnalyze().OrderBy(f => f.Name).ToList();
                     foreach (var file in files)

@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [UserVisible(true)]
     internal class CostlyMethodHighlighterClassificationDefinition : ClassificationFormatDefinition
     {
-        private const string Name = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER;
+        private const string Name = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER;
 
         public CostlyMethodHighlighterClassificationDefinition()
         {

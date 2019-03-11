@@ -127,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             if (!SettingsStore.GetValue((UnitySettings key) => key.EnableIconsForPerformanceCriticalCode))
                 return false;
             
-            if (!SettingsStore.GetValue((UnitySettings key) => key.EnablePerformanceCriticalAnalysis))
+            if (!SettingsStore.GetValue((UnitySettings key) => key.EnablePerformanceCriticalCodeHighlighting))
                 return false;
             
             var declaredElement = element.DeclaredElement;

@@ -8,14 +8,14 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
 {  
     [ContainsContextConsumer]
     public class PerformanceCriticalCodeContextHighlighter : ContextHighlighterBase
@@ -37,13 +37,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             var settingsStore = psiDocumentRangeView.GetSettingsStore();
             
-            if (!settingsStore.GetValue((UnitySettings key) => key.EnablePerformanceCriticalAnalysis))
+            if (!settingsStore.GetValue((UnitySettings key) => key.EnablePerformanceCriticalCodeHighlighting))
                 return;
 
-            if (settingsStore.GetValue((UnitySettings key) => key.EnableLineMarkerForPerformanceCriticalCode))
-                return;
-            
-            if (!settingsStore.GetValue((UnitySettings key) => key.EnableLineMarkerForActivePerformanceCriticalMethod))
+            if (settingsStore.GetValue((UnitySettings key) => key.PerformanceHighlightingMode) != PerformanceHighlightingMode.CurrentMethod)
                 return;
             
             var view = psiDocumentRangeView.View<CSharpLanguage>();

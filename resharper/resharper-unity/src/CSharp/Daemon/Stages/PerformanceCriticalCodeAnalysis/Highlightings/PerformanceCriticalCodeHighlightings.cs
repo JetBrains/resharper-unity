@@ -124,7 +124,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
 
     [StaticSeverityHighlighting(Severity.INFO, CSharpLanguage.Name, Languages = "CSHARP",
-        AttributeId = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER,
+        AttributeId = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
     public class PerformanceHighlighting: PerformanceHighlightingBase , IActiveLineMarkerInfo
@@ -136,7 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         private readonly DocumentRange myRange;
 
         public PerformanceHighlighting(DocumentRange range)
-            : base(SEVERITY_ID, PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER, MESSAGE)
+            : base(SEVERITY_ID, PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER, MESSAGE)
         {
             myRange = range;
         }
@@ -173,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class PerformanceContextHiglighting : HighlightInfo
     {
         public PerformanceContextHiglighting(DocumentRange documentRange)
-            : base(PerformanceHighlightingAttributeIds.COSTLY_METHOD_CONTEXT_HIGHLIGHTER, documentRange, AreaType.EXACT_RANGE, HighlighterLayer.SYNTAX + 1)
+            : base(PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER, documentRange, AreaType.EXACT_RANGE, HighlighterLayer.SYNTAX + 1)
         {
         }
 

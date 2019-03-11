@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.UI.Options;
+using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions.ViewModel;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
@@ -27,13 +28,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
             CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
                 "Parse text based asset files for implicit script usages");
 
-            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalAnalysis,
+            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
                 "Enable performance analysis in frequently called code");
             
             BeginSection();
             {
-                CheckBox((UnitySettings s) => s.EnableLineMarkerForPerformanceCriticalCode,
-                    "Show gutter line for frequently called code");
+                AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode, "Show indicator for performance critical code:",
+                    new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
+                );
                 CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
                     "Show icons for performance critical code");
             }

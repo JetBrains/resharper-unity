@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.Util;
 
-[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_HOT_GUTTER_ICON_ATTRIBUTE,
+[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_PERFORMANCE_CRITICAL_GUTTER_ICON_ATTRIBUTE,
     EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityHotGutterMark),
     Layer = HighlighterLayer.SYNTAX + 1)]
 

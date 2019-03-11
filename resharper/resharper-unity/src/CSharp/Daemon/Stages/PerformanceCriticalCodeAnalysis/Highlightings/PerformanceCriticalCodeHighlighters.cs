@@ -9,23 +9,16 @@ using JetBrains.TextControl.DocumentMarkup;
     // ReSharper doesn't currently support EffectType.LINE_MARKER, so we'll use SOLID_UNDERLINE on the method name
     // instead. Make sure the range is updated in any usages when this is removed!
 #if RIDER
-    RegisterHighlighter(PerformanceHighlightingAttributeIds.COSTLY_METHOD_CONTEXT_HIGHLIGHTER,
+    RegisterHighlighter(PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
         GroupId = UnityHighlightingGroupIds.Unity,
         BackgroundColor = "#ff7526",
         DarkBackgroundColor = "#ff7526",
         EffectType = EffectType.LINE_MARKER,
         Layer = HighlighterLayer.CARET_ROW - 1,
         TransmitUpdates = true),
-    
-        RegisterHighlighter(PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_CONTEXT_METHOD_HIGHLIGHTER,
-        GroupId = UnityHighlightingGroupIds.Unity,
-        BackgroundColor = "#ff7526",
-        DarkBackgroundColor = "#ff7526",
-        EffectType = EffectType.LINE_MARKER,
-        Layer = HighlighterLayer.CARET_ROW - 1),
 #else
 
-    RegisterHighlighter(PerformanceHighlightingAttributeIds.COSTLY_METHOD_CONTEXT_HIGHLIGHTER,
+    RegisterHighlighter(PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
         GroupId = UnityHighlightingGroupIds.Unity,
         EffectColor = "#ff7526",
         EffectType = EffectType.SOLID_UNDERLINE,
