@@ -46,7 +46,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             // TODO: Add to R# options page
             Header("C#");
             CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
-                "Highlight expensive method calls in frequently called code");
+                "Enable performance analysis in frequently called code");
+            
+            BeginSection();
+            {
+                AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode, "Show indicator for performance critical code:",
+                    new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
+                );
+                CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
+                    "Show icons for performance critical code");
+            }
+            EndSection();
+            
             AddComboOption((UnitySettings s) => s.GutterIconMode, "Show gutter icons for implicit script usages:",
                 new RadioOptionPoint(GutterIconMode.Always, "Always"),
                 new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "When Code Vision are disabled"),

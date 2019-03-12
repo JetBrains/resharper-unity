@@ -42,8 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 var factory = CSharpElementFactory.GetInstance(classDeclaration);
                 var declaration = (IMethodDeclaration) factory.CreateTypeMemberDeclaration("void $0(){}", methodName);
 
-                result = classDeclaration.AddClassMemberDeclarationAfter(declaration,
-                    classDeclaration.FieldDeclarations.FirstOrDefault());
+                result = classDeclaration.AddClassMemberDeclarationBefore(declaration, classDeclaration.MethodDeclarations.FirstOrDefault());
             }
 
             return result;

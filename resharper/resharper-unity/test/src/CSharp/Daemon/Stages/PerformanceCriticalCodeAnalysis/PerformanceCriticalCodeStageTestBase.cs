@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.Impl;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
@@ -32,7 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
             {
                 Lifetime.Using(lifetime =>
                 {
-                    ChangeSettingsTemporarily(lifetime).BoundStore.SetValue(HighlightingSettingsAccessor.AnalysisEnabled, AnalysisScope.SOLUTION);
+                    ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) => 
+                        key.PerformanceHighlightingMode, PerformanceHighlightingMode.Always);
 
                     var files = swea.GetFilesToAnalyze().OrderBy(f => f.Name).ToList();
                     foreach (var file in files)

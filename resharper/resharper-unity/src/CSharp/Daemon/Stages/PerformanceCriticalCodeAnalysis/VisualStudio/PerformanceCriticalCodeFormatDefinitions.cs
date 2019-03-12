@@ -2,6 +2,7 @@
 
 using System.ComponentModel.Composition;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
@@ -20,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [UserVisible(true)]
     internal class CostlyMethodHighlighterClassificationDefinition : ClassificationFormatDefinition
     {
-        private const string Name = PerformanceHighlightingAttributeIds.COSTLY_METHOD_HIGHLIGHTER;
+        private const string Name = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER;
 
         public CostlyMethodHighlighterClassificationDefinition()
         {

@@ -11,8 +11,8 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.Util;
 
-[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_GUTTER_ICON_ATTRIBUTE,
-    EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityGutterMark),
+[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_PERFORMANCE_CRITICAL_GUTTER_ICON_ATTRIBUTE,
+    EffectType = EffectType.GUTTER_MARK, GutterMarkType = typeof(UnityHotGutterMark),
     Layer = HighlighterLayer.SYNTAX + 1)]
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
@@ -20,11 +20,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     // This class describes the UI of a highlight (gutter icon), while an IHighlighting
     // is an instance of a highlight at a specific location in a document. The IHighlighting
     // instance refers to this highlighter's attribute ID to wire up the UI
-    public class UnityGutterMark : AbstractUnityGutterMark
+    public class UnityHotGutterMark : AbstractUnityGutterMark
     {
-        public UnityGutterMark()
-            : base(UnityGutterIcons.UnityLogo.Id)
+        public UnityHotGutterMark(): base(UnityGutterIcons.HotMethod.Id)
         {
         }
+
     }
 }

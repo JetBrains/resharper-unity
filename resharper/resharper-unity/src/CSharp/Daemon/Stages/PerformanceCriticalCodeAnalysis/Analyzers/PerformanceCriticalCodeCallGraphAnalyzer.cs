@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
 {
     [SolutionComponent]
     public class PerformanceCriticalCodeCallGraphAnalyzer : CallGraphAnalyzerBase
@@ -34,13 +34,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
-            if (currentNode is IMethodDeclaration methodDeclaration &&
-                ourKnownHotMonoBehaviourMethods.Contains(methodDeclaration.DeclaredName))
+            if (currentNode is IMethodDeclaration methodDeclaration)
             {
-                var containingTypeDeclaration = methodDeclaration.GetContainingTypeDeclaration();
-
-                if (containingTypeDeclaration != null && containingTypeDeclaration.SuperTypes.Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour)))
+                if (PerformanceCriticalCodeStageUtil.HasFrequentlyCalledMethodAttribute(methodDeclaration))
+                {
                     result.Add(containingFunction);
+                } else
+                if (ourKnownHotMonoBehaviourMethods.Contains(methodDeclaration.DeclaredName))
+                {
+                    var containingTypeDeclaration = methodDeclaration.GetContainingTypeDeclaration();
+
+                    if (containingTypeDeclaration != null &&
+                        containingTypeDeclaration.SuperTypes.Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour)))
+                        result.Add(containingFunction);
+                }
             }
 
 

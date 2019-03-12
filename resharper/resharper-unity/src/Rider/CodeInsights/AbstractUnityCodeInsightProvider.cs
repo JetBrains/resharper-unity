@@ -50,8 +50,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
            }
         }
 
-        public virtual IconId IconId => InsightUnityIcons.InsightUnity.Id;
-
         public bool IsAvailableIn(ISolution solution) => myUnitySolutionTracker.IsUnityProject.HasTrueValue();
 
 

@@ -7,11 +7,14 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
+using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Help;
@@ -27,21 +30,27 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {
     [SolutionComponent]
-    public class UnityImplicitUsageHighlightingContributor
+    public class UnityHighlightingContributor
     {
+        protected SolutionAnalysisService Swa { get; }
+        protected int PerformanceAnalyzerId { get; }
         protected readonly ISolution Solution;
         protected readonly ITextControlManager TextControlManager;
         protected readonly IContextBoundSettingsStore SettingsStore;
 
-        public UnityImplicitUsageHighlightingContributor(ISolution solution, ISettingsStore settingsStore,
-            ITextControlManager textControlManager)
+        public UnityHighlightingContributor(ISolution solution, ISettingsStore settingsStore,
+            ITextControlManager textControlManager, SolutionAnalysisService swa,
+            PerformanceCriticalCodeCallGraphAnalyzer performanceCriticalCodeCallGraphAnalyzer)
         {
+            Swa = swa;
+            PerformanceAnalyzerId = performanceCriticalCodeCallGraphAnalyzer.AnalyzerId;
             Solution = solution;
             TextControlManager = textControlManager;
             SettingsStore = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
         }
 
-        public virtual void AddUnityImplicitHighlightingForEventFunction(IHighlightingConsumer consumer, IMethod method, UnityEventFunction eventFunction)
+        public virtual void AddUnityImplicitHighlightingForEventFunction(IHighlightingConsumer consumer, IMethod method,
+            UnityEventFunction eventFunction, DaemonProcessKind kind)
         {
             var tooltip = "Unity event function";
             if (!string.IsNullOrEmpty(eventFunction.Description))
@@ -52,50 +61,88 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             foreach (var declaration in method.GetDeclarations())
             {
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
-                    AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip, "Event function");
+                    AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip, "Event function",
+                        kind);
             }
         }
 
-        public virtual void AddUnityImplicitClassUsage(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string tooltip, string displayName)
+        public virtual void AddUnityImplicitClassUsage(IHighlightingConsumer consumer,
+            IClassLikeDeclaration declaration, string tooltip, string displayName, DaemonProcessKind kind)
         {
-            AddHighlightingWithConfigurableHighlighter(consumer, declaration, tooltip, displayName);
+            AddHighlightingWithConfigurableHighlighter(consumer, declaration, tooltip, displayName, kind);
         }
 
-        public virtual void AddInitializeOnLoadMethod(IHighlightingConsumer consumer, IConstructorDeclaration constructorDeclaration, string tooltip, string displayName)
+        public virtual void AddInitializeOnLoadMethod(IHighlightingConsumer consumer,
+            IConstructorDeclaration constructorDeclaration, string tooltip, string displayName, DaemonProcessKind kind)
         {
-            AddHighlightingWithConfigurableHighlighter(consumer, constructorDeclaration, tooltip, displayName);
+            AddHighlightingWithConfigurableHighlighter(consumer, constructorDeclaration, tooltip, displayName, kind);
         }
 
-        public virtual void AddUnityImplicitFieldUsage(IHighlightingConsumer consumer, IFieldDeclaration field, string tooltip, string displayName)
+        public virtual void AddUnityImplicitFieldUsage(IHighlightingConsumer consumer, IFieldDeclaration field,
+            string tooltip, string displayName, DaemonProcessKind kind)
         {
-            AddHighlightingWithConfigurableHighlighter(consumer, field, tooltip, displayName);
+            AddHighlightingWithConfigurableHighlighter(consumer, field, tooltip, displayName, kind);
         }
 
-        public virtual void AddUnityEventHandler(IHighlightingConsumer consumer, IDeclaration element, string tooltip, string displayName)
+        public virtual void AddUnityEventHandler(IHighlightingConsumer consumer, IDeclaration element, string tooltip,
+            string displayName, DaemonProcessKind kind)
         {
             if (element is ICSharpDeclaration cSharpDeclaration)
-                AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip, displayName);
+                AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip, displayName, kind);
         }
 
-        public virtual void AddHighlightingWithConfigurableHighlighter(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip, string displayName)
+        public virtual void AddHighlightingWithConfigurableHighlighter(IHighlightingConsumer consumer,
+            ICSharpDeclaration element, string tooltip, string displayName, DaemonProcessKind kind)
         {
-            AddHighlighting(consumer, element, tooltip, displayName);
-            AddConfigurableHighlighter(consumer, element);
+            AddHighlighting(consumer, element, tooltip, displayName, kind);
+            AddConfigurableHighlighter(consumer, element, kind);
         }
 
-        public virtual void AddConfigurableHighlighter(IHighlightingConsumer consumer, ICSharpDeclaration element)
+        public virtual void AddConfigurableHighlighter(IHighlightingConsumer consumer, ICSharpDeclaration element,
+            DaemonProcessKind kind)
         {
-            consumer.AddHighlighting(new UnityImplicitlyUsedIdentifierHighlighting(element.NameIdentifier.GetDocumentRange()));
+            consumer.AddHighlighting(
+                new UnityImplicitlyUsedIdentifierHighlighting(element.NameIdentifier.GetDocumentRange()));
         }
 
-        public virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip, string displayName)
+        public virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip,
+            string displayName, DaemonProcessKind kind, bool addOnlyHotIcon = false)
         {
             var mode = SettingsStore.GetValue((UnitySettings key) => key.GutterIconMode);
             if (mode == GutterIconMode.None)
                 return;
 
-            var highlighting = new UnityGutterMarkInfo(element, tooltip);
+            var isIconHot = IsHotIcon(element, kind);
+            if (addOnlyHotIcon && !isIconHot)
+                return;
+            
+            var highlighting = isIconHot
+                ? new UnityHotGutterMarkInfo(element, tooltip)
+                : (IHighlighting) new UnityGutterMarkInfo(element, tooltip);
             consumer.AddHighlighting(highlighting);
+        }
+        
+        protected virtual bool IsHotIcon(ICSharpDeclaration element, DaemonProcessKind kind)
+        {
+            if (!SettingsStore.GetValue((UnitySettings key) => key.EnableIconsForPerformanceCriticalCode))
+                return false;
+            
+            if (!SettingsStore.GetValue((UnitySettings key) => key.EnablePerformanceCriticalCodeHighlighting))
+                return false;
+            
+            var declaredElement = element.DeclaredElement;
+            if (declaredElement == null)
+                return false;
+            
+            var usageChecker = Swa.UsageChecker;
+            if (usageChecker == null)
+                return false;
+
+            var id = Swa.GetElementId(declaredElement, true);
+            if (!id.HasValue)
+                return false;
+
+            return usageChecker.IsMarkedByCallGraphAnalyzer(PerformanceAnalyzerId, id.Value, kind == DaemonProcessKind.GLOBAL_WARNINGS);
         }
 
         public IEnumerable<BulbMenuItem> CreateBulbItemsForUnityDeclaration(IDeclaration declaration)
@@ -104,9 +151,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             var textControl = TextControlManager.LastFocusedTextControl.Value;
             if (textControl != null)
             {
-
                 var result = new List<BulbMenuItem>();
-                if (declaration is IClassLikeDeclaration classDeclaration && !unityApi.IsUnityECSType(declaration.DeclaredElement as ITypeElement))
+                if (declaration is IClassLikeDeclaration classDeclaration &&
+                    !unityApi.IsUnityECSType(declaration.DeclaredElement as ITypeElement))
                 {
                     var fix = new GenerateUnityEventFunctionsFix(classDeclaration);
                     result.Add(
@@ -156,7 +203,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             return EmptyList<BulbMenuItem>.Enumerable;
         }
 
-        public virtual IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api, ITextControl textControl)
+        public virtual IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api,
+            ITextControl textControl)
         {
             return EmptyList<BulbMenuItem>.Enumerable;
         }
@@ -191,7 +239,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                 myUnityApi = unityApi;
             }
 
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution,
+                IProgressIndicator progress)
             {
                 myShowUnityHelp.ShowHelp(myMethod.GetUnityEventFunctionName(myUnityApi), HelpSystem.HelpKind.Msdn);
                 return null;

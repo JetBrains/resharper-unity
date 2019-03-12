@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.UI.Options;
+using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions.ViewModel;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
@@ -27,9 +28,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
             CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
                 "Parse text based asset files for implicit script usages");
 
-            Header("C#");
             CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
-                "Highlight expensive method calls in frequently called code");
+                "Enable performance analysis in frequently called code");
+            
+            BeginSection();
+            {
+                AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode, "Show indicator for performance critical code:",
+                    new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
+                );
+                CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
+                    "Show icons for performance critical code");
+            }
+            EndSection();
 
             // The default is when code vision is disabled. Let's keep this so that if/when ReSharper ever gets Code
             // Vision, we'll show the items, or if the user installs Rider, the copied settings will still be useful

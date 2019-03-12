@@ -1,12 +1,13 @@
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using JetBrains.Diagnostics;
+using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-#if RIDER
-using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
-#endif
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
@@ -20,21 +21,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
             typeof(InvalidParametersWarning),
-            typeof(InvalidTypeParametersWarning),
-            #if RIDER
-            typeof(UnityCodeInsightsHighlighting)
-            #else
-            typeof(UnityGutterMarkInfo),
-            #endif
+            typeof(InvalidTypeParametersWarning)
         })]
     public class UnityEventFunctionAnalyzer : MethodSignatureProblemAnalyzerBase<IMemberOwnerDeclaration>
     {
-        private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
-
-        public UnityEventFunctionAnalyzer(UnityApi unityApi, UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
+        public static readonly Key<ISet<IMethod>> UnityEventFunctionNodeKey = new Key<ISet<IMethod>>("UnityEventFunctionNodeKey");
+        private readonly object mySyncObject = new object();
+        
+        
+        public UnityEventFunctionAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
-            myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
         }
 
         protected override void Analyze(IMemberOwnerDeclaration element, ElementProblemAnalyzerData data,
@@ -67,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     // Only one function, mark it as a unity function, even if it's not an exact match
                     // We'll let other inspections handle invalid signatures
                     var method = candidates[0].Method;
-                    myImplicitUsageHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(consumer, method, function);
+                    PutIconToCustomData( method, data);
                     AddMethodSignatureInspections(consumer, method, function, candidates[0].Match);
                 }
                 else
@@ -80,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     {
                         if (candidate.Match == MethodSignatureMatch.ExactMatch)
                         {
-                            myImplicitUsageHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(consumer, candidate.Method, function);
+                            PutIconToCustomData(candidate.Method, data);
                             hasExactMatch = true;
                             duplicates.Add(candidate.Method);
                         }
@@ -106,11 +103,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         foreach (var candidate in candidates)
                         {
                             var method = candidate.Method;
-                            myImplicitUsageHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(consumer, method, function);
+                            PutIconToCustomData(method, data);
                             AddMethodSignatureInspections(consumer, method, function, candidate.Match);
                         }
                     }
                 }
+            }
+        }
+
+        private void PutIconToCustomData(IMethod method, ElementProblemAnalyzerData data)
+        {
+            lock (mySyncObject)
+            {   
+                var daemon = data.TryGetDaemonProcess();
+                if (daemon == null)
+                    return;
+                
+                var customData = daemon.CustomData.GetOrCreateDataNoLock(UnityEventFunctionNodeKey, () => new HashSet<IMethod>());
+                customData.Add(method);
             }
         }
 
