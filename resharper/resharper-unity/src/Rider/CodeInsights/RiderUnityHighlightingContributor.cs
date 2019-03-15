@@ -21,7 +21,9 @@ using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -97,17 +99,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             
             var iconId = isIconHot ? InsightUnityIcons.InsightHot.Id : InsightUnityIcons.InsightUnity.Id;
             consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                displayName, displayName, codeInsightsProvider, declaredElement,
+                displayName, tooltip, codeInsightsProvider, declaredElement,
                 myIconHost.Transform(iconId), CreateBulbItemsForUnityDeclaration(element), extraActions));
         }
 
-        public override IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api,
-            ITextControl textControl)
+        public override string GetMessageForUnityEventFunction(UnityEventFunction eventFunction)
+        {
+            return eventFunction.Description ?? "Unity event function";
+        }
+
+        public override IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api, 
+            AssetSerializationMode assetSerializationMode, ITextControl textControl)
         {
             var declaredElement = declaration.DeclaredElement;
-            if (CanHaveAnyUsagesInUnity(declaredElement, api))
+            if (ShowUsagesInUnityBulbAction.IsAvailableFor(declaredElement, api))
             {
-                var action = new UnityFindUsagesNavigationAction(declaredElement.NotNull("declaredElement != null"),
+                var action = new ShowUsagesInUnityBulbAction(declaredElement.NotNull("declaredElement != null"), assetSerializationMode,
                     declaration.GetSolution().GetComponent<UnityEditorFindUsageResultCreator>(), myConnectionTracker);
                 return new[]
                 {
@@ -122,47 +129,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             return EmptyList<BulbMenuItem>.Instance;
         }
 
-        private bool CanHaveAnyUsagesInUnity(IDeclaredElement declaredElement, UnityApi api)
-        {
-            if (declaredElement == null)
-                return false;
-            if (declaredElement is IMethod method && !api.IsEventFunction(method) &&
-                !api.IsUnityECSType(method.GetContainingType()))
-                return true;
 
-            if (declaredElement is IClass type && !api.IsUnityECSType(type))
-                return true;
-
-            return false;
-        }
-
-        internal class UnityFindUsagesNavigationAction : BulbActionBase
-        {
-            private readonly IDeclaredElement myDeclaredElement;
-            private readonly UnityEditorFindUsageResultCreator myCreator;
-            [NotNull] private readonly ConnectionTracker myTracker;
-
-            public UnityFindUsagesNavigationAction([NotNull] IDeclaredElement method,
-                [NotNull] UnityEditorFindUsageResultCreator creator, [NotNull] ConnectionTracker tracker)
-            {
-                myDeclaredElement = method;
-                myCreator = creator;
-                myTracker = tracker;
-            }
-
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution,
-                IProgressIndicator progress)
-            {
-                if (!myTracker.IsConnectionEstablished())
-                {
-                    return textControl => ShowTooltip(textControl, "Unity is not running");
-                }
-
-                myCreator.CreateRequestToUnity(myDeclaredElement, null, true);
-                return null;
-            }
-
-            public override string Text => "Show usages in Unity";
-        }
     }
 }

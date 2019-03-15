@@ -25,7 +25,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 return null;
 
             var declaredElement = field.DeclaredElement;
-            if (myUnityApi.IsSerialisedField(declaredElement) || myUnityApi.IsInjectedField(declaredElement))
+            
+            if (myUnityApi.IsSerialisedField(declaredElement) && (
+                    myUnityApi.IsDescendantOfMonoBehaviour(declaredElement?.GetContainingType()) ||
+                    myUnityApi.IsDescendantOfScriptableObject(declaredElement?.GetContainingType())
+                )
+                || myUnityApi.IsInjectedField(declaredElement))
             {
                 myImplicitUsageHighlightingContributor.AddUnityImplicitFieldUsage(consumer, field,
                     "This field is initialised by Unity", "Set by Unity", kind);

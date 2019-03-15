@@ -7,6 +7,7 @@ using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityHost myUnityHost;
         private readonly FileSystemPath mySolutionDirectoryPath;
 
-        public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks, 
+        public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks,
             RiderBackgroundTaskHost backgroundTaskHost, UnitySceneProcessor sceneProcessor, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory)
         {
             myLifetime = lifetime;
@@ -214,22 +215,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public void Complete()
             {
-                if (myConsumer.Result.Count == 0)
-                    return;
-                
                 myShellLocks.Tasks.StartNew(myLifetimeDef.Lifetime, Scheduling.MainGuard, () =>
                 {
-                    if (myFocusUnity)
-                        UnityFocusUtil.FocusUnity(myUnityHost.GetValue(t => t.UnityProcessId.Value));
+                    if (myConsumer.Result.Count != 0)
+                    {
 
-                    if (mySelected != null)
-                        myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(mySelected));
-                    myUnityHost.PerformModelAction(t =>
-                        t.FindUsageResults.Fire(new FindUsageResult(myDisplayName, myConsumer.Result.ToArray())));
-                    
+                        if (myFocusUnity)
+                            UnityFocusUtil.FocusUnity(myUnityHost.GetValue(t => t.UnityProcessId.Value));
+
+                        if (mySelected != null)
+                            myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(mySelected));
+                        myUnityHost.PerformModelAction(t =>
+                            t.FindUsageResults.Fire(new FindUsageResult(myDisplayName, myConsumer.Result.ToArray())));
+
+                    }
+    
                     myLifetimeDef.Terminate();
                 });
-
             }
 
             public void Error(string message)

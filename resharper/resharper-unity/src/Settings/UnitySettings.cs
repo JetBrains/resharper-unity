@@ -26,6 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "Should yaml heuristic be applied?")]
         public bool ShouldApplyYamlHugeFileHeuristic;
+        
+        [SettingsEntry(true, "Is asset mode notification enabled?")]
+        public bool IsAssetModeNotificationEnabled;
 
         [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of YAML files for Unity")]
         public bool IsYamlParsingEnabled;

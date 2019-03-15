@@ -12,10 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     public class UnityHighlightingStage : UnityHighlightingAbstractStage
     {
         public UnityHighlightingStage(IEnumerable<IUnityDeclarationHiglightingProvider> higlightingProviders,
-            UnityApi api, UnitySolutionTracker solutionTracker,
-            UnityHighlightingContributor unityHighlightingContributor, SolutionAnalysisService swa,
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer)
-            : base(higlightingProviders, api, solutionTracker, unityHighlightingContributor, swa, analyzer)
+            UnityApi api, UnityHighlightingContributor unityHighlightingContributor)
+            : base(higlightingProviders, api, unityHighlightingContributor)
         {
         }
     }

@@ -36,11 +36,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     myContributor.AddUnityImplicitClassUsage(consumer, element,
                         "Unity entity component system object", "Unity ECS", kind);
                 }
-                else if (myUnityApi.IsSerializableType(typeElement))
-                {
-                    myContributor.AddUnityImplicitClassUsage(consumer, element,
-                        "Unity custom serializable type", "Unity serializable", kind);
-                }
 
                 return typeElement;
             }
