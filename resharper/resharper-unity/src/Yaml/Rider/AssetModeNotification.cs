@@ -11,22 +11,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
     [SolutionComponent]
     public class AssetModeNotification
     {
-        public AssetModeNotification(UnitySolutionTracker solutionTracker, AssetSerializationMode assetSerializationMode,
-            ISettingsStore settingsStore, UnityHost unityHost)
+        public AssetModeNotification(UnitySolutionTracker solutionTracker, AssetSerializationMode assetSerializationMode, UnityHost unityHost)
         {
             if (!solutionTracker.IsUnityProject.HasTrueValue())
                 return;
 
-            var settings = settingsStore.BindToContextTransient(ContextRange.ApplicationWide);
-            var enabled = settings.GetValue((UnitySettings key) => key.IsAssetModeNotificationEnabled);
-
-            if (enabled)
+            if (!assetSerializationMode.IsForceText)
             {
-                if (!assetSerializationMode.IsForceText)
-                {
-                    settings.SetValue((UnitySettings key) => key.IsAssetModeNotificationEnabled, false);
-                    unityHost.PerformModelAction(t => t.NotifyAssetModeForceText());
-                }
+                unityHost.PerformModelAction(t => t.NotifyAssetModeForceText());
             }
         }
     }

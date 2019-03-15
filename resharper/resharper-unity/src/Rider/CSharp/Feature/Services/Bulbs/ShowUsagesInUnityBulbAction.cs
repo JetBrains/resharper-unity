@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.Bulbs
             
             if (!myAssetSerializationMode.IsForceText)
             {
-                return textControl => ShowTooltip(textControl, "Feature is unavailable when the Unity asset serialisation mode is not set to “Force Text");
+                return textControl => ShowTooltip(textControl, "Feature is unavailable when the Unity asset serialisation mode is not set to 'Force Text'");
             }
             
             if (!myTracker.IsConnectionEstablished())
