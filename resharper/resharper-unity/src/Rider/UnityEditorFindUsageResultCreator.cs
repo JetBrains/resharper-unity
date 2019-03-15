@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly FileSystemPath mySolutionDirectoryPath;
 
         public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks,
-            RiderBackgroundTaskHost backgroundTaskHost, UnitySceneProcessor sceneProcessor, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory)
+            UnitySceneProcessor sceneProcessor, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory, [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
         {
             myLifetime = lifetime;
             mySolution = solution;
@@ -67,18 +67,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var lifetimeDef = myLifetime.CreateNested();
             var pi = new ProgressIndicator(myLifetime);
-            
-            var task = RiderBackgroundTaskBuilder.Create()
-                .WithTitle("Finding usages in Unity for: " + declaredElement.ShortName)
-                .AsIndeterminate()
-                .AsCancelable(() =>
-                {
-                    pi.Cancel();
-                })
-                .Build();
+            if (myBackgroundTaskHost != null)
+            {
+                var task = RiderBackgroundTaskBuilder.Create()
+                    .WithTitle("Finding usages in Unity for: " + declaredElement.ShortName)
+                    .AsIndeterminate()
+                    .AsCancelable(() => { pi.Cancel(); })
+                    .Build();
 
-            myBackgroundTaskHost.AddNewTask(lifetimeDef.Lifetime, task);
-            
+                myBackgroundTaskHost.AddNewTask(lifetimeDef.Lifetime, task);
+            }
+
             myLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, () =>
             {
                 using (ReadLockCookie.Create())
