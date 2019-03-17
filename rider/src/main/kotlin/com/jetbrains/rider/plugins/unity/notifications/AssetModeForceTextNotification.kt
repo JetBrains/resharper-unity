@@ -12,7 +12,7 @@ import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.plugins.unity.UnityHost
 import javax.swing.event.HyperlinkEvent
 
-class AssetModeForceTextNotification(private val propertiesComponent: PropertiesComponent, project: Project, private val unityHost: UnityHost): LifetimedProjectComponent(project) {
+class AssetModeForceTextNotification(private val propertiesComponent: PropertiesComponent, project: Project, unityHost: UnityHost): LifetimedProjectComponent(project) {
 
     companion object {
         private const val settingName = "do_not_show_unity_asset_mode_notification"
@@ -32,7 +32,7 @@ class AssetModeForceTextNotification(private val propertiesComponent: Properties
         val message = """Some advanced integration features are unavailable when the Unity asset serialisation mode is not set to “Force Text”. Enable text serialisation to allow Rider to learn more about the structure of your scenes and assets.
             <ul style="margin-left:10px">
               <a href="LearnMoreNavigateAction">Learn more</a>
-              <a href="doNotShow">Do not show</a> this notification for this solution. <a href="learnMore">Learn more</a>
+              <a href="doNotShow">Do not show</a> this notification for this solution.
             </ul>
             """
         val assetModeNotification = Notification(notificationGroupId.displayId, "Recommend switching to text asset serialisation mode", message, NotificationType.WARNING)
