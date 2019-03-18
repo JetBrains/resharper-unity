@@ -7,7 +7,6 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>UNITY_4_7</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
