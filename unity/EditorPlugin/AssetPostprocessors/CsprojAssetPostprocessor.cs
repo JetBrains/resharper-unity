@@ -494,6 +494,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         if (ourApiCompatibilityLevel == APICompatibilityLevelNet20Subset) // ApiCompatibilityLevel.NET_2_0_Subset
           mask = "unity";
       }
+
+      if (!monoDir.Exists)
+        return null;
       
       var apiDir = monoDir.GetDirectories(mask).LastOrDefault(); // take newest
       if (apiDir != null)

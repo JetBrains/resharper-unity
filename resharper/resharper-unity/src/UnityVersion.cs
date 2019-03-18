@@ -194,6 +194,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static Version GetVersionFromInfoPlist(FileSystemPath infoPlistPath)
         {
+            if (!infoPlistPath.ExistsFile)
+                return null;
+            
             var docs = XDocument.Load(infoPlistPath.FullPath);
             var keyValuePairs = docs.Descendants("dict")
                 .SelectMany(d => d.Elements("key").Zip(d.Elements().Where(e => e.Name != "key"), (k, v) => new { Key = k, Value = v }))

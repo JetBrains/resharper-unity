@@ -173,8 +173,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                     var infoPlistPath = filePath.Combine("../../Info.plist");
                     if (!infoPlistPath.ExistsFile)
                         infoPlistPath = filePath.Combine("../../../Info.plist");
-                    if (!infoPlistPath.ExistsFile)
-                        return null;
                     return UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
                 }
             }
