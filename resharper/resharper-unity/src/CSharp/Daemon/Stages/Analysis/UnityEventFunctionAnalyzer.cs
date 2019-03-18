@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     // Only one function, mark it as a unity function, even if it's not an exact match
                     // We'll let other inspections handle invalid signatures
                     var method = candidates[0].Method;
-                    PutIconToCustomData( method, data);
+                    PutEventToCustomData( method, data);
                     AddMethodSignatureInspections(consumer, method, function, candidates[0].Match);
                 }
                 else
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     {
                         if (candidate.Match == MethodSignatureMatch.ExactMatch)
                         {
-                            PutIconToCustomData(candidate.Method, data);
+                            PutEventToCustomData(candidate.Method, data);
                             hasExactMatch = true;
                             duplicates.Add(candidate.Method);
                         }
@@ -103,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         foreach (var candidate in candidates)
                         {
                             var method = candidate.Method;
-                            PutIconToCustomData(method, data);
+                            PutEventToCustomData(method, data);
                             AddMethodSignatureInspections(consumer, method, function, candidate.Match);
                         }
                     }
@@ -111,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
         }
 
-        private void PutIconToCustomData(IMethod method, ElementProblemAnalyzerData data)
+        private void PutEventToCustomData(IMethod method, ElementProblemAnalyzerData data)
         {
             lock (mySyncObject)
             {   

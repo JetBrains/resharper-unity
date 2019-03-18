@@ -28,8 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 : element.DeclaredElement as IMethod;
             if (declaredElement != null && myCache.IsEventHandler(declaredElement))
             {
-                myImplicitUsageHighlightingContributor.AddUnityEventHandler(consumer, element, "Unity event handler",
-                    element is IMethodDeclaration ? "Event function" : "Implicit usage", kind);
+                myImplicitUsageHighlightingContributor.AddUnityEventHandler(consumer, element as ICSharpDeclaration, "Unity event handler",
+                    element is IMethodDeclaration ? "Event handler" : "Implicit usage", kind);
                 return declaredElement;
             }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
-using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
@@ -23,15 +22,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     {
         protected readonly IEnumerable<IUnityDeclarationHiglightingProvider> HiglightingProviders;
         protected readonly UnityApi API;
-        private readonly UnitySolutionTracker mySolutionTracker;
         protected readonly UnityHighlightingContributor UnityHighlightingContributor;
 
-        public UnityHighlightingAbstractStage(IEnumerable<IUnityDeclarationHiglightingProvider> higlightingProviders, UnityApi api, UnitySolutionTracker solutionTracker,
-            UnityHighlightingContributor unityHighlightingContributor, SolutionAnalysisService swa, PerformanceCriticalCodeCallGraphAnalyzer analyzer)
+        public UnityHighlightingAbstractStage(IEnumerable<IUnityDeclarationHiglightingProvider> higlightingProviders, UnityApi api,
+            UnityHighlightingContributor unityHighlightingContributor)
         {
             HiglightingProviders = higlightingProviders;
             API = api;
-            mySolutionTracker = solutionTracker;
             UnityHighlightingContributor = unityHighlightingContributor;
         }
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
