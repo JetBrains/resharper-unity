@@ -7,6 +7,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>UNITY_2017_3</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
