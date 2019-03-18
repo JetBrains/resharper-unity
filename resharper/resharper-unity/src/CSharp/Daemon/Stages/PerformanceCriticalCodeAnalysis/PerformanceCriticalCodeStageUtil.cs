@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (knownCostlyMethods != null && knownCostlyMethods.Contains(shortName))
                 return true;
 
-            return clrTypeName.Equals(KnownTypes.GameObject) && shortName.Equals("AddComponent") && invocationExpression.TypeArguments.Count == 1;
+            return clrTypeName.Equals(KnownTypes.GameObject) && shortName.Equals("AddComponent");
         }
 
         public static bool IsCameraMainUsage(IReferenceExpression referenceExpression)

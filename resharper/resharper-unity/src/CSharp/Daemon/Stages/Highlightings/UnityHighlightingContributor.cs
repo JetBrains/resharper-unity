@@ -153,6 +153,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 
         public IEnumerable<BulbMenuItem> CreateBulbItemsForUnityDeclaration(IDeclaration declaration)
         {
+            if (!declaration.IsValid())
+                return EmptyList<BulbMenuItem>.Enumerable;
+            
             var unityApi = Solution.GetComponent<UnityApi>();
             var assetSerializationMode = Solution.GetComponent<AssetSerializationMode>();
             var textControl = TextControlManager.LastFocusedTextControl.Value;

@@ -510,7 +510,7 @@
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
-  <Warning name="UnityObjectNullPropagation" configurableSeverity="Unity.NoNullPropogation">
+  <Warning name="UnityObjectNullPropagation" configurableSeverity="Unity.NoNullPropagation">
     <Parameter type="IConditionalAccessExpression" name="expression" />
     <Message value="'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />
     <Range>Expression.GetHighlightingRange()</Range>
