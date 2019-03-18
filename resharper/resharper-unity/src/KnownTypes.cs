@@ -18,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName ImageEffectOpaque = new ClrTypeName("UnityEngine.ImageEffectOpaque");
         public static readonly IClrTypeName ImageEffectTransformsToLDR = new ClrTypeName("UnityEngine.ImageEffectTransformsToLDR");
         public static readonly IClrTypeName Material = new ClrTypeName("UnityEngine.Material");
+        public static readonly IClrTypeName MaterialPropertyBlock = new ClrTypeName("UnityEngine.MaterialPropertyBlock");
         public static readonly IClrTypeName MonoBehaviour = new ClrTypeName("UnityEngine.MonoBehaviour");
         public static readonly IClrTypeName Object = new ClrTypeName("UnityEngine.Object");
         public static readonly IClrTypeName Physics = new ClrTypeName("UnityEngine.Physics");
