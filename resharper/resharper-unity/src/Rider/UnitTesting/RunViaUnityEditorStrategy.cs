@@ -14,6 +14,7 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
+using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -106,12 +107,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var hostId = run.HostController.HostId;
             if (hostId == WellKnownHostProvidersIds.DebugProviderId)
             {
-                run.Launch.Output.Error(
-                    "Starting Unity tests from 'Debug' is currently unsupported. Please attach to editor and use 'Run'.");
-                return Task.FromResult(false);
+                mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "AttachDebuggerToUnityEditor", () =>
+                {
+                    var task = myUnityHost.GetValue(model =>
+                        model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
+                });
             }
-
-            if (hostId != WellKnownHostProvidersIds.RunProviderId)
+            else if (hostId != WellKnownHostProvidersIds.RunProviderId)
             {
                 run.Launch.Output.Error(
                     $"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");

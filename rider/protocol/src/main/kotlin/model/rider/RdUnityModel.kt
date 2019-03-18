@@ -90,5 +90,6 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("unityProcessId", int)
 
         sink("onEditorModelOutOfSync", void)
+        callback("attachDebuggerToUnityEditor", void, bool)
     }
 }
