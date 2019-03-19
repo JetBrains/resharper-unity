@@ -131,7 +131,7 @@ object EditorPluginModel: Root() {
         property("editorLogPath", string)
         property("playerLogPath", string)
 
-        sink("notifyIsRecompileAndContinuePlaying", string)
+        property("scriptChangesDuringPlayTabName", string.nullable)
         source("setScriptCompilationDuringPlay", int)
     }
 }

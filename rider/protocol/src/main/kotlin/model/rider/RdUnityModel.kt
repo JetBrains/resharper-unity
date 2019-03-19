@@ -42,6 +42,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
     init {
         sink("activateRider", void)
         sink("activateUnityLogView", void)
+        sink("showInstallMonoDialog", void)
 
         property("editorState", EditorState)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
@@ -80,7 +81,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("hasUnityReference", bool)
 
         sink("startUnity", void)
-        sink("notifyIsRecompileAndContinuePlaying", string)
+        property("scriptChangesDuringPlayTabName", string.nullable)
         sink("notifyYamlHugeFiles", void)
         sink("notifyAssetModeForceText", void)
         source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)

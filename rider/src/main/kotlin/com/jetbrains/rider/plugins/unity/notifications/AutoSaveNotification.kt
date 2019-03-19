@@ -9,12 +9,17 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
+import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.ScriptCompilationDuringPlay
 import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.projectView.SolutionLifecycleHost
+import com.jetbrains.rider.test.framework.getLoadedProjects
 import javax.swing.event.HyperlinkEvent
 
-class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, project: Project, private val unityHost: UnityHost): LifetimedProjectComponent(project) {
+class AutoSaveNotification(private val propertiesComponent: PropertiesComponent, project: Project, private val unityHost: UnityHost,
+                           solutionLifecycleHost: SolutionLifecycleHost)
+    : LifetimedProjectComponent(project) {
 
     private var firstRun = true
 
@@ -24,8 +29,10 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
     }
 
     init {
-        unityHost.model.notifyIsRecompileAndContinuePlaying.adviseNotNullOnce(componentLifetime){
-            showNotificationIfNeeded(it)
+        solutionLifecycleHost.isBackendLoaded.whenTrue(componentLifetime) {
+            unityHost.model.scriptChangesDuringPlayTabName.adviseNotNullOnce(componentLifetime){
+                showNotificationIfNeeded(it)
+            }
         }
     }
 
@@ -34,6 +41,8 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
         firstRun = false
 
         if (propertiesComponent.getBoolean(settingName)) return
+
+        if (!getLoadedProjects(project).any()) return // avoid showing, when non of the projects is loaded
 
         val message = """Unity is configured to compile scripts while in play mode (see $tabName tab in Unity’s preferences). Rider's auto save may cause loss of state in the running game.
             Change Unity to:

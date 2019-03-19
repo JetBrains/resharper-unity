@@ -208,8 +208,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
                     editor.ApplicationContentsPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
-                    editor.NotifyIsRecompileAndContinuePlaying.AdviseOnce(lifetime,
-                        s => myHost.PerformModelAction(a => a.NotifyIsRecompileAndContinuePlaying(s)));
+                    editor.ScriptChangesDuringPlayTabName.AdviseNotNull(lifetime,
+                        s => myHost.PerformModelAction(a => a.ScriptChangesDuringPlayTabName.Set(s)));
 
                     BindPluginPathToSettings(lf, editor);
 
