@@ -66,8 +66,6 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID)
             return UnityAttachToEditorProfileState(this, environment)
 
-
-
         return null
     }
 

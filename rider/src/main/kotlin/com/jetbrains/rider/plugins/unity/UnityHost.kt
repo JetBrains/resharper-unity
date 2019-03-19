@@ -4,7 +4,9 @@ import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rd.framework.impl.RdTask
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -47,11 +49,19 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
         }
 
         model.attachDebuggerToUnityEditor.set { _, _ ->
+            val sessions = XDebuggerManager.getInstance(project).getDebugSessions()
+            Logger.getInstance(UnityHost::class.java).info(sessions.toString())
             val task = RdTask<Boolean>()
-            UnityAttachToEditorRunConfiguration
+
             val configuration = runManager.findConfigurationByTypeAndName(UnityDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
             if (configuration != null) {
-                ProgramRunnerUtil.executeConfiguration(configuration, DefaultDebugExecutor.getDebugExecutorInstance())
+                val unityAttachConfiguration = configuration.configuration as UnityAttachToEditorRunConfiguration
+
+                val isAttached = sessions.any { it.runProfile !=null && it.runProfile is UnityAttachToEditorRunConfiguration && (it.runProfile as UnityAttachToEditorRunConfiguration).pid == unityAttachConfiguration.pid }
+                if (!isAttached) {
+                    
+                    ProgramRunnerUtil.executeConfiguration(configuration, DefaultDebugExecutor.getDebugExecutorInstance())
+                }
                 task.set(true)
             }
             else
