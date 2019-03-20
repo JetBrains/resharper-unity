@@ -5,6 +5,8 @@
     <RootNamespace>JetBrains.ReSharper.Plugins.Yaml.Tests</RootNamespace>
     <LangVersion>7.2</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER</DefineConstants>
