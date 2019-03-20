@@ -13,7 +13,9 @@ import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.ScriptCompilationDuringPlay
 import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
+import com.jetbrains.rider.projectView.nodes.findProjects
 import com.jetbrains.rider.test.framework.getLoadedProjects
 import javax.swing.event.HyperlinkEvent
 
@@ -42,7 +44,8 @@ class AutoSaveNotification(private val propertiesComponent: PropertiesComponent,
 
         if (propertiesComponent.getBoolean(settingName)) return
 
-        if (!getLoadedProjects(project).any()) return // avoid showing, when non of the projects is loaded
+        // avoid showing, when non of the projects is loaded
+        if (!ProjectModelViewHost.getInstance(project).findProjects().any()) return
 
         val message = """Unity is configured to compile scripts while in play mode (see $tabName tab in Unity’s preferences). Rider's auto save may cause loss of state in the running game.
             Change Unity to:
