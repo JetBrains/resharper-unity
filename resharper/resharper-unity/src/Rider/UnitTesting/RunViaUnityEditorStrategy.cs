@@ -103,14 +103,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 return Task.FromResult(false);
             }
+            
+            var tcs = new TaskCompletionSource<bool>();
+            run.Launch.PutData(ourLaunchedInUnityKey, "smth");
+            run.PutData(ourCompletionSourceKey, tcs);
 
             var hostId = run.HostController.HostId;
             if (hostId == WellKnownHostProvidersIds.DebugProviderId)
             {
+                
                 mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "AttachDebuggerToUnityEditor", () =>
                 {
                     var task = myUnityHost.GetValue(model =>
                         model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
+                    task.Result.AdviseNotNull(run.Lifetime, result =>
+                    {
+                        if (!result.Result)
+                            tcs.SetException(new Exception("Unable to attach debugger."));
+                        else
+                            RefreshAndRunTask(run, tcs);
+                    });
                 });
             }
             else if (hostId != WellKnownHostProvidersIds.RunProviderId)
@@ -119,11 +131,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     $"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
                 return Task.FromResult(false);
             }
+            else
+                RefreshAndRunTask(run, tcs);
 
-            var tcs = new TaskCompletionSource<bool>();
-            run.Launch.PutData(ourLaunchedInUnityKey, "smth");
-            run.PutData(ourCompletionSourceKey, tcs);
+            return tcs.Task;
+        }
 
+        private void RefreshAndRunTask(IUnitTestRun run, TaskCompletionSource<bool> tcs)
+        {
             myLogger.Verbose("Before calling Refresh.");
             Refresh(mySolution.Locks, run.Lifetime).GetAwaiter().OnCompleted(() =>
             {
@@ -142,12 +157,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         if (!result.Result)
                         {
                             tcs.SetException(new Exception("There are errors during compilation in Unity."));
-                            
-                            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RunViaUnityEditorStrategy compilation failed", () =>
-                            {
-                                var notification = new NotificationModel("Compilation failed", "Script compilation in Unity failed, so tests were not started.", true, RdNotificationEntryType.INFO);
-                                myNotificationsModel.Notification(notification);
-                            });
+
+                            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RunViaUnityEditorStrategy compilation failed",
+                                () =>
+                                {
+                                    var notification = new NotificationModel("Compilation failed",
+                                        "Script compilation in Unity failed, so tests were not started.", true,
+                                        RdNotificationEntryType.INFO);
+                                    myNotificationsModel.Notification(notification);
+                                });
                             myUnityHost.PerformModelAction(model => model.ActivateUnityLogView());
                         }
                         else
@@ -172,10 +190,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             });
                         }
                     });
-                });    
+                });
             });
-
-            return tcs.Task;
         }
 
         private async Task Refresh(IShellLocks locks, Lifetime lifetime)
