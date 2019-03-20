@@ -75,6 +75,8 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
                                debugProcess.debuggerInitializingState.advise(lt){
                                    if (it == DebuggerInitializingState.Initialized)
                                        task.set(true)
+                                   if (it == DebuggerInitializingState.Canceled)
+                                       task.set(false)
                                }
 
                            }
