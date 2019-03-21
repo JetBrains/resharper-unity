@@ -23,7 +23,7 @@ class DefaultRunConfigurationGenerator(project: Project, runManager: RunManager,
             // Clean up the renamed "attach and play" configuration from 2018.2 EAP1-3
             // (Was changed from a separate configuration type to just another factory under "Attach to Unity")
             val toRemove = runManager.allSettings.filter {
-                it.type is UnknownConfigurationType && it.name == "Attach to Unity Editor & Play"
+                it.type is UnknownConfigurationType && it.name == ATTACH_AND_PLAY_CONFIGURATION_NAME
             }
             for (value in toRemove) {
                 runManager.removeConfiguration(value)
