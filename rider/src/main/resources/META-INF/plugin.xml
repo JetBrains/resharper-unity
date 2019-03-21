@@ -86,6 +86,7 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OutOfSyncEditorNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.YamlHugeFileNotification</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.RiderUnitySettings</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.UnityHost</implementation-class></component>
@@ -94,6 +95,7 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification</implementation-class></component>
   </project-components>
 
   <actions>
@@ -110,7 +112,6 @@
         <action class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" id="SwitchUIModeAction" />
         <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
         <action class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" id="InstallEditorPluginAction" />
-
       </group>
 
       <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />

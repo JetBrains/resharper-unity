@@ -1,8 +1,10 @@
+using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
@@ -25,15 +27,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 return null;
 
             var declaredElement = field.DeclaredElement;
-            if (myUnityApi.IsSerialisedField(declaredElement) || myUnityApi.IsInjectedField(declaredElement))
+            if (declaredElement == null)
+                return null;
+
+            bool isSerializedField = myUnityApi.IsSerialisedField(declaredElement);
+            if (isSerializedField && (
+                    myUnityApi.IsDescendantOfMonoBehaviour(declaredElement.GetContainingType()) ||
+                    myUnityApi.IsDescendantOfScriptableObject(declaredElement.GetContainingType())
+                )
+                || myUnityApi.IsInjectedField(declaredElement))
             {
                 myImplicitUsageHighlightingContributor.AddUnityImplicitFieldUsage(consumer, field,
                     "This field is initialised by Unity", "Set by Unity", kind);
 
                 return declaredElement;
             }
-            return null;
 
+            if (isSerializedField && declaredElement.GetAttributeInstances(false)
+                    .All(t => !t.GetClrName().Equals(KnownTypes.SerializeField)))
+            {
+                myImplicitUsageHighlightingContributor.AddUnityImplicitFieldUsage(consumer, field,
+                    "This field is serialized by Unity", "Serializable", kind);
+                return declaredElement;
+            }
+            
+            return null;
         }
     }
 }

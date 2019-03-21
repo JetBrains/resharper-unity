@@ -35,10 +35,12 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     override var port: Int = -1
     override var address: String = "127.0.0.1"
     var pid: Int? = null
+    var isUserSelectedPid = false
 
     override fun clone(): RunConfiguration {
         val configuration = super.clone() as UnityAttachToEditorRunConfiguration
         configuration.pid = pid
+        configuration.isUserSelectedPid = isUserSelectedPid
         return configuration
     }
 
@@ -83,7 +85,12 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
         val processList = OSProcessUtil.getProcessList()
 
         // We might have a pid from a previous run, but the editor might have died
-        pid = checkValidEditorInstance(pid, processList) ?: findUnityEditorInstance(processList)
+        pid = if (isUserSelectedPid) {
+            checkValidEditorInstance(pid, processList) ?: findUnityEditorInstance(processList)
+        } else {
+            findUnityEditorInstance(processList)
+        }
+
         if (pid == null)
             return false
 
@@ -92,6 +99,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     }
 
     private fun findUnityEditorInstance(processList: Array<ProcessInfo>): Int? {
+        isUserSelectedPid = false
         return findUnityEditorInstanceFromEditorInstanceJson(processList)
             ?: findUnityEditorInstanceFromProcesses(processList)
     }

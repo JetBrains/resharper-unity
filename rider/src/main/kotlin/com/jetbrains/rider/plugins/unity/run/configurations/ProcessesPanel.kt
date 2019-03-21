@@ -82,8 +82,10 @@ class ProcessesPanel : PanelWithButtons() {
 
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
             selectionModel.addListSelectionListener {
-                if (selectedRow > -1)
+                if (selectedRow > -1) {
                     vm.pid.value = vm.editorProcesses[selectedRow].pid
+                    vm.isUserSelectedPid.value = true
+                }
             }
 
             updateSelection(this)

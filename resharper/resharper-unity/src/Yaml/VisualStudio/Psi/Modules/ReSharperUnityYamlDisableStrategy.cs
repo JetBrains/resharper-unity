@@ -2,6 +2,7 @@ using JetBrains.Application.Notifications;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.VisualStudio.Psi.Modules
@@ -12,9 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.VisualStudio.Psi.Modules
         private readonly Lifetime myLifetime;
         private readonly UserNotifications myNotifications;
 
-        public ReSharperUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore,
+        public ReSharperUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches, ISettingsStore settingsStore,
                                                  UnityYamlSupport unityYamlSupport, UserNotifications notifications)
-            : base(lifetime, solution, settingsStore, unityYamlSupport)
+            : base(lifetime, solution, solutionCaches, settingsStore, unityYamlSupport)
         {
             myLifetime = lifetime;
             myNotifications = notifications;

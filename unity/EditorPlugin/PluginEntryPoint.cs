@@ -287,9 +287,9 @@ namespace JetBrains.Rider.Unity.Editor
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
-            model.NotifyIsRecompileAndContinuePlaying("General");
+            model.ScriptChangesDuringPlayTabName.Set("General");
           else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
-            model.NotifyIsRecompileAndContinuePlaying("Rider");
+            model.ScriptChangesDuringPlayTabName.Set("Rider");
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);

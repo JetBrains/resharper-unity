@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Help;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -52,20 +53,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         public virtual void AddUnityImplicitHighlightingForEventFunction(IHighlightingConsumer consumer, IMethod method,
             UnityEventFunction eventFunction, DaemonProcessKind kind)
         {
+            var message = GetMessageForUnityEventFunction(eventFunction);
+            foreach (var declaration in method.GetDeclarations())
+            {
+                if (declaration is ICSharpDeclaration cSharpDeclaration)
+                    AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, message, "Event function",
+                        kind);
+            }
+        }
+
+        public virtual string GetMessageForUnityEventFunction(UnityEventFunction eventFunction)
+        {
             var tooltip = "Unity event function";
             if (!string.IsNullOrEmpty(eventFunction.Description))
                 tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
             if (eventFunction.Coroutine)
                 tooltip += Environment.NewLine + "This function can be a coroutine.";
 
-            foreach (var declaration in method.GetDeclarations())
-            {
-                if (declaration is ICSharpDeclaration cSharpDeclaration)
-                    AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip, "Event function",
-                        kind);
-            }
+            return tooltip;
         }
-
+        
         public virtual void AddUnityImplicitClassUsage(IHighlightingConsumer consumer,
             IClassLikeDeclaration declaration, string tooltip, string displayName, DaemonProcessKind kind)
         {
@@ -84,11 +91,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             AddHighlightingWithConfigurableHighlighter(consumer, field, tooltip, displayName, kind);
         }
 
-        public virtual void AddUnityEventHandler(IHighlightingConsumer consumer, IDeclaration element, string tooltip,
+        public virtual void AddUnityEventHandler(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip,
             string displayName, DaemonProcessKind kind)
         {
-            if (element is ICSharpDeclaration cSharpDeclaration)
-                AddHighlightingWithConfigurableHighlighter(consumer, cSharpDeclaration, tooltip, displayName, kind);
+            AddHighlightingWithConfigurableHighlighter(consumer, element, tooltip, displayName, kind);
         }
 
         public virtual void AddHighlightingWithConfigurableHighlighter(IHighlightingConsumer consumer,
@@ -148,12 +154,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         public IEnumerable<BulbMenuItem> CreateBulbItemsForUnityDeclaration(IDeclaration declaration)
         {
             var unityApi = Solution.GetComponent<UnityApi>();
+            var assetSerializationMode = Solution.GetComponent<AssetSerializationMode>();
             var textControl = TextControlManager.LastFocusedTextControl.Value;
             if (textControl != null)
             {
                 var result = new List<BulbMenuItem>();
-                if (declaration is IClassLikeDeclaration classDeclaration &&
-                    !unityApi.IsUnityECSType(declaration.DeclaredElement as ITypeElement))
+                if (declaration is IClassLikeDeclaration classDeclaration && unityApi.IsUnityType(declaration.DeclaredElement as ITypeElement))
                 {
                     var fix = new GenerateUnityEventFunctionsFix(classDeclaration);
                     result.Add(
@@ -196,15 +202,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                     }
                 }
 
-                result.AddRange(CreateAdditionalMenuItem(declaration, unityApi, textControl));
+                result.AddRange(CreateAdditionalMenuItem(declaration, unityApi, assetSerializationMode, textControl));
                 return result;
             }
 
             return EmptyList<BulbMenuItem>.Enumerable;
         }
 
-        public virtual IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api,
-            ITextControl textControl)
+        // TODO, create provider for bulb actions 
+        public virtual IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api, 
+            AssetSerializationMode assetSerializationMode, ITextControl textControl)
         {
             return EmptyList<BulbMenuItem>.Enumerable;
         }

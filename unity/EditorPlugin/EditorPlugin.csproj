@@ -7,6 +7,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>UNITY_4_7</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.4.7.2f1" Version="2017.7.21" />
