@@ -1,6 +1,8 @@
 package com.jetbrains.rider.plugins.unity
 
+import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
+import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
 import com.intellij.xdebugger.XDebugProcess
@@ -20,7 +22,6 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
-import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
 import com.jetbrains.rider.projectView.solution
@@ -78,11 +79,10 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
                                    if (it == DebuggerInitializingState.Canceled)
                                        task.set(false)
                                }
-
                            }
                         }
                     })
-                    UnityRunUtil.attachToEditor(unityAttachConfiguration.pid!!, project)
+                    ProgramRunnerUtil.executeConfiguration(configuration, DefaultDebugExecutor.getDebugExecutorInstance())
                 } else
                     task.set(true)
             }
