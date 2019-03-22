@@ -77,6 +77,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
             return EmptyList<RelatedDeclaredElement>.InstanceList;
         }
 
+        public IEnumerable<FindResult> GetRelatedFindResults(IDeclaredElement element)
+        {
+            return EmptyList<FindResult>.InstanceList;
+        }
+
         public Tuple<ICollection<IDeclaredElement>, Predicate<IFindResultReference>, bool> GetDerivedFindRequest(IFindResultReference result)
         {
             return null;
