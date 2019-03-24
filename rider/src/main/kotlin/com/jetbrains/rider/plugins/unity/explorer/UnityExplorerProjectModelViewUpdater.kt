@@ -45,7 +45,7 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
         if (node?.descriptor is RdSolutionDescriptor || node?.descriptor is RdProjectDescriptor) {
             pane?.refresh(object : SolutionViewVisitor() {
                 override fun visit(node: AbstractTreeNode<*>): TreeVisitor.Action {
-                    if (node is UnityExplorerNode.AssetsRoot) {
+                    if (node is AssetsRoot) {
                         return TreeVisitor.Action.INTERRUPT
                     }
 

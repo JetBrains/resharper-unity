@@ -20,7 +20,7 @@ class ShowReferencePropertiesAction : AnAction("Properties"), DumbAware {
         EditPropertiesAction.showDialog(node)
     }
 
-    private fun getReference(e: AnActionEvent): UnityExplorerNode.ReferenceItem? {
+    private fun getReference(e: AnActionEvent): ReferenceItem? {
         return e.getData(UnityExplorer.SELECTED_REFERENCE_KEY)
     }
 }

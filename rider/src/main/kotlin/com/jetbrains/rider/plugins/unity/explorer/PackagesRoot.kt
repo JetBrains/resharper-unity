@@ -59,15 +59,8 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
 
         // We want the children to be file system folders and editable packages, which means embedded packages and local
         // packages. We've already added the embedded packages by including file system folders
-        val localPackages = packagesManager.localPackages
-        for (localPackage in localPackages) {
-            if (localPackage.packageFolder != null) {
-                children.add(PackageNode(project!!, packagesManager, localPackage.packageFolder, localPackage))
-            }
-            else {
-                children.add(UnknownPackageNode(project!!, localPackage))
-            }
-        }
+        packagesManager.localPackages.forEach { addPackage(children, it) }
+        packagesManager.unknownPackages.forEach { addPackage(children, it) }
 
         if (packagesManager.immutablePackages.any())
             children.add(0, ReadOnlyPackagesRoot(project!!, packagesManager))
@@ -88,6 +81,15 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
     // Required for "Locate in Solution Explorer" to work. If we return false, the solution view visitor stops walking.
     // True is effectively "maybe"
     override fun contains(file: VirtualFile) = true
+
+    private fun addPackage(children: MutableList<AbstractTreeNode<*>>, thePackage: PackageData) {
+        if (thePackage.packageFolder != null) {
+            children.add(PackageNode(project!!, packagesManager, thePackage.packageFolder, thePackage))
+        }
+        else {
+            children.add(UnknownPackageNode(project!!, thePackage))
+        }
+    }
 }
 
 class PackageNode(project: Project, private val packagesManager: PackagesManager, packageFolder: VirtualFile, private val packageData: PackageData)
@@ -162,19 +164,13 @@ class PackageNode(project: Project, private val packagesManager: PackagesManager
     }
 
     override fun compareTo(other: AbstractTreeNode<*>): Int {
-        if (other is PackageNode) {
-            return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
-        }
-        else if (other is ReadOnlyPackagesRoot || other is BuiltinPackagesRoot) {
-            return 1
-        }
-        // Other is UnresolvedPackageNode
-        return -1
+        // Compare by name, rather than ID
+        return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
     }
 }
 
 class DependenciesRoot(project: Project, private val packagesManager: PackagesManager, private val packageData: PackageData)
-    : AbstractTreeNode<Any>(project, packageData), Comparable<AbstractTreeNode<*>> {
+    : AbstractTreeNode<Any>(project, packageData) {
 
     override fun update(presentation: PresentationData) {
         presentation.presentableText = "Dependencies"
@@ -188,12 +184,10 @@ class DependenciesRoot(project: Project, private val packagesManager: PackagesMa
         }
         return children
     }
-
-    override fun compareTo(other: AbstractTreeNode<*>) = -1
 }
 
 class DependencyItemNode(project: Project, private val packagesManager: PackagesManager, private val packageName: String, version: String)
-    : AbstractTreeNode<Any>(project, "$packageName@$version"), Comparable<AbstractTreeNode<*>> {
+    : AbstractTreeNode<Any>(project, "$packageName@$version") {
 
     init {
         myName = "$packageName@$version"
@@ -215,10 +209,6 @@ class DependencyItemNode(project: Project, private val packagesManager: Packages
         val packageData = packagesManager.getPackageData(packageName)
         if (packageData?.packageFolder == null) return
         project!!.navigateToSolutionView(packageData.packageFolder, requestFocus)
-    }
-
-    override fun compareTo(other: AbstractTreeNode<*>): Int {
-        return String.CASE_INSENSITIVE_ORDER.compare(this.name, other.name)
     }
 }
 
@@ -242,7 +232,7 @@ abstract class CompositeFolderRoot(project: Project, key: Any)
 }
 
 class ReadOnlyPackagesRoot(project: Project, private val packagesManager: PackagesManager)
-    : CompositeFolderRoot(project, key), Comparable<AbstractTreeNode<*>> {
+    : CompositeFolderRoot(project, key) {
 
     companion object {
         val key = Any()
@@ -272,12 +262,10 @@ class ReadOnlyPackagesRoot(project: Project, private val packagesManager: Packag
         }
         return children
     }
-
-    override fun compareTo(other: AbstractTreeNode<*>) = -1
 }
 
 class BuiltinPackagesRoot(project: Project, private val packagesManager: PackagesManager)
-    : CompositeFolderRoot(project, key), Comparable<AbstractTreeNode<*>> {
+    : CompositeFolderRoot(project, key) {
 
     companion object {
         val key = Any()
@@ -303,8 +291,6 @@ class BuiltinPackagesRoot(project: Project, private val packagesManager: Package
         }
         return children
     }
-
-    override fun compareTo(other: AbstractTreeNode<*>) = -1
 }
 
 // Represents a module, built in part of the Unity product. We show it as a single node with no children, unless we have
@@ -312,7 +298,7 @@ class BuiltinPackagesRoot(project: Project, private val packagesManager: Package
 // Note that a module can have dependencies. Perhaps we want to always show this as a folder, including the Dependencies
 // node?
 class BuiltinPackageNode(project: Project, private val packageData: PackageData)
-    : FileSystemNodeBase(project, packageData.packageFolder!!, listOf()), Comparable<AbstractTreeNode<*>> {
+    : FileSystemNodeBase(project, packageData.packageFolder!!, listOf()) {
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
 
@@ -367,22 +353,11 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
             presentation.tooltip = newTooltip
         }
     }
-
-    override fun compareTo(other: AbstractTreeNode<*>): Int {
-        if (other is BuiltinPackageNode) {
-            return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
-        }
-        else if (other is PackageNode) {
-            return 1
-        }
-        // other is UnknownPackageNode
-        return -1
-    }
 }
 
 // Note that this might get a PackageData with source == PackageSource.Unknown
 class UnknownPackageNode(project: Project, private val packageData: PackageData)
-    : AbstractTreeNode<Any>(project, packageData), Comparable<AbstractTreeNode<*>> {
+    : AbstractTreeNode<Any>(project, packageData) {
 
     init {
         icon = when (packageData.source) {
@@ -401,14 +376,6 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
         if (packageData.details.description.isNotEmpty()) {
             presentation.tooltip = packageData.details.description
         }
-    }
-
-    override fun compareTo(other: AbstractTreeNode<*>): Int {
-        if (other is UnknownPackageNode) {
-            return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
-        }
-        // other is PackageNode or BuiltinPackageNode
-        return 1
     }
 }
 

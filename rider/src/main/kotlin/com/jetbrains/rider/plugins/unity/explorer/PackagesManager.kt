@@ -87,7 +87,10 @@ class PackagesManager(private val project: Project) {
         get() = filterPackagesBySource(PackageSource.Local).toList()
 
     val immutablePackages: List<PackageData>
-        get() = packagesByCanonicalName.filterValues { !it.source.isEditable() }.values.toList()
+        get() = packagesByCanonicalName.filterValues { !it.source.isEditable() && it.source != PackageSource.Unknown }.values.toList()
+
+    val unknownPackages: List<PackageData>
+        get() = filterPackagesBySource(PackageSource.Unknown).toList()
 
     val hasBuiltInPackages: Boolean
         get() = filterPackagesBySource(PackageSource.BuiltIn).any()
@@ -201,43 +204,58 @@ class PackagesManager(private val project: Project) {
         // Order is important here. Embedded packages in the Packages folder take precedence over everything. Registry
         // packages are the most likely, and can't clash with other packages, so put them high up. The file: protocol is
         // used by local and can also be a protocol for git (although I can't get it to work), so check git first
-        return getEmbeddedPackage(packagesFolder, name)
+        return try {
+            getEmbeddedPackage(packagesFolder, name)
                 ?: getRegistryPackage(name, version, registry)
                 ?: getGitPackage(name, version, lockDetails)
                 ?: getLocalPackage(packagesFolder, name, version)
                 ?: getBuiltInPackage(name, version, builtInPackagesFolder)
                 ?: PackageData.unknown(name, version)
+        }
+        catch (throwable: Throwable) {
+            logger.error("Error resolving package", throwable)
+            PackageData.unknown(name, version)
+        }
     }
 
     private fun getLocalPackage(packagesFolder: VirtualFile, name: String, version: String): PackageData? {
 
-        // If it begins with file: it's a path to the package, either relative to the Packages folder or fully qualified
-        if (version.startsWith("file:")) {
-            return try {
-                val path = version.substring(5)
-                val packagesPath = Paths.get(packagesFolder.path)
-                val filePath = packagesPath.resolve(path)
-                val packageFolder = VfsUtil.findFile(filePath, true)
-                if (packageFolder != null && packageFolder.isDirectory) {
-                    getPackageDataFromFolder(name, packageFolder, PackageSource.Local)
-                } else {
-                    // It should be a local package, but it's broken
-                    PackageData.unknown(name, version)
-                }
-            } catch (throwable: Throwable) {
-                logger.error("Error finding local package", throwable)
-                null
-            }
+        if (!version.startsWith("file:")) {
+            return null
         }
-        return null
+
+        // We know this is a "file:" based package, so always return something. It can be resolved relative to the
+        // Packages folder, or as a fully qualified path
+        return try {
+            val path = version.substring(5)
+            val packagesPath = Paths.get(packagesFolder.path)
+            val filePath = packagesPath.resolve(path)
+            val packageFolder = VfsUtil.findFile(filePath, true)
+            if (packageFolder != null && packageFolder.isDirectory) {
+                getPackageDataFromFolder(name, packageFolder, PackageSource.Local)
+            } else {
+                // It should be a local package, but it's broken
+                PackageData.unknown(name, version)
+            }
+        } catch (throwable: Throwable) {
+            logger.error("Error resolving local package", throwable)
+            PackageData.unknown(name, version)
+        }
     }
 
     private fun getGitPackage(name: String, version: String, lockDetails: LockDetails?): PackageData? {
         if (lockDetails == null) return null
         if (lockDetails.revision == null || lockDetails.hash == null) return null
 
-        val packageFolder = project.refreshAndFindFile("Library/PackageCache/$name@${lockDetails.hash}")
-        return getPackageDataFromFolder(name, packageFolder, PackageSource.Git, GitDetails(version, lockDetails.revision, lockDetails.hash))
+        // If we have lockDetails, we know this is a git based package, so always return something
+        return try {
+            val packageFolder = project.refreshAndFindFile("Library/PackageCache/$name@${lockDetails.hash}")
+            getPackageDataFromFolder(name, packageFolder, PackageSource.Git, GitDetails(version, lockDetails.revision, lockDetails.hash))
+        }
+        catch (throwable: Throwable) {
+            logger.error("Error resolving git package", throwable)
+            PackageData.unknown(name, version)
+        }
     }
 
     private fun getEmbeddedPackage(packagesFolder: VirtualFile, name: String): PackageData? {
@@ -249,7 +267,10 @@ class PackagesManager(private val project: Project) {
         // Unity 2018.3 introduced an additional layer of caching, local to the project, so that any edits to the files
         // in the package only affect this project. This is primarily for the API updater, which would otherwise modify
         // files in the per-user cache
-        var packageFolder = project.refreshAndFindFile("Library/PackageCache/$name@$version")
+        // NOTE: We use findChild here because name/version might contain illegal chars, e.g. "https://" which will
+        // throw in refreshAndFindFile on Windows
+        val packageCacheFolder = project.refreshAndFindFile("Library/PackageCache")
+        var packageFolder = packageCacheFolder?.findChild("$name@$version")
         val packageData = getPackageDataFromFolder(name, packageFolder, PackageSource.Registry)
         if (packageData != null) return packageData
 
