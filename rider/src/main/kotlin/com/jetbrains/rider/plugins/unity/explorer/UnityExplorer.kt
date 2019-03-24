@@ -30,7 +30,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
 
         val Icon = UnityIcons.ToolWindows.UnityExplorer
         val IgnoredExtensions = hashSetOf("meta", "tmp")
-        val SELECTED_REFERENCE_KEY: DataKey<UnityExplorerNode.ReferenceItem> = DataKey.create("selectedReference")
+        val SELECTED_REFERENCE_KEY: DataKey<ReferenceItem> = DataKey.create("selectedReference")
 
         fun getInstance(project: Project) = tryGetInstance(project)!!
 
@@ -51,7 +51,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
 
     override fun getData(dataId: String): Any? {
         return when {
-            SELECTED_REFERENCE_KEY.`is`(dataId) -> getSelectedNodes().filterIsInstance<UnityExplorerNode.ReferenceItem>().singleOrNull()
+            SELECTED_REFERENCE_KEY.`is`(dataId) -> getSelectedNodes().filterIsInstance<ReferenceItem>().singleOrNull()
             else -> super.getData(dataId)
         }
     }
