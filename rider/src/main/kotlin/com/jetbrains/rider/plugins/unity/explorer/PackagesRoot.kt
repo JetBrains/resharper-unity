@@ -59,15 +59,8 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
 
         // We want the children to be file system folders and editable packages, which means embedded packages and local
         // packages. We've already added the embedded packages by including file system folders
-        val localPackages = packagesManager.localPackages
-        for (localPackage in localPackages) {
-            if (localPackage.packageFolder != null) {
-                children.add(PackageNode(project!!, packagesManager, localPackage.packageFolder, localPackage))
-            }
-            else {
-                children.add(UnknownPackageNode(project!!, localPackage))
-            }
-        }
+        packagesManager.localPackages.forEach { addPackage(children, it) }
+        packagesManager.unknownPackages.forEach { addPackage(children, it) }
 
         if (packagesManager.immutablePackages.any())
             children.add(0, ReadOnlyPackagesRoot(project!!, packagesManager))
@@ -88,6 +81,15 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
     // Required for "Locate in Solution Explorer" to work. If we return false, the solution view visitor stops walking.
     // True is effectively "maybe"
     override fun contains(file: VirtualFile) = true
+
+    private fun addPackage(children: MutableList<AbstractTreeNode<*>>, thePackage: PackageData) {
+        if (thePackage.packageFolder != null) {
+            children.add(PackageNode(project!!, packagesManager, thePackage.packageFolder, thePackage))
+        }
+        else {
+            children.add(UnknownPackageNode(project!!, thePackage))
+        }
+    }
 }
 
 class PackageNode(project: Project, private val packagesManager: PackagesManager, packageFolder: VirtualFile, private val packageData: PackageData)
@@ -406,6 +408,9 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
     override fun compareTo(other: AbstractTreeNode<*>): Int {
         if (other is UnknownPackageNode) {
             return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
+        }
+        if (other is UnityExplorerNode && other.file.isDirectory) {
+            return -1
         }
         // other is PackageNode or BuiltinPackageNode
         return 1
