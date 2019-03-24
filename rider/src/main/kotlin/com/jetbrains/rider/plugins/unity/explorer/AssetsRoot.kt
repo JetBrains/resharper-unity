@@ -92,7 +92,7 @@ class AssetsRoot(project: Project, virtualFile: VirtualFile)
     }
 }
 
-class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key), Comparable<AbstractTreeNode<*>> {
+class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key) {
 
     companion object {
         val key = Any()
@@ -121,11 +121,6 @@ class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key), Com
             children.add(ReferenceItem(project!!, referenceName, keys))
         }
         return children
-    }
-
-    override fun compareTo(other: AbstractTreeNode<*>): Int {
-        if (other is UnityExplorerNode) return -1
-        return 0
     }
 }
 

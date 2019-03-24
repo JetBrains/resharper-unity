@@ -34,6 +34,39 @@ class UnityExplorerRootNode(project: Project, private val packagesManager: Packa
 
         return nodes
     }
+
+    override fun createComparator(): Comparator<AbstractTreeNode<*>> {
+        val comparator = super.createComparator()
+        return Comparator { node1, node2 ->
+            val sortKey1 = getSortKey(node1)
+            val sortKey2 = getSortKey(node2)
+
+            if (sortKey1 != sortKey2) {
+                return@Comparator sortKey1.compareTo(sortKey2)
+            }
+
+            comparator.compare(node1, node2)
+        }
+    }
+
+    private fun getSortKey(node: AbstractTreeNode<*>): Int {
+        // Nodes of the same type should be sorted as the same. Different types should be in this order (although some
+        // are in different levels of the hierarchy)
+        return when (node) {
+            is AssetsRoot -> 1
+            is PackagesRoot -> 2
+            is ReferenceRoot -> 3
+            is ReadOnlyPackagesRoot -> 4
+            is BuiltinPackagesRoot -> 5
+            is PackageNode -> 6
+            is DependenciesRoot -> 7
+            is DependencyItemNode -> 8
+            is BuiltinPackageNode -> 9
+            is UnknownPackageNode -> 100
+            is UnityExplorerNode -> 1000
+            else -> 10000
+        }
+    }
 }
 
 open class UnityExplorerNode(project: Project,
