@@ -8,6 +8,6 @@ class UnityFeedbackDescriptionProvider: FeedbackDescriptionProvider {
     override fun getDescription(project: Project?): String? {
         if (project == null) return null
         val version = UnityInstallationFinder.getInstance(project).getApplicationVersion() ?: return null
-        return "Unity $version"
+        return "Unity: $version"
     }
 }
