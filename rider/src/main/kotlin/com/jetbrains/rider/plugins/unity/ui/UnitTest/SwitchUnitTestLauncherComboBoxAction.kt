@@ -4,7 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
-import com.jetbrains.rider.isLikeUnityProject
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.UnitTestLaunchPreference
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
@@ -51,7 +51,7 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
         e.presentation.text = getLauncherDescription(currentPreference)
 
         e.presentation.description = getLauncherDescription(currentPreference)
-        e.presentation.isEnabledAndVisible = project.isLikeUnityProject()
+        e.presentation.isEnabledAndVisible = project.isUnityProject()
 
         super.update(e)
     }

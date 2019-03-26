@@ -11,7 +11,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.jetbrains.rdclient.util.idea.defineNestedLifetime
-import com.jetbrains.rider.isLikeUnityProject
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
@@ -47,7 +47,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
     var myShowHiddenItems = false
     var myShowProjectNames = true
 
-    override fun isInitiallyVisible() = project.isLikeUnityProject()
+    override fun isInitiallyVisible() = project.isUnityProject()
 
     override fun getData(dataId: String): Any? {
         return when {

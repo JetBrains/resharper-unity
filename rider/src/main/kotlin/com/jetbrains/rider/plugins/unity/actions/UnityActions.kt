@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.isLikeUnityProject
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.util.UnityIcons
 
@@ -82,5 +82,5 @@ fun AnActionEvent.getHost(): UnityHost? {
 
 fun AnActionEvent.isUnityProject(): Boolean {
     val project = this.project ?: return false
-    return project.isLikeUnityProject()
+    return project.isUnityProject()
 }

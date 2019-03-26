@@ -2,6 +2,7 @@
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
+using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
@@ -15,11 +16,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class ConnectionTracker
     {
-        private UnityEditorState myLastCheckResult = UnityEditorState.Disconnected;
+        public readonly IProperty<UnityEditorState> State;
 
         public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol,
             IShellLocks locks, UnitySolutionTracker unitySolutionTracker)
         {
+            State = new Property<UnityEditorState>(lifetime, "UnityEditorPlugin::ConnectionState", UnityEditorState.Disconnected);
+            
             editorProtocol.UnityModel.View(lifetime, (lt, model) =>
             {
                 if (!unitySolutionTracker.IsUnityProjectFolder.HasTrueValue()) // avoid recurring checks for non-unity projects
@@ -29,25 +32,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 locks.QueueRecurring(lt, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
                 {
                     if (model == null)
-                        myLastCheckResult = UnityEditorState.Disconnected;
+                        State.Value = UnityEditorState.Disconnected;
                     else
                     {
                         var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
                         rdTask?.Result.Advise(lt, result =>
                         {
-                            myLastCheckResult = result.Result;
-                            logger.Trace($"myIsConnected = {myLastCheckResult}");
+                            State.Value = result.Result;
+                            logger.Trace($"myIsConnected = {State.Value}");
                         });
                     }
 
-                    logger.Trace($"Sending connection state. State: {myLastCheckResult}");
-                    host.PerformModelAction(m => m.EditorState.Value = Wrap(myLastCheckResult));
+                    logger.Trace($"Sending connection state. State: {State.Value}");
+                    host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
                 });
             });
         }
-
-        // ReSharper disable once UnusedMember.Global
-        public UnityEditorState LastCheckResult => myLastCheckResult;
 
         private EditorState Wrap(UnityEditorState state)
         {
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public bool IsConnectionEstablished()
         {
-            return LastCheckResult != UnityEditorState.Refresh && LastCheckResult != UnityEditorState.Disconnected;
+            return State.Value != UnityEditorState.Refresh && State.Value != UnityEditorState.Disconnected;
         }
     }
 }
