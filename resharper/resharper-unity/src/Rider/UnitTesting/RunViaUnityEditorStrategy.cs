@@ -103,36 +103,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 return Task.FromResult(false);
             }
-            
+
             var tcs = new TaskCompletionSource<bool>();
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
             run.PutData(ourCompletionSourceKey, tcs);
 
             var hostId = run.HostController.HostId;
-            if (hostId == WellKnownHostProvidersIds.DebugProviderId)
+            switch (hostId)
             {
-                
-                mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "AttachDebuggerToUnityEditor", () =>
-                {
-                    var task = myUnityHost.GetValue(model =>
-                        model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
-                    task.Result.AdviseNotNull(run.Lifetime, result =>
+                case WellKnownHostProvidersIds.DebugProviderId:
+                    mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "AttachDebuggerToUnityEditor", () =>
                     {
-                        if (!result.Result)
-                            tcs.SetException(new Exception("Unable to attach debugger."));
-                        else
-                            RefreshAndRunTask(run, tcs);
+                        var task = myUnityHost.GetValue(model =>
+                            model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
+                        task.Result.AdviseNotNull(run.Lifetime, result =>
+                        {
+                            if (!result.Result)
+                                tcs.SetException(new Exception("Unable to attach debugger."));
+                            else
+                                RefreshAndRunTask(run, tcs);
+                        });
                     });
-                });
+                    break;
+                case WellKnownHostProvidersIds.RunProviderId:
+                    RefreshAndRunTask(run, tcs);
+                    break;
+                default:
+                    run.Launch.Output.Error(
+                        $"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
+                    return Task.FromResult(false);
             }
-            else if (hostId != WellKnownHostProvidersIds.RunProviderId)
-            {
-                run.Launch.Output.Error(
-                    $"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
-                return Task.FromResult(false);
-            }
-            else
-                RefreshAndRunTask(run, tcs);
 
             return tcs.Task;
         }
