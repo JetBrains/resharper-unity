@@ -10,28 +10,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityInstallationSynchronizer
     {
         public UnityInstallationSynchronizer(Lifetime lifetime, UnitySolutionTracker solutionTracker,
-                                             UnityHost host, UnityVersion unityVersion)
+                                             UnityHost host, UnityVersion unityVersion, UnityReferencesTracker referencesTracker)
         {
-            solutionTracker.IsUnityProjectFolder.Advise(lifetime, isUnityProjectFolder =>
+            solutionTracker.IsUnityProjectFolder.Advise(lifetime, res =>
             {
-                if (!isUnityProjectFolder) return;
-                var version = unityVersion.GetActualVersionForSolution();
-                var info = UnityInstallationFinder.GetApplicationInfo(version);
-                if (info == null)
-                    return;
+                if (!res) return;
+                NotifyFrontend(host, unityVersion);
+            });
 
-                var contentPath = UnityInstallationFinder.GetApplicationContentsPath(version);
+            referencesTracker.HasUnityReference.Advise(lifetime, res =>
+            {
+                if (!res) return;
+                NotifyFrontend(host, unityVersion);
+            });
+        }
 
-                host.PerformModelAction(rd =>
-                {
-                    // ApplicationPath may be already set via UnityEditorProtocol, which is more accurate
-                    if (!rd.ApplicationPath.HasValue())
-                        rd.ApplicationPath.SetValue(info.Path.FullPath);
-                    if (!rd.ApplicationContentsPath.HasValue())
-                        rd.ApplicationContentsPath.SetValue(contentPath.FullPath);
-                    if (!rd.ApplicationVersion.HasValue())
-                        rd.ApplicationVersion.SetValue(UnityVersion.VersionToString(info.Version));
-                });
+        private static void NotifyFrontend(UnityHost host, UnityVersion unityVersion)
+        {
+            var version = unityVersion.GetActualVersionForSolution();
+            var info = UnityInstallationFinder.GetApplicationInfo(version);
+            if (info == null)
+                return;
+
+            var contentPath = UnityInstallationFinder.GetApplicationContentsPath(version);
+
+            host.PerformModelAction(rd =>
+            {
+                // ApplicationPath may be already set via UnityEditorProtocol, which is more accurate
+                if (!rd.ApplicationPath.HasValue())
+                    rd.ApplicationPath.SetValue(info.Path.FullPath);
+                if (!rd.ApplicationContentsPath.HasValue())
+                    rd.ApplicationContentsPath.SetValue(contentPath.FullPath);
+                if (!rd.ApplicationVersion.HasValue())
+                    rd.ApplicationVersion.SetValue(UnityVersion.VersionToString(info.Version));
             });
         }
     }

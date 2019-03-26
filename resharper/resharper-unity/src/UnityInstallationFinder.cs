@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Util;
 using JetBrains.Util.Interop;
@@ -13,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         private static readonly ILogger ourLogger = Logger.GetLogger(typeof(UnityInstallationFinder));
 
+        [CanBeNull]
         public static UnityInstallationInfo GetApplicationInfo(Version version)
         {
             var possible = GetPossibleInstallationInfos().ToArray();
@@ -48,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         
         public static FileSystemPath GetApplicationContentsPath(Version version)
         {
-            var applicationPath = GetApplicationInfo(version).Path;
+            var applicationPath = GetApplicationInfo(version)?.Path;
             if (applicationPath == null)
                 return null;
             switch (PlatformUtil.RuntimePlatform)
