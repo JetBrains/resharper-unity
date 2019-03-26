@@ -6,11 +6,9 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Host.Features.TextControls;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl.TextControlsManagement;
-using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {

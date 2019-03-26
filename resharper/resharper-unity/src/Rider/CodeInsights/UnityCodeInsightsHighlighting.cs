@@ -13,7 +13,7 @@ using JetBrains.TextControl.DocumentMarkup;
 using Severity = JetBrains.ReSharper.Feature.Services.Daemon.Severity;
 
 [assembly: RegisterHighlighter(UnityCodeInsightsHighlighting.Id, EffectType = EffectType.NONE,
-    Layer = HighlighterLayer.SYNTAX + 1, NotRecyclable = true, GroupId = HighlighterGroupIds.HIDDEN)]
+    Layer = HighlighterLayer.SYNTAX + 1, NotRecyclable = true, GroupId = HighlighterGroupIds.HIDDEN, TransmitUpdates = true)]
 
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights

@@ -11,7 +11,7 @@ class UnityConfigurationImpl(private val project: Project, unityProjectDiscovere
     }
 
     init {
-        if (unityProjectDiscoverer.isLikeUnityProject) {
+        if (unityProjectDiscoverer.isUnityProject) {
             val excludePaths = ignoredDirectories
                     .mapNotNull(::getChildAsFile)
                     .toHashSet()

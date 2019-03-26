@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.GotoByName;
-using JetBrains.Platform.RdFramework.Util;
+using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.CodeInsights.Providers;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -15,13 +15,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         public override string DisplayName => "Unity implicit usage";
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Top;
 
-        public override ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
-            new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)};
+        public override ICollection<CodeLensRelativeOrdering> RelativeOrderings { get; }
 
-        public UnityCodeInsightProvider(UnitySolutionTracker unitySolutionTracker, UnityHost host,
-            BulbMenuComponent bulbMenu)
-            : base(unitySolutionTracker, host, bulbMenu)
+        public UnityCodeInsightProvider(UnityHost host, UnitySolutionTracker solutionTracker, BulbMenuComponent bulbMenu, UnitySolutionTracker tracker)
+            : base(solutionTracker, host, bulbMenu)
         {
+            RelativeOrderings = tracker.IsUnityProject.HasTrueValue()
+                ? new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)}
+                : new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingLast()};
         }
     }
 }
