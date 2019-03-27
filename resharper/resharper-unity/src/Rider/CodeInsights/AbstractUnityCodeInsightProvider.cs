@@ -48,6 +48,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
            }
         }
 
+        // TODO: Fix sdk and add correct check
+        // We could not check that our provider is available while solution is loading, because user could add Unity Engine
+        // reference later. wait sdk update
         public bool IsAvailableIn(ISolution solution) => true;
 
 
