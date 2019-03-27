@@ -25,7 +25,7 @@ class BackendPaths(private val project: Project, logger: Logger, val repositoryR
         unityPluginSolution = File(unityRoot, "JetBrains.Rider.Unity.Editor.sln")
 
         // Temporary workaround - the R# SDK contains yFile assembly that is obfuscated, and kills msbuild on mac
-        val sln = if (Os.isFamily(Os.FAMILY_MAC)) "rider-unity.sln" else "resharper-unity.sln"
+        val sln = if (!Os.isFamily(Os.FAMILY_WINDOWS)) "rider-unity.sln" else "resharper-unity.sln"
         resharperHostPluginSolution = File(backendRoot, sln)
         assert(resharperHostPluginSolution.isFile)
 
