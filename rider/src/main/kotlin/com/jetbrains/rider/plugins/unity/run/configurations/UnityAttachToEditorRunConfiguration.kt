@@ -13,6 +13,9 @@ import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAc
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.reactive.hasTrueValue
+import com.jetbrains.rider.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
@@ -74,10 +77,12 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     override var listenPortForConnections: Boolean = false
 
     override fun checkSettingsBeforeRun() {
+        val model = UnityHost.getInstance(project).model
         // We could do this in getState, but if we throw an error there, it just shows a balloon
         // If we throw an error here (at least, RuntimeConfigurationError), it will cause the
         // Edit Run Configurations dialog to be shown
-        if (!updatePidAndPort() && UnityInstallationFinder.getInstance(project).getApplicationPath() == null)
+        if (!updatePidAndPort() && (UnityInstallationFinder.getInstance(project).getApplicationPath() == null ||
+                model.hasUnityReference.hasTrueValue && !UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder))
             throw RuntimeConfigurationError("Cannot find Unity Editor instance")
     }
 

@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
            }
         }
 
-        public bool IsAvailableIn(ISolution solution) => myUnitySolutionTracker.IsUnityProject.HasTrueValue();
+        public bool IsAvailableIn(ISolution solution) => true;
 
 
         public abstract string ProviderId { get; }
