@@ -116,8 +116,8 @@
       </group>
 
       <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity-related Actions">
-        <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessActionDll" />
+        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRiderDll" />
       </group>
 
       <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />

@@ -37,6 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return tracker.HasUnityReference.Value;
         }
 
+        /// <summary>
+        ///  Checks that specific project unity reference or specific unity guid
+        /// </summary>
         public static bool IsUnityProject([CanBeNull] this IProject project)
         {
             // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
