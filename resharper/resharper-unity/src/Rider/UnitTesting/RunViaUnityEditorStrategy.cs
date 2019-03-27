@@ -216,19 +216,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     "Periodic wait EditorState != UnityEditorState.Refresh",
                     TimeSpan.FromSeconds(1), () =>
                     {
-                        if (myEditorProtocol.UnityModel.Value != null)
+                        if (myEditorProtocol.UnityModel.Value == null) return;
+                        var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(Unit.Instance);
+                        rdTask?.Result.Advise(lifetime, result =>
                         {
-                            var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(Unit.Instance);
-                            rdTask?.Result.Advise(lifetime, result =>
+                            // [TODO] Backend ConnectionTracker has IsConnectionEstablished method which has same logic
+                            if (result.Result != UnityEditorState.Refresh && result.Result != UnityEditorState.Disconnected)
                             {
-                                // [TODO] Backend ConnectionTracker has IsConnectionEstablished method which has same logic
-                                if (result.Result != UnityEditorState.Refresh && result.Result != UnityEditorState.Disconnected)
-                                {
-                                    lifetimeDefinition.Terminate();
-                                    myLogger.Verbose("lifetimeDefinition.Terminate();");
-                                }
-                            });
-                        }
+                                lifetimeDefinition.Terminate();
+                                myLogger.Verbose("lifetimeDefinition.Terminate();");
+                            }
+                        });
                     });
             }, locks.Tasks.UnguardedMainThreadScheduler);
                 
@@ -371,12 +369,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public void Cancel(IUnitTestRun run)
         {
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "CancellingUnitTests", () =>
-                        {
-                            var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
-                            if (launchProperty != null && launchProperty.HasValue())
-                                launchProperty.Value?.Abort.Start(Unit.Instance);
-                             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
-                        });
+            {
+                var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
+                if (launchProperty != null && launchProperty.HasValue())
+                    launchProperty.Value?.Abort.Start(Unit.Instance);
+                run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
+            });
         }
 
         public void Abort(IUnitTestRun run)
