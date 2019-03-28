@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             Assertion.Assert(context.BasicContext.Parameters.Multiplier == 1, "multiplier == 1");
 
             var unityApi = context.BasicContext.Solution.GetComponent<UnityApi>();
-            if (!CheckPosition(context, unityApi, out var classDeclaration, out var hasVisibilityModifier, out var hasReturnType))
+            if (!CheckPosition(context, unityApi, out var classDeclaration, out var accessRights, out var hasReturnType))
                 return false;
 
             var typeElement = classDeclaration.DeclaredElement;
@@ -93,12 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 if (addedFunctions.Contains(function.Name))
                     continue;
 
-                // TODO: Decide what to do with e.g. `void OnAnima{caret}`
-                // If we want to insert a visibility modifier, it has to go *before* the `void`,
-                // which means adding a behaviour here that will remove it
-                var addModifier = !hasVisibilityModifier && !hasReturnType;
-
-                var item = CreateMethodItem(context, function, classDeclaration, addModifier);
+                var item = CreateMethodItem(context, function, classDeclaration, hasReturnType, accessRights);
                 if (item == null) continue;
 
                 item = SetRelevanceSortPriority(item, function);
@@ -173,21 +168,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         }
 
         private static ILookupItem CreateMethodItem(CSharpCodeCompletionContext context,
-            UnityEventFunction eventFunction, IClassLikeDeclaration declaration, bool addModifier)
+                                                    UnityEventFunction eventFunction, IClassLikeDeclaration declaration,
+                                                    bool hasReturnType, AccessRights accessRights)
         {
             if (CSharpLanguage.Instance == null)
                 return null;
 
-            var accessRights = AccessRights.PRIVATE;
+            // Only show the modifier in the list text if it's not already specified and there isn't a return type, in
+            // which case we default to `private`. E.g. if someone types `OnAnim`, then show `private void OnAnimate...`
+            // but if they type `void OnAnim`, they don't want a modifier, and if they type `public void OnAnim` then
+            // they want to use `public`
+            var showModifier = false;
+            if (!hasReturnType && accessRights == AccessRights.NONE)
+            {
+                showModifier = true;
+                accessRights = AccessRights.PRIVATE;
+            }
+
             var factory = CSharpElementFactory.GetInstance(declaration, false);
-            var method = eventFunction.CreateDeclaration(factory, declaration, accessRights);
-            if (method.DeclaredElement == null)
+            var methodDeclaration = eventFunction.CreateDeclaration(factory, declaration, accessRights);
+            if (methodDeclaration.DeclaredElement == null)
                 return null;
 
-            var instance = new DeclaredElementInstance(method.DeclaredElement);
+            var instance = new DeclaredElementInstance(methodDeclaration.DeclaredElement);
 
-            var declaredElementInfo = new DeclaredElementInfoWithoutParameterInfo(method.DeclaredName, instance,
-                CSharpLanguage.Instance, context.BasicContext.LookupItemsOwner, context)
+            var declaredElementInfo = new DeclaredElementInfoWithoutParameterInfo(methodDeclaration.DeclaredName,
+                instance, CSharpLanguage.Instance, context.BasicContext.LookupItemsOwner, context)
             {
                 Ranges = context.CompletionRanges
             };
@@ -214,7 +220,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
             var text = $"{eventFunction.Name}({parameters})";
             var parameterOffset = eventFunction.Name.Length;
-            var modifier = addModifier
+
+            var modifier = showModifier
                 ? CSharpDeclaredElementPresenter.Instance.Format(accessRights) + " "
                 : string.Empty;
 
@@ -231,12 +238,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                         TextRange.FromLength(parameterStartOffset, displayName.Length - parameterStartOffset));
                     LookupUtil.AddEmphasize(displayName, new TextRange(modifier.Length, displayName.Length));
 
-                    var image = psiIconManager.GetImage(method.DeclaredElement,
-                        method.DeclaredElement.PresentationLanguage, true);
+                    var image = psiIconManager.GetImage(methodDeclaration.DeclaredElement,
+                        methodDeclaration.DeclaredElement.PresentationLanguage, true);
                     var marker = item.Info.Ranges.CreateVisualReplaceRangeMarker();
                     return new SimplePresentation(displayName, image, marker);
                 })
-                .WithBehavior(_ => new UnityEventFunctionBehavior(declaredElementInfo, eventFunction))
+                .WithBehavior(_ => new UnityEventFunctionBehavior(declaredElementInfo, eventFunction, accessRights))
                 .WithMatcher(_ =>
                     new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, declaredElementInfo,
                         context.BasicContext.IdentifierMatchingStyle));
@@ -245,10 +252,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         [ContractAnnotation("=> false, classDeclaration: null; => true, classDeclaration: notnull")]
         private bool CheckPosition(CSharpCodeCompletionContext context, UnityApi unityApi,
                                    out IClassDeclaration classDeclaration,
-                                   out bool hasVisibilityModifier, out bool hasReturnType)
+                                   out AccessRights accessRights, out bool hasReturnType)
         {
             classDeclaration = GetClassDeclaration(context.NodeInFile);
-            hasVisibilityModifier = false;
+            accessRights = AccessRights.NONE;
             hasReturnType = false;
 
             if (classDeclaration == null)
@@ -268,7 +275,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // We know we're in a place where we can complete, so now configure what we
             // complete and what we display
             hasReturnType = HasExistingReturnType(identifier, out var typeUsage);
-            hasVisibilityModifier = HasExistingVisibilityModifier(typeUsage);
+            accessRights = GetAccessRights(typeUsage);
 
             return true;
         }
@@ -375,16 +382,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return false;
         }
 
-        private static bool HasExistingVisibilityModifier([CanBeNull] ITreeNode typeUsage)
+        private static AccessRights GetAccessRights([CanBeNull] ITreeNode typeUsage)
         {
             if (typeUsage == null || !(typeUsage.GetPreviousMeaningfulSibling() is IModifiersList modifiersList))
-                return false;
+                return AccessRights.NONE;
 
-            // TODO: What about virtual or override?
-            return (modifiersList.HasModifier(CSharpTokenType.PUBLIC_KEYWORD) ||
-                    modifiersList.HasModifier(CSharpTokenType.INTERNAL_KEYWORD) ||
-                    modifiersList.HasModifier(CSharpTokenType.PROTECTED_KEYWORD) ||
-                    modifiersList.HasModifier(CSharpTokenType.PRIVATE_KEYWORD));
+            return ModifiersUtil.GetAccessRightsModifiers(modifiersList);
         }
 
         [CanBeNull]

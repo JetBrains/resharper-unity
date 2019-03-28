@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class A : MonoBehaviour
 {
-  private void OnAnimatorIK(int layerIndex)
+  public void OnAnimatorIK(int layerIndex)
   {
     throw new NotImplementedException();{caret}
   }

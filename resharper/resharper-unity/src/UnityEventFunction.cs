@@ -52,8 +52,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             var builder = new StringBuilder(128);
 
-            builder.Append(CSharpDeclaredElementPresenter.Instance.Format(accessRights));
-            builder.Append(" ");
+            if (accessRights != AccessRights.NONE)
+            {
+                builder.Append(CSharpDeclaredElementPresenter.Instance.Format(accessRights));
+                builder.Append(" ");
+            }
+
             if (IsStatic) builder.Append("static ");
 
             // Consider this declaration a template, and the final generated code implements (or overrides) this API

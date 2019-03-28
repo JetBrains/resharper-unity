@@ -31,8 +31,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
         {
             if (!HasUnityBaseType(context)) return;
 
-            var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
             var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
+            var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
             foreach (var generatorElement in selectedGeneratorElements)
             {
                 if (!(generatorElement.DeclaredElement is IMethod selectedMethod)) continue;
