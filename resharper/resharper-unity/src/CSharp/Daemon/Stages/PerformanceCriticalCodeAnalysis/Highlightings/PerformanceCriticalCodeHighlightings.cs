@@ -3,7 +3,6 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -14,11 +13,11 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
 [assembly:
     RegisterConfigurableSeverity(
         PerformanceInvocationHighlighting.SEVERITY_ID,
-        UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
+        null,
         UnityHighlightingGroupIds.Unity,
         PerformanceInvocationHighlighting.TITLE,
         PerformanceInvocationHighlighting.DESCRIPTION,
-        Severity.INFO
+        Severity.HINT
     ),
     RegisterConfigurableSeverity(
         PerformanceNullComparisonHighlighting.SEVERITY_ID,
@@ -26,14 +25,6 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
         UnityHighlightingGroupIds.Unity,
         PerformanceNullComparisonHighlighting.TITLE,
         PerformanceNullComparisonHighlighting.DESCRIPTION,
-        Severity.INFO
-    ),
-    RegisterConfigurableSeverity(
-        PerformanceHighlighting.SEVERITY_ID,
-        UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
-        UnityHighlightingGroupIds.Unity,
-        PerformanceHighlighting.TITLE,
-        PerformanceHighlighting.MESSAGE,
         Severity.INFO
     ),
     RegisterConfigurableSeverity(
@@ -46,9 +37,9 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
     )
 ]
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {
-    [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name, Languages = "CSHARP",
+    [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
         AttributeId = PerformanceHighlightingAttributeIds.COSTLY_METHOD_INVOCATION,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
@@ -151,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
 
 
-    public abstract class PerformanceHighlightingBase : ICustomAttributeIdHighlighting, IUnityHighlighting
+    public abstract class PerformanceHighlightingBase : IHighlighting, IUnityHighlighting
     {
         [NotNull] public readonly string SeverityId;
 
@@ -159,7 +150,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             SeverityId = severityId;
             ToolTip = message;
-            AttributeId = attributeId;
         }
 
         public abstract bool IsValid();
@@ -167,7 +157,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         [NotNull] public string ToolTip { get; }
         [NotNull] public string ErrorStripeToolTip => ToolTip;
-        public string AttributeId { get; }
     }
 
     public class PerformanceContextHiglighting : HighlightInfo
