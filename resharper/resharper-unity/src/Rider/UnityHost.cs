@@ -14,10 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private readonly RdUnityModel myModel;
 
-        // ReSharper disable once SuggestBaseTypeForParameter
-        public UnityHost(ISolution solution, IShellLocks locks)
+        public UnityHost(ISolution solution, bool isInTests = false)
         {
-            myIsInTests = locks.Dispatcher.IsAsyncBehaviorProhibited;
+            myIsInTests = isInTests;
             if (myIsInTests)
                 return;
 
