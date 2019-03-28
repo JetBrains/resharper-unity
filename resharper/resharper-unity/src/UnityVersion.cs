@@ -29,10 +29,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
-            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
+            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, bool inTests = false)
         {
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
+
+            if (inTests)
+                return;
 
             var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
             fileSystemTracker.AdviseFileChanges(lifetime,
