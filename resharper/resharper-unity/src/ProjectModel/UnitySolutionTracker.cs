@@ -27,8 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 return;
             }
 
-            if (!solution.SolutionDirectory.IsAbsolute) return; // RIDER-26122
-
             SetValues();
 
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false,
